@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -3394,9 +3395,25 @@ bool View::UpdateParentLayers() {
 
 void View::OrphanLayers() {
   if (layer()) {
-    ui::Layer* parent = layer()->parent();
-    if (parent) {
+    if (ui::Layer* parent = layer()->parent()) {
       for (ui::Layer* layer : GetLayersInOrder()) {
+        // TODO(http://b/319941708): Please remove the below crash keys once the
+        // the crash is fixed. It seems one of the layers returned by
+        // `GetLayersInOrder()` is not a sibling of this view's `layer()` (i.e.
+        // the parent is different).
+        SCOPED_CRASH_KEY_BOOL("OrphanLayers", "layer_valid", !!layer);
+        SCOPED_CRASH_KEY_BOOL("OrphanLayers", "layer_is_sibling",
+                              layer->parent() == parent);
+        SCOPED_CRASH_KEY_STRING256("OrphanLayers", "this_layer_name",
+                                   this->layer()->name());
+        SCOPED_CRASH_KEY_STRING256("OrphanLayers", "parent_layer_name",
+                                   parent->name());
+        SCOPED_CRASH_KEY_STRING256("OrphanLayers", "sibling_layer_name",
+                                   layer->name());
+        SCOPED_CRASH_KEY_STRING256("OrphanLayers", "widget_name",
+                                   GetWidget() ? GetWidget()->GetName() : "");
+        SCOPED_CRASH_KEY_STRING256("OrphanLayers", "view_class_name",
+                                   GetClassName());
         parent->Remove(layer);
       }
     }
