@@ -694,15 +694,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-// TODO(crbug.com/1496683): Disabled on Lacros since asynchronou fullscreen
-// state behavior breaks the popup on fullscreen state behavior.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OpeningPopupExitsFullscreen DISABLED_OpeningPopupExitsFullscreen
-#else
-#define MAYBE_OpeningPopupExitsFullscreen OpeningPopupExitsFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_OpeningPopupExitsFullscreen) {
+                       OpeningPopupExitsFullscreen) {
   ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreen(true));
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 
@@ -714,6 +707,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   content::ExecuteScriptAsync(tab, "open('.', '', 'popup')");
   Browser* popup = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(2u, browser_list->size());
+  ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
   EXPECT_EQ(popup, browser_list->GetLastActive());
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
