@@ -26,33 +26,33 @@ suite('cr-toast', function() {
     mockTimer.uninstall();
   });
 
-  test('simple show/hide', function() {
+  test('simple show/hide', async function() {
     assertFalse(toast.open);
 
-    toast.show();
+    await toast.show();
     assertTrue(toast.open);
 
-    toast.hide();
+    await toast.hide();
     assertFalse(toast.open);
   });
 
-  test('auto hide with show()', function() {
+  test('auto hide with show()', async function() {
     const duration = 100;
     toast.duration = duration;
 
-    toast.show();
+    await toast.show();
     assertTrue(toast.open);
 
     mockTimer.tick(duration);
     assertFalse(toast.open);
   });
 
-  test('show() clears auto-hide', function() {
+  test('show() clears auto-hide', async function() {
     const duration = 70;
     toast.duration = duration;
-    toast.show();
+    await toast.show();
     mockTimer.tick(duration - 1);
-    toast.show();
+    await toast.show();
 
     // Auto-hide is cleared and toast should remain open.
     mockTimer.tick(1);
@@ -67,24 +67,26 @@ suite('cr-toast', function() {
   });
 
 
-  test('clearing duration clears timeout', function() {
+  test('clearing duration clears timeout', async function() {
     const nonZeroDuration = 30;
     toast.duration = nonZeroDuration;
-    toast.show();
+    await toast.show();
     assertTrue(toast.open);
 
     const zeroDuration = 0;
     toast.duration = zeroDuration;
+    await toast.updateComplete;
     mockTimer.tick(nonZeroDuration);
     assertTrue(toast.open);
   });
 
-  test('setting a duration starts new auto-hide', function() {
+  test('setting a duration starts new auto-hide', async function() {
     toast.duration = 0;
-    toast.show();
+    await toast.show();
 
     const nonZeroDuration = 50;
     toast.duration = nonZeroDuration;
+    await toast.updateComplete;
     mockTimer.tick(nonZeroDuration - 1);
     assertTrue(toast.open);
 
@@ -92,16 +94,17 @@ suite('cr-toast', function() {
     assertFalse(toast.open);
   });
 
-  test('setting duration clears auto-hide', function() {
+  test('setting duration clears auto-hide', async function() {
     const oldDuration = 30;
     toast.duration = oldDuration;
-    toast.show();
+    await toast.show();
 
     mockTimer.tick(oldDuration - 1);
     assertTrue(toast.open);
 
     const newDuration = 50;
     toast.duration = newDuration;
+    await toast.updateComplete;
     mockTimer.tick(newDuration - 1);
     assertTrue(toast.open);
 
