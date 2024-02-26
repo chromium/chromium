@@ -134,7 +134,7 @@ TEST_F(DriveFsAuthTest, GetAccessToken_GetAccessTokenFailure_Permanent) {
       base::BindLambdaForTesting([&](mojom::AccessTokenStatus status,
                                      mojom::AccessTokenPtr access_token) {
         EXPECT_EQ(mojom::AccessTokenStatus::kAuthError, status);
-        EXPECT_TRUE(access_token.is_null());
+        EXPECT_FALSE(access_token.is_null());
         run_loop.Quit();
       }));
   RespondWithAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
@@ -148,7 +148,7 @@ TEST_F(DriveFsAuthTest, GetAccessToken_GetAccessTokenFailure_Transient) {
       base::BindLambdaForTesting([&](mojom::AccessTokenStatus status,
                                      mojom::AccessTokenPtr access_token) {
         EXPECT_EQ(mojom::AccessTokenStatus::kTransientError, status);
-        EXPECT_TRUE(access_token.is_null());
+        EXPECT_FALSE(access_token.is_null());
         run_loop.Quit();
       }));
   RespondWithAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
@@ -204,7 +204,7 @@ TEST_F(DriveFsAuthTest, GetAccessToken_ParallelRequests) {
       base::BindLambdaForTesting([&](mojom::AccessTokenStatus status,
                                      mojom::AccessTokenPtr access_token) {
         EXPECT_EQ(mojom::AccessTokenStatus::kTransientError, status);
-        EXPECT_TRUE(access_token.is_null());
+        EXPECT_FALSE(access_token.is_null());
       }));
   RespondWithAccessToken("auth token");
   run_loop.Run();
@@ -231,7 +231,7 @@ TEST_F(DriveFsAuthTest, GetAccessToken_SequentialRequests) {
         base::BindLambdaForTesting([&](mojom::AccessTokenStatus status,
                                        mojom::AccessTokenPtr access_token) {
           EXPECT_EQ(mojom::AccessTokenStatus::kAuthError, status);
-          EXPECT_TRUE(access_token.is_null());
+          EXPECT_FALSE(access_token.is_null());
           run_loop.Quit();
         }));
     RespondWithAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
