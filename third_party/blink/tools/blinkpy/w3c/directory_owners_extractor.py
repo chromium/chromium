@@ -30,7 +30,6 @@ BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 class WPTDirMetadata(NamedTuple):
     team_email: Optional[str] = None
-    monorail_component: Optional[str] = None
     should_notify: bool = False
     buganizer_public_component: Optional[str] = None
 
@@ -146,16 +145,15 @@ class DirectoryOwnersExtractor:
 
         The output of `dirmd` in JSON format looks like:
             {
-                "dirs":{
-                    "tools/binary_size/libsupersize/testdata":{
-                        "monorail":{
-                            "project":"chromium",
-                            "component":"Blink>Internal"
+                "dirs": {
+                    "tools/binary_size/libsupersize/testdata": {
+                        "teamEmail": "team@chromium.org",
+                        "os": "LINUX",
+                        "wpt": {
+                            "notify": "YES"
                         },
-                        "teamEmail":"team@chromium.org",
-                        "os":"LINUX",
-                        "wpt":{
-                            "notify":"YES"
+                        "buganizerPublic": {
+                            "componentId": "12345"
                         }
                     }
                 }
@@ -191,6 +189,5 @@ class DirectoryOwnersExtractor:
         # 'NO'.
         return WPTDirMetadata(
             data.get('teamEmail'),
-            data.get('monorail', {}).get('component'),
             data.get('wpt', {}).get('notify') != 'NO',
             data.get('buganizerPublic', {}).get('componentId'))

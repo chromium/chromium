@@ -237,11 +237,11 @@ class ImportNotifier:
                              'was not added to the CC list.')
 
             # component could be None.
-            components = [metadata.monorail_component
-                          ] if metadata.monorail_component else None
-            buganizer_public_components = [
-                metadata.buganizer_public_component
-            ] if metadata.buganizer_public_component else None
+            # TODO(crbug.com/40283194): A Buganizer bug can only have one
+            # component. Reshape `MonorailIssue` so that components is not a
+            # list.
+            component_ids = ([metadata.buganizer_public_component]
+                             if metadata.buganizer_public_component else None)
 
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
@@ -277,14 +277,10 @@ class ImportNotifier:
             bug = MonorailIssue.new_chromium_issue(summary,
                                                    description,
                                                    cc,
-                                                   components,
+                                                   component_ids,
                                                    labels=['Test-WebTest'])
             _log.info(bug)
             _log.info("WPT-NOTIFY enabled in %s; adding the bug to the pending list." % full_directory)
-
-            # TODO(crbug.com/1487196): refactor this so we use a common issue which is converted later to
-            # buganizer or monorail specific issue.
-            bug.buganizer_public_components = buganizer_public_components
             bugs.append(bug)
         return bugs
 
@@ -363,7 +359,6 @@ class ImportNotifier:
             _log.warning(e)
 
         for index, bug in enumerate(bugs, start=1):
-            buganizer_component_id = BUGANIZER_WPT_COMPONENT
             issue_link = None
             if buganizer_api and USE_BUGANIZER:
                 if 'summary' not in bug.body:
@@ -379,15 +374,16 @@ class ImportNotifier:
                 title = bug.body['summary']
                 description = bug.body['description']
                 cc = bug.body.get('cc', []) + [self.sheriff_email]
-                if bug.buganizer_public_components:
-                    buganizer_component_id = bug.buganizer_public_components[0]
+                component_ids = bug.body['components']
+                component_id = (component_ids[0]
+                                if component_ids else BUGANIZER_WPT_COMPONENT)
                 try:
                     buganizer_res = buganizer_api.NewIssue(
                         title=title,
                         description=description,
                         cc=cc,
                         status="New",
-                        componentId=buganizer_component_id)
+                        componentId=component_id)
                     issue_link = f'b/{buganizer_res["issue_id"]}'
                 except Exception as e:
                     _log.warning('buganizer api call to new issue failed')

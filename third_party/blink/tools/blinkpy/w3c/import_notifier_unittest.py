@@ -312,14 +312,21 @@ class ImportNotifierTest(unittest.TestCase):
         self.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/bar/DIR_METADATA', '')
 
-        data = (
-            '{"dirs":{"third_party/blink/web_tests/external/wpt/foo":{"monorail":{"component":'
-            '"Blink>Infra>Ecosystem"},"teamEmail":"team-email@chromium.org","wpt":{'
-            '"notify":"YES"}}}}')
-
         def mock_run_command(args):
             if args[-1].endswith('external/wpt/foo'):
-                return data
+                return json.dumps({
+                    'dirs': {
+                        'third_party/blink/web_tests/external/wpt/foo': {
+                            'buganizerPublic': {
+                                'componentId': '999',
+                            },
+                            'teamEmail': 'team-email@chromium.org',
+                            'wpt': {
+                                'notify': 'YES',
+                            },
+                        },
+                    },
+                })
             return ''
 
         self.notifier.owners_extractor.executive = MockExecutive(
@@ -345,7 +352,7 @@ class ImportNotifierTest(unittest.TestCase):
         # The formatting of imported commits and new failures are already tested.
         self.assertEqual(set(bugs[0].body['cc']),
                          {'team-email@chromium.org', 'foolip@chromium.org'})
-        self.assertEqual(bugs[0].body['components'], ['Blink>Infra>Ecosystem'])
+        self.assertEqual(bugs[0].body['components'], ['999'])
         self.assertEqual(
             bugs[0].body['summary'],
             '[WPT] New failures introduced in external/wpt/foo by import https://crrev.com/c/12345'
@@ -368,7 +375,6 @@ class ImportNotifierTest(unittest.TestCase):
             ],
         }
         dir_metadata = WPTDirMetadata(
-            monorail_component='Blink>Infra>Ecosystem',
             buganizer_public_component='123',
             should_notify=True)
         with mock.patch.object(self.notifier.owners_extractor,
@@ -377,8 +383,7 @@ class ImportNotifierTest(unittest.TestCase):
             (bug, ) = self.notifier.create_bugs_from_new_failures(
                 'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
             self.assertEqual(bug.body['cc'], [])
-            self.assertEqual(bug.body['components'], ['Blink>Infra>Ecosystem'])
-            self.assertEquals(bug.buganizer_public_components, ['123'])
+            self.assertEqual(bug.body['components'], ['123'])
             self.assertEqual(
                 bug.body['summary'],
                 '[WPT] New failures introduced in external/wpt/foo '
