@@ -96,15 +96,14 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
     DeviceServiceTestBase::SetUp();
 
     manager_impl_ = PressureManagerImpl::Create();
+    auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
+    fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.42});
     std::unique_ptr<CpuProbeManager> cpu_probe_manager =
-        std::make_unique<CpuProbeManager>(
-            kDefaultSamplingIntervalForTesting,
+        CpuProbeManager::CreateForTesting(
+            std::move(fake_cpu_probe), kDefaultSamplingIntervalForTesting,
             base::BindRepeating(&PressureManagerImpl::UpdateClients,
                                 base::Unretained(manager_impl_.get()),
                                 mojom::PressureSource::kCpu));
-    auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
-    fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.42});
-    cpu_probe_manager->SetCpuProbeForTesting(std::move(fake_cpu_probe));
     manager_impl_->SetCpuProbeManagerForTesting(std::move(cpu_probe_manager));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
