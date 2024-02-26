@@ -568,7 +568,7 @@ void ShellSurface::OnDidProcessDisplayChanges(
                 change.changed_metrics &
                     display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
       });
-  if (should_update_window_position) {
+  if (widget_ && should_update_window_position) {
     OnWidgetScreenPositionChanged();
   }
 }

@@ -4484,4 +4484,24 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeDoesNotSendOcclusionUpdates) {
   surface2->RemoveSurfaceObserver(&observer2);
 }
 
+// Regression test for crbug.com/322388171. Ensure shell surfaces with no
+// backing widget handle display changes without crashing.
+TEST_F(ShellSurfaceTest, HandlesDisplayChangeNoWidget) {
+  // Start with a single display configuration.
+  UpdateDisplay("800x600");
+
+  // Create the surface.
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  EXPECT_TRUE(shell_surface->GetWidget());
+
+  // Keep the shell surface alive but close the widget.
+  shell_surface->GetWidget()->CloseNow();
+  EXPECT_FALSE(shell_surface->GetWidget());
+
+  // Trigger an update to the display configuration, the shell surface should
+  // handle this without crashing.
+  UpdateDisplay("1200x800");
+}
+
 }  // namespace exo
