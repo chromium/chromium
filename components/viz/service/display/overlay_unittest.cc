@@ -91,7 +91,7 @@ const gfx::Rect kOverlayClipRect(0, 0, 128, 128);
 const gfx::PointF kUVTopLeft(0.1f, 0.2f);
 const gfx::PointF kUVBottomRight(1.0f, 1.0f);
 const gfx::BufferFormat kDefaultBufferFormat = gfx::BufferFormat::RGBA_8888;
-constexpr OverlayCandidateFactory::OverlayContext kTestOverlayContext = {};
+const OverlayCandidateFactory::OverlayContext kTestOverlayContext;
 
 class TimeTicksOverride {
  public:
@@ -5525,10 +5525,11 @@ TEST_F(DelegatedTest, NonAxisAlignedCandidateStatus) {
   auto color_mat = GetIdentityColorMatrix();
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
 
+  OverlayCandidateFactory::OverlayContext context;
+  context.is_delegated_context = true;
   auto candidate_factory = OverlayCandidateFactory(
       pass.get(), resource_provider_.get(), &surface_damage_rect_list,
-      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters,
-      OverlayCandidateFactory::OverlayContext{.is_delegated_context = true});
+      &color_mat, gfx::RectF(pass->output_rect), &render_pass_filters, context);
 
   pass->shared_quad_state_list.back()->quad_to_target_transform =
       MakePerspectiveTransform();

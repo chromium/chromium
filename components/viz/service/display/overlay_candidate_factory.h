@@ -48,6 +48,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   using CandidateStatus = OverlayCandidate::CandidateStatus;
 
   struct VIZ_SERVICE_EXPORT OverlayContext {
+    OverlayContext();
+    OverlayContext(const OverlayContext&);
+
     bool is_delegated_context = false;
     // When false, the factory can modify the candidate to provide the same
     // output but result in a smaller serialization size.

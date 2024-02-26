@@ -57,8 +57,8 @@ void OverlayStrategyUnderlayCast::Propose(
   OverlayCandidate candidate;
   auto overlay_iter = quad_list.end();
 
-  const OverlayCandidateFactory::OverlayContext context = {
-      .supports_mask_filter = true};
+  OverlayCandidateFactory::OverlayContext context;
+  context.supports_mask_filter = true;
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
@@ -109,8 +109,8 @@ bool OverlayStrategyUnderlayCast::Attempt(
   bool found_underlay = false;
   gfx::Rect content_rect;
 
-  const OverlayCandidateFactory::OverlayContext context = {
-      .supports_mask_filter = true};
+  OverlayCandidateFactory::OverlayContext context;
+  context.supports_mask_filter = true;
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,

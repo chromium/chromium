@@ -121,6 +121,10 @@ bool ShouldApplyRoundedCorner(OverlayCandidate& candidate,
 
 }  // namespace
 
+OverlayCandidateFactory::OverlayContext::OverlayContext() = default;
+OverlayCandidateFactory::OverlayContext::OverlayContext(const OverlayContext&) =
+    default;
+
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
     const DrawQuad* quad,
     OverlayCandidate& candidate) const {

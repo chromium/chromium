@@ -100,8 +100,9 @@ void OverlayStrategySingleOnTop::Propose(
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
 
-  const OverlayCandidateFactory::OverlayContext context = {
-      .supports_rounded_display_masks = true, .supports_mask_filter = false};
+  OverlayCandidateFactory::OverlayContext context;
+  context.supports_rounded_display_masks = true;
+  context.supports_mask_filter = false;
 
   // Build a list of candidates with the associated quad.
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(

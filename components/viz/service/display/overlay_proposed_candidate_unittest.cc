@@ -176,11 +176,11 @@ TEST_P(OverlayProposedCandidateTest, CorrectRoundedDisplayMaskBounds) {
                                  /*is_overlay_candidate=*/true, identity,
                                  mask_info_, &render_pass);
 
+  OverlayCandidateFactory::OverlayContext context;
+  context.supports_rounded_display_masks = true;
   OverlayCandidateFactory factory = OverlayCandidateFactory(
       &render_pass, &resource_provider_, &surface_damage_list_, &identity_,
-      gfx::RectF(render_pass.output_rect), &render_pass_filters_,
-      OverlayCandidateFactory::OverlayContext{.supports_rounded_display_masks =
-                                                  true});
+      gfx::RectF(render_pass.output_rect), &render_pass_filters_, context);
 
   OverlayCandidate candidate;
   OverlayCandidateFactory::CandidateStatus status =
