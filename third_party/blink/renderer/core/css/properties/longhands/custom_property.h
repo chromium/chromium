@@ -56,7 +56,8 @@ class CORE_EXPORT CustomProperty : public Variable {
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
       const LayoutObject*,
-      bool allow_visited_style) const override;
+      bool allow_visited_style,
+      CSSValuePhase value_phase) const override;
 
   bool IsRegistered() const { return registration_ != nullptr; }
 

@@ -61,7 +61,7 @@ const CSSValue* CSSProperty::CSSValueFromComputedStyle(
   const CSSProperty& resolved_property =
       ResolveDirectionAwareProperty(style.Direction(), style.GetWritingMode());
   return resolved_property.CSSValueFromComputedStyleInternal(
-      style, layout_object, allow_visited_style);
+      style, layout_object, allow_visited_style, CSSValuePhase::kComputedValue);
 }
 
 void CSSProperty::FilterWebExposedCSSPropertiesIntoVector(

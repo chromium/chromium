@@ -32,7 +32,7 @@
     {
       name: "CSSValueFromComputedStyleInternal",
       return_type: "const CSSValue*",
-      parameters: "(const ComputedStyle&, const LayoutObject*, bool allow_visited_style)",
+      parameters: "(const ComputedStyle&, const LayoutObject*, bool allow_visited_style, CSSValuePhase value_phase)",
     },
     {
       name: "ColorIncludingFallback",

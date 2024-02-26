@@ -23,6 +23,9 @@ class CrossThreadStyleValue;
 class ExecutionContext;
 class LayoutObject;
 
+// Determines how far to process a value requested from a computed style.
+enum class CSSValuePhase { kComputedValue, kUsedValue };
+
 // For use in Get(Un)VisitedProperty(), although you could probably
 // use them yourself if you wanted to; contains a mapping from each
 // CSSPropertyID to its visited/unvisited counterpart, or kInvalid
@@ -124,7 +127,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   virtual const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
       const LayoutObject*,
-      bool allow_visited_style) const {
+      bool allow_visited_style,
+      CSSValuePhase value_phase) const {
     return nullptr;
   }
   const CSSValue* CSSValueFromComputedStyle(const ComputedStyle&,

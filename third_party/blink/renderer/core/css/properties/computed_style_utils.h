@@ -37,8 +37,6 @@ namespace cssvalue {
 class CSSContentDistributionValue;
 }
 
-enum class CSSValuePhase { kComputedValue, kUsedValue };
-
 class CORE_EXPORT ComputedStyleUtils {
   STATIC_ONLY(ComputedStyleUtils);
 

@@ -218,7 +218,8 @@ const CSSValue* CustomProperty::ParseSingleValue(
 const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
-    bool allow_visited_style) const {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
   if (registration_) {
     const CSSValue* value = style.GetVariableValue(name_, IsInherited());
     if (value) {
