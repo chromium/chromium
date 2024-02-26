@@ -80,9 +80,15 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   void SerializePreamble(SkCanvas* canvas,
                          const Preamble& preamble,
                          const PlaybackParams& params);
+  // Serialize `buffer`, using the current transform as `original_ctm`.
   void SerializeBuffer(SkCanvas* canvas,
                        const PaintOpBuffer& buffer,
                        const std::vector<size_t>* offsets);
+  // Serialize `buffer` using the provided `params`.
+  void SerializeBufferWithParams(SkCanvas* canvas,
+                                 const PlaybackParams& params,
+                                 const PaintOpBuffer& buffer,
+                                 const std::vector<size_t>* offsets);
   // Returns whether serialization of |op| succeeded and we need to serialize
   // the next PaintOp in the PaintOpBuffer.
   bool WillSerializeNextOp(const PaintOp& op,

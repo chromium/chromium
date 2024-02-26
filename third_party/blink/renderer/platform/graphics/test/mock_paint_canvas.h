@@ -122,6 +122,7 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     const cc::PaintFlags& flags));
 
   MOCK_METHOD1(drawPicture, void(PaintRecord record));
+  MOCK_METHOD2(drawPicture, void(PaintRecord record, bool local_ctm));
   MOCK_CONST_METHOD0(getLocalToDevice, SkM44());
 
   MOCK_METHOD3(Annotate,

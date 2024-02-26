@@ -80,6 +80,7 @@ using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Pointee;
 using ::testing::ResultOf;
+using ::testing::StrictMock;
 
 // An arbitrary size guaranteed to fit the size of any serialized op in this
 // unit test.  This can also be used for deserialized op size safely in this
@@ -732,7 +733,8 @@ class PaintOpBufferOffsetsTest : public ::testing::Test {
   }
 
   void Playback(SkCanvas* canvas, const std::vector<size_t>& offsets) {
-    buffer_.Playback(canvas, PlaybackParams(nullptr), &offsets);
+    buffer_.Playback(canvas, PlaybackParams(nullptr), /*local_ctm=*/true,
+                     &offsets);
   }
 
  protected:
@@ -4016,6 +4018,201 @@ TEST(PaintOpBufferTest, SetMatrixOpWithNonIdentityPlaybackParams) {
       EXPECT_TRUE(canvas->getLocalToDevice() == SkM44(original_ctm, matrix));
     }
   }
+}
+
+// Tests playback of a `PaintOpBuffer` with `local_ctm` set to `true`. In
+// that mode, the transforms are local to the `PaintOpBuffer`: any transform
+// changes are undone and `SetMatrixOp` operates relatively to the canvas
+// current transform.
+TEST(PaintOpBufferTest, PlaybackSetMatrixWithLocalCTM) {
+  InSequence sequence;
+  StrictMock<MockCanvas> canvas;
+  EXPECT_CALL(canvas, didScale(1, 2));
+  EXPECT_CALL(canvas, willSave());
+  // `SetMatrixOp` will be relative to the base transform.
+  EXPECT_CALL(canvas,
+              didSetM44(SkM44(SkM44::Scale(1, 2), SkM44::Translate(3, 4))));
+  EXPECT_CALL(canvas, willRestore());
+
+  canvas.scale(1, 2);
+
+  PaintOpBuffer buffer;
+  buffer.push<SetMatrixOp>(SkM44::Translate(3, 4));
+  buffer.Playback(&canvas, PlaybackParams(/*image_provider=*/nullptr),
+                  /*local_ctm=*/true);
+
+  // Transform changes are discarded after the playback.
+  EXPECT_EQ(canvas.getLocalToDevice(), SkM44::Scale(1, 2));
+}
+
+// Tests playback of a `PaintOpBuffer` with `local_ctm` set to `false`. In that
+// mode, the played-back buffer acts on the parent CTM: any transform changes
+// done are preserved and `SetMatrixOp` ignores and overrides any transform the
+// canvas might have previously had.
+TEST(PaintOpBufferTest, PlaybackSetMatrixWithNonLocalCTM) {
+  InSequence sequence;
+  StrictMock<MockCanvas> canvas;
+  // `SetMatrixOp` will be global, ignoring previously set transforms.
+  EXPECT_CALL(canvas, didScale(1, 2));
+  EXPECT_CALL(canvas, didSetM44(SkM44::Translate(3, 4)));
+
+  canvas.scale(1, 2);
+
+  PaintOpBuffer buffer;
+  buffer.push<SetMatrixOp>(SkM44::Translate(3, 4));
+  buffer.Playback(&canvas, PlaybackParams(/*image_provider=*/nullptr),
+                  /*local_ctm=*/false);
+
+  // Transform changes are preserved after the playback.
+  EXPECT_EQ(canvas.getLocalToDevice(), SkM44::Translate(3, 4));
+}
+
+// Tests playback of a `DrawRecordOp` having `local_ctm` set to `true`.
+// `DrawRecordOp` can't have side effect on the canvas transform and
+// `SetMatrixOp` act relatively to the current canvas transform.
+TEST(PaintOpBufferTest, PlaybackDrawRecordWithLocalCTM) {
+  InSequence sequence;
+  StrictMock<MockCanvas> canvas;
+  EXPECT_CALL(canvas, didScale(1, 2));
+  EXPECT_CALL(canvas, willSave());
+  // `SetMatrixOp` will be relative to the canvas transform.
+  EXPECT_CALL(canvas,
+              didSetM44(SkM44(SkM44::Scale(1, 2), SkM44::Translate(3, 4))));
+  EXPECT_CALL(canvas, willRestore());
+
+  PaintOpBuffer buffer;
+  buffer.push<ScaleOp>(1.0f, 2.0f);
+
+  PaintOpBuffer child_buffer;
+  child_buffer.push<SetMatrixOp>(SkM44::Translate(3, 4));
+  buffer.push<DrawRecordOp>(child_buffer.ReleaseAsRecord(),
+                            /*local_ctm=*/true);
+
+  // Set `local_ctm` to false here so we could inspect the resulting transform.
+  buffer.Playback(&canvas, PlaybackParams(/*image_provider=*/nullptr),
+                  /*local_ctm=*/false);
+
+  // Transform changes are discarded after the playback.
+  EXPECT_EQ(canvas.getLocalToDevice(), SkM44::Scale(1, 2));
+
+  EXPECT_THAT(
+      SerializeAndDeserialize(buffer),
+      Pointee(ElementsAre(PaintOpEq<ScaleOp>(1, 2),  //
+                          PaintOpEq<SaveOp>(),       //
+                          PaintOpEq<SetMatrixOp>(SkM44(SkM44::Scale(1, 2),
+                                                       SkM44::Translate(3, 4))),
+                          PaintOpEq<RestoreOp>())));
+}
+
+// Tests playback of a `DrawRecordOp` having `local_ctm` set to `false`.
+// Transform changes done by `DrawRecordOp` are preserved and `SetMatrixOp`
+// ignores the current canvas transform.
+TEST(PaintOpBufferTest, PlaybackDrawRecordWithNonLocalCTM) {
+  InSequence sequence;
+  StrictMock<MockCanvas> canvas;
+  EXPECT_CALL(canvas, didScale(1, 2));
+  // `SetMatrixOp` will be absolute, ignoring the previous canvas transform.
+  EXPECT_CALL(canvas, didSetM44(SkM44::Translate(3, 4)));
+
+  PaintOpBuffer buffer;
+  buffer.push<ScaleOp>(1.0f, 2.0f);
+
+  PaintOpBuffer child_buffer;
+  child_buffer.push<SetMatrixOp>(SkM44::Translate(3, 4));
+  buffer.push<DrawRecordOp>(child_buffer.ReleaseAsRecord(),
+                            /*local_ctm=*/false);
+
+  // Set `local_ctm` to false here so we could inspect the resulting transform.
+  buffer.Playback(&canvas, PlaybackParams(/*image_provider=*/nullptr),
+                  /*local_ctm=*/false);
+
+  // Transform changes are preserved after the playback.
+  EXPECT_EQ(canvas.getLocalToDevice(), SkM44::Translate(3, 4));
+
+  EXPECT_THAT(
+      SerializeAndDeserialize(buffer),
+      Pointee(ElementsAre(PaintOpEq<ScaleOp>(1, 2),
+                          PaintOpEq<SetMatrixOp>(SkM44::Translate(3, 4)))));
+}
+
+// Tests playback of a non-local-ctm `DrawRecordOp` into a local-ctm
+// `DrawRecordOp`. The `SetMatrixOp` in the inner non-local-ctm `DrawRecordOp`
+// will override the transform of the parent record, but not the global one.
+TEST(PaintOpBufferTest, PlaybackDrawRecordNestedLocalAndNonLocalCTM) {
+  InSequence sequence;
+  StrictMock<MockCanvas> canvas;
+  EXPECT_CALL(canvas, didTranslate(1, 2));
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas,
+              didSetM44(SkM44(SkM44::Translate(1, 2), SkM44::Scale(3, 4))));
+  EXPECT_CALL(canvas,
+              didSetM44(SkM44(SkM44::Translate(1, 2), SkM44::Scale(5, 6))));
+  EXPECT_CALL(canvas, willRestore());
+
+  PaintOpBuffer grand_child_buffer;
+  grand_child_buffer.push<SetMatrixOp>(SkM44::Scale(5, 6));
+
+  PaintOpBuffer child_buffer;
+  child_buffer.push<SetMatrixOp>(SkM44::Scale(3, 4));
+  child_buffer.push<DrawRecordOp>(grand_child_buffer.ReleaseAsRecord(),
+                                  /*local_ctm=*/false);
+  PaintOpBuffer buffer;
+  buffer.push<TranslateOp>(1.0f, 2.0f);
+  buffer.push<DrawRecordOp>(child_buffer.ReleaseAsRecord(),
+                            /*local_ctm=*/true);
+
+  // Set `local_ctm` to false here so we could inspect the resulting transform.
+  buffer.Playback(&canvas, PlaybackParams(/*image_provider=*/nullptr),
+                  /*local_ctm=*/false);
+
+  // Transform changes are discarded after the playback.
+  EXPECT_EQ(canvas.getLocalToDevice(), SkM44::Translate(1, 2));
+
+  EXPECT_THAT(
+      SerializeAndDeserialize(buffer),
+      Pointee(ElementsAre(PaintOpEq<TranslateOp>(1, 2),  //
+                          PaintOpEq<SaveOp>(),           //
+                          PaintOpEq<SetMatrixOp>(SkM44(SkM44::Translate(1, 2),
+                                                       SkM44::Scale(3, 4))),
+                          PaintOpEq<SetMatrixOp>(SkM44(SkM44::Translate(1, 2),
+                                                       SkM44::Scale(5, 6))),
+                          PaintOpEq<RestoreOp>())));
+}
+
+// Tests playback of a non-local-ctm `DrawRecordOp` into another non-local-ctm
+// `DrawRecordOp`. The `SetMatrixOp` in the inner non-local-ctm `DrawRecordOp`
+// will override all transforms.
+TEST(PaintOpBufferTest, PlaybackDrawRecordNestedNonLocalAndNonLocalCTM) {
+  InSequence sequence;
+  StrictMock<MockCanvas> canvas;
+  EXPECT_CALL(canvas, didTranslate(1, 2));
+  EXPECT_CALL(canvas, didSetM44(SkM44::Scale(3, 4)));
+  EXPECT_CALL(canvas, didSetM44(SkM44::Scale(5, 6)));
+
+  PaintOpBuffer grand_child_buffer;
+  grand_child_buffer.push<SetMatrixOp>(SkM44::Scale(5, 6));
+
+  PaintOpBuffer child_buffer;
+  child_buffer.push<SetMatrixOp>(SkM44::Scale(3, 4));
+  child_buffer.push<DrawRecordOp>(grand_child_buffer.ReleaseAsRecord(),
+                                  /*local_ctm=*/false);
+
+  PaintOpBuffer buffer;
+  buffer.push<TranslateOp>(1.0f, 2.0f);
+  buffer.push<DrawRecordOp>(child_buffer.ReleaseAsRecord(),
+                            /*local_ctm=*/false);
+
+  // Set `local_ctm` to false here so we could inspect the resulting transform.
+  buffer.Playback(&canvas, PlaybackParams(/*image_provider=*/nullptr),
+                  /*local_ctm=*/false);
+
+  // Transform changes are preserved after the playback.
+  EXPECT_EQ(canvas.getLocalToDevice(), SkM44::Scale(5, 6));
+
+  EXPECT_THAT(SerializeAndDeserialize(buffer),
+              Pointee(ElementsAre(PaintOpEq<TranslateOp>(1, 2),
+                                  PaintOpEq<SetMatrixOp>(SkM44::Scale(3, 4)),
+                                  PaintOpEq<SetMatrixOp>(SkM44::Scale(5, 6)))));
 }
 
 TEST(PaintOpBufferTest, PathCaching) {

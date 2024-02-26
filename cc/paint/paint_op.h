@@ -667,7 +667,7 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::kDrawRecord;
   static constexpr bool kIsDrawOp = true;
-  explicit DrawRecordOp(PaintRecord record);
+  explicit DrawRecordOp(PaintRecord record, bool local_ctm = true);
   ~DrawRecordOp();
   static void Raster(const DrawRecordOp* op,
                      SkCanvas* canvas,
@@ -686,6 +686,16 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOp {
   HAS_SERIALIZATION_FUNCTIONS();
 
   PaintRecord record;
+
+  // If `local_ctm` is `true`, the transform operations in `record` are local to
+  // that recording: any transform changes done by `record` are undone before
+  // this `DrawRecordOp` completes and `SetMatrixOp` acts relatively to the
+  // transform set on the destination record (to "anchor" `SetMatrixOp` and
+  // other multiplicative matrix transforms on the same base transform). If
+  // `local_ctm` is `false`, matrix changes done by `record` act as if part of
+  // the parent record: transform changes are preserved after this
+  // `DrawRecordOp` is rasterized and `SetMatrixOp` ignores parent transforms.
+  bool local_ctm = true;
 };
 
 class CC_PAINT_EXPORT DrawRectOp final : public PaintOpWithFlags {

@@ -205,10 +205,23 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
     return true;
 
   if (op.GetType() == PaintOpType::kDrawRecord) {
+    const auto& draw_record_op = static_cast<const DrawRecordOp&>(op);
     int save_count = canvas->getSaveCount();
-    Save(canvas, params);
-    SerializeBuffer(
-        canvas, static_cast<const DrawRecordOp&>(op).record.buffer(), nullptr);
+    const PaintOpBuffer& buffer = draw_record_op.record.buffer();
+    if (LIKELY(draw_record_op.local_ctm)) {
+      // This record has a local CTM, meaning that any transforms in `buffer`
+      // must be isolated from the parent record. Saving ensures that transforms
+      // won't leak out. Then, `SerializeBuffer` will set `original_ctm` to the
+      // current transform so that any `SetMatrixOp` in `buffer` will be
+      // transformed consistently with other multiplicative matrix ops
+      // (e.g. ScaleOp).
+      Save(canvas, params);
+      SerializeBuffer(canvas, buffer, nullptr);
+    } else {
+      // The record has a non-local CTM, meaning that any matrix transforms in
+      // `buffer` should behave as if part of the parent record.
+      SerializeBufferWithParams(canvas, params, buffer, nullptr);
+    }
     RestoreToCount(canvas, save_count, params);
     return true;
   }
@@ -267,7 +280,14 @@ void PaintOpBufferSerializer::SerializeBuffer(
   // This updates the original_ctm to reflect the canvas transformation at
   // start of this call to SerializeBuffer.
   PlaybackParams params = MakeParams(canvas);
+  SerializeBufferWithParams(canvas, params, buffer, offsets);
+}
 
+void PaintOpBufferSerializer::SerializeBufferWithParams(
+    SkCanvas* canvas,
+    const PlaybackParams& params,
+    const PaintOpBuffer& buffer,
+    const std::vector<size_t>* offsets) {
   for (PaintOpBuffer::PlaybackFoldingIterator iter(buffer, offsets); iter;
        ++iter) {
     const PaintOp& op = *iter;

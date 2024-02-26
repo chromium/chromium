@@ -156,12 +156,14 @@ void PaintOpBuffer::ResetRetainingBuffer() {
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas) const {
-  Playback(canvas, PlaybackParams(nullptr), nullptr);
+  Playback(canvas, PlaybackParams(nullptr), /*local_ctm=*/true,
+           /*offsets=*/nullptr);
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas,
-                             const PlaybackParams& params) const {
-  Playback(canvas, params, nullptr);
+                             const PlaybackParams& params,
+                             bool local_ctm) const {
+  Playback(canvas, params, local_ctm, /*offsets=*/nullptr);
 }
 
 PaintRecord PaintOpBuffer::ReleaseAsRecord() {
@@ -178,13 +180,16 @@ PaintRecord PaintOpBuffer::ReleaseAsRecord() {
 
 void PaintOpBuffer::Playback(SkCanvas* canvas,
                              const PlaybackParams& params,
+                             bool local_ctm,
                              const std::vector<size_t>* offsets) const {
   if (!op_count_)
     return;
   if (offsets && offsets->empty())
     return;
-  // Prevent PaintOpBuffers from having side effects back into the canvas.
-  SkAutoCanvasRestore save_restore(canvas, true);
+  // Make sure the there are no pending saves after we are done. Add a save if
+  // this `PaintOpBuffer` isn't meant to impact the global CTM (to prevent
+  // PaintOps from having side effects back into the canvas)
+  SkAutoCanvasRestore save_restore(canvas, /*doSave=*/local_ctm);
 
   bool save_layer_alpha_should_preserve_lcd_text =
       (!params.save_layer_alpha_should_preserve_lcd_text.has_value() ||
@@ -204,9 +209,11 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
   // translate(x, y), then draw a paint record with a SetMatrix(identity),
   // the translation should be preserved instead of clobbering the top level
   // transform.  This could probably be done more efficiently.
-  PlaybackParams new_params(params.image_provider, canvas->getLocalToDevice(),
-                            params.custom_callback, params.did_draw_op_callback,
-                            params.convert_op_callback);
+  PlaybackParams new_params(
+      params.image_provider,
+      local_ctm ? canvas->getLocalToDevice() : params.original_ctm,
+      params.custom_callback, params.did_draw_op_callback,
+      params.convert_op_callback);
   new_params.save_layer_alpha_should_preserve_lcd_text =
       save_layer_alpha_should_preserve_lcd_text;
   new_params.is_analyzing = params.is_analyzing;

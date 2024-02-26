@@ -82,8 +82,10 @@ class CC_PAINT_EXPORT PaintRecord {
 
   // Replays the paint record into the canvas.
   void Playback(SkCanvas* canvas) const { buffer_->Playback(canvas); }
-  void Playback(SkCanvas* canvas, const PlaybackParams& params) const {
-    buffer_->Playback(canvas, params);
+  void Playback(SkCanvas* canvas,
+                const PlaybackParams& params,
+                bool local_ctm = true) const {
+    buffer_->Playback(canvas, params, local_ctm);
   }
 
   // STL-like container support:

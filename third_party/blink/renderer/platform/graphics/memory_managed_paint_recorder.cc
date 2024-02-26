@@ -92,7 +92,8 @@ void MemoryManagedPaintRecorder::BeginSideRecording() {
 void MemoryManagedPaintRecorder::EndSideRecording() {
   CHECK(side_canvas_) << "EndSideRecording() can't be called without "
                          "first calling BeginSideRecording().";
-  main_canvas_.drawPicture(side_canvas_->ReleaseAsRecord());
+  main_canvas_.drawPicture(side_canvas_->ReleaseAsRecord(),
+                           /*local_ctm=*/false);
   current_canvas_ = &main_canvas_;
   side_canvas_ = nullptr;
 }

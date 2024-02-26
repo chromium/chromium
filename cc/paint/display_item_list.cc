@@ -91,7 +91,8 @@ void DisplayItemList::Raster(SkCanvas* canvas,
                      TotalOpCount());
   std::vector<size_t> offsets;
   rtree_.Search(canvas_playback_rect, &offsets);
-  paint_op_buffer_.Playback(canvas, PlaybackParams(image_provider), &offsets);
+  paint_op_buffer_.Playback(canvas, PlaybackParams(image_provider),
+                            /*local_ctm=*/true, &offsets);
 
   bool trace_enabled = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("cc", &trace_enabled);

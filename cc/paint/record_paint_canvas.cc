@@ -344,6 +344,11 @@ void RecordPaintCanvas::drawPicture(PaintRecord record) {
   push<DrawRecordOp>(std::move(record));
 }
 
+void RecordPaintCanvas::drawPicture(PaintRecord record, bool local_ctm) {
+  // TODO(enne): If this is small, maybe flatten it?
+  push<DrawRecordOp>(std::move(record), local_ctm);
+}
+
 void RecordPaintCanvas::Annotate(AnnotationType type,
                                  const SkRect& rect,
                                  sk_sp<SkData> data) {

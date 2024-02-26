@@ -396,13 +396,6 @@ crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.shadow.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.w.html [ Failure ]
-# Layer set/reset transforms.
-crbug.com/326503102 external/wpt/html/canvas/element/layers/2d.layer.ctm.resetTransform.html [ Failure ]
-crbug.com/326503102 external/wpt/html/canvas/element/layers/2d.layer.ctm.setTransform.html [ Failure ]
-crbug.com/326503102 external/wpt/html/canvas/offscreen/layers/2d.layer.ctm.resetTransform.html [ Failure ]
-crbug.com/326503102 external/wpt/html/canvas/offscreen/layers/2d.layer.ctm.resetTransform.w.html [ Failure ]
-crbug.com/326503102 external/wpt/html/canvas/offscreen/layers/2d.layer.ctm.setTransform.html [ Failure ]
-crbug.com/326503102 external/wpt/html/canvas/offscreen/layers/2d.layer.ctm.setTransform.w.html [ Failure ]
 
 # Off by one pixel error on ref test
 crbug.com/1259367 [ Mac11-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]

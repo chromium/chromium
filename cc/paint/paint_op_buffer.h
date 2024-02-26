@@ -184,7 +184,9 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   // Replays the paint op buffer into the canvas.
   void Playback(SkCanvas* canvas) const;
-  void Playback(SkCanvas* canvas, const PlaybackParams& params) const;
+  void Playback(SkCanvas* canvas,
+                const PlaybackParams& params,
+                bool local_ctm = true) const;
 
   // Deserialize PaintOps from |input|. The original content will be
   // overwritten.
@@ -333,7 +335,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // the vector will be replayed.
   void Playback(SkCanvas* canvas,
                 const PlaybackParams& params,
-                const std::vector<size_t>* indices) const;
+                bool local_ctm,
+                const std::vector<size_t>* offsets) const;
 
   // Creates a new buffer sized to `new_size`, copying the old to the new (if
   // the old exists). Returns the old buffer.

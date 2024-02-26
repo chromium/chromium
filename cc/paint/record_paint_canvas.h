@@ -125,6 +125,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                     NodeId node_id,
                     const PaintFlags& flags) override;
   void drawPicture(PaintRecord record) override;
+  void drawPicture(PaintRecord record, bool local_ctm) override;
 
   void Annotate(AnnotationType type,
                 const SkRect& rect,

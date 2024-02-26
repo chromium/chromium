@@ -207,9 +207,18 @@ class CC_PAINT_EXPORT PaintCanvas {
                             NodeId node_id,
                             const PaintFlags& flags) = 0;
 
-  // Unlike SkCanvas::drawPicture, this only plays back the PaintRecord and does
-  // not add an additional clip.  This is closer to SkPicture::playback.
+  // Draws `record` into the canvas. Unlike SkCanvas::drawPicture, this only
+  // plays back the PaintRecord and does not add an additional clip.  This is
+  // closer to SkPicture::playback.
+  //
+  // If `local_ctm` is `true`, transform ops in `record` are treated as local to
+  // that recording: `SetMatrixOp` acts relatively to the current canvas
+  // transform and any transform changes are restored before `drawPicture`
+  // returns. Otherwise, transforms in `record` are treated as global to the
+  // canvas: `SetMatrixOp` ignores and overrides any previously set transforms
+  // and all CTM changes are preserved after `drawPicture` returns.
   virtual void drawPicture(PaintRecord record) = 0;
+  virtual void drawPicture(PaintRecord record, bool local_ctm) = 0;
 
   virtual SkM44 getLocalToDevice() const = 0;
 
