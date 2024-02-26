@@ -11,6 +11,7 @@
 # configurations proliferating in the codebase.
 
 import os
+import pathlib
 
 _CWD = os.getcwd().replace('\\', '/')
 _HERE_DIR = os.path.dirname(__file__)
@@ -264,7 +265,7 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
   # unsupported behavior of setting the root_dir to src/.
   # TODO (https://www.crbug.com/1412158): Make iOS TypeScript build tools use
   # ts_library in a supported way, or change them to not rely on ts_library.
-  if (is_ios and (target_path.startswith('ios') or '/ios/' in target_path)):
+  if (is_ios and 'ios' in pathlib.Path(target_path).parts):
     return True, None
 
   # Legacy cases supported for backward-compatibility. Do not add new targets
