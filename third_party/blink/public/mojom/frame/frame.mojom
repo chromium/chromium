@@ -1091,6 +1091,15 @@ interface LocalFrame {
     PageConcealEventParams page_conceal_event_params) => (
       blink.mojom.ViewTransitionState view_transition_state);
 
+  // Dispatches a `pageconceal` event on the previous Document before the
+  // navigation is committed. This API is used for navigations which don't have
+  // a ViewTransition.
+  // For ViewTransition the event must be dispatched before snapshotting the old
+  // Document with a `ViewTransition` object passed to script. So the dispatch
+  // is done as a part of the `SnapshotDocumentForViewTransition` API above.
+  DispatchPageConceal(
+    PageConcealEventParams? page_conceal_event_params);
+
   // Allows the browser to add a resource timing entry for a subframe
   // navigation that has failed before committing - a non-ok object navigation
   // or a no-content response (204/205).

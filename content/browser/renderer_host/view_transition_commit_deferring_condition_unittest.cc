@@ -19,7 +19,13 @@ namespace content {
 class ViewTransitionCommitDeferringConditionTest
     : public RenderViewHostImplTestHarness {
  public:
-  void SetUp() override { RenderViewHostImplTestHarness::SetUp(); }
+  void SetUp() override {
+    view_transition_features_.InitWithFeatures(
+        {blink::features::kViewTransitionOnNavigation,
+         blink::features::kPageConcealEvent},
+        {});
+    RenderViewHostImplTestHarness::SetUp();
+  }
 
   void AddOptIn() {
     auto* opt_in_state =
@@ -32,8 +38,7 @@ class ViewTransitionCommitDeferringConditionTest
   }
 
  private:
-  base::test::ScopedFeatureList view_transition_feature_{
-      blink::features::kViewTransitionOnNavigation};
+  base::test::ScopedFeatureList view_transition_features_;
 };
 
 // This test verifies that we can determine whether or not to create a

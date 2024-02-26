@@ -1327,6 +1327,10 @@ class CONTENT_EXPORT NavigationRequest
   // used for the event if this is a same-origin navigation.
   blink::mojom::PageConcealEventParamsPtr WillDispatchPageConceal();
 
+  // Returns true if this navigation is eligible for dispatching a `pageconceal`
+  // event on the old Document.
+  bool ShouldDispatchPageConcealEvent() const;
+
  private:
   friend class NavigationRequestTest;
 

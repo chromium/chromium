@@ -6870,6 +6870,7 @@ crbug.com/326478175 wpt_internal/dom/about_srcdoc/grandparent_location_aboutsrcd
 
 # Test infra bug
 crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageconceal-push-from-click.html [ Timeout ]
+crbug.com/326459000 virtual/pageconceal/external/wpt/html/browsers/browsing-the-web/history-traversal/pageconceal/pageconceal-push-from-click.html [ Timeout ]
 
 # Flaky test
 crbug.com/325415944 [ Linux ] external/wpt/longtask-timing/spin-eventloop-not-longtask.html [ Failure Pass ]

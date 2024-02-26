@@ -31,9 +31,6 @@ void OnSnapshotAck(base::OnceClosure closure,
 std::unique_ptr<CommitDeferringCondition>
 ViewTransitionCommitDeferringCondition::MaybeCreate(
     NavigationRequest& navigation_request) {
-  // TODO(khushalsagar): This shouldn't be done for every navigation. We'll need
-  // a meta tag (or another way) in the API to know whether this Document is
-  // interested in enabling transitions for same-origin navigations.
   if (!base::FeatureList::IsEnabled(
           blink::features::kViewTransitionOnNavigation)) {
     return nullptr;
@@ -41,6 +38,10 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
 
   if (!navigation_request.IsInPrimaryMainFrame())
     return nullptr;
+
+  if (!navigation_request.ShouldDispatchPageConcealEvent()) {
+    return nullptr;
+  }
 
   RenderFrameHostImpl* rfh =
       navigation_request.frame_tree_node()->current_frame_host();

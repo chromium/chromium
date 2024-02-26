@@ -7791,6 +7791,7 @@ class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
             /*ignore_outstanding_network_request=*/false);
     enabled_features.push_back(
         {blink::features::kViewTransitionOnNavigation, {{}}});
+    enabled_features.push_back({blink::features::kPageConcealEvent, {{}}});
     enabled_features.push_back(
         {features::kInvalidateLocalSurfaceIdPreCommit, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(

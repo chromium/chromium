@@ -213,6 +213,7 @@ class LocalFrameMojoHandler
   void SnapshotDocumentForViewTransition(
       mojom::blink::PageConcealEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) final;
+  void DispatchPageConceal(mojom::blink::PageConcealEventParamsPtr) final;
 
   void AddResourceTimingEntryForFailedSubframeNavigation(
       const FrameToken& subframe_token,

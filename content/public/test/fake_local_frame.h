@@ -156,6 +156,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void SnapshotDocumentForViewTransition(
       blink::mojom::PageConcealEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) override;
+  void DispatchPageConceal(blink::mojom::PageConcealEventParamsPtr) override;
   void AddResourceTimingEntryForFailedSubframeNavigation(
       const ::blink::FrameToken& subframe_token,
       const GURL& initial_url,

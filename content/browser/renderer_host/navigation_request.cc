@@ -5760,6 +5760,19 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
           can_store_old_page_in_bfcache /* persisted */);
 }
 
+bool NavigationRequest::ShouldDispatchPageConcealEvent() const {
+  if (early_render_frame_host_swap_type_ !=
+      EarlyRenderFrameHostSwapType::kNone) {
+    return false;
+  }
+
+  if (IsSameDocument()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(blink::features::kPageConcealEvent);
+}
+
 void NavigationRequest::CommitNavigation() {
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::CommitNavigation",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
@@ -5785,6 +5798,11 @@ void NavigationRequest::CommitNavigation() {
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
 
   AddOldPageInfoToCommitParamsIfNeeded();
+  if (ShouldDispatchPageConcealEvent() && !did_fire_page_conceal_) {
+    frame_tree_node_->current_frame_host()
+        ->GetAssociatedLocalFrame()
+        ->DispatchPageConceal(WillDispatchPageConceal());
+  }
 
   url::Origin origin_to_commit = GetOriginToCommit().value();
   isolation_info_for_subresources_ =
@@ -10290,12 +10308,16 @@ bool NavigationRequest::HasLoader() const {
 blink::mojom::PageConcealEventParamsPtr
 NavigationRequest::WillDispatchPageConceal() {
   CHECK(!did_fire_page_conceal_);
+  CHECK(ShouldDispatchPageConcealEvent());
 
   did_fire_page_conceal_ = true;
 
   // The `pageconceal` event is fired on the old Document to provide information
   // about the new Document. The information shared must be restricted to
   // same-origin Documents.
+  // TODO(khushalsagar): This needs to use `GetOriginToCommit()` except in the
+  // context of commit deferring conditions for pre-render. See
+  // crbug.com/326265171.
   const bool is_same_origin =
       frame_tree_node_->current_origin().IsSameOriginWith(common_params_->url);
   if (!is_same_origin) {
