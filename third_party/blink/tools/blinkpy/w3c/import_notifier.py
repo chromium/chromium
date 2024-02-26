@@ -32,6 +32,7 @@ _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
+CHECKS_URL_TEMPLATE = 'https://chromium-review.googlesource.com/c/chromium/src/+/{}/{}?checksPatchset=1&tab=checks'
 
 BUGANIZER_WPT_COMPONENT = '1456176'
 
@@ -92,7 +93,7 @@ class ImportNotifier:
         self.examine_new_test_expectations(test_expectations)
 
         bugs = self.create_bugs_from_new_failures(wpt_revision_start,
-                                                  wpt_revision_end, gerrit_url)
+                                                  wpt_revision_end, issue)
         self.file_bugs(bugs, dry_run, service_account_key_json)
 
     def find_changed_baselines_of_tests(self, rebaselined_tests):
@@ -197,7 +198,7 @@ class ImportNotifier:
 
     def create_bugs_from_new_failures(self, wpt_revision_start: str,
                                       wpt_revision_end: str,
-                                      gerrit_url: str) -> List[BuganizerIssue]:
+                                      issue: str) -> List[BuganizerIssue]:
         """Files bug reports for new failures.
 
         Args:
@@ -205,11 +206,13 @@ class ImportNotifier:
                 (exclusive), i.e. the last imported revision.
             wpt_revision_end: The end of the imported WPT revision range
                 (inclusive), i.e. the current imported revision.
-            gerrit_url: Gerrit URL of the CL.
+            issue: Issue number of the CL.
 
         Return:
             A list of issues that should be filed.
         """
+        gerrit_url = SHORT_GERRIT_PREFIX + issue
+        patchset1_checks_url = CHECKS_URL_TEMPLATE.format(issue, '1')
         imported_commits = self.local_wpt.commits_in_range(
             wpt_revision_start, wpt_revision_end)
         bugs = []
@@ -239,6 +242,8 @@ class ImportNotifier:
                             gerrit_url, directory))
             failure_list = ''.join(f'{failure.message}\n'
                                    for failure in failures)
+            checks = '\nSee {} for details.\n'.format(patchset1_checks_url)
+
             expectations_statement = (
                 '\nExpectations or baseline files [0] have been automatically '
                 'added for the failing results to keep the bots green. Please '
@@ -256,9 +261,10 @@ class ImportNotifier:
                 'failure for which you are marked an OWNER. '
                 'If you do not want to receive these reports, please add '
                 '"wpt { notify: NO }"  to the relevant DIR_METADATA file.')
-            description = (prologue + failure_list + expectations_statement +
-                           range_statement + commit_list + links_list +
-                           epilogue)
+
+            description = (prologue + failure_list + checks +
+                           expectations_statement + range_statement +
+                           commit_list + links_list + epilogue)
 
             bug = BuganizerIssue(
                 title=summary,

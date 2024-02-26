@@ -18,7 +18,8 @@ from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
-from blinkpy.w3c.import_notifier import ImportNotifier, TestFailure
+from blinkpy.w3c.import_notifier import (ImportNotifier, TestFailure,
+                                         CHECKS_URL_TEMPLATE)
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 
 UMBRELLA_BUG = WPTExpectationsUpdater.UMBRELLA_BUG
@@ -345,7 +346,7 @@ class ImportNotifierTest(unittest.TestCase):
             ]
         }
         bugs = self.notifier.create_bugs_from_new_failures(
-            'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
+            'SHA_START', 'SHA_END', '12345')
 
         # Only one directory has WPT-NOTIFY enabled.
         self.assertEqual(len(bugs), 1)
@@ -358,6 +359,9 @@ class ImportNotifierTest(unittest.TestCase):
             'external/wpt/foo by import https://crrev.com/c/12345')
         self.assertIn('crbug.com/12345 external/wpt/foo/baz.html [ Fail ]',
                       bugs[0].description.splitlines())
+        checks_url = ('See ' + CHECKS_URL_TEMPLATE + ' for details.').format(
+            '12345', '1')
+        self.assertIn(checks_url, bugs[0].description.splitlines())
         self.assertIn(
             'This bug was filed automatically due to a new WPT test failure '
             'for which you are marked an OWNER. If you do not want to receive '
@@ -383,7 +387,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             (bug, ) = self.notifier.create_bugs_from_new_failures(
-                'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
+                'SHA_START', 'SHA_END', '12345')
             self.assertEqual(bug.cc, [])
             self.assertEqual(bug.component_id, '123')
             self.assertEqual(
