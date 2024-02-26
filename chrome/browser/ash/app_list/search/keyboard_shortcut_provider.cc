@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -51,7 +52,8 @@ constexpr double kResultRelevanceManateeThreshold = 0.75;
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,
     std::u16string query) {
-  TokenizedString tokenized_query(query, TokenizedString::Mode::kWords);
+  TokenizedString tokenized_query(std::move(query),
+                                  TokenizedString::Mode::kWords);
 
   // Find all shortcuts which meet the relevance threshold.
   std::vector<std::pair<KeyboardShortcutData, double>> candidates;

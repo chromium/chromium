@@ -5,6 +5,8 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 #include <stddef.h>
+#include <string>
+#include <utility>
 
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
@@ -18,8 +20,8 @@ namespace ash::string_matching {
 
 using ::base::i18n::BreakIterator;
 
-TokenizedString::TokenizedString(const std::u16string& text, Mode mode)
-    : text_(text) {
+TokenizedString::TokenizedString(std::u16string text, Mode mode)
+    : text_(std::move(text)) {
   switch (mode) {
     case Mode::kCamelCase:
       Tokenize();

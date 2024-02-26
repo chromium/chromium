@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "ui/gfx/range/range.h"
@@ -26,8 +26,7 @@ class TokenizedString {
   typedef std::vector<std::u16string> Tokens;
   typedef std::vector<gfx::Range> Mappings;
 
-  explicit TokenizedString(const std::u16string& text,
-                           Mode mode = Mode::kCamelCase);
+  explicit TokenizedString(std::u16string text, Mode mode = Mode::kCamelCase);
 
   TokenizedString(const TokenizedString&) = delete;
   TokenizedString& operator=(const TokenizedString&) = delete;
