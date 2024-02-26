@@ -56,7 +56,7 @@ const net::NetworkTrafficAnnotationTag traffic_annotation =
           user_data {
             type: DEVICE_ID
             type: HW_OS_INFO
-            type: SESSION_ID
+            type: ACCESS_TOKEN
           }
           last_reviewed: "2023-10-24"
         }

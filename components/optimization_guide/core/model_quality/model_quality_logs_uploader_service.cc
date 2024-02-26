@@ -275,7 +275,6 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
           user_data {
             type: SENSITIVE_URL
             type: WEB_CONTENT
-            type: USER_AGENT
             type: USER_CONTENT
             type: HW_OS_INFO
           }

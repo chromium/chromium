@@ -313,7 +313,6 @@ void PaymentsNetworkInterfaceBase::SetOAuth2TokenAndStartRequest() {
             type: PROFILE_DATA
             type: WEB_CONTENT
             type: GAIA_ID
-            type: USER_AGENT
           }
           last_reviewed: "2024-01-24"
         }
