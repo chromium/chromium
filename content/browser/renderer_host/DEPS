@@ -32,9 +32,6 @@ specific_include_rules = {
     # For using DisabledReasonId.
     "+components/back_forward_cache/disabled_reason_id.h",
   ],
-  "blocked_scheme_navigation_browsertest\.cc": [
-    "+pdf/buildflags.h",
-  ],
   "embedded_frame_sink_provider_impl_unittest\.cc": [
     "+components/viz/service",
   ],
