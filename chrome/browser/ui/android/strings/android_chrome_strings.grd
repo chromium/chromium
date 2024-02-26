@@ -594,6 +594,16 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_DELETE_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to delete their saved CVCs.">
         Delete
       </message>
+      <message name="IDS_AUTOFILL_IBAN_EDITOR_NICKNAME" desc="Label for text input field containing the nickname for IBAN shown in the add/edit IBAN form. [CHAR_LIMIT=25]">
+        Nickname
+      </message>
+      <message name="IDS_AUTOFILL_IBAN_EDITOR_VALUE" desc="Label for text input field containing IBAN value shown in the add/edit IBAN form.">
+        IBAN
+      </message>
+      <message name="IDS_AUTOFILL_IBAN_EDITOR_LOCAL_SAVE_FOOTER" desc="Footer informing users that the IBAN will be saved locally, shown in the add/edit IBAN form.">
+        This IBAN will be saved to this device only
+      </message>
+
 
        <!-- Payment Request section preview strings -->
        <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW" desc="This is a snippet of a payment method a user has saved to Chrome, plus an indication of the number of additional payment methods the user has saved.

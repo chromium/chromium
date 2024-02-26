@@ -64,4 +64,7 @@ found in the LICENSE file.
     <dimen name="local_card_cvc_image_horizontal_margin">8dp</dimen>
     <dimen name="local_card_cvc_image_large_horizontal_margin">16dp</dimen>
 
+    <!-- Local IBAN editor -->
+    <dimen name="local_iban_footer_top_margin">50dp</dimen>
+
 </resources>
