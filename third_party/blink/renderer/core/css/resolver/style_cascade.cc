@@ -606,7 +606,13 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
 // in a second phase so that we know which ones actually won the cascade
 // before we start applying, as some properties can affect others.
 void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
-  for (CSSPropertyID id : map_.NativeBitset()) {
+  // All the high-priority properties were dealt with in ApplyHighPriority(),
+  // so we don't need to look at them again. (That would be a no-op due to
+  // the generation check below, but it's cheaper just to mask them out
+  // entirely.)
+  for (auto it = map_.NativeBitset().BeginAfterHighPriority();
+       it != map_.NativeBitset().end(); ++it) {
+    CSSPropertyID id = *it;
     CascadePriority* p = map_.FindKnownToExist(id);
     const CascadePriority priority = *p;
     if (priority.GetGeneration() >= resolver.generation_) {
