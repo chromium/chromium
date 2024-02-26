@@ -130,7 +130,7 @@ found in the LICENSE file.
             android:visibility="gone" />
     </RelativeLayout>
 
-    <org.chromium.ui.widget.TextViewWithClickableSpans
+    <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/sync_consent_details_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

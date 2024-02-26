@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.ui.signin.ConsentTextTracker;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -23,13 +22,9 @@ class HistorySyncView extends LinearLayout {
     private Button mDeclineButton;
     private Button mMoreButton;
     private ButtonCompat mAcceptButton;
-    private TextView mDetailsDescription;
-
-    private ConsentTextTracker mConsentTextTracker;
 
     public HistorySyncView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mConsentTextTracker = new ConsentTextTracker(getResources());
     }
 
     @Override
@@ -43,16 +38,16 @@ class HistorySyncView extends LinearLayout {
         mDeclineButton = findViewById(R.id.negative_button);
         mMoreButton = findViewById(R.id.more_button);
         mAcceptButton = findViewById(R.id.positive_button);
-        mDetailsDescription = findViewById(R.id.sync_consent_details_description);
+        TextView detailsDescription = findViewById(R.id.sync_consent_details_description);
 
         // TODO(crbug.com/1520791): Confirm that these are the correct title and subtitle strings.
         // Using group C from the strings variation experiment as a placeholder in the meantime.
-        mConsentTextTracker.setText(title, R.string.history_sync_consent_title_c);
-        mConsentTextTracker.setText(subtitle, R.string.history_sync_consent_subtitle_c);
-        mConsentTextTracker.setText(mDeclineButton, R.string.no_thanks);
-        mConsentTextTracker.setText(mMoreButton, R.string.more);
-        mConsentTextTracker.setText(mAcceptButton, R.string.signin_accept_button);
-        mConsentTextTracker.setText(mDetailsDescription, R.string.sync_consent_details_description);
+        title.setText(R.string.history_sync_consent_title_c);
+        subtitle.setText(R.string.history_sync_consent_subtitle_c);
+        mDeclineButton.setText(R.string.no_thanks);
+        mMoreButton.setText(R.string.more);
+        mAcceptButton.setText(R.string.signin_accept_button);
+        detailsDescription.setText(R.string.sync_consent_details_description);
     }
 
     ImageView getAccountImageView() {
@@ -69,9 +64,5 @@ class HistorySyncView extends LinearLayout {
 
     ButtonCompat getAcceptButton() {
         return mAcceptButton;
-    }
-
-    TextView getDetailsDescriptionView() {
-        return mDetailsDescription;
     }
 }

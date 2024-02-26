@@ -53,8 +53,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                         mProfileDataCache.getProfileDataOrDefault(mAccountEmail),
                         this::onAcceptClicked,
                         this::onDeclineClicked,
-                        this::onMoreClicked,
-                        this::onSettingsClicked);
+                        this::onMoreClicked);
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -100,10 +99,6 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     }
 
     private void onMoreClicked() {
-        // TODO(crbug.com/1520791): Implement this method
-    }
-
-    private void onSettingsClicked() {
         // TODO(crbug.com/1520791): Implement this method
     }
 }

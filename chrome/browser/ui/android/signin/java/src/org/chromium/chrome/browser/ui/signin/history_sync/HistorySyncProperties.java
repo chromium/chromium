@@ -26,17 +26,9 @@ class HistorySyncProperties {
     static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener> ON_MORE_CLICKED =
             new PropertyModel.ReadableObjectPropertyKey<>("on_more_clicked");
 
-    // PropertyKey for the "settings" link
-    static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener> ON_SETTINGS_CLICKED =
-            new PropertyModel.ReadableObjectPropertyKey<>("on_settings_clicked");
-
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                PROFILE_DATA,
-                ON_ACCEPT_CLICKED,
-                ON_DECLINE_CLICKED,
-                ON_MORE_CLICKED,
-                ON_SETTINGS_CLICKED
+                PROFILE_DATA, ON_ACCEPT_CLICKED, ON_DECLINE_CLICKED, ON_MORE_CLICKED
             };
 
     private HistorySyncProperties() {}
@@ -45,14 +37,12 @@ class HistorySyncProperties {
             DisplayableProfileData profileData,
             Runnable onAcceptClicked,
             Runnable onDeclineClicked,
-            Runnable onMoreClicked,
-            Runnable onSettingsClicked) {
+            Runnable onMoreClicked) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PROFILE_DATA, profileData)
                 .with(ON_ACCEPT_CLICKED, v -> onAcceptClicked.run())
                 .with(ON_DECLINE_CLICKED, v -> onDeclineClicked.run())
                 .with(ON_MORE_CLICKED, v -> onMoreClicked.run())
-                .with(ON_SETTINGS_CLICKED, v -> onSettingsClicked.run())
                 .build();
     }
 }
