@@ -169,11 +169,15 @@ ChromeXrIntegrationClient::CreateRuntimeObserver() {
   return std::make_unique<CameraIndicationObserver>();
 }
 
-#if BUILDFLAG(IS_WIN)
 std::unique_ptr<content::VrUiHost> ChromeXrIntegrationClient::CreateVrUiHost(
-    device::mojom::XRDeviceId device_id,
-    mojo::PendingRemote<device::mojom::XRCompositorHost> compositor) {
-  return std::make_unique<VRUiHostImpl>(device_id, std::move(compositor));
-}
+    content::WebContents& contents,
+    const std::vector<device::mojom::XRViewPtr>& views,
+    mojo::PendingRemote<device::mojom::ImmersiveOverlay> overlay) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(https://crbug.com/40901055): Implement overlay code for Android.
+  return std::make_unique<VRUiHostImpl>(contents, views, std::move(overlay));
+#else
+  return nullptr;
 #endif
+}
 }  // namespace vr

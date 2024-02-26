@@ -28,12 +28,11 @@ class SchedulerUiInterface;
 
 class VR_EXPORT VRBrowserRendererThreadWin {
  public:
-  explicit VRBrowserRendererThreadWin(
-      device::mojom::XRCompositorHost* compositor);
+  VRBrowserRendererThreadWin(
+      mojo::PendingRemote<device::mojom::ImmersiveOverlay> overlay,
+      const std::vector<device::mojom::XRViewPtr>& views);
   ~VRBrowserRendererThreadWin();
 
-  void SetDefaultXrViews(const std::vector<device::mojom::XRViewPtr>& views);
-  void SetWebXrPresenting(bool presenting);
   void SetFramesThrottled(bool throttled);
 
   // The below function(s) affect(s) whether UI is drawn or not.
@@ -46,7 +45,7 @@ class VR_EXPORT VRBrowserRendererThreadWin {
 
   static VRBrowserRendererThreadWin* GetInstanceForTesting();
   BrowserRenderer* GetBrowserRendererForTesting();
-  static void DisableFrameTimeoutForTesting();
+  static void DisableOverlayForTesting();
 
  private:
   class DrawState {
@@ -91,12 +90,8 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   raw_ptr<BrowserUiInterface, DanglingUntriaged> ui_ = nullptr;
   raw_ptr<SchedulerUiInterface, DanglingUntriaged> scheduler_ui_ = nullptr;
 
-  // Owned by vr_ui_host:
-  raw_ptr<device::mojom::XRCompositorHost> compositor_;
-
   DrawState draw_state_;
   bool started_ = false;
-  bool webxr_presenting_ = false;
   bool frame_timeout_running_ = true;
   bool waiting_for_webxr_frame_ = false;
   bool frames_throttled_ = false;

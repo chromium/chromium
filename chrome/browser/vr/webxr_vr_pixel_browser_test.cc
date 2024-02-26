@@ -61,7 +61,7 @@ void MyXRMock::OnFrameSubmitted(
 void TestPresentationPixelsImpl(WebXrVrBrowserTestBase* t,
                                 std::string filename) {
   // Disable frame-timeout UI to test what WebXR renders.
-  UiUtils::DisableFrameTimeoutForTesting();
+  UiUtils::DisableOverlayForTesting();
   MyXRMock my_mock;
 
   // Load the test page, and enter presentation.

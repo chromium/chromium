@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_XR_SERVICE_ISOLATED_DEVICE_PROVIDER_H_
 #define CONTENT_BROWSER_XR_SERVICE_ISOLATED_DEVICE_PROVIDER_H_
 
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
@@ -13,10 +13,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace content {
-class VrUiHost;
-}
 
 namespace content {
 
@@ -38,7 +34,6 @@ class IsolatedVRDeviceProvider
   // IsolatedXRRuntimeProviderClient
   void OnDeviceAdded(
       mojo::PendingRemote<device::mojom::XRRuntime> device,
-      mojo::PendingRemote<device::mojom::XRCompositorHost> compositor_host,
       device::mojom::XRDeviceDataPtr device_data,
       device::mojom::XRDeviceId device_id) override;
   void OnDeviceRemoved(device::mojom::XRDeviceId id) override;
@@ -54,9 +49,7 @@ class IsolatedVRDeviceProvider
   mojo::Receiver<device::mojom::IsolatedXRRuntimeProviderClient> receiver_{
       this};
 
-  using UiHostMap = base::flat_map<device::mojom::XRDeviceId,
-                                   std::unique_ptr<content::VrUiHost>>;
-  UiHostMap ui_host_map_;
+  base::flat_set<device::mojom::XRDeviceId> active_device_ids_;
 };
 
 }  // namespace content

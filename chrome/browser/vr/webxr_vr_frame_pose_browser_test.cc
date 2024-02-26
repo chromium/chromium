@@ -165,7 +165,7 @@ std::string GetPoseAsString(const Frame& frame) {
 // Validates that submitted frames used expected pose.
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
   // Disable frame-timeout UI to test what WebXR renders.
-  UiUtils::DisableFrameTimeoutForTesting();
+  UiUtils::DisableOverlayForTesting();
   MyXRMock my_mock;
 
   // Load the test page, and enter presentation.

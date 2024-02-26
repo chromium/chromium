@@ -105,11 +105,6 @@ OpenXrDevice::~OpenXrDevice() {
   }
 }
 
-mojo::PendingRemote<mojom::XRCompositorHost>
-OpenXrDevice::BindCompositorHost() {
-  return compositor_host_receiver_.BindNewPipeAndPassRemote();
-}
-
 void OpenXrDevice::RequestSession(
     mojom::XRRuntimeSessionOptionsPtr options,
     mojom::XRRuntime::RequestSessionCallback callback) {
@@ -161,13 +156,6 @@ void OpenXrDevice::OnCreateInstanceResult(
         context_provider_factory_async_, instance_, *extension_helper_,
         platform_helper_);
     render_loop_->Start();
-
-    if (overlay_receiver_) {
-      render_loop_->task_runner()->PostTask(
-          FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestOverlay,
-                                    base::Unretained(render_loop_.get()),
-                                    std::move(overlay_receiver_)));
-    }
   }
 
   auto my_callback = base::BindOnce(&OpenXrDevice::OnRequestSessionResult,
@@ -185,7 +173,8 @@ void OpenXrDevice::OnCreateInstanceResult(
 
 void OpenXrDevice::OnRequestSessionResult(
     bool result,
-    mojom::XRSessionPtr session) {
+    mojom::XRSessionPtr session,
+    mojo::PendingRemote<mojom::ImmersiveOverlay> overlay) {
   DCHECK(request_session_callback_);
 
   if (!result) {
@@ -202,6 +191,11 @@ void OpenXrDevice::OnRequestSessionResult(
   session_result->session = std::move(session);
   session_result->controller =
       exclusive_controller_receiver_.BindNewPipeAndPassRemote();
+
+  // TODO(https://crbug.com/40901055): Implement overlay code for Android.
+  if constexpr (BUILDFLAG(IS_WIN)) {
+    session_result->overlay = std::move(overlay);
+  }
 
   std::move(request_session_callback_).Run(std::move(session_result));
 
@@ -244,19 +238,6 @@ void OpenXrDevice::ShutdownSession(
 void OpenXrDevice::SetFrameDataRestricted(bool restricted) {
   // Presentation sessions can not currently be restricted.
   NOTREACHED();
-}
-
-void OpenXrDevice::CreateImmersiveOverlay(
-    mojo::PendingReceiver<mojom::ImmersiveOverlay> overlay_receiver) {
-  // This should only be triggered if we have a session
-  if (render_loop_) {
-    render_loop_->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&OpenXrRenderLoop::RequestOverlay,
-                                  base::Unretained(render_loop_.get()),
-                                  std::move(overlay_receiver)));
-  } else {
-    overlay_receiver_ = std::move(overlay_receiver);
-  }
 }
 
 }  // namespace device

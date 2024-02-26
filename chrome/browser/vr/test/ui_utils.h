@@ -43,7 +43,7 @@ class UiUtils {
   void WaitForVisibilityStatus(const UserFriendlyElementName& element_name,
                                const bool& visible);
 
-  static void DisableFrameTimeoutForTesting();
+  static void DisableOverlayForTesting();
 
  private:
   static void PollForBrowserRenderer(base::RunLoop* wait_loop);

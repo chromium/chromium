@@ -67,7 +67,7 @@ class MyXRMock : public MockXRDeviceHookBase {
 // feature when requesting a session and verifies that secondary views are
 // exposed. Secondary views are currently only supported in the OpenXR backend.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestSecondaryViews) {
-  UiUtils::DisableFrameTimeoutForTesting();
+  UiUtils::DisableOverlayForTesting();
   MyXRMock mock;
 
   LoadFileAndAwaitInitialization("test_openxr_secondary_views");

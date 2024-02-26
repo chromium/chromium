@@ -92,9 +92,9 @@ void UiUtils::WatchElementForVisibilityStatusForTesting(
   }
 }
 
-void UiUtils::DisableFrameTimeoutForTesting() {
+void UiUtils::DisableOverlayForTesting() {
 #if BUILDFLAG(IS_WIN)
-  VRBrowserRendererThreadWin::DisableFrameTimeoutForTesting();
+  VRBrowserRendererThreadWin::DisableOverlayForTesting();
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_WIN)

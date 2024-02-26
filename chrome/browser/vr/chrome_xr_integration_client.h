@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/types/pass_key.h"
-#include "build/build_config.h"
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/xr_integration_client.h"
 
@@ -32,12 +31,10 @@ class ChromeXrIntegrationClient : public content::XrIntegrationClient {
   std::unique_ptr<content::BrowserXRRuntime::Observer> CreateRuntimeObserver()
       override;
 
-  // The only class that we have which implements VrUiHost is Win-only.
-#if BUILDFLAG(IS_WIN)
   std::unique_ptr<content::VrUiHost> CreateVrUiHost(
-      device::mojom::XRDeviceId device_id,
-      mojo::PendingRemote<device::mojom::XRCompositorHost> compositor) override;
-#endif
+      content::WebContents& contents,
+      const std::vector<device::mojom::XRViewPtr>& views,
+      mojo::PendingRemote<device::mojom::ImmersiveOverlay> overlay) override;
 
  private:
   ChromeXrIntegrationClient() = default;

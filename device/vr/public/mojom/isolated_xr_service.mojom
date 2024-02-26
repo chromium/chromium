@@ -80,6 +80,12 @@ struct XRRuntimeSessionResult {
   // to capture this FrameSinkId, and thus the XrSession, rather than only the
   // FrameSinkId of the main contents of the WebContents.
   viz.mojom.FrameSinkId? frame_sink_id;
+
+  // Provides a connection to the ImmersiveOverlay compositor. This is intended
+  // to be used by the browser process to drive a privileged rendering path to
+  // the device to show code that can be rendered on top of the page's content.
+  // In some cases, this may totally obscure the page content.
+  pending_remote<ImmersiveOverlay>? overlay;
 };
 
 // An XRRuntime may live in the browser process or a utility process.  The
@@ -153,13 +159,6 @@ interface ImmersiveOverlay {
   RequestNotificationOnWebXrSubmitted() => ();
 };
 
-// XRCompositorHost lives in the XRRuntime process, and allows the browser to
-// obtain an ImmersiveOverlay to show overlay UI.  The obtained overlay will
-// disconnect when presentation ends.
-interface XRCompositorHost {
-  CreateImmersiveOverlay(pending_receiver<ImmersiveOverlay> overlay);
-};
-
 // Information about a particular XR device that is available. All information
 // about an available XR device should be wrapped in this struct.
 struct XRDeviceData {
@@ -179,7 +178,6 @@ interface IsolatedXRRuntimeProviderClient {
   // Called when runtimes are initially enumerated, or when devices are later
   // attached and become available.
   OnDeviceAdded(pending_remote<XRRuntime> runtime,
-      pending_remote<XRCompositorHost> compositor_host,
       XRDeviceData device_data,
       device.mojom.XRDeviceId device_id);
 

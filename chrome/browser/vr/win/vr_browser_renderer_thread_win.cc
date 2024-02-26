@@ -25,7 +25,7 @@ constexpr base::TimeDelta kWebVrSpinnerTimeout = base::Seconds(2);
 constexpr float kEpsilon = 0.1f;
 constexpr float kMaxPosition = 1000000;
 constexpr float kMinPosition = -kMaxPosition;
-bool g_frame_timeout_ui_disabled_for_testing_ = false;
+bool g_overlay_ui_disabled_for_testing_ = false;
 
 bool InRange(float val, float min = kMinPosition, float max = kMaxPosition) {
   return val > min && val < max;
@@ -39,14 +39,26 @@ VRBrowserRendererThreadWin* VRBrowserRendererThreadWin::instance_for_testing_ =
     nullptr;
 
 VRBrowserRendererThreadWin::VRBrowserRendererThreadWin(
-    device::mojom::XRCompositorHost* compositor)
-    : compositor_(compositor),
+    mojo::PendingRemote<device::mojom::ImmersiveOverlay> overlay,
+    const std::vector<device::mojom::XRViewPtr>& views)
+    : overlay_(std::move(overlay)),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(instance_for_testing_ == nullptr);
   instance_for_testing_ = this;
+
+  for (auto& view : views) {
+    if (view->eye == device::mojom::XREye::kLeft ||
+        view->eye == device::mojom::XREye::kRight) {
+      default_views_.push_back(view.Clone());
+    }
+  }
+
+  StartWebXrTimeout();
 }
 
 VRBrowserRendererThreadWin::~VRBrowserRendererThreadWin() {
+  StopWebXrTimeout();
+
   // Call Cleanup to ensure correct destruction order of VR-UI classes.
   StopOverlay();
   instance_for_testing_ = nullptr;
@@ -60,35 +72,11 @@ void VRBrowserRendererThreadWin::StopOverlay() {
   scheduler_ui_ = nullptr;
 }
 
-void VRBrowserRendererThreadWin::SetDefaultXrViews(
-    const std::vector<device::mojom::XRViewPtr>& views) {
-  if (graphics_) {
-    graphics_->SetXrViews(views);
-  }
-
-  for (auto& view : views) {
-    if (view->eye == device::mojom::XREye::kLeft ||
-        view->eye == device::mojom::XREye::kRight) {
-      default_views_.push_back(view.Clone());
-    }
-  }
-}
-
-void VRBrowserRendererThreadWin::SetWebXrPresenting(bool presenting) {
-  webxr_presenting_ = presenting;
-
-  if (g_frame_timeout_ui_disabled_for_testing_)
-    return;
-
-  if (presenting) {
-    compositor_->CreateImmersiveOverlay(overlay_.BindNewPipeAndPassReceiver());
-    StartWebXrTimeout();
-  } else {
-    StopWebXrTimeout();
-  }
-}
-
 void VRBrowserRendererThreadWin::StartWebXrTimeout() {
+  if (g_overlay_ui_disabled_for_testing_) {
+    return;
+  }
+
   frame_timeout_running_ = true;
   overlay_->SetOverlayAndWebXRVisibility(draw_state_.ShouldDrawUI(),
                                          draw_state_.ShouldDrawWebXR());
@@ -116,6 +104,10 @@ void VRBrowserRendererThreadWin::StartWebXrTimeout() {
 }
 
 void VRBrowserRendererThreadWin::StopWebXrTimeout() {
+  if (g_overlay_ui_disabled_for_testing_) {
+    return;
+  }
+
   if (!webxr_spinner_timeout_closure_.IsCancelled())
     webxr_spinner_timeout_closure_.Cancel();
   if (!webxr_frame_timeout_closure_.IsCancelled())
@@ -142,17 +134,24 @@ void VRBrowserRendererThreadWin::OnWebXrTimedOut() {
 }
 
 void VRBrowserRendererThreadWin::UpdateOverlayState() {
-  if (draw_state_.ShouldDrawUI())
+  if (draw_state_.ShouldDrawUI()) {
     StartOverlay();
+  }
 
-  if (overlay_)
+  if (!g_overlay_ui_disabled_for_testing_) {
     overlay_->SetOverlayAndWebXRVisibility(draw_state_.ShouldDrawUI(),
                                            draw_state_.ShouldDrawWebXR());
+  }
+
   if (draw_state_.ShouldDrawUI()) {
-    if (overlay_)  // False only while testing
+    // Note that this is intentionally checked separately from if we should draw
+    // the UI to prevent just auto-stopping the Overlay for tests, so that the
+    // other logic can potentially run.
+    if (!g_overlay_ui_disabled_for_testing_) {
       overlay_->RequestNextOverlayPose(
           base::BindOnce(&VRBrowserRendererThreadWin::OnPose,
                          base::Unretained(this), GetNextRequestId()));
+    }
   } else {
     StopOverlay();
   }
@@ -164,8 +163,9 @@ void VRBrowserRendererThreadWin::SetFramesThrottled(bool throttled) {
 
   frames_throttled_ = throttled;
 
-  if (g_frame_timeout_ui_disabled_for_testing_)
+  if (g_overlay_ui_disabled_for_testing_) {
     return;
+  }
 
   // TODO(crbug.com/1014764): If we try to re-start the timeouts after UI has
   // already been shown (e.g. a user takes their headset off for a permissions
@@ -237,8 +237,8 @@ namespace {
 constexpr unsigned kSlidingAverageSize = 5;
 }  // namespace
 
-void VRBrowserRendererThreadWin::DisableFrameTimeoutForTesting() {
-  g_frame_timeout_ui_disabled_for_testing_ = true;
+void VRBrowserRendererThreadWin::DisableOverlayForTesting() {
+  g_overlay_ui_disabled_for_testing_ = true;
 }
 
 void VRBrowserRendererThreadWin::StartOverlay() {

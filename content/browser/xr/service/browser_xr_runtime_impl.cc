@@ -250,11 +250,9 @@ void BrowserXRRuntimeImpl::StopImmersiveSession(
       presenting_service_->OnExitPresent();
       presenting_service_ = nullptr;
     }
-
-    for (Observer& observer : observers_) {
-      observer.WebXRWebContentsChanged(nullptr);
-    }
   }
+
+  vr_ui_host_.reset();
   std::move(on_exited).Run();
 }
 
@@ -309,10 +307,8 @@ void BrowserXRRuntimeImpl::ExitPresent(
 
 void BrowserXRRuntimeImpl::SetFramesThrottled(const VRServiceImpl* service,
                                               bool throttled) {
-  if (service == presenting_service_) {
-    for (Observer& observer : observers_) {
-      observer.WebXRFramesThrottledChanged(throttled);
-    }
+  if (service == presenting_service_ && vr_ui_host_) {
+    vr_ui_host_->WebXRFramesThrottledChanged(throttled);
   }
 }
 
@@ -352,18 +348,36 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
           base::BindOnce(&BrowserXRRuntimeImpl::OnImmersiveSessionError,
                          base::Unretained(this)));
 
-      std::vector<device::mojom::XRViewPtr>& views =
-          session_result->session->device_config->views;
-
-      for (device::mojom::XRViewPtr& view : views) {
-        view = ValidateXRView(view.get());
-      }
-
-      // Notify observers that we have started presentation.
       content::WebContents* web_contents = service->GetWebContents();
-      for (Observer& observer : observers_) {
-        observer.SetDefaultXrViews(views);
-        observer.WebXRWebContentsChanged(web_contents);
+      auto* integration_client = GetXrIntegrationClient();
+      if (session_result->overlay && integration_client && web_contents) {
+        // We have enough information to create a VrUiHost, so validate that
+        // information then attempt to create it.
+        std::vector<device::mojom::XRViewPtr>& views =
+            session_result->session->device_config->views;
+
+        for (device::mojom::XRViewPtr& view : views) {
+          view = ValidateXRView(view.get());
+        }
+
+        // The overlay code requires the left and right views to render.
+        if (!base::Contains(views, device::mojom::XREye::kLeft,
+                            &device::mojom::XRView::eye) ||
+            !base::Contains(views, device::mojom::XREye::kRight,
+                            &device::mojom::XRView::eye)) {
+          // Notify the service to cleanup any session that it's started to
+          // setup, and when that and our corresponding runtime shutdown have
+          // finished, notify the page that the session request failed.
+          service->ExitPresent(base::BindOnce(
+              [](RequestSessionCallback callback) {
+                std::move(callback).Run(nullptr);
+              },
+              std::move(callback)));
+          return;
+        }
+
+        vr_ui_host_ = integration_client->CreateVrUiHost(
+            *web_contents, views, std::move(session_result->overlay));
       }
 
       immersive_session_has_camera_access_ =
