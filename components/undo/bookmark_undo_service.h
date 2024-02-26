@@ -54,26 +54,23 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
  private:
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override {}
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
-  void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* old_parent,
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
-  void OnWillChangeBookmarkNode(bookmarks::BookmarkModel* model,
-                                const bookmarks::BookmarkNode* node) override;
-  void OnWillReorderBookmarkNode(bookmarks::BookmarkModel* model,
-                                 const bookmarks::BookmarkNode* node) override;
-  void GroupedBookmarkChangesBeginning(
-      bookmarks::BookmarkModel* model) override;
-  void GroupedBookmarkChangesEnded(bookmarks::BookmarkModel* model) override;
+  void OnWillChangeBookmarkNode(const bookmarks::BookmarkNode* node) override;
+  void OnWillReorderBookmarkNode(const bookmarks::BookmarkNode* node) override;
+  void GroupedBookmarkChangesBeginning() override;
+  void GroupedBookmarkChangesEnded() override;
 
   UndoManager undo_manager_;
   base::flat_set<raw_ptr<bookmarks::BookmarkModel>> observed_models_;
+  // TODO(crbug.com/326185948): Switch to a single observation once the
+  // migration of iOS to a single BookmarkModel instance is complete.
   base::ScopedMultiSourceObservation<bookmarks::BookmarkModel,
                                      bookmarks::BookmarkModelObserver>
       scoped_observations_{this};

@@ -352,13 +352,12 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
   BookmarkModelTest(const BookmarkModelTest&) = delete;
   BookmarkModelTest& operator=(const BookmarkModelTest&) = delete;
 
-  void BookmarkModelLoaded(BookmarkModel* model, bool ids_reassigned) override {
+  void BookmarkModelLoaded(bool ids_reassigned) override {
     // We never load from the db, so that this should never get invoked.
     NOTREACHED();
   }
 
-  void BookmarkNodeMoved(BookmarkModel* model,
-                         const BookmarkNode* old_parent,
+  void BookmarkNodeMoved(const BookmarkNode* old_parent,
                          size_t old_index,
                          const BookmarkNode* new_parent,
                          size_t new_index) override {
@@ -366,8 +365,7 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
     observer_details_.Set(old_parent, new_parent, old_index, new_index, false);
   }
 
-  void BookmarkNodeAdded(BookmarkModel* model,
-                         const BookmarkNode* parent,
+  void BookmarkNodeAdded(const BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override {
     ++added_count_;
@@ -375,15 +373,13 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
                           added_by_user);
   }
 
-  void OnWillRemoveBookmarks(BookmarkModel* model,
-                             const BookmarkNode* parent,
+  void OnWillRemoveBookmarks(const BookmarkNode* parent,
                              size_t old_index,
                              const BookmarkNode* node) override {
     ++before_remove_count_;
   }
 
-  void BookmarkNodeRemoved(BookmarkModel* model,
-                           const BookmarkNode* parent,
+  void BookmarkNodeRemoved(const BookmarkNode* parent,
                            size_t old_index,
                            const BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override {
@@ -392,58 +388,50 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
                           false);
   }
 
-  void BookmarkNodeChanged(BookmarkModel* model,
-                           const BookmarkNode* node) override {
+  void BookmarkNodeChanged(const BookmarkNode* node) override {
     ++changed_count_;
     observer_details_.Set(node, nullptr, static_cast<size_t>(-1),
                           static_cast<size_t>(-1), false);
   }
 
-  void OnWillChangeBookmarkNode(BookmarkModel* model,
-                                const BookmarkNode* node) override {
+  void OnWillChangeBookmarkNode(const BookmarkNode* node) override {
     ++before_change_count_;
   }
 
-  void BookmarkNodeChildrenReordered(BookmarkModel* model,
-                                     const BookmarkNode* node) override {
+  void BookmarkNodeChildrenReordered(const BookmarkNode* node) override {
     ++reordered_count_;
   }
 
-  void OnWillReorderBookmarkNode(BookmarkModel* model,
-                                 const BookmarkNode* node) override {
+  void OnWillReorderBookmarkNode(const BookmarkNode* node) override {
     ++before_reorder_count_;
   }
 
-  void BookmarkNodeFaviconChanged(BookmarkModel* model,
-                                  const BookmarkNode* node) override {
+  void BookmarkNodeFaviconChanged(const BookmarkNode* node) override {
     // We never attempt to load favicons, so that this method never
     // gets invoked.
   }
 
-  void ExtensiveBookmarkChangesBeginning(BookmarkModel* model) override {
+  void ExtensiveBookmarkChangesBeginning() override {
     ++extensive_changes_beginning_count_;
   }
 
-  void ExtensiveBookmarkChangesEnded(BookmarkModel* model) override {
+  void ExtensiveBookmarkChangesEnded() override {
     ++extensive_changes_ended_count_;
   }
 
   void BookmarkAllUserNodesRemoved(
-      BookmarkModel* model,
       const std::set<GURL>& removed_urls) override {
     ++all_bookmarks_removed_;
     all_bookmarks_removed_details_.emplace_back(removed_urls);
   }
 
-  void OnWillRemoveAllUserBookmarks(BookmarkModel* model) override {
-    ++before_remove_all_count_;
-  }
+  void OnWillRemoveAllUserBookmarks() override { ++before_remove_all_count_; }
 
-  void GroupedBookmarkChangesBeginning(BookmarkModel* model) override {
+  void GroupedBookmarkChangesBeginning() override {
     ++grouped_changes_beginning_count_;
   }
 
-  void GroupedBookmarkChangesEnded(BookmarkModel* model) override {
+  void GroupedBookmarkChangesEnded() override {
     ++grouped_changes_ended_count_;
   }
 
@@ -2589,39 +2577,31 @@ class BookmarkModelFaviconTest : public testing::Test,
   void ClearUpdatedNodes() { updated_nodes_.clear(); }
 
  protected:
-  void BookmarkModelLoaded(BookmarkModel* model, bool ids_reassigned) override {
-  }
+  void BookmarkModelLoaded(bool ids_reassigned) override {}
 
-  void BookmarkNodeMoved(BookmarkModel* model,
-                         const BookmarkNode* old_parent,
+  void BookmarkNodeMoved(const BookmarkNode* old_parent,
                          size_t old_index,
                          const BookmarkNode* new_parent,
                          size_t new_index) override {}
 
-  void BookmarkNodeAdded(BookmarkModel* model,
-                         const BookmarkNode* parent,
+  void BookmarkNodeAdded(const BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override {}
 
-  void BookmarkNodeRemoved(BookmarkModel* model,
-                           const BookmarkNode* parent,
+  void BookmarkNodeRemoved(const BookmarkNode* parent,
                            size_t old_index,
                            const BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override {}
 
-  void BookmarkNodeChanged(BookmarkModel* model,
-                           const BookmarkNode* node) override {}
+  void BookmarkNodeChanged(const BookmarkNode* node) override {}
 
-  void BookmarkNodeFaviconChanged(BookmarkModel* model,
-                                  const BookmarkNode* node) override {
+  void BookmarkNodeFaviconChanged(const BookmarkNode* node) override {
     updated_nodes_.push_back(node);
   }
 
-  void BookmarkNodeChildrenReordered(BookmarkModel* model,
-                                     const BookmarkNode* node) override {}
+  void BookmarkNodeChildrenReordered(const BookmarkNode* node) override {}
 
   void BookmarkAllUserNodesRemoved(
-      BookmarkModel* model,
       const std::set<GURL>& removed_urls) override {}
 
   std::unique_ptr<BookmarkModel> model_;
@@ -2754,29 +2734,24 @@ TEST_F(BookmarkDualModelTest, MoveToOtherModel) {
 
   testing::Sequence local_or_syncable_sequence;
   EXPECT_CALL(local_or_syncable_observer_,
-              OnWillRemoveBookmarks(local_or_syncable_model_.get(), mobile_node,
-                                    0, folder))
+              OnWillRemoveBookmarks(mobile_node, 0, folder))
       .InSequence(local_or_syncable_sequence);
   std::set<GURL> removed_urls{GURL("http://foo.com"), GURL("http://bar.com")};
   EXPECT_CALL(local_or_syncable_observer_,
-              BookmarkNodeRemoved(local_or_syncable_model_.get(), mobile_node,
-                                  0, folder, removed_urls))
+              BookmarkNodeRemoved(mobile_node, 0, folder, removed_urls))
       .InSequence(local_or_syncable_sequence);
 
   testing::Sequence account_sequence;
-  EXPECT_CALL(account_observer_,
-              BookmarkNodeAdded(account_model_.get(), dest_folder, 0, true))
+  EXPECT_CALL(account_observer_, BookmarkNodeAdded(dest_folder, 0, true))
       .InSequence(account_sequence);
   const BookmarkNode* captured_foo_parent = nullptr;
-  EXPECT_CALL(account_observer_,
-              BookmarkNodeAdded(account_model_.get(), testing::_, 0, true))
+  EXPECT_CALL(account_observer_, BookmarkNodeAdded(testing::_, 0, true))
       .InSequence(account_sequence)
-      .WillOnce(testing::SaveArg<1>(&captured_foo_parent));
+      .WillOnce(testing::SaveArg<0>(&captured_foo_parent));
   const BookmarkNode* captured_bar_parent = nullptr;
-  EXPECT_CALL(account_observer_,
-              BookmarkNodeAdded(account_model_.get(), testing::_, 1, true))
+  EXPECT_CALL(account_observer_, BookmarkNodeAdded(testing::_, 1, true))
       .InSequence(account_sequence)
-      .WillOnce(testing::SaveArg<1>(&captured_bar_parent));
+      .WillOnce(testing::SaveArg<0>(&captured_bar_parent));
 
   const BookmarkNode* moved_folder =
       local_or_syncable_model_->MoveToOtherModelWithNewNodeIdsAndUuids(

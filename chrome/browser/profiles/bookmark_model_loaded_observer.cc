@@ -20,15 +20,12 @@ BookmarkModelLoadedObserver::~BookmarkModelLoadedObserver() = default;
 void BookmarkModelLoadedObserver::BookmarkModelChanged() {
 }
 
-void BookmarkModelLoadedObserver::BookmarkModelLoaded(
-    bookmarks::BookmarkModel* model,
-    bool ids_reassigned) {
+void BookmarkModelLoadedObserver::BookmarkModelLoaded(bool ids_reassigned) {
   // Causes lazy-load if sync is enabled.
   SyncServiceFactory::GetInstance()->GetForProfile(profile_);
   delete this;
 }
 
-void BookmarkModelLoadedObserver::BookmarkModelBeingDeleted(
-    bookmarks::BookmarkModel* model) {
+void BookmarkModelLoadedObserver::BookmarkModelBeingDeleted() {
   delete this;
 }

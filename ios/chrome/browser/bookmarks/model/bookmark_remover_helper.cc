@@ -29,7 +29,6 @@ void BookmarkRemoverHelper::BookmarkModelChanged() {
 }
 
 void BookmarkRemoverHelper::BookmarkModelLoaded(
-    bookmarks::BookmarkModel* bookmark_model,
     bool) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!AreAllAvailableBookmarkModelsLoaded(browser_state_)) {
@@ -41,8 +40,7 @@ void BookmarkRemoverHelper::BookmarkModelLoaded(
   BookmarksRemoved(::RemoveAllUserBookmarksIOS(browser_state_));
 }
 
-void BookmarkRemoverHelper::BookmarkModelBeingDeleted(
-    bookmarks::BookmarkModel* bookmark_model) {
+void BookmarkRemoverHelper::BookmarkModelBeingDeleted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bookmark_model_observations_.RemoveAllObservations();
   BookmarksRemoved(false);

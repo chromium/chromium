@@ -68,30 +68,23 @@ class BookmarkRestorer : public bookmarks::BookmarkModelObserver {
   ~BookmarkRestorer() override = default;
 
   // bookmarks::BookmarkModelObserver:
-  void BookmarkModelBeingDeleted(BookmarkModel* model) override;
-  void BookmarkModelLoaded(BookmarkModel* model, bool ids_reassigned) override;
-  void BookmarkNodeMoved(BookmarkModel* model,
-                         const BookmarkNode* old_parent,
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkNodeMoved(const BookmarkNode* old_parent,
                          size_t old_index,
                          const BookmarkNode* new_parent,
                          size_t new_index) override {}
-  void BookmarkNodeAdded(BookmarkModel* model,
-                         const BookmarkNode* parent,
+  void BookmarkNodeAdded(const BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override {}
-  void BookmarkNodeRemoved(BookmarkModel* model,
-                           const BookmarkNode* parent,
+  void BookmarkNodeRemoved(const BookmarkNode* parent,
                            size_t old_index,
                            const BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override {}
-  void BookmarkNodeChanged(BookmarkModel* model,
-                           const BookmarkNode* node) override {}
-  void BookmarkNodeFaviconChanged(BookmarkModel* model,
-                                  const BookmarkNode* node) override {}
-  void BookmarkNodeChildrenReordered(BookmarkModel* model,
-                                     const BookmarkNode* node) override {}
+  void BookmarkNodeChanged(const BookmarkNode* node) override {}
+  void BookmarkNodeFaviconChanged(const BookmarkNode* node) override {}
+  void BookmarkNodeChildrenReordered(const BookmarkNode* node) override {}
   void BookmarkAllUserNodesRemoved(
-      BookmarkModel* model,
       const std::set<GURL>& removed_urls) override {}
 
  private:
@@ -109,14 +102,12 @@ BookmarkRestorer::BookmarkRestorer(Profile* profile,
   observation_.Observe(BookmarkModelFactory::GetForBrowserContext(profile));
 }
 
-void BookmarkRestorer::BookmarkModelBeingDeleted(BookmarkModel* model) {
-  model->RemoveObserver(this);
+void BookmarkRestorer::BookmarkModelBeingDeleted() {
   delete this;
 }
 
-void BookmarkRestorer::BookmarkModelLoaded(BookmarkModel* model,
-                                           bool ids_reassigned) {
-  model->RemoveObserver(this);
+void BookmarkRestorer::BookmarkModelLoaded(bool ids_reassigned) {
+  const BookmarkModel* model = observation_.GetSource();
   if (const BookmarkNode* node = model->GetNodeByUuid(
           guid_, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes)) {
     DoOpenBookmark(profile_, disposition_, node);

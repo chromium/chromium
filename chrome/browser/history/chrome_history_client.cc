@@ -85,29 +85,24 @@ void ChromeHistoryClient::StopObservingBookmarkModel() {
 void ChromeHistoryClient::BookmarkModelChanged() {
 }
 
-void ChromeHistoryClient::BookmarkModelBeingDeleted(
-    bookmarks::BookmarkModel* model) {
-  DCHECK_EQ(model, bookmark_model_);
+void ChromeHistoryClient::BookmarkModelBeingDeleted() {
   StopObservingBookmarkModel();
 }
 
 void ChromeHistoryClient::BookmarkNodeRemoved(
-    bookmarks::BookmarkModel* bookmark_model,
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
-  BaseBookmarkModelObserver::BookmarkNodeRemoved(bookmark_model, parent,
-                                                 old_index, node, removed_urls);
+  BaseBookmarkModelObserver::BookmarkNodeRemoved(parent, old_index, node,
+                                                 removed_urls);
   if (on_bookmarks_removed_)
     on_bookmarks_removed_.Run(removed_urls);
 }
 
 void ChromeHistoryClient::BookmarkAllUserNodesRemoved(
-    bookmarks::BookmarkModel* bookmark_model,
     const std::set<GURL>& removed_urls) {
-  BaseBookmarkModelObserver::BookmarkAllUserNodesRemoved(bookmark_model,
-                                                         removed_urls);
+  BaseBookmarkModelObserver::BookmarkAllUserNodesRemoved(removed_urls);
   if (on_bookmarks_removed_)
     on_bookmarks_removed_.Run(removed_urls);
 }

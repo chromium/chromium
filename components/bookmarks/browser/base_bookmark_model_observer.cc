@@ -6,16 +6,13 @@
 
 namespace bookmarks {
 
-void BaseBookmarkModelObserver::BookmarkModelLoaded(BookmarkModel* model,
-                                                    bool ids_reassigned) {}
+void BaseBookmarkModelObserver::BookmarkModelLoaded(bool ids_reassigned) {}
 
-void BaseBookmarkModelObserver::BookmarkModelBeingDeleted(
-    BookmarkModel* model) {
+void BaseBookmarkModelObserver::BookmarkModelBeingDeleted() {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeMoved(
-    BookmarkModel* model,
     const BookmarkNode* old_parent,
     size_t old_index,
     const BookmarkNode* new_parent,
@@ -23,15 +20,13 @@ void BaseBookmarkModelObserver::BookmarkNodeMoved(
   BookmarkModelChanged();
 }
 
-void BaseBookmarkModelObserver::BookmarkNodeAdded(BookmarkModel* model,
-                                                  const BookmarkNode* parent,
+void BaseBookmarkModelObserver::BookmarkNodeAdded(const BookmarkNode* parent,
                                                   size_t index,
                                                   bool added_by_user) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeRemoved(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
@@ -40,23 +35,18 @@ void BaseBookmarkModelObserver::BookmarkNodeRemoved(
 }
 
 void BaseBookmarkModelObserver::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
   BookmarkModelChanged();
 }
 
-void BaseBookmarkModelObserver::BookmarkNodeChanged(BookmarkModel* model,
-                                                    const BookmarkNode* node) {
+void BaseBookmarkModelObserver::BookmarkNodeChanged(const BookmarkNode* node) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeFaviconChanged(
-    BookmarkModel* model,
-    const BookmarkNode* node) {
-}
+    const BookmarkNode* node) {}
 
 void BaseBookmarkModelObserver::BookmarkNodeChildrenReordered(
-    BookmarkModel* model,
     const BookmarkNode* node) {
   BookmarkModelChanged();
 }

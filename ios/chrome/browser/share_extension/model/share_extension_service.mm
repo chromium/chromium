@@ -46,8 +46,7 @@ void ShareExtensionService::ReadingListModelLoaded(
   this->AnyModelLoaded();
 }
 
-void ShareExtensionService::BookmarkModelLoaded(bookmarks::BookmarkModel* model,
-                                                bool ids_reassigned) {
+void ShareExtensionService::BookmarkModelLoaded(bool ids_reassigned) {
   bookmark_model_loaded_ = true;
   this->AnyModelLoaded();
 }

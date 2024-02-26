@@ -67,8 +67,7 @@ BookmarkMenuBridge::~BookmarkMenuBridge() {
   [menu_root_ setDelegate:nil];
 }
 
-void BookmarkMenuBridge::BookmarkModelLoaded(BookmarkModel* model,
-                                             bool ids_reassigned) {
+void BookmarkMenuBridge::BookmarkModelLoaded(bool ids_reassigned) {
   InvalidateMenu();
 }
 
@@ -143,25 +142,22 @@ void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
   menuIsValid_ = true;
 }
 
-void BookmarkMenuBridge::BookmarkModelBeingDeleted(BookmarkModel* model) {}
+void BookmarkMenuBridge::BookmarkModelBeingDeleted() {}
 
-void BookmarkMenuBridge::BookmarkNodeMoved(BookmarkModel* model,
-                                           const BookmarkNode* old_parent,
+void BookmarkMenuBridge::BookmarkNodeMoved(const BookmarkNode* old_parent,
                                            size_t old_index,
                                            const BookmarkNode* new_parent,
                                            size_t new_index) {
   InvalidateMenu();
 }
 
-void BookmarkMenuBridge::BookmarkNodeAdded(BookmarkModel* model,
-                                           const BookmarkNode* parent,
+void BookmarkMenuBridge::BookmarkNodeAdded(const BookmarkNode* parent,
                                            size_t index,
                                            bool added_by_user) {
   InvalidateMenu();
 }
 
 void BookmarkMenuBridge::BookmarkNodeRemoved(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
@@ -170,27 +166,24 @@ void BookmarkMenuBridge::BookmarkNodeRemoved(
 }
 
 void BookmarkMenuBridge::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
   InvalidateMenu();
 }
 
-void BookmarkMenuBridge::BookmarkNodeChanged(BookmarkModel* model,
-                                             const BookmarkNode* node) {
+void BookmarkMenuBridge::BookmarkNodeChanged(const BookmarkNode* node) {
   NSMenuItem* item = MenuItemForNode(node);
   if (item)
     ConfigureMenuItem(node, item, true);
 }
 
-void BookmarkMenuBridge::BookmarkNodeFaviconChanged(BookmarkModel* model,
-                                                    const BookmarkNode* node) {
+void BookmarkMenuBridge::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
   NSMenuItem* item = MenuItemForNode(node);
   if (item)
     ConfigureMenuItem(node, item, false);
 }
 
 void BookmarkMenuBridge::BookmarkNodeChildrenReordered(
-    BookmarkModel* model, const BookmarkNode* node) {
+    const BookmarkNode* node) {
   InvalidateMenu();
 }
 
@@ -203,8 +196,9 @@ void BookmarkMenuBridge::ObserveBookmarkModel() {
     return;
 
   bookmark_model_observation_.Observe(model);
-  if (model->loaded())
-    BookmarkModelLoaded(model, false);
+  if (model->loaded()) {
+    BookmarkModelLoaded(false);
+  }
 }
 
 BookmarkModel* BookmarkMenuBridge::GetBookmarkModel() {

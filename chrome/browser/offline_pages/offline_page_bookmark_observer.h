@@ -14,7 +14,6 @@
 class GURL;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }
 
@@ -32,8 +31,7 @@ class OfflinePageBookmarkObserver
 
   // Implement bookmarks::OfflinePageBookmarkObserver
   void BookmarkModelChanged() override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;

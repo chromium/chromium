@@ -78,12 +78,10 @@ class BookmarkClientBase : public bookmarks::BookmarkClient {
     ~NodeMoveObserver() override;
 
     void BookmarkModelChanged() override;
-    void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
+    void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                            size_t index,
                            bool newly_added) override;
-    void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* old_parent,
+    void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* new_parent,
                            size_t new_index) override;

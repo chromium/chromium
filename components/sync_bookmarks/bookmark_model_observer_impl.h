@@ -47,39 +47,28 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   ~BookmarkModelObserverImpl() override;
 
   // BookmarkModelObserver:
-  void BookmarkModelLoaded(bookmarks::BookmarkModel* /*unused*/,
-                           bool ids_reassigned) override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* /*unused*/) override;
-  void BookmarkNodeMoved(bookmarks::BookmarkModel* /*unused*/,
-                         const bookmarks::BookmarkNode* old_parent,
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* /*unused*/,
-                         const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
-  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* /*unused*/,
-                             const bookmarks::BookmarkNode* parent,
+  void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
                              const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* /*unused*/,
-                           const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
-  void OnWillRemoveAllUserBookmarks(
-      bookmarks::BookmarkModel* /*unused*/) override;
-  void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* /*unused*/,
-                                   const std::set<GURL>& removed_urls) override;
-  void BookmarkNodeChanged(bookmarks::BookmarkModel* /*unused*/,
-                           const bookmarks::BookmarkNode* node) override;
-  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* /*unused*/,
-                               const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeFaviconChanged(bookmarks::BookmarkModel* /*unused*/,
-                                  const bookmarks::BookmarkNode* node) override;
+  void OnWillRemoveAllUserBookmarks() override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkMetaInfoChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
-      bookmarks::BookmarkModel* /*unused*/,
       const bookmarks::BookmarkNode* node) override;
 
  private:

@@ -194,9 +194,8 @@ void BookmarksFunction::OnResponded() {
 void BookmarksFunction::BookmarkModelChanged() {
 }
 
-void BookmarksFunction::BookmarkModelLoaded(BookmarkModel* model,
-                                            bool ids_reassigned) {
-  model->RemoveObserver(this);
+void BookmarksFunction::BookmarkModelLoaded(bool ids_reassigned) {
+  GetBookmarkModel()->RemoveObserver(this);
 
   ResponseValue response = RunOnReady();
   Respond(std::move(response));
@@ -227,18 +226,16 @@ void BookmarkEventRouter::DispatchEvent(events::HistogramValue histogram_value,
   }
 }
 
-void BookmarkEventRouter::BookmarkModelLoaded(BookmarkModel* model,
-                                              bool ids_reassigned) {
+void BookmarkEventRouter::BookmarkModelLoaded(bool ids_reassigned) {
   // TODO(erikkay): Perhaps we should send this event down to the extension
   // so they know when it's safe to use the API?
 }
 
-void BookmarkEventRouter::BookmarkModelBeingDeleted(BookmarkModel* model) {
+void BookmarkEventRouter::BookmarkModelBeingDeleted() {
   model_ = nullptr;
 }
 
-void BookmarkEventRouter::BookmarkNodeMoved(BookmarkModel* model,
-                                            const BookmarkNode* old_parent,
+void BookmarkEventRouter::BookmarkNodeMoved(const BookmarkNode* old_parent,
                                             size_t old_index,
                                             const BookmarkNode* new_parent,
                                             size_t new_index) {
@@ -254,8 +251,7 @@ void BookmarkEventRouter::BookmarkNodeMoved(BookmarkModel* model,
                     base::NumberToString(node->id()), move_info));
 }
 
-void BookmarkEventRouter::BookmarkNodeAdded(BookmarkModel* model,
-                                            const BookmarkNode* parent,
+void BookmarkEventRouter::BookmarkNodeAdded(const BookmarkNode* parent,
                                             size_t index,
                                             bool added_by_user) {
   const BookmarkNode* node = parent->children()[index].get();
@@ -268,7 +264,6 @@ void BookmarkEventRouter::BookmarkNodeAdded(BookmarkModel* model,
 }
 
 void BookmarkEventRouter::BookmarkNodeRemoved(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t index,
     const BookmarkNode* node,
@@ -286,14 +281,12 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
 }
 
 void BookmarkEventRouter::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
   // TODO(crbug.com/1468324): This used to be used only on Android, but that's
   // no longer the case. We need to implement a new event to handle this.
 }
 
-void BookmarkEventRouter::BookmarkNodeChanged(BookmarkModel* model,
-                                              const BookmarkNode* node) {
+void BookmarkEventRouter::BookmarkNodeChanged(const BookmarkNode* node) {
   // TODO(erikkay) The only three things that BookmarkModel sends this
   // notification for are title, url and favicon.  Since we're currently
   // ignoring favicon and since the notification doesn't say which one anyway,
@@ -310,13 +303,11 @@ void BookmarkEventRouter::BookmarkNodeChanged(BookmarkModel* model,
                     base::NumberToString(node->id()), change_info));
 }
 
-void BookmarkEventRouter::BookmarkNodeFaviconChanged(BookmarkModel* model,
-                                                     const BookmarkNode* node) {
+void BookmarkEventRouter::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
   // TODO(erikkay) anything we should do here?
 }
 
 void BookmarkEventRouter::BookmarkNodeChildrenReordered(
-    BookmarkModel* model,
     const BookmarkNode* node) {
   api::bookmarks::OnChildrenReordered::ReorderInfo reorder_info;
   for (const auto& child : node->children())
@@ -328,14 +319,13 @@ void BookmarkEventRouter::BookmarkNodeChildrenReordered(
                     base::NumberToString(node->id()), reorder_info));
 }
 
-void BookmarkEventRouter::ExtensiveBookmarkChangesBeginning(
-    BookmarkModel* model) {
+void BookmarkEventRouter::ExtensiveBookmarkChangesBeginning() {
   DispatchEvent(events::BOOKMARKS_ON_IMPORT_BEGAN,
                 api::bookmarks::OnImportBegan::kEventName,
                 api::bookmarks::OnImportBegan::Create());
 }
 
-void BookmarkEventRouter::ExtensiveBookmarkChangesEnded(BookmarkModel* model) {
+void BookmarkEventRouter::ExtensiveBookmarkChangesEnded() {
   DispatchEvent(events::BOOKMARKS_ON_IMPORT_ENDED,
                 api::bookmarks::OnImportEnded::kEventName,
                 api::bookmarks::OnImportEnded::Create());

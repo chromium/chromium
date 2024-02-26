@@ -176,8 +176,7 @@ void PowerBookmarkService::RemoveDataProvider(
     data_providers_.erase(it);
 }
 
-void PowerBookmarkService::BookmarkNodeAdded(BookmarkModel* model,
-                                             const BookmarkNode* parent,
+void PowerBookmarkService::BookmarkNodeAdded(const BookmarkNode* parent,
                                              size_t index,
                                              bool newly_added) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -194,7 +193,7 @@ void PowerBookmarkService::BookmarkNodeAdded(BookmarkModel* model,
     data_provider->AttachMetadataForNewBookmark(node, meta.get());
   }
 
-  SetNodePowerBookmarkMeta(model, node, std::move(meta));
+  SetNodePowerBookmarkMeta(model_, node, std::move(meta));
 }
 
 void PowerBookmarkService::OnPowersChanged() {

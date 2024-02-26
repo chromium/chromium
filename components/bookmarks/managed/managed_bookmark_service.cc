@@ -131,18 +131,15 @@ void ManagedBookmarkService::Shutdown() {
 
 void ManagedBookmarkService::BookmarkModelChanged() {}
 
-void ManagedBookmarkService::BookmarkModelLoaded(BookmarkModel* bookmark_model,
-                                                 bool ids_reassigned) {
-  BaseBookmarkModelObserver::BookmarkModelLoaded(bookmark_model,
-                                                 ids_reassigned);
+void ManagedBookmarkService::BookmarkModelLoaded(bool ids_reassigned) {
+  BaseBookmarkModelObserver::BookmarkModelLoaded(ids_reassigned);
   // Start tracking the managed bookmarks. This will detect any changes that may
   // have occurred while the initial managed bookmarks were being loaded on the
   // background.
   managed_bookmarks_tracker_->Init(managed_node_);
 }
 
-void ManagedBookmarkService::BookmarkModelBeingDeleted(
-    BookmarkModel* bookmark_model) {
+void ManagedBookmarkService::BookmarkModelBeingDeleted() {
   Cleanup();
 }
 

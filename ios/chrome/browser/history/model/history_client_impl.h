@@ -51,25 +51,21 @@ class HistoryClientImpl : public history::HistoryClient,
 
   // bookmarks::BaseBookmarkModelObserver implementation.
   void BookmarkModelChanged() override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& no_longer_bookmarked) override;
-  void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
-                                   const std::set<GURL>& removed_urls) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
 
   // Callback registered in `favicons_changed_subscription_`.
   void OnFaviconsChanged(const std::set<GURL>& page_urls,
                          const GURL& favicon_url);
 
   // Called when bookmarks are removed from a model and calls
-  // `on_bookmarks_removed_`. `model` can be either `account_bookmark_model_` or
-  // `local_or_syncable_bookmark_model_`. A bookmark is considered truly removed
-  // only if it's not in any of the models.
-  void HandleBookmarksRemovedFromModel(bookmarks::BookmarkModel* model,
-                                       const std::set<GURL>& removed_urls);
+  // `on_bookmarks_removed_`. A bookmark is considered truly removed only if
+  // it's not in any of the models.
+  void HandleBookmarksRemovedFromModel(const std::set<GURL>& removed_urls);
 
   // BookmarkModel instances providing access to bookmarks. May be null.
   raw_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_ = nullptr;

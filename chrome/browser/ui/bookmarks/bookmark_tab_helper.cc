@@ -115,20 +115,17 @@ void BookmarkTabHelper::UpdateStarredStateForCurrentURL() {
 void BookmarkTabHelper::BookmarkModelChanged() {
 }
 
-void BookmarkTabHelper::BookmarkModelLoaded(BookmarkModel* model,
-                                            bool ids_reassigned) {
+void BookmarkTabHelper::BookmarkModelLoaded(bool ids_reassigned) {
   UpdateStarredStateForCurrentURL();
 }
 
-void BookmarkTabHelper::BookmarkNodeAdded(BookmarkModel* model,
-                                          const BookmarkNode* parent,
+void BookmarkTabHelper::BookmarkNodeAdded(const BookmarkNode* parent,
                                           size_t index,
                                           bool added_by_user) {
   UpdateStarredStateForCurrentURL();
 }
 
 void BookmarkTabHelper::BookmarkNodeRemoved(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
@@ -137,13 +134,11 @@ void BookmarkTabHelper::BookmarkNodeRemoved(
 }
 
 void BookmarkTabHelper::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
   UpdateStarredStateForCurrentURL();
 }
 
-void BookmarkTabHelper::BookmarkNodeChanged(BookmarkModel* model,
-                                            const BookmarkNode* node) {
+void BookmarkTabHelper::BookmarkNodeChanged(const BookmarkNode* node) {
   UpdateStarredStateForCurrentURL();
 }
 

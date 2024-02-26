@@ -160,10 +160,10 @@ void BookmarkClientBase::NodeMoveObserver::BookmarkModelChanged() {
 }
 
 void BookmarkClientBase::NodeMoveObserver::BookmarkNodeAdded(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool newly_added) {
+  bookmarks::BookmarkModel* model = client_->bookmark_model_;
   // Check to see if the saved bookmark actually used the suggested folder.
   if (parent->uuid() == client_->last_suggested_folder_uuid_) {
     // Consider the suggestion "accepted" until we see the bookmark moved to a
@@ -186,11 +186,12 @@ void BookmarkClientBase::NodeMoveObserver::BookmarkNodeAdded(
 }
 
 void BookmarkClientBase::NodeMoveObserver::BookmarkNodeMoved(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* old_parent,
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
+  bookmarks::BookmarkModel* model = client_->bookmark_model_;
+
   // If enough time has elapsed since the bookmark was saved, don't consider
   // the bookmark moving out of that folder to be a rejection.
   if (kRejectionCoolOffTime <

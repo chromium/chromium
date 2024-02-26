@@ -40,8 +40,7 @@ class ShareExtensionService : public KeyedService,
   void ReadingListModelLoaded(const ReadingListModel* model) override;
 
   // BookmarkModelObserver implementation.
-  void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
-                           bool ids_reassigned) override;
+  void BookmarkModelLoaded(bool ids_reassigned) override;
   void BookmarkModelChanged() override;
 
  private:

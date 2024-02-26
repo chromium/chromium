@@ -46,37 +46,29 @@ class ShoppingBookmarkModelObserver
 
   void BookmarkModelChanged() override;
 
-  void OnWillChangeBookmarkNode(bookmarks::BookmarkModel* model,
-                                const bookmarks::BookmarkNode* node) override;
+  void OnWillChangeBookmarkNode(const bookmarks::BookmarkNode* node) override;
 
-  void BookmarkNodeChanged(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
 
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
 
-  void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* old_parent,
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
 
-  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
-                             const bookmarks::BookmarkNode* parent,
+  void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
                              const bookmarks::BookmarkNode* node) override;
 
-  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
-                               const bookmarks::BookmarkNode* node) override;
+  void BookmarkMetaInfoChanged(const bookmarks::BookmarkNode* node) override;
 
  private:
-  void HandleFolderDeletion(bookmarks::BookmarkModel* model,
-                            const bookmarks::BookmarkNode* node,
+  void HandleFolderDeletion(const bookmarks::BookmarkNode* node,
                             std::set<uint64_t>* unsubscribed_ids);
-  void HandleNodeDeletion(bookmarks::BookmarkModel* model,
-                          const bookmarks::BookmarkNode* node,
+  void HandleNodeDeletion(const bookmarks::BookmarkNode* node,
                           const bookmarks::BookmarkNode* folder_being_deleted,
                           std::set<uint64_t>* unsubscribed_ids);
 

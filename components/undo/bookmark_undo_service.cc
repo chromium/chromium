@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -29,6 +30,24 @@ using bookmarks::BookmarkNodeData;
 using bookmarks::BookmarkUndoProvider;
 
 namespace {
+
+// TODO(crbug.com/326185948): Remove this function once the migration of iOS to
+// a single BookmarkModel instance is complete.
+BookmarkModel* DetermineModelForNode(
+    const BookmarkNode* node,
+    const std::vector<raw_ptr<BookmarkModel>>& candidate_models) {
+  CHECK(node);
+  const BookmarkNode* root_node = node;
+  while (root_node->parent()) {
+    root_node = root_node->parent();
+  }
+  for (BookmarkModel* model : candidate_models) {
+    if (model->root_node() == root_node) {
+      return model;
+    }
+  }
+  NOTREACHED_NORETURN();
+}
 
 // BookmarkUndoOperation ------------------------------------------------------
 
@@ -357,54 +376,60 @@ void BookmarkUndoService::Shutdown() {
   observed_models_.clear();
 }
 
-void BookmarkUndoService::BookmarkModelBeingDeleted(BookmarkModel* model) {
+void BookmarkUndoService::BookmarkModelBeingDeleted() {
   // Delete all undo operations to avoid dangling pointers to `BookmarkModel`
   // that is getting destroyed. `BookmarkModel` is a `KeyedService`, so it is
   // destroyed during shutdown along with other services - other `BookmarkModel`
   // objects and `BookmarkUndoService` itself will be destroyed soon.
-  undo_manager_.RemoveAllOperations();
-
-  scoped_observations_.RemoveObservation(model);
-  observed_models_.erase(model);
+  Shutdown();
 }
 
-void BookmarkUndoService::BookmarkNodeMoved(BookmarkModel* model,
-                                            const BookmarkNode* old_parent,
+void BookmarkUndoService::BookmarkNodeMoved(const BookmarkNode* old_parent,
                                             size_t old_index,
                                             const BookmarkNode* new_parent,
                                             size_t new_index) {
+  BookmarkModel* model =
+      DetermineModelForNode(new_parent, scoped_observations_.sources());
+  CHECK_EQ(model,
+           DetermineModelForNode(old_parent, scoped_observations_.sources()));
+
   std::unique_ptr<UndoOperation> op(new BookmarkMoveOperation(
       model, old_parent, old_index, new_parent, new_index));
   undo_manager()->AddUndoOperation(std::move(op));
 }
 
-void BookmarkUndoService::BookmarkNodeAdded(BookmarkModel* model,
-                                            const BookmarkNode* parent,
+void BookmarkUndoService::BookmarkNodeAdded(const BookmarkNode* parent,
                                             size_t index,
                                             bool added_by_user) {
+  BookmarkModel* model =
+      DetermineModelForNode(parent, scoped_observations_.sources());
+
   std::unique_ptr<UndoOperation> op(
       new BookmarkAddOperation(model, parent, index));
   undo_manager()->AddUndoOperation(std::move(op));
 }
 
-void BookmarkUndoService::OnWillChangeBookmarkNode(BookmarkModel* model,
-                                                   const BookmarkNode* node) {
+void BookmarkUndoService::OnWillChangeBookmarkNode(const BookmarkNode* node) {
+  BookmarkModel* model =
+      DetermineModelForNode(node, scoped_observations_.sources());
+
   std::unique_ptr<UndoOperation> op(new BookmarkEditOperation(model, node));
   undo_manager()->AddUndoOperation(std::move(op));
 }
 
-void BookmarkUndoService::OnWillReorderBookmarkNode(BookmarkModel* model,
-                                                    const BookmarkNode* node) {
+void BookmarkUndoService::OnWillReorderBookmarkNode(const BookmarkNode* node) {
+  BookmarkModel* model =
+      DetermineModelForNode(node, scoped_observations_.sources());
+
   std::unique_ptr<UndoOperation> op(new BookmarkReorderOperation(model, node));
   undo_manager()->AddUndoOperation(std::move(op));
 }
 
-void BookmarkUndoService::GroupedBookmarkChangesBeginning(
-    BookmarkModel* model) {
+void BookmarkUndoService::GroupedBookmarkChangesBeginning() {
   undo_manager()->StartGroupingActions();
 }
 
-void BookmarkUndoService::GroupedBookmarkChangesEnded(BookmarkModel* model) {
+void BookmarkUndoService::GroupedBookmarkChangesEnded() {
   undo_manager()->EndGroupingActions();
 }
 
@@ -413,6 +438,9 @@ void BookmarkUndoService::AddUndoEntryForRemovedNode(
     const BookmarkNode* parent,
     size_t index,
     std::unique_ptr<BookmarkNode> node) {
+  CHECK_EQ(model,
+           DetermineModelForNode(parent, scoped_observations_.sources()));
+
   // `model` is guaranteed to outlive `BookmarkRemoveOperation`, since all undo
   // operations are deleted whenever `BookmarkModelBeingDeleted` or `Shutdown`
   // are invoked.

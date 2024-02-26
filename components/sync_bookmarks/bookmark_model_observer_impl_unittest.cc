@@ -846,11 +846,11 @@ TEST_F(BookmarkModelObserverImplTest, ShouldAddChildrenInArbitraryOrder) {
 
   // Now simulate calling the observer as if the nodes are added in that order.
   // 4,0,2,3,1.
-  observer.BookmarkNodeAdded(/*model=*/nullptr, bookmark_bar_node, 4, false);
-  observer.BookmarkNodeAdded(/*model=*/nullptr, bookmark_bar_node, 0, false);
-  observer.BookmarkNodeAdded(/*model=*/nullptr, bookmark_bar_node, 2, false);
-  observer.BookmarkNodeAdded(/*model=*/nullptr, bookmark_bar_node, 3, false);
-  observer.BookmarkNodeAdded(/*model=*/nullptr, bookmark_bar_node, 1, false);
+  observer.BookmarkNodeAdded(bookmark_bar_node, 4, false);
+  observer.BookmarkNodeAdded(bookmark_bar_node, 0, false);
+  observer.BookmarkNodeAdded(bookmark_bar_node, 2, false);
+  observer.BookmarkNodeAdded(bookmark_bar_node, 3, false);
+  observer.BookmarkNodeAdded(bookmark_bar_node, 1, false);
 
   EXPECT_THAT(bookmark_tracker->TrackedEntitiesCountForTest(), 8U);
 
@@ -876,7 +876,7 @@ TEST_F(BookmarkModelObserverImplTest,
       bookmark_tracker.get());
 
   EXPECT_CALL(on_bookmark_model_being_deleted_closure_mock, Run());
-  observer.BookmarkModelBeingDeleted(/*model=*/nullptr);
+  observer.BookmarkModelBeingDeleted();
 }
 
 TEST_F(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {

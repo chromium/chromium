@@ -101,7 +101,7 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 
 TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   BookmarkModel* model = bridge_->GetBookmarkModel();
-  bridge_->BookmarkModelLoaded(model, false);
+  bridge_->BookmarkModelLoaded(false);
   UpdateRootMenu();
   // The bare menu after loading used to have a separator and an
   // "Other Bookmarks" submenu, but we no longer show those items if the
@@ -147,7 +147,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
   BookmarkModel* model = bridge_->GetBookmarkModel();
   model->AddURL(model->bookmark_bar_node(), 0, u"Google",
                 GURL("https://google.com"));
-  bridge_->BookmarkModelLoaded(model, false);
+  bridge_->BookmarkModelLoaded(false);
 
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
@@ -360,7 +360,7 @@ TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
   [item setImage:nil];
-  bridge_->BookmarkNodeFaviconChanged(model, node);
+  bridge_->BookmarkNodeFaviconChanged(node);
   EXPECT_TRUE([item image]);
 }
 

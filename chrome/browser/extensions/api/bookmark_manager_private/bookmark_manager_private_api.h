@@ -45,7 +45,7 @@ class BookmarkManagerPrivateEventRouter
 
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
+  void BookmarkModelBeingDeleted() override;
 
  private:
   // Helper to actually dispatch an event to extension listeners.

@@ -49,14 +49,12 @@ class ChromeHistoryClient : public history::HistoryClient,
 
   // bookmarks::BaseBookmarkModelObserver implementation.
   void BookmarkModelChanged() override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* bookmark_model,
-                           const bookmarks::BookmarkNode* parent,
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_url) override;
-  void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* bookmark_model,
-                                   const std::set<GURL>& removed_urls) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls) override;
 
   // BookmarkModel instance providing access to bookmarks. May be null during
   // testing, and is null while shutting down.

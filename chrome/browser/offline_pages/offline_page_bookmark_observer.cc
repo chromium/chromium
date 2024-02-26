@@ -21,7 +21,6 @@ OfflinePageBookmarkObserver::~OfflinePageBookmarkObserver() {}
 void OfflinePageBookmarkObserver::BookmarkModelChanged() {}
 
 void OfflinePageBookmarkObserver::BookmarkNodeRemoved(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,

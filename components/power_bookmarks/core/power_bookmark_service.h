@@ -137,8 +137,7 @@ class PowerBookmarkService : public KeyedService,
   void RemoveDataProvider(PowerBookmarkDataProvider* data_provider);
 
   // BaseBookmarkModelObserver implementation.
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool newly_added) override;
   void BookmarkModelChanged() override {}

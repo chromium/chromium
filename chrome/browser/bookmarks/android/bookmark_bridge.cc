@@ -214,7 +214,7 @@ BookmarkBridge::BookmarkBridge(
   // initialized, we need to make sure that our initial state is
   // up to date.
   if (bookmark_model_->IsDoingExtensiveChanges())
-    ExtensiveBookmarkChangesBeginning(bookmark_model_);
+    ExtensiveBookmarkChangesBeginning();
 
   java_bookmark_model_ = Java_BookmarkBridge_createBookmarkModel(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
@@ -1041,8 +1041,7 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
     std::set<GURL> removed_urls;
     // Observer must be trigger prior, the underlying BookmarkNode* will be
     // deleted immediately after the delete call.
-    BookmarkNodeRemoved(bookmark_model_, reading_list_parent, index, node,
-                        removed_urls);
+    BookmarkNodeRemoved(reading_list_parent, index, node, removed_urls);
 
     // Inside the Delete method, node will be destroyed and node->url will be
     // also destroyed. This causes heap-use-after-free at
@@ -1151,8 +1150,7 @@ void BookmarkBridge::MoveNodeBetweenReadingListAndBookmarks(
     DeleteBookmarkImpl(node, type);
   }
 
-  BookmarkNodeMoved(bookmark_model_, old_parent_node, old_index,
-                    new_parent_node,
+  BookmarkNodeMoved(old_parent_node, old_index, new_parent_node,
                     new_parent_node->GetIndexOf(new_node).value());
 }
 
@@ -1517,20 +1515,18 @@ void BookmarkBridge::BookmarkModelChanged() {
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_));
 }
 
-void BookmarkBridge::BookmarkModelLoaded(BookmarkModel* model,
-                                         bool ids_reassigned) {
+void BookmarkBridge::BookmarkModelLoaded(bool ids_reassigned) {
   NotifyIfDoneLoading();
 }
 
-void BookmarkBridge::BookmarkModelBeingDeleted(BookmarkModel* model) {
+void BookmarkBridge::BookmarkModelBeingDeleted() {
   if (!IsLoaded())
     return;
 
   DestroyJavaObject();
 }
 
-void BookmarkBridge::BookmarkNodeMoved(BookmarkModel* model,
-                                       const BookmarkNode* old_parent,
+void BookmarkBridge::BookmarkNodeMoved(const BookmarkNode* old_parent,
                                        size_t old_index,
                                        const BookmarkNode* new_parent,
                                        size_t new_index) {
@@ -1545,8 +1541,7 @@ void BookmarkBridge::BookmarkNodeMoved(BookmarkModel* model,
       CreateJavaBookmark(new_parent), static_cast<int>(new_index));
 }
 
-void BookmarkBridge::BookmarkNodeAdded(BookmarkModel* model,
-                                       const BookmarkNode* parent,
+void BookmarkBridge::BookmarkNodeAdded(const BookmarkNode* parent,
                                        size_t index,
                                        bool added_by_user) {
   if (!IsLoaded() || !java_bookmark_model_ ||
@@ -1559,8 +1554,7 @@ void BookmarkBridge::BookmarkNodeAdded(BookmarkModel* model,
       CreateJavaBookmark(parent), static_cast<int>(index));
 }
 
-void BookmarkBridge::BookmarkNodeRemoved(BookmarkModel* model,
-                                         const BookmarkNode* parent,
+void BookmarkBridge::BookmarkNodeRemoved(const BookmarkNode* parent,
                                          size_t old_index,
                                          const BookmarkNode* node,
                                          const std::set<GURL>& removed_urls) {
@@ -1576,7 +1570,6 @@ void BookmarkBridge::BookmarkNodeRemoved(BookmarkModel* model,
 }
 
 void BookmarkBridge::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
@@ -1587,8 +1580,7 @@ void BookmarkBridge::BookmarkAllUserNodesRemoved(
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_));
 }
 
-void BookmarkBridge::BookmarkNodeChanged(BookmarkModel* model,
-                                         const BookmarkNode* node) {
+void BookmarkBridge::BookmarkNodeChanged(const BookmarkNode* node) {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
     return;
@@ -1599,8 +1591,7 @@ void BookmarkBridge::BookmarkNodeChanged(BookmarkModel* model,
       CreateJavaBookmark(node));
 }
 
-void BookmarkBridge::BookmarkNodeChildrenReordered(BookmarkModel* model,
-                                                   const BookmarkNode* node) {
+void BookmarkBridge::BookmarkNodeChildrenReordered(const BookmarkNode* node) {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
     return;
@@ -1611,7 +1602,7 @@ void BookmarkBridge::BookmarkNodeChildrenReordered(BookmarkModel* model,
       CreateJavaBookmark(node));
 }
 
-void BookmarkBridge::ExtensiveBookmarkChangesBeginning(BookmarkModel* model) {
+void BookmarkBridge::ExtensiveBookmarkChangesBeginning() {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
     return;
@@ -1621,7 +1612,7 @@ void BookmarkBridge::ExtensiveBookmarkChangesBeginning(BookmarkModel* model) {
       AttachCurrentThread(), ScopedJavaLocalRef<jobject>(java_bookmark_model_));
 }
 
-void BookmarkBridge::ExtensiveBookmarkChangesEnded(BookmarkModel* model) {
+void BookmarkBridge::ExtensiveBookmarkChangesEnded() {
   if (!IsLoaded() || !java_bookmark_model_ ||
       suppress_observer_notifications_) {
     return;

@@ -110,15 +110,13 @@ void ExternalProcessImporterHost::LaunchImportIfReady() {
   client_->Start();
 }
 
-void ExternalProcessImporterHost::BookmarkModelLoaded(BookmarkModel* model,
-                                                      bool ids_reassigned) {
+void ExternalProcessImporterHost::BookmarkModelLoaded(bool ids_reassigned) {
   bookmark_model_observation_for_loading_.Reset();
 
   LaunchImportIfReady();
 }
 
-void ExternalProcessImporterHost::BookmarkModelBeingDeleted(
-    BookmarkModel* model) {
+void ExternalProcessImporterHost::BookmarkModelBeingDeleted() {
   bookmark_model_observation_for_loading_.Reset();
 }
 

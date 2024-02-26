@@ -140,28 +140,22 @@ std::optional<size_t> RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
   return it == items_.end() ? 0 : static_cast<int>(it - items_.begin());
 }
 
-void RecentlyUsedFoldersComboModel::BookmarkModelLoaded(BookmarkModel* model,
-                                                        bool ids_reassigned) {}
+void RecentlyUsedFoldersComboModel::BookmarkModelLoaded(bool ids_reassigned) {}
 
-void RecentlyUsedFoldersComboModel::BookmarkModelBeingDeleted(
-    BookmarkModel* model) {
-}
+void RecentlyUsedFoldersComboModel::BookmarkModelBeingDeleted() {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeMoved(
-    BookmarkModel* model,
     const BookmarkNode* old_parent,
     size_t old_index,
     const BookmarkNode* new_parent,
     size_t new_index) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeAdded(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t index,
     bool added_by_user) {}
 
 void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node) {
@@ -183,29 +177,21 @@ void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
 }
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeRemoved(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeChanged(
-    BookmarkModel* model,
-    const BookmarkNode* node) {
-}
+    const BookmarkNode* node) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeFaviconChanged(
-    BookmarkModel* model,
-    const BookmarkNode* node) {
-}
+    const BookmarkNode* node) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeChildrenReordered(
-      BookmarkModel* model,
-      const BookmarkNode* node) {
-}
+    const BookmarkNode* node) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
