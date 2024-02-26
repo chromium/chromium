@@ -265,22 +265,6 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestMultipleUploads) {
       ModelQualityLogsUploadStatus::kUploadSuccessful, 2);
 }
 
-TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenLoggingDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kModelQualityLogging,
-      {{"model_execution_feature_compose", "false"}});
-
-  auto ai_data_request = BuildComposeLogAiDataReuqest();
-  UploadModelQualityLogs(std::move(ai_data_request));
-
-  // When logging is disabled there should be no pending requests.
-  VerifyNumberOfPendingRequests(0);
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      ModelQualityLogsUploadStatus::kLoggingNotEnabled, 1);
-}
-
 TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenRequestIsEmpty) {
   UploadModelQualityLogs(nullptr);
 

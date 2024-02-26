@@ -218,14 +218,6 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
                "ModelQualityLogsUploaderService::UploadModelQualityLogs",
                "feature", GetStringNameForModelExecutionFeature(feature));
 
-  // Don't do anything if logging is disabled for the feature. Nothing to
-  // upload.
-  if (!features::IsModelQualityLoggingEnabledForFeature(feature)) {
-    RecordUploadStatusHistogram(
-        feature, ModelQualityLogsUploadStatus::kLoggingNotEnabled);
-    return;
-  }
-
   // Set the client id for logging if non-zero.
   proto::LoggingMetadata* logging_metadata =
       log_ai_data_request->mutable_logging_metadata();

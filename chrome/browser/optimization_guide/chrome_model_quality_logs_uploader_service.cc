@@ -14,6 +14,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/pref_service.h"
@@ -56,6 +57,14 @@ bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
     RecordUploadStatusHistogram(
         feature,
         optimization_guide::ModelQualityLogsUploadStatus::kNoMetricsConsent);
+    return false;
+  }
+
+  // Don't upload logs if logging is disabled for the feature. Nothing to
+  // upload.
+  if (!features::IsModelQualityLoggingEnabledForFeature(feature)) {
+    RecordUploadStatusHistogram(
+        feature, ModelQualityLogsUploadStatus::kLoggingNotEnabled);
     return false;
   }
 

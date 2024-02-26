@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -38,8 +39,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
-
-using base::test::TestMessage;
 
 namespace {
 
@@ -659,6 +658,47 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest, EnableFeatureViaPref) {
       "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
       "WallpaperSearch",
       0);
+}
+
+class ModelExecutionComposeLoggingDisabledTest
+    : public ModelExecutionEnabledBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationGuideModelExecution, {}},
+         {features::kModelQualityLogging,
+          {{"model_execution_feature_compose", "false"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionComposeLoggingDisabledTest,
+                       LoggingForFeatureNotEnabled) {
+  EnableSignin();
+  SetExpectedBearerAccessToken("Bearer access_token");
+
+  // Enable metrics consent for logging.
+  SetMetricsConsent(true);
+  ASSERT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  EXPECT_TRUE(model_execution_result_.has_value());
+  EXPECT_TRUE(model_execution_result_->has_value());
+  auto response = ParsedAnyMetadata<proto::ComposeResponse>(
+      model_execution_result_->value());
+  EXPECT_EQ("foo response", response->output());
+
+  // The logs shouldn't be uploaded because the feature is not enabled for
+  // logging.
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      optimization_guide::ModelQualityLogsUploadStatus::kLoggingNotEnabled, 1);
 }
 
 class ModelExecutionNewFeaturesEnabledAutomaticallyTest
