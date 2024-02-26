@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -102,6 +103,12 @@ void DragDrop(NSString* src_identifier, NSString* tab_strip_identifier) {
 @end
 
 @implementation LegacyTabStripTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(kModernTabStrip);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
