@@ -12,11 +12,11 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/mac/scoped_ioobject.h"
 #include "components/power_metrics/smc_internal_types_mac.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace power_metrics {
 
@@ -29,7 +29,7 @@ class SMCReader {
 
   // Returns the value of a key, or nullopt if not available.
   // Virtual for testing.
-  virtual absl::optional<double> ReadKey(SMCKeyIdentifier identifier);
+  virtual std::optional<double> ReadKey(SMCKeyIdentifier identifier);
 
  protected:
   explicit SMCReader(base::mac::ScopedIOObject<io_object_t> connect);
@@ -44,7 +44,7 @@ class SMCReader {
     ~SMCKey();
 
     bool Exists() const;
-    absl::optional<double> Read();
+    std::optional<double> Read();
 
    private:
     bool CallSMCFunction(uint8_t function, SMCParamStruct* out);

@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_POWER_METRICS_ENERGY_IMPACT_MAC_H_
 #define COMPONENTS_POWER_METRICS_ENERGY_IMPACT_MAC_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct coalition_resource_usage;
 
@@ -47,7 +47,7 @@ struct EnergyImpactCoefficients {
 // Reads the Energy Impact coefficients for the current machine from disk, or
 // default coefficients if coefficients are not available for the current
 // machine.
-absl::optional<EnergyImpactCoefficients>
+std::optional<EnergyImpactCoefficients>
 ReadCoefficientsForCurrentMachineOrDefault();
 
 // Computes the Energy Impact score for the resource consumption data in
@@ -70,7 +70,7 @@ namespace internal {
 // Reads the coefficients from the "energy_constants" sub-dictionary of the
 // plist file at |plist_file|. This is exposed for testing, production code
 // should use ReadCoefficientsForCurrentMachineOrDefault().
-absl::optional<EnergyImpactCoefficients> ReadCoefficientsFromPath(
+std::optional<EnergyImpactCoefficients> ReadCoefficientsFromPath(
     const base::FilePath& plist_file);
 
 // Given a |directory| and a |board_id|, read the plist file for the board id
@@ -78,7 +78,7 @@ absl::optional<EnergyImpactCoefficients> ReadCoefficientsFromPath(
 // Returns true if either file can be loaded, false otherwise. This is exposed
 // for testing, production code should use
 // ReadCoefficientsForCurrentMachineOrDefault().
-absl::optional<EnergyImpactCoefficients> ReadCoefficientsForBoardIdOrDefault(
+std::optional<EnergyImpactCoefficients> ReadCoefficientsForBoardIdOrDefault(
     const base::FilePath& directory,
     const std::string& board_id);
 
@@ -86,7 +86,7 @@ absl::optional<EnergyImpactCoefficients> ReadCoefficientsForBoardIdOrDefault(
 // the current machine. This appears to work for Intel Macs only. This is
 // exposed for testing, production code should use
 // ReadCoefficientsForCurrentMachineOrDefault().
-absl::optional<std::string> GetBoardIdForThisMachine();
+std::optional<std::string> GetBoardIdForThisMachine();
 
 }  // namespace internal
 

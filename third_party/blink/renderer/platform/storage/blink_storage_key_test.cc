@@ -368,7 +368,7 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
 
   const struct TestCase {
     scoped_refptr<const SecurityOrigin> origin;
-    // RAW_PTR_EXCLUSION: Can't wrap `absl::nullopt` in `raw_ref`. Also, these
+    // RAW_PTR_EXCLUSION: Can't wrap `std::nullopt` in `raw_ref`. Also, these
     // are test-only and rewriting would add a ton of code churn.
     RAW_PTR_EXCLUSION const BlinkSchemefulSite& top_level_site;
     RAW_PTR_EXCLUSION const BlinkSchemefulSite&

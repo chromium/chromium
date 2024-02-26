@@ -107,10 +107,10 @@ EnergyMetricsProviderLinux::Create() {
   return base::WrapUnique(new EnergyMetricsProviderLinux());
 }
 
-absl::optional<EnergyMetricsProvider::EnergyMetrics>
+std::optional<EnergyMetricsProvider::EnergyMetrics>
 EnergyMetricsProviderLinux::CaptureMetrics() {
   if (!Initialize()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   EnergyMetrics energy_metrics = {0};

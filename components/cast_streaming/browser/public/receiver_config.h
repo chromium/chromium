@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_PUBLIC_RECEIVER_CONFIG_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_PUBLIC_RECEIVER_CONFIG_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
 #include "media/base/video_codecs.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cast_streaming {
@@ -28,7 +29,7 @@ class ReceiverConfig {
 
     // Maximum maintainable frame rate.  If left unset, will use the
     // implementation default.
-    absl::optional<int> max_frame_rate;
+    std::optional<int> max_frame_rate;
 
     // Whether the embedder is capable of scaling content. If set to false, the
     // sender will manage the aspect ratio scaling.
@@ -39,11 +40,11 @@ class ReceiverConfig {
   struct AudioLimits {
     // Audio codec these limits apply to. If left empty, this instance is
     // assumed to apply to all codecs.
-    absl::optional<media::AudioCodec> codec;
+    std::optional<media::AudioCodec> codec;
 
     // Maximum audio sample rate.If left unset, will use the implementation
     // default.
-    absl::optional<int> max_sample_rate;
+    std::optional<int> max_sample_rate;
 
     // Maximum audio channels.
     media::ChannelLayout channel_layout = media::CHANNEL_LAYOUT_STEREO;
@@ -51,8 +52,8 @@ class ReceiverConfig {
     // Minimum and maximum bitrates. Generally capture is done at the maximum
     // bit rate, since audio bandwidth is much lower than video for most
     // content.  If left unset, will use the implementation defaults.
-    absl::optional<int> min_bit_rate;
-    absl::optional<int> max_bit_rate;
+    std::optional<int> min_bit_rate;
+    std::optional<int> max_bit_rate;
 
     // Max playout delay in milliseconds.
     base::TimeDelta max_delay = base::Milliseconds(1500);
@@ -62,7 +63,7 @@ class ReceiverConfig {
   struct VideoLimits {
     // Video codec these limits apply to. If left empty, this instance is
     // assumed to apply to all codecs.
-    absl::optional<media::VideoCodec> codec;
+    std::optional<media::VideoCodec> codec;
 
     // Maximum pixels per second. Value is the standard amount of pixels for
     // 1080P at 30FPS.
@@ -74,14 +75,14 @@ class ReceiverConfig {
 
     // Maximum maintainable frame rate. If left unset, will use the
     // implementation default.
-    absl::optional<int> max_frame_rate;
+    std::optional<int> max_frame_rate;
 
     // Minimum and maximum bitrates. Default values are based on default min and
     // max dimensions, embedders that support different display dimensions
     // should strongly consider setting these fields.  If left unset, will use
     // the implementation defaults.
-    absl::optional<int> min_bit_rate;
-    absl::optional<int> max_bit_rate;
+    std::optional<int> min_bit_rate;
+    std::optional<int> max_bit_rate;
 
     // Max playout delay in milliseconds.
     base::TimeDelta max_delay = base::Milliseconds(1500);
@@ -147,7 +148,7 @@ class ReceiverConfig {
                  std::vector<media::AudioCodec> audio_codecs,
                  std::vector<AudioLimits> audio_limits,
                  std::vector<VideoLimits> video_limits,
-                 absl::optional<Display> description);
+                 std::optional<Display> description);
   ~ReceiverConfig();
 
   ReceiverConfig(ReceiverConfig&&) noexcept;
@@ -169,12 +170,12 @@ class ReceiverConfig {
   // vector of size 1 with the |codec| field empty.
   std::vector<AudioLimits> audio_limits;
   std::vector<VideoLimits> video_limits;
-  absl::optional<Display> display_description;
+  std::optional<Display> display_description;
 
   // Libcast remoting support is opt-in: embedders wishing to field remoting
   // offers may provide a set of remoting constraints, or leave nullptr for all
   // remoting OFFERs to be rejected in favor of continuing streaming.
-  absl::optional<RemotingConstraints> remoting;
+  std::optional<RemotingConstraints> remoting;
 };
 
 }  // namespace cast_streaming

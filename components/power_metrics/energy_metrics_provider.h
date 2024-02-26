@@ -7,8 +7,7 @@
 
 #include <cstdint>
 #include <memory>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace power_metrics {
 
@@ -45,7 +44,7 @@ class EnergyMetricsProvider {
 
   // Used to capture energy consumption metrics. It returns nullopt if not
   // available on the current platform.
-  virtual absl::optional<EnergyMetrics> CaptureMetrics() = 0;
+  virtual std::optional<EnergyMetrics> CaptureMetrics() = 0;
 
  protected:
   // The constructor is intentionally only exposed to subclasses. Production

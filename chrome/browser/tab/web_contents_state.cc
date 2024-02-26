@@ -289,7 +289,7 @@ bool ExtractNavigationEntries(
     for (int i = 0; i < entry_count; ++i) {
       // Read each SerializedNavigationEntry as a separate pickle to avoid
       // optional reads of one tab bleeding into the next tab's data.
-      absl::optional<base::span<const uint8_t>> tab_entry = iter.ReadData();
+      std::optional<base::span<const uint8_t>> tab_entry = iter.ReadData();
       if (!tab_entry.has_value()) {
         LOG(ERROR) << "Failed to restore tab entry from byte array.";
         return false;  // It's dangerous to keep deserializing now, give up.

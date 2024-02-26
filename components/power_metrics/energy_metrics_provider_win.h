@@ -26,7 +26,7 @@ class EnergyMetricsProviderWin : public EnergyMetricsProvider {
   ~EnergyMetricsProviderWin() override;
 
   // EnergyMetricsProvider implementation.
-  absl::optional<EnergyMetrics> CaptureMetrics() override;
+  std::optional<EnergyMetrics> CaptureMetrics() override;
 
  private:
   EnergyMetricsProviderWin();

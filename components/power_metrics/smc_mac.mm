@@ -35,7 +35,7 @@ std::unique_ptr<SMCReader> SMCReader::Create() {
 
 SMCReader::~SMCReader() = default;
 
-absl::optional<double> SMCReader::ReadKey(SMCKeyIdentifier identifier) {
+std::optional<double> SMCReader::ReadKey(SMCKeyIdentifier identifier) {
   auto it = keys_.find(identifier);
   if (it == keys_.end()) {
     auto result = keys_.emplace(identifier, SMCKey(connect_, identifier));
@@ -63,13 +63,13 @@ bool SMCReader::SMCKey::Exists() const {
   return key_info_.dataSize > 0;
 }
 
-absl::optional<double> SMCReader::SMCKey::Read() {
+std::optional<double> SMCReader::SMCKey::Read() {
   if (!Exists())
-    return absl::nullopt;
+    return std::nullopt;
 
   SMCParamStruct out{};
   if (!CallSMCFunction(kSMCReadKey, &out))
-    return absl::nullopt;
+    return std::nullopt;
   switch (key_info_.dataType) {
     case SMCDataType::flt:
       return *reinterpret_cast<float*>(out.bytes);
@@ -80,7 +80,7 @@ absl::optional<double> SMCReader::SMCKey::Read() {
     case SMCDataType::spa5:
       return FromSMCFixedPoint(out.bytes, 5);
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
