@@ -1473,10 +1473,9 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
 
   context_.SetStrokeColor(color);
 
-  if (!StrokeData::StrokeIsDashed(border_thickness,
-                                  border_style == EBorderStyle::kDashed
-                                      ? kDashedStroke
-                                      : kDottedStroke)) {
+  const StrokeStyle stroke_style =
+      border_style == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke;
+  if (!StyledStrokeData::StrokeIsDashed(border_thickness, stroke_style)) {
     DrawWideDottedBoxSideFromPath(centerline_path, border_thickness);
     return;
   }
@@ -1487,8 +1486,7 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
   // the edges to prevent jaggies.
   const float thickness_multiplier = 2 * 1.1f;
   context_.SetStrokeThickness(stroke_thickness * thickness_multiplier);
-  context_.SetStrokeStyle(
-      border_style == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke);
+  context_.SetStrokeStyle(stroke_style);
 
   // TODO(crbug.com/344234): stroking the border path causes issues with
   // tight corners.
@@ -1501,7 +1499,6 @@ void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
     int border_thickness) const {
   context_.SetStrokeThickness(border_thickness);
   context_.SetStrokeStyle(kDottedStroke);
-  context_.SetLineCap(kRoundCap);
 
   // TODO(crbug.com/344234): stroking the border path causes issues with
   // tight corners.

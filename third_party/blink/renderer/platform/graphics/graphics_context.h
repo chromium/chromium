@@ -229,13 +229,6 @@ class PLATFORM_EXPORT GraphicsContext {
     MutableState()->SetStrokeColor(color);
   }
 
-  void SetLineCap(LineCap cap) { MutableState()->SetLineCap(cap); }
-  void SetLineDash(const DashArray& dashes, float dash_offset) {
-    MutableState()->SetLineDash(dashes, dash_offset);
-  }
-  void SetLineJoin(LineJoin join) { MutableState()->SetLineJoin(join); }
-  void SetMiterLimit(float limit) { MutableState()->SetMiterLimit(limit); }
-
   Color FillColor() const { return ImmutableState()->FillColor(); }
   void SetFillColor(const Color& color) { MutableState()->SetFillColor(color); }
 
@@ -481,7 +474,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // cases where dashes should be based on a different thickness.
   const cc::PaintFlags& StrokeFlags(const int length = 0,
                                     const int dash_thickness = 0) const {
-    return ImmutableState()->StrokeFlags(length, dash_thickness);
+    return ImmutableState()->StrokeFlags(length, dash_thickness, false);
   }
 
   // ---------- Transformation methods -----------------

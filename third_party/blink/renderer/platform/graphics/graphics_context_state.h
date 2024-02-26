@@ -36,7 +36,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -60,9 +60,9 @@ class PLATFORM_EXPORT GraphicsContextState final {
 
   // cc::PaintFlags objects that reflect the current state. If the length of the
   // path to be stroked is known, pass it in for correct dash or dot placement.
-  const cc::PaintFlags& StrokeFlags(const int stroked_path_length = 0,
-                                    const int dash_thickness = 0,
-                                    const bool closed_path = false) const;
+  const cc::PaintFlags& StrokeFlags(const int stroked_path_length,
+                                    const int dash_thickness,
+                                    const bool closed_path) const;
   const cc::PaintFlags& FillFlags() const { return fill_flags_; }
 
   uint16_t SaveCount() const { return save_count_; }
@@ -77,13 +77,9 @@ class PLATFORM_EXPORT GraphicsContextState final {
   }
   void SetStrokeColor(const Color&);
 
-  const StrokeData& GetStrokeData() const { return stroke_data_; }
+  const StyledStrokeData& GetStrokeData() const { return stroke_data_; }
   void SetStrokeStyle(StrokeStyle);
   void SetStrokeThickness(float);
-  void SetLineCap(LineCap);
-  void SetLineJoin(LineJoin);
-  void SetMiterLimit(float);
-  void SetLineDash(const DashArray&, float);
 
   // Fill data
   Color FillColor() const {
@@ -133,7 +129,7 @@ class PLATFORM_EXPORT GraphicsContextState final {
   cc::PaintFlags fill_flags_;
   TextPaintOrder text_paint_order_ = kFillStroke;
 
-  StrokeData stroke_data_;
+  StyledStrokeData stroke_data_;
 
   TextDrawingModeFlags text_drawing_mode_ = kTextModeFill;
 

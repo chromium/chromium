@@ -540,7 +540,8 @@ class ComplexOutlinePainter {
     auto stroke_style =
         outline_style_ == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke;
     context_.SetStrokeStyle(stroke_style);
-    if ((width_ % 2) && StrokeData::StrokeIsDashed(width_, stroke_style)) {
+    if ((width_ % 2) &&
+        StyledStrokeData::StrokeIsDashed(width_, stroke_style)) {
       // If width_ is odd, draw wider to fill the clip area.
       context_.SetStrokeThickness(width_ + 2);
     } else {

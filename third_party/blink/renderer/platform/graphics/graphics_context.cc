@@ -483,13 +483,13 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
   // probably worth the speed up of no square root, which also won't be exact.
   gfx::Vector2dF disp = p2 - p1;
   int length = SkScalarRoundToInt(disp.x() + disp.y());
-  const DarkModeFlags flags(this, auto_dark_mode,
-                            paint_flags
-                                ? *paint_flags
-                                : ImmutableState()->StrokeFlags(length, width));
+  const DarkModeFlags flags(
+      this, auto_dark_mode,
+      paint_flags ? *paint_flags
+                  : ImmutableState()->StrokeFlags(length, width, false));
 
   if (pen_style == kDottedStroke) {
-    if (StrokeData::StrokeIsDashed(width, pen_style)) {
+    if (StyledStrokeData::StrokeIsDashed(width, pen_style)) {
       // When the length of the line is an odd multiple of the width, things
       // work well because we get dots at each end of the line, but if the
       // length is anything else, we get gaps or partial dots at the end of the
@@ -540,7 +540,7 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
     } else {
       cc::PaintFlags flags = ImmutableState()->FillFlags();
       // Text lines are drawn using the stroke color.
-      flags.setColor(ImmutableState()->StrokeFlags().getColor4f());
+      flags.setColor(ImmutableState()->StrokeFlags(0, 0, false).getColor4f());
       SkRect r = gfx::RectFToSkRect(
           GetRectForTextLine(pt, width, RoundDownThickness(StrokeThickness())));
       DrawRect(r, flags, auto_dark_mode);
@@ -577,7 +577,7 @@ void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
 
   if ((mode_flags & kTextModeStroke) && GetStrokeStyle() != kNoStroke &&
       StrokeThickness() > 0) {
-    cc::PaintFlags stroke_flags(ImmutableState()->StrokeFlags());
+    cc::PaintFlags stroke_flags(ImmutableState()->StrokeFlags(0, 0, false));
     if (mode_flags & kTextModeFill) {
       // shadow was already applied during fill pass
       stroke_flags.setLooper(nullptr);
@@ -989,10 +989,10 @@ void GraphicsContext::StrokePath(const Path& path_to_stroke,
 void GraphicsContext::StrokeRect(const gfx::RectF& rect,
                                  float line_width,
                                  const AutoDarkMode& auto_dark_mode) {
-  cc::PaintFlags flags(ImmutableState()->StrokeFlags());
+  cc::PaintFlags flags(ImmutableState()->StrokeFlags(0, 0, false));
   flags.setStrokeWidth(WebCoreFloatToSkScalar(line_width));
   // Reset the dash effect to account for the width
-  ImmutableState()->GetStrokeData().SetupPaintDashPathEffect(&flags);
+  ImmutableState()->GetStrokeData().SetupPaintDashPathEffect(&flags, {});
   // strokerect has special rules for CSS when the rect is degenerate:
   // if width==0 && height==0, do nothing
   // if width==0 || height==0, then just draw line for the other dimension
@@ -1014,8 +1014,8 @@ void GraphicsContext::StrokeRect(const gfx::RectF& rect,
 
 void GraphicsContext::StrokeEllipse(const gfx::RectF& ellipse,
                                     const AutoDarkMode& auto_dark_mode) {
-  DrawOval(gfx::RectFToSkRect(ellipse), ImmutableState()->StrokeFlags(),
-           auto_dark_mode);
+  DrawOval(gfx::RectFToSkRect(ellipse),
+           ImmutableState()->StrokeFlags(0, 0, false), auto_dark_mode);
 }
 
 void GraphicsContext::ClipRoundedRect(const FloatRoundedRect& rrect,

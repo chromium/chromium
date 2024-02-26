@@ -21,9 +21,6 @@ static inline cc::PaintFlags::FilterQuality FilterQualityForPaint(
 GraphicsContextState::GraphicsContextState() {
   stroke_flags_.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags_.setStrokeWidth(SkFloatToScalar(stroke_data_.Thickness()));
-  stroke_flags_.setStrokeCap(cc::PaintFlags::kDefault_Cap);
-  stroke_flags_.setStrokeJoin(cc::PaintFlags::kDefault_Join);
-  stroke_flags_.setStrokeMiter(SkFloatToScalar(stroke_data_.MiterLimit()));
   stroke_flags_.setFilterQuality(FilterQualityForPaint(interpolation_quality_));
   stroke_flags_.setDynamicRangeLimit(dynamic_range_limit_);
   stroke_flags_.setAntiAlias(should_antialias_);
@@ -51,8 +48,8 @@ const cc::PaintFlags& GraphicsContextState::StrokeFlags(
     const int stroked_path_length,
     const int dash_thickness,
     const bool closed_path) const {
-  stroke_data_.SetupPaintDashPathEffect(&stroke_flags_, stroked_path_length,
-                                        dash_thickness, closed_path);
+  stroke_data_.SetupPaintDashPathEffect(
+      &stroke_flags_, {stroked_path_length, dash_thickness, closed_path});
   return stroke_flags_;
 }
 
@@ -70,21 +67,6 @@ void GraphicsContextState::SetStrokeColor(const Color& color) {
   stroke_flags_.setShader(nullptr);
 }
 
-void GraphicsContextState::SetLineCap(LineCap cap) {
-  stroke_data_.SetLineCap(cap);
-  stroke_flags_.setStrokeCap(static_cast<cc::PaintFlags::Cap>(cap));
-}
-
-void GraphicsContextState::SetLineJoin(LineJoin join) {
-  stroke_data_.SetLineJoin(join);
-  stroke_flags_.setStrokeJoin(static_cast<cc::PaintFlags::Join>(join));
-}
-
-void GraphicsContextState::SetMiterLimit(float miter_limit) {
-  stroke_data_.SetMiterLimit(miter_limit);
-  stroke_flags_.setStrokeMiter(SkFloatToScalar(miter_limit));
-}
-
 void GraphicsContextState::SetFillColor(const Color& color) {
   fill_flags_.setColor(color.toSkColor4f());
   fill_flags_.setShader(nullptr);
@@ -96,11 +78,6 @@ void GraphicsContextState::SetDrawLooper(sk_sp<SkDrawLooper> draw_looper) {
   stroke_flags_.setLooper(draw_looper);
   // Pass the existing ref to fill (to minimize refcount churn).
   fill_flags_.setLooper(std::move(draw_looper));
-}
-
-void GraphicsContextState::SetLineDash(const DashArray& dashes,
-                                       float dash_offset) {
-  stroke_data_.SetLineDash(dashes, dash_offset);
 }
 
 void GraphicsContextState::SetInterpolationQuality(

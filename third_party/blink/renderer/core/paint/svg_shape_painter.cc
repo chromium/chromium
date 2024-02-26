@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 

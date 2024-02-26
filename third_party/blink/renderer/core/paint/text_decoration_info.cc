@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -675,10 +677,11 @@ gfx::RectF TextDecorationInfo::Bounds() const {
 }
 
 gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {
-  StrokeData stroke_data;
-  stroke_data.SetThickness(roundf(ResolvedThickness()));
-  stroke_data.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  return line_data_.stroke_path.value().StrokeBoundingRect(stroke_data);
+  StyledStrokeData styled_stroke;
+  styled_stroke.SetThickness(roundf(ResolvedThickness()));
+  styled_stroke.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
+  return line_data_.stroke_path.value().StrokeBoundingRect(
+      styled_stroke.ConvertToStrokeData({}));
 }
 
 // Returns the wavy bounds, which is the same size as the wavy paint rect but

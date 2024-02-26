@@ -115,16 +115,6 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   context.BeginRecording();
 
   context.SetShouldAntialias(false);
-  context.SetMiterLimit(1);
-  context.SetStrokeThickness(5);
-  context.SetLineCap(kSquareCap);
-  context.SetStrokeStyle(kSolidStroke);
-
-  // Make skia unable to compute fast bounds for our paths.
-  DashArray dash_array;
-  dash_array.push_back(1);
-  dash_array.push_back(0);
-  context.SetLineDash(dash_array, 0);
 
   // Make the device opaque in 10,10 40x40.
   context.FillRect(gfx::RectF(10, 10, 40, 40), opaque, AutoDarkModeDisabled(),
