@@ -820,7 +820,7 @@ bool PermissionRequestManager::RecreateView() {
   }
 
   current_request_prompt_disposition_ = view_->GetPromptDisposition();
-  if (should_do_auto_response_for_testing) {
+  if (auto_response_for_test_ != NONE && should_do_auto_response_for_testing) {
     // MAC_OS_PROMPT disposition has it's own auto-response logic for testing,
     // so if that was the original disposition we would have skipped our own
     // auto-response logic. Since the disposition can have changed, trigger
