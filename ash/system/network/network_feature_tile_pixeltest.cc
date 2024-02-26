@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/network/network_feature_pod_controller.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -12,7 +13,9 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -36,6 +39,19 @@ constexpr char kServicePatternEthernet[] = R"({
 constexpr char kServicePatternWiFi[] = R"({
     "GUID": "%s", "Type": "wifi", "State": "online",
     "Strength": 100, "SecurityClass": "%s"})";
+
+// Configures a `Feature Tile` base to follow Quick Settings sizing standards.
+void ConfigureQSFeatureTile(FeatureTile* tile) {
+  // Quick Settings Feature Tiles set a fixed size for their feature tiles.
+  tile->SetPreferredSize(
+      gfx::Size(kPrimaryFeatureTileWidth, kFeatureTileHeight));
+  tile->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred,
+                               /*adjust_height_for_width=*/false));
+}
+
 }  // namespace
 
 // Pixel test for the quick settings network feature tile view.
@@ -69,6 +85,7 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
 
     feature_tile_ =
         widget_->GetContentsView()->AddChildView(std::move(feature_tile));
+    ConfigureQSFeatureTile(feature_tile_);
 
     // Add the non-default cellular and ethernet devices to Shill.
     network_state_helper()->manager_test()->AddTechnology(shill::kTypeCellular,

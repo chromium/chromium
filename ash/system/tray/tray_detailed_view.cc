@@ -46,6 +46,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -165,11 +166,12 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
 
 void TrayDetailedView::CreateScrollableList() {
   DCHECK(!scroller_);
-  auto scroll_content = std::make_unique<views::BoxLayoutView>();
-  scroll_content->SetOrientation(views::BoxLayout::Orientation::kVertical);
   scroller_ = AddChildView(std::make_unique<views::ScrollView>());
   scroller_->SetDrawOverflowIndicator(false);
-  scroll_content_ = scroller_->SetContents(std::move(scroll_content));
+  scroll_content_ = scroller_->SetContents(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .Build());
 
   auto vertical_scroll = std::make_unique<RoundedScrollBar>(
       views::ScrollBar::Orientation::kVertical);

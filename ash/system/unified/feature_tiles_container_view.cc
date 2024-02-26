@@ -38,8 +38,15 @@ int GetTileWeight(FeatureTile::TileType type) {
       return kPrimaryTileWeight;
     case FeatureTile::TileType::kCompact:
       return kCompactTileWeight;
-    default:
-      NOTREACHED();
+  }
+}
+
+int GetTileWidth(FeatureTile::TileType type) {
+  switch (type) {
+    case FeatureTile::TileType::kPrimary:
+      return kPrimaryFeatureTileWidth;
+    case FeatureTile::TileType::kCompact:
+      return kCompactFeatureTileWidth;
   }
 }
 
@@ -141,6 +148,13 @@ void FeatureTilesContainerView::AddTiles(
     // Invisible tiles don't take any weight.
     if (tile->GetVisible()) {
       row_weight += GetTileWeight(tile->tile_type());
+      tile->SetPreferredSize(
+          gfx::Size(GetTileWidth(tile->tile_type()), kFeatureTileHeight));
+      tile->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true));
     }
     DCHECK_LE(row_weight, kMaxRowWeight);
     rows_.back()->AddChildView(std::move(tile));

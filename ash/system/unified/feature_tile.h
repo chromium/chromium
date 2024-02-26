@@ -175,6 +175,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   base::WeakPtr<FeatureTile> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

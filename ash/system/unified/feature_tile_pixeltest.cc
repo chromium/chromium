@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
@@ -28,7 +29,35 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
+
+// Quick Settings `FeatureTile` size constants.
+constexpr gfx::Size kQSPrimaryTileSize =
+    gfx::Size(kPrimaryFeatureTileWidth, kFeatureTileHeight);
+constexpr gfx::Size kQSCompactTileSize =
+    gfx::Size(kCompactFeatureTileWidth, kFeatureTileHeight);
+
+// Creates a `Feature Tile` base that follows Quick Settings sizing standards.
+FeatureTile* CreateQSFeatureTileBase(views::Widget* widget,
+                                     bool is_compact = false) {
+  auto tile = std::make_unique<FeatureTile>(
+      views::Button::PressedCallback(), /*is_togglable=*/true,
+      is_compact ? FeatureTile::TileType::kCompact
+                 : FeatureTile::TileType::kPrimary);
+
+  // Quick Settings Feature Tiles set a fixed size for their feature tiles.
+  tile->SetPreferredSize(is_compact ? kQSCompactTileSize : kQSPrimaryTileSize);
+  tile->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred,
+                               /*adjust_height_for_width=*/false));
+
+  return widget->GetContentsView()->AddChildView(std::move(tile));
+}
+
+}  // namespace
 
 // Pixel tests for the quick settings feature tile view.
 class FeatureTilePixelTest : public AshTestBase {
@@ -76,10 +105,7 @@ class FeatureTilePixelTest : public AshTestBase {
 };
 
 TEST_F(FeatureTilePixelTest, PrimaryTile) {
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kPrimary));
+  auto* tile = CreateQSFeatureTileBase(widget_.get());
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -110,10 +136,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
 }
 
 TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kPrimary));
+  auto* tile = CreateQSFeatureTileBase(widget_.get());
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -148,10 +171,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(base::i18n::IsRTL());
 
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kPrimary));
+  auto* tile = CreateQSFeatureTileBase(widget_.get());
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -166,10 +186,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
 }
 
 TEST_F(FeatureTilePixelTest, CompactTile) {
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kCompact));
+  auto* tile = CreateQSFeatureTileBase(widget_.get(), /*is_compact=*/true);
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Multi-line label");
   // Needed for accessibility paint checks.
@@ -347,5 +364,4 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, DownloadInProgress) {
       /*revision_number=*/0, widget_.get()));
 }
 
-}  // namespace
 }  // namespace ash
