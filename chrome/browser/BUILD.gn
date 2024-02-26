@@ -3492,6 +3492,7 @@ static_library("browser") {
       "//chrome/common:non_code_constants",
       "//chrome/common/wallet:mojo_bindings",
       "//chrome/services/media_gallery_util/public/cpp",
+      "//components/android_autofill/browser:android",
       "//components/autofill/android:keyboard_suppressor",
       "//components/background_sync",
       "//components/bookmarks/common/android",

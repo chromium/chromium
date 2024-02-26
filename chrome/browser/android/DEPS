@@ -5,6 +5,7 @@ include_rules = [
   "+cc/slim/layer.h",
   "+chrome/android",
   "+chrome/browser/web_share_target",
+  "+components/android_autofill",
   "+components/browser_ui/site_settings/android",
   "+components/browser_ui/sms/android",
   "+components/browser_ui/util/android/url_constants.h",

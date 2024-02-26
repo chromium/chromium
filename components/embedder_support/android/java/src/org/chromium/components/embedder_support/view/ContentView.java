@@ -7,8 +7,8 @@ package org.chromium.components.embedder_support.view;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Handler;
+import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -19,6 +19,7 @@ import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityNodeProvider;
+import android.view.autofill.AutofillValue;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
@@ -27,7 +28,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -119,10 +119,7 @@ public class ContentView extends FrameLayout
 
         setFocusable(true);
         setFocusableInTouchMode(true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ApiHelperForO.setDefaultFocusHighlightEnabled(this, false);
-        }
+        setDefaultFocusHighlightEnabled(false);
 
         setOnHierarchyChangeListener(this);
         setOnSystemUiVisibilityChangeListener(this);
@@ -592,6 +589,22 @@ public class ContentView extends FrameLayout
     public void onProvideVirtualStructure(final ViewStructure structure) {
         WebContentsAccessibility wcax = getWebContentsAccessibility();
         if (wcax != null) wcax.onProvideVirtualStructure(structure, false);
+    }
+
+    @Override
+    public void autofill(final SparseArray<AutofillValue> values) {
+        if (mWebContents.getViewAndroidDelegate() != null) {
+            mWebContents.getViewAndroidDelegate().autofill(values);
+        }
+    }
+
+    @Override
+    public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
+        if (mWebContents.getViewAndroidDelegate() != null) {
+            mWebContents
+                    .getViewAndroidDelegate()
+                    .onProvideAutofillVirtualStructure(structure, flags);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

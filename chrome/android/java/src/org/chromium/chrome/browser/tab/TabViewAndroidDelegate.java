@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.util.SparseArray;
 import android.view.ViewGroup;
+import android.view.ViewStructure;
+import android.view.autofill.AutofillValue;
 
 import androidx.annotation.Nullable;
 
@@ -160,6 +163,21 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(null);
             mDragAndDropBrowserDelegate = null;
         }
+    }
+
+    @Override
+    public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
+        mTab.onProvideAutofillVirtualStructure(structure, flags);
+    }
+
+    @Override
+    public void autofill(final SparseArray<AutofillValue> values) {
+        mTab.autofill(values);
+    }
+
+    @Override
+    public boolean providesAutofillStructure() {
+        return mTab.providesAutofillStructure();
     }
 
     DragAndDropBrowserDelegate getDragAndDropBrowserDelegateForTesting() {

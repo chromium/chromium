@@ -7,8 +7,15 @@ package org.chromium.chrome.browser.tab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.util.SparseArray;
+import android.view.View;
+import android.view.ViewStructure;
+import android.view.autofill.AutofillValue;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -133,5 +140,22 @@ public class TabViewAndroidDelegateTest {
         assertNull(
                 "DragAndDropBrowserDelegate should be removed once destroyed.",
                 mViewAndroidDelegate.getDragAndDropBrowserDelegateForTesting());
+    }
+
+    @Test
+    public void testForwardsAndroidAutofillRequests() {
+        when(mTab.providesAutofillStructure()).thenReturn(true);
+        assertTrue(mViewAndroidDelegate.providesAutofillStructure());
+
+        ViewStructure structure = mock(ViewStructure.class);
+        mViewAndroidDelegate.onProvideAutofillVirtualStructure(
+                structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
+        verify(mTab)
+                .onProvideAutofillVirtualStructure(
+                        structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
+
+        SparseArray<AutofillValue> values = new SparseArray();
+        mViewAndroidDelegate.autofill(values);
+        verify(mTab).autofill(values);
     }
 }

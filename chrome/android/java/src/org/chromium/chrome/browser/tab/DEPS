@@ -93,6 +93,8 @@ specific_include_rules = {
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/UrlConstants.java",
 
     "-components",
+    "+components/android_autofill/browser/java/src/org/chromium/components/autofill/AndroidAutofillFeatures.java",
+    "+components/android_autofill/browser/java/src/org/chromium/components/autofill/AutofillProvider.java",
     "+components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/delegate",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",

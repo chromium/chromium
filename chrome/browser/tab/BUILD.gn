@@ -82,6 +82,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/autofill/android:autofill_features_java",
     "//components/browser_ui/util/android:java",
     "//components/commerce/core:proto_java",
     "//components/commerce/core/android:core_java",

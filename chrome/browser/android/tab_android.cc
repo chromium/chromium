@@ -22,6 +22,7 @@
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/browser_about_handler.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,12 +34,19 @@
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "components/android_autofill/browser/android_autofill_client.h"
+#include "components/android_autofill/browser/android_autofill_manager.h"
+#include "components/android_autofill/browser/autofill_provider.h"
+#include "components/android_autofill/browser/autofill_provider_android.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -345,6 +353,27 @@ void TabAndroid::InitWebContents(
 
   for (Observer& observer : observers_)
     observer.OnInitWebContents(this);
+}
+
+void TabAndroid::InitializeAutofillIfNecessary(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (autofill::ContentAutofillClient::FromWebContents(web_contents_.get())) {
+    return;
+  }
+  // The AutofillProvider object is already created by the AutofillProvider.
+  if (autofill::AutofillProvider::FromWebContents(web_contents_.get())) {
+    return;
+  }
+  android_autofill::AndroidAutofillClient::CreateForWebContents(
+      web_contents_.get(), [&](const JavaRef<jobject>& client) {});
+
+  // We need to initialize the keyboard suppressor before creating any
+  // AutofillManagers and after the autofill client is available.
+  autofill::AutofillProvider::FromWebContents(web_contents_.get())
+      ->MaybeInitKeyboardSuppressor();
+
+  autofill::ContentAutofillDriverFactory::FromWebContents(web_contents_.get())
+      ->DriverForFrame(web_contents_->GetPrimaryMainFrame());
 }
 
 void TabAndroid::UpdateDelegates(

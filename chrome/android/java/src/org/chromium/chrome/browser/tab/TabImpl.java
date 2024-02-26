@@ -10,9 +10,12 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
+import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.autofill.AutofillValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +56,8 @@ import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -113,6 +118,8 @@ class TabImpl implements Tab {
 
     /** The view provided by {@link TabViewManager} to be shown on top of Content view. */
     private View mCustomView;
+
+    AutofillProvider mAutofillProvider;
 
     /**
      * The {@link TabViewManager} associated with this Tab that is responsible for managing custom
@@ -1088,6 +1095,46 @@ class TabImpl implements Tab {
         return mWebContentsDelegate;
     }
 
+    // Forwarded from TabViewAndroidDelegate.
+
+    /**
+     * Implementation of the {@link View#onProvideAutofillVirtualStructure(ViewStructure, int)}
+     * method for this tab. Noop if {@link AutofillProvider} isn't used on this tab.
+     *
+     * @see View#onProvideAutofillVirtualStructure(ViewStructure structure, int flags)
+     * @see ViewAndroidDelegate#onProvideAutofillVirtualStructure(ViewStructure structure, int
+     *     flags)
+     */
+    void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
+        if (mAutofillProvider != null) {
+            mAutofillProvider.onProvideAutoFillVirtualStructure(structure, flags);
+        }
+    }
+
+    /**
+     * Implementation of the {@link View#autofill(SparseArray))} method for this tab. Noop if {@link
+     * AutofillProvider} isn't used on this tab.
+     *
+     * @see View#autofill(SparseArray)
+     * @see ViewAndroidDelegate#autofill(SparseArray)
+     */
+    void autofill(final SparseArray<AutofillValue> values) {
+        if (mAutofillProvider != null) {
+            mAutofillProvider.autofill(values);
+        }
+    }
+
+    /**
+     * Check whether the platform can request a ViewStructure.
+     *
+     * @return iff the AutofillProvider should provide a ViewStructure when prompted.
+     */
+    boolean providesAutofillStructure() {
+        // TODO(b/326231439): Check pref and AutofillService!
+        return ChromeFeatureList.isEnabled(
+                AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
+    }
+
     // Forwarded from TabWebContentsDelegateAndroid.
 
     /**
@@ -1514,6 +1561,10 @@ class TabImpl implements Tab {
                                     this));
 
             mWebContents.notifyRendererPreferenceUpdate();
+            mContentView.setImportantForAutofill(
+                    prepareAutofillProvider(webContents)
+                            ? View.IMPORTANT_FOR_AUTOFILL_YES
+                            : View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
             TabHelpers.initWebContentsHelpers(this);
             notifyContentChanged();
         } finally {
@@ -1698,6 +1749,33 @@ class TabImpl implements Tab {
         return restored;
     }
 
+    /**
+     * Initializes the {@link AutofillProvider} so that it can provide a ViewStructure for the given
+     * WebContents. If the provider existed already, it's only assigned the new WebContents.
+     *
+     * @param newWebContents The webcontents to prepare the provider for.
+     * @return true if the the provider is available for the given WebContents.
+     */
+    private boolean prepareAutofillProvider(WebContents newWebContents) {
+        if (!providesAutofillStructure()) {
+            mAutofillProvider = null;
+            return false; // Autofill provider can't be prepared.
+        }
+        if (mAutofillProvider != null) {
+            mAutofillProvider.setWebContents(newWebContents);
+            return true; // Provider already existed. Swapping contents suffices.
+        }
+        // TODO(b/326233923): Call selectionController.setNonSelectionActionModeCallback?
+        mAutofillProvider =
+                new AutofillProvider(
+                        getContext(),
+                        mContentView,
+                        newWebContents,
+                        getContext().getString(R.string.app_name));
+        TabImplJni.get().initializeAutofillIfNecessary(mNativeTabAndroid);
+        return true;
+    }
+
     @CalledByNative
     @Override
     public boolean isCustomTab() {
@@ -1776,6 +1854,11 @@ class TabImpl implements Tab {
     }
 
     @VisibleForTesting
+    void setAutofillProvider(AutofillProvider autofillProvider) {
+        mAutofillProvider = autofillProvider;
+    }
+
+    @VisibleForTesting
     protected void setTitle(String title) {
         mTitle = title;
     }
@@ -1841,6 +1924,11 @@ class TabImpl implements Tab {
      */
     private final void destroyWebContents(boolean deleteNativeWebContents) {
         if (mWebContents == null) return;
+
+        if (mAutofillProvider != null) {
+            mAutofillProvider.destroy();
+            mAutofillProvider = null;
+        }
 
         mContentView.removeOnAttachStateChangeListener(mAttachStateChangeListener);
         mContentView = null;
@@ -1965,6 +2053,8 @@ class TabImpl implements Tab {
                 WebContents webContents,
                 TabWebContentsDelegateAndroidImpl delegate,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory);
+
+        void initializeAutofillIfNecessary(long nativeTabAndroid);
 
         void updateDelegates(
                 long nativeTabAndroid,

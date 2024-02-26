@@ -7,12 +7,15 @@ package org.chromium.ui.base;
 import android.content.ClipData;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewStructure;
+import android.view.autofill.AutofillValue;
 import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.CallSuper;
@@ -559,6 +562,29 @@ public class ViewAndroidDelegate {
                 mVerticalScrollDirectionChangeListeners) {
             listener.onVerticalScrollDirectionChanged(directionUp, currentScrollRatio);
         }
+    }
+
+    /**
+     * Forwards requests for a ViewStructure from the Android Autofill API to the implementing View.
+     *
+     * @see View#onProvideAutofillVirtualStructure(ViewStructure structure, int flags)
+     */
+    public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {}
+
+    /**
+     * Forwards autofillable values from the Android Autofill API to the implementing View.
+     *
+     * @see View#autofill(SparseArray)
+     */
+    public void autofill(final SparseArray<AutofillValue> values) {}
+
+    /**
+     * Check whether the Android can request a ViewStructure for Autofill.
+     *
+     * @return true iff an AutofillProvider provides a ViewStructure when prompted.
+     */
+    public boolean providesAutofillStructure() {
+        return false;
     }
 
     /** Destroy and clean up dependencies (e.g. drag state tracker if set). */

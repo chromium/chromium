@@ -148,6 +148,7 @@ class TabAndroid : public base::SupportsUserData {
       const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
       const base::android::JavaParamRef<jobject>&
           jcontext_menu_populator_factory);
+  void InitializeAutofillIfNecessary(JNIEnv* env);
   void UpdateDelegates(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
