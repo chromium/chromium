@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 
+import android.widget.CompoundButton;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
@@ -273,6 +275,15 @@ public class BookmarkSaveFlowTest {
                                                     .setProductClusterId(1234L)
                                                     .build());
                     mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
+
+                    doAnswer(
+                                    args -> {
+                                        ((Callback<Boolean>) args.getArgument(2)).onResult(true);
+                                        return null;
+                                    })
+                            .when(mMockPriceTrackingUtilsJni)
+                            .isBookmarkPriceTracked(any(), anyLong(), any());
+
                     mBookmarkSaveFlowCoordinator.show(
                             id,
                             /* fromHeuristicEntryPoint= */ true,
@@ -281,6 +292,16 @@ public class BookmarkSaveFlowTest {
                             meta.build());
                     return null;
                 });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    CompoundButton toggle =
+                            mBookmarkSaveFlowCoordinator
+                                    .getViewForTesting()
+                                    .findViewById(R.id.notification_switch);
+                    return toggle.isChecked();
+                });
+
         mRenderTestRule.render(
                 mBookmarkSaveFlowCoordinator.getViewForTesting(),
                 "bookmark_save_flow_shopping_list_item_from_heuristic");
@@ -300,6 +321,15 @@ public class BookmarkSaveFlowTest {
                                             ShoppingSpecifics.newBuilder()
                                                     .setProductClusterId(1234L));
                     mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
+
+                    doAnswer(
+                                    args -> {
+                                        ((Callback<Boolean>) args.getArgument(2)).onResult(false);
+                                        return null;
+                                    })
+                            .when(mMockPriceTrackingUtilsJni)
+                            .isBookmarkPriceTracked(any(), anyLong(), any());
+
                     mBookmarkSaveFlowCoordinator.show(
                             id,
                             /* fromHeuristicEntryPoint= */ false,
@@ -308,6 +338,7 @@ public class BookmarkSaveFlowTest {
                             meta.build());
                     return null;
                 });
+
         doAnswer(
                         (invocation) -> {
                             ((Callback<Boolean>) invocation.getArgument(3)).onResult(false);
@@ -324,6 +355,16 @@ public class BookmarkSaveFlowTest {
                 .when(mShoppingService)
                 .subscribe(any(CommerceSubscription.class), any());
         onView(withId(R.id.notification_switch)).perform(click());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    CompoundButton toggle =
+                            mBookmarkSaveFlowCoordinator
+                                    .getViewForTesting()
+                                    .findViewById(R.id.notification_switch);
+                    return !toggle.isChecked();
+                });
+
         mRenderTestRule.render(
                 mBookmarkSaveFlowCoordinator.getViewForTesting(),
                 "bookmark_save_flow_shopping_list_item_from_heuristic_save_failed");
