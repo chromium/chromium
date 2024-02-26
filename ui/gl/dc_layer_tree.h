@@ -121,10 +121,7 @@ class SolidColorSurfacePool final {
 // CommitAndClearPendingOverlays().
 class GL_EXPORT DCLayerTree {
  public:
-  using DelegatedInkRenderer =
-      DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
-                                   IDCompositionDelegatedInkTrail,
-                                   DCompositionInkTrailPoint>;
+  using DelegatedInkRenderer = DelegatedInkPointRendererGpu;
 
   DCLayerTree(bool disable_nv12_dynamic_textures,
               bool disable_vp_auto_hdr,

@@ -295,6 +295,7 @@ component("gl") {
       "dcomp_surface_registry.h",
       "debug_utils.cc",
       "debug_utils.h",
+      "delegated_ink_point_renderer_gpu.cc",
       "delegated_ink_point_renderer_gpu.h",
       "direct_composition_child_surface_win.cc",
       "direct_composition_child_surface_win.h",
