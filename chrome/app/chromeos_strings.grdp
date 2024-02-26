@@ -6919,8 +6919,8 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FALLBACK_OK" desc="Label for the office fallback dialog's OK button.">
     OK
   </message>
-  <message name="IDS_OFFICE_FALLBACK_OPEN_WITH_OFFLINE_EDITOR" desc="Label for the button that uses the offline editor fallback to open the office file.">
-    Open in offline editor
+  <message name="IDS_OFFICE_FALLBACK_OPEN_IN_BASIC_EDITOR" desc="Label for the button that uses the basic fallback editor to open the office file.">
+    Open in basic editor
   </message>
 
   <message name="IDS_OFFICE_FALLBACK_TITLE_OFFLINE" desc="Title for a dialog that appears when an office file is unable to be opened due to the system being offline.">
@@ -6930,7 +6930,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> isn’t available offline.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is offline.">
-    Check your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+    Check your internet connection and choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_TITLE_METERED" desc="Title for a dialog that appears when an office file is unable to be uploaded to Google Drive due to the system being on a metered network (network where bandwidth usage incurs cost to the user).">
     Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> while on a metered connection
@@ -6939,7 +6939,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Can't upload files while on a metered connection.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is on a metered network (network where bandwidth usage incurs cost to the user).">
-    Change your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+    Change your internet connection and choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE" desc="Title for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">
     Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when Google Drive is not available
@@ -6948,16 +6948,16 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> requires Google Drive to be available.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DISABLE_DRIVE_PREFERENCE" desc="Office Fallback dialog instructions for the choices (buttons) the user has available when Google Drive is disabled in settings.">
-    Try enabling Google Drive in Settings and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+    Try enabling Google Drive in Settings and choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_REASON_DRIVE_DISABLED_FOR_ACCOUNT" desc="Explanation for a dialog that appears when Google Drive is not available for the account type.">
     Google Drive is disabled for this account type.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT" desc="Office Fallback dialog instructions for the choices (buttons) the user has available when Google Drive is not available for the account type.">
-    Choose "Open in offline editor" to use limited view and editing options.
+    Choose "Open in basic editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS" desc="Office Fallback dialog instructions for the choices (buttons) the user has available to open the office file.">
-    Choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+    Choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
   </message>
 
   <!-- Office file handler selection dialog -->

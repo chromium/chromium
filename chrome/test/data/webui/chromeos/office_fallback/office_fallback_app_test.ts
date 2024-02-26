@@ -10,6 +10,13 @@ import type {OfficeFallbackElement} from 'chrome://office-fallback/office_fallba
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
+interface ProxyArgs {
+  titleText: string;
+  reasonMessage: string;
+  instructionsMessage: string;
+  enableRetryOption: boolean;
+  enableQuickOfficeOption: boolean;
+}
 
 /**
  * A test OfficeFallbackBrowserProxy implementation that enables to mock various
@@ -19,16 +26,9 @@ class OfficeFallbackTestBrowserProxy implements OfficeFallbackBrowserProxy {
   handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   dialogArgs: string;
 
-  constructor(enableRetryOption: boolean, enableQuickOfficeOption: boolean) {
+  constructor(args: ProxyArgs) {
     this.handler = TestMock.fromClass(PageHandlerRemote);
     // Creating JSON string as in OfficeFallbackDialog::GetDialogArgs().
-    const args = {
-      titleText: 'a title',
-      reasonMessage: 'a reason',
-      instructionsMessage: 'an instruction',
-      enableRetryOption: enableRetryOption,
-      enableQuickOfficeOption: enableQuickOfficeOption,
-    };
     this.dialogArgs = JSON.stringify(args);
   }
 
@@ -47,10 +47,17 @@ suite('<office-fallback>', () => {
   // called.
   let testProxy: OfficeFallbackTestBrowserProxy;
 
-  const setUp =
-      async (enableRetryOption = true, enableQuickOfficeOption = true) => {
-    testProxy = new OfficeFallbackTestBrowserProxy(
-        enableRetryOption, enableQuickOfficeOption);
+  const setUp = async (
+      enableRetryOption = true, enableQuickOfficeOption = true,
+      reasonMessage = 'a reason') => {
+    const dialogArgs: ProxyArgs = {
+      titleText: 'a title',
+      reasonMessage: reasonMessage,
+      instructionsMessage: 'an instruction',
+      enableRetryOption: enableRetryOption,
+      enableQuickOfficeOption: enableQuickOfficeOption,
+    };
+    testProxy = new OfficeFallbackTestBrowserProxy(dialogArgs);
     OfficeFallbackBrowserProxy.setInstance(testProxy);
 
     // Creates and attaches the <office-fallback> element to the DOM tree.
@@ -123,7 +130,7 @@ suite('<office-fallback>', () => {
    * Tests that clicking the "quick office" button triggers the right `close`
    * mojo request.
    */
-  test('Open in offline editor button', async () => {
+  test('Open in basic editor button', async () => {
     await setUp();
 
     officeFallbackApp.$('#quick-office-button').click();

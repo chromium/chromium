@@ -67,6 +67,9 @@ export class OfficeFallbackElement extends HTMLElement {
     if (!this.enableQuickOfficeOption) {
       this.$('#quick-office-button')!.style.display = 'none';
     }
+    if (this.reasonMessage === '') {
+      this.$('#reason-message')!.style.display = 'none';
+    }
   }
 
   /**
@@ -79,7 +82,6 @@ export class OfficeFallbackElement extends HTMLElement {
       const args = JSON.parse(dialogArgs);
       assert(args);
       assert(args.titleText);
-      assert(args.reasonMessage);
       assert(args.instructionsMessage);
       this.titleText = args.titleText;
       this.reasonMessage = args.reasonMessage;

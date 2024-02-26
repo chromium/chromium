@@ -37,8 +37,8 @@ OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
       {"officeFallbackCancel", IDS_OFFICE_FALLBACK_CANCEL},
       {"officeFallbackTryAgain", IDS_OFFICE_FALLBACK_TRY_AGAIN},
       {"officeFallbackOk", IDS_OFFICE_FALLBACK_OK},
-      {"officeFallbackOpenWithOfflineEditor",
-       IDS_OFFICE_FALLBACK_OPEN_WITH_OFFLINE_EDITOR},
+      {"officeFallbackOpenInBasicEditor",
+       IDS_OFFICE_FALLBACK_OPEN_IN_BASIC_EDITOR},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
