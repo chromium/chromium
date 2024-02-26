@@ -19,6 +19,8 @@ class CertProvisioningSchedulerUserService : public KeyedService {
   explicit CertProvisioningSchedulerUserService(Profile* profile);
   ~CertProvisioningSchedulerUserService() override;
 
+  void Shutdown() override;
+
   CertProvisioningScheduler* scheduler() { return scheduler_.get(); }
 
  private:

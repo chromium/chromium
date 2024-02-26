@@ -23,6 +23,15 @@ CertProvisioningSchedulerUserService::CertProvisioningSchedulerUserService(
 CertProvisioningSchedulerUserService::~CertProvisioningSchedulerUserService() =
     default;
 
+void CertProvisioningSchedulerUserService::Shutdown() {
+  // The scheduler uses invalidations and depends on
+  // `ProfileInvalidationProvider`. Invalidation service is destroyed on
+  // Shutdown call and expects all invalidators to be unregistered before that.
+  // Destroy `scheduler_` and its invalidators on service's shutdown to fulfill
+  // this requirement.
+  scheduler_.reset();
+}
+
 // ================ CertProvisioningSchedulerUserServiceFactory ================
 
 // static
