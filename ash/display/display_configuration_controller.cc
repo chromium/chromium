@@ -164,8 +164,13 @@ void DisplayConfigurationController::SetDisplayRotation(
 
 display::Display::Rotation DisplayConfigurationController::GetTargetRotation(
     int64_t display_id) {
-  if (!display_manager_->IsDisplayIdValid(display_id))
+  // The display for `display_id` may exist but there may be no root window for
+  // it, such as in the case of Unified Display. Query for the target rotation
+  // only if the root window exists.
+  if (!display_manager_->IsDisplayIdValid(display_id) ||
+      !Shell::GetRootWindowForDisplayId(display_id)) {
     return display::Display::ROTATE_0;
+  }
 
   ScreenRotationAnimator* animator =
       GetScreenRotationAnimatorForDisplay(display_id);
