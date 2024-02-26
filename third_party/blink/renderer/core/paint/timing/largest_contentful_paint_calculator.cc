@@ -7,7 +7,10 @@
 #include "base/check.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
@@ -154,7 +157,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
 
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
         kTraceCategories, kLCPCandidate, largest_image->paint_time, "data",
-        ImageCandidateTraceData(largest_image, is_triggered_by_soft_navigation),
+        ImageCandidateTraceData(largest_image, is_triggered_by_soft_navigation,
+                                image_element),
         "frame", GetFrameIdForTracing(window->GetFrame()));
   }
 }
@@ -362,7 +366,8 @@ LargestContentfulPaintCalculator::TextCandidateTraceData(
 std::unique_ptr<TracedValue>
 LargestContentfulPaintCalculator::ImageCandidateTraceData(
     const ImageRecord* largest_image,
-    bool is_triggered_by_soft_navigation) {
+    bool is_triggered_by_soft_navigation,
+    Element* image_element) {
   auto value = std::make_unique<TracedValue>();
   value->SetString("type", "image");
   value->SetInteger("nodeId", static_cast<int>(largest_image->node_id));
@@ -386,6 +391,15 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
   value->SetDouble("imageLoadEnd",
                    window_performance_->MonotonicTimeToDOMHighResTimeStamp(
                        largest_image->media_timing->LoadEnd()));
+
+  String loading_attr = "";
+
+  if (HTMLImageElement* html_image_element =
+          DynamicTo<HTMLImageElement>(image_element)) {
+    loading_attr =
+        html_image_element->FastGetAttribute(html_names::kLoadingAttr);
+  }
+  value->SetString("loadingAttr", loading_attr);
 
   return value;
 }

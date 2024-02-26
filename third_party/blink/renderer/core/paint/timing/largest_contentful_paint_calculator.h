@@ -74,7 +74,8 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
       bool is_triggered_by_soft_navigation);
   std::unique_ptr<TracedValue> ImageCandidateTraceData(
       const ImageRecord* largest_image,
-      bool is_triggered_by_soft_navigation);
+      bool is_triggered_by_soft_navigation,
+      Element* image_element);
 
   Member<WindowPerformance> window_performance_;
 

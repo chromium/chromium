@@ -293,6 +293,62 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 }
 #endif
 
+class LCPLazyLoadingImageTest : public MetricIntegrationTest {
+ public:
+  base::Value::Dict setUpTraceEvent(std::string test_url) {
+    auto waiter =
+        std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+            web_contents());
+
+    Start();
+    StartTracing({"loading"});
+    Load(test_url);
+
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLargestContentfulPaint);
+    waiter->Wait();
+
+    std::unique_ptr<TraceAnalyzer> trace_analyzer = StopTracingAndAnalyze();
+    TraceEventVector candidate_events;
+    trace_analyzer->FindEvents(
+        Query::EventNameIs("largestContentfulPaint::Candidate"),
+        &candidate_events);
+
+    return candidate_events[0]->GetKnownArgAsDict("data");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LCPLazyLoadingImageTest,
+                       LargestContentfulPaint_EventLazyLoadingImage_Enabled) {
+  std::string test_url =
+      "/lcp_breakdown_timings_native_lazy_loading_images.html";
+
+  const base::Value::Dict data = setUpTraceEvent(test_url);
+  const std::string* loading_attr = data.FindString("loadingAttr");
+  ASSERT_TRUE(loading_attr);
+  EXPECT_EQ(*loading_attr, "lazy");
+}
+
+IN_PROC_BROWSER_TEST_F(LCPLazyLoadingImageTest,
+                       LargestContentfulPaint_EventLazyLoadingImage_Unset) {
+  std::string test_url = "/iframe_with_image.html";
+
+  const base::Value::Dict data = setUpTraceEvent(test_url);
+  const std::string* loading_attr = data.FindString("loadingAttr");
+  ASSERT_TRUE(loading_attr);
+  EXPECT_EQ(*loading_attr, "");
+}
+
+IN_PROC_BROWSER_TEST_F(LCPLazyLoadingImageTest,
+                       LargestContentfulPaint_EventLazyLoadingImage_Video) {
+  std::string test_url = "/is_video.html";
+
+  const base::Value::Dict data = setUpTraceEvent(test_url);
+  const std::string* loading_attr = data.FindString("loadingAttr");
+  ASSERT_TRUE(loading_attr);
+  EXPECT_EQ(*loading_attr, "");
+}
+
 class PageViewportInLCPTest : public MetricIntegrationTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
