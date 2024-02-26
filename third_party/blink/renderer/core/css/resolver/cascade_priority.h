@@ -18,8 +18,11 @@ namespace blink {
 //
 // [1] https://www.w3.org/TR/css-cascade-3/#cascade-origin
 inline uint32_t EncodeOriginImportance(CascadeOrigin origin, bool important) {
-  uint8_t important_xor = (static_cast<uint8_t>(!important) - 1) & 0xF;
-  return static_cast<uint32_t>(origin) ^ important_xor;
+  if (important) {
+    return static_cast<uint32_t>(origin) ^ 0xF;
+  } else {
+    return static_cast<uint32_t>(origin);
+  }
 }
 
 // Tree order bits are flipped for important declarations to reverse the
@@ -27,8 +30,11 @@ inline uint32_t EncodeOriginImportance(CascadeOrigin origin, bool important) {
 //
 // [1] https://drafts.csswg.org/css-scoping/#shadow-cascading
 inline uint32_t EncodeTreeOrder(uint16_t tree_order, bool important) {
-  uint16_t important_xor = static_cast<uint16_t>(!important) - 1;
-  return static_cast<uint32_t>(tree_order) ^ important_xor;
+  if (important) {
+    return tree_order ^ 0xFFFF;
+  } else {
+    return tree_order;
+  }
 }
 
 // Layer order bits are flipped for important declarations to reverse the
@@ -36,8 +42,11 @@ inline uint32_t EncodeTreeOrder(uint16_t tree_order, bool important) {
 //
 // [1] https://drafts.csswg.org/css-cascade-5/#cascade-layering
 inline uint64_t EncodeLayerOrder(uint16_t layer_order, bool important) {
-  uint16_t important_xor = static_cast<uint16_t>(!important) - 1;
-  return static_cast<uint64_t>(layer_order) ^ important_xor;
+  if (important) {
+    return layer_order ^ 0xFFFF;
+  } else {
+    return layer_order;
+  }
 }
 
 // The CascadePriority class encapsulates a subset of the cascading criteria
