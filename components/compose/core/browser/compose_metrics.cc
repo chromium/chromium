@@ -335,21 +335,6 @@ std::optional<EvalLocation> GetEvalLocationFromEvents(
 
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    const ComposeSessionEvents& session_events) {
-  SessionEvalLocation session_eval_location =
-      GetSessionEvalLocationFromEvents(session_events);
-  std::optional<EvalLocation> eval_location =
-      GetEvalLocationFromEvents(session_events);
-  base::UmaHistogramEnumeration("Compose.Session.EvalLocation",
-                                session_eval_location);
-
-  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
-  if (eval_location) {
-    base::UmaHistogramEnumeration(
-        base::StrCat({"Compose.", EvalLocationString(*eval_location),
-                      ".Session.CloseReason"}),
-        reason);
-  }
-
   std::string status;
   switch (reason) {
     case ComposeSessionCloseReason::kAcceptedSuggestion:
@@ -362,46 +347,47 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
       status = ".Ignored";
   }
 
+  // Report all session-agnostic metrics.
+  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
   base::UmaHistogramCounts1000(kComposeSessionComposeCount + status,
                                session_events.compose_count);
+  base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,
+                               session_events.dialog_shown_count);
+  base::UmaHistogramCounts1000(kComposeSessionUndoCount + status,
+                               session_events.undo_count);
+  base::UmaHistogramCounts1000(kComposeSessionUpdateInputCount + status,
+                               session_events.update_input_count);
+  LogComposeSessionEventCounts(std::nullopt, session_events);
+
+  // Report all eval location specific metrics.
+  SessionEvalLocation session_eval_location =
+      GetSessionEvalLocationFromEvents(session_events);
+  std::optional<EvalLocation> eval_location =
+      GetEvalLocationFromEvents(session_events);
+  base::UmaHistogramEnumeration("Compose.Session.EvalLocation",
+                                session_eval_location);
   if (eval_location) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Compose.", EvalLocationString(*eval_location),
+                      ".Session.CloseReason"}),
+        reason);
     base::UmaHistogramCounts1000(
         base::StrCat({"Compose.", EvalLocationString(*eval_location),
                       ".Session.ComposeCount", status}),
         session_events.compose_count);
-  }
-
-  base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,
-                               session_events.dialog_shown_count);
-  if (eval_location) {
     base::UmaHistogramCounts1000(
         base::StrCat({"Compose.", EvalLocationString(*eval_location),
                       ".Session.DialogShownCount", status}),
         session_events.dialog_shown_count);
-  }
-
-  base::UmaHistogramCounts1000(kComposeSessionUndoCount + status,
-                               session_events.undo_count);
-  if (eval_location) {
     base::UmaHistogramCounts1000(
         base::StrCat({"Compose.", EvalLocationString(*eval_location),
                       ".Session.UndoCount", status}),
         session_events.undo_count);
-  }
-
-  base::UmaHistogramCounts1000(kComposeSessionUpdateInputCount + status,
-                               session_events.update_input_count);
-
-  LogComposeSessionEventCounts(std::nullopt, session_events);
-  if (eval_location) {
-    LogComposeSessionEventCounts(eval_location, session_events);
-  }
-
-  if (eval_location) {
     base::UmaHistogramCounts1000(
         base::StrCat({"Compose.", EvalLocationString(*eval_location),
                       ".Session.SubmitEditCount", status}),
         session_events.update_input_count);
+    LogComposeSessionEventCounts(eval_location, session_events);
   }
 }
 
