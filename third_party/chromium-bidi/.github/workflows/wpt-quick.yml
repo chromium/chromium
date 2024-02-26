@@ -54,7 +54,7 @@ jobs:
         total_chunks: [6]
         this_chunk: [1, 2, 3, 4, 5, 6]
         exclude:
-          # Don't run headful mapper, as it takes 7 minutes. It will be checked in post-commit stage.
+          # Don't run headful mapper, as it takes too long.
           - kind: mapper
             head: headful
     steps:

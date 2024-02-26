@@ -79,8 +79,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - name: Clean up WPT metadata
-        run: rm -rf wpt-metadata/*
+      - run: rm -rf wpt-metadata/chromedriver/headless/*
+      - run: rm -rf wpt-metadata/chromedriver/headful/*
+      - run: rm -rf wpt-metadata/mapper/headless/*
       - uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: chromedriver-headless-wpt-metadata
@@ -93,10 +94,6 @@ jobs:
         with:
           name: mapper-headless-wpt-metadata
           path: wpt-metadata/mapper/headless
-      - uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
-        with:
-          name: mapper-headful-wpt-metadata
-          path: wpt-metadata/mapper/headful
       - name: Auto-commit WPT expectations
         if: (success() || failure()) && github.event.inputs.auto-commit == 'true'
         uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5.0.0
@@ -112,6 +109,10 @@ jobs:
       matrix:
         kind: [chromedriver, mapper]
         head: [headful, headless]
+        exclude:
+          # Don't run headful mapper, as it takes too long.
+          - kind: mapper
+            head: headful
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
