@@ -1330,6 +1330,17 @@ targets.mixin(
     ),
 )
 
+# Pixel 8
+targets.mixin(
+    name = "shiba",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_type": "shiba",
+            "os": "Android",
+        },
+    ),
+)
+
 targets.mixin(
     name = "out_dir_arg",
     args = [

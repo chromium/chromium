@@ -1116,6 +1116,14 @@
       },
     },
   },
+  'shiba': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'shiba',
+        'os': 'Android',
+      },
+    },
+  },
   'skia_gold_test': {
     'args': [
       '--git-revision=${got_revision}',
