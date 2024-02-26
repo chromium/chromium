@@ -19,7 +19,6 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -39,13 +38,10 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
                                    /*default_scale_cancellation=*/true,
                                    /*supports_floated_state=*/false) {
   controller_surface_ = std::move(surface);
-  buffer_ = std::make_unique<exo::Buffer>(
-      aura::Env::GetInstance()
-          ->context_factory()
-          ->GetGpuMemoryBufferManager()
-          ->CreateGpuMemoryBuffer({1, 1}, gfx::BufferFormat::RGBA_8888,
-                                  gfx::BufferUsage::GPU_READ,
-                                  gpu::kNullSurfaceHandle, nullptr));
+  buffer_ = exo::Buffer::CreateBuffer(
+      gfx::Size(1, 1), gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
+      "ArcGhostWindowShellSurface", gpu::kNullSurfaceHandle,
+      /*shutdown_event=*/nullptr);
   SetApplicationId(application_id.c_str());
   controller_surface_->Attach(buffer_.get());
   controller_surface_->SetFrame(exo::SurfaceFrameType::NORMAL);

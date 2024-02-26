@@ -30,6 +30,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -564,6 +565,22 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
   return std::make_unique<Buffer>(std::move(gpu_memory_buffer), texture_target,
                                   query_type, use_zero_copy,
                                   is_overlay_candidate, y_invert);
+}
+
+// static
+std::unique_ptr<Buffer> Buffer::CreateBuffer(
+    gfx::Size buffer_size,
+    gfx::BufferFormat buffer_format,
+    gfx::BufferUsage buffer_usage,
+    base::StringPiece debug_label,
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
+  return std::make_unique<Buffer>(
+      aura::Env::GetInstance()
+          ->context_factory()
+          ->GetGpuMemoryBufferManager()
+          ->CreateGpuMemoryBuffer(buffer_size, buffer_format, buffer_usage,
+                                  surface_handle, shutdown_event));
 }
 
 bool Buffer::ProduceTransferableResource(

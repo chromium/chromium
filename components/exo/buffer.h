@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "media/media_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -39,6 +40,7 @@ class Buffer {
          bool use_zero_copy,
          bool is_overlay_candidate,
          bool y_invert);
+
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
   virtual ~Buffer();
@@ -56,6 +58,14 @@ class Buffer {
       bool use_zero_copy,
       bool is_overlay_candidate,
       bool y_invert);
+
+  static std::unique_ptr<Buffer> CreateBuffer(
+      gfx::Size buffer_size,
+      gfx::BufferFormat buffer_format,
+      gfx::BufferUsage buffer_usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle,
+      base::WaitableEvent* shutdown_event);
 
   const gfx::GpuMemoryBuffer* gfx_buffer() const {
     return gpu_memory_buffer_.get();
