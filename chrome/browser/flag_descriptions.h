@@ -3465,6 +3465,9 @@ extern const char kEnterpriseReportingUIDescription[];
 extern const char kPermissiveUsbPassthroughName[];
 extern const char kPermissiveUsbPassthroughDescription[];
 
+extern const char kCameraAngleBackendName[];
+extern const char kCameraAngleBackendDescription[];
+
 extern const char kCrostiniContainerInstallName[];
 extern const char kCrostiniContainerInstallDescription[];
 

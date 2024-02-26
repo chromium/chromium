@@ -1039,6 +1039,14 @@
     "expiry_milestone": 119
   },
   {
+    "name": "camera-angle-backend",
+    "owners": [
+      "rjodin@chromium.org",
+      "chromeos-gfx-gpu@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "camera-app-autoqr-detection",
     "owners": [ "dorahkim@chromium.org", "chromeos-camera-app-eng@google.com" ],
     "expiry_milestone": 125

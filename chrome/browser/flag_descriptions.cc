@@ -6003,6 +6003,10 @@ const char kPermissiveUsbPassthroughName[] =
 const char kPermissiveUsbPassthroughDescription[] =
     "When enabled, applies more permissive rules passthrough of USB devices.";
 
+const char kCameraAngleBackendName[] = "Camera service ANGLE backend";
+const char kCameraAngleBackendDescription[] =
+    "When enabled, uses ANGLE as the GL driver in the camera service.";
+
 const char kCrostiniContainerInstallName[] =
     "Debian version for new Crostini containers";
 const char kCrostiniContainerInstallDescription[] =
