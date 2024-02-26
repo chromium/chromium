@@ -823,6 +823,8 @@ void RecordStartupMetrics() {
 
   base::UmaHistogramBoolean("Windows.HasHighResolutionTimeTicks",
                             base::TimeTicks::IsHighResolution());
+  base::UmaHistogramBoolean("Windows.HasThreadTicks",
+                            base::ThreadTicks::IsSupported());
 
   // Determine whether parallel DLL loading is enabled for the browser process
   // executable. This is disabled by default on fresh Windows installations, but

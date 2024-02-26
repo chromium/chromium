@@ -90,6 +90,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.HasThreadTicks" enum="Boolean"
+    expires_after="2025-02-23">
+  <owner>olivierli@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The value of ThreadTicks::IsSupported(). Reported once per browser session,
+    on startup.
+  </summary>
+</histogram>
+
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
     expires_after="2024-07-21">
   <owner>olivierli@chromium.org</owner>
