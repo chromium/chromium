@@ -96,9 +96,9 @@ CloudFileSystem::CloudFileSystem(
 
 CloudFileSystem::CloudFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system,
-    ContentCache* content_cache)
-    : file_system_(std::move(file_system)), content_cache_(content_cache) {
-  if (content_cache_) {
+    CacheManager* cache_manager)
+    : file_system_(std::move(file_system)), cache_manager_(cache_manager) {
+  if (cache_manager_) {
     // Add watcher to keep content cache up to date. Notifications are received
     // though Notify() so no notification_callback is needed.
     AddWatcher(GetContentCacheURL(), RootFilePath(),
@@ -111,7 +111,7 @@ CloudFileSystem::CloudFileSystem(
 }
 
 CloudFileSystem::~CloudFileSystem() {
-  if (content_cache_) {
+  if (cache_manager_) {
     RemoveWatcher(GetContentCacheURL(), RootFilePath(),
                   /*recursive=*/true,
                   base::BindOnce([](base::File::Error result) {

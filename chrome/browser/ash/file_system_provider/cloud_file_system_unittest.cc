@@ -47,11 +47,11 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test {
             with_content_cache ? CacheType::LRU : CacheType::NONE);
     std::unique_ptr<ProvidedFileSystemInterface> provided_file_system =
         std::make_unique<FakeProvidedFileSystem>(*file_system_info.get());
-    std::unique_ptr<ContentCache> content_cache =
-        std::make_unique<ContentCache>();
+    std::unique_ptr<CacheManager> cache_manager =
+        std::make_unique<CacheManager>();
     return std::make_unique<CloudFileSystem>(
         std::move(provided_file_system),
-        with_content_cache ? content_cache.get() : nullptr);
+        with_content_cache ? cache_manager.get() : nullptr);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -59,9 +59,9 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test {
 };
 
 // Test that there always exists a self-added recursive watcher on root when
-// there is a ContentCache.
+// there is a CacheManager.
 TEST_F(FileSystemProviderCloudFileSystemTest,
-       WatcherOnRootIsAddedWhenContentCacheExists) {
+       WatcherOnRootIsAddedWhenCacheManagerExists) {
   std::unique_ptr<CloudFileSystem> cloud_file_system =
       CreateCloudFileSystem(/*with_content_cache=*/true);
 
@@ -73,9 +73,9 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 }
 
 // Test that there is not a recursive watcher on root when there isn't a
-// ContentCache.
+// CacheManager.
 TEST_F(FileSystemProviderCloudFileSystemTest,
-       WatcherOnRootIsNotAddedWhenContentCacheDoesNotExist) {
+       WatcherOnRootIsNotAddedWhenCacheManagerDoesNotExist) {
   std::unique_ptr<CloudFileSystem> cloud_file_system =
       CreateCloudFileSystem(/*with_content_cache=*/false);
 

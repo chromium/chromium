@@ -97,7 +97,7 @@ std::unique_ptr<ProvidedFileSystemInterface>
 ExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
     const ProvidedFileSystemInfo& file_system_info,
-    ContentCache* content_cache) {
+    CacheManager* cache_manager) {
   DCHECK(profile);
   if (!chromeos::features::IsFileSystemProviderCloudFileSystemEnabled()) {
     return std::make_unique<ThrottledFileSystem>(
@@ -114,7 +114,7 @@ ExtensionProvider::CreateProvidedFileSystem(
     return std::make_unique<ThrottledFileSystem>(
         std::make_unique<CloudFileSystem>(
             std::make_unique<ProvidedFileSystem>(profile, file_system_info),
-            content_cache));
+            cache_manager));
   }
   // CloudFileSystem without cache.
   return std::make_unique<ThrottledFileSystem>(

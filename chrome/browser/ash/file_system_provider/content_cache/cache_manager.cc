@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 
 namespace ash::file_system_provider {
 
-ContentCache::ContentCache() = default;
+CacheManager::CacheManager() = default;
 
-ContentCache::~ContentCache() = default;
+CacheManager::~CacheManager() = default;
 
 }  // namespace ash::file_system_provider

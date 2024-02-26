@@ -18,7 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -211,7 +211,7 @@ class Service : public KeyedService,
       file_system_map_;
   std::map<std::string, FileSystemKey> mount_point_name_to_key_map_;
   std::unique_ptr<RegistryInterface> registry_;
-  std::unique_ptr<ContentCache> content_cache_;
+  std::unique_ptr<CacheManager> cache_manager_;
   base::ThreadChecker thread_checker_;
   ProviderMap provider_map_;
 

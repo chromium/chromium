@@ -31,7 +31,7 @@ class FakeExtensionProvider : public ProviderInterface {
   std::unique_ptr<ProvidedFileSystemInterface> CreateProvidedFileSystem(
       Profile* profile,
       const ProvidedFileSystemInfo& file_system_info,
-      ContentCache* content_cache) override;
+      CacheManager* cache_manager) override;
   const Capabilities& GetCapabilities() const override;
   const ProviderId& GetId() const override;
   const std::string& GetName() const override;

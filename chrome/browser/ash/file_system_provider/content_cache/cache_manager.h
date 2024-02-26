@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_H_
-#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_MANAGER_H_
+#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_MANAGER_H_
 
 namespace ash::file_system_provider {
 
@@ -12,16 +12,16 @@ namespace ash::file_system_provider {
 // behind both the `FileSystemProviderCloudFileSystem` and
 // `FileSystemProviderContentCache` flags and only enabled on ODFS when the
 // flags are toggled on.
-class ContentCache {
+class CacheManager {
  public:
-  ContentCache();
+  CacheManager();
 
-  ContentCache(const ContentCache&) = delete;
-  ContentCache& operator=(const ContentCache&) = delete;
+  CacheManager(const CacheManager&) = delete;
+  CacheManager& operator=(const CacheManager&) = delete;
 
-  ~ContentCache();
+  ~CacheManager();
 };
 
 }  // namespace ash::file_system_provider
 
-#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_MANAGER_H_

@@ -421,7 +421,7 @@ std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
 FakeExtensionProviderOneDrive::CreateProvidedFileSystem(
     Profile* profile,
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-    ash::file_system_provider::ContentCache* content_cache) {
+    ash::file_system_provider::CacheManager* cache_manager) {
   DCHECK(profile);
   std::unique_ptr<FakeProvidedFileSystemOneDrive> fake_provided_file_system =
       std::make_unique<FakeProvidedFileSystemOneDrive>(file_system_info);

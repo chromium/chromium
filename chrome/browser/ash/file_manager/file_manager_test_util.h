@@ -218,7 +218,7 @@ class FakeExtensionProviderOneDrive
   CreateProvidedFileSystem(
       Profile* profile,
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-      ash::file_system_provider::ContentCache* content_cache) override;
+      ash::file_system_provider::CacheManager* cache_manager) override;
 
   // Calls `request_mount_callback` if set.
   bool RequestMount(

@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
-#include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -41,7 +41,7 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
       std::unique_ptr<ProvidedFileSystemInterface> file_system);
 
   CloudFileSystem(std::unique_ptr<ProvidedFileSystemInterface> file_system,
-                   ContentCache* content_cache);
+                  CacheManager* cache_manager);
 
   CloudFileSystem(const CloudFileSystem&) = delete;
   CloudFileSystem& operator=(const CloudFileSystem&) = delete;
@@ -137,7 +137,7 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   const std::string GetFileSystemId() const;
   void OnTimer();
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
-  raw_ptr<ContentCache, DanglingUntriaged> content_cache_;  // Not owned.
+  raw_ptr<CacheManager, DanglingUntriaged> cache_manager_;  // Not owned.
   base::MetronomeTimer timer_;
   int file_manager_watchers_ = 0;
 
