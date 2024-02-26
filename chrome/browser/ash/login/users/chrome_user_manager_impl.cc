@@ -43,8 +43,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/signin/auth_error_observer.h"
-#include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
@@ -334,12 +332,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
     profile_manager_observation_.Observe(profile_manager);
   }
 
-  auto* session_manager = session_manager::SessionManager::Get();
-  // SessionManager might not exist in unit tests.
-  if (session_manager) {
-    session_observation_.Observe(session_manager);
-  }
-
   // Since we're in ctor postpone any actions till this is fully created.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -462,7 +454,6 @@ void ChromeUserManagerImpl::Shutdown() {
 
   multi_user_sign_in_policy_controller_.Shutdown();
   cloud_external_data_policy_handlers_.clear();
-  session_observation_.Reset();
 }
 
 MultiUserSignInPolicyController*
@@ -586,25 +577,6 @@ void ChromeUserManagerImpl::SaveUserDisplayName(
 
 void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
   cloud_external_data_policy_handlers_.clear();
-}
-
-void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (IsUserLoggedIn() && !IsLoggedInAsGuest() && !IsLoggedInAsAnyKioskApp()) {
-    if (!profile->IsOffTheRecord()) {
-      if (AuthErrorObserver::ShouldObserve(profile)) {
-        AuthErrorObserver* sync_observer =
-            AuthErrorObserverFactory::GetInstance()->GetForProfile(profile);
-        sync_observer->StartObserving();
-      }
-      auto* user =
-          user_manager::UserManager::Get()->FindUserAndModify(account_id);
-      CHECK(user);
-      multi_user_sign_in_policy_controller_.StartObserving(user);
-    }
-  }
-  system::UpdateSystemTimezone(profile);
-  UpdateUserTimeZoneRefresher(profile);
 }
 
 void ChromeUserManagerImpl::OwnershipStatusChanged() {
@@ -1137,6 +1109,12 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
     profile_observations_.push_back(std::move(observation));
   }
 
+  // TODO(b/278643115): Merge into UserManager::OnUserProfileCreated().
+  if (user && IsUserLoggedIn() && !IsLoggedInAsGuest() &&
+      !IsLoggedInAsAnyKioskApp() && !profile->IsOffTheRecord()) {
+    multi_user_sign_in_policy_controller_.StartObserving(user);
+  }
+
   // If there is pending user switch, do it now.
   if (GetPendingUserSwitchID().is_valid()) {
     SwitchActiveUser(GetPendingUserSwitchID());
@@ -1199,36 +1177,6 @@ void ChromeUserManagerImpl::UpdateNumberOfUsers() {
 
   static crash_reporter::CrashKeyString<64> crash_key("num-users");
   crash_key.Set(base::NumberToString(GetLoggedInUsers().size()));
-}
-
-void ChromeUserManagerImpl::UpdateUserTimeZoneRefresher(Profile* profile) {
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user == nullptr) {
-    return;
-  }
-
-  // In Multi-Profile mode only primary user settings are in effect.
-  if (user != user_manager::UserManager::Get()->GetPrimaryUser()) {
-    return;
-  }
-
-  if (!IsUserLoggedIn()) {
-    return;
-  }
-
-  // Timezone auto refresh is disabled for Guest and OffTheRecord
-  // users, but enabled for Kiosk mode.
-  if (IsLoggedInAsGuest() || profile->IsOffTheRecord()) {
-    g_browser_process->platform_part()
-        ->GetTimezoneResolverManager()
-        ->GetResolver()
-        ->Stop();
-    return;
-  }
-  g_browser_process->platform_part()
-      ->GetTimezoneResolverManager()
-      ->UpdateTimezoneResolver();
 }
 
 void ChromeUserManagerImpl::SetUserAffiliation(

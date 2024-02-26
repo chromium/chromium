@@ -190,7 +190,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
               &UpsertStubUserToAccountManager, user_profile, user));
     }
 
-    user_session_mgr->NotifyUserProfileLoaded(user_profile, user);
+    user_session_mgr->OnUserProfileLoaded(user_profile, user);
 
     // This call will set session state to SESSION_STATE_ACTIVE (same one).
     session_manager::SessionManager::Get()->SessionStarted();

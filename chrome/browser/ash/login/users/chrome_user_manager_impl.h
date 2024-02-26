@@ -27,8 +27,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "components/account_id/account_id.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
@@ -50,7 +48,6 @@ class SessionLengthLimiter;
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
     : public user_manager::UserManagerBase,
-      public session_manager::SessionManagerObserver,
       public DeviceSettingsService::Observer,
       public policy::DeviceLocalAccountPolicyService::Observer,
       public policy::MinimumVersionPolicyHandler::Observer,
@@ -95,9 +92,6 @@ class ChromeUserManagerImpl
   void SetUserAffiliation(
       const AccountId& account_id,
       const base::flat_set<std::string>& user_affiliation_ids) override;
-
-  // session_manager::SessionManagerObserver:
-  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // DeviceSettingsService::Observer:
   void OwnershipStatusChanged() override;
@@ -183,10 +177,6 @@ class ChromeUserManagerImpl
   // Update the number of users.
   void UpdateNumberOfUsers();
 
-  // Starts (or stops) automatic timezone refresh on geolocation,
-  // depending on user preferences.
-  void UpdateUserTimeZoneRefresher(Profile* profile);
-
   // Creates a user for the given device local account.
   std::unique_ptr<user_manager::User> CreateUserFromDeviceLocalAccount(
       const AccountId& account_id,
@@ -209,10 +199,6 @@ class ChromeUserManagerImpl
   // Interface to device-local account definitions and associated policy.
   raw_ptr<policy::DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;
-
-  base::ScopedObservation<session_manager::SessionManager,
-                          session_manager::SessionManagerObserver>
-      session_observation_{this};
 
   // Session length limiter.
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;

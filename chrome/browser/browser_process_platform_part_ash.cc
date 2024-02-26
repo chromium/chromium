@@ -263,7 +263,8 @@ BrowserProcessPlatformPart::GetTimezoneResolverManager() {
   if (!timezone_resolver_manager_.get()) {
     timezone_resolver_manager_ =
         std::make_unique<ash::system::TimeZoneResolverManager>(
-            ash::SimpleGeolocationProvider::GetInstance());
+            ash::SimpleGeolocationProvider::GetInstance(),
+            session_manager::SessionManager::Get());
   }
   return timezone_resolver_manager_.get();
 }

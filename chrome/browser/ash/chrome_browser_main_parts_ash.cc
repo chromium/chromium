@@ -974,6 +974,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   SimpleGeolocationProvider::Initialize(
       g_browser_process->shared_url_loader_factory());
 
+  // Instantiate TImeZoneResolverManager here, so it subscribes to
+  // SessionManager and profile creation notification is properly propagated.
+  g_browser_process->platform_part()->GetTimezoneResolverManager();
+
   // On Chrome OS, Chrome does not exit when all browser windows are closed.
   // UnregisterKeepAlive is called from chrome::HandleAppExitingForPlatform.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(

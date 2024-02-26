@@ -217,10 +217,10 @@ class UserSessionManager
   // user sessions restoration is in progress.
   bool UserSessionsRestoreInProgress() const;
 
-  // Send the notification before creating the browser so additional objects
-  // that need the profile (e.g. the launcher) can be created first.
-  void NotifyUserProfileLoaded(Profile* profile,
-                               const user_manager::User* user);
+  // Called when user profile is loaded. Send the notification before creating
+  // the browser so additional objects that need the profile (e.g. the launcher)
+  // can be created first.
+  void OnUserProfileLoaded(Profile* profile, const user_manager::User* user);
 
   // Start the Tether service if it is ready.
   void StartTetherServiceIfPossible(Profile* profile);
