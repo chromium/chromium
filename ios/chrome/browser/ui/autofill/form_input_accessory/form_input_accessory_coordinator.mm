@@ -424,6 +424,9 @@ const CGFloat kIPHVerticalOffset = -5;
       [self.formInputAccessoryMediator lastFocusedFieldWasObfuscated];
   [self startManualFillForDataType:dataType
           invokedOnObfuscatedField:invokedOnObfuscatedField];
+
+  // TODO(crbug.com/326265397): Hide the keyboard accessory and remove line
+  // below.
   [self updateKeyboardAccessoryForManualFilling];
 }
 
