@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 namespace {
@@ -17,25 +18,26 @@ class PickerCopyMediaTest : public AshTestBase {};
 
 TEST_F(PickerCopyMediaTest, CopiesGifAsHtml) {
   CopyGifMediaToClipboard(GURL("https://foo.com"),
-                          /*content_description=*/u"a gif");
+                          /*content_description=*/u"a gif", gfx::Size(30, 20));
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
-      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="a gif"/>)html");
+      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="a gif" width="30" height="20"/>)html");
 }
 
 TEST_F(PickerCopyMediaTest, EscapesAltText) {
   CopyGifMediaToClipboard(GURL("https://foo.com"),
-                          /*content_description=*/u"a \"gif\"");
+                          /*content_description=*/u"a \"gif\"",
+                          gfx::Size(30, 20));
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
-      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="a &quot;gif&quot;"/>)html");
+      uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="a &quot;gif&quot;" width="30" height="20"/>)html");
 }
 
 TEST_F(PickerCopyMediaTest, ShowsToast) {
   CopyGifMediaToClipboard(GURL("https://foo.com"),
-                          /*content_description=*/u"a gif");
+                          /*content_description=*/u"a gif", gfx::Size(30, 20));
 
   EXPECT_TRUE(
       ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));

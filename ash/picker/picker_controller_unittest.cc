@@ -199,7 +199,8 @@ TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
   controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
-      /*url=*/GURL("http://foo.com"), /*preview_image_url=*/GURL(), gfx::Size(),
+      /*url=*/GURL("http://foo.com"), /*preview_image_url=*/GURL(),
+      gfx::Size(30, 20),
       /*content_description=*/u"a gif"));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(
@@ -209,7 +210,7 @@ TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
-      uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif"/>)html");
+      uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif" width="30" height="20"/>)html");
   EXPECT_TRUE(
       ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
 }

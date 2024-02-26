@@ -147,7 +147,10 @@ std::optional<PickerInsertMediaRequest::MediaData> ResultToInsertMediaData(
 void MaybeCopyMediaToClipboard(const PickerSearchResult& result) {
   if (const auto* gif =
           std::get_if<PickerSearchResult::GifData>(&result.data())) {
-    CopyGifMediaToClipboard(gif->url, gif->content_description);
+    // TODO: b/322900073 - If we insert full resolution URLs, we should use the
+    // dimensions for the full resolution GIF, not the preview gif.
+    CopyGifMediaToClipboard(gif->url, gif->content_description,
+                            gif->dimensions);
   }
 }
 

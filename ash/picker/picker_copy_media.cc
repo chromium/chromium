@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -22,25 +23,28 @@ namespace {
 constexpr char kPickerCopyToClipboardToastId[] = "picker_copy_to_clipboard";
 
 std::string BuildGifHTML(const GURL& url,
-                         std::u16string_view content_description) {
+                         std::u16string_view content_description,
+                         gfx::Size size) {
   // Referrer-Policy is used to prevent the website from getting information
   // about where the GIFs are being used.
   return base::StringPrintf(
-      R"html(<img src="%s" referrerpolicy="no-referrer" alt="%s"/>)html",
+      R"html(<img src="%s" referrerpolicy="no-referrer" alt="%s" width="%d" height="%d"/>)html",
       url.spec().c_str(),
-      base::EscapeForHTML(base::UTF16ToUTF8(content_description)).c_str());
+      base::EscapeForHTML(base::UTF16ToUTF8(content_description)).c_str(),
+      size.width(), size.height());
 }
 
 }  // namespace
 
 void CopyGifMediaToClipboard(const GURL& url,
-                             std::u16string_view content_description) {
+                             std::u16string_view content_description,
+                             gfx::Size size) {
   // Overwrite the clipboard data with the GIF url.
   auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste);
 
   clipboard->WriteHTML(
-      base::UTF8ToUTF16(BuildGifHTML(url, content_description)),
+      base::UTF8ToUTF16(BuildGifHTML(url, content_description, size)),
       /*document_url=*/"");
 
   // Show a toast to inform the user about the copy.
