@@ -555,6 +555,7 @@ crbug.com/1520938 external/wpt/html/semantics/popovers/popover-top-layer-nesting
 crbug.com/1520938 external/wpt/html/semantics/popovers/popover-top-layer-nesting.tentative.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/provide_response/request.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/credentials.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/request.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]

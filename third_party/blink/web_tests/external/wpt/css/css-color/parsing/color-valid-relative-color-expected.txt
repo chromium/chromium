@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "rgb(from rebeccapurple b alpha r / g)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.6 0.00392157 0.4)\nExpected: color(srgb 0.6 1 0.4 / 0.2).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
 [FAIL] e.style['color'] = "rgb(from rebeccapurple r r r / r)" should set the property value
@@ -24,6 +24,8 @@ Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.2 0.4 0 / 0.8)\nExpected: color(srgb 0.2 0.4 none / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "rgb(from currentColor r g b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "rgb(from color-mix(in srgb, red, red) r g b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hsl(from rebeccapurple none none none)" should set the property value
   Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "hsl(from rebeccapurple none none none / none)" should set the property value
@@ -39,6 +41,8 @@ Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "hsl(from hsl(120deg 20% 50% / .5) none s l / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.6 0.4 0.4 / 0.5)\nExpected: color(srgb none 0.4 0.4 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "hsl(from currentColor h s l)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "hsl(from color-mix(in srgb, red, red) h s l / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hwb(from rebeccapurple none none none)" should set the property value
   Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
@@ -56,33 +60,61 @@ Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.5 0.2 0.2 / 0.5)\nExpected: color(srgb none 0.2 0.2 / 0.5).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "hwb(from currentColor h w b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "hwb(from color-mix(in srgb, red, red) h w b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "lab(from currentColor l a b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "lab(from color-mix(in lab, lab(25 20 50), lab(25 20 50)) l a b / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "oklab(from oklab(0.7 0.25 -0.15) l calc(a / 2) calc(b / 3))" should set the property value
   Colors do not match.\nActual:   oklab(0.7 0.125 -0.05)\nExpected: oklab(0.7 0.125 -0.075).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected -0.075 +/- 0.01, expected -0.075 but got -0.05
 [FAIL] e.style['color'] = "oklab(from currentColor l a b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "lch(from currentColor) l c h)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "lch(from color-mix(in lch, lch(70 45 30), lch(70 45 30)) l c h / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "oklch(from color-mix(in oklch, oklch(0.7 0.45 30), oklch(0.7 0.45 30)) l c h / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "oklch(from currentColor l c h)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor srgb r g b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(srgb 0.7 0.5 0.3), color(srgb 0.7 0.5 0.3)) srgb r g b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor srgb-linear r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(srgb-linear 0.7 0.5 0.3), color(srgb-linear 0.7 0.5 0.3)) srgb-linear r g b / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor a98-rgb r g b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(a98-rgb 0.7 0.5 0.3), color(a98-rgb 0.7 0.5 0.3)) a98-rgb r g b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor rec2020 r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(rec2020 0.7 0.5 0.3), color(rec2020 0.7 0.5 0.3)) rec2020 r g b / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor prophoto-rgb r g b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(prophoto-rgb 0.7 0.5 0.3), color(prophoto-rgb 0.7 0.5 0.3)) prophoto-rgb r g b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor display-p3 r g b)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(display-p3 0.7 0.5 0.3), color(display-p3 0.7 0.5 0.3)) display-p3 r g b / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor xyz x y z)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(xyz 0.7 0.5 0.3), color(xyz 0.7 0.5 0.3)) xyz r g b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor xyz-d50 x y z)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(xyz-d50 0.7 0.5 0.3), color(xyz-d50 0.7 0.5 0.3)) xyz-d50 r g b / alpha)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from currentColor xyz-d65 x y z)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['color'] = "color(from color-mix(in xyz, color(xyz-d65 0.7 0.5 0.3), color(xyz-d65 0.7 0.5 0.3)) xyz-d65 r g b / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

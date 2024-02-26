@@ -1,8 +1,40 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'rgb(from color-mix(in srgb, red, red) r g b / alpha)'
+  assert_true: 'rgb(from color-mix(in srgb, red, red) r g b / alpha)' is a supported value for color. expected true got false
 [FAIL] Property color value 'hsl(from hsl(20 30 40 / 0.8) calc(h + 1) calc(s + 1) calc(l + 1) / calc(alpha + 0.01))'
   Colors do not match.\nActual:   color(srgb 0.88 1.556 1.92 / 0.81)\nExpected: color(srgb 0.54 0.37 0.28 / 0.81).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.54 +/- 0.01, expected 0.54 but got 0.88
+[FAIL] Property color value 'hsl(from color-mix(in srgb, red, red) h s l / alpha)'
+  assert_true: 'hsl(from color-mix(in srgb, red, red) h s l / alpha)' is a supported value for color. expected true got false
 [FAIL] Property color value 'hwb(from hwb(20 30 40 / 0.8) calc(h + 1) calc(w + 1) calc(b + 1) / calc(alpha + 0.01))'
   Colors do not match.\nActual:   color(srgb 0.481481 0.481481 0.481481 / 0.81)\nExpected: color(srgb 0.59 0.41 0.31 / 0.81).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.59 +/- 0.01, expected 0.59 but got 0.481481
+[FAIL] Property color value 'hwb(from color-mix(in srgb, red, red) h w b / alpha)'
+  assert_true: 'hwb(from color-mix(in srgb, red, red) h w b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'lab(from color-mix(in lab, lab(25 20 50), lab(25 20 50)) l a b / alpha)'
+  assert_true: 'lab(from color-mix(in lab, lab(25 20 50), lab(25 20 50)) l a b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)'
+  assert_true: 'oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'lch(from color-mix(in lch, lch(70 45 30), lch(70 45 30)) l c h / alpha)'
+  assert_true: 'lch(from color-mix(in lch, lch(70 45 30), lch(70 45 30)) l c h / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'oklch(from color-mix(in oklch, oklch(0.7 0.45 30), oklch(0.7 0.45 30)) l c h / alpha)'
+  assert_true: 'oklch(from color-mix(in oklch, oklch(0.7 0.45 30), oklch(0.7 0.45 30)) l c h / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(srgb 0.7 0.5 0.3), color(srgb 0.7 0.5 0.3)) srgb r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(srgb 0.7 0.5 0.3), color(srgb 0.7 0.5 0.3)) srgb r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(srgb-linear 0.7 0.5 0.3), color(srgb-linear 0.7 0.5 0.3)) srgb-linear r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(srgb-linear 0.7 0.5 0.3), color(srgb-linear 0.7 0.5 0.3)) srgb-linear r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(a98-rgb 0.7 0.5 0.3), color(a98-rgb 0.7 0.5 0.3)) a98-rgb r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(a98-rgb 0.7 0.5 0.3), color(a98-rgb 0.7 0.5 0.3)) a98-rgb r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(rec2020 0.7 0.5 0.3), color(rec2020 0.7 0.5 0.3)) rec2020 r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(rec2020 0.7 0.5 0.3), color(rec2020 0.7 0.5 0.3)) rec2020 r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(prophoto-rgb 0.7 0.5 0.3), color(prophoto-rgb 0.7 0.5 0.3)) prophoto-rgb r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(prophoto-rgb 0.7 0.5 0.3), color(prophoto-rgb 0.7 0.5 0.3)) prophoto-rgb r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(display-p3 0.7 0.5 0.3), color(display-p3 0.7 0.5 0.3)) display-p3 r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(display-p3 0.7 0.5 0.3), color(display-p3 0.7 0.5 0.3)) display-p3 r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(xyz 0.7 0.5 0.3), color(xyz 0.7 0.5 0.3)) xyz r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(xyz 0.7 0.5 0.3), color(xyz 0.7 0.5 0.3)) xyz r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(xyz-d50 0.7 0.5 0.3), color(xyz-d50 0.7 0.5 0.3)) xyz-d50 r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(xyz-d50 0.7 0.5 0.3), color(xyz-d50 0.7 0.5 0.3)) xyz-d50 r g b / alpha)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(from color-mix(in xyz, color(xyz-d65 0.7 0.5 0.3), color(xyz-d65 0.7 0.5 0.3)) xyz-d65 r g b / alpha)'
+  assert_true: 'color(from color-mix(in xyz, color(xyz-d65 0.7 0.5 0.3), color(xyz-d65 0.7 0.5 0.3)) xyz-d65 r g b / alpha)' is a supported value for color. expected true got false
 Harness: the test ran to completion.
 
