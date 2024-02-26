@@ -104,35 +104,6 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
   template <typename T>
   void OnSuccessImpl(const MediaStreamVector&, CaptureController*);
 
-  template <>
-  void OnSuccessImpl<MediaStream>(const MediaStreamVector& streams,
-                                  CaptureController* capture_controller) {
-    DCHECK_EQ(streams.size(), 1u);
-    MediaStream* stream = streams[0];
-
-    if (on_success_follow_up_) {
-      // Only getDisplayMedia() calls set |on_success_follow_up_|.
-      // Successful invocations of getDisplayMedia() always have exactly
-      // one video track.
-      //
-      // Extension API calls that are followed by a getUserMedia() call with
-      // chromeMediaSourceId are treated liked getDisplayMedia() calls.
-      MediaStreamTrackVector video_tracks = stream->getVideoTracks();
-      DCHECK_EQ(video_tracks.size(), 1u);
-      if (capture_controller) {
-        capture_controller->SetVideoTrack(video_tracks[0], stream->id().Utf8());
-      }
-    }
-
-    // Resolve Promise<MediaStream> on a microtask.
-    resolver_->Resolve(stream);
-
-    // Enqueue the follow-up microtask, if any is intended.
-    if (on_success_follow_up_) {
-      std::move(on_success_follow_up_).Run(stream->id(), capture_controller);
-    }
-  }
-
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error,
                CaptureController* capture_controller,
@@ -148,15 +119,6 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
     UserMediaRequest::Callbacks::Trace(visitor);
   }
 
-  template <>
-  void OnSuccessImpl<IDLSequence<MediaStream>>(
-      const MediaStreamVector& streams,
-      CaptureController* capture_controller) {
-    DCHECK(!streams.empty());
-    DCHECK_EQ(UserMediaRequestType::kAllScreensMedia, media_type_);
-    resolver_->Resolve(streams);
-  }
-
  private:
   const UserMediaRequestType media_type_;
 
@@ -166,6 +128,47 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
   base::OnceCallback<void(const String&, CaptureController*)>
       on_success_follow_up_;
 };
+
+template <>
+template <>
+void PromiseResolverCallbacks<MediaStream>::OnSuccessImpl<MediaStream>(
+    const MediaStreamVector& streams,
+    CaptureController* capture_controller) {
+  DCHECK_EQ(streams.size(), 1u);
+  MediaStream* stream = streams[0];
+
+  if (on_success_follow_up_) {
+    // Only getDisplayMedia() calls set |on_success_follow_up_|.
+    // Successful invocations of getDisplayMedia() always have exactly
+    // one video track.
+    //
+    // Extension API calls that are followed by a getUserMedia() call with
+    // chromeMediaSourceId are treated liked getDisplayMedia() calls.
+    MediaStreamTrackVector video_tracks = stream->getVideoTracks();
+    DCHECK_EQ(video_tracks.size(), 1u);
+    if (capture_controller) {
+      capture_controller->SetVideoTrack(video_tracks[0], stream->id().Utf8());
+    }
+  }
+
+  // Resolve Promise<MediaStream> on a microtask.
+  resolver_->Resolve(stream);
+
+  // Enqueue the follow-up microtask, if any is intended.
+  if (on_success_follow_up_) {
+    std::move(on_success_follow_up_).Run(stream->id(), capture_controller);
+  }
+}
+
+template <>
+template <>
+void PromiseResolverCallbacks<IDLSequence<MediaStream>>::OnSuccessImpl<
+    IDLSequence<MediaStream>>(const MediaStreamVector& streams,
+                              CaptureController* capture_controller) {
+  DCHECK(!streams.empty());
+  DCHECK_EQ(UserMediaRequestType::kAllScreensMedia, media_type_);
+  resolver_->Resolve(streams);
+}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
