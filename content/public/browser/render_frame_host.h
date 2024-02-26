@@ -740,7 +740,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // to this, IsActive() is preferred instead of using LifecycleState::kActive.
   // TODO(crbug.com/1177198): Make IsActive and GetLifecycleState() == kActive
   // always match.
-  virtual bool IsActive() = 0;
+  virtual bool IsActive() const = 0;
 
   // Checks that the RenderFrameHost is inactive (with some exceptions) and
   // ensures that it will be never activated if it is inactive when calling this

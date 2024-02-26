@@ -463,7 +463,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsRenderFrameLive() override;
   LifecycleState GetLifecycleState() override;
   bool IsInLifecycleState(LifecycleState lifecycle_state) override;
-  bool IsActive() override;
+  bool IsActive() const override;
   bool IsInactiveAndDisallowActivation(uint64_t reason) override;
   size_t GetProxyCount() override;
   bool HasSelection() override;
@@ -672,6 +672,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
                               ui::AXNodeID hit_node_id)> opt_callback) override;
   gfx::NativeWindow GetTopLevelNativeWindow() override;
+  bool CanFireAccessibilityEvents() const override;
   bool AccessibilityIsRootFrame() const override;
   RenderFrameHostImpl* AccessibilityRenderFrameHost() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;

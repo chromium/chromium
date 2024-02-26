@@ -111,6 +111,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
 
   virtual gfx::NativeWindow GetTopLevelNativeWindow() = 0;
 
+  virtual bool CanFireAccessibilityEvents() const = 0;
+
  protected:
   AXPlatformTreeManagerDelegate() = default;
 };
