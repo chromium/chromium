@@ -917,14 +917,8 @@ IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceDialogBrowserTest,
       prefs::kDefaultSearchProviderChoicePending);
 }
 
-// TODO(crbug.com/1506381) Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DialogTriggers DISABLED_DialogTriggers
-#else
-#define MAYBE_DialogTriggers DialogTriggers
-#endif
 IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceDialogBrowserTest,
-                       MAYBE_DialogTriggers) {
+                       DialogTriggers) {
   // -- First profile ---------------------------------------------------------
 
   // Due to having more than one profile from the PRE_test, we explicitly load
