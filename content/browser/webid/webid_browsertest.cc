@@ -1067,8 +1067,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             EXPECT_EQ(
-                "AbortError: Only one navigator.credentials.get request may be "
-                "outstanding at one time.",
+                "NotAllowedError: Only one navigator.credentials.get request "
+                "may be outstanding at one time.",
                 ExtractJsError(RunDigitalIdentityValidRequest(shell())));
             std::move(callback).Run(
                 "test-mdoc",

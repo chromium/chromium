@@ -644,7 +644,7 @@ void OnRequestToken(ScriptPromiseResolver* resolver,
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError,
+          DOMExceptionCode::kNotAllowedError,
           "Only one navigator.credentials.get request may be outstanding at "
           "one time."));
       return;
