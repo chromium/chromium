@@ -3362,6 +3362,13 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
         ~CompositingReason::kTrivial3DTransform;
   }
 
+  if (context_.fragment_context
+          .self_or_ancestor_participates_in_view_transition &&
+      object_.StyleRef().HasClipPath()) {
+    context_.direct_compositing_reasons |=
+        CompositingReason::kViewTransitionElementDescendantWithClipPath;
+  }
+
   context_.was_layout_shift_root =
       IsLayoutShiftRoot(object_, object_.FirstFragment());
 

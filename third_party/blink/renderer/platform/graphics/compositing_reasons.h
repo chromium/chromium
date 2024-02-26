@@ -66,6 +66,7 @@ using CompositingReasons = uint64_t;
      See third_party/blink/renderer/core/view_transition/README.md. */         \
   V(ViewTransitionElement)                                                     \
   V(ViewTransitionPseudoElement)                                               \
+  V(ViewTransitionElementDescendantWithClipPath)                               \
                                                                                \
   /* For composited scrolling, determined after paint. */                      \
   V(OverflowScrolling)                                                         \
@@ -131,7 +132,8 @@ class PLATFORM_EXPORT CompositingReason {
     kDirectReasonsForTransformProperty =
         k3DTransform | kTrivial3DTransform | kWillChangeTransform |
         kWillChangeOther | kPerspectiveWith3DDescendants |
-        kPreserve3DWith3DDescendants | kActiveTransformAnimation,
+        kPreserve3DWith3DDescendants | kActiveTransformAnimation |
+        kViewTransitionElementDescendantWithClipPath,
     kDirectReasonsForScaleProperty =
         k3DScale | kWillChangeScale | kActiveScaleAnimation,
     kDirectReasonsForRotateProperty =

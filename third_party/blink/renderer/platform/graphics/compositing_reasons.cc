@@ -86,6 +86,9 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kViewTransitionPseudoElement,
      "This element is a part of a pseudo element tree representing the view "
      "transition."},
+    {CompositingReason::kViewTransitionElementDescendantWithClipPath,
+     "This element's ancestor is shared during view transition and it has a "
+     "clip-path"},
     {CompositingReason::kOverflowScrolling,
      "Is a scrollable overflow element using accelerated scrolling."},
     {CompositingReason::kElementCapture,
