@@ -168,7 +168,8 @@ bool ProtectionSystemSpecificHeader::Parse(BoxReader* reader) {
   // Don't bother validating the box's contents.
   // Copy the entire box, including the header, for passing to EME as initData.
   DCHECK(raw_box.empty());
-  raw_box.assign(reader->buffer(), reader->buffer() + reader->box_size());
+  base::span<const uint8_t> buffer = reader->buffer().first(reader->box_size());
+  raw_box.assign(buffer.begin(), buffer.end());
   return true;
 }
 
@@ -343,8 +344,9 @@ FourCC SampleEncryption::BoxType() const {
 bool SampleEncryption::Parse(BoxReader* reader) {
   RCHECK(reader->ReadFullBoxHeader());
   use_subsample_encryption = (reader->flags() & kUseSubsampleEncryption) != 0;
-  sample_encryption_data.assign(reader->buffer() + reader->pos(),
-                                reader->buffer() + reader->box_size());
+  base::span<const uint8_t> buffer =
+      reader->buffer().first(reader->box_size()).subspan(reader->pos());
+  sample_encryption_data.assign(buffer.begin(), buffer.end());
   return true;
 }
 
@@ -1682,8 +1684,9 @@ FourCC IamfSpecificBox::BoxType() const {
 
 bool IamfSpecificBox::Parse(BoxReader* reader) {
   const int obu_bitstream_size = reader->box_size() - reader->pos();
-  const uint8_t* buf = reader->buffer() + reader->pos();
-  ia_descriptors.assign(buf, buf + obu_bitstream_size);
+  base::span<const uint8_t> buffer =
+      reader->buffer().subspan(reader->pos(), obu_bitstream_size);
+  ia_descriptors.assign(buffer.begin(), buffer.end());
 
   RCHECK(reader->SkipBytes(obu_bitstream_size));
 

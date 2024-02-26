@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <set>
 
-#include "base/big_endian.h"
+#include "base/numerics/byte_conversions.h"
 #include "media/formats/mp4/box_definitions.h"
 
 namespace media {
@@ -20,47 +20,59 @@ Box::~Box() = default;
 
 bool BufferReader::Read1(uint8_t* v) {
   RCHECK(HasBytes(1));
-  *v = buf_[pos_++];
+  *v = base::numerics::U8FromBigEndian(buf_.subspan(pos_).first<1u>());
+  pos_ += 1u;
   return true;
 }
-
-// Internal implementation of multi-byte reads
-template<typename T> bool BufferReader::Read(T* v) {
-  RCHECK(HasBytes(sizeof(T)));
-
-  // MPEG-4 uses big endian byte order
-  base::ReadBigEndian(buf_ + pos_, v);
-  pos_ += sizeof(T);
-  return true;
-}
-
 bool BufferReader::Read2(uint16_t* v) {
-  return Read(v);
+  RCHECK(HasBytes(2));
+  *v = base::numerics::U16FromBigEndian(buf_.subspan(pos_).first<2u>());
+  pos_ += 2u;
+  return true;
 }
 bool BufferReader::Read2s(int16_t* v) {
-  return Read(v);
+  uint16_t tmp;
+  RCHECK(Read2(&tmp));
+  *v = static_cast<int16_t>(tmp);
+  return true;
 }
 bool BufferReader::Read4(uint32_t* v) {
-  return Read(v);
+  RCHECK(HasBytes(4));
+  *v = base::numerics::U32FromBigEndian(buf_.subspan(pos_).first<4u>());
+  pos_ += 4u;
+  return true;
 }
 bool BufferReader::Read4s(int32_t* v) {
-  return Read(v);
+  uint32_t tmp;
+  RCHECK(Read4(&tmp));
+  *v = static_cast<int32_t>(tmp);
+  return true;
 }
 bool BufferReader::Read8(uint64_t* v) {
-  return Read(v);
+  RCHECK(HasBytes(8));
+  *v = base::numerics::U64FromBigEndian(buf_.subspan(pos_).first<8u>());
+  pos_ += 8u;
+  return true;
 }
 bool BufferReader::Read8s(int64_t* v) {
-  return Read(v);
+  uint64_t tmp;
+  RCHECK(Read8(&tmp));
+  *v = static_cast<int64_t>(tmp);
+  return true;
 }
 
 bool BufferReader::ReadFourCC(FourCC* v) {
-  return Read4(reinterpret_cast<uint32_t*>(v));
+  uint32_t tmp;
+  RCHECK(Read4(&tmp));
+  *v = static_cast<FourCC>(tmp);
+  return true;
 }
 
 bool BufferReader::ReadVec(std::vector<uint8_t>* vec, uint64_t count) {
   RCHECK(HasBytes(count));
   vec->clear();
-  vec->insert(vec->end(), buf_ + pos_, buf_ + pos_ + count);
+  auto range = buf_.subspan(pos_, count);
+  vec->insert(vec->end(), range.begin(), range.end());
   pos_ += count;
   return true;
 }
@@ -185,19 +197,22 @@ bool BoxReader::IsValidTopLevelBox(const FourCC& type, MediaLog* media_log) {
 bool BoxReader::ScanChildren() {
   // Must be able to trust box_size_ below.
   RCHECK(box_size_known_);
+  // This is implied by setting `box_size_known_` to true, as `buf_` is
+  // truncated to `box_size_` at that time.
+  CHECK_EQ(box_size_, buf_.size());
 
   DCHECK(!scanned_);
   scanned_ = true;
 
-  DCHECK_LE(pos_, box_size_);
-  while (pos_ < box_size_) {
-    BoxReader child(&buf_[pos_], box_size_ - pos_, media_log_, is_EOS_);
+  while (pos_ < buf_.size()) {
+    auto range = buf_.subspan(pos_);
+    BoxReader child(range.data(), range.size(), media_log_, is_EOS_);
     if (child.ReadHeader() != ParseResult::kOk)
       return false;
     children_.insert(std::pair<FourCC, BoxReader>(child.type(), child));
     pos_ += child.box_size();
   }
-  DCHECK_EQ(pos_, box_size_);
+  DCHECK_EQ(pos_, buf_.size());
   return true;
 }
 
@@ -256,7 +271,7 @@ ParseResult BoxReader::ReadHeader() {
       // this special case (and is used only for PSSH parsing). Can we get rid
       // of it? The caller can treat kNeedMoreData as an error, and the only
       // difference would be lack of support for |box_size == 0|.
-      box_size = base::strict_cast<uint64_t>(buf_size_);
+      box_size = base::strict_cast<uint64_t>(buf_.size());
     } else {
       MEDIA_LOG(DEBUG, media_log_)
           << "ISO BMFF boxes that run to EOS are not supported";
@@ -277,8 +292,9 @@ ParseResult BoxReader::ReadHeader() {
 
   // Make sure the buffer contains at least the expected number of bytes.
   // Since the data may be appended in pieces, this is only an error if EOS.
-  if (box_size > base::strict_cast<uint64_t>(buf_size_))
+  if (box_size > base::strict_cast<uint64_t>(buf_.size())) {
     return is_EOS_ ? ParseResult::kError : ParseResult::kNeedMoreData;
+  }
 
   // Note that the pos_ head has advanced to the byte immediately after the
   // header, which is where we want it.
@@ -286,7 +302,7 @@ ParseResult BoxReader::ReadHeader() {
   box_size_known_ = true;
 
   // We don't want future reads to go beyond the box.
-  buf_size_ = std::min(buf_size_, box_size_);
+  buf_ = buf_.first(box_size_);
 
   return ParseResult::kOk;
 }

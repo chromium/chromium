@@ -7,10 +7,11 @@
 #include <array>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 
@@ -124,27 +125,29 @@ class StringAnnexBBuffer : public AnnexBBuffer {
 };
 
 template <typename NalSizeType>
-void CopyNalsToAnnexB(char* buffer,
-                      const size_t buffer_size,
+  requires(std::is_integral_v<NalSizeType> && std::is_unsigned_v<NalSizeType> &&
+           sizeof(NalSizeType) <= 4)
+void CopyNalsToAnnexB(base::span<const char> buffer,
                       AnnexBBuffer* annexb_buffer) {
-  static_assert(sizeof(NalSizeType) == 1 || sizeof(NalSizeType) == 2 ||
-                    sizeof(NalSizeType) == 4,
-                "NAL size type has unsupported size");
-  DCHECK(buffer);
-  DCHECK(annexb_buffer);
-  size_t bytes_left = buffer_size;
-  while (bytes_left > 0) {
-    DCHECK_GT(bytes_left, sizeof(NalSizeType));
+  while (!buffer.empty()) {
     NalSizeType nal_size;
-    base::ReadBigEndian(reinterpret_cast<uint8_t*>(buffer), &nal_size);
-    bytes_left -= sizeof(NalSizeType);
-    buffer += sizeof(NalSizeType);
+    if constexpr (sizeof(NalSizeType) == 1u) {
+      nal_size = base::numerics::U8FromBigEndian(
+          base::as_bytes(buffer).template first<1u>());
+    } else if constexpr (sizeof(NalSizeType) == 2u) {
+      nal_size = base::numerics::U16FromBigEndian(
+          base::as_bytes(buffer).template first<2u>());
+    } else {
+      nal_size = base::numerics::U32FromBigEndian(
+          base::as_bytes(buffer).template first<4u>());
+    }
 
-    DCHECK_GE(bytes_left, nal_size);
+    auto [nals_buf, remain] =
+        buffer.subspan(sizeof(NalSizeType)).split_at(nal_size);
+    buffer = remain;
+
     annexb_buffer->Append(kAnnexBHeaderBytes, sizeof(kAnnexBHeaderBytes));
-    annexb_buffer->Append(buffer, nal_size);
-    bytes_left -= nal_size;
-    buffer += nal_size;
+    annexb_buffer->Append(nals_buf.data(), nals_buf.size());
   }
 }
 
@@ -182,12 +185,12 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
   OSStatus status;
 
   // Get the sample buffer's block buffer and format description.
-  auto* bb = CMSampleBufferGetDataBuffer(sbuf);
+  auto* const bb = CMSampleBufferGetDataBuffer(sbuf);
   DCHECK(bb);
   auto* fdesc = CMSampleBufferGetFormatDescription(sbuf);
   DCHECK(fdesc);
 
-  size_t bb_size = CMBlockBufferGetDataLength(bb);
+  const size_t bb_size = CMBlockBufferGetDataLength(bb);
   size_t total_bytes = bb_size;
 
   size_t pset_count;
@@ -257,20 +260,27 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
 
   // Copy all the NAL units. In the process convert them from AVCC/HVCC format
   // (length header) to AnnexB format (start code).
-  char* bb_data;
+  char* contiguous_bb_data;
   status = CMBlockBufferGetDataPointer(contiguous_bb.get(), 0, nullptr, nullptr,
-                                       &bb_data);
+                                       &contiguous_bb_data);
   if (status != noErr) {
     DLOG(ERROR) << " CMBlockBufferGetDataPointer failed: " << status;
     return false;
   }
+  auto contiguous_bb_span =
+      // SAFETY: `bb` is a block buffer of size `bb_size`, queried above through
+      // CMBlockBufferGetDataLength(). The `contiguous_bb` is a contiguous
+      // buffer created from `bb`, so it has the same size. Thus the
+      // `contiguous_bb_data` pointer, which points to the `contiguous_bb`
+      // buffer, will point to an array of size `bb_size`.
+      UNSAFE_BUFFERS(base::span<const char>(contiguous_bb_data, bb_size));
 
   if (nal_size_field_bytes == 1) {
-    CopyNalsToAnnexB<uint8_t>(bb_data, bb_size, annexb_buffer);
+    CopyNalsToAnnexB<uint8_t>(contiguous_bb_span, annexb_buffer);
   } else if (nal_size_field_bytes == 2) {
-    CopyNalsToAnnexB<uint16_t>(bb_data, bb_size, annexb_buffer);
+    CopyNalsToAnnexB<uint16_t>(contiguous_bb_span, annexb_buffer);
   } else if (nal_size_field_bytes == 4) {
-    CopyNalsToAnnexB<uint32_t>(bb_data, bb_size, annexb_buffer);
+    CopyNalsToAnnexB<uint32_t>(contiguous_bb_span, annexb_buffer);
   } else {
     NOTREACHED();
   }
