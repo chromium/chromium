@@ -114,6 +114,8 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
           {"options.hasUserVerification", "hasUserVerification"},
           {"options.automaticPresenceSimulation", "isUserConsenting"},
           {"options.isUserVerified", "isUserVerified"},
+          {"options.defaultBackupState", "defaultBackupState"},
+          {"options.defaultBackupEligibility", "defaultBackupEligibility"},
       },
       params);
 
@@ -193,6 +195,8 @@ Status ExecuteAddCredential(WebView* web_view,
           {"credential.userHandle", "userHandle"},
           {"credential.signCount", "signCount"},
           {"credential.largeBlob", "largeBlob"},
+          {"credential.backupEligibility", "backupEligibility"},
+          {"credential.backupState", "backupState"},
       },
       params);
   base::Value::Dict* credential = mapped_params.FindDict("credential");
