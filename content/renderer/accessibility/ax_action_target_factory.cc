@@ -25,9 +25,7 @@ std::unique_ptr<ui::AXActionTarget> AXActionTargetFactory::CreateFromNodeId(
   // Plugin tree is not present in only HTML scenario. In case of plugins,
   // it will be nullptr till the time plugin sets the tree source.
   if (plugin_tree_adapter) {
-    const ui::AXNode* plugin_node = plugin_tree_adapter->GetFromId(node_id);
-    if (plugin_node)
-      return plugin_tree_adapter->CreateActionTarget(*plugin_node);
+    return plugin_tree_adapter->CreateActionTarget(node_id);
   }
   return std::make_unique<ui::NullAXActionTarget>();
 }

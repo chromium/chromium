@@ -218,7 +218,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
       uint32_t char_offset_in_node,
       chrome_pdf::PageCharacterIndex& page_char_index) const;
 
-  // blink::WebAXPluginTreeSource:
+  // ui::AXTreeSource:
   bool GetTreeData(ui::AXTreeData* tree_data) const override;
   ui::AXNode* GetRoot() const override;
   ui::AXNode* GetFromId(int32_t id) const override;
@@ -233,8 +233,10 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
   const ui::AXNode* GetNull() const override;
   void SerializeNode(const ui::AXNode* node,
                      ui::AXNodeData* out_data) const override;
+
+  // content::PluginAXTreeActionTargetAdapter:
   std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
-      const ui::AXNode& target_node) override;
+      ui::AXNodeID id) override;
 
   // content::RenderFrameObserver:
   void AccessibilityModeChanged(const ui::AXMode& mode) override;

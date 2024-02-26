@@ -599,7 +599,7 @@ class MockPluginAccessibilityTreeSource
   void ResetAccActionStatus() {}
   bool IsIgnored(const ui::AXNode* node) const override { return false; }
   std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
-      const ui::AXNode& target_node) override {
+      ui::AXNodeID id) override {
     action_target_called_ = true;
     return std::make_unique<ui::NullAXActionTarget>();
   }
