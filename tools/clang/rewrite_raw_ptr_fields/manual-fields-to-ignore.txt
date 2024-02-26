@@ -450,6 +450,33 @@ prefs::DictionaryValueUpdate::value_
 # performance sensitive base::Unretained
 content::responsiveness::Watcher::calculator_io_
 
+# Populated manually - hammering down visible nails in stack samples.
+# Thought to unacceptable hurt renderer performance.
+# See https://crrev.com/c/5271003
+cc::EffectTreeLayerListIterator::Position::current_layer
+cc::EffectTreeLayerListIterator::Position::current_render_surface
+cc::EffectTreeLayerListIterator::Position::target_render_surface
+cc::EffectTreeLayerListIterator::layer_tree_impl_
+cc::EffectTreeLayerListIterator::effect_tree_
+cc::HeadsUpDisplayLayerImpl::placeholder_quad_
+cc::GlobalMetricsTrackers::dropped_frame_counter
+cc::GlobalMetricsTrackers::latency_ukm_reporter
+cc::GlobalMetricsTrackers::frame_sequence_trackers
+cc::GlobalMetricsTrackers::event_latency_tracker
+cc::GlobalMetricsTrackers::predictor_jank_tracker
+cc::GlobalMetricsTrackers::scroll_jank_dropped_frame_tracker
+cc::GlobalMetricsTrackers::scroll_jank_ukm_reporter
+cc::CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::owner_
+cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_
+cc::PictureLayerTilingSet::CoverageIterator::set_
+cc::PrioritizedTile::tile_
+cc::PrioritizedTile::source_tiling_
+cc::LayerTreeHostImpl::FrameData::render_surface_list
+cc::PropertyTree::property_trees_
+cc::LayerTreeHostImpl::FrameData::will_draw_layers
+cc::LayerTreeImpl::render_surface_list_
+viz::(anonymous namespace)::BspTreePerfTest::base_list_
+
 #######
 # End of performance-related exclusions
 #######
