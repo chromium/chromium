@@ -447,10 +447,6 @@ extern const char kIOSEditMenuHideSearchWebDescription[];
 extern const char kIOSExternalActionURLsName[];
 extern const char kIOSExternalActionURLsDescription[];
 
-// Title and description for the flag to enable Incognito downloads education.
-extern const char kIOSIncognitoDownloadsWarningName[];
-extern const char kIOSIncognitoDownloadsWarningDescription[];
-
 // Title and description for the flag to enable the keyboard accessory upgrade.
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];

@@ -514,12 +514,6 @@ extern const char kIOSExternalActionURLsName[] = "iOS external action URLs";
 extern const char kIOSExternalActionURLsDescription[] =
     "When enabled, the browser will support handling external action URLs.";
 
-const char kIOSIncognitoDownloadsWarningName[] =
-    "Enable Incognito downloads warning on iOS";
-const char kIOSIncognitoDownloadsWarningDescription[] =
-    "When enabled, users will be warned that downloaded files are saved on the "
-    "device and might be seen by other users even if they are in Incognito.";
-
 const char kIOSKeyboardAccessoryUpgradeName[] =
     "Enable the keyboard accessory upgrade on iOS";
 const char kIOSKeyboardAccessoryUpgradeDescription[] =

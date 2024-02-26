@@ -9018,21 +9018,6 @@
             ]
         }
     ],
-    "IOSIncognitoDownloadsWarning": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSIncognitoDownloadsWarning"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [

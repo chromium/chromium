@@ -690,8 +690,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   // Update status label text.
   self.statusLabel.text = [self localizedFileNameAndSizeWithPeriod:NO];
   // Update detail label text.
-  if (base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning) &&
-      self.incognito) {
+  if (self.incognito) {
     self.detailLabel.text =
         l10n_util::GetNSString(IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE);
     // Set to '0' to ensure the entire incognito warning is visible.

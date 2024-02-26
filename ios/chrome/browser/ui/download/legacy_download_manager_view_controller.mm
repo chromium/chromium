@@ -344,9 +344,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
   self.overrideUserInterfaceStyle =
-      incognito && base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning)
-          ? UIUserInterfaceStyleDark
-          : UIUserInterfaceStyleUnspecified;
+      incognito ? UIUserInterfaceStyleDark : UIUserInterfaceStyleUnspecified;
 }
 
 - (void)setFileName:(NSString*)fileName {
@@ -754,8 +752,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   self.statusLabel.numberOfLines = kNumberOfLines;
   switch (_state) {
     case kDownloadManagerStateNotStarted:
-      if (base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning) &&
-          self.incognito) {
+      if (self.incognito) {
         _incognitoDownloadsWarningVisible = YES;
         statusText =
             l10n_util::GetNSString(IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE);

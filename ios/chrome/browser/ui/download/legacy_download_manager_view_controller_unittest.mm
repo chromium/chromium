@@ -24,11 +24,9 @@ class LegacyDownloadManagerViewControllerTest : public PlatformTest {
   LegacyDownloadManagerViewControllerTest()
       : view_controller_([[LegacyDownloadManagerViewController alloc] init]) {
     state_symbol_partial_mock_ = OCMPartialMock(view_controller_.stateSymbol);
-    feature_list_.InitAndEnableFeature(kIOSIncognitoDownloadsWarning);
   }
   LegacyDownloadManagerViewController* view_controller_;
   id state_symbol_partial_mock_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests label and button titles with kDownloadManagerStateNotStarted state

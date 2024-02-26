@@ -4945,11 +4945,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "ios-incognito-downloads-warning",
-    "owners": [ "zalmashni@google.com", "chrome-incognito@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "ios-iph-for-safari-switcher",
     "owners": [ "huitingyu@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 121
