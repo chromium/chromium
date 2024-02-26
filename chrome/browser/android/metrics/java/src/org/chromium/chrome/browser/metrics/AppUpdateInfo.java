@@ -13,7 +13,7 @@ public class AppUpdateInfo {
     }
 
     public AppUpdateInfo() {
-        mDelegate = new AppUpdateInfoDelegate();
+        mDelegate = new AppUpdateInfoDelegateImpl();
     }
 
     public void emitToHistogram() {
