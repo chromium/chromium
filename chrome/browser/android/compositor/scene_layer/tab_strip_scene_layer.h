@@ -133,6 +133,7 @@ class TabStripSceneLayer : public SceneLayer {
       jint handle_tint,
       jint handle_outline_tint,
       jboolean foreground,
+      jboolean shouldShowTabOutline,
       jboolean close_pressed,
       jfloat toolbar_width,
       jfloat x,

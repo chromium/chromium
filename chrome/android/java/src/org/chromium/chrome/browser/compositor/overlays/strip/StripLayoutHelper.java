@@ -3028,6 +3028,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         || mTabGroupModelFilter.isTabInTabGroup(adjTab));
     }
 
+    /**
+     * Show tab outline for Tab Group Indicator when the tab is in a group and it is not in reorder
+     * mode.
+     *
+     * @param stripLayoutTab The current {@link StripLayoutTab}.
+     * @return whether to show tab outline.
+     */
+    protected boolean shouldShowTabOutline(StripLayoutTab stripLayoutTab) {
+        return ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
+                && mTabGroupModelFilter.isTabInTabGroup(getTabById(stripLayoutTab.getId()))
+                && getSelectedStripTab() == stripLayoutTab
+                && !mInReorderMode;
+    }
+
     private void updateReorderPosition(float deltaX) {
         if (!mInReorderMode || mInteractingTab == null || mReorderingForTabDrop) return;
 
@@ -3634,6 +3648,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     protected float getLastReorderXForTesting() {
         return mLastReorderX;
+    }
+
+    protected void setInReorderModeForTesting(boolean inReorderMode) {
+        mInReorderMode = inReorderMode;
     }
 
     private void setAccessibilityDescription(StripLayoutTab stripTab, Tab tab) {

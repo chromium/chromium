@@ -762,6 +762,10 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().getNewTabButton();
     }
 
+    public boolean shouldShowTabOutline(StripLayoutTab tab) {
+        return getActiveStripLayoutHelper().shouldShowTabOutline(tab);
+    }
+
     /**
      * @return The touch target offset to be applied to the new tab button.
      */

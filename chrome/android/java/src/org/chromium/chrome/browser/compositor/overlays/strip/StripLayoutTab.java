@@ -445,7 +445,7 @@ public class StripLayoutTab implements StripLayoutView {
      * @return The Android resource that represents the tab outline.
      */
     public @DrawableRes int getOutlineResourceId() {
-        return R.drawable.bg_tabstrip_background_tab_outline;
+        return R.drawable.tab_group_outline;
     }
 
     /**

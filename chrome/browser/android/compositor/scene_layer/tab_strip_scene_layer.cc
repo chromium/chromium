@@ -388,6 +388,7 @@ void TabStripSceneLayer::PutStripTabLayer(
     jint handle_tint,
     jint handle_outline_tint,
     jboolean foreground,
+    jboolean shouldShowTabOutline,
     jboolean close_pressed,
     jfloat toolbar_width,
     jfloat x,
@@ -432,10 +433,11 @@ void TabStripSceneLayer::PutStripTabLayer(
   layer->SetProperties(
       id, close_button_resource, close_button_hover_resource, divider_resource,
       tab_handle_resource, tab_handle_outline_resource, foreground,
-      close_pressed, toolbar_width, x, y, width, height, content_offset_y,
-      divider_offset_x, bottom_margin, top_margin, close_button_padding,
-      close_button_alpha, is_start_divider_visible, is_end_divider_visible,
-      is_loading, spinner_rotation, brightness, opacity);
+      shouldShowTabOutline, close_pressed, toolbar_width, x, y, width, height,
+      content_offset_y, divider_offset_x, bottom_margin, top_margin,
+      close_button_padding, close_button_alpha, is_start_divider_visible,
+      is_end_divider_visible, is_loading, spinner_rotation, brightness,
+      opacity);
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(

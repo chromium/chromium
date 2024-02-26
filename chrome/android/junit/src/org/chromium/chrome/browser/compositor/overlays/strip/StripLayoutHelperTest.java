@@ -1714,6 +1714,86 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabOutline_SelectedTabInGroup_NotShow() {
+        // Mock 5 tabs and make 2 tab groups each containing 2 tabs.
+        initializeTest(false, false, false, 0, 5);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 5);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        groupTabs(0, 2);
+        groupTabs(2, 4);
+
+        // Test tab outline should not show for selected tab in group.
+        assertFalse(
+                "Tab outline should show for selected tab in group",
+                mStripLayoutHelper.shouldShowTabOutline(tabs[0]));
+
+        // Test tab outline should not show for the rest of tabs.
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[1]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[2]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[3]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[4]));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabOutline_SelectedTabInGroup_Show() {
+        // Mock 5 tabs and make 2 tab groups each containing 2 tabs.
+        initializeTest(false, false, false, 0, 5);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 5);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        groupTabs(0, 2);
+        groupTabs(2, 4);
+
+        // Test tab outline should show for selected tab in group.
+        assertTrue(
+                "Tab outline should show for selected tab in group",
+                mStripLayoutHelper.shouldShowTabOutline(tabs[0]));
+
+        // Test tab outline should not show for the rest of tabs.
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[1]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[2]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[3]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[4]));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabOutline_ReorderMode_NotShow() {
+        // Mock 5 tabs and make 2 tab groups each containing 2 tabs.
+        initializeTest(false, false, false, 0, 5);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 5);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        groupTabs(0, 2);
+        groupTabs(2, 4);
+
+        // Enter reorder mode.
+        mStripLayoutHelper.setInReorderModeForTesting(true);
+
+        // Test tab outline should not show for selected tab in group when enter reorder mode.
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[0]));
+
+        // Test tab outline should not show for the rest of tabs.
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[1]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[2]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[3]));
+        assertFalse(
+                "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[4]));
+    }
+
+    @Test
     public void testReorder_SetSelectedTabGroupContainersVisible() {
         // Mock 5 tabs. Group the first two tabs.
         initializeTest(false, false, true, 2, 5);
