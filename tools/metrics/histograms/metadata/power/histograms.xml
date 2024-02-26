@@ -1570,17 +1570,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
-    expires_after="2024-02-25">
-  <owner>avi@chromium.org</owner>
-  <owner>lgrey@chromium.org</owner>
-  <summary>
-    Whether the user's machine is on battery power. Sampled once per minute.
-    Unlike Power.Mac.IsOnBattery, this correctly logs desktop Macs as not being
-    on battery.
-  </summary>
-</histogram>
-
 <histogram name="Power.Mac.ThermalState" enum="MacThermalState"
     expires_after="2023-11-30">
   <owner>lgrey@chromium.org</owner>

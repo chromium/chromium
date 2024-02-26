@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/power_monitor/power_monitor.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -100,7 +99,6 @@ class PowerMetricsProvider::Impl {
       RecordSMC("DuringStartup");
     } else {
       RecordSMC("All");
-      RecordIsOnBattery();
       RecordThermal();
     }
   }
@@ -119,13 +117,6 @@ class PowerMetricsProvider::Impl {
                        smc_reader_->ReadKey(SMCKeyIdentifier::GPU0Power));
     RecordSMCHistogram("Power.Mac.GPU1.", suffix,
                        smc_reader_->ReadKey(SMCKeyIdentifier::GPU1Power));
-  }
-
-  void RecordIsOnBattery() {
-    if (base::PowerMonitor::IsInitialized()) {
-      UMA_HISTOGRAM_BOOLEAN("Power.Mac.IsOnBattery2",
-                            base::PowerMonitor::IsOnBatteryPower());
-    }
   }
 
   void RecordThermal() {
