@@ -23,6 +23,9 @@ third_party/blink/tools/run_wpt_tests.py --help
 
 ## Running Web Platform Tests with Chrome
 
+Note: Internal testing APIs, e.g. `window.internals` or `window.testRunner`, are not available in Chrome. [Internal web
+platform tests](../../third_party/blink/web_tests/wpt_internal) using those APIs should be skipped through [NeverFixTests](../../third_party/blink/web_tests/NeverFixTests).
+
 ### Supported Platforms
 
 * Linux
