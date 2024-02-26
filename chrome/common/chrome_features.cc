@@ -1292,13 +1292,6 @@ BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSupportToolScreenshot,
              "SupportToolScreenshot",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables copy token button on chrome://support-tool.url-generator page. The
-// token can be used in Admin Console to select the requested data collector
-// types.
-BASE_FEATURE(kSupportToolCopyTokenButton,
-             "SupportToolCopyTokenButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN)
