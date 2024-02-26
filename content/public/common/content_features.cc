@@ -307,6 +307,16 @@ BASE_FEATURE(kDIPSPreservePSData,
              "DIPSPreservePSData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables HW decode acceleration for WebRTC.
+BASE_FEATURE(kWebRtcHWDecoding,
+             "webrtc-hw-decoding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables HW encode acceleration for WebRTC.
+BASE_FEATURE(kWebRtcHWEncoding,
+             "webrtc-hw-encoding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables disconnecting the `ExtensionMessagePort` when the page using the port
 // enters BFCache.
 BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,

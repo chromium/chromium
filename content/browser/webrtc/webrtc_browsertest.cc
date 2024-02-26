@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -37,8 +38,15 @@ namespace content {
 // granted.
 class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
  public:
-  MAYBE_WebRtcBrowserTest() {}
-  ~MAYBE_WebRtcBrowserTest() override {}
+  MAYBE_WebRtcBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // This test fails on Nexus 5 devices.
+    // TODO(henrika): see http://crbug.com/362437 and http://crbug.com/359389
+    // for details.
+    scoped_feature_list_.InitAndDisableFeature(features::kWebRtcHWDecoding);
+#endif
+  }
+  ~MAYBE_WebRtcBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
@@ -58,6 +66,8 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
     // the javascript, expecting no errors to be thrown.
     MakeTypicalCall(javascript, "/media/peerconnection-setConfiguration.html");
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {
@@ -166,13 +176,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 // received on pc2 to test that cloning of remote video and audio tracks works
 // as intended and is sent back to pc1.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanForwardRemoteStream) {
-#if defined (OS_ANDROID)
-  // This test fails on Nexus 5 devices.
-  // TODO(henrika): see http://crbug.com/362437 and http://crbug.com/359389
-  // for details.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableWebRtcHWDecoding);
-#endif
   MakeTypicalPeerConnectionCall(
       "callAndForwardRemoteStream({video: true, audio: true});");
 }

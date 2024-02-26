@@ -616,13 +616,11 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
 }
 
 bool RendererBlinkPlatformImpl::IsWebRtcHWEncodingEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableWebRtcHWEncoding);
+  return base::FeatureList::IsEnabled(::features::kWebRtcHWEncoding);
 }
 
 bool RendererBlinkPlatformImpl::IsWebRtcHWDecodingEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableWebRtcHWDecoding);
+  return base::FeatureList::IsEnabled(::features::kWebRtcHWDecoding);
 }
 
 bool RendererBlinkPlatformImpl::IsWebRtcSrtpEncryptedHeadersEnabled() {

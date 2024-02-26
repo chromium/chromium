@@ -94,8 +94,6 @@ CONTENT_EXPORT extern const char kDisableSpeechSynthesisAPI[];
 CONTENT_EXPORT extern const char kDisableThreadedCompositing[];
 extern const char kDisableV8IdleTasks[];
 CONTENT_EXPORT extern const char kDisableWebRtcEncryption[];
-CONTENT_EXPORT extern const char kDisableWebRtcHWDecoding[];
-CONTENT_EXPORT extern const char kDisableWebRtcHWEncoding[];
 CONTENT_EXPORT extern const char kDisableWebGLImageChromium[];
 CONTENT_EXPORT extern const char kDisableWebSecurity[];
 CONTENT_EXPORT extern const char kDisableZeroCopyDxgiVideo[];

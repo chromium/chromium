@@ -17,6 +17,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -79,7 +80,6 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       switches::kDisableGpuWatchdog,
       switches::kDisableQuic,
       switches::kDisableMipmapGeneration,
-      switches::kDisableWebRtcHWDecoding,
       // TODO(crbug.com/1082821): Remove this switch from the allow-list.
       switches::kEnableCastStreamingReceiver,
       switches::kEnableFeatures,
@@ -141,6 +141,12 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
     LOG(ERROR) << "Config command-line arg must be a string: " << arg.first;
     return false;
   }
+
+  // Disable kWebRtcHWDecoding by default until config-data are updated.
+  // TODO(b/326282208): Remove once config-data are updated to use the new
+  // feature.
+  AppendToSwitch(switches::kDisableFeatures, features::kWebRtcHWDecoding.name,
+                 command_line);
 
   return true;
 }

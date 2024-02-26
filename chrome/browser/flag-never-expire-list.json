@@ -34,8 +34,6 @@
   "disable-buffer-bw-compression",
   "disable-explicit-dma-fences",
   "disable-javascript-harmony-shipping",
-  "disable-webrtc-hw-decoding",
-  "disable-webrtc-hw-encoding",
   "disallow-doc-written-script-loads",
   "enable-autofill-credit-card-upload",
   "enable-benchmarking",
@@ -148,6 +146,8 @@
   "wait-threshold-seconds-for-capabilities-api",
   "wallet-service-use-sandbox",
   "web-authentication-permit-enterprise-attestation",
+  "webrtc-hw-decoding",
+  "webrtc-hw-encoding",
   "webtransport-developer-mode",
   "webxr-runtime",
   "webxr-shared-buffers"

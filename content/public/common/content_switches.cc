@@ -898,12 +898,6 @@ const char kWebOtpBackendAuto[] = "web-otp-backend-auto";
 // ignores this switch on its stable and beta channels.
 const char kDisableWebRtcEncryption[]      = "disable-webrtc-encryption";
 
-// Disables HW decode acceleration for WebRTC.
-const char kDisableWebRtcHWDecoding[]       = "disable-webrtc-hw-decoding";
-
-// Disables HW encode acceleration for WebRTC.
-const char kDisableWebRtcHWEncoding[] = "disable-webrtc-hw-encoding";
-
 // Enables negotiation of encrypted header extensions from RFC 6904 for SRTP
 // in WebRTC.
 // See https://tools.ietf.org/html/rfc6904 for further information.

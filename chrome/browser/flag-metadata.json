@@ -1860,22 +1860,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "disable-webrtc-hw-decoding",
-    "owners": [ "hiroh@chromium.org", "chromeos-video-eng@google.com" ],
-    // This flag does not expire because it allows users to disable HW video
-    // decoding only in webrtc usecase for debugging purpose and temporary
-    // workaround for some issues.
-    "expiry_milestone": -1
-  },
-  {
-    "name": "disable-webrtc-hw-encoding",
-    "owners": [ "hiroh@chromium.org", "chromeos-video-eng@google.com" ],
-    // This flag does not expire because it allows users to disable HW video
-    // encoding only in webrtc usecase for debugging purpose and temporary
-    // workaround for some issues.
-    "expiry_milestone": -1
-  },
-  {
     "name": "disallow-doc-written-script-loads",
     "owners": [ "//chrome/browser/data_saver/OWNERS" ],
     // This is a web-developer facing flag and should not be removed.
@@ -8569,6 +8553,22 @@
     "name": "webrtc-allow-wgc-window-capturer",
     "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
     "expiry_milestone": 129
+  },
+  {
+    "name": "webrtc-hw-decoding",
+    "owners": [ "hiroh@chromium.org", "chromeos-video-eng@google.com" ],
+    // This flag does not expire because it allows users to enable or disable
+    // HW video decoding only in webrtc usecase for debugging purpose and
+    // temporary workaround for some issues.
+    "expiry_milestone": -1
+  },
+  {
+    "name": "webrtc-hw-encoding",
+    "owners": [ "hiroh@chromium.org", "chromeos-video-eng@google.com" ],
+    // This flag does not expire because it allows users to enable or disable
+    // HW video encoding only in webrtc usecase for debugging purpose and
+    // temporary workaround for some issues.
+    "expiry_milestone": -1
   },
   {
     "name": "webtransport-developer-mode",
