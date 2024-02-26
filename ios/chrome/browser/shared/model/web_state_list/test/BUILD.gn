@@ -7,10 +7,28 @@ source_set("test_support") {
   sources = [
     "fake_web_state_list_delegate.h",
     "fake_web_state_list_delegate.mm",
+    "web_state_list_builder_from_description.h",
+    "web_state_list_builder_from_description.mm",
   ]
   deps = [
     "//base",
+    "//components/tab_groups",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
+    "//ios/web/public/test/fakes",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "web_state_list_builder_from_description_unittest.mm" ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//components/tab_groups",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
   ]
 }
