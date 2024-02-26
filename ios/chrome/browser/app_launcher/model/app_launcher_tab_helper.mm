@@ -66,6 +66,13 @@ enum class ExternalURLRequestStatus {
   kCount,
 };
 
+// Execute the callbacks contained in `callbacks`.
+void ExecuteCallbacks(std::vector<base::OnceClosure> callbacks) {
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
+}
+
 }  // namespace
 
 AppLauncherTabHelper::AppLauncherTabHelper(
@@ -228,11 +235,12 @@ void AppLauncherTabHelper::LaunchAppRequestCompleted() {
   is_app_launch_request_pending_ = false;
   is_prompt_active_ = false;
 
-  // Call and clear all callbacks waiting for app launch completion.
-  for (auto& callback : callbacks_waiting_for_app_launch_completion_) {
-    std::move(callback).Run();
-  }
-  callbacks_waiting_for_app_launch_completion_.clear();
+  // Some of the callback may destruct `this`, so post the execution to remove
+  // the function from the stack.
+  std::vector<base::OnceClosure> callbacks;
+  std::swap(callbacks_waiting_for_app_launch_completion_, callbacks);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ExecuteCallbacks, std::move(callbacks)));
 }
 
 void AppLauncherTabHelper::ShouldAllowRequest(

@@ -348,10 +348,12 @@ TEST_F(AppLauncherTabHelperTest,
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
   EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
 
+  base::RunLoop().RunUntilIdle();
   // Application should be launched, but navigation should still be pending.
   EXPECT_FALSE(callback_called);
 
   delegate_.CompleteBackToApp();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
 }
@@ -413,6 +415,7 @@ TEST_F(AppLauncherTabHelperTest,
   // After app launch completion, policy decision should be received with
   // navigation allowed.
   delegate_.CompleteAppLaunch();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
   EXPECT_EQ(GURL("valid://1234"), delegate_.GetLastLaunchedAppUrl());
@@ -475,6 +478,7 @@ TEST_F(AppLauncherTabHelperTest,
   // After app launch completion, policy decision should be received with
   // navigation allowed.
   delegate_.CompleteAppLaunch();
+  base::RunLoop().RunUntilIdle();
 
   // Application should not be launched, and navigation should trigger be
   // pending.
