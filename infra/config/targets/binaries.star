@@ -2123,6 +2123,7 @@ targets.binaries.script(
     args = [
         "--cts-gcs-path",
         "../../android_webview/tools/cts_config/webview_cts_hostside_gcs_path.json",
+        "--skip-expected-failures",
         "--additional-apk",
         "apks/TrichromeLibrary64.apk",
         "--use-webview-provider",
