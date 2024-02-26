@@ -44,4 +44,18 @@ void TestPaymentsAutofillClient::ConfirmMigrateLocalCardToCloud(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+void TestPaymentsAutofillClient::ShowAutofillProgressDialog(
+    AutofillProgressDialogType autofill_progress_dialog_type,
+    base::OnceClosure cancel_callback) {
+  autofill_progress_dialog_shown_ = true;
+}
+
+void TestPaymentsAutofillClient::CloseAutofillProgressDialog(
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_user_perceived_authentication_callback) {
+  if (no_user_perceived_authentication_callback) {
+    std::move(no_user_perceived_authentication_callback).Run();
+  }
+}
+
 }  // namespace autofill::payments

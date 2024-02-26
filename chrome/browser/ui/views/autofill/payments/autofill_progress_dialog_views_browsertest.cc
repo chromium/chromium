@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -69,7 +70,11 @@ class AutofillProgressDialogViewsBrowserTest
   AutofillProgressDialogControllerImpl* controller() const {
     auto* client =
         ChromeAutofillClient::FromWebContentsForTesting(web_contents());
-    return client->AutofillProgressDialogControllerForTesting();
+    // On Desktop and Clank, the PaymentsAutofillClient can only be a
+    // ChromePaymentsAutofillClient.
+    return static_cast<payments::ChromePaymentsAutofillClient*>(
+               client->GetPaymentsAutofillClient())
+        ->AutofillProgressDialogControllerForTesting();
   }
 
   content::WebContents* web_contents() const {

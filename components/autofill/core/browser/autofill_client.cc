@@ -260,16 +260,6 @@ void AutofillClient::ShowAutofillErrorDialog(
     const AutofillErrorDialogContext& context) {
 }
 
-void AutofillClient::ShowAutofillProgressDialog(
-    AutofillProgressDialogType autofill_progress_dialog_type,
-    base::OnceClosure cancel_callback) {
-}
-
-void AutofillClient::CloseAutofillProgressDialog(
-    bool show_confirmation_before_closing,
-    base::OnceClosure no_interactive_authentication_callback) {
-}
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

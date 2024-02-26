@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -186,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   // Check that the flow was successful and an UnmaskCardRequest was triggered
   // with the correct fields set, and the progress dialog was shown.
   auto* autofill_client = client();
-  EXPECT_TRUE(autofill_client->autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client->GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
   const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
       unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
                            autofill_client->GetPaymentsNetworkInterface())

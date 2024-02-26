@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -251,15 +250,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const VirtualCardManualFallbackBubbleOptions& options) override;
   void ShowAutofillErrorDialog(
       const AutofillErrorDialogContext& context) override;
-  void ShowAutofillProgressDialog(
-      AutofillProgressDialogType autofill_progress_dialog_type,
-      base::OnceClosure cancel_callback) override;
   void TriggerUserPerceptionOfAutofillSurvey(
       const std::map<std::string, std::string>& field_filling_stats_data)
       override;
-  void CloseAutofillProgressDialog(
-      bool show_confirmation_before_closing,
-      base::OnceClosure no_interactive_authentication_callback) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
@@ -282,11 +275,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   SetCardUnmaskControllerForTesting(
       std::unique_ptr<CardUnmaskPromptControllerImpl> test_controller) {
     return std::exchange(unmask_controller_, std::move(test_controller));
-  }
-
-  AutofillProgressDialogControllerImpl*
-  AutofillProgressDialogControllerForTesting() {
-    return autofill_progress_dialog_controller_.get();
   }
 
   // ContentAutofillClient:
@@ -357,8 +345,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
-  std::unique_ptr<AutofillProgressDialogControllerImpl>
-      autofill_progress_dialog_controller_;
   std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
       card_unmask_otp_input_dialog_controller_;
 };

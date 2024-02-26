@@ -1219,17 +1219,6 @@ void ChromeAutofillClient::ShowAutofillErrorDialog(
                      base::Unretained(web_contents())));
 }
 
-void ChromeAutofillClient::ShowAutofillProgressDialog(
-    AutofillProgressDialogType autofill_progress_dialog_type,
-    base::OnceClosure cancel_callback) {
-  autofill_progress_dialog_controller_->ShowDialog(
-      autofill_progress_dialog_type,
-      base::BindOnce(&CreateAndShowProgressDialog,
-                     autofill_progress_dialog_controller_->GetWeakPtr(),
-                     base::Unretained(web_contents())),
-      std::move(cancel_callback));
-}
-
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     const std::map<std::string, std::string>& field_filling_stats_data) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -1249,15 +1238,6 @@ void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
             features::kAutofillGranularFillingAvailable)}},
       field_filling_stats_data);
 #endif
-}
-
-void ChromeAutofillClient::CloseAutofillProgressDialog(
-    bool show_confirmation_before_closing,
-    base::OnceClosure no_interactive_authentication_callback) {
-  DCHECK(autofill_progress_dialog_controller_);
-  autofill_progress_dialog_controller_->DismissDialog(
-      show_confirmation_before_closing,
-      std::move(no_interactive_authentication_callback));
 }
 
 bool ChromeAutofillClient::IsAutocompleteEnabled() const {
@@ -1360,9 +1340,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                                  web_contents->GetBrowserContext()),
                              base::NullCallback())),
       unmask_controller_(std::make_unique<CardUnmaskPromptControllerImpl>(
-          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()))),
-      autofill_progress_dialog_controller_(
-          std::make_unique<AutofillProgressDialogControllerImpl>()) {
+          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()))) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();

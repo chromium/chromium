@@ -194,7 +194,8 @@ TEST_F(IbanAccessManagerTest, FetchValue_LocalIbanNoProgressDialog) {
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   iban_access_manager_->FetchValue(suggestion, callback.Get());
 
-  EXPECT_FALSE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_.GetPaymentsAutofillClient()
+                   ->autofill_progress_dialog_shown());
 }
 
 // Verify that there will be a progress dialog when unmasking a server IBAN.
@@ -210,7 +211,8 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Success) {
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   iban_access_manager_->FetchValue(suggestion, callback.Get());
 
-  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
   EXPECT_FALSE(autofill_client_.autofill_error_dialog_shown());
 }
 
@@ -228,7 +230,8 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Failure) {
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   iban_access_manager_->FetchValue(suggestion, callback.Get());
 
-  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
   EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
 }
 

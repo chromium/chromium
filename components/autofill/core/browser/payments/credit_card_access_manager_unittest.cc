@@ -3083,7 +3083,8 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
     // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
     // invoked.
     EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
-    EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+    EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                    ->autofill_progress_dialog_shown());
 
     // Mock that
     // CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
@@ -3119,7 +3120,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
   EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
 
   CreditCard card = *masked_server_card;
   card.set_record_type(CreditCard::RecordType::kFullServerCard);
@@ -3165,7 +3167,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
   EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
 
   // Mock that CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
   // indicates a red path.
@@ -3199,7 +3202,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
   EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
 
   // Mock the authentication is cancelled.
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
@@ -3305,7 +3309,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
   EXPECT_TRUE(autofill_client_.risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
 
   // Mock that CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
   // indicates a yellow path when `fido_request_options` and `context_token` are

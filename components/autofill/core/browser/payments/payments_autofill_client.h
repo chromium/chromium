@@ -14,6 +14,7 @@
 
 namespace autofill {
 
+enum class AutofillProgressDialogType;
 class MigratableCreditCard;
 
 namespace payments {
@@ -79,6 +80,15 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // the desktop codebase. If iOS is not using it to do anything, please keep
   // this function for desktop.
   virtual void CreditCardUploadCompleted(bool card_saved);
+
+  // Show/dismiss the progress dialog which contains a throbber and a text
+  // message indicating that something is in progress.
+  virtual void ShowAutofillProgressDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback);
+  virtual void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_interactive_authentication_callback);
 };
 
 }  // namespace payments

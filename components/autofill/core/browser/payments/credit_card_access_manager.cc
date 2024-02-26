@@ -776,8 +776,9 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
           features::kAutofillEnableFIDOProgressDialog)) {
     // Close the progress dialog when the authentication for getting the full
     // card completes.
-    client_->CloseAutofillProgressDialog(
-        /*show_confirmation_before_closing=*/true);
+    client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/true,
+        /*no_interactive_authentication_callback=*/base::OnceClosure());
   }
 #else
   // Close the Webauthn verify pending dialog. If FIDO authentication succeeded,
@@ -1119,7 +1120,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     }
 #endif
 
-    client_->ShowAutofillProgressDialog(
+    client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
         AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
         /*cancel_callback=*/base::BindOnce(
             &CreditCardRiskBasedAuthenticator::OnUnmaskCancelled,
@@ -1178,7 +1179,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 
 void CreditCardAccessManager::FetchVirtualCard() {
   is_authentication_in_progress_ = true;
-  client_->ShowAutofillProgressDialog(
+  client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
       AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
       base::BindOnce(&CreditCardAccessManager::OnVirtualCardUnmaskCancelled,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -1252,8 +1253,9 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
         Result::kAuthenticationRequired:
       // Authenticates users to unmask the card if the response indicates
       // further authentication is required.
-      client_->CloseAutofillProgressDialog(
-          /*show_confirmation_before_closing=*/false);
+      client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+          /*show_confirmation_before_closing=*/false,
+          /*no_interactive_authentication_callback=*/base::OnceClosure());
       CHECK(!response.context_token.empty());
       risk_based_authentication_response_ = response;
       // If `fido_request_options` is present, FIDO auth is offered to the card
@@ -1280,8 +1282,9 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
     case CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
         Result::kError:
       // Shows error dialog to users if the authentication failed.
-      client_->CloseAutofillProgressDialog(
-          /*show_confirmation_before_closing=*/false);
+      client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+          /*show_confirmation_before_closing=*/false,
+          /*no_interactive_authentication_callback=*/base::OnceClosure());
       std::move(on_credit_card_fetched_callback_)
           .Run(CreditCardFetchResult::kTransientError, nullptr);
       client_->ShowAutofillErrorDialog(response.error_dialog_context);
@@ -1331,8 +1334,9 @@ void CreditCardAccessManager::
     // Otherwise further authentication is required to unmask the card.
     DCHECK(!response_details.context_token.empty());
     // Close the progress dialog without showing the confirmation.
-    client_->CloseAutofillProgressDialog(
-        /*show_confirmation_before_closing=*/false);
+    client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/false,
+        /*no_interactive_authentication_callback=*/base::OnceClosure());
     StartAuthenticationFlow(
         IsFidoAuthEnabled(response_details.fido_request_options.has_value()));
     return;
@@ -1343,8 +1347,9 @@ void CreditCardAccessManager::
   // permanent error dialog, and for all other cases we show VCN temporary
   // error dialog.
   // Close the progress dialog without showing the confirmation.
-  client_->CloseAutofillProgressDialog(
-      /*show_confirmation_before_closing=*/false);
+  client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/false,
+      /*no_interactive_authentication_callback=*/base::OnceClosure());
   std::move(on_credit_card_fetched_callback_)
       .Run(CreditCardFetchResult::kTransientError, nullptr);
 
@@ -1390,8 +1395,8 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
     // device authentication prompt freezes Chrome. Thus we can only trigger
     // the prompt after the progress dialog has been closed, which we can do
     // by using the `no_interactive_authentication_callback` parameter in
-    // `AutofillClient::CloseAutofillProgressDialog()`.
-    client_->CloseAutofillProgressDialog(
+    // `PaymentsAutofillClient::CloseAutofillProgressDialog()`.
+    client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
         /*show_confirmation_before_closing=*/false,
         /*no_interactive_authentication_callback=*/base::BindOnce(
             // `StartDeviceAuthenticationForFilling()` will asynchronously
@@ -1401,8 +1406,9 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
             &CreditCardAccessManager::StartDeviceAuthenticationForFilling,
             weak_ptr_factory_.GetWeakPtr(), card_.get()));
   } else {
-    client_->CloseAutofillProgressDialog(
-        /*show_confirmation_before_closing=*/true);
+    client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/true,
+        /*no_interactive_authentication_callback=*/base::OnceClosure());
     std::move(on_credit_card_fetched_callback_)
         .Run(CreditCardFetchResult::kSuccess, card_.get());
 

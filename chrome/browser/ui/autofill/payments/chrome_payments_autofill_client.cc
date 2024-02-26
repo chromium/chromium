@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -97,6 +99,28 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
     controller->ShowConfirmationBubbleView(card_saved);
   }
 #endif
+}
+
+void ChromePaymentsAutofillClient::ShowAutofillProgressDialog(
+    AutofillProgressDialogType autofill_progress_dialog_type,
+    base::OnceClosure cancel_callback) {
+  autofill_progress_dialog_controller_ =
+      std::make_unique<AutofillProgressDialogControllerImpl>();
+  autofill_progress_dialog_controller_->ShowDialog(
+      autofill_progress_dialog_type,
+      base::BindOnce(&CreateAndShowProgressDialog,
+                     autofill_progress_dialog_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())),
+      std::move(cancel_callback));
+}
+
+void ChromePaymentsAutofillClient::CloseAutofillProgressDialog(
+    bool show_confirmation_before_closing,
+    base::OnceClosure no_interactive_authentication_callback) {
+  DCHECK(autofill_progress_dialog_controller_);
+  autofill_progress_dialog_controller_->DismissDialog(
+      show_confirmation_before_closing,
+      std::move(no_interactive_authentication_callback));
 }
 
 }  // namespace autofill::payments

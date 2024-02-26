@@ -84,7 +84,6 @@ class AutofillOfferManager;
 class AutofillOptimizationGuide;
 class AutofillPopupDelegate;
 class AutofillProfile;
-enum class AutofillProgressDialogType;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 struct CardUnmaskPromptOptions;
@@ -804,16 +803,6 @@ class AutofillClient {
   // displayed for the title and description, respectively.
   virtual void ShowAutofillErrorDialog(
       const AutofillErrorDialogContext& context);
-
-  // Show/dismiss the progress dialog which contains a throbber and a text
-  // message indicating that something is in progress.
-  virtual void ShowAutofillProgressDialog(
-      AutofillProgressDialogType autofill_progress_dialog_type,
-      base::OnceClosure cancel_callback);
-  virtual void CloseAutofillProgressDialog(
-      bool show_confirmation_before_closing,
-      base::OnceClosure no_interactive_authentication_callback =
-          base::OnceClosure());
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill. When triggering happens, the survey dialog will be displayed with

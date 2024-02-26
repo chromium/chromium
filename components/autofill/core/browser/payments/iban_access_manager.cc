@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -72,7 +73,7 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
     return;
   }
 
-  client_->ShowAutofillProgressDialog(
+  client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
       AutofillProgressDialogType::kServerIbanUnmaskProgressDialog,
       base::BindOnce(&IbanAccessManager::OnServerIbanUnmaskCancelled,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -116,8 +117,8 @@ void IbanAccessManager::OnUnmaskResponseReceived(
       // device authentication prompt freezes Chrome. Thus we can only trigger
       // the prompt after the progress dialog has been closed, which we can do
       // by using the `no_interactive_authentication_callback` parameter in
-      // `AutofillClient::CloseAutofillProgressDialog()`.
-      client_->CloseAutofillProgressDialog(
+      // `PaymentsAutofillClient::CloseAutofillProgressDialog()`.
+      client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
           /*show_confirmation_before_closing=*/false,
           /*no_interactive_authentication_callback=*/base::BindOnce(
               // `StartDeviceAuthenticationForFilling()` will asynchronously
@@ -128,8 +129,9 @@ void IbanAccessManager::OnUnmaskResponseReceived(
               weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value,
               NonInteractivePaymentMethodType::kServerIban));
     } else {
-      client_->CloseAutofillProgressDialog(
-          /*show_confirmation_before_closing=*/false);
+      client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+          /*show_confirmation_before_closing=*/false,
+          /*no_interactive_authentication_callback=*/base::OnceClosure());
       std::move(on_iban_fetched).Run(value);
       if (auto* form_data_importer = client_->GetFormDataImporter()) {
         form_data_importer

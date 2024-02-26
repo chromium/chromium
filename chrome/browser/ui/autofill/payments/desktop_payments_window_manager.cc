@@ -88,7 +88,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
 void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
     RedirectCompletionProof redirect_completion_proof,
     const std::string& risk_data) {
-  client_->ShowAutofillProgressDialog(
+  client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
       AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
       // TODO(crbug.com/1517762): Handle the user cancelling the progress
       // dialog here.
@@ -106,8 +106,9 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
     PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
   Vcn3dsAuthenticationResponse response = CreateVcn3dsAuthenticationResponse(
       result, response_details, std::move(vcn_3ds_context_->card));
-  client_->CloseAutofillProgressDialog(
-      /*show_confirmation_before_closing=*/response.card.has_value());
+  client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/response.card.has_value(),
+      /*no_interactive_authentication_callback=*/base::OnceClosure());
   // TODO(crbug.com/1517762): Trigger an error dialog if no card is present in
   // `response`.
   std::move(vcn_3ds_context_->completion_callback).Run(std::move(response));

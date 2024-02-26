@@ -35,13 +35,26 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
           start_migrating_cards_callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+  void ShowAutofillProgressDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback) override;
+  void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_user_perceived_authentication_callback) override;
+
   void set_migration_card_selections(
       const std::vector<std::string>& migration_card_selection) {
     migration_card_selection_ = migration_card_selection;
   }
 
+  bool autofill_progress_dialog_shown() {
+    return autofill_progress_dialog_shown_;
+  }
+
  private:
   std::vector<std::string> migration_card_selection_;
+
+  bool autofill_progress_dialog_shown_ = false;
 };
 
 }  // namespace autofill::payments

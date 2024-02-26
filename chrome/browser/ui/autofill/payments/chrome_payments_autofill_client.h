@@ -7,6 +7,9 @@
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
+#include <memory>
+
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -49,6 +52,25 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void CreditCardUploadCompleted(bool card_saved) override;
+  void ShowAutofillProgressDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback) override;
+  void CloseAutofillProgressDialog(
+      bool show_confirmation_before_closing,
+      base::OnceClosure no_interactive_authentication_callback) override;
+
+  AutofillProgressDialogControllerImpl*
+  AutofillProgressDialogControllerForTesting() {
+    if (!autofill_progress_dialog_controller_) {
+      autofill_progress_dialog_controller_ =
+          std::make_unique<AutofillProgressDialogControllerImpl>();
+    }
+    return autofill_progress_dialog_controller_.get();
+  }
+
+ private:
+  std::unique_ptr<AutofillProgressDialogControllerImpl>
+      autofill_progress_dialog_controller_;
 };
 
 }  // namespace autofill::payments
