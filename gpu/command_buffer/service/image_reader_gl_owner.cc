@@ -102,8 +102,7 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
                            base::ScopedFD fence_fd)
       : base::android::ScopedHardwareBufferFenceSync(std::move(handle),
                                                      std::move(fence_fd),
-                                                     base::ScopedFD(),
-                                                     true /* is_video */),
+                                                     base::ScopedFD()),
         texture_owner_(std::move(texture_owner)),
         image_(image) {
     DCHECK(image_);

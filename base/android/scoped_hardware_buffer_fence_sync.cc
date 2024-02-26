@@ -12,12 +12,10 @@ namespace android {
 ScopedHardwareBufferFenceSync::ScopedHardwareBufferFenceSync(
     ScopedHardwareBufferHandle handle,
     ScopedFD fence_fd,
-    ScopedFD available_fence_fd,
-    bool is_video)
+    ScopedFD available_fence_fd)
     : handle_(std::move(handle)),
       fence_fd_(std::move(fence_fd)),
-      available_fence_fd_(std::move(available_fence_fd)),
-      is_video_(is_video) {}
+      available_fence_fd_(std::move(available_fence_fd)) {}
 
 ScopedHardwareBufferFenceSync::~ScopedHardwareBufferFenceSync() = default;
 

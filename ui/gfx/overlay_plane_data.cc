@@ -22,6 +22,7 @@ OverlayPlaneData::OverlayPlaneData(
     const std::optional<HDRMetadata>& hdr_metadata,
     std::optional<SkColor4f> color,
     bool is_solid_color,
+    bool is_root_overlay,
     std::optional<Rect> clip_rect)
     : z_order(z_order),
       plane_transform(plane_transform),
@@ -36,6 +37,7 @@ OverlayPlaneData::OverlayPlaneData(
       hdr_metadata(hdr_metadata),
       color(color),
       is_solid_color(is_solid_color),
+      is_root_overlay(is_root_overlay),
       clip_rect(clip_rect) {}
 
 OverlayPlaneData::~OverlayPlaneData() = default;

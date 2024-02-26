@@ -90,8 +90,7 @@ class VideoImage : public base::RefCounted<VideoImage> {
         base::android::ScopedHardwareBufferHandle handle)
         : ScopedHardwareBufferFenceSync(std::move(handle),
                                         base::ScopedFD(),
-                                        base::ScopedFD(),
-                                        /*is_video=*/true),
+                                        base::ScopedFD()),
           image_(std::move(image)) {}
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 

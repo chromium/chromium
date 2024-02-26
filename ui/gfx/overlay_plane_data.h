@@ -37,6 +37,7 @@ struct GFX_EXPORT OverlayPlaneData {
       const std::optional<HDRMetadata>& hdr_metadata,
       std::optional<SkColor4f> color = std::nullopt,
       bool is_solid_color = false,
+      bool is_root_overlay = false,
       std::optional<Rect> clip_rect = std::nullopt);
   ~OverlayPlaneData();
 
@@ -87,7 +88,9 @@ struct GFX_EXPORT OverlayPlaneData {
   std::optional<SkColor4f> color;
 
   // Set if this is a solid color quad.
-  bool is_solid_color;
+  bool is_solid_color = false;
+
+  bool is_root_overlay = false;
 
   // Optional clip rect for this overlay.
   std::optional<gfx::Rect> clip_rect;

@@ -271,14 +271,13 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   AHardwareBuffer* hardware_buffer = nullptr;
   base::ScopedFD fence_fd;
   auto scoped_hardware_buffer = std::move(image);
-  bool is_primary_plane = false;
+  bool is_primary_plane = overlay_plane_data.is_root_overlay;
   if (scoped_hardware_buffer) {
     hardware_buffer = scoped_hardware_buffer->buffer();
 
     // We currently only promote the display compositor's buffer or a video
     // buffer to an overlay. So if this buffer is not for video then it implies
     // its the primary plane.
-    is_primary_plane = !scoped_hardware_buffer->is_video();
     DCHECK(!is_primary_plane || !primary_plane_fences_);
     if (is_primary_plane) {
       primary_plane_fences_.emplace();
