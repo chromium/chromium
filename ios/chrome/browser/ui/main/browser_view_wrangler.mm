@@ -12,6 +12,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
@@ -168,8 +169,12 @@
   }
 
   if (_currentInterface) {
-    // Tell the current BVC it moved to the background.
-    [_currentInterface setPrimary:NO];
+    // Record that the primary browser was changed.
+    TabUsageRecorderBrowserAgent* tabUsageRecorder =
+        TabUsageRecorderBrowserAgent::FromBrowser(_currentInterface.browser);
+    if (tabUsageRecorder) {
+      tabUsageRecorder->RecordPrimaryBrowserChange(true);
+    }
   }
 
   _currentInterface = interface;

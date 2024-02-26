@@ -30,8 +30,6 @@ class Browser;
 
 // Only used by the FirstRunSceneAgent.
 @property(nonatomic, readonly) UIViewController* viewController;
-// Only used once by MainController when clearing browsing data.
-- (void)setPrimary:(BOOL)primary;
 
 @end
 

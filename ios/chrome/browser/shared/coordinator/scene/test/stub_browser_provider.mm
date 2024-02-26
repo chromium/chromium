@@ -8,8 +8,4 @@
 
 @synthesize inactiveBrowser = _inactiveBrowser;
 
-- (void)setPrimary:(BOOL)primary {
-  // no-op
-}
-
 @end

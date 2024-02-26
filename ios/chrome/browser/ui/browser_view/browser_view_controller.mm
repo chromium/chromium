@@ -603,15 +603,6 @@ enum HeaderBehaviour {
 
 #pragma mark - Public methods
 
-- (void)setPrimary:(BOOL)primary {
-  if (_tabUsageRecorderBrowserAgent) {
-    _tabUsageRecorderBrowserAgent->RecordPrimaryBrowserChange(primary);
-  }
-  if (primary) {
-    [self updateBroadcastState];
-  }
-}
-
 - (void)shieldWasTapped:(id)sender {
   [self.omniboxCommandsHandler cancelOmniboxEdit];
 }

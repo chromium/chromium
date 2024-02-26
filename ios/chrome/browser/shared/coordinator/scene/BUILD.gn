@@ -95,6 +95,7 @@ source_set("scene") {
     "//ios/chrome/browser/mailto_handler/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",

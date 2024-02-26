@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/model/browser_util.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -3663,7 +3664,15 @@ void InjectNTP(Browser* browser) {
       ->SetWebUsageEnabled(true);
   WebUsageEnablerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
       ->SetWebUsageEnabled(true);
-  [self.currentInterface setPrimary:YES];
+
+  if (self.currentInterface) {
+    TabUsageRecorderBrowserAgent* tabUsageRecorder =
+        TabUsageRecorderBrowserAgent::FromBrowser(
+            self.currentInterface.browser);
+    if (tabUsageRecorder) {
+      tabUsageRecorder->RecordPrimaryBrowserChange(true);
+    }
+  }
 }
 
 // Shows the tab switcher UI.

@@ -56,10 +56,6 @@
   return self.coordinator.playingTTS;
 }
 
-- (void)setPrimary:(BOOL)primary {
-  [self.coordinator.viewController setPrimary:primary];
-}
-
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self.coordinator clearPresentedStateWithCompletion:completion

@@ -83,6 +83,7 @@ source_set("main") {
     "//ios/chrome/browser/device_sharing/model",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/qr_scanner/ui_bundled:coordinator",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/sessions",

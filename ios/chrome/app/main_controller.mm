@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 #import "ios/chrome/browser/metrics/model/incognito_usage_app_state_agent.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/window_configuration_recorder.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
@@ -1524,7 +1525,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
         WebUsageEnablerBrowserAgent::FromBrowser(incognitoBrowser)
             ->SetWebUsageEnabled(true);
       }
-      [browserProviderInterface.currentBrowserProvider setPrimary:YES];
+      if (browserProviderInterface.currentBrowserProvider) {
+        TabUsageRecorderBrowserAgent* tabUsageRecorder =
+            TabUsageRecorderBrowserAgent::FromBrowser(
+                browserProviderInterface.currentBrowserProvider.browser);
+        if (tabUsageRecorder) {
+          tabUsageRecorder->RecordPrimaryBrowserChange(true);
+        }
+      }
     }
     // `completionBlock` is run once, not once per scene.
     if (completionBlock)

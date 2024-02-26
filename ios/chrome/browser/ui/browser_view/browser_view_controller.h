@@ -133,9 +133,6 @@ typedef struct {
 // Command handler for omnibox commands.
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 
-// Whether the receiver is currently the primary BVC.
-- (void)setPrimary:(BOOL)primary;
-
 // Opens a new tab as if originating from `originPoint` and `focusOmnibox`.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
                      focusOmnibox:(BOOL)focusOmnibox
