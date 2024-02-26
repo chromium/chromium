@@ -362,7 +362,8 @@ bool IsGaiaPageDefaultsToSAML() {
 bool IsContextNeededForScreen(OobeScreenId screen_id) {
   return screen_id == SamlConfirmPasswordView::kScreenId ||
          screen_id == CryptohomeRecoveryScreenView::kScreenId ||
-         screen_id == GaiaPasswordChangedView::kScreenId;
+         screen_id == GaiaPasswordChangedView::kScreenId ||
+         screen_id == LocalDataLossWarningScreenView::kScreenId;
 }
 
 }  // namespace
