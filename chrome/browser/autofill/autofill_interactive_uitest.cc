@@ -4004,8 +4004,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
 // Tests that an XHR request can indicate a form submission - even if the form
 // is deleted from the DOM.
+// TODO(crbug.com/41493168): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       XhrSucceededAndDeleteForm) {
+                       DISABLED_XhrSucceededAndDeleteForm) {
   EnterValues();
 
   base::RunLoop run_loop;
