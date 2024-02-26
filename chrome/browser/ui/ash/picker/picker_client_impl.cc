@@ -20,6 +20,8 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -153,8 +155,17 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
     std::vector<std::unique_ptr<ChromeSearchResult>> results) {
   std::vector<ash::PickerSearchResult> picker_results;
   picker_results.reserve(results.size());
-  for (std::unique_ptr<ChromeSearchResult>& result : results) {
+
+  for (const std::unique_ptr<ChromeSearchResult>& result : results) {
     CHECK(result);
+  }
+
+  base::ranges::sort(results, base::ranges::greater(),
+                     [](const std::unique_ptr<ChromeSearchResult>& result) {
+                       return result->relevance();
+                     });
+
+  for (const std::unique_ptr<ChromeSearchResult>& result : results) {
     switch (result->result_type()) {
       case ash::AppListSearchResultType::kOmnibox: {
         std::optional<GURL> result_url =
