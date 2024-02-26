@@ -95,6 +95,25 @@ OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
 
 }  // namespace
 
+OverviewController::ScopedOcclusionPauser::ScopedOcclusionPauser(
+    ScopedOcclusionPauser&&) = default;
+OverviewController::ScopedOcclusionPauser&
+OverviewController::ScopedOcclusionPauser::operator=(ScopedOcclusionPauser&&) =
+    default;
+
+OverviewController::ScopedOcclusionPauser::~ScopedOcclusionPauser() {
+  if (controller_) {
+    controller_->MaybeUnpauseOcclusionTracker(unpause_delay_);
+  }
+}
+
+OverviewController::ScopedOcclusionPauser::ScopedOcclusionPauser(
+    base::WeakPtr<OverviewController> controller,
+    base::TimeDelta unpause_delay)
+    : controller_(controller), unpause_delay_(unpause_delay) {
+  controller_->MaybePauseOcclusionTracker();
+}
+
 OverviewController::OverviewController()
     : occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
       delayed_animation_task_delay_(kTransition),
@@ -124,6 +143,11 @@ OverviewController::~OverviewController() {
 
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+}
+
+OverviewController::ScopedOcclusionPauser
+OverviewController::PauseOcclusionTracker(base::TimeDelta unpause_delay) {
+  return ScopedOcclusionPauser(weak_ptr_factory_.GetWeakPtr(), unpause_delay);
 }
 
 // static
@@ -234,22 +258,6 @@ bool OverviewController::IsInStartAnimation() {
 
 bool OverviewController::IsCompletingShutdownAnimations() const {
   return !delayed_animations_.empty();
-}
-
-void OverviewController::PauseOcclusionTracker() {
-  if (occlusion_tracker_pauser_)
-    return;
-
-  reset_pauser_task_.Cancel();
-  occlusion_tracker_pauser_ =
-      std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
-}
-
-void OverviewController::UnpauseOcclusionTracker(base::TimeDelta delay) {
-  reset_pauser_task_.Reset(base::BindOnce(&OverviewController::ResetPauser,
-                                          weak_ptr_factory_.GetWeakPtr()));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, reset_pauser_task_.callback(), delay);
 }
 
 void OverviewController::AddObserver(OverviewObserver* observer) {
@@ -369,7 +377,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     presentation_time_recorder->RequestNext();
 
     // Suspend occlusion tracker until the exit animation is complete.
-    PauseOcclusionTracker();
+    exit_pauser_ = PauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
     // We may want to slide out the overview grid in some cases, even if not
     // explicitly stated.
@@ -491,7 +499,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // (i.e. they have a snapshot), suspend occlusion tracker until the enter
     // animation is complete.
     if (windows_have_snapshot_) {
-      PauseOcclusionTracker();
+      enter_pauser_ = PauseOcclusionTracker(kOcclusionPauseDurationForStart);
     }
 
     overview_session_ = std::make_unique<OverviewSession>(this);
@@ -557,9 +565,7 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
     observer.OnOverviewModeStartingAnimationComplete(canceled);
   }
 
-  if (windows_have_snapshot_) {
-    UnpauseOcclusionTracker(kOcclusionPauseDurationForStart);
-  }
+  enter_pauser_.reset();
   TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::EnterOverview",
                                   this, "canceled", canceled);
 }
@@ -568,7 +574,7 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
   for (auto& observer : observers_)
     observer.OnOverviewModeEndingAnimationComplete(canceled);
 
-  UnpauseOcclusionTracker(occlusion_pause_duration_for_end_);
+  exit_pauser_.reset();
 
   // Resume the activation frame state.
   if (!canceled) {
@@ -582,7 +588,31 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
                                   this, "canceled", canceled);
 }
 
+void OverviewController::MaybePauseOcclusionTracker() {
+  pause_count_++;
+  if (pause_count_ > 1) {
+    return;
+  }
+
+  reset_pauser_task_.Cancel();
+  occlusion_tracker_pauser_ =
+      std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
+}
+
+void OverviewController::MaybeUnpauseOcclusionTracker(base::TimeDelta delay) {
+  pause_count_--;
+  if (pause_count_ > 0) {
+    return;
+  }
+
+  reset_pauser_task_.Reset(base::BindOnce(&OverviewController::ResetPauser,
+                                          weak_ptr_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, reset_pauser_task_.callback(), delay);
+}
+
 void OverviewController::ResetPauser() {
+  CHECK_EQ(pause_count_, 0);
   if (!overview_session_) {
     occlusion_tracker_pauser_.reset();
     return;

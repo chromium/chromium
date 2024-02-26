@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -275,6 +276,8 @@ class ASH_EXPORT OverviewWindowDragController {
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   SnapPosition snap_position_ = SnapPosition::kNone;
+
+  std::optional<OverviewController::ScopedOcclusionPauser> occlusion_pauser_;
 
   // A timer used to scale up the new desk button to make it a drop target for
   // the window being dragged if the window is hovered on the button over a

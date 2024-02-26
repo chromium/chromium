@@ -91,11 +91,6 @@ constexpr char kOverviewWindowDragHistogram[] =
 constexpr char kOverviewWindowDragMaxLatencyHistogram[] =
     "Ash.Overview.WindowDrag.PresentationTime.MaxLatency.TabletMode";
 
-void UnpauseOcclusionTracker() {
-  OverviewController::Get()->UnpauseOcclusionTracker(
-      kOcclusionPauseDurationForDrag);
-}
-
 bool GetVirtualDesksBarEnabled(OverviewItemBase* item) {
   return desks_util::ShouldDesksBarBeCreated() &&
          item->overview_grid()->desks_bar_view();
@@ -266,7 +261,8 @@ void OverviewWindowDragController::InitiateDrag(
   initial_centerpoint_ = item_->target_bounds().CenterPoint();
   original_opacity_ = item_->GetOpacity();
   current_drag_behavior_ = DragBehavior::kUndefined;
-  OverviewController::Get()->PauseOcclusionTracker();
+  occlusion_pauser_ = OverviewController::Get()->PauseOcclusionTracker(
+      kOcclusionPauseDurationForDrag);
   DCHECK(!presentation_time_recorder_);
 
   presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
@@ -342,7 +338,7 @@ OverviewWindowDragController::CompleteDrag(
   item_ = nullptr;
   event_source_item_ = nullptr;
   current_drag_behavior_ = DragBehavior::kNoDrag;
-  UnpauseOcclusionTracker();
+  occlusion_pauser_.reset();
   presentation_time_recorder_.reset();
   return result;
 }
@@ -450,7 +446,7 @@ OverviewWindowDragController::DragResult OverviewWindowDragController::Fling(
       item_ = nullptr;
       event_source_item_ = nullptr;
       current_drag_behavior_ = DragBehavior::kNoDrag;
-      UnpauseOcclusionTracker();
+      occlusion_pauser_.reset();
       RecordDragToClose(kFlingToClose);
       return DragResult::kSuccessfulDragToClose;
     }
@@ -503,7 +499,7 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
   }
 
   current_drag_behavior_ = DragBehavior::kNoDrag;
-  UnpauseOcclusionTracker();
+  occlusion_pauser_.reset();
 }
 
 void OverviewWindowDragController::ResetGesture() {
@@ -533,7 +529,7 @@ void OverviewWindowDragController::ResetGesture() {
   item_ = nullptr;
   event_source_item_ = nullptr;
   current_drag_behavior_ = DragBehavior::kNoDrag;
-  UnpauseOcclusionTracker();
+  occlusion_pauser_.reset();
 }
 
 void OverviewWindowDragController::ResetOverviewSession() {

@@ -1786,7 +1786,8 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
 }
 
 void OverviewGrid::StartScroll() {
-  OverviewController::Get()->PauseOcclusionTracker();
+  scroll_pauser_ = OverviewController::Get()->PauseOcclusionTracker(
+      kOcclusionUnpauseDurationForScroll);
 
   // Users are not allowed to scroll past the leftmost or rightmost bounds of
   // the items on screen in the grid. |scroll_offset_min_| is the amount needed
@@ -1856,8 +1857,7 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
 }
 
 void OverviewGrid::EndScroll() {
-  OverviewController::Get()->UnpauseOcclusionTracker(
-      kOcclusionUnpauseDurationForScroll);
+  scroll_pauser_.reset();
   for (const auto& item : item_list_) {
     item->set_scrolling_bounds(std::nullopt);
   }
@@ -2507,7 +2507,8 @@ void OverviewGrid::OnSplitViewDividerPositionChanged() {
 }
 
 void OverviewGrid::OnScreenCopiedBeforeRotation() {
-  OverviewController::Get()->PauseOcclusionTracker();
+  rotation_pauser_ = OverviewController::Get()->PauseOcclusionTracker(
+      kOcclusionUnpauseDurationForRotation);
 
   for (auto& window : window_list()) {
     window->UpdateRoundedCornersAndShadow();
@@ -2520,8 +2521,7 @@ void OverviewGrid::OnScreenRotationAnimationFinished(
     bool canceled) {
   OverviewController* overview_controller = OverviewController::Get();
   overview_controller->DelayedUpdateRoundedCornersAndShadow();
-  overview_controller->UnpauseOcclusionTracker(
-      kOcclusionUnpauseDurationForRotation);
+  rotation_pauser_.reset();
 }
 
 void OverviewGrid::OnWallpaperChanging() {

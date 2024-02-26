@@ -16,6 +16,7 @@
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
@@ -752,6 +753,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // each scroll update, use this list to prevent unnecessary recalculations.
   // For a scroll end, clear the list.
   base::flat_map<OverviewItemBase*, gfx::Transform> cached_transforms_;
+
+  std::optional<OverviewController::ScopedOcclusionPauser> rotation_pauser_;
+  std::optional<OverviewController::ScopedOcclusionPauser> scroll_pauser_;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };

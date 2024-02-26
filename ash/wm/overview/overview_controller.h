@@ -31,12 +31,43 @@ class OverviewSession;
 class ASH_EXPORT OverviewController : public OverviewDelegate,
                                       public wm::ActivationChangeObserver {
  public:
+  // `ScopedOcclusionPauser` pauses occlusion tracking for overview mode
+  // purposes until it is destroyed. When it is destroyed, occlusion tracking
+  // will be unpaused after the given unpause delay. If a
+  // `ScopedOcclusionPauser`s is destroyed while an unpause delay is in
+  // progress, that delay will be cancelled and the new delay will be used. This
+  // means that if two `ScopedOcclusionPauser`s are destroyed, the delay for the
+  // second `ScopedOcclusionPauser` to be destroyed will be used, even if the
+  // first delay is much longer.
+  class ScopedOcclusionPauser {
+   public:
+    ScopedOcclusionPauser(ScopedOcclusionPauser&&);
+    ScopedOcclusionPauser& operator=(ScopedOcclusionPauser&&);
+
+    ScopedOcclusionPauser(const ScopedOcclusionPauser&) = delete;
+    ScopedOcclusionPauser& operator=(const ScopedOcclusionPauser&) = delete;
+
+    ~ScopedOcclusionPauser();
+
+   private:
+    friend class OverviewController;
+
+    ScopedOcclusionPauser(base::WeakPtr<OverviewController> controller,
+                          base::TimeDelta unpause_delay);
+
+    base::WeakPtr<OverviewController> controller_;
+    base::TimeDelta unpause_delay_;
+  };
+
   OverviewController();
 
   OverviewController(const OverviewController&) = delete;
   OverviewController& operator=(const OverviewController&) = delete;
 
   ~OverviewController() override;
+
+  [[nodiscard]] ScopedOcclusionPauser PauseOcclusionTracker(
+      base::TimeDelta unpause_delay);
 
   // Convenience function to get the overview controller instance, which is
   // created and owned by Shell.
@@ -79,11 +110,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // Returns true if overview has been shutdown, but is still animating to the
   // end state ui.
   bool IsCompletingShutdownAnimations() const;
-
-  // Pause or unpause the occlusion tracker. Resets the unpause delay if we were
-  // already in the process of unpausing.
-  void PauseOcclusionTracker();
-  void UnpauseOcclusionTracker(base::TimeDelta delay);
 
   void AddObserver(OverviewObserver* observer);
   void RemoveObserver(OverviewObserver* observer);
@@ -147,9 +173,14 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
 
   void OnStartingAnimationComplete(bool canceled);
   void OnEndingAnimationComplete(bool canceled);
-  void ResetPauser();
 
   void UpdateRoundedCornersAndShadow();
+
+  // Pause or unpause the occlusion tracker. Resets the unpause delay if we were
+  // already in the process of unpausing.
+  void MaybePauseOcclusionTracker();
+  void MaybeUnpauseOcclusionTracker(base::TimeDelta delay);
+  void ResetPauser();
 
   // Collection of DelayedAnimationObserver objects that own widgets that may be
   // still animating after overview mode ends. If shell needs to shut down while
@@ -171,16 +202,22 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // scroll update that is within the threshold.
   bool is_continuous_scroll_in_progress_ = false;
 
+  // We may pause occlusion tracking on enter and exit overview mode.
+  std::optional<ScopedOcclusionPauser> enter_pauser_;
+  std::optional<ScopedOcclusionPauser> exit_pauser_;
+
+  // The following state tracks occlusion pausing and its delayed unpausing for
+  // overview mode.
+  int pause_count_ = 0;
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
       occlusion_tracker_pauser_;
+  base::CancelableOnceClosure reset_pauser_task_;
 
   std::unique_ptr<OverviewSession> overview_session_;
 
   base::Time last_overview_session_time_;
 
   base::TimeDelta occlusion_pause_duration_for_end_;
-
-  base::CancelableOnceClosure reset_pauser_task_;
 
   // App dragging enters overview right away. This task is used to delay the
   // |OnStartingAnimationComplete| call so that some animations do not make the
