@@ -80,6 +80,7 @@ class HttpServerProperties;
 class NetLog;
 class NetworkAnonymizationKey;
 struct NetworkTrafficAnnotationTag;
+class ProxyDelegate;
 class QuicChromiumConnectionHelper;
 class QuicCryptoClientStreamFactory;
 class QuicServerInfo;
@@ -311,6 +312,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       HttpServerProperties* http_server_properties,
       CertVerifier* cert_verifier,
       TransportSecurityState* transport_security_state,
+      ProxyDelegate* proxy_delegate,
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
@@ -660,6 +662,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   const raw_ptr<HttpServerProperties> http_server_properties_;
   const raw_ptr<CertVerifier> cert_verifier_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
+  const raw_ptr<ProxyDelegate> proxy_delegate_;
   const raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   const raw_ptr<QuicCryptoClientStreamFactory>
       quic_crypto_client_stream_factory_;

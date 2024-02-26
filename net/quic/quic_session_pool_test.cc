@@ -38,6 +38,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/session_usage.h"
+#include "net/base/test_proxy_delegate.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
@@ -223,6 +224,7 @@ class MockQuicSessionPool : public QuicSessionPool {
       HttpServerProperties* http_server_properties,
       CertVerifier* cert_verifier,
       TransportSecurityState* transport_security_state,
+      ProxyDelegate* proxy_delegate,
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
@@ -234,6 +236,7 @@ class MockQuicSessionPool : public QuicSessionPool {
                         http_server_properties,
                         cert_verifier,
                         transport_security_state,
+                        proxy_delegate,
                         sct_auditing_delegate,
                         socket_performance_watcher_factory,
                         quic_crypto_client_stream_factory,
@@ -301,7 +304,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     factory_ = std::make_unique<QuicSessionPool>(
         net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
         socket_factory_.get(), http_server_properties_.get(),
-        cert_verifier_.get(), &transport_security_state_,
+        cert_verifier_.get(), &transport_security_state_, proxy_delegate_.get(),
         /*sct_auditing_delegate=*/nullptr,
         /*SocketPerformanceWatcherFactory*/ nullptr,
         &crypto_client_stream_factory_, &context_);
@@ -994,6 +997,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   TransportSecurityState transport_security_state_;
+  std::unique_ptr<TestProxyDelegate> proxy_delegate_;
   std::unique_ptr<ScopedMockNetworkChangeNotifier>
       scoped_mock_network_change_notifier_;
   std::unique_ptr<QuicSessionPool> factory_;
@@ -2559,7 +2563,7 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
   auto factory = MockQuicSessionPool(
       net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
       socket_factory_.get(), http_server_properties_.get(),
-      cert_verifier_.get(), &transport_security_state_,
+      cert_verifier_.get(), &transport_security_state_, proxy_delegate_.get(),
       /*sct_auditing_delegate=*/nullptr,
       /*SocketPerformanceWatcherFactory*/ nullptr,
       &crypto_client_stream_factory_, &context_);
