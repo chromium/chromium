@@ -2638,12 +2638,10 @@ export namespace Input {
 }
 export namespace Input {
   export const PointerUpActionSchema = z.lazy(() =>
-    z
-      .object({
-        type: z.literal('pointerUp'),
-        button: JsUintSchema,
-      })
-      .and(Input.PointerCommonPropertiesSchema)
+    z.object({
+      type: z.literal('pointerUp'),
+      button: JsUintSchema,
+    })
   );
 }
 export namespace Input {

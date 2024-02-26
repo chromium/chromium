@@ -2063,7 +2063,7 @@ export namespace Input {
   export type PointerUpAction = {
     type: 'pointerUp';
     button: JsUint;
-  } & Input.PointerCommonProperties;
+  };
 }
 export namespace Input {
   export type PointerDownAction = {
