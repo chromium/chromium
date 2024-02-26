@@ -949,6 +949,15 @@ HttpHandler::HttpHandler(
                         base::BindRepeating(
                             &ExecuteWebAuthnCommand,
                             base::BindRepeating(&ExecuteSetUserVerified)))),
+      CommandMapping(
+          kPost,
+          "session/:sessionId/webauthn/authenticator/:authenticatorId/"
+          "credentials/:credentialId/props",
+          WrapToCommand(
+              "SetCredentialProperties",
+              base::BindRepeating(
+                  &ExecuteWebAuthnCommand,
+                  base::BindRepeating(&ExecuteSetCredentialProperties)))),
 
       // Extensions for Secure Payment Confirmation API:
       // https://w3c.github.io/secure-payment-confirmation/#sctn-automation

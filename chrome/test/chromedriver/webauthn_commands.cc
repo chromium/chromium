@@ -275,3 +275,19 @@ Status ExecuteSetUserVerified(WebView* web_view,
           params),
       value);
 }
+
+Status ExecuteSetCredentialProperties(WebView* web_view,
+                                      const base::Value::Dict& params,
+                                      std::unique_ptr<base::Value>* value) {
+  return web_view->SendCommandAndGetResult(
+      "WebAuthn.setCredentialProperties",
+      MapParams(
+          {
+              {"authenticatorId", "authenticatorId"},
+              {"credentialId", "credentialId"},
+              {"backupEligibility", "backupEligibility"},
+              {"backupState", "backupState"},
+          },
+          params),
+      value);
+}

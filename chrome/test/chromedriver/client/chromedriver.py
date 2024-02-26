@@ -745,6 +745,15 @@ class ChromeDriver(object):
               'isUserVerified': isUserVerified}
     return self.ExecuteCommand(Command.SET_USER_VERIFIED, params)
 
+  def SetCredentialProperties(self, authenticatorId, credentialId,
+                              backupState=None, backupEligibility=None):
+    params = {'authenticatorId': authenticatorId, 'credentialId': credentialId}
+    if backupState is not None:
+      params['backupState'] = backupState
+    if backupEligibility is not None:
+      params['backupEligibility'] = backupEligibility
+    return self.ExecuteCommand(Command.SET_CREDENTIAL_PROPERTIES, params)
+
   def SetSPCTransactionMode(self, mode):
     params = {'mode': mode}
     return self.ExecuteCommand(Command.SET_SPC_TRANSACTION_MODE, params)

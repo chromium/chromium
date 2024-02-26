@@ -4503,6 +4503,57 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     result = self._driver.ExecuteAsyncScript(register_uv_script)
     self.assertEqual("OK", result['status'])
 
+  def testSetCredentialProperties(self):
+    script = """
+      let done = arguments[0];
+      getCredential({
+        type: "public-key",
+        id: new TextEncoder().encode("cred-1"),
+        transports: ["usb"],
+      }).then(done);
+    """
+    self._driver.Load(self.GetHttpsUrlForFile(
+        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+
+    authenticatorId = self._driver.AddVirtualAuthenticator(
+        protocol = 'ctap2',
+        transport = 'usb',
+        hasResidentKey = True,
+        hasUserVerification = True,
+        isUserVerified = True,
+    )
+    credentialId = self.URLSafeBase64Encode("cred-1")
+
+    # Create a credential with default backup flags.
+    self._driver.AddCredential(
+      authenticatorId = authenticatorId,
+      credentialId = credentialId,
+      userHandle = self.URLSafeBase64Encode('melia'),
+      isResidentCredential = True,
+      rpId = "chromedriver.test",
+      privateKey = self.privateKey,
+      signCount = 1,
+    )
+    for backupState in [False, True]:
+      for backupEligibility in [False, True]:
+        # Set the credential properties.
+        self._driver.SetCredentialProperties(
+            authenticatorId = authenticatorId, credentialId = credentialId,
+            backupState = backupState, backupEligibility = backupEligibility)
+
+        # Getting an assertion should reflect the values.
+        result = self._driver.ExecuteAsyncScript(script)
+        self.assertEqual('OK', result['status'])
+        self.assertEqual(backupState, result['flags']['bs'])
+        self.assertEqual(backupEligibility, result['flags']['be'])
+
+        # Getting the credential through webdriver should reflect the values.
+        credentials = self._driver.GetCredentials(authenticatorId)
+        self.assertEqual(1, len(credentials))
+        self.assertEqual(credentialId, credentials[0]['credentialId'])
+        self.assertEqual(backupEligibility, credentials[0]['backupEligibility'])
+        self.assertEqual(backupState, credentials[0]['backupState'])
+
   def testCreateVirtualSensorWithInvalidSensorName(self):
     self.assertRaisesRegex(chromedriver.InvalidArgument,
                            "invalid argument: 'type' must be a string",
