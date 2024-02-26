@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/base/video_types.h"
@@ -64,7 +65,7 @@ class TransferringOptimizer : public WritableStreamTransferringOptimizer {
 
  private:
   const scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker_;
-  gpu::GpuMemoryBufferManager* const gmb_manager_ = nullptr;
+  const raw_ptr<gpu::GpuMemoryBufferManager> gmb_manager_ = nullptr;
 };
 
 gpu::GpuMemoryBufferManager* GetGmbManager() {
