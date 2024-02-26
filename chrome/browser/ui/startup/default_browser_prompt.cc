@@ -93,7 +93,7 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
   // Do not show if the user has previously declined the prompt.
   int64_t last_dismissed_value =
       profile->GetPrefs()->GetInt64(prefs::kDefaultBrowserLastDeclined);
-  return last_dismissed_value >= 0;
+  return last_dismissed_value == 0;
 }
 
 void OnCheckIsDefaultBrowserFinished(
