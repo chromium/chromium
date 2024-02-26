@@ -1354,7 +1354,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="199191324030140441">Tắt chế độ Không làm phiền</translation>
 <translation id="1992397118740194946">Chưa đặt</translation>
 <translation id="1994173015038366702">URL của trang web</translation>
-<translation id="1995916364271252349">Kiểm soát thông tin mà các trang web có thể dùng và hiển thị (vị trí, máy ảnh, cửa sổ bật lên và thông tin khác)</translation>
+<translation id="1995916364271252349">Kiểm soát loại thông tin các trang web có thể dùng và hiển thị (vị trí, máy ảnh, cửa sổ bật lên và thông tin khác)</translation>
 <translation id="1997433994358798851">Chrome cần có quyền sử dụng Bluetooth để kết nối với thiết bị của bạn</translation>
 <translation id="1997616988432401742">Chứng chỉ của bạn</translation>
 <translation id="1999115740519098545">Khi khởi động</translation>
@@ -1685,7 +1685,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="224835741840550119">Thanh lọc thiết bị</translation>
 <translation id="2249111429176737533">Mở bằng cửa sổ dạng thẻ</translation>
 <translation id="2249605167705922988">ví dụ: 1-5, 8, 11-13</translation>
-<translation id="2249635629516220541">Tuỳ chỉnh thông tin mà các trang web sử dụng để hiện quảng cáo cho bạn</translation>
+<translation id="2249635629516220541">Tuỳ chỉnh thông tin được các trang web dùng để hiện quảng cáo cho bạn</translation>
 <translation id="2250624716625396929">Thẻ này đang sử dụng camera hoặc micrô của bạn</translation>
 <translation id="2251218783371366160">Mở bằng trình xem hệ thống</translation>
 <translation id="225163402930830576">Làm mới mạng</translation>
@@ -2891,7 +2891,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3150927491400159470">Tải lại cứng</translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3151539355209957474">Thời gian khởi động</translation>
-<translation id="3151562827395986343">Xóa dữ liệu duyệt web, cookie, bộ nhớ đệm, v.v.</translation>
+<translation id="3151562827395986343">Xóa nhật ký, cookie, bộ nhớ đệm và nhiều loại dữ liệu khác.</translation>
 <translation id="3151786313568798007">Hướng</translation>
 <translation id="3152356229013609796">Xem, đóng và trả lời thông báo của điện thoại</translation>
 <translation id="3155163173539279776">Chạy lại Chromium</translation>
@@ -3097,7 +3097,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3317678681329786349">Máy ảnh và micrô bị chặn</translation>
 <translation id="3319306431415395200">Dịch văn bản trong hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3320271870899888245">Không thể kết nối với OneDrive. Hãy thử lại.</translation>
-<translation id="3320630259304269485">Tính năng Duyệt web an toàn (bảo vệ trước các trang web nguy hiểm) và các tùy chọn cài đặt bảo mật khác</translation>
+<translation id="3320630259304269485">Tính năng Duyệt web an toàn (bảo vệ trước các trang web nguy hiểm) và chế độ cài đặt bảo mật khác</translation>
 <translation id="3321460131042519426">Bật xuống dòng tự động</translation>
 <translation id="3321494112580110651">Bạn không thấy máy in của mình?</translation>
 <translation id="3321776060736518525">Từ <ph name="APP_URL" /></translation>
