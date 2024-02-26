@@ -594,7 +594,13 @@ class TabListMediator {
                     Tab groupTab = filter.getTabAt(prevFilterIndex);
                     boolean isUngroupingLastTabInGroup = groupTab.getId() == movedTab.getId();
                     if (mActionsOnAllRelatedTabs) {
-                        if (isUngroupingLastTabInGroup) return;
+                        // When ungrouping the last tab in a group no update was needed. However,
+                        // with tab groups of size 1 an update is still needed to ensure the
+                        // thumbnail, title, etc. get correctly represented.
+                        if (isUngroupingLastTabInGroup
+                                && !ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+                            return;
+                        }
 
                         final int currentSelectedTabId =
                                 TabModelUtils.getCurrentTabId(filter.getTabModel());
