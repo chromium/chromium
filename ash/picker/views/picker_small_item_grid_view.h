@@ -35,10 +35,10 @@ class ASH_EXPORT PickerSmallItemGridView
   // PickerTraversableItemContainer:
   PickerItemView* GetTopItem() override;
   PickerItemView* GetBottomItem() override;
-  PickerItemView* GetItemAbove(const PickerItemView* item) override;
-  PickerItemView* GetItemBelow(const PickerItemView* item) override;
-  PickerItemView* GetItemLeftOf(const PickerItemView* item) override;
-  PickerItemView* GetItemRightOf(const PickerItemView* item) override;
+  PickerItemView* GetItemAbove(PickerItemView* item) override;
+  PickerItemView* GetItemBelow(PickerItemView* item) override;
+  PickerItemView* GetItemLeftOf(PickerItemView* item) override;
+  PickerItemView* GetItemRightOf(PickerItemView* item) override;
 
   PickerEmojiItemView* AddEmojiItem(
       std::unique_ptr<PickerEmojiItemView> emoji_item);
@@ -53,7 +53,7 @@ class ASH_EXPORT PickerSmallItemGridView
 
   // Returns the row containing `item`, or nullptr if `item` is not part of this
   // grid.
-  const views::View* GetRowContaining(const PickerItemView* item) const;
+  views::View* GetRowContaining(PickerItemView* item);
 
   int grid_width_ = 0;
 };

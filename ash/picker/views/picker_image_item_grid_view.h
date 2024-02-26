@@ -32,10 +32,10 @@ class ASH_EXPORT PickerImageItemGridView
   // PickerTraversableItemContainer:
   PickerItemView* GetTopItem() override;
   PickerItemView* GetBottomItem() override;
-  PickerItemView* GetItemAbove(const PickerItemView* item) override;
-  PickerItemView* GetItemBelow(const PickerItemView* item) override;
-  PickerItemView* GetItemLeftOf(const PickerItemView* item) override;
-  PickerItemView* GetItemRightOf(const PickerItemView* item) override;
+  PickerItemView* GetItemAbove(PickerItemView* item) override;
+  PickerItemView* GetItemBelow(PickerItemView* item) override;
+  PickerItemView* GetItemLeftOf(PickerItemView* item) override;
+  PickerItemView* GetItemRightOf(PickerItemView* item) override;
 
   PickerImageItemView* AddImageItem(
       std::unique_ptr<PickerImageItemView> image_item);
@@ -43,7 +43,7 @@ class ASH_EXPORT PickerImageItemGridView
  private:
   // Returns the column containing `item`, or nullptr if `item` is not part of
   // this grid.
-  const views::View* GetColumnContaining(const PickerItemView* item) const;
+  views::View* GetColumnContaining(PickerItemView* item);
 
   int grid_width_ = 0;
 };

@@ -115,11 +115,11 @@ TEST(PickerImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
 TEST(PickerImageItemGridViewTest, GetsTopItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  PickerItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  PickerItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  const PickerItemView* item3 =
+  PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
   EXPECT_THAT(
@@ -139,11 +139,11 @@ TEST(PickerImageItemGridViewTest, EmptyGridHasNoTopItem) {
 TEST(PickerImageItemGridViewTest, GetsBottomItem) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  PickerItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  PickerItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  const PickerItemView* item3 =
+  PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
   EXPECT_THAT(
@@ -163,13 +163,13 @@ TEST(PickerImageItemGridViewTest, EmptyGridHasNoBottomItem) {
 TEST(PickerImageItemGridViewTest, GetsItemAbove) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  PickerItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  PickerItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  const PickerItemView* item3 =
+  PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  const PickerItemView* item4 =
+  PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(item_grid.children(),
@@ -194,13 +194,13 @@ TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
 TEST(PickerImageItemGridViewTest, GetsItemBelow) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  PickerItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  PickerItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  const PickerItemView* item3 =
+  PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  const PickerItemView* item4 =
+  PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(item_grid.children(),
@@ -225,13 +225,13 @@ TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
 TEST(PickerImageItemGridViewTest, GetsItemLeftOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  PickerItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  PickerItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  const PickerItemView* item3 =
+  PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  const PickerItemView* item4 =
+  PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(item_grid.children(),
@@ -248,11 +248,11 @@ TEST(PickerImageItemGridViewTest, GetsItemLeftOf) {
 TEST(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  PickerItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 300)));
-  const PickerItemView* item2 =
+  PickerItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  const PickerItemView* item3 =
+  PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
 
   EXPECT_THAT(
@@ -276,13 +276,13 @@ TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
 TEST(PickerImageItemGridViewTest, GetsItemRightOf) {
   PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  const PickerItemView* item1 =
+  PickerItemView* item1 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const PickerItemView* item2 =
+  PickerItemView* item2 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
-  const PickerItemView* item3 =
+  PickerItemView* item3 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  const PickerItemView* item4 =
+  PickerItemView* item4 =
       item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
 
   EXPECT_THAT(item_grid.children(),

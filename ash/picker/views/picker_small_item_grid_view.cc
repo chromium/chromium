@@ -13,6 +13,7 @@
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -64,7 +65,7 @@ PickerItemView* PickerSmallItemGridView::GetTopItem() {
     return nullptr;
   }
   // Return the first item in the top row, if it exists.
-  const views::View* row = children().front();
+  views::View* row = children().front();
   return row->children().empty() ? nullptr
                                  : views::AsViewClass<PickerItemView>(
                                        row->children().front().get());
@@ -75,63 +76,56 @@ PickerItemView* PickerSmallItemGridView::GetBottomItem() {
     return nullptr;
   }
   // Return the first item in the bottom row, if it exists.
-  const views::View* row = children().back();
+  views::View* row = children().back();
   return row->children().empty() ? nullptr
                                  : views::AsViewClass<PickerItemView>(
                                        row->children().front().get());
 }
 
-PickerItemView* PickerSmallItemGridView::GetItemAbove(
-    const PickerItemView* item) {
-  const views::View* row = GetRowContaining(item);
+PickerItemView* PickerSmallItemGridView::GetItemAbove(PickerItemView* item) {
+  views::View* row = GetRowContaining(item);
   if (!row || row == children().front()) {
     return nullptr;
   }
   // Return the first item in the row above, if it exists.
-  const views::View* row_above = std::prev(FindChild(row))->get();
+  views::View* row_above =
+      std::prev(base::ranges::find(children(), row))->get();
   return row_above->children().empty()
              ? nullptr
              : views::AsViewClass<PickerItemView>(
                    row_above->children().front().get());
 }
 
-PickerItemView* PickerSmallItemGridView::GetItemBelow(
-    const PickerItemView* item) {
-  const views::View* row = GetRowContaining(item);
+PickerItemView* PickerSmallItemGridView::GetItemBelow(PickerItemView* item) {
+  views::View* row = GetRowContaining(item);
   if (!row || row == children().back()) {
     return nullptr;
   }
   // Return the first item in the row below, if it exists.
-  const views::View* row_below = std::next(FindChild(row))->get();
+  views::View* row_below =
+      std::next(base::ranges::find(children(), row))->get();
   return row_below->children().empty()
              ? nullptr
              : views::AsViewClass<PickerItemView>(
                    row_below->children().front().get());
 }
 
-PickerItemView* PickerSmallItemGridView::GetItemLeftOf(
-    const PickerItemView* item) {
-  const views::View* row = GetRowContaining(item);
-  if (!row) {
+PickerItemView* PickerSmallItemGridView::GetItemLeftOf(PickerItemView* item) {
+  views::View* row = GetRowContaining(item);
+  if (!row || item == row->children().front()) {
     return nullptr;
   }
-  const views::View::Views::const_iterator it = row->FindChild(item);
-  return it == row->children().cbegin()
-             ? nullptr
-             : views::AsViewClass<PickerItemView>(std::prev(it)->get());
+  return views::AsViewClass<PickerItemView>(
+      std::prev(base::ranges::find(row->children(), item))->get());
 }
 
-PickerItemView* PickerSmallItemGridView::GetItemRightOf(
-    const PickerItemView* item) {
-  const views::View* row = GetRowContaining(item);
-  if (!row) {
+PickerItemView* PickerSmallItemGridView::GetItemRightOf(PickerItemView* item) {
+  views::View* row = GetRowContaining(item);
+  if (!row || item == row->children().back()) {
     return nullptr;
   }
-  const views::View::Views::const_iterator next_it =
-      std::next(row->FindChild(item));
-  return next_it == row->children().cend()
-             ? nullptr
-             : views::AsViewClass<PickerItemView>(next_it->get());
+  return views::AsViewClass<PickerItemView>(
+      std::next(base::ranges::find(row->children(), item))->get());
 }
 
 PickerEmojiItemView* PickerSmallItemGridView::AddEmojiItem(
@@ -172,9 +166,8 @@ PickerItemView* PickerSmallItemGridView::AddSmallGridItem(
   return row->AddChildView(std::move(grid_item));
 }
 
-const views::View* PickerSmallItemGridView::GetRowContaining(
-    const PickerItemView* item) const {
-  const views::View* row = item->parent();
+views::View* PickerSmallItemGridView::GetRowContaining(PickerItemView* item) {
+  views::View* row = item->parent();
   return row && row->parent() == this ? row : nullptr;
 }
 

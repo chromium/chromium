@@ -34,10 +34,10 @@ class ASH_EXPORT PickerListItemContainerView
   // PickerTraversableItemContainer:
   PickerItemView* GetTopItem() override;
   PickerItemView* GetBottomItem() override;
-  PickerItemView* GetItemAbove(const PickerItemView* item) override;
-  PickerItemView* GetItemBelow(const PickerItemView* item) override;
-  PickerItemView* GetItemLeftOf(const PickerItemView* item) override;
-  PickerItemView* GetItemRightOf(const PickerItemView* item) override;
+  PickerItemView* GetItemAbove(PickerItemView* item) override;
+  PickerItemView* GetItemBelow(PickerItemView* item) override;
+  PickerItemView* GetItemLeftOf(PickerItemView* item) override;
+  PickerItemView* GetItemRightOf(PickerItemView* item) override;
 
   PickerListItemView* AddListItem(
       std::unique_ptr<PickerListItemView> list_item);

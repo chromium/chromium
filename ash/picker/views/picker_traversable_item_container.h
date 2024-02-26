@@ -26,19 +26,19 @@ class ASH_EXPORT PickerTraversableItemContainer {
 
   // Returns the item directly above `item`, or nullptr if there is no such item
   // in the container.
-  virtual PickerItemView* GetItemAbove(const PickerItemView* item) = 0;
+  virtual PickerItemView* GetItemAbove(PickerItemView* item) = 0;
 
   // Returns the item directly below `item`, or nullptr if there is no such item
   // in the container.
-  virtual PickerItemView* GetItemBelow(const PickerItemView* item) = 0;
+  virtual PickerItemView* GetItemBelow(PickerItemView* item) = 0;
 
   // Returns the item directly to the left of `item`, or nullptr if there is no
   // such item in the container.
-  virtual PickerItemView* GetItemLeftOf(const PickerItemView* item) = 0;
+  virtual PickerItemView* GetItemLeftOf(PickerItemView* item) = 0;
 
   // Returns the item directly to the right of `item`, or nullptr if there is no
   // such item in the container.
-  virtual PickerItemView* GetItemRightOf(const PickerItemView* item) = 0;
+  virtual PickerItemView* GetItemRightOf(PickerItemView* item) = 0;
 };
 
 }  // namespace ash
