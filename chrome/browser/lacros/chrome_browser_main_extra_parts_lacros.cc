@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/debug/dump_without_crashing.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
@@ -185,7 +185,7 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
   if (!base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
                               &ash_resources_dir)) {
     LOG(WARNING) << "Could not find Ash PNaCl - PNaCl may be unavailable";
-    base::debug::DumpWithoutCrashing();
+    CHECK_IS_TEST();
   } else {
     base::FilePath ash_pnacl =
         ash_resources_dir.Append(FILE_PATH_LITERAL("pnacl"));
