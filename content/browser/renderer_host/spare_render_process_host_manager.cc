@@ -40,7 +40,11 @@ void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
     return;  // Nothing to warm up.
   }
 
+  bool had_spare_renderer = !!spare_render_process_host_;
   CleanupSpareRenderProcessHost();
+  UMA_HISTOGRAM_BOOLEAN(
+      "BrowserRenderProcessHost.SpareProcessEvictedOtherSpare",
+      had_spare_renderer);
 
   // Don't create a spare renderer for a BrowserContext that is in the
   // process of shutting down.

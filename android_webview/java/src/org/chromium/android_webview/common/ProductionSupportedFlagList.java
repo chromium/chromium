@@ -907,6 +907,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.NO_THROTTLING_VISIBLE_AGENT,
                 "Do not throttle Javascript timers to 1Hz on hidden cross-origin frames that are"
                         + " same-agent with a visible frame."),
+        Flag.baseFeature("CreateSpareRendererOnBrowserContextCreation"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
