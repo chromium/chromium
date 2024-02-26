@@ -4229,6 +4229,11 @@ enum WebFeature {
   kTrustedTypesIntrospectionPropertyType = 4866,
   kTrustedTypesIntrospectionTypeMapping = 4867,
   kIndexedDBFileLastModifiedDate = 4868,
+  // The items above roughly this point are available in the M123 branch.
+
+  kSpeculationRulesRejectedLaxReferrerPolicy = 4869,
+  kSpeculationRulesUsedLinkReferrerPolicy = 4870,
+  kSpeculationRulesExplicitReferrerPolicy = 4871,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

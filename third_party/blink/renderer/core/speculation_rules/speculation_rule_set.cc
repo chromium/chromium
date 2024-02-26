@@ -395,6 +395,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       DCHECK_NE(referrer_policy_out, network::mojom::ReferrerPolicy::kDefault);
       // Set referrerPolicy to input["referrer_policy"].
       referrer_policy = referrer_policy_out;
+      UseCounter::Count(context,
+                        WebFeature::kSpeculationRulesExplicitReferrerPolicy);
     }
   }
 

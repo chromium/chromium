@@ -113,7 +113,7 @@ String MakeReferrerWarning(mojom::blink::SpeculationAction action,
 // not acceptable (see AcceptableReferrerPolicy above).
 std::optional<Referrer> GetReferrer(const SpeculationRule* rule,
                                     const SpeculationRuleSet& rule_set,
-                                    const Document& document,
+                                    Document& document,
                                     mojom::blink::SpeculationAction action,
                                     HTMLAnchorElement* link,
                                     std::optional<KURL> opt_url) {
@@ -124,13 +124,20 @@ std::optional<Referrer> GetReferrer(const SpeculationRule* rule,
     referrer_policy = rule->referrer_policy().value();
   } else if (link && link->HasRel(kRelationNoReferrer)) {
     referrer_policy = network::mojom::ReferrerPolicy::kNever;
+    UseCounter::Count(document,
+                      WebFeature::kSpeculationRulesUsedLinkReferrerPolicy);
   } else if (link && link->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
     // Override |referrer_policy| with value derived from link's
     // referrerpolicy attribute (if valid).
-    referrer_policy = execution_context->GetReferrerPolicy();
-    SecurityPolicy::ReferrerPolicyFromString(
+    bool valid = SecurityPolicy::ReferrerPolicyFromString(
         link->FastGetAttribute(html_names::kReferrerpolicyAttr),
         kSupportReferrerPolicyLegacyKeywords, &referrer_policy);
+    if (valid) {
+      UseCounter::Count(document,
+                        WebFeature::kSpeculationRulesUsedLinkReferrerPolicy);
+    } else {
+      referrer_policy = execution_context->GetReferrerPolicy();
+    }
   } else {
     referrer_policy = execution_context->GetReferrerPolicy();
   }
@@ -157,6 +164,8 @@ std::optional<Referrer> GetReferrer(const SpeculationRule* rule,
     }
     console_message->SetNodes(document.GetFrame(), std::move(nodes));
     execution_context->AddConsoleMessage(console_message);
+    UseCounter::Count(document,
+                      WebFeature::kSpeculationRulesRejectedLaxReferrerPolicy);
     return std::nullopt;
   }
 

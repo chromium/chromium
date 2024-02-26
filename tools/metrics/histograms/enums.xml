@@ -11283,6 +11283,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4866" label="TrustedTypesIntrospectionPropertyType"/>
   <int value="4867" label="TrustedTypesIntrospectionTypeMapping"/>
   <int value="4868" label="IndexedDBFileLastModifiedDate"/>
+  <int value="4869" label="SpeculationRulesRejectedLaxReferrerPolicy"/>
+  <int value="4870" label="SpeculationRulesUsedLinkReferrerPolicy"/>
+  <int value="4871" label="SpeculationRulesExplicitReferrerPolicy"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
