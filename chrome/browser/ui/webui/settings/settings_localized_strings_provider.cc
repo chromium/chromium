@@ -1780,6 +1780,11 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"networkPredictionEnabledDesc",
        IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC},
       {"preloadingPageTitle", IDS_SETTINGS_PRELOAD_PAGES_TITLE},
+      {"preloadingPageSummary", IDS_SETTINGS_PRELOAD_PAGES_SUMMARY},
+      {"preloadingPageNoPreloadingTitle",
+       IDS_SETTINGS_PRELOAD_PAGES_NO_PRELOADING_TITLE},
+      {"preloadingPageNoPreloadingSummary",
+       IDS_SETTINGS_PRELOAD_PAGES_NO_PRELOADING_SUMMARY},
       {"preloadingPageStandardPreloadingTitle",
        IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_TITLE},
       {"preloadingPageStandardPreloadingSummary",
@@ -2288,6 +2293,16 @@ void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
       {"privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1Proxy",
        IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1_PROXY},
 #endif
+      {"privacyGuideSearchSuggestionsCardHeader",
+       IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_CARD_HEADER},
+      {"privacyGuideSearchSuggestionsFeatureDescription1",
+       IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_FEATURE_DESCRIPTION1},
+      {"privacyGuideSearchSuggestionsPrivacyDescription1",
+       IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION1},
+      {"privacyGuideSearchSuggestionsPrivacyDescription2",
+       IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION2},
+      {"privacyGuideSearchSuggestionsPrivacyDescription3",
+       IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION3},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

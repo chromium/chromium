@@ -2927,6 +2927,15 @@ const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";
 
+const char kPrivacyGuide3Name[] = "Privacy Guide V3";
+const char kPrivacyGuide3Description[] =
+    "Enables updates to the Privacy Guide flow.";
+
+const char kPrivacyGuidePreloadName[] = "Privacy Guide Preload";
+const char kPrivacyGuidePreloadDescription[] =
+    "Adds the preload card to the Privacy Guide 3 flow. "
+    "This requires #privacy-guide-3 to also be enabled.";
+
 const char kPrivacyGuideAndroid3Name[] = "Privacy Guide 3 on Android";
 const char kPrivacyGuideAndroid3Description[] =
     "Enables updates to the Privacy Guide flow on Android.";

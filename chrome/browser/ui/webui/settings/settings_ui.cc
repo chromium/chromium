@@ -361,6 +361,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild();
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
 
+  html_source->AddBoolean("enablePrivacyGuide3", base::FeatureList::IsEnabled(
+                                                     features::kPrivacyGuide3));
+
+  html_source->AddBoolean(
+      "enablePrivacyGuidePreload",
+      base::FeatureList::IsEnabled(features::kPrivacyGuidePreload) &&
+          base::FeatureList::IsEnabled(features::kPrivacyGuide3));
+
   html_source->AddBoolean(
       "enableCbdTimeframeRequired",
       base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));

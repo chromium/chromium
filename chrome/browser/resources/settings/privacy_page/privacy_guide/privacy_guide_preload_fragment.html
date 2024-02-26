@@ -1,0 +1,59 @@
+<style include="privacy-guide-fragment-shared"></style>
+<div class="header-phase2" focus-element tabindex="-1">
+  <picture>
+    <source
+        srcset="./images/privacy_guide/preload_graphic_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt="" src="./images/privacy_guide/preload_graphic.svg">
+  </picture>
+  <h2 class="header-label-phase2">$i18n{preloadingPageSummary}</h2>
+</div>
+<div class="fragment-content">
+  <settings-radio-group id="preloadRadioGroup"
+      pref="{{prefs.net.network_prediction_options}}"
+      selectable-elements="settings-collapse-radio-button">
+    <settings-collapse-radio-button id="preloadRadioStandard"
+        pref="[[prefs.net.network_prediction_options]]"
+        name="[[networkPredictionOptionsEnum_.STANDARD]]"
+        label="$i18n{preloadingPageStandardPreloadingTitle}"
+        sub-label="$i18n{preloadingPageStandardPreloadingSummary}">
+      <div slot="collapse" class="settings-columned-section">
+        <div class="column">
+          <h3 class="description-header">
+            $i18n{privacyGuideFeatureDescriptionHeader}
+          </h3>
+          <div role="list">
+            <privacy-guide-description-item
+                role="listitem"
+                icon="settings20:bolt"
+                label="$i18n{preloadingPageStandardPreloadingWhenOnBulletOne}">
+            </privacy-guide-description-item>
+            <privacy-guide-description-item
+                role="listitem"
+                icon="settings20:select-window"
+                label="$i18n{preloadingPageStandardPreloadingWhenOnBulletTwo}">
+            </privacy-guide-description-item>
+          </div>
+        </div>
+        <div class="column">
+          <h3 class="description-header">
+            $i18n{privacyGuideThingsToConsider}
+          </h3>
+          <div role="list">
+            <privacy-guide-description-item
+                role="listitem"
+                icon="settings:cookie"
+                label="$i18n{preloadingPageThingsToConsiderBulletOne}">
+            </privacy-guide-description-item>
+          </div>
+        </div>
+      </div>
+    </settings-collapse-radio-button>
+    <settings-collapse-radio-button id="noPreloading" no-collapse
+        pref="[[prefs.net.network_prediction_options]]"
+        name="[[networkPredictionOptionsEnum_.DISABLED]]"
+        label="$i18n{preloadingPageNoPreloadingTitle}"
+        sub-label="$i18n{preloadingPageNoPreloadingSummary}">
+    </settings-collapse-radio-button>
+  </settings-radio-group>
+</div>

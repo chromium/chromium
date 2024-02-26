@@ -8963,6 +8963,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrivacyGuideAndroid3)},
 #endif
 
+    {"privacy-guide-3", flag_descriptions::kPrivacyGuide3Name,
+     flag_descriptions::kPrivacyGuide3Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPrivacyGuide3)},
+
+    {"privacy-guide-preload", flag_descriptions::kPrivacyGuidePreloadName,
+     flag_descriptions::kPrivacyGuidePreloadDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPrivacyGuidePreload)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"privacy-guide-preload-android",
      flag_descriptions::kPrivacyGuidePreloadAndroidName,
