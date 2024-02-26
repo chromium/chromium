@@ -202,7 +202,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
   switch (itemIdentifier) {
     case kContent:
       return {IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE,
-              IDS_IOS_NOTIFICATIONS_OPT_IN_CONTENT_TOGGLE_MESSSAGE,
+              IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT,
               _contentNotificationsEnabled, YES};
     case kTips:
       return {IDS_IOS_SET_UP_LIST_TIPS_TITLE,
