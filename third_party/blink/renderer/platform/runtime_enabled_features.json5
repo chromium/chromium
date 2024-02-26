@@ -3695,7 +3695,6 @@
     {
       // crbug.com/325517313
       name: "TextDiffSplitFix",
-      status: "stable",
     },
     {
       name: "TextFragmentAPI",
