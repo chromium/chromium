@@ -76,7 +76,7 @@
 
   __weak __typeof(self) weakSelf = self;
   context_menu_feature->GetElementAtPoint(
-      self.webState, requestID, point, self.webView.scrollView.contentSize,
+      self.webState, requestID, point,
       base::BindOnce(^(const std::string& innerRequestID,
                        const web::ContextMenuParams& params) {
         web::ContextMenuParams context_menu_params(params);
