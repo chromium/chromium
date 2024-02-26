@@ -2815,9 +2815,6 @@ extern const char kLinkPreviewDescription[];
 extern const char kMemorySaverMultistateModeAvailableName[];
 extern const char kMemorySaverMultistateModeAvailableDescription[];
 
-extern const char kMemorySaverMemoryUsageInHovercardsName[];
-extern const char kMemorySaverMemoryUsageInHovercardsDescription[];
-
 extern const char kModalMemorySaverName[];
 extern const char kModalMemorySaverDescription[];
 

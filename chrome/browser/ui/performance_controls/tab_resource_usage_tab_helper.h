@@ -15,6 +15,9 @@ class NavigationHandle;
 
 class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
  public:
+  // Threshold was selected based on the 99th percentile of tab memory usage
+  static const uint64_t kHighMemoryUsageThresholdBytes = 800 * 1024 * 1024;
+
   TabResourceUsage() = default;
 
   uint64_t memory_usage_in_bytes() const { return memory_usage_bytes_; }

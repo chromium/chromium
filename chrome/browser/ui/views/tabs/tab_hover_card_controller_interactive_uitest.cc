@@ -39,7 +39,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -84,25 +83,18 @@ std::vector<TabHoverCardTestFeatureConfig> GetTabHoverCardTestFeatureConfig() {
   return {
       {{{features::kChromeRefresh2023, {}},
         {features::kTabHoverCardImages, {}}},
-       {performance_manager::features::kMemoryUsageInHovercards}},
-      {{{features::kTabHoverCardImages, {}}},
-       {features::kChromeRefresh2023,
-        performance_manager::features::kMemoryUsageInHovercards}},
+       {}},
+      {{{features::kTabHoverCardImages, {}}}, {features::kChromeRefresh2023}},
   };
 }
 
 std::vector<TabHoverCardTestFeatureConfig>
 GetTabHoverCardFooterTestFeatureConfig() {
   return {
-      {{{performance_manager::features::kMemoryUsageInHovercards,
-         {{"memory_update_trigger", "navigation"}}},
-        {features::kTabHoverCardImages, {}},
+      {{{features::kTabHoverCardImages, {}},
         {features::kChromeRefresh2023, {}}},
        {}},
-      {{{performance_manager::features::kMemoryUsageInHovercards,
-         {{"memory_update_trigger", "navigation"}}},
-        {features::kTabHoverCardImages, {}}},
-       {features::kChromeRefresh2023}},
+      {{{features::kTabHoverCardImages, {}}}, {features::kChromeRefresh2023}},
   };
 }
 
@@ -636,10 +628,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_FALSE(performance_row->icon()->GetImageModel().IsEmpty());
 
   // Hover card updates and shows high memory usage when card is still open
-  bytes_used =
-      performance_manager::features::kMemoryUsageInHovercardsHighThresholdBytes
-          .Get() +
-      100;
+  bytes_used = TabResourceUsage::kHighMemoryUsageThresholdBytes + 100;
   tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()
@@ -673,10 +662,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_TRUE(performance_row->icon()->GetImageModel().IsEmpty());
 
   // Hover card updates and shows high memory usage when card is still open
-  bytes_used =
-      performance_manager::features::kMemoryUsageInHovercardsHighThresholdBytes
-          .Get() +
-      100;
+  bytes_used = TabResourceUsage::kHighMemoryUsageThresholdBytes + 100;
   tab_resource_usage_tab_helper->SetMemoryUsageInBytes(bytes_used);
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()

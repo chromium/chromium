@@ -63,27 +63,6 @@ BASE_FEATURE(kMemorySaverMultistateMode,
 const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge{
     &kMemorySaverMultistateMode, "show_recommended_badge", false};
 
-BASE_FEATURE(kMemoryUsageInHovercards,
-             "MemoryUsageInHovercards",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
-    &kMemoryUsageInHovercards,
-    "memory_usage_in_hovercards_high_threshold_bytes", 800 * 1024 * 1024};
-
-// Mapping of enum value to parameter string for "memory_update_trigger" param.
-constexpr base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>::Option
-    kMemoryUsageInHovercardsUpdateTriggerOptions[] = {
-        {MemoryUsageInHovercardsUpdateTrigger::kBackground, "background"},
-        {MemoryUsageInHovercardsUpdateTrigger::kNavigation, "navigation"},
-};
-
-const base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>
-    kMemoryUsageInHovercardsUpdateTrigger{
-        &kMemoryUsageInHovercards, "memory_update_trigger",
-        MemoryUsageInHovercardsUpdateTrigger::kNavigation,
-        &kMemoryUsageInHovercardsUpdateTriggerOptions};
-
 BASE_FEATURE(kPerformanceControlsSidePanel,
              "PerformanceControlsSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);

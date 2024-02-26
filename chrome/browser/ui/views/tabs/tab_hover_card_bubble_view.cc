@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -356,9 +355,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     : BubbleDialogDelegateView(tab,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW),
-      tab_style_(TabStyle::Get()),
-      memory_usage_in_hovercards_enabled_(base::FeatureList::IsEnabled(
-          performance_manager::features::kMemoryUsageInHovercards)) {
+      tab_style_(TabStyle::Get()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // Remove the accessible role so that hover cards are not read when they

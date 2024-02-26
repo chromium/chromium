@@ -608,10 +608,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         CreateForWebContents(web_contents);
   }
   MemorySaverChipTabHelper::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kMemoryUsageInHovercards)) {
-    TabResourceUsageTabHelper::CreateForWebContents(web_contents);
-  }
+  TabResourceUsageTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
       base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
     ThumbnailTabHelper::CreateForWebContents(web_contents);

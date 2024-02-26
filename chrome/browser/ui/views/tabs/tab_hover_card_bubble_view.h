@@ -91,7 +91,6 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<FooterView> footer_view_ = nullptr;
   std::optional<TabAlertState> alert_state_;
   const raw_ptr<const TabStyle> tab_style_;
-  const bool memory_usage_in_hovercards_enabled_;
   PrefChangeRegistrar pref_change_registrar_;
   bool memory_usage_in_hovercards_setting_ = false;
 

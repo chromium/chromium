@@ -29,7 +29,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
-#include "components/performance_manager/public/features.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -279,9 +278,6 @@ TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
         base::BindRepeating(&TabHoverCardController::OnMemoryPressureChanged,
                             base::Unretained(this)));
   }
-
-  hover_card_tab_memory_usage_enabled_ = base::FeatureList::IsEnabled(
-      performance_manager::features::kMemoryUsageInHovercards);
 }
 
 TabHoverCardController::~TabHoverCardController() = default;
@@ -499,9 +495,7 @@ void TabHoverCardController::HideHoverCard() {
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
-    if (hover_card_tab_memory_usage_enabled_) {
-      TabResourceUsageCollector::Get()->RemoveObserver(this);
-    }
+    TabResourceUsageCollector::Get()->RemoveObserver(this);
     delayed_show_timer_.Stop();
     hover_card_observation_.Reset();
     event_sniffer_.reset();
@@ -578,9 +572,7 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (hover_card_tab_memory_usage_enabled_) {
-    TabResourceUsageCollector::Get()->AddObserver(this);
-  }
+  TabResourceUsageCollector::Get()->AddObserver(this);
 }
 
 void TabHoverCardController::UpdateCardContent(Tab* tab) {

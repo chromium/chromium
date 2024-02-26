@@ -71,23 +71,6 @@ BASE_DECLARE_FEATURE(kMemorySaverMultistateMode);
 // saver option.
 extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
 
-// This displays active memory usage in hovercards.
-BASE_DECLARE_FEATURE(kMemoryUsageInHovercards);
-
-// Threshold for when memory usage is labeled as "high".
-extern const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes;
-
-// Options for when memory usage metrics are fetched for hovercards.
-enum class MemoryUsageInHovercardsUpdateTrigger {
-  kBackground,  // Metrics are fetched in the background every 2 minutes
-                // (default).
-  kNavigation,  // Metrics are also fetched after a navigation becomes idle.
-};
-
-// Sets when memory usage metrics will be fetched to display in hovercards.
-extern const base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>
-    kMemoryUsageInHovercardsUpdateTrigger;
-
 // This enables the performance controls side panel for learning about and
 // configuring performance settings.
 BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);

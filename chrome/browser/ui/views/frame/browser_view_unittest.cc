@@ -35,7 +35,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/performance_manager/public/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/navigation_simulator.h"
@@ -484,17 +483,13 @@ TEST_P(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   memory_usage.tab_resource_usage = tab_resource_usage_;
 
   AddTab(browser(), GURL("about:blank"));
-  Tab* tab = browser_view()->tabstrip()->tab_at(0);
+  Tab* const tab = browser_view()->tabstrip()->tab_at(0);
   tab->SetData(std::move(memory_usage));
 
   // Expect that low memory usage isn't in the window title.
   EXPECT_EQ(SubBrowserName("about:blank - %s"),
             browser_view()->GetAccessibleWindowTitle());
-  uint64_t memory_used =
-      static_cast<uint64_t>(
-          performance_manager::features::
-              kMemoryUsageInHovercardsHighThresholdBytes.Get()) +
-      1;
+  uint64_t memory_used = TabResourceUsage::kHighMemoryUsageThresholdBytes + 1;
   tab_resource_usage_->SetMemoryUsageInBytes(memory_used);
 
   // Expect that high memory usage is in the window title.

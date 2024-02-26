@@ -3145,16 +3145,6 @@ const FeatureEntry::FeatureVariation kMemorySaverMultistateModeVariations[] = {
      std::size(kMemorySaverMultistateModeShowRecommendedBadge), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kMemoryUsageInHovercardsUpdateTriggerVariations[] = {
-        {"memory_update_trigger", "navigation"},
-};
-const FeatureEntry::FeatureVariation kMemoryUsageInHovercardsVariations[] = {
-    {"With Update on Navigation",
-     kMemoryUsageInHovercardsUpdateTriggerVariations,
-     std::size(kMemoryUsageInHovercardsUpdateTriggerVariations), nullptr},
-};
-
 const FeatureEntry::FeatureParam kModalMemorySaverConservative[] = {
     {"modal_memory_saver_mode", "1"}};
 const FeatureEntry::FeatureParam kModalMemorySaverMedium[] = {
@@ -9729,15 +9719,6 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kMemorySaverMultistateMode,
          kMemorySaverMultistateModeVariations,
          "HighEfficiencyMultistateMode")},
-
-    {"memory-saver-memory-usage-in-hovercards",
-     flag_descriptions::kMemorySaverMemoryUsageInHovercardsName,
-     flag_descriptions::kMemorySaverMemoryUsageInHovercardsDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kMemoryUsageInHovercards,
-         kMemoryUsageInHovercardsVariations,
-         "MemoryUsageInHovercards")},
 
     {"modal-memory-saver", flag_descriptions::kModalMemorySaverName,
      flag_descriptions::kModalMemorySaverDescription, kOsDesktop,

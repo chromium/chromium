@@ -4861,12 +4861,6 @@ const char kMemorySaverMultistateModeAvailableDescription[] =
     "heuristic mode, enabled with a fixed timer, and discarded. Configure this "
     "through the settings page.";
 
-const char kMemorySaverMemoryUsageInHovercardsName[] =
-    "Show memory usage in hovercards.";
-const char kMemorySaverMemoryUsageInHovercardsDescription[] =
-    "When enabled, memory usage for active tabs can be found in their "
-    "hovercards.";
-
 const char kModalMemorySaverName[] = "Multi mode memory saver.";
 const char kModalMemorySaverDescription[] =
     "Configures which underlying Memory Saver mode is active. The mode "

@@ -184,8 +184,6 @@ class TabHoverCardController : public views::ViewObserver,
   PrefChangeRegistrar pref_change_registrar_;
   bool hover_card_image_previews_enabled_ = false;
 
-  bool hover_card_tab_memory_usage_enabled_ = false;
-
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;
   base::WeakPtrFactory<TabHoverCardController> weak_ptr_factory_{this};
