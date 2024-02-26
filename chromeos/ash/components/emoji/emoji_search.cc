@@ -19,6 +19,8 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -166,10 +168,9 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   for (const auto& [emoji, weighting] : scored_emoji) {
     ret.push_back({weighting, emoji});
   }
-  std::sort(ret.begin(), ret.end(),
-            [](const EmojiSearchEntry& a, const EmojiSearchEntry& b) {
-              return a.weighting > b.weighting;
-            });
+  base::ranges::sort(
+      ret, base::ranges::greater(),
+      [](const EmojiSearchEntry& entry) { return entry.weighting; });
   return ret;
 }
 
