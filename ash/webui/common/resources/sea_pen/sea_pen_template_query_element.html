@@ -11,6 +11,32 @@
     height: 40px;
   }
 
+  #options {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    padding-block: var(--cr-section-padding);
+    width: 100%;
+  }
+
+  #options cr-button {
+    background-color: var(--cros-bg-color);
+    border-radius: 12px;
+    height: 36px;
+    padding: 4px, 12px;
+  }
+
+  #options cr-button[aria-selected] {
+    --text-color: var(--cros-button-label-color-primary);
+    background-color: var(--cros-button-background-color-primary);
+    border-radius: 10px;
+    outline: 2px solid var(--cros-button-background-color-primary);
+    outline-offset: 2px;
+  }
+
   #template {
     align-items: start;
     border-bottom-color: var(--cros-text-color-primary);
@@ -103,13 +129,18 @@
     font: var(--cros-button-2-font);
     padding: 8px 32px 8px 16px;
   }
-
-  cr-action-menu::part(dialog) {
-    /* The menu only takes up half of the screen. */
-    max-height: calc(100vh / 2);
-  }
 </style>
 <div class="main">
+  <!-- TODO(b/326299109): Extract into a separate component. -->
+  <div id="options">
+    <template is="dom-repeat" items="[[options_]]" as="option">
+      <cr-button
+          on-click="onClickOption_"
+          aria-selected$="[[isSelected_(option, selectedChip_, selectedOptions_)]]">
+        [[option.translation]]
+      </cr-button>
+    </template>
+  </div>
   <div id="template">
     <template is="dom-repeat" items="[[templateTokens_]]" as="token">
       <template is="dom-if" if="[[isChip_(token)]]">
@@ -146,16 +177,4 @@
       </cr-button>
     </template>
   </div>
-  <cr-action-menu>
-    <template id="optionList" is="dom-repeat" items="[[options_]]" as="option">
-      <button
-          aria-selected$="[[isOptionSelected_(option, selectedChip_.translation)]]"
-          class="dropdown-item"
-          data-id$="[[template.id]]"
-          on-click="onClickOption_">
-        <iron-icon class="dropdown-check" icon="cr:check"></iron-icon>
-        [[option.translation]]
-      </button>
-    </template>
-  </cr-action-menu>
 </div>

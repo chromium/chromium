@@ -12,8 +12,6 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 
-import {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
@@ -25,12 +23,6 @@ import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 import {ChipToken, getDefaultOptions, getTemplateTokens, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
-
-export interface SeaPenTemplateQueryElement {
-  $: {
-    optionList: DomRepeat,
-  };
-}
 
 export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
@@ -122,33 +114,28 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         this.seaPenTemplate_.options.has(this.selectedChip_.id),
         'options must exist');
     this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
-    this.$.optionList.render();
-    this.showOptionMenu_(event);
-  }
-
-  private showOptionMenu_(event: Event&{model: {token: ChipToken}}) {
-    const targetElement = event.currentTarget as HTMLElement;
-    const config = {
-      anchorAlignmentX: AnchorAlignment.AFTER_START,
-      anchorAlignmentY: AnchorAlignment.AFTER_START,
-    };
-    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
-    menuElement!.showAt(targetElement.parentElement!, config);
   }
 
   private onClickOption_(event: Event&{model: {option: SeaPenOption}}) {
     const option = event.model.option;
     // Notifies the selected chip's translation has changed to the UI.
     this.set('selectedChip_.translation', option.translation);
+    // Notifies the selected options has changed to the UI by overriding Polymer
+    // dirty check
     this.selectedOptions_.set(this.selectedChip_!.id, option);
+    const selectedOptions = this.selectedOptions_;
+    this.selectedOptions_ = new Map<SeaPenTemplateChip, SeaPenOption>();
+    this.selectedOptions_ = selectedOptions;
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
-    this.closeOptionMenu_();
   }
 
-  private closeOptionMenu_() {
-    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
-    menuElement!.close();
+  private isSelected_(
+      option: SeaPenOption, selectedChip: ChipToken|null,
+      selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>): boolean {
+    return !!selectedOptions && !!selectedChip &&
+        selectedOptions.has(selectedChip!.id) &&
+        option === selectedOptions.get(selectedChip.id);
   }
 
   private onClickInspire_() {
@@ -232,6 +219,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private onClickSearchButton_() {
+    this.options_ = null;
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(this.getSeaPenTemplateId_());

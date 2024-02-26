@@ -17,10 +17,17 @@
   ::slotted(wallpaper-selected) {
     background-color: var(--cros-sys-app_base_shaded);
     grid-area: selected;
-    height: 172px;
+    /* TODO(b/326299946): Expand query element to cover the images rather than
+     * pushing images down */
+    min-height: 172px;
     position: sticky;
     top: 56px;
     z-index: 1;
+  }
+
+  sea-pen-input-query,
+  ::slotted(wallpaper-selected) {
+    height: 172px;
   }
 
   #seaPenBottomContainer {

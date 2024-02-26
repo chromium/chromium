@@ -126,16 +126,16 @@ suite('SeaPenTemplateQueryElementTest', function() {
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     assertTrue(
-        !!seaPenTemplateQueryElement.shadowRoot!
-              .querySelector('cr-action-menu')
-              ?.open,
+        !!seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            '#options cr-button'),
         'the action menu should open after clicking a chip');
     const options = seaPenTemplateQueryElement.shadowRoot!.querySelectorAll(
-        'button.dropdown-item:not([hidden])');
+        '#options cr-button');
     assertTrue(
         options.length > 0, 'there should be options available to select');
-    const selectedOption = seaPenTemplateQueryElement.shadowRoot!.querySelector(
-                               'button[aria-selected=\'true\']') as HTMLElement;
+    const selectedOption =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            '#options cr-button[aria-selected]') as HTMLElement;
     assertEquals(
         chipToSelect.innerText, selectedOption!.innerText,
         'the selected chip should have an equivalent selected option');
@@ -161,7 +161,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     const optionToSelect =
         seaPenTemplateQueryElement.shadowRoot!.querySelector(
-            'button[aria-selected=\'false\']') as HTMLElement;
+            '#options cr-button:not([aria-selected])') as HTMLElement;
     const optionText = optionToSelect!.innerText;
     assertTrue(
         optionText !== chip.innerText,
@@ -170,11 +170,12 @@ suite('SeaPenTemplateQueryElementTest', function() {
     optionToSelect!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
-    assertFalse(
-        !!seaPenTemplateQueryElement.shadowRoot!
-              .querySelector('cr-action-menu')
-              ?.open,
-        'the action menu should close after clicking an option');
+    let selectedOption =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            '#options cr-button[aria-selected]') as HTMLElement;
+    assertEquals(
+        selectedOption!.innerText, optionText,
+        'the new option should now be selected');
 
     const selectedChip = seaPenTemplateQueryElement.shadowRoot!.querySelector(
                              '#template .selected') as HTMLElement;
@@ -185,8 +186,8 @@ suite('SeaPenTemplateQueryElementTest', function() {
     chip!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
-    const selectedOption = seaPenTemplateQueryElement.shadowRoot!.querySelector(
-                               'button[aria-selected=\'true\']') as HTMLElement;
+    selectedOption = seaPenTemplateQueryElement.shadowRoot!.querySelector(
+                         '#options cr-button[aria-selected]') as HTMLElement;
     assertEquals(
         selectedOption!.innerText, optionText,
         'the option should now be selected');
@@ -211,8 +212,9 @@ suite('SeaPenTemplateQueryElementTest', function() {
     chips[0]!.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
-    let selectedOption = seaPenTemplateQueryElement.shadowRoot!.querySelector(
-                             'button[aria-selected=\'true\']') as HTMLElement;
+    let selectedOption =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            '#options cr-button[aria-selected]') as HTMLElement;
     let optionText = selectedOption!.innerText;
     assertTrue(
         optionText === chips[0]!.innerText,
@@ -222,7 +224,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     selectedOption = seaPenTemplateQueryElement.shadowRoot!.querySelector(
-                         'button[aria-selected=\'true\']') as HTMLElement;
+                         '#options cr-button[aria-selected]') as HTMLElement;
     optionText = selectedOption!.innerText;
     assertTrue(
         optionText === chips[1]!.innerText,
