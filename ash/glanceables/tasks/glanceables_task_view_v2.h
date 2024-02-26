@@ -13,8 +13,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class ImageButton;
@@ -44,7 +46,8 @@ struct Task;
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
-class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
+class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
+                                         public views::ViewObserver {
   METADATA_HEADER(GlanceablesTaskViewV2, views::FlexLayoutView)
 
  public:
@@ -69,6 +72,10 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
   GlanceablesTaskViewV2(const GlanceablesTaskViewV2&) = delete;
   GlanceablesTaskViewV2& operator=(const GlanceablesTaskViewV2&) = delete;
   ~GlanceablesTaskViewV2() override;
+
+  // views::ViewObserver:
+  void OnViewBlurred(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   const views::ImageButton* GetCheckButtonForTest() const;
   bool GetCompletedForTest() const;
@@ -115,6 +122,8 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
   // Title of the task.
   std::u16string task_title_;
 
+  bool saving_task_changes_ = false;
+
   // Marks the task as completed.
   const MarkAsCompletedCallback mark_as_completed_callback_;
 
@@ -126,6 +135,12 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
 
   // Shows an error message in the parent `GlanceablesTasksView`.
   const ShowErrorMessageCallback show_error_message_callback_;
+
+  base::ScopedMultiSourceObservation<views::View, GlanceablesTaskViewV2>
+      edit_exit_observer_{this};
+
+  base::WeakPtrFactory<GlanceablesTaskViewV2> state_change_weak_ptr_factory_{
+      this};
 
   base::WeakPtrFactory<GlanceablesTaskViewV2> weak_ptr_factory_{this};
 };

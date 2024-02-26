@@ -29,7 +29,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,7 +54,6 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/wm/core/focus_controller.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -467,21 +468,19 @@ void GlanceablesTasksView::SaveTask(
     const std::string& title,
     api::TasksClient::OnTaskSavedCallback callback) {
   if (task_id.empty()) {
-    // Manually deleting `view` may cause the focus manager try storing the
-    // dangling `view`'s descendants. Let native window handle the view deletion
-    // when it lost active.
-    if (GetWidget() &&
-        GetWidget()->GetNativeWindow() !=
-            Shell::Get()->focus_controller()->GetActiveWindow()) {
-      return;
-    }
-
     // Empty `task_id` means that the task has not yet been created. Verify that
     // this task has a non-empty title, otherwise just delete the `view` from
     // the scrollable container.
     if (title.empty() && view) {
       RecordTaskAdditionResult(TaskModificationResult::kCancelled);
-      task_items_container_view_->RemoveChildViewT(view.get());
+
+      // Removing the task immediately may cause a crash when the task is saved
+      // in response to the task title textfield losing focus, as it may result
+      // in deleting focused view while the focus manager is handling focus
+      // change to another view. b/324409607
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&GlanceablesTasksView::RemoveTaskView,
+                                    weak_ptr_factory_.GetWeakPtr(), view));
       return;
     }
 
@@ -558,6 +557,19 @@ std::u16string GlanceablesTasksView::GetErrorString(
       // TODO(b/323959143): Add the string when it is ready.
       return u"Error";
   }
+}
+
+void GlanceablesTasksView::RemoveTaskView(
+    base::WeakPtr<GlanceablesTaskViewV2> task_view) {
+  if (!task_view) {
+    return;
+  }
+
+  if (task_view->Contains(GetFocusManager()->GetFocusedView())) {
+    add_new_task_button_->RequestFocus();
+  }
+  task_items_container_view_->RemoveChildViewT(task_view.get());
+  PreferredSizeChanged();
 }
 
 BEGIN_METADATA(GlanceablesTasksView)

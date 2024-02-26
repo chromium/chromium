@@ -274,6 +274,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
     PressAndReleaseKey(ui::VKEY_D);
 
     PressAndReleaseKey(ui::VKEY_ESCAPE);
+    base::RunLoop().RunUntilIdle();
   }
 
   {
@@ -346,10 +347,95 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
   PressAndReleaseKey(ui::VKEY_P);
   PressAndReleaseKey(ui::VKEY_D);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
 
   const auto [task_view, task_id, title, callback] = future.Take();
   EXPECT_EQ(task_id, "task-id");
   EXPECT_EQ(title, "Task title upd");
+}
+
+TEST_F(GlanceablesTaskViewStableLaunchTest, CommitEditedTaskOnTab) {
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false, /*updated=*/base::Time());
+
+  base::test::TestFuture<base::WeakPtr<GlanceablesTaskViewV2>,
+                         const std::string&, const std::string&,
+                         api::TasksClient::OnTaskSavedCallback>
+      future;
+
+  const auto widget = CreateFramelessTestWidget();
+  widget->SetFullscreen(true);
+  auto* const view =
+      widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
+          &task, /*mark_as_completed_callback=*/base::DoNothing(),
+          /*save_callback=*/future.GetRepeatingCallback(),
+          /*edit_in_browser_callback=*/base::DoNothing(),
+          /*show_error_message_callback=*/base::DoNothing()));
+  ASSERT_TRUE(view);
+
+  view->UpdateTaskTitleViewForState(
+      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
+  PressAndReleaseKey(ui::VKEY_SPACE);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_P);
+  PressAndReleaseKey(ui::VKEY_D);
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  base::RunLoop().RunUntilIdle();
+
+  {
+    auto [task_view, task_id, title, callback] = future.Take();
+    EXPECT_EQ(task_id, "task-id");
+    EXPECT_EQ(title, "Task title upd");
+    const auto updated_task =
+        api::Task("task-id", "New upd",
+                  /*due=*/std::nullopt, /*completed=*/false,
+                  /*has_subtasks=*/false,
+                  /*has_email_link=*/false, /*has_notes=*/false,
+                  /*updated=*/base::Time::Now());
+    std::move(callback).Run(&updated_task);
+  }
+
+  EXPECT_FALSE(views::AsViewClass<views::Label>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel))));
+  EXPECT_TRUE(views::AsViewClass<views::Textfield>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField))));
+  const auto* edit_in_browser_button = view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+  ASSERT_TRUE(edit_in_browser_button);
+  EXPECT_TRUE(edit_in_browser_button->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  base::RunLoop().RunUntilIdle();
+
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_A);
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  base::RunLoop().RunUntilIdle();
+
+  {
+    const auto [task_view, task_id, title, callback] = future.Take();
+    EXPECT_EQ(task_id, "task-id");
+    EXPECT_EQ(title, "Task title upda");
+  }
+
+  edit_in_browser_button = view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+  ASSERT_TRUE(edit_in_browser_button);
+  EXPECT_TRUE(edit_in_browser_button->HasFocus());
+
+  view->GetFocusManager()->ClearFocus();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(views::AsViewClass<views::Label>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel))));
+  EXPECT_FALSE(views::AsViewClass<views::Textfield>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField))));
+  EXPECT_FALSE(views::AsViewClass<views::Textfield>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel))));
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
@@ -424,7 +510,6 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
 
   view->UpdateTaskTitleViewForState(
       GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
-  EXPECT_FALSE(view->GetCheckButtonForTest()->GetEnabled());
   EXPECT_FALSE(view->GetCompletedForTest());
 
   PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
@@ -437,7 +522,9 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
   auto [task_view, task_id, title, callback] = future.Take();
   EXPECT_TRUE(task_id.empty());
   EXPECT_EQ(title, "New");
-  EXPECT_FALSE(view->GetCheckButtonForTest()->GetEnabled());
+  EXPECT_FALSE(view->GetCompletedForTest());
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(view->GetCompletedForTest());
 
   const auto* const title_label =

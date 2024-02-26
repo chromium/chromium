@@ -23,8 +23,10 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -42,6 +44,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -51,7 +54,6 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/core/focus_controller.h"
 
 namespace ash {
 namespace {
@@ -138,7 +140,7 @@ class TaskViewTextField : public SystemTextfield,
 
  public:
   using OnFinishedEditingCallback =
-      base::OnceCallback<void(const std::u16string& title)>;
+      base::RepeatingCallback<void(const std::u16string& title)>;
 
   TaskViewTextField(const std::u16string& title,
                     OnFinishedEditingCallback on_finished_editing)
@@ -192,8 +194,7 @@ class TaskViewTextField : public SystemTextfield,
     // Entering inactive state from the active state implies the editing is
     // done.
     if (!IsActive()) {
-      // Running `on_finished_editing_` deletes `this`.
-      std::move(on_finished_editing_).Run(GetText());
+      on_finished_editing_.Run(GetText());
     }
   }
 
@@ -216,6 +217,8 @@ class EditInBrowserButton : public views::LabelButton {
     SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
+    button_controller()->set_notify_action(
+        views::ButtonController::NotifyAction::kOnPress);
   }
 };
 
@@ -409,6 +412,32 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
 
 GlanceablesTaskViewV2::~GlanceablesTaskViewV2() = default;
 
+void GlanceablesTaskViewV2::OnViewBlurred(views::View* observed_view) {
+  if ((observed_view == edit_in_browser_button_ ||
+       observed_view == task_title_textfield_) &&
+      (!edit_in_browser_button_ || !edit_in_browser_button_->HasFocus()) &&
+      (!task_title_textfield_ || !task_title_textfield_->HasFocus())) {
+    edit_exit_observer_.RemoveAllObservations();
+    // Schedule a task to update task view state to kView. Done asynchronously
+    // to let the focus change to complete. State update will remove the blurred
+    // view while focus is still changing, which may cause a crash -
+    // b/324409607.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GlanceablesTaskViewV2::UpdateTaskTitleViewForState,
+                       state_change_weak_ptr_factory_.GetWeakPtr(),
+                       TaskTitleViewState::kView));
+  }
+}
+
+void GlanceablesTaskViewV2::OnViewIsDeleting(views::View* observed_view) {
+  edit_exit_observer_.RemoveObservation(observed_view);
+
+  if (!edit_exit_observer_.IsObservingAnySource()) {
+    UpdateTaskTitleViewForState(TaskTitleViewState::kView);
+  }
+}
+
 const views::ImageButton* GlanceablesTaskViewV2::GetCheckButtonForTest() const {
   return check_button_;
 }
@@ -419,6 +448,9 @@ bool GlanceablesTaskViewV2::GetCompletedForTest() const {
 
 void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
     TaskTitleViewState state) {
+  state_change_weak_ptr_factory_.InvalidateWeakPtrs();
+  edit_exit_observer_.RemoveAllObservations();
+
   task_title_button_ = nullptr;
   task_title_textfield_ = nullptr;
   tasks_title_view_->RemoveAllChildViews();
@@ -436,6 +468,7 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
               task_title_, base::BindRepeating(
                                &GlanceablesTaskViewV2::TaskTitleButtonPressed,
                                base::Unretained(this))));
+      task_title_button_->SetEnabled(!saving_task_changes_);
       task_title_button_->UpdateLabelForState(
           /*completed=*/check_button_->checked());
       break;
@@ -443,14 +476,15 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
       task_title_textfield_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
               task_title_,
-              base::BindOnce(&GlanceablesTaskViewV2::OnFinishedEditing,
-                             base::Unretained(this))));
+              base::BindRepeating(&GlanceablesTaskViewV2::OnFinishedEditing,
+                                  base::Unretained(this))));
       GetWidget()->widget_delegate()->SetCanActivate(true);
       task_title_textfield_->RequestFocus();
 
       edit_in_browser_button_ = contents_view_->AddChildView(
           std::make_unique<EditInBrowserButton>(edit_in_browser_callback_));
-      check_button_->SetEnabled(false);
+      edit_exit_observer_.AddObservation(task_title_textfield_);
+      edit_exit_observer_.AddObservation(edit_in_browser_button_);
       break;
   }
 
@@ -491,6 +525,10 @@ void GlanceablesTaskViewV2::CheckButtonPressed() {
     return;
   }
 
+  if (saving_task_changes_) {
+    return;
+  }
+
   bool target_state = !check_button_->checked();
   check_button_->SetChecked(target_state);
 
@@ -518,17 +556,17 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
     task_title_ = title;
   }
 
-  // Skip the title view resetting when the window lost active. Let the view
-  // hierarchy clean up be done by the native widget.
-  if (!(GetWidget() &&
-        GetWidget()->GetNativeWindow() !=
-            Shell::Get()->focus_controller()->GetActiveWindow())) {
-    UpdateTaskTitleViewForState(TaskTitleViewState::kView);
+  if (task_title_textfield_ && task_title_textfield_->HasFocus()) {
+    GetFocusManager()->ClearFocus();
   }
 
   if (task_id_.empty() || task_title_ != old_title) {
+    saving_task_changes_ = true;
     if (task_title_button_) {
       task_title_button_->SetEnabled(false);
+    }
+    if (task_title_textfield_) {
+      task_title_textfield_->SetEnabled(false);
     }
     // Note: result for task addition flow will be recorded in the parent view,
     // which initialized add task flow.
@@ -545,7 +583,6 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
   } else {
     // Note: result for task addition flow will be recorded in the parent view,
     // which initialized add task flow.
-    check_button_->SetEnabled(true);
     if (!task_id_.empty()) {
       RecordTaskModificationResult(TaskModificationResult::kCancelled);
     }
@@ -553,9 +590,12 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
 }
 
 void GlanceablesTaskViewV2::OnSaved(const api::Task* task) {
-  check_button_->SetEnabled(true);
+  saving_task_changes_ = false;
   if (task_title_button_) {
     task_title_button_->SetEnabled(true);
+  }
+  if (task_title_textfield_) {
+    task_title_textfield_->SetEnabled(true);
   }
   if (task) {
     task_id_ = task->id;

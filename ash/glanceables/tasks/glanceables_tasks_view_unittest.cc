@@ -258,6 +258,7 @@ TEST_F(GlanceablesTasksViewTest, SupportsEditingRightAfterAdding) {
   PressAndReleaseKey(ui::VKEY_E);
   PressAndReleaseKey(ui::VKEY_W);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
 
   // Verify executed callbacks number.
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 1u);
@@ -274,10 +275,101 @@ TEST_F(GlanceablesTasksViewTest, SupportsEditingRightAfterAdding) {
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_SPACE);
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_1);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
 
   // Verify executed callbacks number.
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
   EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 3, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 4, 1);
+}
+
+TEST_F(GlanceablesTasksViewTest, TabbingOutOfNewTaskTextfieldAddsTask) {
+  base::HistogramTester histogram_tester;
+  tasks_client()->set_paused(true);
+
+  // Add a task.
+  GestureTapOn(GetAddNewTaskButton());
+
+  const auto* task_view = GetTaskItemsContainerView()->children()[0].get();
+  EXPECT_TRUE(task_view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+
+  PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_E);
+  PressAndReleaseKey(ui::VKEY_W);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that edit in browser button is visible and focused.
+  const auto* const edit_in_browser_button = GetEditInBrowserButton();
+  ASSERT_TRUE(edit_in_browser_button);
+  EXPECT_TRUE(edit_in_browser_button->GetVisible());
+  EXPECT_TRUE(edit_in_browser_button->HasFocus());
+
+  EXPECT_FALSE(task_view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+
+  // Verify executed callbacks number.
+  EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 1u);
+  EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 0u);
+
+  // Tab back to the Add task textfield, and update the text.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  base::RunLoop().RunUntilIdle();
+
+  const auto* const title_text_field =
+      views::AsViewClass<views::Textfield>(task_view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+  ASSERT_TRUE(title_text_field);
+  EXPECT_TRUE(title_text_field->HasFocus());
+  EXPECT_EQ(u"New", title_text_field->GetText());
+
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_1);
+  // Focus edit in browser button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+
+  EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
+  EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
+
+  // Focus the next task, which exits the task editing state.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(GetEditInBrowserButton());
+
+  task_view = GetTaskItemsContainerView()->children()[0].get();
+  EXPECT_FALSE(task_view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+  const auto* title_label =
+      views::AsViewClass<views::Label>(task_view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  ASSERT_TRUE(title_label);
+  EXPECT_EQ(u"New1", title_label->GetText());
+
+  // Edit the same task.
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+  GestureTapOn(title_label);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_SPACE);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_1);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify executed callbacks number.
+  EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
+  EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
+
+  title_label = views::AsViewClass<views::Label>(
+      GetTaskItemsContainerView()->children()[0]->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  ASSERT_TRUE(title_label);
+  EXPECT_EQ(u"New1 1", title_label->GetText());
 
   histogram_tester.ExpectTotalCount(
       "Ash.Glanceables.TimeManagement.Tasks.UserAction", 2);
@@ -305,6 +397,8 @@ TEST_F(GlanceablesTasksViewTest, AllowsPressingAddNewTaskButtonWhileAdding) {
   GestureTapOn(GetAddNewTaskButton());
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
             initial_tasks_count + 2);
+
+  base::RunLoop().RunUntilIdle();
 
   // But the previous task becomes automatically committed due to losing focus.
   const auto* const previous_task_label = views::AsViewClass<views::Label>(
@@ -359,6 +453,8 @@ TEST_F(GlanceablesTasksViewTest, DoesNotAllowEditingToBlankTitle) {
 
     // Commit changes.
     PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+    base::RunLoop().RunUntilIdle();
   }
 
   {
@@ -385,6 +481,7 @@ TEST_F(GlanceablesTasksViewTest, DoesNotAddTaskWithBlankTitle) {
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
             initial_tasks_count + 1);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
 
   // Verify executed callbacks number.
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
@@ -422,6 +519,7 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   PressAndReleaseKey(ui::VKEY_E);
   PressAndReleaseKey(ui::VKEY_W);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(task_items_container_view->children().size(), 3u);
   EXPECT_FALSE(GetErrorMessage());
@@ -450,6 +548,7 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_P);
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_D);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(task_items_container_view->children().size(), 2u);
   EXPECT_FALSE(GetErrorMessage());

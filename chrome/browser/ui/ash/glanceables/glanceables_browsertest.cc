@@ -564,6 +564,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, AddTaskItem) {
 
     // Finish editing by pressing Esc key.
     GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+    base::RunLoop().RunUntilIdle();
   }
 
   {
@@ -642,6 +643,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {
 
     // Finish editing by pressing Esc key.
     GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+    base::RunLoop().RunUntilIdle();
   }
 
   {

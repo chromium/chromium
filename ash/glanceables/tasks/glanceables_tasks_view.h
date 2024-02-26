@@ -130,6 +130,9 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // `error_type`.
   std::u16string GetErrorString(GlanceablesTasksErrorType error_type) const;
 
+  // Removes `task_view` from the tasks container.
+  void RemoveTaskView(base::WeakPtr<GlanceablesTaskViewV2> task_view);
+
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
 
