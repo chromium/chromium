@@ -8,7 +8,8 @@
 #include <optional>
 #include <string>
 
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "base/time/time.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-forward.h"
 #include "components/account_manager_core/account.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/values_util.h"

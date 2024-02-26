@@ -545,38 +545,5 @@ std::unique_ptr<BrowserAction> BrowserAction::GetActionForSessionStart() {
       /*incognito=*/false, /*should_trigger_session_restore=*/true, -1);
 }
 
-BrowserActionQueue::BrowserActionQueue() = default;
-BrowserActionQueue::~BrowserActionQueue() = default;
-
-bool BrowserActionQueue::IsEmpty() const {
-  return actions_.empty();
-}
-
-void BrowserActionQueue::PushOrCancel(std::unique_ptr<BrowserAction> action,
-                                      mojom::CreationResult cancel_reason) {
-  if (action->IsQueueable()) {
-    actions_.push(std::move(action));
-  } else {
-    action->Cancel(cancel_reason);
-  }
-}
-
-void BrowserActionQueue::Push(std::unique_ptr<BrowserAction> action) {
-  DCHECK(action->IsQueueable());
-  actions_.push(std::move(action));
-}
-
-std::unique_ptr<BrowserAction> BrowserActionQueue::Pop() {
-  DCHECK(!IsEmpty());
-  std::unique_ptr<BrowserAction> action = std::move(actions_.front());
-  actions_.pop();
-  return action;
-}
-
-void BrowserActionQueue::Clear() {
-  base::queue<std::unique_ptr<BrowserAction>> empty;
-  actions_.swap(empty);
-  DCHECK(IsEmpty());
-}
 
 }  // namespace crosapi

@@ -371,6 +371,7 @@ static_library("common_lib") {
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
     ]
+    public_deps += [ "//chrome/common/extensions/api" ]
     deps += [ "//chrome/common/chromeos/extensions" ]
   }
   if (is_chromeos_ash) {

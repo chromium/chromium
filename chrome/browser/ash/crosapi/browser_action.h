@@ -114,25 +114,6 @@ class BrowserAction {
   const bool is_queueable_;
 };
 
-// A queue of queueable actions.
-class BrowserActionQueue {
- public:
-  BrowserActionQueue();
-  ~BrowserActionQueue();
-
-  // Enqueues |action| if it is queueable. Cancels it otherwise.
-  void PushOrCancel(std::unique_ptr<BrowserAction> action,
-                    mojom::CreationResult cancel_reason);
-
-  void Push(std::unique_ptr<BrowserAction> action);
-  std::unique_ptr<BrowserAction> Pop();
-  bool IsEmpty() const;
-  void Clear();
-
- private:
-  base::queue<std::unique_ptr<BrowserAction>> actions_;
-};
-
 }  // namespace crosapi
 
 #endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_ACTION_H_

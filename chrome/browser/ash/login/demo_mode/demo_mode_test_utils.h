@@ -8,7 +8,10 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "components/policy/proto/device_management_backend.pb.h"
+
+namespace enterprise_management {
+class DemoModeDimensions;
+}  // namespace enterprise_management
 
 namespace ash {
 class MockEnrollmentLauncher;

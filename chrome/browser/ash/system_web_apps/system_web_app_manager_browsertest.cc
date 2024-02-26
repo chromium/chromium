@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"

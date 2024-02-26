@@ -59,6 +59,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/volume.h"
 #endif
 
 namespace web_app {

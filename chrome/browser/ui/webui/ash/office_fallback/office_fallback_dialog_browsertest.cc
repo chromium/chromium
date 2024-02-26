@@ -8,6 +8,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_dialog.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"

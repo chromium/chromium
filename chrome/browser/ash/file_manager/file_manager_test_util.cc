@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"

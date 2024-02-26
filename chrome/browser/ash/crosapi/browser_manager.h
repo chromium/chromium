@@ -20,14 +20,13 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_action.h"
+#include "chrome/browser/ash/crosapi/browser_action_queue.h"
 #include "chrome/browser/ash/crosapi/browser_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
-#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
 #include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -78,9 +77,11 @@ class CloudPolicyCore;
 namespace crosapi {
 
 namespace mojom {
+enum class CreationResult;
 class Crosapi;
 }  // namespace mojom
 
+class BrowserAction;
 class BrowserLoader;
 class DeviceOwnershipWaiter;
 class FilesAppLauncher;

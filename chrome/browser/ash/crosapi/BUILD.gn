@@ -49,6 +49,8 @@ source_set("crosapi") {
     "automation_ash.h",
     "browser_action.cc",
     "browser_action.h",
+    "browser_action_queue.cc",
+    "browser_action_queue.h",
     "browser_data_back_migrator.cc",
     "browser_data_back_migrator.h",
     "browser_data_back_migrator_metrics.cc",
