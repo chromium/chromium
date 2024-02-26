@@ -153,6 +153,13 @@ class WebStateID;
 // Notifies the grid that it is about to be dismissed.
 - (void)prepareForDismissal;
 
+// Moves the visible cells such as their center is in `center` (expressed in
+// self.view's coordinates) and apply `scale`. Pass CGPointZero to reset their
+// position.
+- (void)centerVisibleCellsToPoint:(CGPoint)center withScale:(CGFloat)scale;
+// Resets the move and scale done by the method just above.
+- (void)resetVisibleCellsCenterAndScale;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_H_

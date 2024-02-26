@@ -10,6 +10,7 @@ source_set("tab_groups") {
     "tab_group_mediator.mm",
   ]
   deps = [
+    ":presentation",
     ":tab_group_consumer",
     ":tab_group_mutator",
     ":tab_groups_commands",
@@ -103,6 +104,21 @@ source_set("tab_group_creation_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+}
+
+source_set("presentation") {
+  sources = [
+    "tab_group_presentation_controller.h",
+    "tab_group_presentation_controller.mm",
+    "tab_group_transition_animator.h",
+    "tab_group_transition_animator.mm",
+    "tab_group_transition_delegate.h",
+    "tab_group_transition_delegate.mm",
+  ]
+  deps = [
+    ":tab_groups_constant",
+    ":tab_groups_ui",
   ]
 }
 

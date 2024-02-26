@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_transition_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 
@@ -19,6 +20,8 @@
   TabGroupMediator* _mediator;
   // View controller for tab groups.
   TabGroupViewController* _viewController;
+  // Transition delegate for the animation to show/hide a Tab Group.
+  TabGroupTransitionDelegate* _transitionDelegate;
 }
 
 #pragma mark - ChromeCoordinator
@@ -47,10 +50,10 @@
   _viewController.mutator = _mediator;
   _viewController.gridViewController.mutator = _mediator;
 
-  // TODO(crbug.com/1501837): Add the tab group animation when user tap on a tab
-  // group cell in the tab grid.
-  _viewController.modalPresentationStyle =
-      UIModalPresentationOverCurrentContext;
+  _viewController.modalPresentationStyle = UIModalPresentationCustom;
+  _transitionDelegate = [[TabGroupTransitionDelegate alloc]
+      initWithTabGroupViewController:_viewController];
+  _viewController.transitioningDelegate = _transitionDelegate;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];

@@ -556,6 +556,24 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
+- (void)centerVisibleCellsToPoint:(CGPoint)center withScale:(CGFloat)scale {
+  for (UIView* cell in self.collectionView.visibleCells) {
+    CGPoint transformedOrigin = [self.collectionView convertPoint:center
+                                                         fromView:self.view];
+    CGAffineTransform transform =
+        CGAffineTransformMakeTranslation(transformedOrigin.x - cell.center.x,
+                                         transformedOrigin.y - cell.center.y);
+    transform = CGAffineTransformScale(transform, scale, scale);
+    cell.transform = transform;
+  }
+}
+
+- (void)resetVisibleCellsCenterAndScale {
+  for (UIView* cell in self.collectionView.visibleCells) {
+    cell.transform = CGAffineTransformIdentity;
+  }
+}
+
 #pragma mark - UICollectionView Diffable Data Source Helpers
 
 // Configures the grid header for the given section.

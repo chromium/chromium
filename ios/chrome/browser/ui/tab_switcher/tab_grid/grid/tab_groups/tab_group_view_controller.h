@@ -27,6 +27,16 @@
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                      lightTheme:(BOOL)lightTheme;
 
+// Methods handling the presentation animation of this view controller.
+- (void)prepareForPresentation;
+- (void)animateTopElementsPresentation;
+- (void)animateGridPresentation;
+- (void)fadeBlurIn;
+
+// Methods handling the dismissal animation of this view controller.
+- (void)animateDismissal;
+- (void)fadeBlurOut;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUP_VIEW_CONTROLLER_H_

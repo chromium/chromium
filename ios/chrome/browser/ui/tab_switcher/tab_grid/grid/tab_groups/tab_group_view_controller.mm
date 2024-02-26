@@ -48,9 +48,13 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   UIColor* _groupColor;
   // Group's creation date.
   base::Time _groupCreationDate;
+  // The title of the view.
+  UIView* _primaryTitle;
+  // The blur background.
+  UIVisualEffectView* _blurView;
 }
 
-#pragma mark - UIViewController
+#pragma mark - Public
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                      lightTheme:(BOOL)lightTheme {
@@ -70,24 +74,69 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   return self;
 }
 
-- (void)viewDidLoad {
-  [super viewDidLoad];
-  if (!UIAccessibilityIsReduceTransparencyEnabled()) {
+- (void)prepareForPresentation {
+  [self.view layoutIfNeeded];
+  CGAffineTransform scaleDown =
+      CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
+  _navigationBar.alpha = 0;
+  _primaryTitle.alpha = 0;
+  _primaryTitle.transform = CGAffineTransformTranslate(
+      scaleDown, -_primaryTitle.bounds.size.width / 5.0, 0);
+
+  _gridViewController.view.alpha = 0;
+  CGPoint center = [_gridViewController.view convertPoint:self.view.center
+                                                 fromView:self.view];
+  [_gridViewController centerVisibleCellsToPoint:center withScale:0.1];
+}
+
+- (void)animateTopElementsPresentation {
+  _navigationBar.alpha = 1;
+  _primaryTitle.alpha = 1;
+  _primaryTitle.transform = CGAffineTransformIdentity;
+}
+
+- (void)animateGridPresentation {
+  _gridViewController.view.alpha = 1;
+  [_gridViewController resetVisibleCellsCenterAndScale];
+}
+
+- (void)fadeBlurIn {
+  if (UIAccessibilityIsReduceTransparencyEnabled()) {
+    self.view.backgroundColor = UIColor.blackColor;
+  } else {
     self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
         colorWithAlphaComponent:kBackgroundAlpha];
     UIBlurEffect* blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-    UIVisualEffectView* blurEffectView =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:blurEffectView];
-    AddSameConstraints(self.view, blurEffectView);
-  } else {
-    self.view.backgroundColor = [UIColor blackColor];
+    _blurView.effect = blurEffect;
+  }
+}
+
+- (void)animateDismissal {
+  CGPoint center = [_gridViewController.view convertPoint:self.view.center
+                                                 fromView:self.view];
+  [_gridViewController centerVisibleCellsToPoint:center withScale:0.1];
+}
+
+- (void)fadeBlurOut {
+  _blurView.effect = nil;
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.view.backgroundColor = UIColor.clearColor;
+  if (!UIAccessibilityIsReduceTransparencyEnabled()) {
+    _blurView = [[UIVisualEffectView alloc] initWithEffect:nil];
+    _blurView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_blurView];
+    AddSameConstraints(self.view, _blurView);
   }
 
   [self configureNavigationBar];
   UIView* primaryTitle = [self configuredPrimaryTitle];
+  _primaryTitle = primaryTitle;
   UIView* secondaryTitle = [self configuredSubTitle];
 
   UIView* gridView = _gridViewController.view;
