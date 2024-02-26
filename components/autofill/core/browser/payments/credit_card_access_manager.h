@@ -38,10 +38,6 @@ namespace autofill {
 class BrowserAutofillManager;
 enum class WebauthnDialogCallbackType;
 
-namespace autofill_metrics {
-class AutofillMetricsBaseTest;
-}
-
 // Flow type denotes which card unmask authentication method was used.
 // TODO(crbug/1300959): Deprecate kCvcThenFido, kCvcFallbackFromFido, and
 // kOtpFallbackFromFido.
@@ -184,88 +180,8 @@ class CreditCardAccessManager
       payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details) override;
 
-  void SetUnmaskDetailsRequestInProgressForTesting(
-      bool unmask_details_request_in_progress) {
-    unmask_details_request_in_progress_ = unmask_details_request_in_progress;
-  }
-
-  bool ShouldOfferFidoOptInDialogForTesting(
-      const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response) {
-    return ShouldOfferFidoOptInDialog(response);
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  bool ShouldOfferFidoAuthForTesting() { return ShouldOfferFidoAuth(); }
-#endif
-
-  void OnVcn3dsAuthenticationCompleteForTesting(
-      payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response) {
-    OnVcn3dsAuthenticationComplete(std::move(response));
-  }
-
  private:
-  // TODO(crbug.com/1249665): Remove FRIEND and create test_api class to access
-  // private methods and variables.
-  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerBrowserTest,
-                           NavigateFromPage_UnmaskedCardCacheResets);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
-      RiskBasedMaskedServerCardUnmasking_AuthenticationRequired_FidoOnly);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
-      RiskBasedMaskedServerCardUnmasking_AuthenticationRequired_CvcThenFido);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
-      RiskBasedMaskedServerCardUnmasking_AuthenticationRequired_PreflightCallNotFinished);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
-                           PreflightCallRateLimited);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
-                           UnmaskAuthFlowEvent_AlsoLogsVirtualCardSubhistogram);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_PrefersFido);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_FidoNotOptedIn);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_FidoFailedFallBackToOtp);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly_FidoNotOptedIn);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_CreditCardAccessManagerReset_TriggersOtpAuthenticatorResetOnFlowCancelled);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardAccessManagerTest,
-      RiskBasedVirtualCardUnmasking_Failure_VirtualCardRetrievalError);
-  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
-                           RiskBasedVirtualCardUnmasking_FlowCancelled);
-  friend class autofill_metrics::AutofillMetricsBaseTest;
-  friend class CreditCardAccessManagerTest;
-
-#if !BUILDFLAG(IS_IOS)
-  void set_fido_authenticator_for_testing(
-      std::unique_ptr<CreditCardFidoAuthenticator> fido_authenticator) {
-    fido_authenticator_ = std::move(fido_authenticator);
-  }
-#endif
-
-#if defined(UNIT_TEST)
-  // Mocks that a virtual card was selected, so unit tests that don't run the
-  // actual Autofill suggestions dropdown UI can still follow their remaining
-  // steps under the guise of doing it for a virtual card.
-  void set_virtual_card_suggestion_selected_on_form_event_logger_for_testing() {
-    form_event_logger_->set_latest_selected_card_was_virtual_card_for_testing(
-        /*latest_selected_card_was_virtual_card=*/true);
-  }
-#endif
+  friend class CreditCardAccessManagerTestApi;
 
   // Returns whether or not unmasked card cache is empty. Exposed for testing.
   bool UnmaskedCardCacheIsEmpty();

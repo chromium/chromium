@@ -866,6 +866,7 @@ static_library("test_support") {
     "mock_merchant_promo_code_manager.h",
     "mock_single_field_form_fill_router.cc",
     "mock_single_field_form_fill_router.h",
+    "payments/credit_card_access_manager_test_api.h",
     "payments/mock_iban_access_manager.cc",
     "payments/mock_iban_access_manager.h",
     "payments/mock_test_payments_network_interface.cc",
