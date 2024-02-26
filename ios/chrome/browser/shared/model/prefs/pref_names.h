@@ -126,6 +126,11 @@ inline constexpr char kIosCredentialProviderPromoSource[] =
 inline constexpr char kIosBookmarkCachedFolderId[] =
     "ios.bookmark.cached_folder_id";
 
+// Caches the folder’s model of user's position in the bookmark hierarchy
+// navigator.
+inline constexpr char kIosBookmarkCachedFolderModel[] =
+    "ios.bookmark.cached_folder_model";
+
 // Caches the scroll position of Bookmarks.
 inline constexpr char kIosBookmarkCachedTopMostRow[] =
     "ios.bookmark.cached_top_most_row";

@@ -8,6 +8,7 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -33,20 +34,26 @@ TEST_F(BookmarkPathCacheTest, TestPathCache) {
   const BookmarkNode* f1 = AddFolder(mobile_node, u"f1");
   int64_t folder_id = f1->id();
   int topmost_row = 23;
-  [BookmarkPathCache cacheBookmarkTopMostRowWithPrefService:&prefs_
-                                                   folderId:folder_id
-                                                 topMostRow:topmost_row];
+  [BookmarkPathCache
+      cacheBookmarkTopMostRowWithPrefService:&prefs_
+                                    folderId:folder_id
+                                 inModelType:BookmarkModelType::kLocalOrSyncable
+                                  topMostRow:topmost_row];
 
   int64_t result_folder_id;
+  BookmarkModelType model_type;
   int result_topmost_row;
   [BookmarkPathCache
       getBookmarkTopMostRowCacheWithPrefService:&prefs_
-                                          model:
-                                              local_or_syncable_bookmark_model_
+                           localOrSyncableModel:
+                               local_or_syncable_bookmark_model_
+                                   accountModel:account_bookmark_model_
                                        folderId:&result_folder_id
+                                      modelType:&model_type
                                      topMostRow:&result_topmost_row];
   EXPECT_EQ(folder_id, result_folder_id);
   EXPECT_EQ(topmost_row, result_topmost_row);
+  EXPECT_EQ(model_type, BookmarkModelType::kLocalOrSyncable);
 }
 
 TEST_F(BookmarkPathCacheTest, TestPathCacheWhenFolderDeleted) {
@@ -56,21 +63,26 @@ TEST_F(BookmarkPathCacheTest, TestPathCacheWhenFolderDeleted) {
   const BookmarkNode* f1 = AddFolder(mobile_node, u"f1");
   int64_t folder_id = f1->id();
   int topmost_row = 23;
-  [BookmarkPathCache cacheBookmarkTopMostRowWithPrefService:&prefs_
-                                                   folderId:folder_id
-                                                 topMostRow:topmost_row];
+  [BookmarkPathCache
+      cacheBookmarkTopMostRowWithPrefService:&prefs_
+                                    folderId:folder_id
+                                 inModelType:BookmarkModelType::kLocalOrSyncable
+                                  topMostRow:topmost_row];
 
   // Delete the folder.
   local_or_syncable_bookmark_model_->Remove(
       f1, bookmarks::metrics::BookmarkEditSource::kOther);
 
   int64_t unused_folder_id;
+  BookmarkModelType model_type;
   int unused_topmost_row;
   BOOL result = [BookmarkPathCache
       getBookmarkTopMostRowCacheWithPrefService:&prefs_
-                                          model:
-                                              local_or_syncable_bookmark_model_
+                           localOrSyncableModel:
+                               local_or_syncable_bookmark_model_
+                                   accountModel:account_bookmark_model_
                                        folderId:&unused_folder_id
+                                      modelType:&model_type
                                      topMostRow:&unused_topmost_row];
   ASSERT_FALSE(result);
 }

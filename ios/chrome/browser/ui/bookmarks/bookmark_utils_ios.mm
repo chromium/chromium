@@ -828,8 +828,6 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
 
 #pragma mark - Cache position in table view.
 
-namespace {
-
 // Creates bookmark path for `folderId` passed in. For eg: for folderId = 76,
 // Root node(0) --> MobileBookmarks (3) --> Test1(76) will be returned as [0, 3,
 // 76]. Return nullptr if the folder is not found.
@@ -853,23 +851,6 @@ NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
     [bookmarkPath addObject:[NSNumber numberWithLongLong:bookmark->id()]];
   }
   return [[bookmarkPath reverseObjectEnumerator] allObjects];
-}
-
-}  // namespace
-
-NSArray<NSNumber*>* CreateBookmarkPath(
-    bookmarks::BookmarkModel* localOrSyncableModel,
-    bookmarks::BookmarkModel* accountModel,
-    int64_t folder_id) {
-  NSArray<NSNumber*>* path =
-      CreateBookmarkPath(localOrSyncableModel, folder_id);
-  if (path != nil) {
-    return path;
-  }
-  if (!accountModel) {
-    return nil;
-  }
-  return CreateBookmarkPath(accountModel, folder_id);
 }
 
 GURL ConvertUserDataToGURL(NSString* urlString) {
