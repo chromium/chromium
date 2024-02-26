@@ -1048,8 +1048,9 @@ SelectorQueryCache& Document::GetSelectorQueryCache() {
 }
 
 MediaQueryMatcher& Document::GetMediaQueryMatcher() {
-  if (!media_query_matcher_)
+  if (!media_query_matcher_) {
     media_query_matcher_ = MakeGarbageCollected<MediaQueryMatcher>(*this);
+  }
   return *media_query_matcher_;
 }
 
@@ -4020,8 +4021,21 @@ void Document::ImplicitClose() {
     return;
   }
 
-  if (HaveRenderBlockingStylesheetsLoaded())
-    UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+  if (HaveRenderBlockingStylesheetsLoaded()) {
+    // The initial empty document might be loaded synchronously.
+    // When this occurs and we also synchronously update the style and layout
+    // here, which is needed for things like autofill, it creates a chain
+    // reaction where inserting iframes without a src to a document causes
+    // expensive layout thrashing of the embedding document. Since this is a
+    // common scenario, special-casing it here, and avoiding that layout if
+    // this is an initial-empty document in a subframe.
+    if (!base::FeatureList::IsEnabled(
+            features::kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe) ||
+        Loader()->HasLoadedNonInitialEmptyDocument() ||
+        GetFrame()->IsMainFrame()) {
+      UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+    }
+  }
 
   load_event_progress_ = kLoadEventCompleted;
 
@@ -5252,6 +5266,7 @@ void Document::LayoutViewportWasResized() {
   MediaQueryAffectingValueChanged(MediaValueChange::kSize);
   if (media_query_matcher_)
     media_query_matcher_->ViewportChanged();
+
   // We need to be careful not to trigger a resize event when setting the
   // initial layout size. It might seem like the correct check should be
   // (load_event_progress_ >= kLoadEventInProgress), but that doesn't actually
@@ -5259,8 +5274,10 @@ void Document::LayoutViewportWasResized() {
   // kLoadEventCompleted. DidFirstLayout() is a reliable indicator that the load
   // event *actually* completed; but we also need to fire a resize event if the
   // window size changes during load event dispatch.
+  // Note that in the case of the initial empty document, the load may hav
+  // completed before performing the first layout.
   if (View()->DidFirstLayout() ||
-      load_event_progress_ == kLoadEventInProgress) {
+      load_event_progress_ == kLoadEventInProgress || IsLoadCompleted()) {
     EnqueueResizeEvent();
     EnqueueVisualViewportResizeEvent();
     if (GetFrame()->IsMainFrame() && !Printing())

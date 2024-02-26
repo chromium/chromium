@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+
+<script>
+  description("Test that inserting an empty iframe doesn't force a layout");
+
+  var jsTestIsAsync = true;
+  window.addEventListener("load", () => {
+    window.layoutCountBefore = internals.layoutCountForTesting();
+    const iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    window.layoutCountAfter = internals.layoutCountForTesting();
+    shouldBe("layoutCountAfter", "layoutCountBefore");
+    finishJSTest();
+  });
+</script>

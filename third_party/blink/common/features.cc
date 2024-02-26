@@ -258,6 +258,10 @@ BASE_FEATURE(kAvifGainmapHdrImages,
              "AvifGainmapHdrImages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe,
+             "AvoidForcedLayoutOnInitialEmptyDocumentInSubframe",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
              "BackForwardCacheDWCOnJavaScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -159,6 +159,13 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // Tracker: https://crbug.com/1451889
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvifGainmapHdrImages);
 
+// When synchronousy loading the initial empty document, perform the layout
+// asynchronously.
+// TODO(http://crbug.com/324572951): Remove flag after Finch shows that this is
+// safe and has positive impact.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheDWCOnJavaScriptExecution);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);

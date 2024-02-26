@@ -19,6 +19,8 @@
 
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"
@@ -74,6 +76,23 @@ bool MediaQueryMatcher::Evaluate(const MediaQuerySet* media) {
 MediaQueryList* MediaQueryMatcher::MatchMedia(const String& query) {
   if (!document_) {
     return nullptr;
+  }
+
+  // TODO(crbug.com/326992301) Check if there are other cases where we might
+  // need to force layout to make the initial media-query values in sync.
+  // This condition could probably be much simpler, but we are trying to
+  // preserve existing (possibly buggy) behavior until the implications are
+  // entirely clear.
+  if (document_->IsActive() && document_->IsLoadCompleted() &&
+      document_->HaveRenderBlockingStylesheetsLoaded() &&
+      !document_->View()->DidFirstLayout() && !document_->LoadEventStarted() &&
+      !document_->IsInMainFrame()) {
+    // With the feature enabled, we skip the synchronous forced layout update
+    // in Document::ImplicitClose(), so we have to force layout here to
+    // compute starting values for media queries.
+    DCHECK(base::FeatureList::IsEnabled(
+        blink::features::kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe));
+    document_->UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
   }
 
   MediaQuerySet* media =
