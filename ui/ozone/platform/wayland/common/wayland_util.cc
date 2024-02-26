@@ -138,6 +138,8 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
       return WL_OUTPUT_TRANSFORM_180;
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return WL_OUTPUT_TRANSFORM_90;
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
       break;
   }

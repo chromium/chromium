@@ -43,10 +43,13 @@ VkSurfaceTransformFlagBitsKHR ToVkSurfaceTransformFlag(
       return VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR;
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR;
-    default:
-      NOTREACHED() << "transform:" << transform;
-      return VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
+    case gfx::OVERLAY_TRANSFORM_INVALID:
+      break;
   };
+  NOTREACHED() << "transform:" << transform;
+  return VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 }
 
 gfx::OverlayTransform FromVkSurfaceTransformFlag(

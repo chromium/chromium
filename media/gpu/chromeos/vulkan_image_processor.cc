@@ -918,6 +918,8 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
       vertex_push_constants[6] = x_end;
       vertex_push_constants[7] = y_end;
       break;
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
       LOG(ERROR) << "Unsupported rotation requested for VulkanImageProcessor.";
       return;

@@ -36,6 +36,8 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
       return DRM_MODE_ROTATE_180;
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return DRM_MODE_ROTATE_90;
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
       NOTREACHED();
   }

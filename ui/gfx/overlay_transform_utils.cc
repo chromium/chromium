@@ -28,6 +28,11 @@ Transform OverlayTransformToTransform(OverlayTransform overlay_transform,
                                viewport_bounds.height());
     case OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return Transform::Affine(0, -1, 1, 0, 0, viewport_bounds.width());
+    case OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+      return Transform::Affine(0, 1, 1, 0, 0, 0);
+    case OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
+      return Transform::Affine(0, -1, -1, 0, viewport_bounds.height(),
+                               viewport_bounds.width());
   }
 
   NOTREACHED();
@@ -51,6 +56,10 @@ OverlayTransform InvertOverlayTransform(OverlayTransform transform) {
       return OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180;
     case OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
+    case OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+      return OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90;
+    case OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
+      return OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
   }
   NOTREACHED();
   return OVERLAY_TRANSFORM_NONE;

@@ -198,6 +198,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // during ProcessForOverlays.
   virtual gfx::RectF GetUnassignedDamage() const;
 
+  // Supports gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90 and
+  // gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270 transforms.
+  virtual bool SupportsFlipRotateTransform() const;
+
  protected:
   OverlayProcessorInterface() = default;
 };

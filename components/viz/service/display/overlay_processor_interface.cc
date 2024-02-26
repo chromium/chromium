@@ -219,4 +219,8 @@ gfx::RectF OverlayProcessorInterface::GetUnassignedDamage() const {
   return gfx::RectF();
 }
 
+bool OverlayProcessorInterface::SupportsFlipRotateTransform() const {
+  return false;
+}
+
 }  // namespace viz

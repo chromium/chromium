@@ -88,6 +88,8 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
           .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::UP_DOWN,
       };
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     case gfx::OVERLAY_TRANSFORM_INVALID:
       break;
   }

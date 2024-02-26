@@ -158,6 +158,10 @@ gfx::Rect OverlayProcessorSurfaceControl::GetOverlayDamageRectForOutputSurface(
   return transform.MapRect(gfx::ToEnclosingRect(candidate.display_rect));
 }
 
+bool OverlayProcessorSurfaceControl::SupportsFlipRotateTransform() const {
+  return true;
+}
+
 void OverlayProcessorSurfaceControl::SetDisplayTransformHint(
     gfx::OverlayTransform transform) {
   display_transform_ = transform;

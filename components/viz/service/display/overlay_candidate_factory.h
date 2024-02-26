@@ -64,6 +64,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
     // When true, allow a quad to be promoted, even if its resource is not an
     // overlay candidate.
     bool allow_non_overlay_resources = false;
+    bool supports_flip_rotate_transform = false;
   };
 
   // The coordinate space of |render_pass| is the target space for candidates

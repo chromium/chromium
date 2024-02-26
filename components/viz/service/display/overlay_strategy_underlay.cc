@@ -39,6 +39,8 @@ void OverlayStrategyUnderlay::Propose(
 
   OverlayCandidateFactory::OverlayContext context;
   context.supports_mask_filter = true;
+  context.supports_flip_rotate_transform =
+      capability_checker_->SupportsFlipRotateTransform();
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,

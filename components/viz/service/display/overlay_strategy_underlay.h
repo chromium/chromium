@@ -32,7 +32,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
 
   // If |allow_nonopaque_overlays| is true, then we don't require that the
   // the candidate is_opaque.
-  OverlayStrategyUnderlay(
+  explicit OverlayStrategyUnderlay(
       OverlayProcessorUsingStrategy* capability_checker,
       OpaqueMode opaque_mode = OpaqueMode::RequireOpaqueCandidates);
 

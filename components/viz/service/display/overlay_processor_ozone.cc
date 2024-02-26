@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
@@ -215,6 +216,17 @@ bool OverlayProcessorOzone::IsOverlaySupported() const {
 
 bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
   return true;
+}
+
+bool OverlayProcessorOzone::SupportsFlipRotateTransform() const {
+  // TODO(petermcneeley): Test and enable for ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return false;
+#elif BUILDFLAG(IS_CASTOS)
+  return false;
+#else
+  return false;
+#endif
 }
 
 void OverlayProcessorOzone::CheckOverlaySupportImpl(

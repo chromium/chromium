@@ -103,6 +103,8 @@ void OverlayStrategySingleOnTop::Propose(
   OverlayCandidateFactory::OverlayContext context;
   context.supports_rounded_display_masks = true;
   context.supports_mask_filter = false;
+  context.supports_flip_rotate_transform =
+      capability_checker_->SupportsFlipRotateTransform();
 
   // Build a list of candidates with the associated quad.
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(

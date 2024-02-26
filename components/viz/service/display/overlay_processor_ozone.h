@@ -32,6 +32,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   // Override OverlayProcessorUsingStrategy.
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   void SetViewportSize(const gfx::Size& size) override {}
+  bool SupportsFlipRotateTransform() const override;
 
   void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,

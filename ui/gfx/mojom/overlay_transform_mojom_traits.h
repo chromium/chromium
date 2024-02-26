@@ -32,6 +32,12 @@ struct EnumTraits<gfx::mojom::OverlayTransform, gfx::OverlayTransform> {
       case gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
         return gfx::mojom::OverlayTransform::
             OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
+      case gfx::OverlayTransform::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+        return gfx::mojom::OverlayTransform::
+            OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90;
+      case gfx::OverlayTransform::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
+        return gfx::mojom::OverlayTransform::
+            OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
     }
     NOTREACHED();
     return gfx::mojom::OverlayTransform::OVERLAY_TRANSFORM_INVALID;
@@ -60,6 +66,16 @@ struct EnumTraits<gfx::mojom::OverlayTransform, gfx::OverlayTransform> {
         return true;
       case gfx::mojom::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
         *out = gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
+        return true;
+      case gfx::mojom::OverlayTransform::
+          OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+        *out =
+            gfx::OverlayTransform::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90;
+        return true;
+      case gfx::mojom::OverlayTransform::
+          OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
+        *out = gfx::OverlayTransform::
+            OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
         return true;
     }
     NOTREACHED();
