@@ -27,6 +27,7 @@ build_webui("build") {
     "app.ts",
     "infinite_list.ts",
     "tab_organization_failure.ts",
+    "tab_organization_group.ts",
     "tab_organization_in_progress.ts",
     "tab_organization_not_started.ts",
     "tab_organization_not_started_image.ts",

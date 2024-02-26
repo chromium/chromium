@@ -1,52 +1,6 @@
-<style include="mwb-shared-style tab-organization-shared-style cr-icons">
-  cr-button {
-    margin-top: 16px;
-    width: fit-content;
-  }
-
+<style include="mwb-shared-style tab-organization-shared-style">
   cr-feedback-buttons {
     color: var(--color-icon);
-  }
-
-  cr-icon-button {
-    --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 20px;
-  }
-
-  cr-input {
-    --cr-input-background-color: transparent;
-    --cr-input-border: 1px solid var(--color-side-panel-textfield-border);
-    --cr-input-border-bottom: none;
-    --cr-input-border-radius: 8px;
-    --cr-input-error-display: none;
-    --cr-input-padding-bottom: 9px;
-    --cr-input-padding-top: 9px;
-    --cr-input-underline-display: none;
-  }
-
-  cr-input:focus {
-    --cr-input-border: 2px solid var(--cr-focus-outline-color);
-    --cr-input-padding-bottom: 8px;
-    --cr-input-padding-top: 8px;
-  }
-
-  tab-search-item {
-    --tab-search-favicon-background: var(--color-tab-search-background);
-  }
-
-  .button-row {
-    display: flex;
-    gap: 16px;
-    justify-content: flex-end;
-    margin: 0 16px;
-  }
-
-  .divider {
-    background-color: var(--cr-separator-color);
-    height: 1px;
-    margin: 12px 0;
-    width: 100%;
   }
 
   .feedback {
@@ -54,45 +8,6 @@
     display: flex;
     gap: 8px;
     justify-content: space-between;
-  }
-
-  .group-header-row {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin: 0 var(--mwb-list-item-horizontal-margin);
-  }
-
-  .group-name {
-    font-size: 13px;
-    line-height: 20px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 184px;
-  }
-
-  .group-name-row {
-    align-items: center;
-    display: flex;
-    flex: auto;
-    justify-content: space-between;
-  }
-
-  #multiOrganizationInput {
-    width: 100%;
-  }
-
-  iron-selector > .mwb-list-item:focus {
-    background-color: var(--mwb-list-item-selected-background-color);
-  }
-
-  .mwb-list-item {
-    background-color: transparent;
-  }
-
-  .mwb-list-item[compact] {
-    height: 32px;
-    padding: 0 12px 0 var(--mwb-list-item-horizontal-margin);
   }
 
   .results {
@@ -104,12 +19,6 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    padding: 16px 0;
-  }
-
-  #singleOrganizationInput {
-    margin: 0 var(--mwb-list-item-horizontal-margin)
-            16px var(--mwb-list-item-horizontal-margin);
   }
 
   .tab-organization-body,
@@ -126,66 +35,14 @@
       aria-relevant="all">
     [[getTitle_()]]
   </div>
-  <div class="results">
-    <div id="scrollable">
-      <template is="dom-if" if="[[multiTabOrganization]]">
-        <div class="group-header-row">
-          <template is="dom-if" if="[[showInput_]]">
-            <cr-input id="multiOrganizationInput" type="text" value="{{name}}"
-                aria-label="[[getInputAriaLabel_(name)]]"
-                on-focus="onInputFocus_"
-                on-blur="onInputBlur_"
-                on-keydown="onInputKeyDown_">
-            </cr-input>
-          </template>
-          <template is="dom-if" if="[[!showInput_]]">
-            <div class="group-name-row">
-              <div class="tab-organization-header group-name">[[name]]</div>
-              <cr-icon-button class="icon-edit" on-click="onEditClick_">
-              </cr-icon-button>
-            </div>
-          </template>
-          <cr-icon-button id="rejectButton"
-              class="icon-clear"
-              on-click="onRejectGroupClick_">
-          </cr-icon-button>
-        </div>
-        <div class="divider"></div>
-      </template>
-      <template is="dom-if" if="[[!multiTabOrganization]]">
-        <cr-input id="singleOrganizationInput" type="text" value="{{name}}"
-            aria-label="[[getInputAriaLabel_(name)]]"
-            on-focus="onInputFocus_"
-            on-keydown="onInputKeyDown_">
-        </cr-input>
-      </template>
-      <iron-selector id="selector" role="listbox"
-          on-keydown="onListKeyDown_"
-          selected-class="selected"
-          on-iron-select="onSelectedChanged_">
-        <template is="dom-repeat" items="[[tabDatas_]]">
-          <tab-search-item class="mwb-list-item" data="[[item]]"
-              role="option"
-              compact="[[multiTabOrganization]]"
-              tabindex$="[[getTabIndex_(index, lastFocusedIndex_)]]"
-              on-close="onTabRemove_"
-              on-focus="onTabFocus_"
-              on-blur="onTabBlur_"
-              in-suggested-group>
-          </tab-search-item>
-        </template>
-      </iron-selector>
-      <div class="button-row">
-        <template is="dom-if" if="[[showRefresh_]]">
-          <cr-button class="tonal-button" on-click="onRefreshClick_">
-            [[getRefreshButtonText_(isLastOrganization)]]
-          </cr-button>
-        </template>
-        <cr-button class="action-button" on-click="onCreateGroupClick_">
-          $i18n{createGroup}
-        </cr-button>
-      </div>
-    </div>
+  <div id="scrollable">
+    <tab-organization-group
+        name="[[name_]]"
+        tabs="[[tabs_]]"
+        organization-id="[[organizationId_]]"
+        is-last-organization="[[isLastOrganization_]]"
+        multi-tab-organization="[[multiTabOrganization]]">
+    </tab-organization-group>
   </div>
   <div class="feedback" role="toolbar" on-keydown="onFeedbackKeyDown_">
     <div class="tab-organization-body">

@@ -2,30 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './strings.m.js';
+import './tab_organization_group.js';
 import './tab_organization_shared_style.css.js';
-import './tab_search_item.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TabData, TabItemType} from './tab_data.js';
 import {getTemplate} from './tab_organization_results.html.js';
-import type {Tab} from './tab_search.mojom-webui.js';
-import type {TabSearchItem} from './tab_search_item.js';
+import type {Tab, TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
@@ -47,44 +39,22 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   static get properties() {
     return {
-      tabs: {
-        type: Array,
-        observer: 'onTabsChange_',
+      session: {
+        type: Object,
+        observer: 'onSessionChange_',
       },
-
-      name: String,
 
       availableHeight: {
         type: Number,
         observer: 'onAvailableHeightChange_',
       },
 
-      isLastOrganization: Boolean,
       multiTabOrganization: Boolean,
 
-      organizationId: {
-        type: Number,
-        observer: 'onOrganizationIdChange_',
-      },
-
-      lastFocusedIndex_: {
-        type: Number,
-        value: 0,
-      },
-
-      showInput_: Boolean,
-
-      showRefresh_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('tabOrganizationRefreshButtonEnabled'),
-      },
-
-      tabDatas_: {
-        type: Array,
-        value: () => [],
-        computed: 'computeTabDatas_(tabs.*)',
-      },
+      tabs_: Array,
+      name_: String,
+      isLastOrganization_: Boolean,
+      organizationId_: Number,
 
       feedbackSelectedOption_: {
         type: String,
@@ -93,26 +63,21 @@ export class TabOrganizationResultsElement extends PolymerElement {
     };
   }
 
-  tabs: Tab[];
-  name: string;
+  session: TabOrganizationSession;
   availableHeight: number;
-  isLastOrganization: boolean;
   multiTabOrganization: boolean;
-  organizationId: number;
 
-  private lastFocusedIndex_: number;
-  private showInput_: boolean;
-  private showRefresh_: boolean;
-  private tabDatas_: TabData[];
   private feedbackSelectedOption_: CrFeedbackOption;
+
+  // TODO(emshack): These 4 variables are a holdover from a single-group UI.
+  // Remove once the UI can display multiple groups.
+  private tabs_: Tab[];
+  private name_: string;
+  private isLastOrganization_: boolean;
+  private organizationId_: number;
 
   static get template() {
     return getTemplate();
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-    this.showInput_ = !this.multiTabOrganization;
   }
 
   announceHeader() {
@@ -121,31 +86,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   focusInput() {
-    const input = this.getInput_();
-    if (input) {
-      input.focus();
+    const group = this.shadowRoot!.querySelector('tab-organization-group');
+    if (!group) {
+      return;
     }
-  }
-
-  private getInput_(): CrInputElement|null {
-    if (!this.showInput_) {
-      return null;
-    }
-    const id = this.multiTabOrganization ? '#multiOrganizationInput' :
-                                           '#singleOrganizationInput';
-    return this.shadowRoot!.querySelector<CrInputElement>(id);
-  }
-
-  private computeTabDatas_() {
-    return this.tabs.map(
-        tab => new TabData(
-            tab, TabItemType.OPEN_TAB, new URL(tab.url.url).hostname));
-  }
-
-  private onTabsChange_() {
-    if (this.lastFocusedIndex_ > this.tabs.length - 1) {
-      this.lastFocusedIndex_ = 0;
-    }
+    group.focusInput();
   }
 
   private getTitle_(): string {
@@ -153,14 +98,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private getRefreshButtonText_(): string {
-    if (this.isLastOrganization) {
+    if (this.isLastOrganization_) {
       return loadTimeData.getString('rejectFinalSuggestion');
     }
     return loadTimeData.getString('rejectSuggestion');
-  }
-
-  private getTabIndex_(index: number): number {
-    return index === this.lastFocusedIndex_ ? 0 : -1;
   }
 
   private onAvailableHeightChange_() {
@@ -170,129 +111,17 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
   }
 
-  private onOrganizationIdChange_() {
+  private onSessionChange_() {
     this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
-  }
 
-  private getInputAriaLabel_() {
-    return loadTimeData.getStringF('inputAriaLabel', this.name);
-  }
-
-  private onInputFocus_() {
-    const input = this.getInput_();
-    if (input) {
-      input.select();
-    }
-  }
-
-  private onInputBlur_() {
-    if (this.multiTabOrganization) {
-      this.showInput_ = false;
-    }
-  }
-
-  private onInputKeyDown_(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      event.stopPropagation();
-      if (this.multiTabOrganization) {
-        this.showInput_ = false;
-      } else {
-        this.getInput_()!.blur();
-      }
-    }
-  }
-
-  private onListKeyDown_(event: KeyboardEvent) {
-    const selector = this.$.selector;
-    if (selector.selected === undefined) {
+    if (!this.session || this.session.organizations.length === 0) {
       return;
     }
-
-    let handled = false;
-    if (event.shiftKey && event.key === 'Tab') {
-      // Explicitly focus the element prior to the list in focus order and
-      // override the default behavior, which would be to focus the row that
-      // the currently focused close button is in.
-      if (this.multiTabOrganization) {
-        this.shadowRoot!.querySelector<CrIconButtonElement>(
-                            `#rejectButton`)!.focus();
-      } else {
-        this.getInput_()!.focus();
-      }
-      handled = true;
-    } else if (!event.shiftKey) {
-      if (event.key === 'ArrowUp') {
-        selector.selectPrevious();
-        handled = true;
-      } else if (event.key === 'ArrowDown') {
-        selector.selectNext();
-        handled = true;
-      }
-    }
-
-    if (handled) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
-  }
-
-  private onSelectedChanged_() {
-    if (this.$.selector.selectedItem) {
-      const selectedItem = this.$.selector.selectedItem as TabSearchItem;
-      const selectedItemCloseButton =
-          selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
-      selectedItemCloseButton.focus();
-      this.lastFocusedIndex_ = this.$.selector.indexOf(selectedItem);
-    }
-  }
-
-  private onTabRemove_(event: DomRepeatEvent<TabData>) {
-    const index = this.tabDatas_.indexOf(event.model.item);
-    const tab = this.tabs[index];
-    this.dispatchEvent(new CustomEvent('remove-tab', {
-      bubbles: true,
-      composed: true,
-      detail: {tab},
-    }));
-  }
-
-  private onTabFocus_(event: DomRepeatEvent<TabData>) {
-    // Ensure that when a TabSearchItem receives focus, it becomes the selected
-    // item in the list.
-    this.$.selector.selected = event.model.index;
-  }
-
-  private onTabBlur_(_event: DomRepeatEvent<TabData>) {
-    // Ensure the selector deselects its current selection on blur. If
-    // selection should move to another element in the list, this will be done
-    // in onTabFocus_.
-    this.$.selector.selectIndex(-1);
-  }
-
-  private onEditClick_() {
-    this.showInput_ = true;
-  }
-
-  private onRejectGroupClick_() {
-    this.dispatchEvent(new CustomEvent('reject-click', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private onRefreshClick_() {
-    this.dispatchEvent(new CustomEvent('refresh-click', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private onCreateGroupClick_() {
-    this.dispatchEvent(new CustomEvent('create-group-click', {
-      bubbles: true,
-      composed: true,
-      detail: {name: this.name, tabs: this.tabs},
-    }));
+    const organization: TabOrganization = this.session.organizations[0];
+    this.name_ = mojoString16ToString(organization.name);
+    this.tabs_ = organization.tabs;
+    this.organizationId_ = organization.organizationId;
+    this.isLastOrganization_ = this.session.organizations.length === 1;
   }
 
   private onLearnMoreClick_() {
@@ -341,7 +170,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('feedback', {
       bubbles: true,
       composed: true,
-      detail: {value: event.detail.value},
+      detail: {value: event.detail.value, organizationId: this.organizationId_},
     }));
   }
 }

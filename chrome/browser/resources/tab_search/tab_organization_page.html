@@ -66,13 +66,9 @@
     </tab-organization-in-progress>
     <tab-organization-results id="results"
         shown$="[[isState_(tabOrganizationStateEnum_.kSuccess, state_)]]"
-        name="[[name_]]"
-        tabs="[[tabs_]]"
-        organization-id="[[organizationId_]]"
-        is-last-organization="[[isLastOrganization_]]"
+        session="[[session_]]"
         multi-tab-organization="[[multiTabOrganization_]]"
         available-height="[[availableHeight_]]"
-        on-refresh-click="onRejectClick_"
         on-reject-click="onRejectClick_"
         on-create-group-click="onCreateGroupClick_"
         on-remove-tab="onRemoveTab_"
@@ -82,7 +78,7 @@
     <tab-organization-failure id="failure"
         shown$="[[isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
         show-fre="[[showFRE_]]"
-        error="[[error_]]"
+        error="[[session_.error]]"
         on-check-now="onCheckNow_"
         on-tip-click="onTipClick_">
     </tab-organization-failure>

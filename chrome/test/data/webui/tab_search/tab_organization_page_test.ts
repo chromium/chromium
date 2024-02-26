@@ -4,7 +4,7 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {SyncInfo, Tab, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -53,9 +53,7 @@ suite('TabOrganizationPageTest', () => {
 
     tabOrganizationResults = document.createElement('tab-organization-results');
     tabOrganizationResults.multiTabOrganization = false;
-    tabOrganizationResults.name =
-        mojoString16ToString(session.organizations[0]!.name);
-    tabOrganizationResults.tabs = session.organizations[0]!.tabs;
+    tabOrganizationResults.session = session;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabOrganizationResults);
@@ -119,7 +117,10 @@ suite('TabOrganizationPageTest', () => {
 
   test('Single organization input blurs on enter', async () => {
     await tabOrganizationResultsSetup();
-    const input = tabOrganizationResults.shadowRoot!.querySelector<HTMLElement>(
+    const group = tabOrganizationResults.shadowRoot!.querySelector(
+        'tab-organization-group');
+    assertTrue(!!group);
+    const input = group.shadowRoot!.querySelector<HTMLElement>(
         '#singleOrganizationInput');
     assertTrue(!!input);
     assertFalse(input.hasAttribute('focused_'));
@@ -136,8 +137,11 @@ suite('TabOrganizationPageTest', () => {
     tabOrganizationResults.multiTabOrganization = true;
     await flushTasks();
 
-    const input = tabOrganizationResults.shadowRoot!.querySelector<HTMLElement>(
-        '#multiOrganizationInput');
+    const group = tabOrganizationResults.shadowRoot!.querySelector(
+        'tab-organization-group');
+    assertTrue(!!group);
+    const input =
+        group.shadowRoot!.querySelector<HTMLElement>('#multiOrganizationInput');
     assertTrue(!!input);
 
     assertTrue(isVisible(input));
@@ -148,8 +152,7 @@ suite('TabOrganizationPageTest', () => {
     assertFalse(isVisible(input));
 
     const editButton =
-        tabOrganizationResults.shadowRoot!.querySelector<HTMLElement>(
-            '.icon-edit');
+        group.shadowRoot!.querySelector<HTMLElement>('.icon-edit');
     assertTrue(!!editButton);
     assertTrue(isVisible(editButton));
 
@@ -170,10 +173,12 @@ suite('TabOrganizationPageTest', () => {
     const results = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-results');
     assertTrue(!!results);
+    const group = results.shadowRoot!.querySelector('tab-organization-group');
+    assertTrue(!!group);
 
     assertEquals(0, testApiProxy.getCallCount('removeTabFromOrganization'));
 
-    const tabRows = results.shadowRoot!.querySelectorAll('tab-search-item');
+    const tabRows = group.shadowRoot!.querySelectorAll('tab-search-item');
     assertTrue(!!tabRows);
     assertEquals(3, tabRows.length);
 
@@ -188,8 +193,10 @@ suite('TabOrganizationPageTest', () => {
   test('Arrow keys traverse focus in results list', async () => {
     await tabOrganizationResultsSetup();
 
-    const tabRows =
-        tabOrganizationResults.shadowRoot!.querySelectorAll('tab-search-item');
+    const group = tabOrganizationResults.shadowRoot!.querySelector(
+        'tab-organization-group');
+    assertTrue(!!group);
+    const tabRows = group.shadowRoot!.querySelectorAll('tab-search-item');
     assertTrue(!!tabRows);
     assertEquals(3, tabRows.length);
 
@@ -209,14 +216,14 @@ suite('TabOrganizationPageTest', () => {
     assertFalse(closeButton1.matches(':focus'));
     assertFalse(closeButton2.matches(':focus'));
 
-    tabOrganizationResults.$.selector.dispatchEvent(
+    group.$.selector.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'ArrowUp'}));
 
     assertFalse(closeButton0.matches(':focus'));
     assertFalse(closeButton1.matches(':focus'));
     assertTrue(closeButton2.matches(':focus'));
 
-    tabOrganizationResults.$.selector.dispatchEvent(
+    group.$.selector.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'ArrowDown'}));
 
     assertTrue(closeButton0.matches(':focus'));
@@ -265,7 +272,9 @@ suite('TabOrganizationPageTest', () => {
     const results = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-results');
     assertTrue(!!results);
-    const createGroupButton = results.shadowRoot!.querySelector('cr-button');
+    const group = results.shadowRoot!.querySelector('tab-organization-group');
+    assertTrue(!!group);
+    const createGroupButton = group.shadowRoot!.querySelector('cr-button');
     assertTrue(!!createGroupButton);
     createGroupButton.click();
     await flushTasks();
@@ -289,8 +298,10 @@ suite('TabOrganizationPageTest', () => {
     const results = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-results');
     assertTrue(!!results);
+    const group = results.shadowRoot!.querySelector('tab-organization-group');
+    assertTrue(!!group);
     const cancelButton =
-        results.shadowRoot!.querySelector<HTMLElement>('#rejectButton');
+        group.shadowRoot!.querySelector<HTMLElement>('#rejectButton');
     assertTrue(!!cancelButton);
     cancelButton.click();
     await flushTasks();
@@ -317,7 +328,9 @@ suite('TabOrganizationPageTest', () => {
     const results = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-results');
     assertTrue(!!results);
-    const refreshButton = results.shadowRoot!.querySelector('cr-button');
+    const group = results.shadowRoot!.querySelector('tab-organization-group');
+    assertTrue(!!group);
+    const refreshButton = group.shadowRoot!.querySelector('cr-button');
     assertTrue(!!refreshButton);
     assertTrue(refreshButton.innerHTML.includes(rejectFinalSuggestion));
     refreshButton.click();
@@ -371,7 +384,10 @@ suite('TabOrganizationPageTest', () => {
         const results = tabOrganizationPage.shadowRoot!.querySelector(
             'tab-organization-results');
         assertTrue(!!results);
-        const refreshButton = results.shadowRoot!.querySelector('cr-button');
+        const group =
+            results.shadowRoot!.querySelector('tab-organization-group');
+        assertTrue(!!group);
+        const refreshButton = group.shadowRoot!.querySelector('cr-button');
         assertTrue(!!refreshButton);
         assertTrue(refreshButton.innerHTML.includes(rejectSuggestion));
       });
