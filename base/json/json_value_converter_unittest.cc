@@ -7,10 +7,10 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,7 +32,7 @@ struct SimpleMessage {
   std::vector<std::unique_ptr<std::string>> string_values;
   SimpleMessage() : foo(0), baz(false), bstruct(false), simple_enum(FOO) {}
 
-  static bool ParseSimpleEnum(std::string_view value, SimpleEnum* field) {
+  static bool ParseSimpleEnum(StringPiece value, SimpleEnum* field) {
     if (value == "foo") {
       *field = FOO;
       return true;

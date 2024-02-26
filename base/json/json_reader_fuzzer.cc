@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string_view>
-
 #include "base/json/json_reader.h"
 
 #include <optional>
@@ -23,7 +21,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::unique_ptr<char[]> input(new char[size - 1]);
   memcpy(input.get(), data, size - 1);
 
-  std::string_view input_string(input.get(), size - 1);
+  StringPiece input_string(input.get(), size - 1);
 
   const int options = data[size - 1];
 
@@ -37,7 +35,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     CHECK(JSONWriter::Write(value, &serialized));
 
     std::optional<Value> deserialized =
-        JSONReader::Read(std::string_view(serialized));
+        JSONReader::Read(StringPiece(serialized));
     CHECK(deserialized);
     CHECK_EQ(value, deserialized.value());
   }

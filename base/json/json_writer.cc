@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <limits>
-#include <string_view>
 
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -107,7 +106,7 @@ bool JSONWriter::BuildJSONString(double node, size_t depth) {
   return true;
 }
 
-bool JSONWriter::BuildJSONString(std::string_view node, size_t depth) {
+bool JSONWriter::BuildJSONString(StringPiece node, size_t depth) {
   EscapeJSONString(node, true, json_string_);
   return true;
 }

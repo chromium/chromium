@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A JSON parser, converting from a std::string_view to a base::Value.
+// A JSON parser, converting from a base::StringPiece to a base::Value.
 //
 // The JSON spec is:
 // https://tools.ietf.org/rfc/rfc8259.txt
@@ -14,7 +14,7 @@
 // Implementation choices permitted by the RFC:
 // - Nesting is limited (to a configurable depth, 200 by default).
 // - Numbers are limited to those representable by a finite double. The
-//   conversion from a JSON number (in the std::string_view input) to a
+//   conversion from a JSON number (in the base::StringPiece input) to a
 //   double-flavored base::Value may also be lossy.
 // - The input (which must be UTF-8) may begin with a BOM (Byte Order Mark).
 // - Duplicate object keys (strings) are silently allowed. Last key-value pair
@@ -38,11 +38,11 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/base_export.h"
 #include "base/json/json_common.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 
@@ -107,14 +107,14 @@ class BASE_EXPORT JSONReader {
   // Reads and parses |json|, returning a Value.
   // If |json| is not a properly formed JSON string, returns std::nullopt.
   static std::optional<Value> Read(
-      std::string_view json,
+      StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a Value::Dict.
   // If |json| is not a properly formed JSON dict string, returns std::nullopt.
   static std::optional<Value::Dict> ReadDict(
-      std::string_view json,
+      StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
@@ -123,7 +123,7 @@ class BASE_EXPORT JSONReader {
   // formatted error message, an error code, and the error location if
   // appropriate as the error value of the expected type.
   static Result ReadAndReturnValueWithError(
-      std::string_view json,
+      StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   // Determine whether the Rust parser is in use.

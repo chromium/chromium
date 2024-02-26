@@ -10,11 +10,11 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/base_export.h"
 #include "base/json/json_common.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace base {
@@ -106,7 +106,7 @@ class BASE_EXPORT JSONWriter {
   bool BuildJSONString(bool node, size_t depth);
   bool BuildJSONString(int node, size_t depth);
   bool BuildJSONString(double node, size_t depth);
-  bool BuildJSONString(std::string_view node, size_t depth);
+  bool BuildJSONString(StringPiece node, size_t depth);
   bool BuildJSONString(const Value::BlobStorage& node, size_t depth);
   bool BuildJSONString(const Value::Dict& node, size_t depth);
   bool BuildJSONString(const Value::List& node, size_t depth);
