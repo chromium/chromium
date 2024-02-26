@@ -1124,9 +1124,16 @@ test.util.async.getContentMetadata =
  * "loaded" on its root element.
  */
 test.util.sync.isFileManagerLoaded = (contentWindow: Window) => {
-  if (contentWindow && contentWindow.fileManager &&
-      contentWindow.fileManager.ui) {
-    return contentWindow.fileManager.ui.element.hasAttribute('loaded');
+  if (contentWindow && contentWindow.fileManager) {
+    try {
+      // The test util functions can be loaded prior to the fileManager.ui
+      // element being available, this results in an assertion failure. Treat
+      // this as file manager not being loaded instead of a hard failure.
+      return contentWindow.fileManager.ui.element.hasAttribute('loaded');
+    } catch (e) {
+      console.warn(e);
+      return false;
+    }
   }
 
   return false;
