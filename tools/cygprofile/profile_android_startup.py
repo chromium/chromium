@@ -258,47 +258,6 @@ class AndroidProfileTool:
       return 1
     return 0
 
-  def CollectProfile(self, apk, package_info):
-    """Run a profile and collect the log files.
-
-    Args:
-      apk: The location of the chrome apk to profile.
-      package_info: A PackageInfo structure describing the chrome apk,
-                    as from pylib/constants.
-
-    Returns:
-      A list of cygprofile data files.
-
-    Raises:
-      NoProfileDataError: No data was found on the device.
-    """
-    if self._pregenerated_profiles:
-      logging.info('Using pregenerated profiles instead of running profile')
-      logging.info('Profile files:\n%s', '\n'.join(self._pregenerated_profiles))
-      return self._pregenerated_profiles
-    self._device.adb.Logcat(clear=True)
-    self._Install(apk)
-    try:
-      changer = self._SetChromeFlags(package_info)
-      self._SetUpDeviceFolders()
-      if self._use_wpr:
-        with WprManager(self._WPR_ARCHIVE, self._device,
-                        package_info.cmdline_file, package_info.package):
-          self._RunProfileCollection(package_info, self._simulate_user)
-      else:
-        self._RunProfileCollection(package_info, self._simulate_user)
-    except device_errors.CommandFailedError as exc:
-      logging.error('Exception %s; dumping logcat', exc)
-      for logcat_line in self._device.adb.Logcat(dump=True):
-        logging.error(logcat_line)
-      raise
-    finally:
-      self._RestoreChromeFlags(changer)
-
-    data = self._PullProfileData()
-    self._DeleteDeviceData()
-    return data
-
   def CollectSystemHealthProfile(self, apk):
     """Run the orderfile system health benchmarks and collect log files.
 
@@ -539,15 +498,6 @@ def main():
   devil_chromium.Initialize(
       output_directory=args.output_directory, adb_path=args.adb_path)
 
-  apk = apk_helper.ApkHelper(args.apk_path)
-  package_info = None
-  for p in constants.PACKAGE_INFO.items():
-    if p.package == apk.GetPackageName():
-      package_info = p
-      break
-  else:
-    raise Exception('Unable to determine package info for %s' % args.apk_path)
-
   trace_directory = args.trace_directory
   if not trace_directory:
     trace_directory = os.path.join(args.output_directory, 'profile_data')
@@ -557,7 +507,7 @@ def main():
       args.output_directory, host_profile_dir=trace_directory,
       use_wpr=not args.no_wpr, urls=args.urls, simulate_user=args.simulate_user,
       device=devices[0])
-  profiler.CollectProfile(args.apk_path, package_info)
+  profiler.CollectSystemHealthProfile(args.apk_path)
   return 0
 
 

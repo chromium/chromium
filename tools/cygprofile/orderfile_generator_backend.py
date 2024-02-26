@@ -239,8 +239,7 @@ class ClankCompiler:
   """Handles compilation of clank."""
 
   def __init__(self, out_dir, step_recorder, arch, use_goma, goma_dir,
-               use_remoteexec, ninja_command, system_health_profiling, public,
-               orderfile_location):
+               use_remoteexec, ninja_command, public, orderfile_location):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._arch = arch
@@ -249,7 +248,6 @@ class ClankCompiler:
     self._goma_dir = goma_dir
     self._use_remoteexec = use_remoteexec
     self._ninja_command = ninja_command
-    self._system_health_profiling = system_health_profiling
     self._public = public
     self._orderfile_location = orderfile_location
     self._apk = 'Monochrome.apk'
@@ -295,13 +293,11 @@ class ClankCompiler:
         'use_remoteexec=' + str(self._use_remoteexec).lower(),
         'use_order_profiling=' + str(instrumented).lower(),
         'use_call_graph=' + str(use_call_graph).lower(),
+        'devtools_instrumentation_dumping=' + str(instrumented).lower()
     ]
     args += _ARCH_GN_ARGS[self._arch]
     if self._goma_dir:
       args += ['goma_dir="%s"' % self._goma_dir]
-    if self._system_health_profiling:
-      args += ['devtools_instrumentation_dumping = ' +
-               str(instrumented).lower()]
 
     if self._public and os.path.exists(self._orderfile_location):
       # GN needs the orderfile path to be source-absolute.
@@ -621,21 +617,17 @@ class OrderfileGenerator:
         raise Exception('Profile save directory must not pre-exist')
       os.makedirs(self._options.profile_save_dir)
 
-    if self._options.system_health_orderfile:
-      files = self._profiler.CollectSystemHealthProfile(
-          self._compiler.chrome_apk)
-      self._MaybeSaveProfile(files)
-      try:
-        self._ProcessPhasedOrderfile(files)
-      except Exception:
-        for f in files:
-          self._SaveForDebugging(f)
-        self._SaveForDebugging(self._compiler.lib_chrome_so)
-        raise
-      finally:
-        self._profiler.Cleanup()
-    else:
-      self._CollectLegacyProfile()
+    files = self._profiler.CollectSystemHealthProfile(self._compiler.chrome_apk)
+    self._MaybeSaveProfile(files)
+    try:
+      self._ProcessPhasedOrderfile(files)
+    except Exception:
+      for f in files:
+        self._SaveForDebugging(f)
+      self._SaveForDebugging(self._compiler.lib_chrome_so)
+      raise
+    finally:
+      self._profiler.Cleanup()
     logging.getLogger().setLevel(logging.INFO)
 
   def _ProcessPhasedOrderfile(self, files):
@@ -662,35 +654,6 @@ class OrderfileGenerator:
             ordered_symbols) / 1024
     with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
       orderfile.write('\n'.join(ordered_symbols))
-
-  def _CollectLegacyProfile(self):
-    files = []
-    try:
-      files = self._profiler.CollectProfile(
-          self._compiler.chrome_apk,
-          constants.PACKAGE_INFO['chrome'])
-      self._MaybeSaveProfile(files)
-      self._step_recorder.BeginStep('Process profile')
-      assert os.path.exists(self._compiler.lib_chrome_so)
-      offsets = process_profiles.GetReachedOffsetsFromDumpFiles(
-          files, self._compiler.lib_chrome_so)
-      if not offsets:
-        raise Exception('No profiler offsets found in {}'.format(
-            '\n'.join(files)))
-      processor = process_profiles.SymbolOffsetProcessor(
-          self._compiler.lib_chrome_so)
-      ordered_symbols = processor.GetOrderedSymbols(offsets)
-      if not ordered_symbols:
-        raise Exception('No symbol names from  offsets found in {}'.format(
-            '\n'.join(files)))
-      with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
-        orderfile.write('\n'.join(ordered_symbols))
-    except Exception:
-      for f in files:
-        self._SaveForDebugging(f)
-      raise
-    finally:
-      self._profiler.Cleanup()
 
   def _MaybeSaveProfile(self, files):
     if self._options.profile_save_dir:
@@ -894,12 +857,12 @@ class OrderfileGenerator:
     benchmark_results = {}
     try:
       _UnstashOutputDirectory(out_directory)
-      self._compiler = ClankCompiler(
-          out_directory, self._step_recorder, self._options.arch,
-          self._options.use_goma, self._options.goma_dir,
-          self._options.use_remoteexec, self._ninja_command,
-          self._options.system_health_orderfile, self._options.public,
-          self._GetPathToOrderfile())
+      self._compiler = ClankCompiler(out_directory, self._step_recorder,
+                                     self._options.arch, self._options.use_goma,
+                                     self._options.goma_dir,
+                                     self._options.use_remoteexec,
+                                     self._ninja_command, self._options.public,
+                                     self._GetPathToOrderfile())
 
       if no_orderfile:
         orderfile_path = self._GetPathToOrderfile()
@@ -930,13 +893,6 @@ class OrderfileGenerator:
     """Generates and maybe upload an order."""
     assert (bool(self._options.profile) ^
             bool(self._options.manual_symbol_offsets))
-    if self._options.system_health_orderfile and not self._options.profile:
-      raise AssertionError('--system_health_orderfile must be not be used '
-                           'with --skip-profile')
-    if (self._options.manual_symbol_offsets and
-        not self._options.system_health_orderfile):
-      raise AssertionError('--manual-symbol-offsets must be used with '
-                           '--system_health_orderfile.')
 
     if self._options.profile:
       try:
@@ -945,8 +901,7 @@ class OrderfileGenerator:
             self._instrumented_out_dir, self._step_recorder, self._options.arch,
             self._options.use_goma, self._options.goma_dir,
             self._options.use_remoteexec, self._ninja_command,
-            self._options.system_health_orderfile, self._options.public,
-            self._GetPathToOrderfile())
+            self._options.public, self._GetPathToOrderfile())
         if not self._options.pregenerated_profiles:
           # If there are pregenerated profiles, the instrumented build should
           # not be changed to avoid invalidating the pregenerated profile
@@ -984,8 +939,7 @@ class OrderfileGenerator:
             self._uninstrumented_out_dir, self._step_recorder,
             self._options.arch, self._options.use_goma, self._options.goma_dir,
             self._options.use_remoteexec, self._ninja_command,
-            self._options.system_health_orderfile, self._options.public,
-            self._GetPathToOrderfile())
+            self._options.public, self._GetPathToOrderfile())
 
         self._compiler.CompileLibchrome(instrumented=False,
                                         use_call_graph=False)
@@ -1086,11 +1040,6 @@ def CreateArgumentParser():
                       help='Build non-internal APK and change the orderfile '
                       'location. Required if your checkout is non-internal.',
                       default=False)
-  parser.add_argument('--nosystem-health-orderfile', action='store_false',
-                      dest='system_health_orderfile', default=True,
-                      help=('Create an orderfile based on an about:blank '
-                            'startup benchmark instead of system health '
-                            'benchmarks.'))
   parser.add_argument('--manual-symbol-offsets', default=None, type=str,
                       help=('File of list of ordered symbol offsets generated '
                             'by manual profiling. Must set other --manual* '
