@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "cpu", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -20,6 +20,10 @@ try_.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_configs = ["builder"],
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 consoles.list_view(
@@ -46,6 +50,7 @@ try_.builder(
     ),
     builderless = False,
     contact_team_email = "clank-engprod@google.com",
+    siso_enabled = True,
 )
 
 try_.builder(
