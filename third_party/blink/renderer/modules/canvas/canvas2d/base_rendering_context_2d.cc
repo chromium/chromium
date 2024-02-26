@@ -378,13 +378,13 @@ void BaseRenderingContext2D::endLayer(ExceptionState& exception_state) {
 }
 
 void BaseRenderingContext2D::PopAndRestore(cc::PaintCanvas& canvas) {
+  if (IsTransformInvertible()) {
+    GetModifiablePath().Transform(GetState().GetTransform());
+  }
+
   if (state_stack_.back()->GetSaveType() ==
       CanvasRenderingContext2DState::SaveType::kBeginEndLayerTwoSaves) {
     canvas.restore();
-  }
-
-  if (IsTransformInvertible()) {
-    GetModifiablePath().Transform(GetState().GetTransform());
   }
 
   canvas.restore();
