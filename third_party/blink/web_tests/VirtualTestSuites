@@ -1159,7 +1159,7 @@
     "bases": [ "external/wpt/css/css-transforms" ],
     "args": ["--enable-features=BackfaceVisibilityInterop",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jan 15, 2024"
+    "expires": "Nov 15, 2024"
   },
   {
     "prefix": "third-party-cookie-phaseout-enabled",
