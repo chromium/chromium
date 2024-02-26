@@ -48,8 +48,9 @@ def StartLogcatIfNecessary(device_id, adb_cmd, base_dir):
     logging.info('Logcat for device %s has died', device_id)
     error_filter = re.compile('- waiting for device -')
     for line in process.stderr:
-      if not error_filter.match(line):
-        logging.error(device_id + ':   ' + line)
+      line_str = line.decode('utf8', 'replace')
+      if not error_filter.match(line_str):
+        logging.error(device_id + ':   ' + line_str)
 
   logging.info('Starting logcat %d for device %s', logcat_num,
                device_id)
