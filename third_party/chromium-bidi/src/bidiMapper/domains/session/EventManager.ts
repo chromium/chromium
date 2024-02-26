@@ -129,7 +129,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
         value: event,
       }),
       contextId,
-      event.method as ChromiumBidi.EventNames
+      event.method
     );
   }
 

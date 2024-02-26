@@ -21,12 +21,12 @@ import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export type EventNames =
   // keep-sorted start
-  | BiDiModule
-  | BrowsingContext.EventNames
   | Cdp.EventNames
-  | Log.EventNames
-  | Network.EventNames
-  | Script.EventNames;
+  | `${BiDiModule}`
+  | `${BrowsingContext.EventNames}`
+  | `${Log.EventNames}`
+  | `${Network.EventNames}`
+  | `${Script.EventNames}`;
 // keep-sorted end
 
 export enum BiDiModule {
