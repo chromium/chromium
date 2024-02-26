@@ -67,7 +67,7 @@ constexpr int kQuartilesLabels[] = {
 // Returns which of the four quartiles of memory savings this number falls into.
 // The lowest memory usage quartile (0-24th percentile) returns 0 and the
 // highest quartile (75-99 percentile) returns 3.
-int GetMemorySavingsQuartile(const int memory_savings_bytes) {
+int GetMemorySavingsQuartile(const int64_t memory_savings_bytes) {
   if (memory_savings_bytes < kMemorySaverChartPmf25PercentileBytes) {
     return MemorySavingsQuartile::kLow;
   } else if (memory_savings_bytes < kMemorySaverChartPmf50PercentileBytes) {
@@ -85,7 +85,7 @@ class GaugeView : public views::FlexLayoutView {
   METADATA_HEADER(GaugeView, views::FlexLayoutView)
 
  public:
-  explicit GaugeView(const int memory_savings_bytes)
+  explicit GaugeView(const int64_t memory_savings_bytes)
       : memory_savings_bytes_(memory_savings_bytes) {
     SetOrientation(views::LayoutOrientation::kVertical);
     SetMainAxisAlignment(views::LayoutAlignment::kEnd);
@@ -125,7 +125,7 @@ class GaugeView : public views::FlexLayoutView {
   }
 
  private:
-  const int memory_savings_bytes_;
+  const int64_t memory_savings_bytes_;
 
   // Draws an arc starting at the far left, with the specified center point and
   // angle (in degrees).
@@ -178,7 +178,7 @@ END_METADATA
 }  // namespace
 
 MemorySaverResourceView::MemorySaverResourceView(
-    const int memory_savings_bytes) {
+    const int64_t memory_savings_bytes) {
   SetOrientation(views::LayoutOrientation::kVertical);
 
   auto* gauge_view =

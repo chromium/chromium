@@ -13,7 +13,7 @@
 // visualization to contextualize those savings.
 class MemorySaverResourceView : public views::FlexLayoutView {
  public:
-  explicit MemorySaverResourceView(const int memory_savings_bytes);
+  explicit MemorySaverResourceView(const int64_t memory_savings_bytes);
 
   MemorySaverResourceView(const MemorySaverResourceView&) = delete;
   MemorySaverResourceView& operator=(const MemorySaverResourceView&) = delete;
