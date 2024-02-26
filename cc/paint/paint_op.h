@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <limits>
 #include <memory>
 #include <string>
@@ -1065,6 +1066,11 @@ using LargestPaintOp =
 // kLargestPaintOpAlignedSize instead of sizeof(LargestPaintOp).
 inline constexpr size_t kLargestPaintOpAlignedSize =
     PaintOpBuffer::ComputeOpAlignedSize<LargestPaintOp>();
+
+// This is declared here for use in gtest-based unit tests but is defined in
+// the //cc:test_support target. Depend on that to use this in your unit test.
+// This should not be used in production code.
+void PrintTo(const PaintOp& rect, std::ostream* os);
 
 }  // namespace cc
 
