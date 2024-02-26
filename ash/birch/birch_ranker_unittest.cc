@@ -148,6 +148,88 @@ TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
   EXPECT_FLOAT_EQ(items[0].ranking, 9.f);
 }
 
+TEST(BirchRankerTest, RankAttachmentItems_Morning) {
+  base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
+
+  // Simulate 9 AM in the morning.
+  base::Time now = TimeFromString("22 Feb 2024 9:00 UTC");
+  BirchRanker ranker(now);
+  ASSERT_TRUE(ranker.IsMorning());
+
+  // Create an attachment for an ongoing event (8 AM to 10 AM).
+  BirchAttachmentItem item0(u"Ongoing");
+  item0.start_time = TimeFromString("22 Feb 2024 08:00 UTC");
+  item0.end_time = TimeFromString("22 Feb 2024 10:00 UTC");
+
+  // Create an attachment for an upcoming event (9:15 to 9:45).
+  BirchAttachmentItem item1(u"Upcoming");
+  item1.start_time = TimeFromString("22 Feb 2024 9:15 UTC");
+  item1.end_time = TimeFromString("22 Feb 2024 9:45 UTC");
+
+  // Create an attachment for another event later in the day (1 PM).
+  BirchAttachmentItem item2(u"Later");
+  item2.start_time = TimeFromString("22 Feb 2024 13:00 UTC");
+  item2.end_time = TimeFromString("22 Feb 2024 13:30 UTC");
+
+  // Put the items in the vector in reverse order to validate that they are
+  // still handled in the correct order (by time) inside the ranker.
+  std::vector<BirchAttachmentItem> items = {item2, item1, item0};
+
+  ranker.RankAttachmentItems(&items);
+
+  ASSERT_EQ(3u, items.size());
+
+  // The ongoing event's item has a high priority.
+  EXPECT_FLOAT_EQ(items[0].ranking, 7.f);
+
+  // The upcoming event's item has a medium priority.
+  EXPECT_FLOAT_EQ(items[1].ranking, 13.f);
+
+  // The later event's item wasn't ranked, so has the default value.
+  EXPECT_FLOAT_EQ(items[2].ranking, std::numeric_limits<float>::max());
+}
+
+TEST(BirchRankerTest, RankAttachmentItems_Evening) {
+  base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
+
+  // Simulate 6 PM in the evening.
+  base::Time now = TimeFromString("22 Feb 2024 18:00 UTC");
+  BirchRanker ranker(now);
+  ASSERT_TRUE(ranker.IsEvening());
+
+  // Create an attachment for an ongoing event (5 PM to 7 PM).
+  BirchAttachmentItem item0(u"Ongoing");
+  item0.start_time = TimeFromString("22 Feb 2024 17:00 UTC");
+  item0.end_time = TimeFromString("22 Feb 2024 19:00 UTC");
+
+  // Create an attachment for an upcoming event (6:15 PM).
+  BirchAttachmentItem item1(u"Upcoming");
+  item1.start_time = TimeFromString("22 Feb 2024 18:15 UTC");
+  item1.end_time = TimeFromString("22 Feb 2024 18:45 UTC");
+
+  // Create an attachment for another event later in the evening (8 PM).
+  BirchAttachmentItem item2(u"Later");
+  item2.start_time = TimeFromString("22 Feb 2024 20:00 UTC");
+  item2.end_time = TimeFromString("22 Feb 2024 20:30 UTC");
+
+  // Put the items in the vector in reverse order to validate that they are
+  // still handled in the correct order (by time) inside the ranker.
+  std::vector<BirchAttachmentItem> items = {item2, item1, item0};
+
+  ranker.RankAttachmentItems(&items);
+
+  ASSERT_EQ(3u, items.size());
+
+  // The ongoing event's item has a medium priority.
+  EXPECT_FLOAT_EQ(items[0].ranking, 10.f);
+
+  // The upcoming event's item has a lower priority.
+  EXPECT_FLOAT_EQ(items[1].ranking, 13.f);
+
+  // The later event's item wasn't ranked, so has the default value.
+  EXPECT_FLOAT_EQ(items[2].ranking, std::numeric_limits<float>::max());
+}
+
 TEST(BirchRankerTest, RankWeatherItems_Morning) {
   base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
 

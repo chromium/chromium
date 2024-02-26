@@ -380,7 +380,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   EXPECT_TRUE(model->IsDataFresh());
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
-  EXPECT_EQ(model->GetAllItems().size(), 4u);
+  EXPECT_EQ(model->GetAllItems().size(), 5u);
 
   model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
                                               base::Unretained(&consumer),
@@ -400,6 +400,38 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
               testing::ElementsAre("0", "1", "2"));
   EXPECT_EQ(model->GetAllItems().size(), 0u);
   EXPECT_TRUE(model->IsDataFresh());
+}
+
+TEST_F(BirchModelTest, GetAllItems) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Insert one item of each type.
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Event 1");
+  model->SetCalendarItems(std::move(calendar_item_list));
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  attachment_item_list.emplace_back(u"Attachment 1");
+  model->SetAttachmentItems(std::move(attachment_item_list));
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
+                             GURL("favicon"), "session");
+  model->SetRecentTabItems(std::move(tab_item_list));
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  model->SetFileSuggestItems(std::move(file_item_list));
+  std::vector<BirchWeatherItem> weather_item_list;
+  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  model->SetWeatherItems(std::move(weather_item_list));
+
+  // Verify that GetAllItems() returns the correct number of items and the
+  // code didn't skip a type.
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 5u);
+  EXPECT_STREQ(all_items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_STREQ(all_items[1]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_STREQ(all_items[2]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_STREQ(all_items[3]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_STREQ(all_items[4]->GetItemType(), BirchWeatherItem::kItemType);
 }
 
 }  // namespace ash

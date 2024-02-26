@@ -65,7 +65,32 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
 }
 
 void BirchRanker::RankAttachmentItems(std::vector<BirchAttachmentItem>* items) {
-  // TODO(b/305094126): Rank all data types.
+  CHECK(items);
+
+  // Sort the attachments by their event start time.
+  std::sort(items->begin(), items->end(),
+            [](const BirchAttachmentItem& a, const BirchAttachmentItem& b) {
+              return a.start_time < b.start_time;
+            });
+
+  const bool is_morning = IsMorning();
+
+  for (BirchAttachmentItem& item : *items) {
+    // Attachments for ongoing events have high priority in the morning and
+    // medium priority the rest of the day.
+    const bool is_ongoing = item.start_time <= now_ && now_ < item.end_time;
+    if (is_ongoing) {
+      item.ranking = is_morning ? 7.f : 10.f;
+      continue;
+    }
+
+    // Attachments for events starting in the next 30 minutes have medium
+    // priority.
+    if (now_ <= item.start_time && item.start_time < now_ + base::Minutes(30)) {
+      item.ranking = 13.f;
+      continue;
+    }
+  }
 }
 
 void BirchRanker::RankFileSuggestItems(std::vector<BirchFileItem>* items) {

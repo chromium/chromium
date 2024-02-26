@@ -115,11 +115,15 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
 
   BirchRanker ranker(base::Time::Now());
   ranker.RankCalendarItems(&calendar_items_);
+  ranker.RankAttachmentItems(&attachment_items_);
   ranker.RankWeatherItems(&weather_items_);
   // TODO(b/305094126): Rank all data types.
 
   for (auto& event : calendar_items_) {
     all_items.push_back(std::make_unique<BirchCalendarItem>(event));
+  }
+  for (auto& event : attachment_items_) {
+    all_items.push_back(std::make_unique<BirchAttachmentItem>(event));
   }
   for (auto& tab : recent_tab_items_) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
