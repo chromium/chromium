@@ -381,6 +381,30 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
       proto::USER_FEEDBACK_UNSPECIFIED, 1);
 }
 
+TEST_F(ModelQualityLogsUploaderServiceTest,
+       TabOrganizationMultipleOrganizationUserFeedbackUMA) {
+  std::unique_ptr<ModelQualityLogEntry> log_entry =
+      GetModelQualityLogEntryAndSetFeedback(
+          proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          proto::USER_FEEDBACK_THUMBS_UP);
+  // Add one more tab organization to existing log_entry with user feedback.
+  log_entry->quality_data<TabOrganizationFeatureTypeMap>()
+      ->add_organizations()
+      ->set_user_feedback(proto::USER_FEEDBACK_THUMBS_DOWN);
+
+  UploadModelQualityLogsWithLogEntry(std::move(log_entry));
+
+  // We should record two user feedback values corresponding to each of the tab
+  // organization.
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
+      proto::USER_FEEDBACK_THUMBS_UP, 1);
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
+      proto::USER_FEEDBACK_THUMBS_DOWN, 1);
+}
+
 TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(
