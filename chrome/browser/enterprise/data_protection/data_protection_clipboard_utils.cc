@@ -264,7 +264,7 @@ void IsCopyToOSClipboardRestricted(
                      ->GetCopyToOSClipboardVerdict(
                          *source.data_transfer_endpoint()->GetURL());
 
-  // TODO(b/302340176): Add support for verdicts other than "block".
+  // TODO(b/303640183): Add reporting logic.
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     std::u16string replacement_data = l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
@@ -273,6 +273,22 @@ void IsCopyToOSClipboardRestricted(
   }
 
   std::move(callback).Run(data, std::nullopt);
+}
+
+void OnDataControlsCopyWarning(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const std::u16string& data,
+    std::vector<base::OnceClosure> bypass_callbacks,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
+    bool bypassed) {
+  if (bypassed) {
+    for (auto& bypass_callback : bypass_callbacks) {
+      std::move(bypass_callback).Run();
+    }
+    IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
+    return;
+  }
 }
 
 void IsCopyRestrictedByDialog(
@@ -285,17 +301,43 @@ void IsCopyRestrictedByDialog(
     return;
   }
 
-  auto verdict = data_controls::RulesServiceFactory::GetForBrowserContext(
-                     source.browser_context())
-                     ->GetCopyRestrictedBySourceVerdict(
-                         *source.data_transfer_endpoint()->GetURL());
+  auto source_only_verdict =
+      data_controls::RulesServiceFactory::GetForBrowserContext(
+          source.browser_context())
+          ->GetCopyRestrictedBySourceVerdict(
+              *source.data_transfer_endpoint()->GetURL());
 
   // TODO(b/302340176): Add support for verdicts other than "block".
   // TODO(b/303640183): Add reporting logic.
-  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+  if (source_only_verdict.level() == data_controls::Rule::Level::kBlock) {
     data_controls::DataControlsDialog::Show(
         source.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+    return;
+  }
+
+  // The "warn" level of copying to the OS clipboard is to show a warning
+  // dialog, not to do a string replacement.
+  auto os_clipboard_verdict =
+      data_controls::RulesServiceFactory::GetForBrowserContext(
+          source.browser_context())
+          ->GetCopyToOSClipboardVerdict(
+              *source.data_transfer_endpoint()->GetURL());
+
+  std::vector<base::OnceClosure> bypass_callbacks;
+  if (source_only_verdict.level() == data_controls::Rule::Level::kWarn) {
+    bypass_callbacks.push_back(source_only_verdict.TakeBypassReportClosure());
+  }
+  if (os_clipboard_verdict.level() == data_controls::Rule::Level::kWarn) {
+    bypass_callbacks.push_back(os_clipboard_verdict.TakeBypassReportClosure());
+  }
+
+  if (!bypass_callbacks.empty()) {
+    data_controls::DataControlsDialog::Show(
+        source.web_contents(),
+        data_controls::DataControlsDialog::Type::kClipboardCopyWarn,
+        base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
+                       std::move(bypass_callbacks), std::move(callback)));
     return;
   }
 

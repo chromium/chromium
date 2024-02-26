@@ -499,4 +499,156 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
   EXPECT_FALSE(future.IsReady());
 }
 
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       CopyWarnedThenCanceled) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+  set_expected_dialog_type(
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+
+  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+
+  WaitForDialogToInitialize();
+
+  // The dialog will stay up until a user action dismisses it, so `future`
+  // shouldn't be ready yet.
+  EXPECT_FALSE(future.IsReady());
+
+  CancelDialog();
+  WaitForDialogToClose();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       CopyWarnedThenCanceled_OsClipboardDestination) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+  set_expected_dialog_type(
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+
+  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+
+  WaitForDialogToInitialize();
+
+  // The dialog will stay up until a user action dismisses it, so `future`
+  // shouldn't be ready yet.
+  EXPECT_FALSE(future.IsReady());
+
+  CancelDialog();
+  WaitForDialogToClose();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       CopyWarnedThenBypassed) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+  set_expected_dialog_type(
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+
+  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+
+  WaitForDialogToInitialize();
+
+  // The dialog will stay up until a user action dismisses it, so `future`
+  // shouldn't be ready yet.
+  EXPECT_FALSE(future.IsReady());
+
+  AcceptDialog();
+  WaitForDialogToClose();
+
+  auto data = future.Get<std::u16string>();
+  EXPECT_EQ(data, u"foo");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       CopyWarnedThenBypassed_OsClipboardDestination) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+  set_expected_dialog_type(
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+
+  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+
+  WaitForDialogToInitialize();
+
+  // The dialog will stay up until a user action dismisses it, so `future`
+  // shouldn't be ready yet.
+  EXPECT_FALSE(future.IsReady());
+
+  AcceptDialog();
+  WaitForDialogToClose();
+
+  auto data = future.Get<std::u16string>();
+  EXPECT_EQ(data, u"foo");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+}
+
 }  // namespace enterprise_data_protection
