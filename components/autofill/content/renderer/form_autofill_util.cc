@@ -979,7 +979,7 @@ void FilterOptionElementsAndGetOptionStrings(
 
 bool ShouldSkipFillField(const FormFieldData::FillData& field,
                          const WebFormControlElement& element,
-                         const WebFormControlElement& trigger_element) {
+                         bool is_initiating_element) {
   // Skip all checkable or non-modifiable elements, except select fields because
   // some synthetic select element use a hidden select element.
   if (!element.IsEnabled() || element.IsReadOnly() ||
@@ -994,7 +994,7 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
     return true;
   }
 
-  if (element == trigger_element) {
+  if (is_initiating_element) {
     return false;
   }
 
@@ -2232,12 +2232,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     FieldDataManager& field_data_manager) {
-  // This container stores the FormFieldData::FillData* of `form.fields` that
-  // will be filled into their corresponding blink elements.
-  std::vector<const FormFieldData::FillData*> autofillable_fields;
-  std::vector<std::pair<FieldRef, WebAutofillState>> filled_fields;
-  filled_fields.reserve(fields.size());
-
   // If this is a preview, prevent already autofilled fields from being
   // highlighted.
   if (action_type == mojom::FormActionType::kFill &&
@@ -2250,21 +2244,33 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
           ? &PreviewFormField
           : &FillFormField;
 
-  WebFormControlElement initially_focused_element;
-  for (const FormFieldData::FillData& field : fields) {
-    WebFormControlElement element =
-        GetFormControlByRendererId(field.renderer_id);
-    if (!element.IsNull() && element.Focused()) {
-      initially_focused_element = element;
-      break;
-    }
-  }
+  // This container stores the FormFieldData::FillData* of `form.fields` that
+  // will be filled into their corresponding blink elements.
+  std::vector<std::pair<FieldRef, WebAutofillState>> filled_fields;
+  filled_fields.reserve(fields.size());
 
-  // The intended behaviour is:
-  // * Autofill the currently focused element.
-  // * Send the blur event.
-  // * For each other element, focus -> autofill -> blur.
-  // * Send the focus event for the initially focused element.
+  struct Field {
+    explicit operator bool() const {
+      DCHECK_EQ(!data, element.IsNull());
+      return data;
+    }
+
+    raw_ptr<const FormFieldData::FillData> data = nullptr;
+    WebFormControlElement element;
+  };
+
+  // We first collect the focused (if one exists) and the unfocused autofillable
+  // elements, and the autofill them in the following order:
+  // 1. Autofill the focused element.
+  // 2. Send the blur event.
+  // 3. Autofill the unfocused elements.
+  // 4. Send the focus event for the initially focused element.
+  // See crbug.com/326995529 for details.
+  Field focused_field;
+  std::vector<Field> unfocused_fields;
+  unfocused_fields.reserve(fields.size());
+
+  // Step 0: Find the focused element and the unfocused elements to fill.
   for (const FormFieldData::FillData& field : fields) {
     WebFormControlElement element =
         GetFormControlByRendererId(field.renderer_id);
@@ -2274,60 +2280,58 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     element.SetAutofillSection(WebString::FromUTF8(field.section.ToString()));
 
     if ((action_type == mojom::FormActionType::kFill &&
-         ShouldSkipFillField(field, element, initially_focused_element)) ||
+         ShouldSkipFillField(field, element,
+                             /*is_initiating_element=*/element.Focused())) ||
         (action_type == mojom::FormActionType::kUndo &&
          !element.IsAutofilled())) {
       continue;
     }
 
-    // Autofill the initiating element.
-    if (element == initially_focused_element) {
-      filled_fields.emplace_back(element, element.GetAutofillState());
-      // In preview mode, only fill the field if it changes the fields value.
-      // With this, the WebAutofillState is not changed from kAutofilled to
-      // kPreviewed. This prevents the highlighting to change.
-      if (action_persistence == mojom::ActionPersistence::kFill ||
-          field.value != element.Value().Utf16() ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-        fill_or_preview(field, /*is_initiating_element=*/true, element,
-                        field_data_manager);
-      }
-      continue;
+    if (element.Focused()) {
+      focused_field = {&field, element};
+    } else {
+      unfocused_fields.emplace_back(&field, element);
     }
-    // Storing the indexes of non-initiating elements to be autofilled after
-    // triggering the blur event for the initiating element.
-    autofillable_fields.emplace_back(&field);
+  }
+
+  // Step 1: Autofill the initiating element.
+  if (focused_field) {
+    // In preview mode, only fill the field if it changes the fields value.
+    // With this, the WebAutofillState is not changed from kAutofilled to
+    // kPreviewed. This prevents the highlighting to change.
+    if (action_persistence == mojom::ActionPersistence::kFill ||
+        focused_field.data->value != focused_field.element.Value().Utf16() ||
+        !base::FeatureList::IsEnabled(
+            features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
+      filled_fields.emplace_back(focused_field.element,
+                                 focused_field.element.GetAutofillState());
+      fill_or_preview(*focused_field.data, /*is_initiating_element=*/true,
+                      focused_field.element, field_data_manager);
+    }
   }
 
   // If there is no other field to be autofilled, sending the blur event and
   // then the focus event for the initiating element does not make sense.
-  if (autofillable_fields.empty()) {
+  if (unfocused_fields.empty()) {
     return filled_fields;
   }
 
-  // A blur event is emitted for the focused element if it is the initiating
-  // element before all other elements are autofilled.
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      !initially_focused_element.IsNull()) {
-    initially_focused_element.DispatchBlurEvent();
+  // Step 2: A blur event is emitted for the focused element if it is the
+  // initiating element before all other elements are autofilled.
+  if (action_persistence == mojom::ActionPersistence::kFill && focused_field) {
+    focused_field.element.DispatchBlurEvent();
   }
 
-  // Autofill the non-initiating elements.
-  for (const FormFieldData::FillData* field_data : autofillable_fields) {
-    WebFormControlElement element =
-        GetFormControlByRendererId(field_data->renderer_id);
-    if (!element.IsNull()) {
-      filled_fields.emplace_back(element, element.GetAutofillState());
-      fill_or_preview(*field_data, false, element, field_data_manager);
-    }
+  // Step 3: Autofill the non-initiating elements.
+  for (Field& field : unfocused_fields) {
+    filled_fields.emplace_back(field.element, field.element.GetAutofillState());
+    fill_or_preview(*field.data, false, field.element, field_data_manager);
   }
 
-  // A focus event is emitted for the initiating element after autofilling is
-  // completed. It is not intended to work for preview.
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      !initially_focused_element.IsNull()) {
-    initially_focused_element.DispatchFocusEvent();
+  // Step 4: A focus event is emitted for the initiating element after
+  // autofilling is completed. It is not intended to work for preview.
+  if (action_persistence == mojom::ActionPersistence::kFill && focused_field) {
+    focused_field.element.DispatchFocusEvent();
   }
 
   return filled_fields;
