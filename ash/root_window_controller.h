@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_provider_source.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_types.h"
-#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_tree_host.h"
@@ -61,6 +60,7 @@ class WallpaperWidgetController;
 class WindowParentingController;
 class WorkAreaInsets;
 enum class LoginStatus;
+enum class SplitViewOverviewSessionExitPoint;
 
 namespace curtain {
 class SecurityCurtainWidgetController;

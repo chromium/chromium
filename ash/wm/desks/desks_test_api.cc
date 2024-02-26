@@ -20,6 +20,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "base/run_loop.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_item_view.h"

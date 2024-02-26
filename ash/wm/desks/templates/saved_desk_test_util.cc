@@ -15,6 +15,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/memory/raw_ref.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/bounds_animator.h"

@@ -7,6 +7,7 @@
 
 #include "ash/shelf/shelf_layout_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

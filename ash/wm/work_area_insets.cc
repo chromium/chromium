@@ -4,6 +4,7 @@
 
 #include "ash/wm/work_area_insets.h"
 
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"

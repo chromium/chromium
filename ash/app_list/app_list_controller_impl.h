@@ -41,6 +41,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/types/display_constants.h"
 
