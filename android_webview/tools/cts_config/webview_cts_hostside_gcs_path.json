@@ -21,7 +21,11 @@
         "is_hostside": true,
         "excludes": [
           {
-            "match": "com.android.cts.webkit.WebViewHostSideMultipleProfileTest#*",
+            "match": "com.android.cts.webkit.WebViewHostSideMultipleProfileTest#testManagedProfile",
+            "_bug_id": "b/326395159"
+          },
+          {
+            "match": "com.android.cts.webkit.WebViewHostSideMultipleProfileTest#testSecondProfile",
             "_bug_id": "b/326395159"
           }
         ]
