@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+component("app_launch_prefetch") {
+  assert(is_win, "//components/app_launch_prefetch only supported on Windows")
+  sources = [
+    "app_launch_prefetch.cc",
+    "app_launch_prefetch.h",
+  ]
+  defines = [ "IS_APP_LAUNCH_PREFETCH_IMPL" ]
+  public_deps = [ "//base" ]
+}
