@@ -3372,16 +3372,16 @@
     },
     {
       // This is a killswitch for the change in declarative/imperative shadow
-      // root attachment (see [1]). This should be removed in M124 (Feb 20,
-      // 2024) assuming no issues are encountered.
-      // [1] https://github.com/whatwg/dom/issues/1235
+      // root attachment. This should be removed in M126 assuming no issues are
+      // encountered.
       name: "ShadowRootAttachmentNewBehavior",
       status: "stable",
     },
     {
       // See crbug.com/1510466: this is the shadow root clonable implementation.
+      // This shipped in M124, and should be safe to remove in M126 or so.
       name: "ShadowRootClonable",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SharedArrayBuffer",

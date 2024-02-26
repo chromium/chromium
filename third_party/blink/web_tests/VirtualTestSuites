@@ -1107,16 +1107,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "shadow-root-clonable-disabled",
-    "owners": ["masonf@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/shadow-dom/shadow-root-clonable.html"
-    ],
-    "args": ["--disable-blink-features=ShadowRootClonable"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "template-shadowroot-enabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],
