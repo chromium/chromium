@@ -39,6 +39,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -51,7 +52,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -68,24 +68,22 @@ import java.util.List;
 /** Tests {@link AccountManagementFragment}. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@DoNotBatch(reason = "TODO(crbug.com/1168590): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
+    public SyncTestRule mSyncTestRule = new SyncTestRule();
+
     public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);
 
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
-    // CTA won't work.
+    // CTA won't work (SyncTestRule extends CTARule).
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
-
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+            RuleChain.outerRule(mSyncTestRule).around(mSettingsActivityTestRule);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -122,7 +120,6 @@ public class AccountManagementFragmentTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
         UmaRecorderHolder.resetForTesting();
     }
 
@@ -130,7 +127,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAccountManagementFragmentView() throws Exception {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -141,8 +138,8 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testSignedInAccountShownOnTop() throws Exception {
-        mSigninTestRule.addAccount("testSecondary@gmail.com");
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSyncTestRule.addAccount("testSecondary@gmail.com");
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -153,12 +150,13 @@ public class AccountManagementFragmentTest {
     @MediumTest
     public void testAccountManagementViewForChildAccountWithNonDisplayableAccountEmail()
             throws Exception {
+        final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         AccountInfo accountInfo =
-                mSigninTestRule.addAccount(
+                signinTestRule.addAccount(
                         CHILD_ACCOUNT_NAME,
                         SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(accountInfo);
+        signinTestRule.waitForSeeding();
+        signinTestRule.waitForSignin(accountInfo);
         mSettingsActivityTestRule.startSettingsActivity();
 
         // Force update the fragment so that NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES is
@@ -184,15 +182,16 @@ public class AccountManagementFragmentTest {
     public void
             testAccountManagementViewForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
                     throws Exception {
+        final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(
+                signinTestRule.addAccount(
                         CHILD_ACCOUNT_NAME,
                         "",
                         "",
                         null,
                         SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(accountInfo);
+        signinTestRule.waitForSeeding();
+        signinTestRule.waitForSignin(accountInfo);
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -219,12 +218,13 @@ public class AccountManagementFragmentTest {
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
         final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
                 new AccountCapabilitiesBuilder();
+        final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
-                mSigninTestRule.addAccount(
+                signinTestRule.addAccount(
                         CHILD_ACCOUNT_NAME,
                         accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(primarySupervisedAccount);
+        signinTestRule.waitForSeeding();
+        signinTestRule.waitForSignin(primarySupervisedAccount);
 
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
@@ -250,13 +250,14 @@ public class AccountManagementFragmentTest {
             boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
         final AccountCapabilitiesBuilder accountCapabilitiesBuilder =
                 new AccountCapabilitiesBuilder();
+        final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
-                mSigninTestRule.addAccount(
+                signinTestRule.addAccount(
                         CHILD_ACCOUNT_NAME,
                         accountCapabilitiesBuilder.setIsSubjectToParentalControls(true).build());
-        mSigninTestRule.addAccount("account@school.com");
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(primarySupervisedAccount);
+        signinTestRule.addAccount("account@school.com");
+        signinTestRule.waitForSeeding();
+        signinTestRule.waitForSignin(primarySupervisedAccount);
 
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
@@ -276,7 +277,7 @@ public class AccountManagementFragmentTest {
     @Test
     @SmallTest
     public void testSignOutUserWithoutShowingSignOutDialog() {
-        mSigninTestRule.addTestAccountThenSignin();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out)).perform(click());
@@ -293,7 +294,7 @@ public class AccountManagementFragmentTest {
     @Test
     @SmallTest
     public void showSignOutDialogBeforeSigningUserOut() {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
@@ -306,15 +307,8 @@ public class AccountManagementFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardShownForSignedInUsers() {
-        FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
         // Fake an identity error.
-        fakeSyncService.setRequiresClientUpgrade(true);
+        overrideSyncService().setRequiresClientUpgrade(true);
 
         HistogramWatcher watchIdentityErrorCardShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -322,7 +316,7 @@ public class AccountManagementFragmentTest {
                         SyncSettingsUtils.ErrorUiAction.SHOWN);
 
         // Sign in and open settings.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
@@ -334,15 +328,8 @@ public class AccountManagementFragmentTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardNotShownIfFeatureDisabled() {
-        FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
         // Fake an identity error.
-        fakeSyncService.setRequiresClientUpgrade(true);
+        overrideSyncService().setRequiresClientUpgrade(true);
 
         // Expect no records.
         HistogramWatcher watchIdentityErrorCardShownHistogram =
@@ -351,7 +338,7 @@ public class AccountManagementFragmentTest {
                         .build();
 
         // Sign in and open settings.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
@@ -364,7 +351,7 @@ public class AccountManagementFragmentTest {
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardNotShownIfNoError() {
         // Sign in and open settings.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
@@ -375,15 +362,8 @@ public class AccountManagementFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardNotShownForSyncingUsers() {
-        FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
         // Fake an identity error.
-        fakeSyncService.setRequiresClientUpgrade(true);
+        overrideSyncService().setRequiresClientUpgrade(true);
 
         // Expect no records.
         HistogramWatcher watchIdentityErrorCardShownHistogram =
@@ -392,7 +372,7 @@ public class AccountManagementFragmentTest {
                         .build();
 
         // Sign in, enable sync and open settings.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
@@ -404,13 +384,7 @@ public class AccountManagementFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardDynamicallyShownOnError() {
-        FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
+        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
 
         // Expect no records initially.
         HistogramWatcher watchIdentityErrorCardShownHistogram =
@@ -419,7 +393,7 @@ public class AccountManagementFragmentTest {
                         .build();
 
         // Sign in and open settings.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
@@ -444,14 +418,7 @@ public class AccountManagementFragmentTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardDynamicallyHidden() {
-        FakeSyncServiceImpl fakeSyncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
-
+        FakeSyncServiceImpl fakeSyncService = overrideSyncService();
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
 
@@ -461,7 +428,7 @@ public class AccountManagementFragmentTest {
                         SyncSettingsUtils.ErrorUiAction.SHOWN);
 
         // Sign in and open settings.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
@@ -481,5 +448,14 @@ public class AccountManagementFragmentTest {
         // No error card exists anymore.
         onView(withId(R.id.identity_error_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
+    }
+
+    private FakeSyncServiceImpl overrideSyncService() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
+                    SyncServiceFactory.setInstanceForTesting(fakeSyncService);
+                    return fakeSyncService;
+                });
     }
 }
