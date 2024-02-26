@@ -15,6 +15,10 @@ import {parseCssColor} from './utils.js';
 
 import {getTemplate} from './sparkle_placeholder.html.js';
 
+/**
+ * Polymer element that displays a sparkle effect.
+ *   <sparkle-placeholder active></sparkle-placehoder>
+ */
 export class SparklePlaceholderElement extends PolymerElement {
   static get is() {
     return 'sparkle-placeholder';
@@ -26,6 +30,15 @@ export class SparklePlaceholderElement extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * Controls whether the sparkle animation is played.
+       */
+      active: {
+        type: Boolean,
+        value: false,
+        observer: 'onActiveChanged_',
+      },
+
       /**
        * Whether dark mode is the active preferred color scheme.
        */
@@ -41,6 +54,7 @@ export class SparklePlaceholderElement extends PolymerElement {
     };
   }
 
+  active: boolean;
   isDarkModeActive: boolean;
   index: number;
   sparkleImpl = new Sparkle();
@@ -66,6 +80,14 @@ export class SparklePlaceholderElement extends PolymerElement {
     }
   }
 
+  private onActiveChanged_(active: boolean) {
+    if (active) {
+      this.sparkleImpl.startRendering();
+    } else {
+      this.sparkleImpl.stopRendering();
+    }
+  }
+
   private onIndexChanged_(index: number) {
     setTimeout(() => {
       this.sparkleImpl.applyNoiseOffset();
@@ -78,7 +100,6 @@ export class SparklePlaceholderElement extends PolymerElement {
     if (this.shadowRoot != null &&
         sparkleElement.parentNode !== this.shadowRoot) {
       this.shadowRoot.appendChild(sparkleElement);
-      this.sparkleImpl.startRendering();
     }
     if (this.isDarkModeActive) {
       this.sparkleImpl.setTopLeftBackgroundColor(parseCssColor('#344477'));

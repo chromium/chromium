@@ -29,6 +29,10 @@ import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {isNonEmptyArray, isNonEmptyFilePath, logSeaPenTemplateFeedback} from './sea_pen_utils.js';
 
+const kLoadingPlaceholderCount = 8;
+
+type Tile = 'loading'|SeaPenThumbnail;
+
 export class SeaPenImagesElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-images';
@@ -45,9 +49,27 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         observer: 'onTemplateIdChanged_',
       },
 
-      thumbnails_: Object,
+      thumbnails_: {
+        type: Object,
+        observer: 'onThumbnailsChanged_',
+      },
 
-      thumbnailsLoading_: Boolean,
+      thumbnailsLoading_: {
+        type: Boolean,
+        observer: 'onThumbnailsLoadingChanged_',
+      },
+
+      /**
+       * List of tiles to be displayed to the user. Updated when `thumbnails_`
+       * or `thumbnailsLoading_` changed.
+       */
+      tiles_: {
+        type: Array,
+        value() {
+          // Pre-populate the tiles with placeholders.
+          return new Array(kLoadingPlaceholderCount).fill('loading');
+        },
+      },
 
       currentSelected_: {
         type: String,
@@ -72,6 +94,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private templateId: SeaPenTemplateId|Query;
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
+  private tiles_: Tile[];
   private currentSelected_: string|null;
   private pendingSelected_: SeaPenThumbnail|FilePath|null;
   private thumbnailResponseStatusCode_: MantaStatusCode|null;
@@ -129,16 +152,67 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     return !thumbnails && !thumbnailsLoading;
   }
 
+  private isSeaPenThumbnail_(item: Tile|null|
+                             undefined): item is SeaPenThumbnail {
+    return !!item && typeof item === 'object' && 'id' in item &&
+        typeof item.id === 'number';
+  }
+
   private shouldShowImageThumbnails_(
       thumbnailsLoading: boolean, thumbnails: SeaPenThumbnail[]|null): boolean {
-    return !thumbnailsLoading && isNonEmptyArray(thumbnails);
+    return thumbnailsLoading || isNonEmptyArray(thumbnails);
   }
 
   private getPlaceholders_(x: number) {
     return new Array(x).fill(0);
   }
 
-  private onThumbnailSelected_(event: Event&{model: {item: SeaPenThumbnail}}) {
+  private isTileVisible_(tile: Tile|null|undefined, thumbnailsLoading: boolean):
+      boolean {
+    if (thumbnailsLoading) {
+      return false;
+    }
+    return this.isSeaPenThumbnail_(tile);
+  }
+
+  private onThumbnailsChanged_(thumbnails: SeaPenThumbnail[]) {
+    if (!isNonEmptyArray(thumbnails)) {
+      return;
+    }
+
+    this.updateList(
+        /*propertyPath=*/ 'tiles_',
+        /*identityGetter=*/
+        (tile: Tile) => {
+          if (this.isSeaPenThumbnail_(tile)) {
+            return tile.id.toString();
+          }
+          return tile;
+        },
+        /*newList=*/ thumbnails,
+        /*identityBasedUpdate=*/ true,
+    );
+  }
+
+  private onThumbnailsLoadingChanged_(thumbnailsLoading: boolean) {
+    if (!thumbnailsLoading) {
+      return;
+    }
+
+    this.updateList(
+        /*propertyPath=*/ 'tiles_',
+        /*identityGetter=*/
+        () => 'loading',
+        /*newList=*/ new Array(kLoadingPlaceholderCount).fill('loading'),
+        /*identityBasedUpdate=*/ false,
+    );
+  }
+
+  private onThumbnailSelected_(event: Event&{model: {item: Tile}}) {
+    if (!this.isSeaPenThumbnail_(event.model.item)) {
+      return;
+    }
+
     selectSeaPenWallpaper(
         event.model.item, getSeaPenProvider(), this.getStore());
   }
@@ -148,9 +222,9 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private isThumbnailSelected_(
-      thumbnail: SeaPenThumbnail|undefined, currentSelected: string|null,
+      thumbnail: Tile|undefined, currentSelected: string|null,
       pendingSelected: FilePath|SeaPenThumbnail|null): boolean {
-    if (!thumbnail) {
+    if (!thumbnail || !this.isSeaPenThumbnail_(thumbnail)) {
       return false;
     }
 
@@ -173,10 +247,11 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     return pendingSelected === null && !!currentSelected?.endsWith(fileName);
   }
 
-  private isThumbnailLoading_(
-      thumbnail: SeaPenThumbnail|undefined,
+  private isThumbnailPendingSelected_(
+      thumbnail: Tile|undefined,
       pendingSelected: FilePath|SeaPenThumbnail|null): boolean {
-    return !!thumbnail && thumbnail === pendingSelected;
+    return this.isSeaPenThumbnail_(thumbnail) && !!thumbnail &&
+        thumbnail === pendingSelected;
   }
 
   // Get the name of the template for metrics. Must match histograms.xml

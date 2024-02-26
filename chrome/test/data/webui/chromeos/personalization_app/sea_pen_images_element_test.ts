@@ -80,8 +80,27 @@ suite('SeaPenImagesElementTest', function() {
             .querySelectorAll<SparklePlaceholderElement>(
                 'div:not([hidden]) sparkle-placeholder');
     assertEquals(
-        4, loadingThumbnailPlaceholders!.length,
-        'should be 4 loading placeholders available.');
+        8, loadingThumbnailPlaceholders!.length,
+        'should be 8 loading placeholders available.');
+    assertTrue(Array.from(loadingThumbnailPlaceholders)
+                   .every(placeholder => !!placeholder.active));
+  });
+
+  test('thumbnail placeholders not active when hidden', async () => {
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.images;
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const loadingThumbnailPlaceholders =
+        seaPenImagesElement.shadowRoot!
+            .querySelectorAll<SparklePlaceholderElement>(
+                'div:not([hidden]) sparkle-placeholder');
+    assertTrue(Array.from(loadingThumbnailPlaceholders)
+                   .every(placeholder => !placeholder.active));
   });
 
   test('displays image thumbnails', async () => {
