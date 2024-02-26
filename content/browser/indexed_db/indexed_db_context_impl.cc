@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -33,6 +34,7 @@
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "content/browser/indexed_db/features.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
@@ -602,7 +604,6 @@ const base::FilePath IndexedDBContextImpl::GetFirstPartyDataPathForTesting()
 
 void IndexedDBContextImpl::OnFilesWritten(const BucketLocator& bucket_locator,
                                           bool flushed) {
-  bucket_set_.insert(bucket_locator);
   NotifyOfBucketModification(bucket_locator);
   if (!flushed) {
     // A negative value indicates "not cached, and LevelDB file write is
@@ -955,25 +956,28 @@ IndexedDBBucketContext& IndexedDBContextImpl::GetOrCreateBucketContext(
       },
       weak_factory_.GetWeakPtr(), bucket_locator);
   bucket_delegate.on_content_changed = base::BindRepeating(
-      [](base::WeakPtr<IndexedDBContextImpl> context,
-         BucketLocator bucket_locator, const std::u16string& database_name,
-         const std::u16string& object_store_name) {
-        if (context) {
-          context->NotifyIndexedDBContentChanged(bucket_locator, database_name,
-                                                 object_store_name);
-        }
-      },
-      weak_factory_.GetWeakPtr(), bucket_locator);
-  bucket_delegate.on_files_written = base::BindRepeating(
-      [](base::WeakPtr<IndexedDBContextImpl> context,
-         BucketLocator bucket_locator, bool did_sync) {
-        if (context) {
-          context->OnFilesWritten(bucket_locator, did_sync);
-        }
-      },
-      weak_factory_.GetWeakPtr(), bucket_locator);
+      base::BindRepeating(&IndexedDBContextImpl::NotifyIndexedDBContentChanged,
+                          weak_factory_.GetWeakPtr(), bucket_locator));
+  bucket_delegate.on_files_written =
+      base::BindRepeating(&IndexedDBContextImpl::OnFilesWritten,
+                          weak_factory_.GetWeakPtr(), bucket_locator);
   bucket_delegate.for_each_bucket_context = base::BindRepeating(
       &IndexedDBContextImpl::ForEachBucketContext, weak_factory_.GetWeakPtr());
+
+  if (base::FeatureList::IsEnabled(features::kIndexedDBShardBackingStores)) {
+    bucket_delegate.on_ready_for_destruction = base::BindPostTask(
+        idb_task_runner_, std::move(bucket_delegate.on_ready_for_destruction));
+    bucket_delegate.on_receiver_bounced = base::BindPostTask(
+        idb_task_runner_,
+        base::BindRepeating(&IndexedDBContextImpl::BindIndexedDB,
+                            weak_factory_.GetWeakPtr(), bucket_locator));
+    bucket_delegate.on_content_changed = base::BindPostTask(
+        idb_task_runner_, bucket_delegate.on_content_changed);
+    bucket_delegate.on_files_written =
+        base::BindPostTask(idb_task_runner_, bucket_delegate.on_files_written);
+    bucket_delegate.for_each_bucket_context = base::BindPostTask(
+        idb_task_runner_, bucket_delegate.for_each_bucket_context);
+  }
 
   mojo::PendingRemote<storage::mojom::BlobStorageContext>
       cloned_blob_storage_context;
@@ -1001,6 +1005,7 @@ IndexedDBBucketContext& IndexedDBContextImpl::GetOrCreateBucketContext(
     it->second->BindMockFailureSingletonForTesting(  // IN-TEST
         std::move(pending_failure_injector_));
   }
+  bucket_set_.insert(bucket_locator);
   return *it->second;
 }
 

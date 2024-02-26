@@ -67,7 +67,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
     IndexedDBBucketContext::Delegate delegate;
-    delegate.on_ready_for_destruction = base::BindRepeating(
+    delegate.on_ready_for_destruction = base::BindOnce(
         &IndexedDBDatabaseTest::OnBucketContextReadyForDestruction,
         weak_factory_.GetWeakPtr());
 

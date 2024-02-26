@@ -72,8 +72,8 @@ class IndexedDBTransactionTest : public testing::Test {
 
     IndexedDBBucketContext::Delegate delegate;
     delegate.on_ready_for_destruction =
-        base::BindRepeating(&IndexedDBTransactionTest::OnDbReadyForDestruction,
-                            base::Unretained(this));
+        base::BindOnce(&IndexedDBTransactionTest::OnDbReadyForDestruction,
+                       base::Unretained(this));
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
         storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),

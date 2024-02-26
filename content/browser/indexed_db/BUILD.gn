@@ -8,6 +8,8 @@ source_set("indexed_db") {
   sources = [
     "database_impl.cc",
     "database_impl.h",
+    "features.cc",
+    "features.h",
     "file_path_util.cc",
     "file_path_util.h",
     "file_stream_reader_to_data_pipe.cc",

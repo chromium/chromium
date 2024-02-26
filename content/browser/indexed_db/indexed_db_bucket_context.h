@@ -136,8 +136,20 @@ class CONTENT_EXPORT IndexedDBBucketContext
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    // Called when the bucket context is ready to be destroyed.
-    base::RepeatingCallback<void()> on_ready_for_destruction;
+    // Called when the bucket context is ready to be destroyed. After this is
+    // called, the bucket context will no longer accept new IDBFactory
+    // connections (receivers in `receivers_`).
+    base::OnceCallback<void()> on_ready_for_destruction;
+
+    // Called when `IndexedDBBucketContext` can't handle an `AddReceiver()`
+    // call: specifically, if destruction has already been initiated by calling
+    // `on_ready_for_destruction`.
+    base::RepeatingCallback<void(
+        mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+        /*client_state_checker_remote*/,
+        const base::UnguessableToken& /*client_token*/,
+        mojo::PendingReceiver<blink::mojom::IDBFactory> /*pending_receiver*/)>
+        on_receiver_bounced;
 
     // Called when database content has changed. Technically this is called when
     // the content *probably will* change --- it's invoked before a transaction

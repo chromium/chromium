@@ -34,6 +34,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "content/browser/indexed_db/features.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
@@ -462,6 +463,7 @@ constexpr const base::TimeDelta
 
 IndexedDBBucketContext::Delegate::Delegate()
     : on_ready_for_destruction(base::DoNothing()),
+      on_receiver_bounced(base::DoNothing()),
       on_content_changed(base::DoNothing()),
       on_files_written(base::DoNothing()),
       for_each_bucket_context(base::DoNothing()) {}
@@ -516,16 +518,12 @@ IndexedDBBucketContext::~IndexedDBBucketContext() {
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 
-  delegate_.on_ready_for_destruction = base::DoNothing();
+  delegate_.on_ready_for_destruction.Reset();
   ResetBackingStore();
 }
 
 void IndexedDBBucketContext::ForceClose(bool doom) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!backing_store_) {
-    return;
-  }
 
   is_doomed_ = doom;
 
@@ -748,9 +746,19 @@ void IndexedDBBucketContext::AddReceiver(
         client_state_checker_remote,
     base::UnguessableToken client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
-  receivers_.Add(
-      this, std::move(pending_receiver),
-      ReceiverContext(std::move(client_state_checker_remote), client_token));
+  // When `on_ready_for_destruction` is non-null, `this` hasn't requested its
+  // own destruction. When it is null, this is to be torn down and has to bounce
+  // the AddReceiver request back to the delegate.
+  if (delegate().on_ready_for_destruction) {
+    receivers_.Add(
+        this, std::move(pending_receiver),
+        ReceiverContext(std::move(client_state_checker_remote), client_token));
+  } else {
+    CHECK(base::FeatureList::IsEnabled(features::kIndexedDBShardBackingStores));
+    delegate().on_receiver_bounced.Run(std::move(client_state_checker_remote),
+                                       client_token,
+                                       std::move(pending_receiver));
+  }
 }
 
 void IndexedDBBucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
@@ -1313,7 +1321,9 @@ void IndexedDBBucketContext::HandleBackingStoreCorruption(
   const base::FilePath file_path =
       data_path_.Append(indexed_db::GetLevelDBFileName(bucket_locator()));
   ForceClose(/*doom=*/false);
-  // NB: `this` may be deleted.
+
+  // NB: `this` will be synchronously deleted here while
+  // kIndexedDBShardBackingStores is false.
 
   // Note: DestroyDB only deletes LevelDB files, leaving all others,
   //       so our corruption info file will remain.
@@ -1647,14 +1657,15 @@ void IndexedDBBucketContext::ResetBackingStore() {
   skip_closing_sequence_ = false;
   running_tasks_ = false;
 
-  if (receivers_.empty()) {
-    delegate().on_ready_for_destruction.Run();
+  if (receivers_.empty() && delegate().on_ready_for_destruction) {
+    std::move(delegate().on_ready_for_destruction).Run();
   }
 }
 
 void IndexedDBBucketContext::OnReceiverDisconnected() {
-  if (receivers_.empty() && !backing_store_) {
-    delegate().on_ready_for_destruction.Run();
+  if (receivers_.empty() && !backing_store_ &&
+      delegate().on_ready_for_destruction) {
+    std::move(delegate().on_ready_for_destruction).Run();
   }
 }
 
