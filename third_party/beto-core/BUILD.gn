@@ -277,7 +277,7 @@ rust_static_library("ldt_np_adv_ffi") {
   public = [ "src/nearby/presence/ldt_np_adv_ffi/include/np_ldt.h" ]
   deps = [
     ":crypto_provider",
-    ":crypto_provider_boringssl",
+    ":crypto_provider_default",
     ":ldt",
     ":ldt_np_adv",
     ":np_hkdf",
@@ -289,6 +289,7 @@ rust_static_library("ldt_np_adv_ffi") {
 rust_static_library("crypto_provider_boringssl") {
   build_native_rust_unit_tests = true
 
+  crate_name = "crypto_provider_boringssl"
   crate_root = "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs"
   sources = [
     "src/nearby/crypto/crypto_provider_boringssl/src/aead/aes_gcm.rs",
@@ -314,6 +315,7 @@ rust_static_library("crypto_provider_boringssl") {
 }
 
 rust_static_library("crypto_provider") {
+  crate_name = "crypto_provider"
   crate_root = "src/nearby/crypto/crypto_provider/src/lib.rs"
   sources = [
     "src/nearby/crypto/crypto_provider/src/aead.rs",
@@ -361,6 +363,7 @@ rust_static_library("crypto_provider_stubs") {
 }
 
 rust_static_library("crypto_provider_default") {
+  crate_name = "crypto_provider_default"
   crate_root = "src/nearby/crypto/crypto_provider_default/src/lib.rs"
   sources = [ "src/nearby/crypto/crypto_provider_default/src/lib.rs" ]
   edition = "2021"
@@ -373,6 +376,7 @@ rust_static_library("crypto_provider_default") {
 }
 
 rust_static_library("ldt_np_adv") {
+  crate_name = "ldt_np_adv"
   build_native_rust_unit_tests = true
   crate_root = "src/nearby/presence/ldt_np_adv/src/lib.rs"
   sources = [ "src/nearby/presence/ldt_np_adv/src/lib.rs" ]
@@ -396,6 +400,7 @@ rust_static_library("ldt_np_adv") {
 }
 
 rust_static_library("ldt") {
+  crate_name = "ldt"
   crate_root = "src/nearby/presence/ldt/src/lib.rs"
   sources = [ "src/nearby/presence/ldt/src/lib.rs" ]
   deps = [
@@ -457,6 +462,7 @@ rust_unit_test("ldt_test_vectors") {
 }
 
 rust_static_library("ldt_tbc") {
+  crate_name = "ldt_tbc"
   crate_root = "src/nearby/presence/ldt_tbc/src/lib.rs"
   sources = [ "src/nearby/presence/ldt_tbc/src/lib.rs" ]
   deps = [ ":crypto_provider" ]
@@ -464,16 +470,19 @@ rust_static_library("ldt_tbc") {
 
 rust_static_library("array_view") {
   build_native_rust_unit_tests = true
+  crate_name = "array_view"
   crate_root = "src/nearby/presence/array_view/src/lib.rs"
   sources = [ "src/nearby/presence/array_view/src/lib.rs" ]
 }
 
 rust_static_library("array_ref") {
+  crate_name = "array_ref"
   crate_root = "src/nearby/presence/array_ref/src/lib.rs"
   sources = [ "src/nearby/presence/array_ref/src/lib.rs" ]
 }
 
 rust_static_library("np_hkdf") {
+  crate_name = "np_hkdf"
   crate_root = "src/nearby/presence/np_hkdf/src/lib.rs"
   sources = [
     "src/nearby/presence/np_hkdf/src/lib.rs",
@@ -504,6 +513,7 @@ rust_unit_test("np_hkdf_tests") {
 
 rust_static_library("xts_aes") {
   build_native_rust_unit_tests = true
+  crate_name = "xts_aes"
   crate_root = "src/nearby/presence/xts_aes/src/lib.rs"
   sources = [ "src/nearby/presence/xts_aes/src/lib.rs" ]
   deps = [
