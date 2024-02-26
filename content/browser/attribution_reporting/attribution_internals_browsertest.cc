@@ -689,11 +689,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.rows[2].cells[5]?.innerText === '0' &&
             table.rows[2].cells[6]?.innerText === 'false' &&
             table.rows[2].cells[1]?.innerText === 'Sent: HTTP 200' &&
-            !table.rows[2].classList.contains('send-error') &&
+            !table.rows[2].cells[1]?.classList.contains('send-error') &&
             table.rows[3].cells[1]?.innerText === 'Prohibited by browser policy' &&
-            !table.rows[3].classList.contains('send-error') &&
+            !table.rows[3].cells[1]?.classList.contains('send-error') &&
             table.rows[4].cells[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
-            table.rows[4].classList.contains('send-error')) {
+            table.rows[4].cells[1]?.classList.contains('send-error')) {
           if (obs) {
             obs.disconnect();
           }

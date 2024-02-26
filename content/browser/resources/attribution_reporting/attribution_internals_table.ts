@@ -40,7 +40,6 @@ export type IsSelectableFunc<T> = (data: T) => boolean;
 export interface InitOpts<T> {
   readonly getId?: GetIdFunc<T>;
   readonly isSelectable?: IsSelectableFunc<T>;
-  readonly styleRow?: RenderFunc<T>;
 }
 
 export class AttributionInternalsTableElement<T> extends CustomElement {
@@ -51,16 +50,13 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
   private cols_?: Array<RenderFunc<T>>;
   private compare_?: CompareFunc<T>;
   private getId_?: GetIdFunc<T>;
-  private styleRow_: RenderFunc<T> = () => {};
 
   init(dataCols: Iterable<DataColumn<T>>, {
     getId,
     isSelectable,
-    styleRow = () => {},
   }: InitOpts<T> = {}): void {
     this.cols_ = [];
     this.getId_ = getId;
-    this.styleRow_ = styleRow;
 
     const tr = this.$<HTMLElement>('thead > tr')!;
     tr.addEventListener('click', e => this.onSortButtonClick_(e));
@@ -171,7 +167,6 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     for (const render of this.cols_!) {
       render(tr.insertCell(), data);
     }
-    this.styleRow_(tr, data);
     return tr;
   }
 
@@ -232,7 +227,6 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
           tr.data = updatedData;
           this.cols_!.forEach(
               (render, idx) => render(tr.cells[idx]!, updatedData));
-          this.styleRow_(tr, updatedData);
           trs.push(tr);
         }
       }

@@ -263,7 +263,7 @@ function initSourceTable(t: AttributionInternalsTableElement<Source>):
         valueColumn('Reporting Origin', 'reportingOrigin', asUrl),
         valueColumn(
             'Registration Time', 'sourceTime', asDate, /*defaultSort=*/ true),
-        valueColumn('Expiry Time', 'expiryTime', asDate),
+        valueColumn('Expiry', 'expiryTime', asDate),
         valueColumn('Trigger Specs', 'triggerSpecs', asCode),
         valueColumn(
             'Aggregatable Report Window Time', 'aggregatableReportWindowTime',
@@ -388,9 +388,14 @@ function isHttpError(code: number): boolean {
   return code < 200 || code >= 400;
 }
 
-function styleReportRow(tr: HTMLElement, report: {sendFailed: boolean}): void {
-  tr.classList.toggle('send-error', report.sendFailed);
-}
+const reportStatusColumn: DataColumn<{status: string, sendFailed: boolean}> = {
+  label: 'Status',
+  compare: (a, b) => compareDefault(a.status, b.status),
+  render: (td, report) => {
+    td.classList.toggle('send-error', report.sendFailed);
+    td.innerText = report.status;
+  },
+};
 
 class Report {
   id: ReportID;
@@ -486,12 +491,12 @@ function initReportTable<T extends Report>(
 
   t.init(
       [
-        valueColumn('Status', 'status', asStringOrBool),
-        valueColumn('Report URL', 'reportUrl', asUrl),
+        reportStatusColumn,
+        valueColumn('URL', 'reportUrl', asUrl),
         valueColumn('Trigger Time', 'triggerTime', asDate),
         valueColumn('Report Time', 'reportTime', asDate, /*defaultSort=*/ true),
         ...cols,
-        valueColumn('Report Body', 'reportBody', asCode),
+        valueColumn('Body', 'reportBody', asCode),
       ],
       {
         // Prevent sent/dropped reports from being removed by returning
@@ -499,7 +504,6 @@ function initReportTable<T extends Report>(
         getId: (report, updated) =>
             (report.isPending() || updated) ? report.id.value : undefined,
         isSelectable: report => report.isPending(),
-        styleRow: styleReportRow,
       },
   );
 
@@ -584,8 +588,8 @@ function initOsRegistrationTable(
     AttributionInternalsTableElement<OsRegistration> {
   t.init([
     valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
-    valueColumn('Registration Type', 'registrationType', asStringOrBool),
-    valueColumn('Registration URL', 'registrationUrl', asUrl),
+    valueColumn('Type', 'registrationType', asStringOrBool),
+    valueColumn('URL', 'registrationUrl', asUrl),
     valueColumn('Top-Level Origin', 'topLevelOrigin', asUrl),
     valueColumn('Debug Key Allowed', 'debugKeyAllowed', asStringOrBool),
     valueColumn('Debug Reporting', 'debugReporting', asStringOrBool),
@@ -638,15 +642,12 @@ function attributionSuccessDebugReport(mojo: WebUIReport): DebugReport {
 
 function initDebugReportTable(t: AttributionInternalsTableElement<DebugReport>):
     AttributionInternalsTableElement<DebugReport> {
-  t.init(
-      [
-        valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
-        valueColumn('URL', 'url', asUrl),
-        valueColumn('Status', 'status', asStringOrBool),
-        valueColumn('Body', 'body', asCode),
-      ],
-      {styleRow: styleReportRow},
-  );
+  t.init([
+    valueColumn('Time', 'time', asDate, /*defaultSort=*/ true),
+    valueColumn('URL', 'url', asUrl),
+    reportStatusColumn,
+    valueColumn('Body', 'body', asCode),
+  ]);
   return t;
 }
 
@@ -803,8 +804,8 @@ class AttributionInternals implements ObserverInterface {
   constructor() {
     this.eventLevelReports = initReportTable<EventLevelReport>(
         document.querySelector('#event-level-report-panel')!, this.handler, [
-          valueColumn('Report Priority', 'reportPriority', asNumber),
-          valueColumn('Randomized Report', 'randomizedReport', asStringOrBool),
+          valueColumn('Priority', 'reportPriority', asNumber),
+          valueColumn('Randomized', 'randomizedReport', asStringOrBool),
         ]);
 
     this.aggregatableReports = initReportTable<AggregatableReport>(
@@ -814,7 +815,7 @@ class AttributionInternals implements ObserverInterface {
               'Verification Token', 'verificationToken', asStringOrBool),
           valueColumn(
               'Aggregation Coordinator', 'aggregationCoordinator', asUrl),
-          valueColumn('Null Report', 'isNullReport', asStringOrBool),
+          valueColumn('Null', 'isNullReport', asStringOrBool),
         ]);
 
     this.sources = initSourceTable(document.querySelector('#sourceTable')!);
