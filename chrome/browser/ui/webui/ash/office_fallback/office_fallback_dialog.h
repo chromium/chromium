@@ -51,6 +51,8 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
                        const std::string& title_text,
                        const std::string& reason_message,
                        const std::string& instructions_message,
+                       const bool& enable_retry_option,
+                       const bool& enable_quick_office_option,
                        const int& width,
                        const int& height,
                        DialogChoiceCallback callback);
@@ -64,6 +66,8 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   const std::string title_text_;
   const std::string reason_message_;
   const std::string instructions_message_;
+  const bool enable_retry_option_;
+  const bool enable_quick_office_option_;
   const int width_;
   const int height_;
   DialogChoiceCallback callback_;

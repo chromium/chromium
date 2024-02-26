@@ -63,6 +63,8 @@ void GetDialogTextIdsAndSize(
     int& reason_message_id,
     bool& include_task_in_reason_message,
     int& instructions_message_id,
+    bool& enable_retry_option,
+    bool& enable_quick_office_option,
     int& width,
     int& height) {
   width = kWidth;
@@ -74,6 +76,8 @@ void GetDialogTextIdsAndSize(
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_OFFLINE;
       include_task_in_reason_message = true;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE;
+      enable_retry_option = true;
+      enable_quick_office_option = true;
       height = kOfflineHeight;
       break;
     case ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet:
@@ -82,6 +86,8 @@ void GetDialogTextIdsAndSize(
       include_task_in_reason_message = true;
       instructions_message_id =
           IDS_OFFICE_FALLBACK_INSTRUCTIONS_DISABLE_DRIVE_PREFERENCE;
+      enable_retry_option = true;
+      enable_quick_office_option = true;
       height = kDisableDrivePreferenceSetHeight;
       break;
     case ash::office_fallback::FallbackReason::kDriveDisabledForAccountType:
@@ -89,12 +95,16 @@ void GetDialogTextIdsAndSize(
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_DISABLED_FOR_ACCOUNT;
       instructions_message_id =
           IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT;
+      enable_retry_option = true;
+      enable_quick_office_option = true;
       height = kDriveDisabledForAccountType;
       break;
     case ash::office_fallback::FallbackReason::kMeteredConnection:
       title_id = IDS_OFFICE_FALLBACK_TITLE_METERED;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_METERED;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED;
+      enable_retry_option = true;
+      enable_quick_office_option = true;
       height = kMeteredHeight;
       break;
     case ash::office_fallback::FallbackReason::kDriveDisabled:
@@ -104,6 +114,8 @@ void GetDialogTextIdsAndSize(
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
       include_task_in_reason_message = true;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS;
+      enable_retry_option = true;
+      enable_quick_office_option = true;
       height = kDriveUnavailableHeight;
       break;
   }
@@ -158,11 +170,14 @@ bool OfficeFallbackDialog::Show(
   int reason_message_id;
   bool include_task_in_reason_message;
   int instructions_message_id;
+  bool enable_retry_option;
+  bool enable_quick_office_option;
   int width;
   int height;
   GetDialogTextIdsAndSize(fallback_reason, title_id, reason_message_id,
                           include_task_in_reason_message,
-                          instructions_message_id, width, height);
+                          instructions_message_id, enable_retry_option,
+                          enable_quick_office_option, width, height);
   // TODO(cassycc): Figure out how to add the web_drive to the placeholder in
   // IDS_OFFICE_FALLBACK_TITLE_WEB_DRIVE_UNAVAILABLE.
   const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
@@ -176,8 +191,9 @@ bool OfficeFallbackDialog::Show(
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
   OfficeFallbackDialog* dialog = new OfficeFallbackDialog(
-      file_urls, title_text, reason_message, instructions_message, width,
-      height, std::move(callback));
+      file_urls, title_text, reason_message, instructions_message,
+      enable_retry_option, enable_quick_office_option, width, height,
+      std::move(callback));
 
   dialog->ShowSystemDialog();
   return true;
@@ -199,6 +215,8 @@ OfficeFallbackDialog::OfficeFallbackDialog(
     const std::string& title_text,
     const std::string& reason_message,
     const std::string& instructions_message,
+    const bool& enable_retry_option,
+    const bool& enable_quick_office_option,
     const int& width,
     const int& height,
     DialogChoiceCallback callback)
@@ -208,6 +226,8 @@ OfficeFallbackDialog::OfficeFallbackDialog(
       title_text_(title_text),
       reason_message_(reason_message),
       instructions_message_(instructions_message),
+      enable_retry_option_(enable_retry_option),
+      enable_quick_office_option_(enable_quick_office_option),
       width_(width),
       height_(height),
       callback_(std::move(callback)) {}
@@ -219,6 +239,8 @@ std::string OfficeFallbackDialog::GetDialogArgs() const {
   args.Set("titleText", title_text_);
   args.Set("reasonMessage", reason_message_);
   args.Set("instructionsMessage", instructions_message_);
+  args.Set("enableRetryOption", enable_retry_option_);
+  args.Set("enableQuickOfficeOption", enable_quick_office_option_);
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;

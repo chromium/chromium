@@ -703,6 +703,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Cannot show setup dialog"/>
   <int value="14" label="Cannot show move confirmation"/>
   <int value="15" label="No files to open"/>
+  <int value="16" label="Selected OK at fallback"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">

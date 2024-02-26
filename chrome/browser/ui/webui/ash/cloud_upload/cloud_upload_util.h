@@ -166,7 +166,8 @@ enum class OfficeTaskResult {
   kCannotShowSetupDialog = 13,
   kCannotShowMoveConfirmation = 14,
   kNoFilesToOpen = 15,
-  kMaxValue = kNoFilesToOpen,
+  kOkAtFallback = 16,
+  kMaxValue = kOkAtFallback,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.

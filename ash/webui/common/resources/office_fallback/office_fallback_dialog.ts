@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -25,6 +25,8 @@ export class OfficeFallbackElement extends HTMLElement {
   titleText: string = '';
   reasonMessage: string = '';
   instructionsMessage: string = '';
+  enableRetryOption = true;
+  enableQuickOfficeOption = true;
   private root: ShadowRoot;
 
   constructor() {
@@ -45,15 +47,26 @@ export class OfficeFallbackElement extends HTMLElement {
   }
 
   async connectedCallback() {
-    const quickOfficeButton = this.$('#quick-office-button')!;
     const tryAgainButton = this.$('#try-again-button')!;
     const cancelButton = this.$('#cancel-button')!;
-    quickOfficeButton.addEventListener(
-        'click', () => this.onQuickOfficeButtonClick());
+    const okButton = this.$('#ok-button')!;
+    const quickOfficeButton = this.$('#quick-office-button')!;
     tryAgainButton.addEventListener(
         'click', () => this.onTryAgainButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
+    okButton.addEventListener('click', () => this.onOkButtonClick());
+    quickOfficeButton.addEventListener(
+        'click', () => this.onQuickOfficeButtonClick());
     document.addEventListener('keydown', this.onKeyDown.bind(this));
+    if (this.enableRetryOption) {
+      this.$('#ok-button')!.style.display = 'none';
+    } else {
+      this.$('#try-again-button')!.style.display = 'none';
+      this.$('#cancel-button')!.style.display = 'none';
+    }
+    if (!this.enableQuickOfficeOption) {
+      this.$('#quick-office-button')!.style.display = 'none';
+    }
   }
 
   /**
@@ -71,6 +84,8 @@ export class OfficeFallbackElement extends HTMLElement {
       this.titleText = args.titleText;
       this.reasonMessage = args.reasonMessage;
       this.instructionsMessage = args.instructionsMessage;
+      this.enableRetryOption = args.enableRetryOption;
+      this.enableQuickOfficeOption = args.enableQuickOfficeOption;
     } catch (e) {
       console.error(`Unable to get dialog arguments. Error: ${e}.`);
     }
@@ -92,10 +107,6 @@ export class OfficeFallbackElement extends HTMLElement {
     return template;
   }
 
-  private onQuickOfficeButtonClick(): void {
-    this.proxy.handler.close(DialogChoice.kQuickOffice);
-  }
-
   private onTryAgainButtonClick(): void {
     this.proxy.handler.close(DialogChoice.kTryAgain);
   }
@@ -104,9 +115,18 @@ export class OfficeFallbackElement extends HTMLElement {
     this.proxy.handler.close(DialogChoice.kCancel);
   }
 
+  private onOkButtonClick(): void {
+    this.proxy.handler.close(DialogChoice.kOk);
+  }
+
+  private onQuickOfficeButtonClick(): void {
+    this.proxy.handler.close(DialogChoice.kQuickOffice);
+  }
+
   private onKeyDown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
-      // Handle Escape as a "cancel".
+      // Handle Escape as a "cancel" (which can therefore still be returned as a
+      // response when the "cancel" button is hidden).
       e.stopImmediatePropagation();
       e.preventDefault();
       this.onCancelButtonClick();

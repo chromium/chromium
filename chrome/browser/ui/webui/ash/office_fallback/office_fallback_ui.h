@@ -24,6 +24,7 @@ namespace ash::office_fallback {
 
 // The string conversions of ash::office_fallback::mojom::DialogChoice.
 const char kDialogChoiceCancel[] = "cancel";
+const char kDialogChoiceOk[] = "ok";
 const char kDialogChoiceQuickOffice[] = "quick-office";
 const char kDialogChoiceTryAgain[] = "try-again";
 

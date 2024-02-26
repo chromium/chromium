@@ -7066,6 +7066,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_FALLBACK_TRY_AGAIN" desc="Label for the button that retries opening the office file with the original application.">
     Try again
   </message>
+  <message name="IDS_OFFICE_FALLBACK_OK" desc="Label for the office fallback dialog's OK button.">
+    OK
+  </message>
   <message name="IDS_OFFICE_FALLBACK_OPEN_WITH_OFFLINE_EDITOR" desc="Label for the button that uses the offline editor fallback to open the office file.">
     Open in offline editor
   </message>

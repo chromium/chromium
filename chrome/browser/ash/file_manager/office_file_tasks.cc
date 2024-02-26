@@ -363,6 +363,18 @@ void OnDialogChoiceReceived(
           ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
           std::move(cloud_open_metrics));
     }
+  } else if (choice.value() == ash::office_fallback::kDialogChoiceOk) {
+    if (IsWebDriveOfficeTask(task)) {
+      LogGoogleDriveMetricsAfterFallback(
+          fallback_reason, ash::cloud_upload::OfficeTaskResult::kOkAtFallback,
+          std::move(cloud_open_metrics));
+    } else if (IsOpenInOfficeTask(task)) {
+      LogOneDriveMetricsAfterFallback(
+          fallback_reason, ash::cloud_upload::OfficeTaskResult::kOkAtFallback,
+          std::move(cloud_open_metrics));
+    }
+  } else if (!choice.value().empty()) {
+    LOG(ERROR) << "Unhandled response: " << choice.value();
   } else {
     LOG(ERROR) << "Empty user response";
   }

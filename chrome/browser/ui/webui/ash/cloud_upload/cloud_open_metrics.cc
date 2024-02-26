@@ -69,6 +69,7 @@ bool DidEndWithoutSetUp(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCancelledAtSetup:
     case OfficeTaskResult::kCannotShowSetupDialog:
     case OfficeTaskResult::kNoFilesToOpen:
+    case OfficeTaskResult::kOkAtFallback:
       return true;
     case OfficeTaskResult::kOpened:
     case OfficeTaskResult::kMoved:
@@ -90,6 +91,7 @@ bool DidEndAtFallback(OfficeTaskResult task_result) {
     case OfficeTaskResult::kFallbackOther:
     case OfficeTaskResult::kCancelledAtFallback:
     case OfficeTaskResult::kCannotGetFallbackChoice:
+    case OfficeTaskResult::kOkAtFallback:
       return true;
     case OfficeTaskResult::kOpened:
     case OfficeTaskResult::kMoved:
@@ -128,6 +130,7 @@ bool DidEndAtMoveConfirmation(OfficeTaskResult task_result) {
     case OfficeTaskResult::kFileAlreadyBeingUploaded:
     case OfficeTaskResult::kCannotShowSetupDialog:
     case OfficeTaskResult::kNoFilesToOpen:
+    case OfficeTaskResult::kOkAtFallback:
       return false;
   }
 }
@@ -635,6 +638,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kCannotShowSetupDialog:
           case OfficeTaskResult::kCannotShowMoveConfirmation:
           case OfficeTaskResult::kNoFilesToOpen:
+          case OfficeTaskResult::kOkAtFallback:
             SetWrongValueLogged(task_result);
             break;
         }
