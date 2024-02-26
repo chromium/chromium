@@ -304,10 +304,12 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         this.updateInternetMenuItemDescription_();
       });
 
-      // Multidevice menu item.
-      this.addWebUiListener(
-          'settings.updateMultidevicePageContentData',
-          this.updateMultideviceMenuItemDescription_.bind(this));
+      // Multidevice menu item is not available in guest mode.
+      if (this.pageAvailability[Section.kMultiDevice]) {
+        this.addWebUiListener(
+            'settings.updateMultidevicePageContentData',
+            this.updateMultideviceMenuItemDescription_.bind(this));
+      }
     }
   }
 
@@ -330,7 +332,8 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     // page initially loads.
     this.$.topMenuRepeat.render();
 
-    if (this.isRevampWayfindingEnabled_) {
+    if (this.isRevampWayfindingEnabled_ &&
+        this.pageAvailability[Section.kMultiDevice]) {
       this.multideviceBrowserProxy_.getPageContentData().then(
           this.updateMultideviceMenuItemDescription_.bind(this));
     }

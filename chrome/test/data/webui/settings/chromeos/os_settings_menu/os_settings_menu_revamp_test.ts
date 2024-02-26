@@ -10,16 +10,17 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createPageAvailabilityForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDevicePageContentData, MultiDeviceSettingsMode, OsSettingsMenuElement, OsSettingsMenuItemElement, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, createRouterForTesting, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, MultiDeviceBrowserProxyImpl, MultiDevicePageContentData, MultiDeviceSettingsMode, OsSettingsMenuElement, OsSettingsMenuItemElement, Router, routesMojom, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -822,6 +823,31 @@ suite('<os-settings-menu>', () => {
       multideviceBrowserProxy = new TestMultideviceBrowserProxy();
       MultiDeviceBrowserProxyImpl.setInstanceForTesting(
           multideviceBrowserProxy);
+    });
+
+    suite('when in guest mode', () => {
+      setup(() => {
+        loadTimeData.overrideValues({isGuest: true});
+
+        // Reinitialize Router and routes based on load time data.
+        // i.e. Multdevice route should not exist in guest mode.
+        Router.resetInstanceForTesting(createRouterForTesting());
+      });
+
+      test('Multidevice menu item should not exist', async () => {
+        await createMenu();
+        const multideviceMenuItem =
+            queryMenuItemByPath(`/${routesMojom.MULTI_DEVICE_SECTION_PATH}`);
+        assertNull(multideviceMenuItem);
+      });
+
+      test('Should not call getPageContentData', async () => {
+        await createMenu();
+
+        const numGetPageContentDataCalls =
+            multideviceBrowserProxy.getCallCount('getPageContentData');
+        assertEquals(0, numGetPageContentDataCalls);
+      });
     });
 
     test('Default description shows for NO_ELIGIBLE_HOSTS status', async () => {
