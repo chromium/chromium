@@ -120,20 +120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Session.DialogShownCount.{FinalStatus}" units="count"
-    expires_after="2024-08-11">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Count of the number of times the Compose dialog was shown in a session where
-    {FinalStatus}. Recorded once per session when it is closed or destroyed.
-  </summary>
-  <token key="FinalStatus">
-    <variant name="Accepted" summary="the Compose response was inserted"/>
-    <variant name="Ignored" summary="the Compose response was ignored"/>
-  </token>
-</histogram>
-
 <histogram name="Compose.Session.Duration.OverOneDay" enum="BooleanYesNo"
     expires_after="2024-06-09">
   <owner>perrier@chromium.org</owner>
@@ -142,22 +128,6 @@ chromium-metrics-reviews@google.com.
     Wether or not the ComposeSession was open for more than one day. Recorded
     once per session when the session closes for any reason.
   </summary>
-</histogram>
-
-<histogram name="Compose.Session.Duration.{SessionType}" units="ms"
-    expires_after="2024-06-09">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    The length of a ComposeSession in ms that end {SessionType}. Recorded once
-    per session when the session closes for any reason.
-  </summary>
-  <token key="SessionType">
-    <variant name="FRE" summary="on the FRE dialog"/>
-    <variant name="Ignored" summary="without an insert"/>
-    <variant name="Inserted" summary="with an insert"/>
-    <variant name="MSBB" summary="on the MSBB dialog"/>
-  </token>
 </histogram>
 
 <histogram name="Compose.Session.EvalLocation"
@@ -318,6 +288,44 @@ chromium-metrics-reviews@google.com.
     <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram
+    name="Compose.{ComposeEvalLocation}Session.DialogShownCount.{FinalStatus}"
+    units="count" expires_after="2024-08-11">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of times the Compose dialog was shown in a session where
+    {FinalStatus}. Recorded once per session when it is closed or destroyed.
+    {ComposeEvalLocation} if a mix of Server and OnDevice requests were used for
+    this session, or no requests were made, then neither Server nor OnDevice
+    variant is recorded.
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+  <token key="FinalStatus">
+    <variant name="Accepted" summary="the Compose response was inserted"/>
+    <variant name="Ignored" summary="the Compose response was ignored"/>
+  </token>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Session.Duration.{SessionType}"
+    units="ms" expires_after="2024-06-09">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    The length of a ComposeSession in ms that end {SessionType}. Recorded once
+    per session when the session closes for any reason. {ComposeEvalLocation} If
+    a mix of Server and OnDevice requests were used for this session, or no
+    requests were made, then neither Server nor OnDevice variant is recorded.
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+  <token key="SessionType">
+    <variant name="FRE" summary="on the FRE dialog"/>
+    <variant name="Ignored" summary="without an insert"/>
+    <variant name="Inserted" summary="with an insert"/>
+    <variant name="MSBB" summary="on the MSBB dialog"/>
+  </token>
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Session.EventCounts"

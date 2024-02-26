@@ -336,6 +336,12 @@ void LogComposeMSBBSessionCloseReason(ComposeMSBBSessionCloseReason reason);
 void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
                                            int dialog_shown_count);
 
+SessionEvalLocation GetSessionEvalLocationFromEvents(
+    const ComposeSessionEvents& session_events);
+
+std::optional<EvalLocation> GetEvalLocationFromEvents(
+    const ComposeSessionEvents& session_events);
+
 // Log session based metrics when a session ends.
 // Should only be called once per session.
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
@@ -364,8 +370,10 @@ void LogComposeDialogOpenLatency(base::TimeDelta duration);
 void LogComposeDialogSelectionLength(int length);
 
 // Log the session duration with |session_suffix| applied to histogram name.
-void LogComposeSessionDuration(base::TimeDelta session_duration,
-                               std::string session_suffix = "");
+void LogComposeSessionDuration(
+    base::TimeDelta session_duration,
+    std::string session_suffix = "",
+    std::optional<EvalLocation> eval_location = std::nullopt);
 
 void LogComposeRequestFeedback(EvalLocation eval_location,
                                ComposeRequestFeedback feedback);

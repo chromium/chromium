@@ -305,29 +305,44 @@ void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
                                dialog_shown_count);
 }
 
-void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
-                                   const ComposeSessionEvents& session_events) {
-  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
-
-  SessionEvalLocation session_eval_location;
-  std::optional<EvalLocation> eval_location;
+SessionEvalLocation GetSessionEvalLocationFromEvents(
+    const ComposeSessionEvents& session_events) {
   if (session_events.server_responses == 0 &&
       session_events.on_device_responses == 0) {
-    session_eval_location = SessionEvalLocation::kNone;
+    return SessionEvalLocation::kNone;
   } else if (session_events.server_responses > 0 &&
              session_events.on_device_responses > 0) {
-    session_eval_location = SessionEvalLocation::kMixed;
+    return SessionEvalLocation::kMixed;
   } else if (session_events.server_responses > 0) {
-    eval_location = EvalLocation::kServer;
-    session_eval_location = SessionEvalLocation::kServer;
+    return SessionEvalLocation::kServer;
   } else {
-    eval_location = EvalLocation::kOnDevice;
-    session_eval_location = SessionEvalLocation::kOnDevice;
+    return SessionEvalLocation::kOnDevice;
   }
+}
 
+std::optional<EvalLocation> GetEvalLocationFromEvents(
+    const ComposeSessionEvents& session_events) {
+  switch (GetSessionEvalLocationFromEvents(session_events)) {
+    case SessionEvalLocation::kNone:
+    case SessionEvalLocation::kMixed:
+      return std::nullopt;
+    case SessionEvalLocation::kServer:
+      return EvalLocation::kServer;
+    case SessionEvalLocation::kOnDevice:
+      return EvalLocation::kOnDevice;
+  }
+}
+
+void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
+                                   const ComposeSessionEvents& session_events) {
+  SessionEvalLocation session_eval_location =
+      GetSessionEvalLocationFromEvents(session_events);
+  std::optional<EvalLocation> eval_location =
+      GetEvalLocationFromEvents(session_events);
   base::UmaHistogramEnumeration("Compose.Session.EvalLocation",
                                 session_eval_location);
 
+  base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
   if (eval_location) {
     base::UmaHistogramEnumeration(
         base::StrCat({"Compose.", EvalLocationString(*eval_location),
@@ -358,6 +373,13 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
 
   base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,
                                session_events.dialog_shown_count);
+  if (eval_location) {
+    base::UmaHistogramCounts1000(
+        base::StrCat({"Compose.", EvalLocationString(*eval_location),
+                      ".Session.DialogShownCount", status}),
+        session_events.dialog_shown_count);
+  }
+
   base::UmaHistogramCounts1000(kComposeSessionUndoCount + status,
                                session_events.undo_count);
   if (eval_location) {
@@ -436,9 +458,16 @@ void LogComposeDialogSelectionLength(int length) {
 }
 
 void LogComposeSessionDuration(base::TimeDelta session_duration,
-                               std::string session_suffix) {
+                               std::string session_suffix,
+                               std::optional<EvalLocation> eval_location) {
   base::UmaHistogramLongTimes100(kComposeSessionDuration + session_suffix,
                                  session_duration);
+  if (eval_location) {
+    base::UmaHistogramLongTimes100(
+        base::StrCat({"Compose.", EvalLocationString(*eval_location),
+                      ".Session.Duration", session_suffix}),
+        session_duration);
+  }
 
   if (session_duration.InDays() > 1) {
     base::UmaHistogramBoolean(kComposeSessionOverOneDay, true);

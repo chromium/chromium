@@ -227,6 +227,9 @@ ComposeSession::ComposeSession(
 }
 
 ComposeSession::~ComposeSession() {
+  std::optional<compose::EvalLocation> eval_location =
+      compose::GetEvalLocationFromEvents(session_events_);
+
   if (session_events_.fre_dialog_shown_count > 0 &&
       (!fre_complete_ || session_events_.fre_completed_in_session)) {
     compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
@@ -257,10 +260,10 @@ ComposeSession::~ComposeSession() {
 
   if (session_events_.inserted_results) {
     compose::LogComposeSessionDuration(session_duration_->Elapsed(),
-                                       ".Inserted");
+                                       ".Inserted", eval_location);
   } else {
-    compose::LogComposeSessionDuration(session_duration_->Elapsed(),
-                                       ".Ignored");
+    compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".Ignored",
+                                       eval_location);
   }
   if (close_reason_ == compose::ComposeSessionCloseReason::kEndedImplicitly) {
     base::RecordAction(
