@@ -25,7 +25,6 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -103,9 +102,7 @@ void EmbeddedPermissionPromptBaseView::CreateWidget() {
   DCHECK(browser_->window());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
-  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-    widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
-  }
+  widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
 }
 
 std::unique_ptr<views::FlexLayoutView>

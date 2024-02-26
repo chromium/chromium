@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
@@ -28,7 +27,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/tooltip_observer.h"
 
@@ -237,9 +235,6 @@ void TooltipAura::Update(aura::Window* window,
 void TooltipAura::Show() {
   if (widget_) {
     widget_->Show();
-
-    if (!base::FeatureList::IsEnabled(views::features::kWidgetLayering))
-      widget_->StackAtTop();
 
     widget_->GetTooltipView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTooltipOpened, true);

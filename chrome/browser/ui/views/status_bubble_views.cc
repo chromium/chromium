@@ -47,7 +47,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -743,11 +742,7 @@ void StatusBubbleViews::InitPopup() {
 #if !BUILDFLAG(IS_MAC)
     // Stack the popup above the base widget and below higher z-order windows.
     // This is unnecessary and even detrimental on Mac, see CreateBubbleWidget.
-    if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-      popup_->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
-    } else {
-      popup_->StackAboveWidget(frame);
-    }
+    popup_->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
 #endif
     RepositionPopup();
   }

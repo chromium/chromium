@@ -37,7 +37,6 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -71,54 +70,6 @@ GetMemoryPressureOverride() {
     }
   }
   return value;
-}
-
-// Fetches the Omnibox drop-down widget, or returns null if the drop-down is
-// not visible.
-void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
-  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-    widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
-    return;
-  }
-
-#if BUILDFLAG(IS_LINUX)
-  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
-  // by other secondary UI Widgets (such as the omnibox Widget, see
-  // crbug.com/1226536).
-  widget->StackAtTop();
-#else  // !BUILDFLAG(IS_LINUX)
-  // Hover card should always render above omnibox (see crbug.com/1272106).
-  if (!browser || !widget)
-    return;
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
-    return;
-  auto* const popup_view = browser_view->GetLocationBarView()
-                               ->omnibox_view()
-                               ->model()
-                               ->get_popup_view();
-  if (popup_view && popup_view->IsOpen()) {
-    widget->StackAboveWidget(
-        static_cast<OmniboxPopupViewViews*>(popup_view)->GetWidget());
-    return;
-  }
-
-  // Hover card should always render above help bubbles (see crbug.com/1309238).
-  if (browser_view->GetFeaturePromoController()) {
-    auto* const registry =
-        browser_view->GetFeaturePromoController()->bubble_factory_registry();
-    auto* const help_bubble =
-        registry->GetHelpBubble(browser_view->GetElementContext());
-    if (help_bubble && help_bubble->IsA<user_education::HelpBubbleViews>()) {
-      widget->StackAboveWidget(
-          help_bubble->AsA<user_education::HelpBubbleViews>()
-              ->bubble_view()
-              ->GetWidget());
-    }
-  }
-
-#endif  // !BUILDFLAG(IS_LINUX)
 }
 
 base::TimeDelta GetPreviewImageCaptureDelay(
@@ -454,7 +405,8 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
   UpdateCardContent(target_tab_);
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
-  FixWidgetStackOrder(hover_card_->GetWidget(), tab_strip_->GetBrowser());
+  hover_card_->GetWidget()->SetZOrderSublevel(
+      ChromeWidgetSublevel::kSublevelHoverable);
 
   if (!is_initial || !UseAnimations()) {
     OnCardFullyVisible();

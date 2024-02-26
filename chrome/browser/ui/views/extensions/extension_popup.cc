@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -23,7 +22,6 @@
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -364,11 +362,6 @@ ExtensionPopup::ExtensionPopup(
 
 void ExtensionPopup::ShowBubble() {
   GetWidget()->Show();
-  if (!base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-    // StackAboveWidget() stacks this widget *directly* above the anchor view
-    // widget. This prevents it from covering other UI.
-    GetWidget()->StackAboveWidget(GetAnchorView()->GetWidget());
-  }
 
   // Focus on the host contents when the bubble is first shown.
   host_->host_contents()->Focus();

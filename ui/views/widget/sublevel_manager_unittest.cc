@@ -10,11 +10,9 @@
 #include <tuple>
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/views_features.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -30,9 +28,7 @@ class SublevelManagerTest : public ViewsTestBase,
                                            WidgetShowType,
                                            Widget::InitParams::Activatable>> {
  public:
-  SublevelManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWidgetLayering);
-  }
+  SublevelManagerTest() = default;
 
   void SetUp() override {
     set_native_widget_type(
@@ -96,9 +92,6 @@ class SublevelManagerTest : public ViewsTestBase,
     }
     return test_name;
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Widgets should be stacked according to their sublevel regardless

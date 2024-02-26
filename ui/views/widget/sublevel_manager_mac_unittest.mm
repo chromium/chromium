@@ -13,11 +13,9 @@
 #include <utility>
 
 #include "base/mac/mac_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/views_features.h"
 
 namespace views {
 
@@ -28,9 +26,7 @@ class SublevelManagerMacTest
       public testing::WithParamInterface<
           std::tuple<WidgetShowType, Widget::InitParams::Activatable>> {
  public:
-  SublevelManagerMacTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWidgetLayering);
-  }
+  SublevelManagerMacTest() = default;
 
   std::unique_ptr<Widget> CreateChildWidget(
       Widget* parent,
@@ -79,9 +75,6 @@ class SublevelManagerMacTest
     }
     return test_name;
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Disabled widgets are ignored when its siblings are re-ordered.

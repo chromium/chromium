@@ -36,7 +36,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -195,9 +194,7 @@ void PermissionPromptBubbleBaseView::CreateWidget() {
                                kAllowButtonElementId);
   }
 
-  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-    widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
-  }
+  widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
 }
 
 void PermissionPromptBubbleBaseView::ShowWidget() {

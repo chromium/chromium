@@ -28,7 +28,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/views_features.h"
 
 namespace views {
 namespace {
@@ -122,14 +121,8 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
     bounds.AdjustToFit(work_area);
     widget->SetBounds(bounds);
   }
-  // Using BubbleDialogDelegateView engages its CreateBubbleWidget() which
-  // invokes widget->StackAbove(context). That causes the bubble to stack
-  // _immediately_ above |context|; below any already-existing bubbles. That
-  // doesn't make sense for a menu, so put it back on top.
-  if (base::FeatureList::IsEnabled(features::kWidgetLayering))
-    widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-  else
-    widget->StackAtTop();
+
+  widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
   widget->Show();
 }
 

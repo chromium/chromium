@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,7 +25,6 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/win/event_creation_utils.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/compositor/compositor.h"
@@ -43,7 +41,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/path_win.h"
 #include "ui/views/corewm/tooltip_aura.h"
-#include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
@@ -197,15 +194,11 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   InitHost();
   window()->Show();
 
-  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-    // Stack immedately above its parent so that it does not cover other
-    // root-level windows.
-    //
-    // With the exception of menus, to allow them to be displayed on
-    // top of other windows.
-    if (params.parent && params.type != views::Widget::InitParams::TYPE_MENU) {
-      StackAbove(params.parent);
-    }
+  // Stack immediately above its parent so that it does not cover other
+  // root-level windows, with the exception of menus, to allow them to be
+  // displayed on top of other windows.
+  if (params.parent && params.type != views::Widget::InitParams::TYPE_MENU) {
+    StackAbove(params.parent);
   }
 }
 

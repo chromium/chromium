@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/auto_reset.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -35,7 +34,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 class OmniboxPopupViewViews::AutocompletePopupWidget final
@@ -284,16 +282,6 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     popup_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
     popup_->SetPopupContentsView(this);
     popup_->AddObserver(this);
-
-    if (!base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-      popup_->StackAbove(omnibox_view_->GetRelativeWindowForPopup());
-      // For some IMEs GetRelativeWindowForPopup triggers the omnibox to lose
-      // focus, thereby closing (and destroying) the popup. TODO(sky): this
-      // won't be needed once we close the omnibox on input window showing.
-      if (!popup_) {
-        return;
-      }
-    }
 
     popup_created = true;
   }
