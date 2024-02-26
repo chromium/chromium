@@ -1678,11 +1678,6 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   ~PDFExtensionLinkClickTest() override = default;
 
  protected:
-  MimeHandlerViewGuest* LoadTestLinkPdfGetMimeHandlerView() {
-    return LoadPdfGetMimeHandlerView(
-        embedded_test_server()->GetURL("/pdf/test-link.pdf"));
-  }
-
   // The rectangle of the link in test-link.pdf is [72 706 164 719] in PDF user
   // space. To calculate a position inside this rectangle, several
   // transformations have to be applied:
@@ -1692,25 +1687,21 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   // [d] (82.5, 709.5) in PDF user space coordinates.
   // This performs the [a] to [b] transformation, since that is the coordinate
   // space with respect to guest that SimulateMouseClickAt() needs.
-  gfx::Point GetLinkPosition(MimeHandlerViewGuest* guest) {
-    return ConvertPageCoordToScreenCoord(guest->GetGuestMainFrame(),
-                                         {110, 110});
+  gfx::Point GetLinkPosition(content::RenderFrameHost* extension_host) {
+    return ConvertPageCoordToScreenCoord(extension_host, {110, 110});
   }
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(guest, kDefaultKeyModifier,
-                       blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
+                       kDefaultKeyModifier, blink::WebMouseEvent::Button::kLeft,
+                       GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
   int tab_count = browser()->tab_strip_model()->count();
@@ -1729,17 +1720,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, Middle) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(guest, 0, blink::WebMouseEvent::Button::kMiddle,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(), 0,
+                       blink::WebMouseEvent::Button::kMiddle,
+                       GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
   int tab_count = browser()->tab_strip_model()->count();
@@ -1758,19 +1747,17 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, Middle) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlShiftLeft) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   WebContents* web_contents = GetActiveWebContents();
 
   const int modifiers = blink::WebInputEvent::kShiftKey | kDefaultKeyModifier;
 
-  SimulateMouseClickAt(guest, modifiers, blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(), modifiers,
+                       blink::WebMouseEvent::Button::kLeft,
+                       GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
   int tab_count = browser()->tab_strip_model()->count();
@@ -1784,18 +1771,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlShiftLeft) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftMiddle) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(guest, blink::WebInputEvent::kShiftKey,
-                       blink::WebMouseEvent::Button::kMiddle,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(
+      extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
+      blink::WebMouseEvent::Button::kMiddle, GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
   int tab_count = browser()->tab_strip_model()->count();
@@ -1809,20 +1793,17 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftMiddle) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftLeft) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(guest, blink::WebInputEvent::kShiftKey,
-                       blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(
+      extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
+      blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
   Browser* browser = ui_test_utils::WaitForBrowserToOpen();
   ui_test_utils::WaitForBrowserSetLastActive(browser);
 
@@ -1841,11 +1822,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftLeft) {
 // click in the PDF opens a new tab. The main page handles the pageShow event
 // and updates the history state.
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Navigate to the main page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1861,15 +1837,17 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
   const GURL& current_url = web_contents->GetLastCommittedURL();
   ASSERT_EQ("/pdf/test-link.pdf", current_url.path());
 
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  ASSERT_TRUE(EnsureFullPagePDFHasLoadedWithValidFrameTree(web_contents));
+
+  content::RenderFrameHost* extension_host =
+      GetOnlyPdfExtensionHostEnsureValid();
+  ASSERT_TRUE(extension_host);
 
   // Now click on the link to example.com in the PDF. This should open up a new
   // tab.
-  MimeHandlerViewGuest* guest = MimeHandlerViewGuest::FromGuestViewBase(
-      GetGuestViewManager()->WaitForSingleGuestViewCreated());
-  SimulateMouseClickAt(guest, kDefaultKeyModifier,
-                       blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
+                       kDefaultKeyModifier, blink::WebMouseEvent::Button::kLeft,
+                       GetLinkPosition(extension_host));
 
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
@@ -1906,31 +1884,36 @@ class FailOnNavigation : public content::WebContentsObserver {
 }  // namespace
 
 // If the PDF viewer can't navigate the tab using a tab id, make sure it doesn't
-// try to navigate the mime handler extension's frame.
+// try to navigate the extension frame.
 // Regression test for https://crbug.com/1158381
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, LinkClickInPdfInNonTab) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // For ease of testing, we'll still load the PDF in a tab, but we clobber the
   // tab id in the viewer to make it think it's not in a tab.
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-link.pdf"));
+  ASSERT_TRUE(extension_host);
   ASSERT_TRUE(
-      content::ExecJs(guest->GetGuestMainFrame(),
+      content::ExecJs(extension_host,
                       "window.viewer.browserApi.getStreamInfo().tabId = "
                       "    chrome.tabs.TAB_ID_NONE;"));
 
-  FailOnNavigation fail_if_mimehandler_navigates(guest->web_contents());
-  SimulateMouseClickAt(guest, blink::WebInputEvent::kNoModifiers,
-                       blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(guest));
+  content::WebContents* target_contents = GetActiveWebContents();
+  if (!UseOopif()) {
+    MimeHandlerViewGuest* guest =
+        pdf_extension_test_util::GetOnlyMimeHandlerView(target_contents);
+    ASSERT_TRUE(guest);
+    target_contents = guest->web_contents();
+    EXPECT_NE(GetActiveWebContents(), target_contents);
+  }
 
-  // Since the guest contents is for a mime handling extension (in this case,
-  // the PDF viewer extension), it must not navigate away from the extension. If
-  // |fail_if_mimehandler_navigates| doesn't see a navigation, we consider the
+  FailOnNavigation fail_if_mimehandler_navigates(target_contents);
+  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
+                       blink::WebInputEvent::kNoModifiers,
+                       blink::WebMouseEvent::Button::kLeft,
+                       GetLinkPosition(extension_host));
+
+  // The PDF extension frame must not navigate away. If
+  // `fail_if_mimehandler_navigates` doesn't see a navigation, we consider the
   // test to have passed.
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
