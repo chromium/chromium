@@ -575,32 +575,6 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_SKIP_ENROLLMENT_DIALOG_GO_BACK_BUTTON);
   builder->Add("skipConfirmationSkipButton",
                IDS_SKIP_ENROLLMENT_DIALOG_SKIP_BUTTON);
-
-  /* Active Directory strings */
-  // TODO(b/280560446) Remove once references in HTML/JS are removed.
-  builder->Add("oauthEnrollAdMachineNameInput", IDS_AD_DEVICE_NAME_INPUT_LABEL);
-  builder->Add("oauthEnrollAdDomainJoinWelcomeMessage",
-               IDS_AD_DOMAIN_JOIN_WELCOME_MESSAGE);
-  builder->Add("adAuthLoginUsername", IDS_AD_AUTH_LOGIN_USER);
-  builder->Add("adLoginInvalidUsername", IDS_AD_INVALID_USERNAME);
-  builder->Add("adLoginPassword", IDS_AD_LOGIN_PASSWORD);
-  builder->Add("adLoginInvalidPassword", IDS_AD_INVALID_PASSWORD);
-  builder->Add("adJoinErrorMachineNameInvalid", IDS_AD_DEVICE_NAME_INVALID);
-  builder->Add("adJoinErrorMachineNameTooLong", IDS_AD_DEVICE_NAME_TOO_LONG);
-  builder->Add("adJoinErrorMachineNameInvalidFormat",
-               IDS_AD_DEVICE_NAME_INVALID_FORMAT);
-  builder->Add("adJoinMoreOptions", IDS_AD_MORE_OPTIONS_BUTTON);
-  builder->Add("adUnlockTitle", IDS_AD_UNLOCK_TITLE_MESSAGE);
-  builder->Add("adUnlockSubtitle", IDS_AD_UNLOCK_SUBTITLE_MESSAGE);
-  builder->Add("adUnlockPassword", IDS_AD_UNLOCK_CONFIG_PASSWORD);
-  builder->Add("adUnlockIncorrectPassword", IDS_AD_UNLOCK_INCORRECT_PASSWORD);
-  builder->Add("adUnlockPasswordSkip", IDS_AD_UNLOCK_PASSWORD_SKIP);
-  builder->Add("adJoinOrgUnit", IDS_AD_ORG_UNIT_HINT);
-  builder->Add("adJoinCancel", IDS_AD_CANCEL_BUTTON);
-  builder->Add("adJoinSave", IDS_AD_SAVE_BUTTON);
-  builder->Add("selectEncryption", IDS_AD_ENCRYPTION_SELECTION_SELECT);
-  builder->Add("selectConfiguration", IDS_AD_CONFIG_SELECTION_SELECT);
-  /* End of Active Directory strings */
 }
 
 void EnrollmentScreenHandler::DeclareJSCallbacks() {
@@ -621,21 +595,6 @@ void EnrollmentScreenHandler::DeclareJSCallbacks() {
               &EnrollmentScreenHandler::HandleOnLearnMore);
   AddCallback("getDeviceIdForEnrollment",
               &EnrollmentScreenHandler::HandleGetDeviceId);
-}
-
-void EnrollmentScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* parameters) {
-  // TODO(b/280560446) Remove this placeholder once
-  // chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.js
-  // is removed (currently, some tests still depend on this list to be
-  // non-empty).
-  parameters->Set(
-      "encryptionTypesList",
-      base::Value::List().Append(base::Value::Dict()
-                                     .Set("title", "some title")
-                                     .Set("subtitle", "some subtitle")
-                                     .Set("value", 42)
-                                     .Set("selected", false)));
 }
 
 bool EnrollmentScreenHandler::IsOnEnrollmentScreen() {

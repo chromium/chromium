@@ -30,9 +30,6 @@ enum class SigninError {
   kChallengeResponseAuthInvalidClientCert,
   kCookieWaitTimeout,
   kFailedToFetchSamlRedirect,
-  kActiveDirectoryNetworkProblem,
-  kActiveDirectoryNotSupportedEncryption,
-  kActiveDirectoryUnknownError,
 };
 
 // This class represents an interface between code that performs sign-in

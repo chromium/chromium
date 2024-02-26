@@ -630,19 +630,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
   builder->Add("samlChangeProviderButton",
                IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON);
 
-  builder->Add("adPassChangeOldPasswordHint",
-               IDS_AD_PASSWORD_CHANGE_OLD_PASSWORD_HINT);
-  builder->Add("adPassChangeNewPasswordHint",
-               IDS_AD_PASSWORD_CHANGE_NEW_PASSWORD_HINT);
-  builder->Add("adPassChangeRepeatNewPasswordHint",
-               IDS_AD_PASSWORD_CHANGE_REPEAT_NEW_PASSWORD_HINT);
-  builder->Add("adPassChangeOldPasswordError",
-               IDS_AD_PASSWORD_CHANGE_INVALID_PASSWORD_ERROR);
-  builder->Add("adPassChangeNewPasswordRejected",
-               IDS_AD_PASSWORD_CHANGE_NEW_PASSWORD_REJECTED_SHORT_ERROR);
-  builder->Add("adPassChangePasswordsMismatch",
-               IDS_AD_PASSWORD_CHANGE_PASSWORDS_MISMATCH_ERROR);
-
   builder->Add("securityTokenPinDialogTitle",
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_TITLE);
   builder->Add("securityTokenPinDialogSubtitle",

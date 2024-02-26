@@ -79,7 +79,6 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
-  void GetAdditionalParameters(base::Value::Dict* parameters) override;
 
   void ContinueAuthenticationWhenCookiesAvailable(const std::string& user,
                                                   int license_type);
