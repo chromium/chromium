@@ -5,67 +5,41 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_DISPLAY_ROTATION_OBSERVER_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_DISPLAY_ROTATION_OBSERVER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner.h"
-#include "ui/display/display.h"
-#include "ui/display/display_observer.h"
-#include "ui/display/screen.h"
+#include "base/functional/callback.h"
+#include "media/capture/video/chromeos/mojom/system_event_monitor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
-class DisplayRotationObserver {
+// ScreenObserverDelegate is used to observe screen rotation on
+// SystemEventMonitor. Its construction and destruction have to be on the ui
+// thread. If not, it will hit a CHECK failure because it breaks mojo's thread
+// safety.
+class ScreenObserverDelegate : public cros::mojom::CrosDisplayObserver {
  public:
-  virtual void SetInternalDisplayRotation(int rotation) = 0;
-};
+  using OnScreenRotationChangedCallback = base::RepeatingCallback<void(int)>;
 
-// Registers itself as an observer at |display::Screen::GetScreen()| and
-// forwards rotation change events to the given DisplayRotationObserver on the
-// thread where ScreenObserverDelegate was created.
-class ScreenObserverDelegate
-    : public display::DisplayObserver,
-      public base::RefCountedThreadSafe<ScreenObserverDelegate> {
- public:
-  static scoped_refptr<ScreenObserverDelegate> Create(
-      base::WeakPtr<DisplayRotationObserver> observer,
-      scoped_refptr<base::SingleThreadTaskRunner> display_task_runner);
+  // When rotation of the screen is changed,
+  // |on_screen_rotation_changed_callback| will be invoked on the ui thread.
+  explicit ScreenObserverDelegate(
+      OnScreenRotationChangedCallback on_screen_rotation_changed_callback);
+
+  ~ScreenObserverDelegate() override;
 
   ScreenObserverDelegate() = delete;
   ScreenObserverDelegate(const ScreenObserverDelegate&) = delete;
   ScreenObserverDelegate& operator=(const ScreenObserverDelegate&) = delete;
 
-  // The user must call RemoveObserver() to drop the reference to |observer_| in
-  // ScreenObserverDelegate before deleting |observer_|.
-  void RemoveObserver();
+  void OnDisplayRotationChanged(
+      cros::mojom::ClockwiseRotation rotation) override;
 
  private:
-  friend class base::RefCountedThreadSafe<ScreenObserverDelegate>;
+  OnScreenRotationChangedCallback on_screen_rotation_changed_callback_;
 
-  ScreenObserverDelegate(
-      base::WeakPtr<DisplayRotationObserver> observer,
-      scoped_refptr<base::SingleThreadTaskRunner> display_task_runner);
-  ~ScreenObserverDelegate() override;
+  mojo::Receiver<cros::mojom::CrosDisplayObserver> receiver_{this};
 
-  // DisplayObserver implementations.
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t metrics) override;
-
-  void AddObserverOnDisplayThread();
-  void RemoveObserverOnDisplayThread();
-
-  // Post the screen rotation change of the internal display from the display
-  // thread to capture thread.
-  void SendInternalDisplayRotation(int rotation);
-  void SendInternalDisplayRotationOnCaptureThread(int rotation);
-
-  base::WeakPtr<DisplayRotationObserver> observer_;
-
-  std::optional<display::ScopedDisplayObserver> display_observer_;
-
-  // The task runner where the calls to display::Display must be serialized on.
-  const scoped_refptr<base::SingleThreadTaskRunner> display_task_runner_;
-  // The task runner on which the ScreenObserverDelegate is created.
-  const scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner_;
+  mojo::Remote<cros::mojom::CrosSystemEventMonitor> monitor_;
 };
 
 }  // namespace media

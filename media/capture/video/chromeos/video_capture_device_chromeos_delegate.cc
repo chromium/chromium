@@ -165,12 +165,15 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
           base::MakeRefCounted<PowerManagerClientProxy>()) {
   power_manager_client_proxy_->Init(weak_ptr_factory_.GetWeakPtr(),
                                     capture_task_runner_, ui_task_runner);
-  screen_observer_delegate_ = ScreenObserverDelegate::Create(
-      weak_ptr_factory_.GetWeakPtr(), ui_task_runner);
+  screen_observer_delegate_ = base::SequenceBound<ScreenObserverDelegate>(
+      ui_task_runner,
+      base::BindPostTask(
+          capture_task_runner_,
+          base::BindRepeating(&VideoCaptureDeviceChromeOSDelegate::SetRotation,
+                              weak_ptr_factory_.GetWeakPtr())));
 }
 
 VideoCaptureDeviceChromeOSDelegate::~VideoCaptureDeviceChromeOSDelegate() {
-  screen_observer_delegate_->RemoveObserver();
   power_manager_client_proxy_->Shutdown();
   camera_hal_delegate_->DisableAllVirtualDevices();
 }
@@ -338,12 +341,6 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
 
   if (!unblock_suspend_token.is_empty())
     power_manager_client_proxy_->UnblockSuspend(unblock_suspend_token);
-}
-
-void VideoCaptureDeviceChromeOSDelegate::SetInternalDisplayRotation(
-    int rotation) {
-  DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  SetRotation(rotation);
 }
 
 void VideoCaptureDeviceChromeOSDelegate::SetRotation(int rotation) {
