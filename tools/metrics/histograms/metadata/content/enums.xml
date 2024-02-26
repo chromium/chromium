@@ -49,6 +49,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ContentNotificationPromptAction">
   <int value="0" label="Go to Settings tapped"/>
   <int value="1" label="No Thanks tapped"/>
+  <int value="2" label="Accepted tapped"/>
 </enum>
 
 <enum name="ContentNotificationSetUpListPromoAction">
