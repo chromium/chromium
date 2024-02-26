@@ -60,7 +60,7 @@ preprocess_if_expr("preprocess_conditional") {
   deps = [
     "components/oobe_vars:css_wrapper_files",
     "debug:web_components",
-    "test_api:copy_ts",
+    "test_api:copy_js",
   ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$oobe_preprocessed_folder"

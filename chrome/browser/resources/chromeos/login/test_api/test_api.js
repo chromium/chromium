@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrRadioGroupElement} from '//resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
-import {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {assert} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {assert} from '//resources/js/assert.js';
+import {$} from '//resources/ash/common/util.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeA11yOption} from '../components/oobe_a11y_option.js';
 import {Oobe} from '../cr_ui.js';
 
 /**
@@ -18,178 +16,161 @@ import {Oobe} from '../cr_ui.js';
 class TestElementApi {
   /**
    * Returns HTMLElement with $$ support.
+   * @return {HTMLElement}
    */
-  element(): HTMLElement {
+  element() {
     throw new Error('element() should be defined!');
   }
 
   /**
    * Returns whether the element is visible.
+   * @return {boolean}
    */
-  isVisible(): boolean {
+  isVisible() {
     return !this.element().hidden;
   }
 
   /**
    * Returns whether the element is enabled.
+   * @return {boolean}
    */
-  isEnabled(): boolean {
-    const el = this.element();
-    if ('disabled' in el) {
-      return !el.disabled;
-    }
-    return true;
+  isEnabled() {
+    return !this.element().disabled;
   }
 }
 
 class ScreenElementApi extends TestElementApi {
-  protected id: string;
-  protected nextButton: PolymerElementApi|undefined;
-
-  constructor(id: string) {
+  constructor(id) {
     super();
     this.id = id;
     this.nextButton = undefined;
   }
 
-  override element(): HTMLElement {
-    const el = document.getElementById(this.id);
-    assert(
-        el instanceof HTMLElement, this.id + ' should be a valid HTMLElement');
-    return el;
+  /** @override */
+  element() {
+    return $(this.id);
   }
 
   /**
    * Click on the primary action button ("Next" usually).
    */
-  clickNext(): void {
+  clickNext() {
     assert(this.nextButton);
     this.nextButton.click();
   }
 
   /**
    * Returns whether the screen should be skipped.
+   * @return {boolean}
    */
-  shouldSkip(): boolean {
+  shouldSkip() {
     return false;
   }
 }
 
 class PolymerElementApi extends TestElementApi {
-  private parent: TestElementApi;
-  private query: string;
-
-  constructor(parent: TestElementApi, query: string) {
+  constructor(parent, query) {
     super();
     this.parent = parent;
     this.query = query;
   }
 
-  override element(): HTMLElement {
-    const parentElement = this.parent.element();
-    assert(
-        parentElement instanceof HTMLElement,
-        'Parent must be a valid HTMLElement');
-    const polymerElement = parentElement.shadowRoot?.querySelector(this.query);
-    assert(
-        polymerElement instanceof HTMLElement,
-        this.query + ' should be a valid HTMLElement');
-    return polymerElement;
+  /** @override */
+  element() {
+    assert(this.parent.element());
+    return this.parent.element().shadowRoot.querySelector(this.query);
   }
 
   /**
    * Assert element is visible/enabled and click on the element.
    */
-  click(): void {
-    assert(this.isVisible(), 'Element must be visible before click');
-    assert(this.isEnabled(), 'Element must be enabled before click');
+  click() {
+    assert(this.isVisible());
+    assert(this.isEnabled());
     this.element().click();
   }
 }
 
 class TextFieldApi extends PolymerElementApi {
-  constructor(parent: TestElementApi, query: string) {
+  constructor(parent, query) {
     super(parent, query);
   }
 
   /**
    * Assert element is visible/enabled and fill in the element with a value.
+   * @param {string} value
    */
-  typeInto(value: string): void {
-    assert(this.isVisible(), 'Text field must be visible');
-    assert(this.isEnabled(), 'Text field must be enabled');
-    const el = this.element();
-    assert('value' in el);
-    el.value = value;
-    el.dispatchEvent(new Event('input'));
-    el.dispatchEvent(new Event('change'));
+  typeInto(value) {
+    assert(this.isVisible());
+    assert(this.isEnabled());
+    this.element().value = value;
+    this.element().dispatchEvent(new Event('input'));
+    this.element().dispatchEvent(new Event('change'));
   }
 }
 
-class HidDetectionScreenTester extends ScreenElementApi {
+class HIDDetectionScreenTester extends ScreenElementApi {
   constructor() {
     super('hid-detection');
     this.nextButton = new PolymerElementApi(this, '#hid-continue-button');
   }
 
   // Must be called to enable the next button
-  emulateDevicesConnected(): void {
+  emulateDevicesConnected() {
     chrome.send('OobeTestApi.emulateDevicesForTesting');
   }
 
-  touchscreenDetected(): boolean {
+  touchscreenDetected() {
     // Touchscreen entire row is only visible when touchscreen is detected.
     const touchscreenRow =
         new PolymerElementApi(this, '#hid-touchscreen-entry');
     return touchscreenRow.isVisible();
   }
 
-  mouseDetected(): boolean {
+  mouseDetected() {
     const mouseTickIcon = new PolymerElementApi(this, '#mouse-tick');
     return mouseTickIcon.isVisible();
   }
 
-  keyboardDetected(): boolean {
+  keyboardDetected() {
     const keyboardTickIcon = new PolymerElementApi(this, '#keyboard-tick');
     return keyboardTickIcon.isVisible();
   }
 
-  getKeyboardNotDetectedText(): string {
+  getKeyboardNotDetectedText() {
     return loadTimeData.getString('hidDetectionKeyboardSearching');
   }
 
-  getMouseNotDetectedText(): string {
+  getMouseNotDetectedText() {
     return loadTimeData.getString('hidDetectionMouseSearching');
   }
 
-  getUsbKeyboardDetectedText(): string {
+  getUsbKeyboardDetectedText() {
     return loadTimeData.getString('hidDetectionUSBKeyboardConnected');
   }
 
-  getPointingDeviceDetectedText(): string {
+  getPointingDeviceDetectedText() {
     return loadTimeData.getString('hidDetectionPointingDeviceConnected');
   }
 
-  getNextButtonName(): string {
+  getNextButtonName() {
     return loadTimeData.getString('hidDetectionContinue');
   }
 
-  canClickNext(): boolean {
-    assert(this.nextButton);
+  canClickNext() {
     return this.nextButton.isEnabled();
   }
 }
 
 class WelcomeScreenTester extends ScreenElementApi {
-  private demoModeConfirmationDialog: PolymerElementApi;
-
   constructor() {
     super('connect');
     this.demoModeConfirmationDialog =
         new PolymerElementApi(this, '#demoModeConfirmationDialog');
   }
 
-  override clickNext(): void {
+  /** @override */
+  clickNext() {
     if (!this.nextButton) {
       const mainStep = new PolymerElementApi(this, '#welcomeScreen');
       this.nextButton = new PolymerElementApi(mainStep, '#getStarted');
@@ -198,8 +179,7 @@ class WelcomeScreenTester extends ScreenElementApi {
     assert(this.nextButton);
     this.nextButton.click();
   }
-
-  getDemoModeOkButtonName(): string {
+  getDemoModeOkButtonName() {
     return loadTimeData.getString('enableDemoModeDialogConfirm');
   }
 }
@@ -210,7 +190,8 @@ class NetworkScreenTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipNetworkFirstShow');
   }
 }
@@ -228,11 +209,6 @@ class EnrollmentScreenTester extends ScreenElementApi {
 }
 
 class UserCreationScreenTester extends ScreenElementApi {
-  private personalCrButton: PolymerElementApi;
-  private enrollCrButton: PolymerElementApi;
-  private enrollTriageCrButton: PolymerElementApi;
-  private enrollNextButton: PolymerElementApi;
-
   constructor() {
     super('user-creation');
     this.personalCrButton = new PolymerElementApi(this, '#selfButton');
@@ -247,37 +223,33 @@ class UserCreationScreenTester extends ScreenElementApi {
   /**
    * Presses enroll device button to select it in enroll triage step.
    */
-  selectEnrollTriageButton(): void {
+  selectEnrollTriageButton() {
     this.enrollTriageCrButton.click();
   }
 
   /**
    * Presses for personal use button to select it.
    */
-  selectPersonalUser(): void {
+  selectPersonalUser() {
     this.personalCrButton.click();
   }
 
   /**
    * Presses for work button to select it.
    */
-  selectForWork(): void {
+  selectForWork() {
     this.enrollCrButton.click();
   }
 
   /**
    * Presses next button in enroll-triage step.
    */
-  clickEnrollNextButton(): void {
+  clickEnrollNextButton() {
     this.enrollNextButton.click();
   }
 }
 
 class GaiaScreenTester extends ScreenElementApi {
-  private signinFrame: PolymerElementApi;
-  private gaiaDialog: PolymerElementApi;
-  private gaiaLoading: PolymerElementApi;
-
   constructor() {
     super('gaia-signin');
     this.signinFrame = new PolymerElementApi(this, '#signin-frame-dialog');
@@ -287,8 +259,9 @@ class GaiaScreenTester extends ScreenElementApi {
 
   /**
    * Returns if the Gaia Screen is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return (
         this.isVisible() && !this.gaiaLoading.isVisible() &&
         this.signinFrame.isVisible() && this.gaiaDialog.isVisible());
@@ -296,8 +269,6 @@ class GaiaScreenTester extends ScreenElementApi {
 }
 
 class SyncScreenTester extends ScreenElementApi {
-  private loadedStep: PolymerElementApi;
-
   constructor() {
     super('sync-consent');
     this.loadedStep = new PolymerElementApi(this, '#syncConsentOverviewDialog');
@@ -305,8 +276,9 @@ class SyncScreenTester extends ScreenElementApi {
 
   /**
    * Returns if the Sync Consent Screen is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible() && this.loadedStep.isVisible();
   }
 }
@@ -315,17 +287,13 @@ class FingerprintScreenTester extends ScreenElementApi {
   constructor() {
     super('fingerprint-setup');
   }
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return !loadTimeData.getBoolean('testapi_isFingerprintSupported');
   }
 }
 
 class AssistantScreenTester extends ScreenElementApi {
-  private mainElement: PolymerElementApi;
-  private valueProp: PolymerElementApi;
-  private valuePropSkipButtonText: PolymerElementApi;
-  private relatedInfo: PolymerElementApi;
-
   constructor() {
     super('assistant-optin-flow');
     this.mainElement = new PolymerElementApi(this, '#card');
@@ -334,43 +302,38 @@ class AssistantScreenTester extends ScreenElementApi {
         new PolymerElementApi(this.valueProp, '#skip-button-text');
     this.relatedInfo = new PolymerElementApi(this.mainElement, '#relatedInfo');
   }
-
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipAssistant');
   }
 
   /**
    * Returns if the assistant screen is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return (
         this.isVisible() &&
         (this.valueProp.isVisible() || this.relatedInfo.isVisible()));
   }
 
-  getSkipButtonName(): string {
+  getSkipButtonName() {
     if (this.valueProp.isVisible()) {
-      const valuePropSkipButton = this.valuePropSkipButtonText.element();
-      return valuePropSkipButton.textContent ? valuePropSkipButton.textContent :
-                                               '';
+      return this.valuePropSkipButtonText.element().textContent;
     }
     return loadTimeData.getString('assistantOptinNoThanksButton');
   }
 
   /**
    * Returns whether we currently show existing user flow.
+   * @returns {boolean}
    */
-  isPreviousUserFlowShown(): boolean {
+  isPreviousUserFlowShown() {
     return this.relatedInfo.isVisible();
   }
 }
 
 class MarketingOptInScreenTester extends ScreenElementApi {
-  private accessibilityButton: PolymerElementApi;
-  private accessibilityStep: PolymerElementApi;
-  private accessibilityToggle: PolymerElementApi;
-  private marketingOptInGameDeviceTitle: PolymerElementApi;
-
   constructor() {
     super('marketing-opt-in');
     this.accessibilityButton =
@@ -382,77 +345,77 @@ class MarketingOptInScreenTester extends ScreenElementApi {
     this.marketingOptInGameDeviceTitle =
         new PolymerElementApi(this, '#marketingOptInGameDeviceTitle');
   }
-
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return !loadTimeData.getBoolean('testapi_isBrandedBuild');
   }
 
   /**
    * Returns whether accessibility step is shown.
+   * @returns {boolean}
    */
-  isAccessibilityStepReadyForTesting(): boolean {
+  isAccessibilityStepReadyForTesting() {
     return this.accessibilityStep.isVisible();
   }
 
   /**
    * Returns whether a11y button is visible on the marketing-opt-in screen.
+   * @returns {boolean}
    */
-  isAccessibilityButtonVisible(): boolean {
+  isAccessibilityButtonVisible() {
     return this.accessibilityButton.isVisible();
   }
 
   /**
    * Returns whether a11y toggle is on.
+   * @returns {boolean}
    */
-  isAccessibilityToggleOn(): boolean {
-    const accessibilityToggle = this.accessibilityToggle.element();
-    assert(accessibilityToggle instanceof OobeA11yOption);
-    return accessibilityToggle.checked;
+  isAccessibilityToggleOn() {
+    return this.accessibilityToggle.element().checked;
   }
 
   /**
    * Returns whether gaming-specific title is visible.
+   * @returns {boolean}
    */
-  isMarketingOptInGameDeviceTitleVisible(): boolean {
+  isMarketingOptInGameDeviceTitleVisible() {
     return this.marketingOptInGameDeviceTitle.isVisible();
   }
 
   /**
    * Returns a11y button name.
+   * @returns {string}
    */
-  getAccessibilityButtonName(): string {
+  getAccessibilityButtonName() {
     return loadTimeData.getString('marketingOptInA11yButtonLabel');
   }
 
   /**
    * Returns name of Done button on a11y page.
+   * @returns {string}
    */
-  getAccessibilityDoneButtonName(): string {
+  getAccessibilityDoneButtonName() {
     return loadTimeData.getString('finalA11yPageDoneButtonTitle');
   }
 
   /**
    * Returns name of Get Started button.
+   * @returns {string}
    */
-  getGetStartedButtonName(): string {
+  getGetStartedButtonName() {
     return loadTimeData.getString('marketingOptInScreenAllSet');
   }
 
   /**
    * Returns gaming-specific title.
+   * @returns {string}
    */
-  getCloudGamingDeviceTitle(): string {
+  getCloudGamingDeviceTitle() {
     return loadTimeData.getString('marketingOptInScreenGameDeviceTitle');
   }
 }
 
 class ThemeSelectionScreenTester extends ScreenElementApi {
-  private themeRadioButton: PolymerElementApi;
-  private lightThemeButton: PolymerElementApi;
-  private darkThemeButton: PolymerElementApi;
-  private autoThemeButton: PolymerElementApi;
-  private textHeader: PolymerElementApi;
-
   constructor() {
     super('theme-selection');
     this.themeRadioButton = new PolymerElementApi(this, '#theme');
@@ -464,8 +427,9 @@ class ThemeSelectionScreenTester extends ScreenElementApi {
 
   /**
    * Returns if the Theme Selection Screen is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return (
         this.isVisible() && this.lightThemeButton.isVisible() &&
         this.darkThemeButton.isVisible() && this.autoThemeButton.isVisible());
@@ -474,46 +438,43 @@ class ThemeSelectionScreenTester extends ScreenElementApi {
   /**
    * Presses light theme button to select it.
    */
-  selectLightTheme(): void {
+  selectLightTheme() {
     this.lightThemeButton.click();
   }
 
   /**
    * Presses dark theme button to select it.
    */
-  selectDarkTheme(): void {
+  selectDarkTheme() {
     this.darkThemeButton.click();
   }
 
   /**
    * Presses auto theme button to select it.
    */
-  selectAutoTheme(): void {
+  selectAutoTheme() {
     this.autoThemeButton.click();
   }
 
   /**
    * Finds which theme is selected.
+   * @returns {string}
    */
-  getNameOfSelectedTheme(): string {
-    const themeRadioButton = this.themeRadioButton.element();
-    assert(themeRadioButton instanceof CrRadioGroupElement);
-    return themeRadioButton.selected;
+  getNameOfSelectedTheme() {
+    return this.themeRadioButton.element().selected;
   }
 
   /**
    * Retrieves computed color of the screen header. This value will be used to
    * determine screen's color mode.
+   * @returns {string}
    */
-  getHeaderTextColor(): string {
+  getHeaderTextColor() {
     return window.getComputedStyle(this.textHeader.element()).color;
   }
 }
 
 class ConfirmSamlPasswordScreenTester extends ScreenElementApi {
-  private passwordInput: TextFieldApi;
-  private confirmPasswordInput: TextFieldApi;
-
   constructor() {
     super('saml-confirm-password');
     this.passwordInput = new TextFieldApi(this, '#passwordInput');
@@ -523,8 +484,9 @@ class ConfirmSamlPasswordScreenTester extends ScreenElementApi {
 
   /**
    * Enter password input fields with password value and submit the form.
+   * @param {string} password
    */
-  enterManualPasswords(password: string) {
+  enterManualPasswords(password) {
     this.passwordInput.typeInto(password);
     afterNextRender(assert(this.element()), () => {
       this.confirmPasswordInput.typeInto(password);
@@ -536,12 +498,6 @@ class ConfirmSamlPasswordScreenTester extends ScreenElementApi {
 }
 
 class PinSetupScreenTester extends ScreenElementApi {
-  private skipButton: PolymerElementApi;
-  private doneButton: PolymerElementApi;
-  private backButton: PolymerElementApi;
-  private pinField: TextFieldApi;
-  private pinButtons: Record<string, PolymerElementApi>;
-
   constructor() {
     super('pin-setup');
     this.skipButton = new PolymerElementApi(this, '#setupSkipButton');
@@ -560,35 +516,35 @@ class PinSetupScreenTester extends ScreenElementApi {
 
   /**
    * Enter PIN into PINKeyboard input field, without submitting.
+   * @param {string} pin
    */
-  enterPin(pin: string): void {
+  enterPin(pin) {
     this.pinField.typeInto(pin);
   }
 
   /**
    * Presses a single digit button in the PIN keyboard.
-   * @param digit String with single digit to be clicked on.
+   * @param {string} digit String with single digit to be clicked on.
    */
-  pressPinDigit(digit: string): void {
+  pressPinDigit(digit) {
     this.pinButtons[digit].click();
   }
 
   /**
+   * @return {string}
    */
-  getSkipButtonName(): string {
+  getSkipButtonName() {
     return loadTimeData.getString('discoverPinSetupSkip');
   }
 
-  isInTabletMode(): boolean {
+  /** @return {boolean} */
+  isInTabletMode() {
     return loadTimeData.getBoolean('testapi_isOobeInTabletMode');
   }
 }
 
 class EnrollmentSignInStep extends PolymerElementApi {
-  private signInFrame: PolymerElementApi;
-  private nextButton: PolymerElementApi;
-
-  constructor(parent: ScreenElementApi) {
+  constructor(parent) {
     super(parent, '#step-signin');
     this.signInFrame = new PolymerElementApi(this, '#signin-frame');
     this.nextButton = new PolymerElementApi(this, '#primary-action-button');
@@ -596,8 +552,9 @@ class EnrollmentSignInStep extends PolymerElementApi {
 
   /**
    * Returns if the Enrollment Signing step is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return (
         this.isVisible() && this.signInFrame.isVisible() &&
         this.nextButton.isVisible());
@@ -605,47 +562,41 @@ class EnrollmentSignInStep extends PolymerElementApi {
 }
 
 class EnrollmentAttributeStep extends PolymerElementApi {
-  private skipButton: PolymerElementApi;
-
-  constructor(parent: ScreenElementApi) {
+  constructor(parent) {
     super(parent, '#step-attribute-prompt');
     this.skipButton = new PolymerElementApi(parent, '#attributesSkip');
   }
 
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible() && this.skipButton.isVisible();
   }
 
-  clickSkip(): void {
-    this.skipButton.click();
+  clickSkip() {
+    return this.skipButton.click();
   }
 }
 
 class EnrollmentSuccessStep extends PolymerElementApi {
-  private nextButton: PolymerElementApi;
-
-  constructor(parent: ScreenElementApi) {
+  constructor(parent) {
     super(parent, '#step-success');
     this.nextButton = new PolymerElementApi(parent, '#successDoneButton');
   }
 
   /**
    * Returns if the Enrollment Success step is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible() && this.nextButton.isVisible();
   }
 
-  clickNext(): void {
+  clickNext() {
     this.nextButton.click();
   }
 }
 
 class EnrollmentErrorStep extends PolymerElementApi {
-  private retryButton: PolymerElementApi;
-  private errorMsgContainer: PolymerElementApi;
-
-  constructor(parent: ScreenElementApi) {
+  constructor(parent) {
     super(parent, '#step-error');
     this.retryButton = new PolymerElementApi(parent, '#errorRetryButton');
     this.errorMsgContainer = new PolymerElementApi(parent, '#errorMsg');
@@ -653,42 +604,39 @@ class EnrollmentErrorStep extends PolymerElementApi {
 
   /**
    * Returns if the Enrollment Error step is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible() && this.errorMsgContainer.isVisible();
   }
 
   /**
    * Returns if enterprise enrollment can be retried.
+   * @return {boolean}
    */
-  canRetryEnrollment(): boolean {
+  canRetryEnrollment() {
     return this.retryButton.isVisible() && this.retryButton.isEnabled();
   }
 
   /**
    * Click the Retry button on the enrollment error screen.
    */
-  clickRetryButton(): void {
+  clickRetryButton() {
     assert(this.canRetryEnrollment());
     this.retryButton.click();
   }
 
   /**
    * Returns the error text shown on the enrollment error screen.
+   * @return {string}
    */
-  getErrorMsg(): string {
+  getErrorMsg() {
     assert(this.isReadyForTesting());
     return this.errorMsgContainer.element().innerText;
   }
 }
 
 class EnterpriseEnrollmentScreenTester extends ScreenElementApi {
-  private signInStep: EnrollmentSignInStep;
-  private attributeStep: EnrollmentAttributeStep;
-  private successStep: EnrollmentSuccessStep;
-  private errorStep: EnrollmentErrorStep;
-  private enrollmentInProgressDlg: PolymerElementApi;
-
   constructor() {
     super('enterprise-enrollment');
     this.signInStep = new EnrollmentSignInStep(this);
@@ -700,8 +648,9 @@ class EnterpriseEnrollmentScreenTester extends ScreenElementApi {
 
   /**
    * Returns if enrollment is in progress.
+   * @return {boolean}
    */
-  isEnrollmentInProgress(): boolean {
+  isEnrollmentInProgress() {
     return this.enrollmentInProgressDlg.isVisible();
   }
 }
@@ -714,39 +663,38 @@ class OfflineLoginScreenTester extends ScreenElementApi {
 
   /**
    * Returns if the Offline Login Screen is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
-    return this.isVisible() && this.nextButton !== undefined &&
-        this.nextButton.isVisible();
+  isReadyForTesting() {
+    return this.isVisible() && this.nextButton.isVisible();
   }
 
   /**
    * Returns the email field name on the Offline Login Screen.
+   * @return {string}
    */
-  getEmailFieldName(): string {
+  getEmailFieldName() {
     return loadTimeData.getString('offlineLoginEmail');
   }
 
   /**
    * Returns the password field name on the Offline Login Screen.
+   * @return {string}
    */
-  getPasswordFieldName(): string {
+  getPasswordFieldName() {
     return loadTimeData.getString('offlineLoginPassword');
   }
 
   /**
    * Returns the next button name on the Offline Login Screen.
+   * @return {string}
    */
-  getNextButtonName(): string {
+  getNextButtonName() {
     return loadTimeData.getString('offlineLoginNextBtn');
   }
 }
 
 class ErrorScreenTester extends ScreenElementApi {
-  private offlineLink: PolymerElementApi;
-  private errorTitle: PolymerElementApi;
-  private errorSubtitle: PolymerElementApi;
-
   constructor() {
     super('error-message');
     this.offlineLink = new PolymerElementApi(this, '#error-offline-login-link');
@@ -756,23 +704,26 @@ class ErrorScreenTester extends ScreenElementApi {
 
   /**
    * Returns if the Error Screen is ready for test interaction.
+   * @return {boolean}
    */
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible();
   }
 
   /**
    *
    * Returns if offline link is visible.
+   * @return {boolean}
    */
-  isOfflineLinkVisible(): boolean {
+  isOfflineLinkVisible() {
     return this.offlineLink.isVisible();
   }
 
   /**
    * Returns error screen message title.
+   * @return {string}
    */
-  getErrorTitle(): string {
+  getErrorTitle() {
     // If screen is not visible always return empty title.
     if (!this.isVisible()) {
       return '';
@@ -783,8 +734,9 @@ class ErrorScreenTester extends ScreenElementApi {
 
   /**
    * Returns error screen subtitle. Includes all visible error messages.
+   * @return {string}
    */
-  getErrorReasons(): string {
+  getErrorReasons() {
     // If screen is not visible always return empty reasons.
     if (!this.isVisible()) {
       return '';
@@ -796,8 +748,8 @@ class ErrorScreenTester extends ScreenElementApi {
   /**
    * Click the sign in as an existing user Link.
    */
-  clickSignInAsExistingUserLink(): void {
-    this.offlineLink.click();
+  clickSignInAsExistingUserLink() {
+    return this.offlineLink.click();
   }
 }
 
@@ -806,18 +758,12 @@ class DemoPreferencesScreenTester extends ScreenElementApi {
     super('demo-preferences');
   }
 
-  getDemoPreferencesNextButtonName(): string {
+  getDemoPreferencesNextButtonName() {
     return loadTimeData.getString('demoPreferencesNextButtonLabel');
   }
 }
 
 class GuestTosScreenTester extends ScreenElementApi {
-  private loadedStep: PolymerElementApi;
-  private googleEulaDialog: PolymerElementApi;
-  private crosEulaDialog: PolymerElementApi;
-  private googleEulaDialogLink: PolymerElementApi;
-  private crosEulaDialogLink: PolymerElementApi;
-
   constructor() {
     super('guest-tos');
     this.loadedStep = new PolymerElementApi(this, '#loaded');
@@ -830,40 +776,44 @@ class GuestTosScreenTester extends ScreenElementApi {
     this.crosEulaDialogLink = new PolymerElementApi(this, '#crosEulaLink');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipGuestTos');
   }
 
-  isReadyForTesting(): boolean {
+  /** @return {boolean} */
+  isReadyForTesting() {
     return this.isVisible() && this.loadedStep.isVisible();
   }
 
-  getNextButtonName(): string {
+  /** @return {string} */
+  getNextButtonName() {
     return loadTimeData.getString('guestTosAccept');
   }
 
-  getEulaButtonName(): string {
+  /** @return {string} */
+  getEulaButtonName() {
     return loadTimeData.getString('guestTosOk');
   }
 
-  isGoogleEulaDialogShown(): boolean {
+  /** @return {boolean} */
+  isGoogleEulaDialogShown() {
     return this.googleEulaDialog.isVisible();
   }
 
-  isCrosEulaDialogShown(): boolean {
+  /** @return {boolean} */
+  isCrosEulaDialogShown() {
     return this.crosEulaDialog.isVisible();
   }
 
-  getGoogleEulaLinkName(): string {
-    const googleEulaLink = this.googleEulaDialogLink.element();
-    assert(googleEulaLink instanceof HTMLAnchorElement);
-    return googleEulaLink.text.trim();
+  /** @return {string} */
+  getGoogleEulaLinkName() {
+    return this.googleEulaDialogLink.element().text.trim();
   }
 
-  getCrosEulaLinkName(): string {
-    const crosEulaLink = this.crosEulaDialogLink.element();
-    assert(crosEulaLink instanceof HTMLAnchorElement);
-    return crosEulaLink.text.trim();
+  /** @return {string} */
+  getCrosEulaLinkName() {
+    return this.crosEulaDialogLink.element().text.trim();
   }
 }
 
@@ -872,28 +822,18 @@ class GestureNavigationScreenTester extends ScreenElementApi {
     super('gesture-navigation');
   }
 
-  getNextButtonName(): string {
+  /** @return {string} */
+  getNextButtonName() {
     return loadTimeData.getString('gestureNavigationIntroNextButton');
   }
 
-  getSkipButtonName(): string {
+  /** @return {string} */
+  getSkipButtonName() {
     return loadTimeData.getString('gestureNavigationIntroSkipButton');
   }
 }
 
 class ConsolidatedConsentScreenTester extends ScreenElementApi {
-  private loadedStep: PolymerElementApi;
-  private readMoreButton: PolymerElementApi;
-  private recoveryToggle: PolymerElementApi;
-  private googleEulaDialog: PolymerElementApi;
-  private crosEulaDialog: PolymerElementApi;
-  private arcTosDialog: PolymerElementApi;
-  private privacyPolicyDialog: PolymerElementApi;
-  private googleEulaLink: PolymerElementApi;
-  private crosEulaLink: PolymerElementApi;
-  private arcTosLink: PolymerElementApi;
-  private privacyPolicyLink: PolymerElementApi;
-
   constructor() {
     super('consolidated-consent');
     this.loadedStep = new PolymerElementApi(this, '#loadedDialog');
@@ -914,24 +854,28 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
     this.privacyPolicyLink = new PolymerElementApi(this, '#privacyPolicyLink');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipConsolidatedConsent');
   }
 
-  isReadyForTesting(): boolean {
+  /** @return {boolean} */
+  isReadyForTesting() {
     return this.isVisible() && this.loadedStep.isVisible();
   }
 
-  isReadMoreButtonShown(): boolean {
+  /** @return {boolean} */
+  isReadMoreButtonShown() {
     // The read more button is inside a <dom-if> element, if it's hidden, the
     // element would be removed entirely from dom, so we need to check if the
     // element exists before checking if it's visible.
     return (
-        this.readMoreButton.element() !== null &&
+        this.readMoreButton.element() != null &&
         this.readMoreButton.isVisible());
   }
 
-  getNextButtonName(): string {
+  /** @return {string} */
+  getNextButtonName() {
     return loadTimeData.getString('consolidatedConsentAcceptAndContinue');
   }
 
@@ -939,81 +883,81 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
    * Enable the toggle which controls whether the user opted-in the the
    * cryptohome recovery feature.
    */
-  enableRecoveryToggle(): void {
-    const recoveryToggle = this.recoveryToggle.element();
-    assert(recoveryToggle instanceof CrToggleElement);
-    recoveryToggle.checked = true;
+  enableRecoveryToggle() {
+    this.recoveryToggle.element().checked = true;
   }
 
-  getEulaOkButtonName(): string {
+  /** @return {string} */
+  getEulaOkButtonName() {
     return loadTimeData.getString('consolidatedConsentOK');
   }
 
-  isGoogleEulaDialogShown(): boolean {
+  /** @return {boolean} */
+  isGoogleEulaDialogShown() {
     return this.googleEulaDialog.isVisible();
   }
 
-  isCrosEulaDialogShown(): boolean {
+  /** @return {boolean} */
+  isCrosEulaDialogShown() {
     return this.crosEulaDialog.isVisible();
   }
 
-  isArcTosDialogShown(): boolean {
+  /** @return {boolean} */
+  isArcTosDialogShown() {
     return this.arcTosDialog.isVisible();
   }
 
-  isPrivacyPolicyDialogShown(): boolean {
+  /** @return {boolean} */
+  isPrivacyPolicyDialogShown() {
     return this.privacyPolicyDialog.isVisible();
   }
 
-  getGoogleEulaLinkName(): string {
-    const googleEulaLink = this.googleEulaLink.element();
-    assert(googleEulaLink instanceof HTMLAnchorElement);
-    return googleEulaLink.text.trim();
+  /** @return {string} */
+  getGoogleEulaLinkName() {
+    return this.googleEulaLink.element().text.trim();
   }
 
-  getCrosEulaLinkName(): string {
-    const crosEulaLink = this.crosEulaLink.element();
-    assert(crosEulaLink instanceof HTMLAnchorElement);
-    return crosEulaLink.text.trim();
+  /** @return {string} */
+  getCrosEulaLinkName() {
+    return this.crosEulaLink.element().text.trim();
   }
 
-  getArcTosLinkName(): string {
-    const arcTosLink = this.arcTosLink.element();
-    assert(arcTosLink instanceof HTMLAnchorElement);
-    return arcTosLink.text.trim();
+  /** @return {string} */
+  getArcTosLinkName() {
+    return this.arcTosLink.element().text.trim();
   }
 
-  getPrivacyPolicyLinkName(): string {
-    const privacyPolicyLink = this.privacyPolicyLink.element();
-    assert(privacyPolicyLink instanceof HTMLAnchorElement);
-    return privacyPolicyLink.text.trim();
+  /** @return {string} */
+  getPrivacyPolicyLinkName() {
+    return this.privacyPolicyLink.element().text.trim();
   }
 
   /**
    * Click `accept` button to go to the next screen.
    */
-  clickAcceptButton(): void {
-    assert(this.nextButton);
+  clickAcceptButton() {
     this.nextButton.element().click();
   }
 }
 
 class SmartPrivacyProtectionScreenTester extends ScreenElementApi {
-  private noThanks: PolymerElementApi;
   constructor() {
     super('smart-privacy-protection');
     this.noThanks = new PolymerElementApi(this, '#noThanksButton');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return !loadTimeData.getBoolean('testapi_isHPSEnabled');
   }
 
-  isReadyForTesting(): boolean {
+  /** @return {boolean} */
+  isReadyForTesting() {
     return this.isVisible() && this.noThanks.isVisible();
   }
 
-  getNoThanksButtonName(): string {
+  /** @return {string} */
+  getNoThanksButtonName() {
     return loadTimeData.getString('smartPrivacyProtectionTurnOffButton');
   }
 }
@@ -1025,10 +969,6 @@ class CryptohomeRecoverySetupScreenTester extends ScreenElementApi {
 }
 
 class LocalPasswordSetupScreenTester extends ScreenElementApi {
-  private passwordInput: PolymerElementApi;
-  private firstInput: TextFieldApi;
-  private confirmInput: TextFieldApi;
-
   constructor() {
     super('local-password-setup');
     this.passwordInput = new PolymerElementApi(this, '#passwordInput');
@@ -1037,17 +977,17 @@ class LocalPasswordSetupScreenTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 
-  isReadyForTesting(): boolean {
+  /** @return {boolean} */
+  isReadyForTesting() {
     return this.isVisible() && this.firstInput.isVisible() &&
         this.confirmInput.isVisible();
   }
 
-  enterPassword(password: string): void {
+  enterPassword(password) {
     this.firstInput.typeInto(password);
     afterNextRender(assert(this.element()), () => {
       this.confirmInput.typeInto(password);
       afterNextRender(assert(this.element()), () => {
-        assert(this.nextButton);
         this.nextButton.click();
       });
     });
@@ -1055,26 +995,24 @@ class LocalPasswordSetupScreenTester extends ScreenElementApi {
 }
 
 class PasswordFactorSuccessScreenTester extends ScreenElementApi {
-  private doneButton: PolymerElementApi;
-
   constructor() {
     super('factor-setup-success');
     this.doneButton = new PolymerElementApi(this, '#doneButton');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 
-  isDone(): boolean {
-    assert(this.nextButton);
+  /** @return {boolean} */
+  isDone() {
     return this.isVisible() &&
         (this.doneButton.isVisible() || this.nextButton.isVisible());
   }
 
-  clickDone(): void {
+  clickDone() {
     if (this.doneButton.isVisible()) {
       this.doneButton.click();
       return;
     }
-    if (this.nextButton && this.nextButton.isVisible()) {
+    if (this.nextButton.isVisible()) {
       this.nextButton.click();
     }
   }
@@ -1086,32 +1024,24 @@ class GaiaInfoScreenTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipGaiaInfoScreen');
   }
 }
 
 class ConsumerUpdateScreenTester extends ScreenElementApi {
-  private skipButton: PolymerElementApi;
-
   constructor() {
     super('consumer-update');
     this.skipButton = new PolymerElementApi(this, '#skipButton');
   }
 
-  clickSkip(): void {
+  clickSkip() {
     this.skipButton.click();
   }
 }
 
 class ChoobeScreenTester extends ScreenElementApi {
-  private skipButton: PolymerElementApi;
-  private choobeScreensList: PolymerElementApi;
-  private touchpadScrollScreenButton: PolymerElementApi;
-  private drivePinningScreenButton: PolymerElementApi;
-  private displaySizeScreenButton: PolymerElementApi;
-  private themeSelectionScreenButton: PolymerElementApi;
-
   constructor() {
     super('choobe');
     this.skipButton = new PolymerElementApi(this, '#skipButton');
@@ -1127,63 +1057,65 @@ class ChoobeScreenTester extends ScreenElementApi {
         this.choobeScreensList, '#cr-button-theme-selection');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipChoobe');
   }
 
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible();
   }
 
-  clickTouchpadScrollScreen(): void {
+  clickTouchpadScrollScreen() {
     this.touchpadScrollScreenButton.click();
   }
 
-  clickDrivePinningScreen(): void {
+  clickDrivePinningScreen() {
     this.drivePinningScreenButton.click();
   }
 
-  clickDisplaySizeScreen(): void {
+  clickDisplaySizeScreen() {
     this.displaySizeScreenButton.click();
   }
 
-  clickThemeSelectionScreen(): void {
+  clickThemeSelectionScreen() {
     this.themeSelectionScreenButton.click();
   }
 
-  isTouchpadScrollScreenVisible(): boolean {
-    return this.touchpadScrollScreenButton.element() !== null &&
+  isTouchpadScrollScreenVisible() {
+    return this.touchpadScrollScreenButton.element() != null &&
         this.touchpadScrollScreenButton.isVisible();
   }
 
-  isDrivePinningScreenVisible(): boolean {
-    return this.drivePinningScreenButton.element() !== null &&
+  isDrivePinningScreenVisible() {
+    return this.drivePinningScreenButton.element() != null &&
         this.drivePinningScreenButton.isVisible();
   }
 
-  isDisplaySizeScreenVisible(): boolean {
-    return this.displaySizeScreenButton.element() !== null &&
+  isDisplaySizeScreenVisible() {
+    return this.displaySizeScreenButton.element() != null &&
         this.displaySizeScreenButton.isVisible();
   }
 
-  isThemeSelectionScreenVisible(): boolean {
-    return this.themeSelectionScreenButton.element() !== null &&
+  isThemeSelectionScreenVisible() {
+    return this.themeSelectionScreenButton.element() != null &&
         this.themeSelectionScreenButton.isVisible();
   }
 
-  isDrivePinningScreenChecked(): boolean {
+  isDrivePinningScreenChecked() {
     return !!this.drivePinningScreenButton.element().getAttribute('checked');
   }
 
-  clickSkip(): void {
+  clickNext() {
+    this.nextButton.click();
+  }
+
+  clickSkip() {
     this.skipButton.click();
   }
 }
 
 class ChoobeDrivePinningScreenTester extends ScreenElementApi {
-  private drivePinningToggle: PolymerElementApi;
-  private drivePinningSpaceInformation: PolymerElementApi;
-
   constructor() {
     super('drive-pinning');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
@@ -1193,23 +1125,25 @@ class ChoobeDrivePinningScreenTester extends ScreenElementApi {
         new PolymerElementApi(this, '#spaceInformation');
   }
 
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible() && this.drivePinningToggle.isVisible() &&
         this.drivePinningSpaceInformation.isVisible();
   }
 
-  toggleFileSync(): void {
+  toggleFileSync() {
     this.drivePinningToggle.click();
   }
 
-  isFileSyncEnabled(): boolean {
-    const drivePinningToggle = this.drivePinningToggle.element();
-    assert(drivePinningToggle instanceof CrToggleElement);
-    return !!drivePinningToggle.checked;
+  isFileSyncEnabled() {
+    return !!this.drivePinningToggle.element().checked;
   }
 
-  getSpaceInformationString(): string {
+  getSpaceInformationString() {
     return this.drivePinningSpaceInformation.element().innerText;
+  }
+
+  clickNext() {
+    this.nextButton.click();
   }
 }
 
@@ -1220,12 +1154,17 @@ class ChoobeTouchpadScrollScreenTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipTouchpadScroll');
   }
 
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible();
+  }
+
+  clickNext() {
+    this.nextButton.click();
   }
 }
 
@@ -1235,51 +1174,44 @@ class ChoobeDisplaySizeTester extends ScreenElementApi {
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipDisplaySize');
   }
 
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible();
+  }
+
+  clickNext() {
+    this.nextButton.click();
   }
 }
 
-class HwDataCollectionScreenTester extends ScreenElementApi {
+class HWDataCollectionScreenTester extends ScreenElementApi {
   constructor() {
     super('hw-data-collection');
     this.nextButton = new PolymerElementApi(this, '#acceptButton');
   }
 
-  override shouldSkip(): boolean {
+  /** @override */
+  shouldSkip() {
     return loadTimeData.getBoolean('testapi_shouldSkipHwDataCollection');
   }
 
-  isReadyForTesting(): boolean {
+  isReadyForTesting() {
     return this.isVisible();
+  }
+
+  clickNext() {
+    this.nextButton.click();
   }
 }
 
 export class OobeApiProvider {
-  private screens: Record<string, ScreenElementApi>;
-  private loginWithPin: (username: string, pin: string) => void;
-  private advanceToScreen: (screen: string) => void;
-  private skipToLoginForTesting: () => void;
-  private skipPostLoginScreens: () => void;
-  private loginAsGuest: () => void;
-  private showGaiaDialog: () => void;
-  private getBrowseAsGuestButtonName: () => void;
-  private getCurrentScreenName: () => string;
-  private getCurrentScreenStep: () => string;
-  private getOobeActiveDialog: () => HTMLElement | null;
-  private findActiveOobeDialogSlotsByName: (slotName: string) => HTMLElement[];
-  private combineTextOfAdaptiveDialogSlots: (slotName: string) => string;
-  private getOobeActiveDialogTitleText: () => string;
-  private getOobeActiveDialogSubtitleText: () => string;
-  private getOobeActiveDialogContentText: () => string;
-
   constructor() {
     this.screens = {
-      HIDDetectionScreen: new HidDetectionScreenTester(),
+      HIDDetectionScreen: new HIDDetectionScreenTester(),
       WelcomeScreen: new WelcomeScreenTester(),
       NetworkScreen: new NetworkScreenTester(),
       UpdateScreen: new UpdateScreenTester(),
@@ -1310,42 +1242,42 @@ export class OobeApiProvider {
       ChoobeDrivePinningScreen: new ChoobeDrivePinningScreenTester(),
       ChoobeTouchpadScrollScreen: new ChoobeTouchpadScrollScreenTester(),
       ChoobeDisplaySizeScreen: new ChoobeDisplaySizeTester(),
-      HWDataCollectionScreen: new HwDataCollectionScreenTester(),
+      HWDataCollectionScreen: new HWDataCollectionScreenTester(),
     };
 
-    this.loginWithPin = function(username: string, pin: string): void {
+    this.loginWithPin = function(username, pin) {
       chrome.send('OobeTestApi.loginWithPin', [username, pin]);
     };
 
-    this.advanceToScreen = function(screen: string): void {
+    this.advanceToScreen = function(screen) {
       chrome.send('OobeTestApi.advanceToScreen', [screen]);
     };
 
-    this.skipToLoginForTesting = function(): void {
+    this.skipToLoginForTesting = function() {
       chrome.send('OobeTestApi.skipToLoginForTesting');
     };
 
-    this.skipPostLoginScreens = function(): void {
+    this.skipPostLoginScreens = function() {
       chrome.send('OobeTestApi.skipPostLoginScreens');
     };
 
-    this.loginAsGuest = function(): void {
+    this.loginAsGuest = function() {
       chrome.send('OobeTestApi.loginAsGuest');
     };
 
-    this.showGaiaDialog = function(): void {
+    this.showGaiaDialog = function() {
       chrome.send('OobeTestApi.showGaiaDialog');
     };
 
-    this.getBrowseAsGuestButtonName = function(): string {
+    this.getBrowseAsGuestButtonName = function() {
       return loadTimeData.getString('testapi_browseAsGuest');
     };
 
-    this.getCurrentScreenName = function(): string {
+    this.getCurrentScreenName = function() {
       return Oobe.getInstance().currentScreen.id.trim();
     };
 
-    this.getCurrentScreenStep = function(): string {
+    this.getCurrentScreenStep = function() {
       const step = Oobe.getInstance().currentScreen.getAttribute('multistep');
       if (step === null) {
         return 'default';
@@ -1355,17 +1287,16 @@ export class OobeApiProvider {
 
     /**
      * Returns currently displayed OOBE dialog HTML element.
+     * @returns {Object}
      */
-    this.getOobeActiveDialog = function(): HTMLElement|null {
+    this.getOobeActiveDialog = function() {
       const adaptiveDialogs =
-          Oobe.getInstance().currentScreen.shadowRoot?.querySelectorAll(
+          Oobe.getInstance().currentScreen.shadowRoot.querySelectorAll(
               'oobe-adaptive-dialog');
-      if (adaptiveDialogs) {
-        for (const dialog of adaptiveDialogs) {
-          // Only one adaptive dialog could be shown at the same time.
-          if (!dialog.hidden) {
-            return dialog;
-          }
+      for (const dialog of adaptiveDialogs) {
+        // Only one adaptive dialog could be shown at the same time.
+        if (!dialog.hidden) {
+          return dialog;
         }
       }
 
@@ -1375,15 +1306,11 @@ export class OobeApiProvider {
       // In this case we can try to fetch all loading dialogs attached to the
       // current screen and check their internal adaptive dialogs.
       const loadingDialogs =
-          Oobe.getInstance().currentScreen.shadowRoot?.querySelectorAll(
+          Oobe.getInstance().currentScreen.shadowRoot.querySelectorAll(
               'oobe-loading-dialog');
-      if (loadingDialogs) {
-        for (const dialog of loadingDialogs) {
-          if (!dialog.hidden) {
-            const activeDialog =
-                dialog.shadowRoot?.querySelector('oobe-adaptive-dialog');
-            return activeDialog ? activeDialog : null;
-          }
+      for (const dialog of loadingDialogs) {
+        if (!dialog.hidden) {
+          return dialog.shadowRoot.querySelector('oobe-adaptive-dialog');
         }
       }
 
@@ -1392,52 +1319,52 @@ export class OobeApiProvider {
 
     /**
      * Returns array of the slot HTML elements with a given slot name.
+     * @param {string} slotName
+     * @returns {!Array<!Element>}
      */
-    this.findActiveOobeDialogSlotsByName = function(slotName: string):
-        HTMLElement[] {
-          const dialog = this.getOobeActiveDialog();
-          if (dialog === null) {
-            return [];
-          }
+    this.findActiveOobeDialogSlotsByName = function(slotName) {
+      const dialog = this.getOobeActiveDialog();
+      if (dialog === null) {
+        return [];
+      }
 
-          if (dialog.children === undefined || dialog.children === null) {
-            return [];
-          }
+      if (dialog.children === undefined || dialog.children == null) {
+        return [];
+      }
 
-          // There are cases when we have different element with the same slot,
-          // so we must find all of them for a given adaptive dialog.
-          const result = [];
+      // There are cases when we have different element with the same slot, so
+      // we must find all of them for a given adaptive dialog.
+      const result = [];
 
-          for (const child of dialog.children) {
-            if (!(child instanceof HTMLElement)) {
-              continue;
-            }
-            if (child.hidden) {
-              continue;
-            }
+      for (const child of dialog.children) {
+        if (child.hidden) {
+          continue;
+        }
 
-            const slot = child.slot;
-            if (slot === undefined) {
-              continue;
-            }
+        const slot = child.slot;
+        if (slot === undefined) {
+          continue;
+        }
 
-            if (typeof slot !== 'string') {
-              continue;
-            }
+        if (typeof slot !== 'string') {
+          continue;
+        }
 
-            if (slot.toLowerCase().trim() === slotName.toLowerCase().trim()) {
-              result.push(child);
-            }
-          }
+        if (slot.toLowerCase().trim() === slotName.toLowerCase().trim()) {
+          result.push(child);
+        }
+      }
 
-          return result;
-        };
+      return result;
+    };
 
     /**
      * Concatenates innerText of all slots with a given name inside a currently
      * displayed OOBE dialog.
+     * @param {string} slotName
+     * @returns {string}
      */
-    this.combineTextOfAdaptiveDialogSlots = function(slotName: string): string {
+    this.combineTextOfAdaptiveDialogSlots = function(slotName) {
       const slots = this.findActiveOobeDialogSlotsByName(slotName);
       let result = '';
 
@@ -1452,22 +1379,25 @@ export class OobeApiProvider {
 
     /**
      * Returns text inside displayed title slots.
+     * @returns {string}
      */
-    this.getOobeActiveDialogTitleText = function(): string {
+    this.getOobeActiveDialogTitleText = function() {
       return this.combineTextOfAdaptiveDialogSlots('title');
     };
 
     /**
      * Returns text inside displayed subtitle slots.
+     * @returns {string}
      */
-    this.getOobeActiveDialogSubtitleText = function(): string {
+    this.getOobeActiveDialogSubtitleText = function() {
       return this.combineTextOfAdaptiveDialogSlots('subtitle');
     };
 
     /**
      * Returns text inside displayed content slots.
+     * @returns {string}
      */
-    this.getOobeActiveDialogContentText = function(): string {
+    this.getOobeActiveDialogContentText = function() {
       return this.combineTextOfAdaptiveDialogSlots('content');
     };
   }
