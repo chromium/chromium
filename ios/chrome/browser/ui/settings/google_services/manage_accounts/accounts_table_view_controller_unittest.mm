@@ -23,11 +23,14 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -91,16 +94,28 @@ class AccountsTableViewControllerTest
     [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
 
+    AccountsMediator* mediator =
+        [[AccountsMediator alloc] initWithSyncService:test_sync_service()
+                                accountManagerService:account_manager_service()
+                                          authService:authentication_service()
+                                      identityManager:identity_manager()];
+
     AccountsTableViewController* controller =
         [[AccountsTableViewController alloc]
                                 initWithBrowser:browser_.get()
                       closeSettingsOnAddAccount:NO
                      applicationCommandsHandler:mock_application_handler
             signoutDismissalByParentCoordinator:NO];
+
+    mediator.consumer = controller;
+    controller.modelIdentityDataSource = mediator;
+    mediator_ = mediator;
+
     return controller;
   }
 
   void TearDown() override {
+    mediator_ = nil;
     [base::apple::ObjCCast<AccountsTableViewController>(controller())
         settingsWillBeDismissed];
     LegacyChromeTableViewControllerTest::TearDown();
@@ -126,6 +141,11 @@ class AccountsTableViewControllerTest
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
+  ChromeAccountManagerService* account_manager_service() {
+    return ChromeAccountManagerServiceFactory::GetForBrowserState(
+        browser_state_.get());
+  }
+
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
@@ -133,6 +153,7 @@ class AccountsTableViewControllerTest
   std::unique_ptr<Browser> browser_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  AccountsMediator* mediator_;
 };
 
 // Tests that a valid identity is added to the model.

@@ -5,9 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_consumer.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
+@protocol AccountsModelIdentityDataSource;
 @protocol ApplicationCommands;
 @protocol SettingsCommands;
 class Browser;
@@ -15,7 +17,12 @@ class Browser;
 // TableView that handles the settings for accounts when the user is signed in
 // to Chrome.
 @interface AccountsTableViewController
-    : SettingsRootTableViewController <SettingsControllerProtocol>
+    : SettingsRootTableViewController <AccountsConsumer,
+                                       SettingsControllerProtocol>
+
+// Model delegate.
+@property(nonatomic, weak) id<AccountsModelIdentityDataSource>
+    modelIdentityDataSource;
 
 // `browser` must not be nil.
 // If `closeSettingsOnAddAccount` is YES, then this account table view
