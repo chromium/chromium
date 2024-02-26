@@ -12,7 +12,7 @@ enum class ContentSuggestionsModuleType;
 @class MagicStackModule;
 
 // Container View for a module in the Magic Stack.
-@interface MagicStackModuleContainer : UIView
+@interface MagicStackModuleContainer : UICollectionViewCell
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 

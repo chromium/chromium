@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
@@ -502,6 +503,10 @@ const CGFloat kModuleMinMargin = 16;
     [self addViewControllerAboveFeed:self.feedHeaderViewController];
   }
 
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    [self addViewControllerAboveFeed:self.magicStackCollectionView];
+  }
+
   [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
 
   [self addViewControllerAboveFeed:self.headerViewController];
@@ -595,6 +600,7 @@ const CGFloat kModuleMinMargin = 16;
   }
 
   [self removeFromViewHierarchy:self.feedWrapperViewController];
+  [self removeFromViewHierarchy:self.magicStackCollectionView];
   [self removeFromViewHierarchy:self.contentSuggestionsViewController];
 
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
@@ -1300,31 +1306,43 @@ const CGFloat kModuleMinMargin = 16;
 
   [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
 
+  NSMutableArray* constraints = [NSMutableArray array];
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    [constraints
+        addObject:[self.collectionView.topAnchor
+                      constraintEqualToAnchor:self.magicStackCollectionView.view
+                                                  .bottomAnchor
+                                     constant:kBottomMagicStackPadding]];
+
+  } else {
+    [constraints addObject:[self.collectionView.topAnchor
+                               constraintEqualToAnchor:
+                                   self.contentSuggestionsViewController.view
+                                       .bottomAnchor]];
+  }
+
   // If the fake omnibox is pinned to the top, we pin the feed header below it.
   // Otherwise, the feed header gets pinned to the top.
   if ([self shouldPinFakeOmnibox]) {
-    self.feedHeaderConstraints = @[
-      [self.feedHeaderViewController.view.topAnchor
-          constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
-                         constant:-(content_suggestions::HeaderBottomPadding() +
-                                    [self.feedHeaderViewController
-                                            customSearchEngineViewHeight])],
-      [self.collectionView.topAnchor
-          constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                      .bottomAnchor],
-    ];
+    [constraints
+        addObject:
+            [self.feedHeaderViewController.view.topAnchor
+                constraintEqualToAnchor:self.headerViewController.view
+                                            .bottomAnchor
+                               constant:
+                                   -(content_suggestions::
+                                         HeaderBottomPadding() +
+                                     [self.feedHeaderViewController
+                                             customSearchEngineViewHeight])]];
   } else {
-    self.feedHeaderConstraints = @[
-      [self.feedHeaderViewController.view.topAnchor
-          constraintEqualToAnchor:self.view.topAnchor
-                         constant:-[self.feedHeaderViewController
-                                          customSearchEngineViewHeight]],
-      [self.collectionView.topAnchor
-          constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                      .bottomAnchor],
-    ];
+    [constraints
+        addObject:
+            [self.feedHeaderViewController.view.topAnchor
+                constraintEqualToAnchor:self.view.topAnchor
+                               constant:-[self.feedHeaderViewController
+                                                customSearchEngineViewHeight]]];
   }
-
+  self.feedHeaderConstraints = constraints;
   [self.feedHeaderViewController
       toggleBackgroundBlur:[self.NTPContentDelegate isContentHeaderSticky]
                   animated:YES];
@@ -1342,10 +1360,18 @@ const CGFloat kModuleMinMargin = 16;
   if (self.feedTopSectionViewController) {
     bottomView = self.feedTopSectionViewController.view;
   }
+
+  NSLayoutConstraint* feedHeaderTopAnchor =
+      [self.feedHeaderViewController.view.topAnchor
+          constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                      .bottomAnchor];
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
+        constraintEqualToAnchor:self.magicStackCollectionView.view.bottomAnchor
+                       constant:kBottomMagicStackPadding];
+  }
   self.feedHeaderConstraints = @[
-    [self.feedHeaderViewController.view.topAnchor
-        constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                    .bottomAnchor],
+    feedHeaderTopAnchor,
     [bottomView.topAnchor constraintEqualToAnchor:self.feedHeaderViewController
                                                       .view.bottomAnchor],
   ];
@@ -1487,6 +1513,10 @@ const CGFloat kModuleMinMargin = 16;
 - (void)applyCollectionViewConstraints {
   UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
   contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    self.magicStackCollectionView.view
+        .translatesAutoresizingMaskIntoConstraints = NO;
+  }
 
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
@@ -1565,6 +1595,16 @@ const CGFloat kModuleMinMargin = 16;
     [contentSuggestionsView.trailingAnchor
         constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
   ]];
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [self.magicStackCollectionView.view.leadingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
+      [self.magicStackCollectionView.view.trailingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
+      [self.magicStackCollectionView.view.topAnchor
+          constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
+    ]];
+  }
   [self setInitialFakeOmniboxConstraints];
 }
 

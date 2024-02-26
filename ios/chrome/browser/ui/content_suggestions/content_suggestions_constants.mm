@@ -20,12 +20,6 @@ NSString* const kContentSuggestionsShortcutsAccessibilityIdentifierPrefix =
 NSString* const kMagicStackScrollViewAccessibilityIdentifier =
     @"MagicStackScrollViewAccessibilityIdentifier";
 
-NSString* const kMagicStackEditButtonContainerAccessibilityIdentifier =
-    @"MagicStackEditButtonContainerAccessibilityIdentifier";
-
-NSString* const kMagicStackEditButtonAccessibilityIdentifier =
-    @"MagicStackEditButtonAccessibilityIdentifier";
-
 NSString* const kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier =
     @"MagicStackEditHalfSheetDoneButtonAccessibilityIdentifier";
 

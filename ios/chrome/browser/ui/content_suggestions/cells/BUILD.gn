@@ -82,6 +82,7 @@ source_set("most_visited_tiles") {
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:cells",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
@@ -115,6 +116,7 @@ source_set("shortcuts") {
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:cells",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/whats_new:util",
   ]

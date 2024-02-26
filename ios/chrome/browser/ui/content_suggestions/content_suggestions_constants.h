@@ -66,12 +66,6 @@ extern NSString* const kMagicStackScrollViewAccessibilityIdentifier;
 // Represents the Magic Stack UIStackView.
 extern NSString* const kMagicStackViewAccessibilityIdentifier;
 
-// Represents the Edit Button Container in the Magic Stack.
-extern NSString* const kMagicStackEditButtonContainerAccessibilityIdentifier;
-
-// Represents the Edit Button in the Magic Stack.
-extern NSString* const kMagicStackEditButtonAccessibilityIdentifier;
-
 // Represents the "Done" button in the Magic Stack edit half sheet.
 extern NSString* const
     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier;

@@ -4,5 +4,34 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
-@implementation MagicStackModule
+@implementation MagicStackModule {
+  // The hash of this identifier.
+  NSUInteger _hash;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _hash = @(int(_type)).hash;
+  }
+  return self;
+}
+
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(id)object {
+  if (self == object) {
+    return YES;
+  }
+  if (![object isKindOfClass:[MagicStackModule class]]) {
+    return NO;
+  }
+  MagicStackModule* moduleObject = static_cast<MagicStackModule*>(object);
+  return _type == moduleObject.type;
+}
+
+- (NSUInteger)hash {
+  return _hash;
+}
+
 @end

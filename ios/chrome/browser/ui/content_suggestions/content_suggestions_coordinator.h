@@ -34,6 +34,10 @@ class WebState;
 @property(nonatomic, strong, readonly)
     ContentSuggestionsViewController* viewController;
 
+// The Magic Stack UICollectionView.
+@property(nonatomic, strong, readonly)
+    UIViewController* magicStackCollectionView;
+
 // The mediator used by this coordinator.
 // TODO(crbug.com/1403298): Replace this with a delegate to avoid exposing this.
 @property(nonatomic, strong, readonly)

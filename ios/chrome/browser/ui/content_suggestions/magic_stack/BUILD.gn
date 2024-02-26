@@ -4,11 +4,15 @@
 
 source_set("public") {
   sources = [
+    "magic_stack_collection_view_audience.h",
     "magic_stack_consumer.h",
     "magic_stack_module.h",
     "magic_stack_module.mm",
   ]
-  deps = []
+  deps = [
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -19,6 +23,7 @@ source_set("ranking_model") {
     "magic_stack_ranking_model_delegate.h",
   ]
   deps = [
+    ":cells",
     ":magic_stack",
     ":public",
     "//components/segmentation_platform/public",
@@ -43,8 +48,19 @@ source_set("ranking_model") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("magic_stack") {
+source_set("constants") {
   sources = [
+    "magic_stack_constants.h",
+    "magic_stack_constants.mm",
+  ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("cells") {
+  sources = [
+    "magic_stack_edit_button_cell.h",
+    "magic_stack_edit_button_cell.mm",
     "magic_stack_module_container.h",
     "magic_stack_module_container.mm",
     "magic_stack_module_container_delegate.h",
@@ -52,12 +68,51 @@ source_set("magic_stack") {
     "magic_stack_module_contents_factory.mm",
     "most_visited_tiles_config.h",
     "most_visited_tiles_config.mm",
-    "placeholder_config.h",
-    "placeholder_config.mm",
     "shortcuts_config.h",
     "shortcuts_config.mm",
   ]
   deps = [
+    ":constants",
+    ":public",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/resources:magic_stack_edit_button_background_color",
+    "//ios/chrome/browser/ui/content_suggestions/safety_check",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
+    "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("magic_stack") {
+  sources = [
+    "edit_button_config.h",
+    "edit_button_config.mm",
+    "magic_stack_collection_view.h",
+    "magic_stack_collection_view.mm",
+    "magic_stack_layout_configurator.h",
+    "magic_stack_layout_configurator.mm",
+    "placeholder_config.h",
+    "placeholder_config.mm",
+  ]
+  deps = [
+    ":cells",
+    ":constants",
     ":public",
     "resources:magic_stack_placeholder_module",
     "//base",

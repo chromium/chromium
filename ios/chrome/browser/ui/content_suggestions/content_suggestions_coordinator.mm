@@ -82,6 +82,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_collection_view_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
@@ -124,6 +126,7 @@
 
 @interface ContentSuggestionsCoordinator () <
     ContentSuggestionsViewControllerAudience,
+    MagicStackCollectionViewControllerAudience,
     MagicStackHalfSheetTableViewControllerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
     NotificationsConfirmationPresenter,
@@ -195,6 +198,8 @@
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
+
+  MagicStackCollectionViewController* _magicStackCollectionView;
 }
 
 - (void)start {
@@ -369,6 +374,12 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          ParcelTrackingOptInCommands);
 
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    _magicStackCollectionView =
+        [[MagicStackCollectionViewController alloc] init];
+    _magicStackCollectionView.audience = self;
+  }
+
   if (_magicStackRankingModel) {
     _magicStackRankingModel.consumer = self.contentSuggestionsViewController;
   }
@@ -376,6 +387,11 @@
   _safetyCheckMediator.consumer = self.contentSuggestionsViewController;
   _mostVisitedTilesMediator.consumer = self.contentSuggestionsViewController;
   _setUpListMediator.consumer = self.contentSuggestionsViewController;
+
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    self.contentSuggestionsMediator.magicStackConsumer =
+        _magicStackCollectionView;
+  }
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
 }
@@ -421,7 +437,7 @@
   _started = NO;
 }
 
-- (UIViewController*)viewController {
+- (ContentSuggestionsViewController*)viewController {
   return self.contentSuggestionsViewController;
 }
 

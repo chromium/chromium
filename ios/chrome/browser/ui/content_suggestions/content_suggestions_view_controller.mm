@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
@@ -74,33 +75,12 @@ namespace {
 
 // The bottom padding for the vertical stack view.
 const float kBottomStackViewPadding = 6.0f;
-const float kBottomStackViewExtraPadding = 14.0f;
-
-// The minimum scroll velocity in order to swipe between modules in the Magic
-// Stack.
-const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
-
-// The spacing between modules in the Magic Stack.
-constexpr CGFloat kMagicStackSpacing = 12.0f;
-
-// The reduction in width of MagicStack modules from NTP modules. This
-// reduction allows the next module to peek in from the side.
-constexpr CGFloat kMagicStackPeekInset = kMagicStackSpacing;
-constexpr CGFloat kMagicStackPeekInsetLandscape = kMagicStackSpacing * 2 + 18;
 
 // The corner radius of the Magic Stack.
 const float kMagicStackCornerRadius = 16.0f;
 
 // The distance in which a replaced/replacing module will fade out/in of view.
 const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
-
-// The size configs of the Magic Stack edit button.
-const float kMagicStackEditButtonWidth = 61;
-const float kMagicStackEditButtonIconPointSize = 22;
-
-// Margin spacing between Magic Stack Edit button and horizontal neighboring
-// views.
-const float kMagicStackEditButtonMargin = 32;
 
 // The duration of the animation that hides the Set Up List.
 const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
@@ -227,7 +207,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   CGFloat bottomSpacing = kBottomStackViewPadding;
   if (IsMagicStackEnabled()) {
     // Add more spacing between magic stack and feed header.
-    bottomSpacing = kBottomStackViewExtraPadding;
+    bottomSpacing = kBottomMagicStackPadding;
   }
   [NSLayoutConstraint activateConstraints:@[
     [self.verticalStackView.leadingAnchor
@@ -281,7 +261,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
   // Only Create Magic Stack if the ranking has been received. It can be delayed
   // to after -viewDidLoad if fecthing from Segmentation Platform.
-  if (IsMagicStackEnabled()) {
+  if (IsMagicStackEnabled() && !IsIOSMagicStackCollectionViewEnabled()) {
     [self createMagicStack];
     if (_magicStackRankReceived) {
       [self populateMagicStack];

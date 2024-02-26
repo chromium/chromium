@@ -45,6 +45,8 @@
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
 
+@property(nonatomic, strong) UIViewController* magicStackCollectionView;
+
 // Feed metrics recorder.
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
