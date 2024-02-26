@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-go@6c1fd22b67f7a7c42ad9a45c0f4197434035e429 # v5.0.0
         with:
           go-version: '1.21.x'
-      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
       - run: npm ci
       - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:

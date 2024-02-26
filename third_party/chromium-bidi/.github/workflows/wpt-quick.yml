@@ -67,7 +67,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
+      - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup dirs
