@@ -465,8 +465,15 @@ TextPaintStyle HighlightStyleUtils::HighlightPaintingStyle(
       highlight_style.shadow =
           uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
     }
-    highlight_style.selection_text_decoration = SelectionTextDecoration(
-        document, style, *pseudo_style, previous_layer_current_color);
+    std::optional<AppliedTextDecoration> selection_decoration =
+        SelectionTextDecoration(document, style, *pseudo_style,
+                                previous_layer_current_color);
+    if (selection_decoration) {
+      highlight_style.selection_decoration_lines =
+          selection_decoration->Lines();
+      highlight_style.selection_decoration_color =
+          selection_decoration->GetColor();
+    }
   }
 
   // Text shadows are disabled when printing. http://crbug.com/258321
