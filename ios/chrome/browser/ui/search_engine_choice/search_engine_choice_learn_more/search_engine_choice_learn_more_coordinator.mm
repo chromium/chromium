@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this/why_am_i_seeing_this_coordinator.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this/why_am_i_seeing_this_view_controller.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
 
-@interface WhyAmISeeingThisCoordinator () <
+@interface SearchEngineChoiceLearnMoreCoordinator () <
     UIAdaptivePresentationControllerDelegate,
-    WhyAmISeeingThisDelegate>
+    SearchEngineChoiceLearnMoreDelegate>
 @end
 
-@implementation WhyAmISeeingThisCoordinator {
+@implementation SearchEngineChoiceLearnMoreCoordinator {
   // The view controller displaying the information.
-  WhyAmISeeingThisViewController* _viewController;
+  SearchEngineChoiceLearnMoreViewController* _viewController;
 }
 
 - (void)start {
   [super start];
-  _viewController = [[WhyAmISeeingThisViewController alloc]
+  _viewController = [[SearchEngineChoiceLearnMoreViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
   // Creates the navigation controller and presents.
@@ -60,9 +60,10 @@
   [self viewControlerDidDismiss];
 }
 
-#pragma mark - WhyAmISeeingThisDelegate
+#pragma mark - SearchEngineChoiceLearnMoreDelegate
 
-- (void)learnMoreDone:(WhyAmISeeingThisViewController*)viewController {
+- (void)learnMoreDone:
+    (SearchEngineChoiceLearnMoreViewController*)viewController {
   CHECK_EQ(_viewController, viewController, base::NotFatalUntil::M124);
   __weak __typeof(self) weakSelf = self;
   [_viewController dismissViewControllerAnimated:YES

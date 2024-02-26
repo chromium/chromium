@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("why_am_i_seeing_this") {
+source_set("search_engine_choice_learn_more") {
   sources = [
-    "why_am_i_seeing_this_coordinator.h",
-    "why_am_i_seeing_this_coordinator.mm",
-    "why_am_i_seeing_this_view_controller.h",
-    "why_am_i_seeing_this_view_controller.mm",
+    "search_engine_choice_learn_more_coordinator.h",
+    "search_engine_choice_learn_more_coordinator.mm",
+    "search_engine_choice_learn_more_view_controller.h",
+    "search_engine_choice_learn_more_view_controller.mm",
   ]
   deps = [
     "//base",

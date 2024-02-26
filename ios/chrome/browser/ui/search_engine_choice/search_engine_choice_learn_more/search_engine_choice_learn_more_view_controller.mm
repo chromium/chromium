@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this/why_am_i_seeing_this_view_controller.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -61,7 +61,7 @@ NSAttributedString* PutBoldPartInText(NSString* string) {
 
 }  // namespace
 
-@implementation WhyAmISeeingThisViewController
+@implementation SearchEngineChoiceLearnMoreViewController
 
 #pragma mark - UIViewController
 
