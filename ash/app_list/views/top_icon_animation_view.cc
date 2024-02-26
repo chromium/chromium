@@ -231,7 +231,7 @@ gfx::Size TopIconAnimationView::CalculatePreferredSize() const {
 void TopIconAnimationView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  if (icon_background_) {
+  if (icon_background_ && icon_background_->layer()) {
     icon_background_->layer()->SetColor(
         GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBaseOpaque));
   }
