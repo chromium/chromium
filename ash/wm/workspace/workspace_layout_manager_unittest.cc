@@ -2331,6 +2331,11 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
   split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
+  // The split view divider is also a child of the default desk container. Spin
+  // the run loop here so that the post task to close the divider widget when
+  // snapping two windows gets run.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(4U, default_container()->children().size());
   for (aura::Window* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());

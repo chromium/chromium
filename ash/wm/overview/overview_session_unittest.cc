@@ -7963,9 +7963,7 @@ TEST_F(SplitViewOverviewSessionTest, SelectUnsnappableWindowInSplitView) {
 
 // Verify that when in overview mode, the selector items unsnappable indicator
 // shows up when expected.
-// TODO(crbug.com/324024580): Re-enable this flaky test.
-TEST_F(SplitViewOverviewSessionTest,
-       DISABLED_OverviewUnsnappableIndicatorVisibility) {
+TEST_F(SplitViewOverviewSessionTest, OverviewUnsnappableIndicatorVisibility) {
   // Create three windows; two normal and one unsnappable, so that when after
   // snapping |window1| to enter split view we can test the state of each normal
   // and unsnappable windows.
@@ -8414,9 +8412,8 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
 // Verify that if the split view divider is dragged all the way to the edge, the
 // window being dragged gets returned to the overview list, if overview mode is
 // still active.
-// TODO(crbug.com/324024580): Re-enable this flaky test.
 TEST_F(SplitViewOverviewSessionTest,
-       DISABLED_DividerDraggedToEdgeReturnsWindowToOverviewList) {
+       DividerDraggedToEdgeReturnsWindowToOverviewList) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -8461,10 +8458,9 @@ TEST_F(SplitViewOverviewSessionTest,
 // all the way to the opposite edge, then the split view window is reinserted
 // into the overview grid at the correct position according to MRU order, and
 // the stacking order is also correct.
-// TODO(crbug.com/324024580): Re-enable this flaky test.
 TEST_F(
     SplitViewOverviewSessionTest,
-    DISABLED_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded) {
+    SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
