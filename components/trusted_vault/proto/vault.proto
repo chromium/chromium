@@ -53,6 +53,7 @@ message SecurityDomainMember {
   enum MemberType {
     MEMBER_TYPE_UNSPECIFIED = 0;
     MEMBER_TYPE_PHYSICAL_DEVICE = 1;
+    MEMBER_TYPE_USER_DEFINED_PIN = 5;
   }
 
   MemberType member_type = 4;

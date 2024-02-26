@@ -115,6 +115,10 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
       member.set_member_type(
           trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
       break;
+    case AuthenticationFactorType::kGpmPin:
+      member.set_member_type(
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_USER_DEFINED_PIN);
+      break;
     case AuthenticationFactorType::kUnspecified:
       member.set_member_type(
           trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED);
@@ -395,6 +399,8 @@ GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
   switch (authentication_factor_type) {
     case AuthenticationFactorType::kPhysicalDevice:
       return TrustedVaultURLFetchReasonForUMA::kRegisterDevice;
+    case AuthenticationFactorType::kGpmPin:
+      return TrustedVaultURLFetchReasonForUMA::kRegisterGpmPin;
     case AuthenticationFactorType::kUnspecified:
       return TrustedVaultURLFetchReasonForUMA::
           kRegisterUnspecifiedAuthenticationFactor;

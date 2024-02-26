@@ -93,7 +93,7 @@ enum class DownloadAuthenticationFactorsRegistrationStateResult {
   kMaxValue = kIrrecoverable,
 };
 
-enum class AuthenticationFactorType { kPhysicalDevice, kUnspecified };
+enum class AuthenticationFactorType { kPhysicalDevice, kGpmPin, kUnspecified };
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);

@@ -22,6 +22,8 @@ std::string GetTrustedVaultURLFetchReasonSuffix(
       return std::string();
     case TrustedVaultURLFetchReasonForUMA::kRegisterDevice:
       return "RegisterDevice";
+    case TrustedVaultURLFetchReasonForUMA::kRegisterGpmPin:
+      return "RegisterGooglePasswordManagerPIN";
     case TrustedVaultURLFetchReasonForUMA::
         kRegisterUnspecifiedAuthenticationFactor:
       return "RegisterUnspecifiedAuthenticationFactor";
