@@ -16840,6 +16840,8 @@ from previous Chrome versions.
   <int value="-1806173068" label="UseSharedImagesForPepperVideo:enabled"/>
   <int value="-1804485171" label="disable-fullscreen-tab-detaching"/>
   <int value="-1804411756" label="ClipboardSuggestionContentHidden:enabled"/>
+  <int value="-1804027916"
+      label="PrivateNetworkAccessForWorkersWarningOnly:disabled"/>
   <int value="-1802905985" label="OmniboxExpandedStateSuggestIcons:enabled"/>
   <int value="-1802559277" label="RunTasksByBatches:disabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
@@ -19137,6 +19139,8 @@ from previous Chrome versions.
   <int value="-746328467" label="ExpensiveBackgroundTimerThrottling:disabled"/>
   <int value="-746042208" label="QuickCommands:enabled"/>
   <int value="-745969829" label="BackGestureRefactorAndroid:enabled"/>
+  <int value="-745906477"
+      label="PrivateNetworkAccessForNavigationsWarningOnly:disabled"/>
   <int value="-745616196" label="ClickToCall:disabled"/>
   <int value="-745267150" label="OptimizationGuideOnDeviceModel:enabled"/>
   <int value="-745082968" label="SyncDeviceInfoInTransportMode:disabled"/>
@@ -21131,6 +21135,8 @@ from previous Chrome versions.
   <int value="161694478" label="OmniboxNewAnswerLayout:enabled"/>
   <int value="161706692" label="ContextualPageActionPriceTracking:disabled"/>
   <int value="165429419" label="DrawNativeEdgeToEdge:disabled"/>
+  <int value="165912610"
+      label="PrivateNetworkAccessForWorkersWarningOnly:enabled"/>
   <int value="165962668" label="EnablePreferencesAccountStorage:enabled"/>
   <int value="168025622" label="EnableInputEventLogging:enabled"/>
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
@@ -23051,6 +23057,8 @@ from previous Chrome versions.
   <int value="1051252858" label="ClearIdentityInCanMakePaymentEvent:enabled"/>
   <int value="1051797561" label="OngoingProcesses:enabled"/>
   <int value="1053743655" label="NewOverviewAnimations:enabled"/>
+  <int value="1054363360"
+      label="PrivateNetworkAccessForNavigationsWarningOnly:enabled"/>
   <int value="1054910800" label="enable-timezone-tracking-option"/>
   <int value="1055116004" label="AllowTouchpadHapticClickSettings:enabled"/>
   <int value="1055737615" label="VideoToolboxAv1Decoding:enabled"/>

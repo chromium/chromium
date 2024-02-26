@@ -6348,6 +6348,19 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          network::features::kPrivateNetworkAccessPermissionPrompt)},
 
+    {"private-network-access-ignore-worker-errors",
+     flag_descriptions::kPrivateNetworkAccessIgnoreWorkerErrorsName,
+     flag_descriptions::kPrivateNetworkAccessIgnoreWorkerErrorsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kPrivateNetworkAccessForWorkersWarningOnly)},
+
+    {"private-network-access-ignore-navigation-errors",
+     flag_descriptions::kPrivateNetworkAccessIgnoreNavigationErrorsName,
+     flag_descriptions::kPrivateNetworkAccessIgnoreNavigationErrorsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         features::kPrivateNetworkAccessForNavigationsWarningOnly)},
+
     {"main-thread-compositing-priority",
      flag_descriptions::kMainThreadCompositingPriorityName,
      flag_descriptions::kMainThreadCompositingPriorityDescription, kOsAll,

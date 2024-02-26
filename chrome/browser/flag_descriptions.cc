@@ -1405,7 +1405,7 @@ const char kPrivateNetworkAccessPreflightShortTimeoutName[] =
     "Reduce waiting time for Private Network Access preflights response";
 const char kPrivateNetworkAccessPreflightShortTimeoutDescription[] =
     "Reduce the waiting time for Private Network Access preflights to 200 "
-    "milliseconds. The default timeout period for requests is 5 minutes."
+    "milliseconds. The default timeout period for requests is 5 minutes. "
     "See also: "
     "https://developer.chrome.com/blog/private-network-access-preflight/";
 
@@ -1414,10 +1414,30 @@ const char kPrivateNetworkAccessPermissionPromptName[] =
 const char kPrivateNetworkAccessPermissionPromptDescription[] =
     "Enable Permission Prompt for HTTPS public websites accessing HTTP "
     "more-private devices. Require to set a fetch option `targetAddressSpace` "
-    "on the request to relax mixed content check."
+    "on the request to relax mixed content check. "
     "See also: "
     "https://developer.chrome.com/blog/"
     "private-network-access-update-2023-02-02/";
+
+const char kPrivateNetworkAccessIgnoreWorkerErrorsName[] =
+    "Ignore Private Network Access errors for worker-related requests";
+const char kPrivateNetworkAccessIgnoreWorkerErrorsDescription[] =
+    "Ignore Private Network Access errors for worker-related requests, "
+    "including worker script fetches, and fetches initiated in a worker. "
+    "Instead of blocking the requests, the errors will be shown as an issue in "
+    "DevTools. See "
+    "also: https://developer.chrome.com/blog/private-network-access-update/ "
+    "and https://developer.chrome.com/blog/private-network-access-preflight/";
+
+const char kPrivateNetworkAccessIgnoreNavigationErrorsName[] =
+    "Ignore Private Network Access errors for navigation-related requests";
+const char kPrivateNetworkAccessIgnoreNavigationErrorsDescription[] =
+    "Ignore Private Network Access errors for navigation-related requests, "
+    "including worker script fetches, and fetches initiated in a worker. "
+    "Instead of blocking the requests, the errors will be shown as an issue in "
+    "DevTools. See "
+    "also: https://developer.chrome.com/blog/private-network-access-update/ "
+    "and https://developer.chrome.com/blog/private-network-access-preflight/";
 
 const char kDeprecateAltClickName[] =
     "Enable Alt+Click deprecation notifications";

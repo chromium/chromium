@@ -735,6 +735,17 @@ BASE_FEATURE(kPrivateNetworkAccessForNavigations,
              "PrivateNetworkAccessForNavigations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Private Network Access checks in warning mode for navigations.
+//
+// Does nothing if `kPrivateNetworkAccessForNavigations` is disabled.
+//
+// If both this and `kPrivateNetworkAccessForNavigations` are enabled, then PNA
+// preflight requests for navigations are not required to succeed. If
+// one fails, a warning is simply displayed in DevTools.
+BASE_FEATURE(kPrivateNetworkAccessForNavigationsWarningOnly,
+             "PrivateNetworkAccessForNavigationsWarningOnly",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
 // See: https://wicg.github.io/private-network-access/#cors-preflight

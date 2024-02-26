@@ -718,6 +718,12 @@ extern const char kPrivateNetworkAccessPreflightShortTimeoutDescription[];
 extern const char kPrivateNetworkAccessPermissionPromptName[];
 extern const char kPrivateNetworkAccessPermissionPromptDescription[];
 
+extern const char kPrivateNetworkAccessIgnoreWorkerErrorsName[];
+extern const char kPrivateNetworkAccessIgnoreWorkerErrorsDescription[];
+
+extern const char kPrivateNetworkAccessIgnoreNavigationErrorsName[];
+extern const char kPrivateNetworkAccessIgnoreNavigationErrorsDescription[];
+
 extern const char kDeprecateAltClickName[];
 extern const char kDeprecateAltClickDescription[];
 
