@@ -66,6 +66,11 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   extensions::MimeHandlerViewGuest* LoadPdfInNewTabGetMimeHandlerView(
       const GURL& url);
 
+  // Same as `LoadPdf()`, but also returns a pointer to the extension host for
+  // the loaded PDF. Returns nullptr if the load fails or getting the extension
+  // host fails. The test will fail if the load fails.
+  content::RenderFrameHost* LoadPdfGetExtensionHost(const GURL& url);
+
   void TestGetSelectedTextReply(const GURL& url, bool expect_success);
 
   content::WebContents* GetActiveWebContents();

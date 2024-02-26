@@ -136,6 +136,16 @@ MimeHandlerViewGuest* PDFExtensionTestBase::LoadPdfInNewTabGetMimeHandlerView(
   return GetOnlyMimeHandlerView(GetActiveWebContents());
 }
 
+content::RenderFrameHost* PDFExtensionTestBase::LoadPdfGetExtensionHost(
+    const GURL& url) {
+  if (!LoadPdf(url)) {
+    ADD_FAILURE() << "Failed to load PDF";
+    return nullptr;
+  }
+
+  return GetOnlyPdfExtensionHostEnsureValid();
+}
+
 void PDFExtensionTestBase::TestGetSelectedTextReply(const GURL& url,
                                                     bool expect_success) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);

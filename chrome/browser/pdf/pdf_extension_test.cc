@@ -1262,11 +1262,8 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
-  ASSERT_TRUE(
-      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
-
-  content::RenderFrameHost* extension_host =
-      GetOnlyPdfExtensionHostEnsureValid();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
 
   SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
@@ -1316,11 +1313,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
-  ASSERT_TRUE(
-      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
-
-  content::RenderFrameHost* extension_host =
-      GetOnlyPdfExtensionHostEnsureValid();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
 
   SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
@@ -1372,11 +1366,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
-  ASSERT_TRUE(LoadPdf(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf#zoom=200")));
-
-  content::RenderFrameHost* extension_host =
-      GetOnlyPdfExtensionHostEnsureValid();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf#zoom=200"));
   ASSERT_TRUE(extension_host);
 
   SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
@@ -1417,11 +1408,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowDownUp) {
-  ASSERT_TRUE(
-      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
-
-  content::RenderFrameHost* extension_host =
-      GetOnlyPdfExtensionHostEnsureValid();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);
 
   SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
