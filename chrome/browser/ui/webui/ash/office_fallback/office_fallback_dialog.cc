@@ -72,12 +72,14 @@ void GetDialogTextIdsAndSize(
     case ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady:
       title_id = IDS_OFFICE_FALLBACK_TITLE_OFFLINE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_OFFLINE;
+      include_task_in_reason_message = true;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE;
       height = kOfflineHeight;
       break;
     case ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet:
       title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
+      include_task_in_reason_message = true;
       instructions_message_id =
           IDS_OFFICE_FALLBACK_INSTRUCTIONS_DISABLE_DRIVE_PREFERENCE;
       height = kDisableDrivePreferenceSetHeight;
@@ -85,7 +87,6 @@ void GetDialogTextIdsAndSize(
     case ash::office_fallback::FallbackReason::kDriveDisabledForAccountType:
       title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_DISABLED_FOR_ACCOUNT;
-      include_task_in_reason_message = true;
       instructions_message_id =
           IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT;
       height = kDriveDisabledForAccountType;
@@ -93,7 +94,6 @@ void GetDialogTextIdsAndSize(
     case ash::office_fallback::FallbackReason::kMeteredConnection:
       title_id = IDS_OFFICE_FALLBACK_TITLE_METERED;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_METERED;
-      include_task_in_reason_message = true;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED;
       height = kMeteredHeight;
       break;
@@ -102,6 +102,7 @@ void GetDialogTextIdsAndSize(
     case ash::office_fallback::FallbackReason::kDriveFsInterfaceError:
       title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
+      include_task_in_reason_message = true;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS;
       height = kDriveUnavailableHeight;
       break;
@@ -167,8 +168,8 @@ bool OfficeFallbackDialog::Show(
   const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
   const std::string reason_message =
       include_task_in_reason_message
-          ? l10n_util::GetStringUTF8(reason_message_id)
-          : l10n_util::GetStringFUTF8(reason_message_id, task_title);
+          ? l10n_util::GetStringFUTF8(reason_message_id, task_title)
+          : l10n_util::GetStringUTF8(reason_message_id);
   const std::string instructions_message =
       l10n_util::GetStringUTF8(instructions_message_id);
 

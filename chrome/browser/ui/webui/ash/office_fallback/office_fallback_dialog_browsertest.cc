@@ -108,8 +108,8 @@ class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
 };
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an
-// `OfficeFallbackElement`. Tests that the correct title is displayed when the
-// fallback reason is that the system is offline.
+// `OfficeFallbackElement`. Tests that the correct title and reason is displayed
+// when the fallback reason is that the system is offline.
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenOffline) {
   // Launch Office Fallback dialog.
@@ -119,14 +119,23 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
 
-  content::EvalJsResult eval_result =
+  content::EvalJsResult eval_result_title =
       content::EvalJs(web_contents,
                       "document.querySelector('office-fallback')"
                       ".$('#title').innerText");
-  EXPECT_EQ(eval_result.ExtractString(),
+  EXPECT_EQ(eval_result_title.ExtractString(),
             l10n_util::GetStringFUTF8(
                 IDS_OFFICE_FALLBACK_TITLE_OFFLINE,
                 files_.front().path().BaseName().LossyDisplayName()));
+
+  content::EvalJsResult eval_result_reason =
+      content::EvalJs(web_contents,
+                      "document.querySelector('office-fallback')"
+                      ".$('#reason-message').innerText");
+  const std::string application_name = "Google Docs";
+  EXPECT_EQ(eval_result_reason.ExtractString(),
+            l10n_util::GetStringFUTF8(IDS_OFFICE_FALLBACK_REASON_OFFLINE,
+                                      base::UTF8ToUTF16(application_name)));
 }
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an
@@ -173,8 +182,9 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
 }
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an
-// `OfficeFallbackElement`. Tests that the correct instructions are displayed
-// when the fallback reason is that Drive is unavailable for the account type.
+// `OfficeFallbackElement`. Tests that the correct reason and instructions are
+// displayed when the fallback reason is that Drive is unavailable for the
+// account type.
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenDriveDisabledForAccountType) {
   // Launch Office Fallback dialog.
@@ -184,13 +194,21 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
 
-  content::EvalJsResult eval_result =
+  content::EvalJsResult eval_result_instructions =
       content::EvalJs(web_contents,
                       "document.querySelector('office-fallback')"
                       ".$('#instructions-message').innerText");
-  EXPECT_EQ(eval_result.ExtractString(),
+  EXPECT_EQ(eval_result_instructions.ExtractString(),
             l10n_util::GetStringUTF8(
                 IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT));
+
+  content::EvalJsResult eval_result_reason =
+      content::EvalJs(web_contents,
+                      "document.querySelector('office-fallback')"
+                      ".$('#reason-message').innerText");
+  EXPECT_EQ(eval_result_reason.ExtractString(),
+            l10n_util::GetStringUTF8(
+                IDS_OFFICE_FALLBACK_REASON_DRIVE_DISABLED_FOR_ACCOUNT));
 }
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an
