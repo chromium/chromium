@@ -6,6 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_WIDGET_H_
 
 #include "ash/ash_export.h"
+#include "ash/bubble/bubble_event_filter.h"
 #include "base/time/time.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -14,6 +15,10 @@ namespace gfx {
 class Point;
 class Rect;
 }  // namespace gfx
+
+namespace ui {
+class LocatedEvent;
+}
 
 namespace ash {
 class PickerViewDelegate;
@@ -43,6 +48,11 @@ class ASH_EXPORT PickerWidget : public views::Widget {
                         const gfx::Rect& focused_window_bounds,
                         PickerViewDelegate* delegate,
                         base::TimeTicks trigger_event_timestamp);
+
+  void OnClickOutsideWidget(const ui::LocatedEvent& event);
+
+  // Used to close the Picker widget when the user clicks outside of it.
+  BubbleEventFilter bubble_event_filter_;
 };
 
 }  // namespace ash

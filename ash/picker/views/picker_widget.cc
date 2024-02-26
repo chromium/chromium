@@ -4,9 +4,12 @@
 
 #include "ash/picker/views/picker_widget.h"
 
+#include "ash/bubble/bubble_event_filter.h"
 #include "ash/picker/views/picker_view.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -102,9 +105,20 @@ PickerWidget::PickerWidget(const gfx::Rect& caret_bounds,
                                      cursor_point,
                                      focused_window_bounds,
                                      delegate,
-                                     trigger_event_timestamp)) {
+                                     trigger_event_timestamp)),
+      bubble_event_filter_(
+          /*widget=*/this,
+          /*button=*/nullptr,
+          // base::Unretained is safe here because this class owns
+          // `bubble_event_filter_.
+          base::BindRepeating(&PickerWidget::OnClickOutsideWidget,
+                              base::Unretained(this))) {
   SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_HIDE);
+}
+
+void PickerWidget::OnClickOutsideWidget(const ui::LocatedEvent& event) {
+  Close();
 }
 
 PickerWidget::~PickerWidget() = default;

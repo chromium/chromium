@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/ash_element_identifiers.h"
-#include "ash/bubble/bubble_event_filter.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
@@ -182,17 +181,10 @@ std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
 
 void PickerView::AddedToWidget() {
   session_metrics_.StartRecording(*GetWidget());
-  // `base::Unretained` is safe here because this class owns
-  // `bubble_event_filter_`.
-  bubble_event_filter_ = std::make_unique<BubbleEventFilter>(
-      GetWidget(), /*button=*/nullptr,
-      base::BindRepeating(&PickerView::OnClickOutsideWidget,
-                          base::Unretained(this)));
 }
 
 void PickerView::RemovedFromWidget() {
   session_metrics_.StopRecording();
-  bubble_event_filter_.reset();
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
@@ -280,12 +272,6 @@ void PickerView::SelectCategory(PickerCategory category) {
 void PickerView::PublishCategoryResults(
     std::vector<PickerSearchResultsSection> results) {
   category_view_->SetResults(results);
-}
-
-void PickerView::OnClickOutsideWidget(const ui::LocatedEvent& event) {
-  if (auto* widget = GetWidget()) {
-    widget->Close();
-  }
 }
 
 void PickerView::AddSearchFieldView() {

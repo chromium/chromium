@@ -506,20 +506,6 @@ TEST_F(PickerViewTest, PressingEscClosesPickerWidget) {
   EXPECT_TRUE(widget->IsClosed());
 }
 
-TEST_F(PickerViewTest, ClickingOutsideClosesPickerWidget) {
-  FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
-                                     kDefaultFocusedWindowBounds, &delegate);
-  widget->Show();
-
-  gfx::Point point_outside_widget = widget->GetWindowBoundsInScreen().origin();
-  point_outside_widget.Offset(-10, -10);
-  GetEventGenerator()->MoveMouseTo(point_outside_widget);
-  GetEventGenerator()->ClickLeftButton();
-
-  EXPECT_TRUE(widget->IsClosed());
-}
-
 TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
   base::HistogramTester histogram;
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(

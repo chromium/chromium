@@ -11,9 +11,11 @@
 #include "ash/test/ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_utils.h"
 
 namespace ash {
 namespace {
@@ -64,6 +66,20 @@ TEST_F(PickerWidgetTest, CreateWidgetHasCorrectBorder) {
                                      kDefaultFocusedWindowBounds, &delegate);
 
   EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
+}
+
+TEST_F(PickerWidgetTest, ClickingOutsideClosesPickerWidget) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
+                                     kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+
+  gfx::Point point_outside_widget = widget->GetWindowBoundsInScreen().origin();
+  point_outside_widget.Offset(-10, -10);
+  GetEventGenerator()->MoveMouseTo(point_outside_widget);
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(widget->IsClosed());
 }
 
 }  // namespace
