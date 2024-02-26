@@ -30,6 +30,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
+#include "local_desk_data_manager.h"
 
 namespace desks_storage {
 
@@ -186,6 +187,10 @@ LocalDeskDataManager::DeleteTaskResult::DeleteTaskResult(
     DeleteTaskResult&& other) = default;
 
 LocalDeskDataManager::DeleteTaskResult::~DeleteTaskResult() = default;
+
+void LocalDeskDataManager::SetupFloatingWorkspaceForTest() {
+  saved_desks_list_[ash::DeskTemplateType::kFloatingWorkspace];
+}
 
 DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
   std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries;

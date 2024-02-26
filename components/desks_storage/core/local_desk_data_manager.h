@@ -119,6 +119,9 @@ class LocalDeskDataManager : public DeskModel, public AdminTemplateModel {
   // AdminTemplateModel:
   void UpdateEntry(std::unique_ptr<ash::DeskTemplate> entry) override;
 
+  // This must be called after the class has been initialized and ready in the
+  // test.
+  void SetupFloatingWorkspaceForTest();
   static void SetDisableMaxTemplateLimitForTesting(bool disabled);
 
  private:

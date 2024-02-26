@@ -70,8 +70,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
       continue;
     }
 
-    if (template_type == DeskTemplateType::kFloatingWorkspace ||
-        template_type == DeskTemplateType::kTemplate) {
+    if (template_type == DeskTemplateType::kFloatingWorkspace) {
       // Filter the windows by profile ID associated with each window. Only save
       // the windows that are attached to the primary profile ID. For lacros,
       // the window profile id is non-zero. We can skip this check if it's on
