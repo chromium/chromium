@@ -6,6 +6,7 @@
 
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/browser/core_bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -53,8 +54,7 @@ class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
     return
         [[BookmarkActivity alloc] initWithURL:URL
                                         title:kTestTitle
-                 localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
-                         accountBookmarkModel:account_bookmark_model_
+                                bookmarkModel:local_or_syncable_bookmark_model_
                                       handler:mocked_handler_
                                   prefService:&testing_pref_service_];
   }
@@ -82,8 +82,7 @@ TEST_F(BookmarkActivityTest, NilBookmarkModel_NoCrash) {
   BookmarkActivity* activity =
       [[BookmarkActivity alloc] initWithURL:GURL("https://example.com/")
                                       title:kTestTitle
-               localOrSyncableBookmarkModel:nil
-                       accountBookmarkModel:nil
+                              bookmarkModel:nil
                                     handler:mocked_handler_
                                 prefService:&testing_pref_service_];
 

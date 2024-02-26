@@ -56,15 +56,14 @@ class ActivityServiceMediatorTest : public PlatformTest {
         OCMStrictClassMock([ChromeActivityItemThumbnailGenerator class]);
 
     mediator_ = [[ActivityServiceMediator alloc]
-                     initWithHandler:mocked_handler_
-                    bookmarksHandler:mocked_bookmarks_handler_
-                 qrGenerationHandler:mocked_qr_generation_handler_
-                         prefService:pref_service_.get()
-        localOrSyncableBookmarkModel:nil
-                accountBookmarkModel:nil
-                  baseViewController:nil
-                     navigationAgent:nil
-             readingListBrowserAgent:nil];
+                initWithHandler:mocked_handler_
+               bookmarksHandler:mocked_bookmarks_handler_
+            qrGenerationHandler:mocked_qr_generation_handler_
+                    prefService:pref_service_.get()
+                  bookmarkModel:nil
+             baseViewController:nil
+                navigationAgent:nil
+        readingListBrowserAgent:nil];
 
     pref_service_->registry()->RegisterBooleanPref(prefs::kPrintingEnabled,
                                                    true);

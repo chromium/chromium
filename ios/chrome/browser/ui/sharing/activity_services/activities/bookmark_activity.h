@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 namespace bookmarks {
-class BookmarkModel;
+class CoreBookmarkModel;
 }
 
 @protocol BookmarksCommands;
@@ -23,13 +23,10 @@ class PrefService;
 // `handler` is used to add the page to the bookmarks. The `prefService` is used
 // to verify if the user can edit their bookmarks or not.
 - (instancetype)initWithURL:(const GURL&)URL
-                           title:(NSString*)title
-    localOrSyncableBookmarkModel:
-        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
-            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
-                         handler:(id<BookmarksCommands>)handler
-                     prefService:(PrefService*)prefService
-    NS_DESIGNATED_INITIALIZER;
+                      title:(NSString*)title
+              bookmarkModel:(bookmarks::CoreBookmarkModel*)bookmarkModel
+                    handler:(id<BookmarksCommands>)handler
+                prefService:(PrefService*)prefService NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
