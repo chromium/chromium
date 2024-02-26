@@ -106,6 +106,18 @@ suite('<settings-internet-subpage>', () => {
     await flushTasks();
   }
 
+  async function initSubpageForTether(): Promise<void> {
+    internetSubpage = document.createElement('settings-internet-subpage');
+
+    mojoApi.resetForTest();
+    mojoApi.setNetworkTypeEnabledState(NetworkType.kTether, true);
+    mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+
+    document.body.appendChild(internetSubpage);
+    internetSubpage.init();
+    await flushTasks();
+  }
+
   teardown(() => {
     internetSubpage.remove();
     mojoApi.resetForTest();
@@ -650,6 +662,86 @@ suite('<settings-internet-subpage>', () => {
         assertTrue(!!networkAlwaysOnVpn);
         // The list should contain 2 compatible networks.
         assertEquals(2, networkAlwaysOnVpn.networks.length);
+      });
+
+      test('Instant Hotspot page initiates tether scanning', async () => {
+        loadTimeData.overrideValues({
+          'isInstantHotspotRebrandEnabled': true,
+        });
+        await initSubpageForTether();
+        mojoApi.addNetworksForTest(
+            [OncMojo.getDefaultNetworkState(NetworkType.kTether, 'tether1')]);
+
+        internetSubpage.defaultNetwork =
+            OncMojo.getDefaultNetworkState(NetworkType.kTether, 'tether1');
+        internetSubpage.deviceState =
+            mojoApi.getDeviceStateForTest(NetworkType.kTether) || undefined;
+
+        mojoApi.setDeviceStateForTest({
+          type: NetworkType.kTether,
+          deviceState: DeviceStateType.kEnabled,
+          scanning: false,
+          ipv4Address: undefined,
+          ipv6Address: undefined,
+          imei: undefined,
+          macAddress: undefined,
+          simLockStatus: undefined,
+          simInfos: undefined,
+          inhibitReason: InhibitReason.kNotInhibited,
+          simAbsent: false,
+          managedNetworkAvailable: false,
+          serial: undefined,
+          isCarrierLocked: false,
+        });
+        assertFalse(mojoApi.getIsDeviceScanning(NetworkType.kTether));
+
+        internetSubpage.init();
+        await flushTasks();
+
+        assertTrue(mojoApi.getIsDeviceScanning(NetworkType.kTether));
+      });
+
+      [false, true].forEach(isInstantHotspotRebrandEnabled => {
+        test('Cellular page does not initiate tether scanning', async () => {
+          loadTimeData.overrideValues({
+            'isInstantHotspotRebrandEnabled': isInstantHotspotRebrandEnabled,
+          });
+          await initSubpageForTether();
+          mojoApi.addNetworksForTest([OncMojo.getDefaultNetworkState(
+              NetworkType.kCellular, 'cellular1')]);
+          internetSubpage.defaultNetwork = OncMojo.getDefaultNetworkState(
+              NetworkType.kCellular, 'cellular1');
+          internetSubpage.deviceState =
+              mojoApi.getDeviceStateForTest(NetworkType.kCellular) || undefined;
+          internetSubpage.tetherDeviceState =
+              mojoApi.getDeviceStateForTest(NetworkType.kTether) || undefined;
+
+          mojoApi.setDeviceStateForTest({
+            type: NetworkType.kTether,
+            deviceState: DeviceStateType.kEnabled,
+            scanning: false,
+            ipv4Address: undefined,
+            ipv6Address: undefined,
+            imei: undefined,
+            macAddress: undefined,
+            simLockStatus: undefined,
+            simInfos: undefined,
+            inhibitReason: InhibitReason.kNotInhibited,
+            simAbsent: false,
+            managedNetworkAvailable: false,
+            serial: undefined,
+            isCarrierLocked: false,
+          });
+          assertFalse(mojoApi.getIsDeviceScanning(NetworkType.kTether));
+
+          internetSubpage.init();
+          await flushTasks();
+          if (isInstantHotspotRebrandEnabled) {
+            assertFalse(mojoApi.getIsDeviceScanning(NetworkType.kTether));
+          } else {
+            assertTrue(mojoApi.getIsDeviceScanning(NetworkType.kTether));
+          }
+        });
       });
     });
   });

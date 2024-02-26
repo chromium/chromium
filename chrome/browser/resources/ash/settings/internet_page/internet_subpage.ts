@@ -441,15 +441,10 @@ export class SettingsInternetSubpageElement extends
       return true;
     }
 
-    // Scans should be kicked off from the Mobile data subpage, as long as it
-    // includes Tether networks.
-    if (this.deviceState.type === NetworkType.kTether ||
+    // Scans should be kicked off from the new Instant Hotspot page.
+    return this.deviceState.type === NetworkType.kTether ||
         (this.deviceState.type === NetworkType.kCellular &&
-         this.tetherDeviceState)) {
-      return true;
-    }
-
-    return false;
+         !!this.tetherDeviceState && !this.isInstantHotspotRebrandEnabled_);
   }
 
   private startScanning_(): void {
@@ -458,7 +453,8 @@ export class SettingsInternetSubpageElement extends
     }
     const INTERVAL_MS = 10 * 1000;
     let type = this.deviceState!.type;
-    if (type === NetworkType.kCellular && this.tetherDeviceState) {
+    if (!this.isInstantHotspotRebrandEnabled_ &&
+        type === NetworkType.kCellular && this.tetherDeviceState) {
       // Only request tether scan. Cellular scan is disruptive and should
       // only be triggered by explicit user action.
       type = NetworkType.kTether;

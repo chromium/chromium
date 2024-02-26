@@ -573,6 +573,16 @@ export class FakeNetworkConfig {
   }
 
   /**
+   * @param {!NetworkType} type
+   * @return {boolean}
+   */
+  getIsDeviceScanning(type) {
+    const deviceState = this.deviceStates_.get(type);
+    assert(!!deviceState);
+    return deviceState.scanning;
+  }
+
+  /**
    * @param {!CellularSimState} cellularSimState
    * @return {!Promise<{success: boolean}>}
    */
@@ -656,6 +666,9 @@ export class FakeNetworkConfig {
 
   /** @param {!NetworkType } type */
   requestNetworkScan(type) {
+    this.deviceStates_.get(type).scanning = true;
+    this.onDeviceStateListChanged();
+
     this.methodCalled('requestNetworkScan');
   }
 
