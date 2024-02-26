@@ -12,7 +12,9 @@ import argparse
 import logging
 import sys
 
+import builders
 import cipd
+import recipe
 
 
 def add_common_args(parser):
@@ -82,9 +84,28 @@ def main():
   args = parse_args()
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
-  cipd.fetch_recipe_bundle(args.verbose)
+  bundle_root = cipd.fetch_recipe_bundle(args.verbose)
+  builder_props = builders.find_builder_props(args.bucket, args.builder)
+  if not builder_props:
+    return 1
 
-  # TODO(crbug.com/41492688): Draw the rest of the owl.
+  skip_compile = args.run_mode == 'test'
+  skip_test = args.run_mode == 'compile'
+  recipe_runner = recipe.LegacyRunner(
+      bundle_root,
+      builder_props,
+      args.bucket,
+      args.builder,
+      args.test,
+      skip_compile,
+      skip_test,
+      args.build_dir,
+  )
+  # TODO(crbug.com/41492688): Add a more rich channel of output from the UTR
+  # rather than simply exit code, and use that to send Y/N prompts to the user
+  # to control/override default behavior (eg: using pre-builts with incorrect
+  # GN args).
+  return recipe_runner.run_recipe()
 
 
 if __name__ == '__main__':

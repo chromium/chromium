@@ -46,3 +46,4 @@ def fetch_recipe_bundle(is_verbose):
   # The stdout of `cipd install` seems noisy, and all useful logs appear to go
   # to stderr anyway.
   subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+  return _CIPD_ROOT_DIR
