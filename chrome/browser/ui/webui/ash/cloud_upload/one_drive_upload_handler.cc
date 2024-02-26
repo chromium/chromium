@@ -156,7 +156,7 @@ bool OneDriveUploadHandler::FileAlreadyBeingUploaded() {
     }
 
     // Check upload to ODFS tasks.
-    if (!UrlIsOnODFS(profile_, status.get().GetDestinationFolder())) {
+    if (!UrlIsOnODFS(status.get().GetDestinationFolder())) {
       continue;
     }
 

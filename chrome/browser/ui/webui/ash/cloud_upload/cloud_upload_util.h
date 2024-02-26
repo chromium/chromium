@@ -353,7 +353,7 @@ bool IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
 
 // Returns true if url refers to an entry on any current mount provided by the
 // ODFS file system provider.
-bool UrlIsOnODFS(Profile* profile, const storage::FileSystemURL& url);
+bool UrlIsOnODFS(const storage::FileSystemURL& url);
 
 // Get ODFS metadata as actions by doing a special GetActions request (for the
 // root directory) and return the actions to |OnODFSMetadataActions| which will

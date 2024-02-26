@@ -422,7 +422,7 @@ bool CloudOpenTask::MaybeRunFixupFlow() {
 void CloudOpenTask::OpenOrMoveFiles() {
   // Record the source volume type of the opened file.
   OfficeFilesSourceVolume source_volume;
-  if (UrlIsOnODFS(profile_, file_urls_.front())) {
+  if (UrlIsOnODFS(file_urls_.front())) {
     source_volume = OfficeFilesSourceVolume::kMicrosoftOneDrive;
   } else if (UrlIsOnAndroidOneDrive(profile_, file_urls_.front())) {
     source_volume = OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider;

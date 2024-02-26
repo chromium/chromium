@@ -266,7 +266,7 @@ bool IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled(
          IsODFSInstalled(profile);
 }
 
-bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url) {
+bool UrlIsOnODFS(const FileSystemURL& url) {
   ash::file_system_provider::util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
     return false;

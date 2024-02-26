@@ -260,8 +260,7 @@ void CopyOrMoveIOTaskImpl::VerifyTransfer() {
   // Prevent files being copied or moved to ODFS if there is a managed user
   // present amongst other logged in users. Ensures managed user's files can't
   // be leaked to a non-managed user's ODFS b/278644796.
-  if (ash::cloud_upload::UrlIsOnODFS(profile_,
-                                     progress_->GetDestinationFolder()) &&
+  if (ash::cloud_upload::UrlIsOnODFS(progress_->GetDestinationFolder()) &&
       user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1) {
     // Check none of the logged in users are managed.
     for (user_manager::User* user :
