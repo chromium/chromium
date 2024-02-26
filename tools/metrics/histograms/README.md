@@ -658,17 +658,29 @@ courtesy to ask them for approval.
 
 ### Components
 
-Histograms may be associated with components, which can help make sure that
+Histograms may be associated with a component, which can help make sure that
 histogram expiry bugs don't fall through the cracks.
 
-There are two ways in which components may be associated with a histogram. The
-first and recommended way is to add a tag to a histogram or histogram suffix,
-e.g. <component>UI&gt;Shell</component>. The second way is to specify an OWNERS
-file as a secondary owner for a histogram. If the OWNERS file has an adjacent
-DIR_METADATA file that contains a component, then that component is associated
-with the histogram. If there isn't a parallel DIR_METADATA file with such a
-component, but a parent directory has one, then the parent directory's component
-is used.
+A histogram is associated with the `buganizer_public` component listed in the
+DIR_METADATA file adjacent to the histograms.xml file if present.
+
+There are two other ways in which components may be associated with a
+histogram. The first way is to add a tag containing the component ID to a
+histogram or histogram suffix, e.g. <component>1456399</component>. The second
+way is to specify an OWNERS file as a secondary owner for a histogram. If the
+OWNERS file has an adjacent DIR_METADATA file that contains a
+`buganizer_public` component, then that component is associated with the
+histogram. If there isn't a parallel DIR_METADATA file with such a component,
+but an ancestor directory has one, then the ancestor directory's component is
+used.
+
+If more than one component is associated with a histogram, <component> tag is
+favored over adjacent DIR_METADATA file and over OWNERS file.
+
+**Note:** For non-Chromium Issue Tracker (ChromeOS Public Tracker or internal)
+components, make sure uma-tools@prod.google.com has access to create and
+update issues.
+
 
 ### Improvement Direction
 For some histograms, an increase or a decrease in the reported values can be

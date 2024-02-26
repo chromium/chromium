@@ -166,26 +166,6 @@ def MergeTrees(trees, should_expand_owners):
   return doc
 
 
-def _GetComponentFromMetadataFile(filename):
-  """Extracts a component string from the metadata file.
-
-  Args:
-    filename: The filename for the metadata file.
-
-  Returns:
-    The component name as a string.
-  """
-  with open(filename, 'r') as f:
-    for line in f.read().splitlines():
-      # component line looks like '[\s+]component: "name"[\s+]'.
-      line = line.strip()
-      if line.startswith('component:'):
-        component = line[line.find('"') + 1:-1]
-        if component:
-          return component
-  return None
-
-
 def _AddComponentFromMetadataFile(tree, filename):
   """Adds the component from the metadata file to the DOM tree.
 
@@ -196,7 +176,7 @@ def _AddComponentFromMetadataFile(tree, filename):
   Returns:
     The updated tree with the component (optionally) added.
   """
-  component = _GetComponentFromMetadataFile(filename)
+  component = expand_owners.ExtractComponentViaDirmd(os.path.dirname(filename))
   if component:
     histograms = tree.getElementsByTagName('histograms')
     if histograms:

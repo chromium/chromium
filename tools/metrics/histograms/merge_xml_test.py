@@ -230,7 +230,7 @@ class MergeXmlTest(unittest.TestCase):
 
   def testMergeFiles_WithComponentMetadata(self):
     merged = merge_xml.PrettyPrintMergedFiles(
-        [histogram_paths.TEST_XML_WITH_COMPONENTS_RELATIVE])
+        [histogram_paths.TEST_XML_WITH_COMPONENTS])
     expected_merged_xml = """
 <histogram-configuration>
 
@@ -241,7 +241,7 @@ class MergeXmlTest(unittest.TestCase):
 <histogram name="Test.Histogram" units="seconds" expires_after="M104">
   <owner>person@chromium.org</owner>
   <owner>team-alias@chromium.org</owner>
-  <component>Test&gt;Component</component>
+  <component>45678</component>
   <summary>Summary 2</summary>
 </histogram>
 
@@ -250,7 +250,7 @@ class MergeXmlTest(unittest.TestCase):
   <owner>uma@chromium.org</owner>
   <owner>team-alias@chromium.org</owner>
   <component>First&gt;Component</component>
-  <component>Test&gt;Component</component>
+  <component>45678</component>
   <summary>A enum histogram.</summary>
 </histogram>
 

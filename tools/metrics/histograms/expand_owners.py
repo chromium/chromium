@@ -207,14 +207,9 @@ def _ComponentFromDirmd(json_data, subpath):
     json_data: json object output from dirmd.
     subpath: The subpath for the directory being queried, e.g. src/storage'.
   """
-  dirmd = json_data.get('dirs', {}).get(subpath, {})
-  # If a public Buganizer component is listed, return its component ID.
-  if buganizer_component := dirmd.get('buganizerPublic',
-                                      {}).get('componentId', ''):
-    return buganizer_component
-  # If no component exists for the directory, or if METADATA migration is
-  # incomplete there will be no component information.
-  return dirmd.get('monorail', {}).get('component', '')
+  return json_data.get('dirs', {}).get(subpath,
+                                       {}).get('buganizerPublic',
+                                               {}).get('componentId', '')
 
 
 # Memoize decorator from: https://stackoverflow.com/a/1988826
@@ -228,48 +223,6 @@ class Memoize:
     if not args in self.memo:
       self.memo[args] = self.f(*args)
     return self.memo[args]
-
-
-@Memoize
-def _ExtractComponentViaDirmd(path):
-  """Returns the component for Buganizer issues at the given path.
-
-  Examples are '1287811' for Buganizer and 'UI>Shell>Launcher' for Monorail.
-
-  Uses dirmd in third_party/depot_tools to parse metadata and walk parent
-  directories up to the top level of the repo.
-
-  Returns a Monorail component if no Buganizer component can be extracted.
-
-  Returns an empty string if no component can be extracted.
-
-  Args:
-    path: The path to a directory to query, e.g. 'src/storage'.
-  """
-  # Verify that the paths are absolute and the root is a parent of the
-  # passed in path.
-  root_path = os.path.abspath(os.path.join(*DIR_ABOVE_TOOLS))
-  path = os.path.abspath(path)
-  if not path.startswith(root_path):
-    raise Error('Path {} is not a subpath of the root path {}.'.format(
-        path, root_path))
-  subpath = path[len(root_path) + 1:] or '.'  # E.g. content/public.
-  dirmd_exe = 'dirmd'
-  if sys.platform == 'win32':
-    dirmd_exe = 'dirmd.bat'
-  dirmd_path = os.path.join(*(DIR_ABOVE_TOOLS +
-                              ['third_party', 'depot_tools', dirmd_exe]))
-  dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
-  dirmd = subprocess.Popen(
-      dirmd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  if dirmd.wait() != 0:
-    raise Error('dirmd failed: "' + ' '.join(dirmd_command) + '": ' +
-                dirmd.stderr.read().decode('utf-8'))
-  json_out = json.load(dirmd.stdout)
-  # On Windows, dirmd output still uses Unix path separators.
-  if sys.platform == 'win32':
-    subpath = subpath.replace('\\', '/')
-  return _ComponentFromDirmd(json_out, subpath)
 
 
 def _MakeOwners(document, path, emails_with_dom_elements):
@@ -335,6 +288,47 @@ def _UpdateHistogramOwners(histogram, owner_to_replace, owners_to_add):
     else:
       _AddTextNodeWithNewLineAndIndent(histogram, node_after_owners_file)
       histogram.insertBefore(owner_to_add, node_after_owners_file)
+
+
+@Memoize
+def ExtractComponentViaDirmd(path):
+  """Returns the component for Buganizer issues at the given path.
+
+  Examples are '1287811' and '1456399'.
+
+  Uses dirmd in third_party/depot_tools to parse metadata and walk parent
+  directories up to the top level of the repo.
+
+  Returns an empty string if no component can be extracted.
+
+  Args:
+    path: The path to a directory to query, e.g. 'src/storage'.
+  """
+  # Verify that the paths are absolute and the root is a parent of the
+  # passed in path.
+  root_path = os.path.abspath(os.path.join(*DIR_ABOVE_TOOLS))
+  path = os.path.abspath(path)
+  if not path.startswith(root_path):
+    raise Error('Path {} is not a subpath of the root path {}.'.format(
+        path, root_path))
+  subpath = path[len(root_path) + 1:] or '.'  # E.g. content/public.
+  dirmd_exe = 'dirmd'
+  if sys.platform == 'win32':
+    dirmd_exe = 'dirmd.bat'
+  dirmd_path = os.path.join(*(DIR_ABOVE_TOOLS +
+                              ['third_party', 'depot_tools', dirmd_exe]))
+  dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
+  dirmd = subprocess.Popen(dirmd_command,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+  if dirmd.wait() != 0:
+    raise Error('dirmd failed: "' + ' '.join(dirmd_command) + '": ' +
+                dirmd.stderr.read().decode('utf-8'))
+  json_out = json.load(dirmd.stdout)
+  # On Windows, dirmd output still uses Unix path separators.
+  if sys.platform == 'win32':
+    subpath = subpath.replace('\\', '/')
+  return _ComponentFromDirmd(json_out, subpath)
 
 
 def AddHistogramComponent(histogram, component):
@@ -409,7 +403,7 @@ def ExpandHistogramsOWNERS(histograms):
 
       _UpdateHistogramOwners(histogram, owner, owners_to_add)
 
-      component = _ExtractComponentViaDirmd(os.path.dirname(path))
+      component = ExtractComponentViaDirmd(os.path.dirname(path))
       if component and component not in components_with_dom_elements:
         components_with_dom_elements.add(component)
         AddHistogramComponent(histogram, component)
