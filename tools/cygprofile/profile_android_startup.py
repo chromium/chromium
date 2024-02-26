@@ -193,7 +193,7 @@ class AndroidProfileTool:
 
   def __init__(self,
                output_directory,
-               host_profile_dir,
+               host_profile_root,
                use_wpr,
                urls,
                simulate_user,
@@ -204,7 +204,7 @@ class AndroidProfileTool:
 
     Args:
       output_directory: (str) Chrome build directory.
-      host_profile_dir: (str) Where to store the profiles on the host.
+      host_profile_root: (str) Where to store the profiles on the host.
       use_wpr: (bool) Whether to use Web Page Replay.
       urls: (str) URLs to load. Have to be contained in the WPR archive if
                   use_wpr is True.
@@ -218,7 +218,7 @@ class AndroidProfileTool:
     self._device = device
     self._cygprofile_tests = os.path.join(
         output_directory, 'cygprofile_unittests')
-    self._host_profile_dir = host_profile_dir
+    self._host_profile_root = host_profile_root
     self._use_wpr = use_wpr
     self._urls = urls
     self._simulate_user = simulate_user
@@ -290,9 +290,56 @@ class AndroidProfileTool:
     # TODO(crbug.com/324927538): Remove after debugging.
     if self._verbosity >= 4:
       print(self._device.adb.Logcat(dump=True))
-    data = self._PullProfileData()
+    data = self._PullProfileData(profile_benchmark)
     self._DeleteDeviceData()
     return data
+
+  def CollectWebViewStartupProfile(self, apk):
+    """Run the given benchmark and collect the generated profiles.
+
+    Args:
+      apk: The location of the webview apk file to profile.
+
+    Returns:
+      A list of profile hitmaps.
+
+    Raises:
+      NoProfileDataError: No data was found on the device
+    """
+    # TODO(rasikan): Add support for pregenerated profiles.
+    logging.info('Running webview startup profile')
+    self._SetUpDeviceFolders()
+
+    package_info = self._GetPackageInfo(apk)
+    changer = self._SetCommandLineFlags(package_info)
+
+    chromium_out_dir = os.path.abspath(os.path.join(os.path.dirname(apk), '..'))
+    browser = self._GetBrowserFromApk(apk)
+
+    profile_benchmark = 'orderfile_generation.webview_startup'
+    if self._debug:
+      logging.info('Using reduced debugging profile')
+      profile_benchmark = 'orderfile_generation.webview_startup_debugging'
+    self._RunCommand([
+        'tools/perf/run_benchmark', '--device', self._device.serial,
+        '--browser', browser, '--chromium-output-directory', chromium_out_dir,
+        profile_benchmark
+    ])
+    self._RestoreCommandLineFlags(changer)
+
+    data = self._PullProfileData(profile_benchmark)
+    self._DeleteDeviceData()
+    return data
+
+  @staticmethod
+  def _GetBrowserFromApk(apk):
+    browser = 'android-webview'
+    apk_name = os.path.basename(apk)
+    if 'TrichromeWebView' in apk_name:
+      browser = browser + '-trichrome'
+    if 'Monochrome.apk' in apk_name or 'Google' in apk_name:
+      browser = browser + '-google'
+    return browser
 
   @classmethod
   def _RunCommand(cls, command):
@@ -347,7 +394,7 @@ class AndroidProfileTool:
   def Cleanup(self):
     """Delete all local and device files left over from profiling. """
     self._DeleteDeviceData()
-    self._DeleteHostData()
+    self._DeleteHostData(self._host_profile_root)
 
   def _Install(self, apk):
     """Installs Chrome.apk on the device.
@@ -375,15 +422,23 @@ class AndroidProfileTool:
       #                 conversions are finished.
       logging.error(str(e))
 
-  def _SetChromeFlags(self, package_info):
-    print('Setting Chrome flags...')
+  @staticmethod
+  def _GetPackageInfo(apk_path):
+    apk = apk_helper.ApkHelper(apk_path)
+    for _, p in constants.PACKAGE_INFO.items():
+      if p.package == apk.GetPackageName():
+        return p
+    raise Exception('Unable to determine package info for %s' % apk_path)
+
+  def _SetCommandLineFlags(self, package_info):
+    print('Setting command line flags for {}...'.format(package_info.package))
     changer = flag_changer.FlagChanger(
         self._device, package_info.cmdline_file)
     changer.AddFlags(['--no-sandbox', '--disable-fre'])
     return changer
 
-  def _RestoreChromeFlags(self, changer):
-    print('Restoring Chrome flags...')
+  def _RestoreCommandLineFlags(self, changer):
+    print('Restoring command line flags...')
     if changer:
       changer.Restore()
 
@@ -418,16 +473,22 @@ class AndroidProfileTool:
   def _KillChrome(self, package_info):
     self._device.ForceStop(package_info.package)
 
-  def _DeleteHostData(self):
+  def _DeleteHostData(self, host_profile_dir):
     """Clears out profile storage locations on the host."""
-    shutil.rmtree(self._host_profile_dir, ignore_errors=True)
+    shutil.rmtree(host_profile_dir, ignore_errors=True)
 
-  def _SetUpHostFolders(self):
-    self._DeleteHostData()
-    os.mkdir(self._host_profile_dir)
+  def _SetUpHostFolders(self, host_profile_dir):
+    self._DeleteHostData(host_profile_dir)
+    os.makedirs(host_profile_dir, exist_ok=False)
 
-  def _PullProfileData(self):
+  def _PullProfileData(self, profile_subdir):
     """Pulls the profile data off of the device.
+
+    Args:
+      profile_subdir: The subdirectory name to store the profiles. This is
+                      useful when multiple profiles are collected
+                      e.g. memory mobile and webview startup will be stored
+                      in separate subdirectories in the _host_profile_root.
 
     Returns:
       A list of profile data files which were pulled.
@@ -435,9 +496,14 @@ class AndroidProfileTool:
     Raises:
       NoProfileDataError: No data was found on the device.
     """
-    print('Pulling profile data...')
-    self._SetUpHostFolders()
-    self._device.PullFile(self._DEVICE_PROFILE_DIR, self._host_profile_dir,
+    host_profile_dir = self._host_profile_root
+    if profile_subdir:
+      host_profile_dir = os.path.join(host_profile_dir, profile_subdir)
+    print('Pulling profile data into {}...'.format(host_profile_dir))
+
+    self._SetUpHostFolders(host_profile_dir)
+    self._device.PullFile(self._DEVICE_PROFILE_DIR,
+                          host_profile_dir,
                           timeout=300)
 
     # Temporary workaround/investigation: if (for unknown reason) 'adb pull' of
@@ -446,13 +512,13 @@ class AndroidProfileTool:
     # '...profile_data/files', list the files deeper in the tree.
     files = []
     redundant_dir_root = os.path.basename(self._DEVICE_PROFILE_DIR)
-    for root_file in os.listdir(self._host_profile_dir):
+    for root_file in os.listdir(host_profile_dir):
       if root_file == redundant_dir_root:
-        profile_dir = os.path.join(self._host_profile_dir, root_file)
+        profile_dir = os.path.join(host_profile_dir, root_file)
         files.extend(os.path.join(profile_dir, f)
                      for f in os.listdir(profile_dir))
       else:
-        files.append(os.path.join(self._host_profile_dir, root_file))
+        files.append(os.path.join(host_profile_dir, root_file))
 
     if len(files) == 0:
       raise NoProfileDataError('No profile data was collected')
@@ -503,10 +569,12 @@ def main():
     trace_directory = os.path.join(args.output_directory, 'profile_data')
   devices = device_utils.DeviceUtils.HealthyDevices()
   assert devices, 'Expected at least one connected device'
-  profiler = AndroidProfileTool(
-      args.output_directory, host_profile_dir=trace_directory,
-      use_wpr=not args.no_wpr, urls=args.urls, simulate_user=args.simulate_user,
-      device=devices[0])
+  profiler = AndroidProfileTool(args.output_directory,
+                                host_profile_root=trace_directory,
+                                use_wpr=not args.no_wpr,
+                                urls=args.urls,
+                                simulate_user=args.simulate_user,
+                                device=devices[0])
   profiler.CollectSystemHealthProfile(args.apk_path)
   return 0
 

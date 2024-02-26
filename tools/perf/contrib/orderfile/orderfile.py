@@ -293,3 +293,43 @@ class OrderfileMemory(system_health.MobileMemorySystemHealth):
   @classmethod
   def Name(cls):
     return 'orderfile.memory_mobile'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileWebViewStartup(system_health.WebviewStartupSystemHealthBenchmark
+                              ):
+  """Benchmark for orderfile generation with WebView startup profiles.
+
+  We need this class to wrap the system_health.webview_startup benchmark so
+  we can apply the additional configs that trigger the devtools memory dump.
+  We rely on the devtools memory dump to collect the profiles, even though
+  this is a startup profile. The reason for this is so we can avoid rebuilding
+  the native library between benchmarks, as the memory_mobile based benchmarks
+  use this. Rebuilidng/relinking would make it difficult to merge the offsets.
+  TODO(b/326927766): remove the devtools_instrumentation_dumping compiler flag
+  so we can switch to startup profiling for webview startup.
+  """
+
+  def CreateStorySet(self, options):
+    return system_health_stories.SystemHealthBlankStorySet(
+        take_memory_measurement=True)
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
+        filter_string='-*,disabled-by-default-memory-infra')
+    options = timeline_based_measurement.Options(cat_filter)
+    return options
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.webview_startup'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileWebViewDebugging(OrderfileWebViewStartup):
+  """A very short benchmark for debugging metrics collection."""
+  options = {'pageset_repeat': 1}
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.webview_startup_debugging'

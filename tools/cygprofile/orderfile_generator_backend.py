@@ -235,41 +235,78 @@ class StepRecorder:
     return process.returncode
 
 
+class NativeLibraryBuildVariant:
+  """Native library build versions.
+  See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_native_libraries.md # pylint: disable=line-too-long
+  for more details.
+  """
+  MONOCHROME = 0
+  TRICHROME = 1
+
+
 class ClankCompiler:
   """Handles compilation of clank."""
 
-  def __init__(self, out_dir, step_recorder, arch, use_goma, goma_dir,
-               use_remoteexec, ninja_command, public, orderfile_location):
+  def __init__(self, out_dir, step_recorder, options, orderfile_location,
+               native_library_build_variant):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
-    self._arch = arch
-    # TODO(b/236070141): remove goma config.
-    self._use_goma = use_goma
-    self._goma_dir = goma_dir
-    self._use_remoteexec = use_remoteexec
-    self._ninja_command = ninja_command
-    self._public = public
+    self._options = options
     self._orderfile_location = orderfile_location
-    self._apk = 'Monochrome.apk'
-    self._apk_target = 'monochrome_apk'
-    if '64' in self._arch:
-      # Monochrome has a _64 suffix for arm64 and x64 builds.
-      self._libname = 'libmonochrome_64'
-      self._libchrome_target = 'libmonochrome_64'
-    else:
-      self._libname = 'libmonochrome'
-      self._libchrome_target = 'libmonochrome'
-    if public:
-      self._apk = self._apk.replace('.apk', 'Public.apk')
-      self._apk_target = self._apk_target.replace('_apk', '_public_apk')
+    self._native_library_build_variant = native_library_build_variant
 
-    self.obj_dir = os.path.join(self._out_dir, 'Release', 'obj')
-    self.lib_chrome_so = os.path.join(
-        self._out_dir, 'Release', 'lib.unstripped',
-        '{}.so'.format(self._libname))
-    self.chrome_apk = os.path.join(self._out_dir, 'Release', 'apks', self._apk)
+    self._ninja_command = ['autoninja']
+    if options.ninja_path:
+      self._ninja_command = [options.ninja_path]
+    if self._options.ninja_j:
+      self._ninja_command += ['-j', ninja_j]
+    self._ninja_command += ['-C']
 
-  def Build(self, instrumented, use_call_graph, target):
+    # WebView targets
+    self._webview_target, webview_apk = self._GetWebViewTargetAndApk(
+        native_library_build_variant, options.public, options.arch)
+    self.webview_apk_path = os.path.join(out_dir, 'Release', 'apks',
+                                         webview_apk)
+
+    # Chrome targets
+    self._chrome_target, chrome_apk = self._GetChromeTargetAndApk(
+        options.public)
+    self.chrome_apk_path = os.path.join(out_dir, 'Release', 'apks', chrome_apk)
+
+    self._libchrome_target = self._GetLibchromeTarget(options.arch)
+    self.lib_chrome_so = os.path.join(out_dir, 'Release', 'lib.unstripped',
+                                      '{}.so'.format(self._libchrome_target))
+
+  def _GenerateGnArgs(self, instrumented, use_call_graph):
+    assert not use_call_graph or instrumented, ('You can not enable call graph '
+                                                'without instrumentation!')
+    # Set the "Release Official" flavor, the parts affecting performance.
+    gn_args = [
+        'enable_resource_allowlist_generation=false',
+        'is_chrome_branded=' + str(not self._options.public).lower(),
+        'is_debug=false',
+        'is_official_build=true',
+        'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
+        'target_os="android"',
+        # TODO(b/236070141): remove goma config.
+        'use_goma=' + str(self._options.use_goma).lower(),
+        'use_remoteexec=' + str(self._options.use_remoteexec).lower(),
+        'use_order_profiling=' + str(instrumented).lower(),
+        'use_call_graph=' + str(use_call_graph).lower(),
+        'devtools_instrumentation_dumping=' + str(instrumented).lower()
+    ]
+    gn_args += _ARCH_GN_ARGS[self._options.arch]
+    if self._options.goma_dir:
+      gn_args += ['goma_dir="%s"' % self._options.goma_dir]
+
+    if self._options.public and os.path.exists(self._orderfile_location):
+      # GN needs the orderfile path to be source-absolute.
+      src_abs_orderfile = os.path.relpath(self._orderfile_location,
+                                          constants.DIR_SOURCE_ROOT)
+      gn_args += ['chrome_orderfile_path="//{}"'.format(src_abs_orderfile)]
+    return gn_args
+
+  def _Build(self, instrumented, use_call_graph, target):
     """Builds the provided ninja target with or without order_profiling on.
 
     Args:
@@ -278,41 +315,15 @@ class ClankCompiler:
       target: (str) The name of the ninja target to build.
     """
     self._step_recorder.BeginStep('Compile %s' % target)
-    assert not use_call_graph or instrumented, ('You can not enable call graph '
-                                                'without instrumentation!')
-
-    # Set the "Release Official" flavor, the parts affecting performance.
-    args = [
-        'enable_resource_allowlist_generation=false',
-        'is_chrome_branded=' + str(not self._public).lower(),
-        'is_debug=false',
-        'is_official_build=true',
-        'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
-        'target_os="android"',
-        'use_goma=' + str(self._use_goma).lower(),
-        'use_remoteexec=' + str(self._use_remoteexec).lower(),
-        'use_order_profiling=' + str(instrumented).lower(),
-        'use_call_graph=' + str(use_call_graph).lower(),
-        'devtools_instrumentation_dumping=' + str(instrumented).lower()
-    ]
-    args += _ARCH_GN_ARGS[self._arch]
-    if self._goma_dir:
-      args += ['goma_dir="%s"' % self._goma_dir]
-
-    if self._public and os.path.exists(self._orderfile_location):
-      # GN needs the orderfile path to be source-absolute.
-      src_abs_orderfile = os.path.relpath(self._orderfile_location,
-                                          constants.DIR_SOURCE_ROOT)
-      args += ['chrome_orderfile="//{}"'.format(src_abs_orderfile)]
-
-    self._step_recorder.RunCommand(
-        ['gn', 'gen', os.path.join(self._out_dir, 'Release'),
-         '--args=' + ' '.join(args)])
-
+    gn_args = self._GenerateGnArgs(instrumented, use_call_graph)
+    self._step_recorder.RunCommand([
+        'gn', 'gen',
+        os.path.join(self._out_dir, 'Release'), '--args=' + ' '.join(gn_args)
+    ])
     self._step_recorder.RunCommand(
         self._ninja_command + [os.path.join(self._out_dir, 'Release'), target])
 
-  def ForceRelink(self):
+  def _ForceRelink(self):
     """Forces libmonochrome.so to be re-linked.
 
     With partitioned libraries enabled, deleting these library files does not
@@ -325,6 +336,18 @@ class ClankCompiler:
     assert os.path.exists(file_to_touch)
     self._step_recorder.RunCommand(['touch', file_to_touch])
 
+  def CompileWebViewApk(self, instrumented, use_call_graph, force_relink=False):
+    """Builds a SystemWebView.apk either with or without order_profiling on.
+
+    Args:
+      instrumented: (bool) Whether to build an instrumented apk.
+      use_call_graph: (bool) Whether to use the call graph instrumentation.
+      force_relink: Whether libchromeview.so should be re-created.
+    """
+    if force_relink:
+      self._ForceRelink()
+    self._Build(instrumented, use_call_graph, self._webview_target)
+
   def CompileChromeApk(self, instrumented, use_call_graph, force_relink=False):
     """Builds a Chrome.apk either with or without order_profiling on.
 
@@ -334,8 +357,8 @@ class ClankCompiler:
       force_relink: Whether libchromeview.so should be re-created.
     """
     if force_relink:
-      self.ForceRelink()
-    self.Build(instrumented, use_call_graph, self._apk_target)
+      self._ForceRelink()
+    self._Build(instrumented, use_call_graph, self._chrome_target)
 
   def CompileLibchrome(self, instrumented, use_call_graph, force_relink=False):
     """Builds a libmonochrome.so either with or without order_profiling on.
@@ -346,8 +369,48 @@ class ClankCompiler:
       force_relink: (bool) Whether libmonochrome.so should be re-created.
     """
     if force_relink:
-      self.ForceRelink()
-    self.Build(instrumented, use_call_graph, self._libchrome_target)
+      self._ForceRelink()
+    self._Build(instrumented, use_call_graph, self._libchrome_target)
+
+  @staticmethod
+  def _MakePublicTarget(internal_target):
+    if 'google' in internal_target:
+      return internal_target.replace('_google', '')
+    return internal_target.replace('_apk', '_public_apk')
+
+  @staticmethod
+  def _GetApkFromTarget(target):
+    _camel_case = ''.join(x.capitalize() for x in target.lower().split('_'))
+    _camel_case = _camel_case.replace('Webview', 'WebView')
+    return _camel_case.replace('Apk', '.apk')
+
+  @staticmethod
+  def _GetWebViewTargetAndApk(native_library_build_variant, public, arch):
+    target = 'trichrome_webview_google_apk'
+    if native_library_build_variant == NativeLibraryBuildVariant.MONOCHROME:
+      target = 'monochrome_apk'
+    if public:
+      target = ClankCompiler._MakePublicTarget(target)
+    apk = ClankCompiler._GetApkFromTarget(target)
+    if 'Trichrome' in apk and '64' in arch:
+      # Trichrome has a 6432.apk suffix for arm64 and x64 builds.
+      apk = apk.replace('.apk', '6432.apk')
+    return target, apk
+
+  @staticmethod
+  def _GetChromeTargetAndApk(public):
+    target = 'monochrome_apk'
+    if public:
+      target = ClankCompiler._MakePublicTarget(target)
+    return target, ClankCompiler._GetApkFromTarget(target)
+
+  @staticmethod
+  def _GetLibchromeTarget(arch):
+    target = 'libmonochrome'
+    if '64' in arch:
+      # Monochrome has a _64 suffix for arm64 and x64 builds.
+      return target + '_64'
+    return target
 
 
 class OrderfileUpdater:
@@ -516,17 +579,21 @@ class OrderfileGenerator:
     devices = device_utils.DeviceUtils.HealthyDevices()
     assert devices, 'Expected at least one connected device'
 
+    if (self._native_library_build_variant ==
+        NativeLibraryBuildVariant.TRICHROME):
+      for device in devices:
+        if device.build_version_sdk >= version_codes.Q:
+          return device
+      raise Exception('No device running Android Q+ found to build trichrome.')
+
     return devices[0]
 
 
   def __init__(self, options, orderfile_updater_class):
     self._options = options
-    self._ninja_command = ['autoninja']
-    if self._options.ninja_path:
-      self._ninja_command = [self._options.ninja_path]
-    if self._options.ninja_j:
-      self._ninja_command += ['-j', self._options.ninja_j]
-    self._ninja_command += ['-C']
+    self._native_library_build_variant = NativeLibraryBuildVariant.TRICHROME
+    if options.native_lib_variant == 'monochrome':
+      self._native_library_build_variant = NativeLibraryBuildVariant.MONOCHROME
     self._instrumented_out_dir = os.path.join(
         self._BUILD_ROOT, self._options.arch + '_instrumented_out')
     if self._options.use_call_graph:
@@ -541,7 +608,7 @@ class OrderfileGenerator:
 
     if options.profile:
       output_directory = os.path.join(self._instrumented_out_dir, 'Release')
-      host_profile_dir = os.path.join(output_directory, 'profile_data')
+      self._host_profile_root = os.path.join(self._BUILD_ROOT, 'profile_data')
       urls = [profile_android_startup.AndroidProfileTool.TEST_URL]
       use_wpr = True
       simulate_user = False
@@ -551,7 +618,7 @@ class OrderfileGenerator:
       device = self._SetDevice()
       self._profiler = profile_android_startup.AndroidProfileTool(
           output_directory,
-          host_profile_dir,
+          self._host_profile_root,
           use_wpr,
           urls,
           simulate_user,
@@ -615,10 +682,13 @@ class OrderfileGenerator:
       # before profiling to save time.
       if os.path.exists(self._options.profile_save_dir):
         raise Exception('Profile save directory must not pre-exist')
-      os.makedirs(self._options.profile_save_dir)
 
-    files = self._profiler.CollectSystemHealthProfile(self._compiler.chrome_apk)
-    self._MaybeSaveProfile(files)
+    files = self._profiler.CollectSystemHealthProfile(
+        self._compiler.chrome_apk_path)
+    if self._options.profile_webview_startup:
+      files += self._profiler.CollectWebViewStartupProfile(
+          self._compiler.webview_apk_path)
+    self._MaybeSaveProfile()
     try:
       self._ProcessPhasedOrderfile(files)
     except Exception:
@@ -655,12 +725,12 @@ class OrderfileGenerator:
     with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
       orderfile.write('\n'.join(ordered_symbols))
 
-  def _MaybeSaveProfile(self, files):
+  def _MaybeSaveProfile(self):
+    """Saves profiles in self._host_profile_root to --profile-save-dir"""
     if self._options.profile_save_dir:
       logging.info('Saving profiles to %s', self._options.profile_save_dir)
-      for f in files:
-        shutil.copy(f, self._options.profile_save_dir)
-        logging.info('Saved profile %s', f)
+      shutil.copytree(self._host_profile_root, self._options.profile_save_dir)
+      logging.info('Saved profiles')
 
   def _PatchOrderfile(self):
     """Patches the orderfile using clean version of libchrome.so."""
@@ -745,6 +815,46 @@ class OrderfileGenerator:
         self._GetPathToOrderfile()]:
       self._orderfile_updater.UploadToCloudStorage(
           file_name, use_debug_location=False)
+
+  def _WebViewStartupBenchmark(self, apk):
+    """Runs system_health.webview_startup benchmark.
+    Args:
+      apk: (str) Path to the apk.
+    """
+    self._step_recorder.BeginStep("Running system_health.webview_startup")
+    try:
+      chromium_out_dir = os.path.abspath(
+          os.path.join(os.path.dirname(apk), '..'))
+      browser = self._profiler._GetBrowserFromApk(apk)
+      out_dir = tempfile.mkdtemp()
+      self._profiler._RunCommand([
+          'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
+          '--browser', browser, '--output-format=csv', '--output-dir', out_dir,
+          '--chromium-output-directory', chromium_out_dir, '--reset-results',
+          'system_health.webview_startup'
+      ])
+      out_file_path = os.path.join(out_dir, 'results.csv')
+      if not os.path.exists(out_file_path):
+        raise Exception('Results file not found!')
+      results = {}
+      with open(out_file_path, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+          if not row['name'].startswith('webview_startup'):
+            continue
+          results.setdefault(row['name'], {}).setdefault(row['stories'],
+                                                         []).append(row['avg'])
+
+      if not results:
+        raise Exception('Could not find relevant results')
+
+      return results
+
+    except Exception as e:
+      return 'Error: ' + str(e)
+
+    finally:
+      shutil.rmtree(out_dir)
 
   def _NativeCodeMemoryBenchmark(self, apk):
     """Runs system_health.memory_mobile to assess native code memory footprint.
@@ -858,11 +968,8 @@ class OrderfileGenerator:
     try:
       _UnstashOutputDirectory(out_directory)
       self._compiler = ClankCompiler(out_directory, self._step_recorder,
-                                     self._options.arch, self._options.use_goma,
-                                     self._options.goma_dir,
-                                     self._options.use_remoteexec,
-                                     self._ninja_command, self._options.public,
-                                     self._GetPathToOrderfile())
+                                     self._options, self._GetPathToOrderfile(),
+                                     self._native_library_build_variant)
 
       if no_orderfile:
         orderfile_path = self._GetPathToOrderfile()
@@ -875,9 +982,16 @@ class OrderfileGenerator:
                                       use_call_graph=False,
                                       force_relink=True)
       benchmark_results['Speedometer2.0'] = self._PerformanceBenchmark(
-          self._compiler.chrome_apk)
+          self._compiler.chrome_apk_path)
       benchmark_results['orderfile.memory_mobile'] = (
-          self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk))
+          self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk_path))
+      if self._options.profile_webview_startup:
+        self._compiler.CompileWebViewApk(instrumented=False,
+                                         use_call_graph=False,
+                                         force_relink=True)
+        benchmark_results[
+            'system_health.webview_startup'] = self._WebViewStartupBenchmark(
+                self._compiler.webview_apk_path)
 
     except Exception as e:
       benchmark_results['Error'] = str(e)
@@ -897,11 +1011,10 @@ class OrderfileGenerator:
     if self._options.profile:
       try:
         _UnstashOutputDirectory(self._instrumented_out_dir)
-        self._compiler = ClankCompiler(
-            self._instrumented_out_dir, self._step_recorder, self._options.arch,
-            self._options.use_goma, self._options.goma_dir,
-            self._options.use_remoteexec, self._ninja_command,
-            self._options.public, self._GetPathToOrderfile())
+        self._compiler = ClankCompiler(self._instrumented_out_dir,
+                                       self._step_recorder, self._options,
+                                       self._GetPathToOrderfile(),
+                                       self._native_library_build_variant)
         if not self._options.pregenerated_profiles:
           # If there are pregenerated profiles, the instrumented build should
           # not be changed to avoid invalidating the pregenerated profile
@@ -909,6 +1022,9 @@ class OrderfileGenerator:
           self._compiler.CompileChromeApk(instrumented=True,
                                           use_call_graph=
                                           self._options.use_call_graph)
+          if self._options.profile_webview_startup:
+            self._compiler.CompileWebViewApk(
+                instrumented=True, use_call_graph=self._options.use_call_graph)
         self._GenerateAndProcessProfile()
         self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
       finally:
@@ -935,11 +1051,10 @@ class OrderfileGenerator:
                            self._GetPathToOrderfile())
       try:
         _UnstashOutputDirectory(self._uninstrumented_out_dir)
-        self._compiler = ClankCompiler(
-            self._uninstrumented_out_dir, self._step_recorder,
-            self._options.arch, self._options.use_goma, self._options.goma_dir,
-            self._options.use_remoteexec, self._ninja_command,
-            self._options.public, self._GetPathToOrderfile())
+        self._compiler = ClankCompiler(self._uninstrumented_out_dir,
+                                       self._step_recorder, self._options,
+                                       self._GetPathToOrderfile(),
+                                       self._native_library_build_variant)
 
         self._compiler.CompileLibchrome(instrumented=False,
                                         use_call_graph=False)
@@ -1040,6 +1155,19 @@ def CreateArgumentParser():
                       help='Build non-internal APK and change the orderfile '
                       'location. Required if your checkout is non-internal.',
                       default=False)
+  parser.add_argument(
+      '--native-lib-variant',
+      choices=['monochrome', 'trichrome'],
+      default='monochrome',
+      help=(
+          'The shared library build variant for chrome on android. See '
+          'https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_native_libraries.md '  # pylint: disable=line-too-long
+          'for more details.'))
+  parser.add_argument('--profile-webview-startup',
+                      action='store_true',
+                      default=False,
+                      help='Use the webview startup benchmark profiles to '
+                      'generate the orderfile.')
   parser.add_argument('--manual-symbol-offsets', default=None, type=str,
                       help=('File of list of ordered symbol offsets generated '
                             'by manual profiling. Must set other --manual* '
