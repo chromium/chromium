@@ -73,6 +73,8 @@ message ActionInfo {
 // Entity Suggestion Category info.
 message CategoryInfo {
   enum Category {
+    reserved 22;
+
     UNKNOWN = 0;
     MUSIC = 2;
     GAMES = 4;
@@ -88,7 +90,6 @@ message CategoryInfo {
     TV = 19;
     MOVIES = 20;
     CARS_MODEL_US = 21;
-    LOCAL_POIS_AND_CHAINS = 22;
     COMPANIES = 23;
     PRODUCT_LINES = 24;
     LOCAL_POI = 25;
