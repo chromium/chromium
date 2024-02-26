@@ -23,6 +23,32 @@ BASE_FEATURE(kWarmScreenCaptureSonoma,
              "WarmScreenCaptureSonoma",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+bool ShouldWarmScreenCapture() {
+  const int macos_version = base::mac::MacOSVersion();
+  // On macOS < 14, we're using CGWindowListCreateImage to capture a screenshot.
+  // Starting in macOS 14, CGWindowListCreateImage causes a "your screen is
+  // being captured" chip to show in the menu bar while an app is capturing the
+  // screen, and if it's a one-time image capture, it shows for ten seconds.
+  if (macos_version < 14'00'00) {
+    return true;
+  }
+
+  // Kill switch.
+  if (!base::FeatureList::IsEnabled(kWarmScreenCaptureSonoma)) {
+    return false;
+  }
+
+  // On macOS >= 14, Apple introduced SCScreenshotManager that can be used to
+  // capture a screenshot without any notification shown to the user. There's a
+  // bug in this API that was fixed in 14.4.
+  if (macos_version >= 14'04'00) {
+    return true;
+  }
+
+  // macOS 14-14.3.
+  return false;
+}
+
 // Capture a screenshot and throw away the result.
 void CaptureScreenshot() {
   if (@available(macOS 14.0, *)) {
@@ -131,13 +157,7 @@ bool TryPromptUserForScreenCapture() {
 }
 
 void WarmScreenCapture() {
-  if (base::mac::MacOSMajorVersion() >= 14 &&
-      !base::FeatureList::IsEnabled(kWarmScreenCaptureSonoma)) {
-    // Starting in macOS 14, a "your screen is being captured" chip shows in the
-    // menu bar while an app is capturing the screen, and if it's a one-time
-    // image capture, it shows for ten seconds. Doing the warmup below would
-    // cause the chip to show on every app start. Therefore, skip the warmup as
-    // the benefit isn't worth the cost of startling the user with the chip.
+  if (!ShouldWarmScreenCapture()) {
     return;
   }
 
