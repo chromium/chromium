@@ -8586,9 +8586,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
     interestGroupBuyers: [$1],
     auctionSignals: {x: 1},
     sellerSignals: {yet: 'more', info: 1},
-    sellerTimeout: 200,
+    sellerTimeout: 20000,
     perBuyerSignals: {$1: {even: 'more', x: 4.5}},
-    perBuyerTimeouts: {$1: 100, '*': 150}
+    perBuyerTimeouts: {$1: 10000, '*': 15000}
                 })",
       test_origin,
       embedded_https_test_server().GetURL("a.test",
@@ -9838,7 +9838,7 @@ IN_PROC_BROWSER_TEST_F(
             decisionLogicURL: $2,
             interestGroupBuyers: [$1],
             perBuyerSignals: {$1: {a:1}, 'https://not_in_buyers.com': {a:1}},
-            perBuyerTimeouts: {'https://not_in_buyers.com': 100}
+            perBuyerTimeouts: {'https://not_in_buyers.com': 10000}
           })",
           test_origin,
           embedded_https_test_server().GetURL(
@@ -13250,9 +13250,9 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
   auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
   sellerSignals: {signals: 'from', the: ['seller']},
   $6: $7,
-  sellerTimeout: 200,
+  sellerTimeout: 20000,
   perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
-  perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
+  perBuyerTimeouts: {$4: 11000, $5: 12000, '*': 15000},
   perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
   perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
   perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
@@ -13401,9 +13401,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
   sellerSignals: {signals: 'from', the: ['seller']},
   directFromSellerSignals: $6,
-  sellerTimeout: 200,
+  sellerTimeout: 20000,
   perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
-  perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
+  perBuyerTimeouts: {$4: 11000, $5: 12000, '*': 15000},
   perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
   perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
   perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
@@ -13647,10 +13647,10 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
   auctionSignals: maybePromise(["top-level auction signals"]),
   sellerSignals: maybePromise(["top-level seller signals"]),
   $4: maybePromise($5),
-  sellerTimeout: 300,
+  sellerTimeout: 30000,
   perBuyerSignals: maybePromise(
       {[componentBuyer]: ["top-level buyer signals"]}),
-  perBuyerTimeouts: maybePromise({[componentBuyer]: 110, '*': 150}),
+  perBuyerTimeouts: maybePromise({[componentBuyer]: 11000, '*': 15000}),
   perBuyerCumulativeTimeouts: maybePromise(
       {[componentBuyer]: 11100, '*': 15100}),
   perBuyerPrioritySignals: {'*': {foo: 3}},
@@ -13663,10 +13663,10 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
     auctionSignals: maybePromise(["component auction signals"]),
     sellerSignals: maybePromise(["component seller signals"]),
     $8: maybePromise($9),
-    sellerTimeout: 200,
+    sellerTimeout: 20000,
     perBuyerSignals: maybePromise(
         {[componentBuyer]: ["component buyer signals"]}),
-    perBuyerTimeouts: maybePromise({[componentBuyer]: 200}),
+    perBuyerTimeouts: maybePromise({[componentBuyer]: 20000}),
     perBuyerCumulativeTimeouts: maybePromise({[componentBuyer]: 20100}),
     perBuyerPrioritySignals: {[componentBuyer]: {bar: 1}, '*': {BaZ: -2}},
     perBuyerCurrencies: maybePromise({[componentBuyer]: 'USD'}),
@@ -13884,9 +13884,9 @@ IN_PROC_BROWSER_TEST_F(
   auctionSignals: maybePromise(["top-level auction signals"]),
   sellerSignals: maybePromise(["top-level seller signals"]),
   directFromSellerSignals: maybePromise($4),
-  sellerTimeout: 300,
+  sellerTimeout: 30000,
   perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
-  perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
+  perBuyerTimeouts: maybePromise({$8: 11000, '*': 15000}),
   perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
   perBuyerPrioritySignals: {'*': {foo: 3}},
   perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
@@ -13898,9 +13898,9 @@ IN_PROC_BROWSER_TEST_F(
     auctionSignals: maybePromise(["component auction signals"]),
     sellerSignals: maybePromise(["component seller signals"]),
     directFromSellerSignals: maybePromise($9),
-    sellerTimeout: 200,
+    sellerTimeout: 20000,
     perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
-    perBuyerTimeouts: maybePromise({$8: 200}),
+    perBuyerTimeouts: maybePromise({$8: 20000}),
     perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
     perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
     perBuyerCurrencies: maybePromise({$8: 'USD'}),
@@ -14082,9 +14082,9 @@ IN_PROC_BROWSER_TEST_F(
   auctionSignals: maybePromise(["top-level auction signals"]),
   sellerSignals: maybePromise(["top-level seller signals"]),
   directFromSellerSignals: maybePromise($4),
-  sellerTimeout: 300,
+  sellerTimeout: 30000,
   perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
-  perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
+  perBuyerTimeouts: maybePromise({$8: 11000, '*': 15000}),
   perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
   perBuyerPrioritySignals: {'*': {foo: 3}},
   perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
@@ -14098,9 +14098,9 @@ IN_PROC_BROWSER_TEST_F(
     auctionSignals: maybePromise(["component auction signals"]),
     sellerSignals: maybePromise(["component seller signals"]),
     directFromSellerSignals: maybePromise($9),
-    sellerTimeout: 200,
+    sellerTimeout: 20000,
     perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
-    perBuyerTimeouts: maybePromise({$8: 200}),
+    perBuyerTimeouts: maybePromise({$8: 20000}),
     perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
     perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
     perBuyerCurrencies: maybePromise({$8: 'USD'}),
@@ -14729,12 +14729,12 @@ function validatePerBuyerTimeouts(perBuyerTimeouts) {
   const perBuyerTimeoutsJSON = JSON.stringify(perBuyerTimeouts);
   let ok = 0;
   for (key in perBuyerTimeouts) {
-    if (key.startsWith("https://a.test") && perBuyerTimeouts[key] === 50) {
+    if (key.startsWith("https://a.test") && perBuyerTimeouts[key] === 5000) {
       ++ok;
-    } else if (key === "https://b.test" && perBuyerTimeouts[key] === 60) {
+    } else if (key === "https://b.test" && perBuyerTimeouts[key] === 6000) {
       ++ok;
     } else if (key === '*' &&
-        perBuyerTimeouts[key] === 56) {
+        perBuyerTimeouts[key] === 5600) {
       ++ok;
     } else {
       throw 'Wrong key in perBuyerTimeouts ' + perBuyerTimeoutsJSON;
@@ -14806,7 +14806,7 @@ function validatePerBuyerCumulativeTimeouts(perBuyerCumulativeTimeouts) {
   interestGroupBuyers: [$1],
   perBuyerTimeouts: new Promise((resolve, reject) => {
     setTimeout(
-        () => { resolve({$1: 50, 'https://b.test': 60, '*': 56}); }, 1)
+        () => { resolve({$1: 5000, 'https://b.test': 6000, '*': 5600}); }, 1)
   }),
   perBuyerCumulativeTimeouts: new Promise((resolve, reject) => {
     setTimeout(
@@ -15214,8 +15214,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // scripts which has an endless loop times out fast.
   const std::string kTestPerBuyerTimeouts[] = {
       JsReplace("{$1: 1}", bidder_a_origin),
-      JsReplace("{$1: 1, '*': 100}", bidder_a_origin),
-      JsReplace("{$1: 100, '*': 1}", bidder_b_origin),
+      JsReplace("{$1: 1, '*': 10000}", bidder_a_origin),
+      JsReplace("{$1: 10000, '*': 1}", bidder_b_origin),
   };
 
   for (const auto& test_per_buyer_timeouts : kTestPerBuyerTimeouts) {

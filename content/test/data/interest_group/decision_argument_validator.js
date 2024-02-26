@@ -96,7 +96,7 @@ function validateAuctionConfig(auctionConfig) {
   const sellerSignalsJSON = JSON.stringify(auctionConfig.sellerSignals);
   if (sellerSignalsJSON !== '{"signals":"from","the":["seller"]}')
     throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
-  if (auctionConfig.sellerTimeout !== 200)
+  if (auctionConfig.sellerTimeout !== 20000)
     throw 'Wrong sellerTimeout ' + auctionConfig.sellerTimeout;
 
   if (JSON.stringify(auctionConfig.perBuyerSignals[buyerAOrigin]) !==
@@ -105,9 +105,9 @@ function validateAuctionConfig(auctionConfig) {
         JSON.stringify(auctionConfig.perBuyerSignals);
   }
 
-  if (auctionConfig.perBuyerTimeouts[buyerAOrigin] !== 110 ||
-      auctionConfig.perBuyerTimeouts[buyerBOrigin] !== 120 ||
-      auctionConfig.perBuyerTimeouts['*'] !== 150) {
+  if (auctionConfig.perBuyerTimeouts[buyerAOrigin] !== 11000 ||
+      auctionConfig.perBuyerTimeouts[buyerBOrigin] !== 12000 ||
+      auctionConfig.perBuyerTimeouts['*'] !== 15000) {
     throw 'Wrong perBuyerTimeouts ' +
         JSON.stringify(auctionConfig.perBuyerTimeouts);
   }
