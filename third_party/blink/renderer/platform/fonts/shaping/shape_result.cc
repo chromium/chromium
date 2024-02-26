@@ -78,10 +78,13 @@ struct SameSizeAsRunInfo {
 ASSERT_SIZE(ShapeResult::RunInfo, SameSizeAsRunInfo);
 
 struct SameSizeAsShapeResult {
-  Vector<int> vectors[2];
-  UntracedMember<void*> members[2];
   float width;
-  unsigned integers[2];
+  UntracedMember<void*> deprecated_ink_bounds_;
+  Vector<int> runs_;
+  Vector<int> character_position_;
+  UntracedMember<void*> primary_font_;
+  unsigned start_index_;
+  unsigned num_characters_;
   unsigned bitfields : 32;
 };
 
