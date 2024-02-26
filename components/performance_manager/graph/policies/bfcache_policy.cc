@@ -68,7 +68,7 @@ bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
   auto main_frame_nodes = page_node->GetMainFrameNodes();
   if (main_frame_nodes.size() == 1)
     return false;
-  for (const auto* main_frame_node : main_frame_nodes) {
+  for (const FrameNode* main_frame_node : main_frame_nodes) {
     if (!main_frame_node->IsCurrent())
       return true;
   }

@@ -154,7 +154,9 @@ class BrowserChildProcessHostImpl
         ->child_process();
   }
 
-  typedef std::list<BrowserChildProcessHostImpl*> BrowserChildProcessList;
+  typedef std::list<raw_ptr<BrowserChildProcessHostImpl, CtnExperimental>>
+      BrowserChildProcessList;
+
  private:
   friend class BrowserChildProcessHostIterator;
   friend class BrowserChildProcessObserver;

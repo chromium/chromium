@@ -710,7 +710,8 @@ class VIEWS_EXPORT MenuController
   // When Run is invoked during an active Run, it may be called from a separate
   // MenuControllerDelegate. If not empty it means we are nested, and the
   // stacked delegates should be notified instead of |delegate_|.
-  std::list<internal::MenuControllerDelegate*> delegate_stack_;
+  std::list<raw_ptr<internal::MenuControllerDelegate, CtnExperimental>>
+      delegate_stack_;
 
   // As the mouse moves around submenus are not opened immediately. Instead
   // they open after this timer fires.
@@ -826,7 +827,7 @@ class VIEWS_EXPORT MenuController
   gfx::ThrobAnimation alert_animation_;
 
   // Currently showing alerted menu items. Updated when submenus open and close.
-  base::flat_set<MenuItemView*> alerted_items_;
+  base::flat_set<raw_ptr<MenuItemView, CtnExperimental>> alerted_items_;
 
   // The rounded corners of the context menu.
   std::optional<gfx::RoundedCornersF> rounded_corners_ = std::nullopt;

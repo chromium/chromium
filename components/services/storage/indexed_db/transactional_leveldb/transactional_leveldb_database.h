@@ -146,7 +146,8 @@ class TransactionalLevelDBDatabase
   // |db_only_loaded_iterators_| as a flat_set, as the iterator pooling feature
   // of TransactionalLevelDBDatabase ensures a maximum number of
   // kDefaultMaxOpenIteratorsPerDatabase loaded iterators.
-  base::flat_set<TransactionalLevelDBIterator*> db_only_loaded_iterators_;
+  base::flat_set<raw_ptr<TransactionalLevelDBIterator, CtnExperimental>>
+      db_only_loaded_iterators_;
   std::set<raw_ptr<TransactionalLevelDBIterator, SetExperimental>>
       db_only_evicted_iterators_;
   bool is_evicting_all_loaded_iterators_ = false;

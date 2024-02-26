@@ -540,7 +540,8 @@ class CC_EXPORT LayerTreeImpl {
 
   void AddLayerShouldPushProperties(LayerImpl* layer);
   void ClearLayersThatShouldPushProperties();
-  const base::flat_set<LayerImpl*>& LayersThatShouldPushProperties() const {
+  const base::flat_set<raw_ptr<LayerImpl, CtnExperimental>>&
+  LayersThatShouldPushProperties() const {
     return layers_that_should_push_properties_;
   }
 
@@ -606,8 +607,8 @@ class CC_EXPORT LayerTreeImpl {
 
   void NotifyLayerHasPaintWorkletsChanged(PictureLayerImpl* layer,
                                           bool has_worklets);
-  const base::flat_set<PictureLayerImpl*>& picture_layers_with_paint_worklets()
-      const {
+  const base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>&
+  picture_layers_with_paint_worklets() const {
     return picture_layers_with_paint_worklets_;
   }
 
@@ -870,7 +871,8 @@ class CC_EXPORT LayerTreeImpl {
   LayerImplMap layer_id_map_;
 
   // Set of layers that need to push properties.
-  base::flat_set<LayerImpl*> layers_that_should_push_properties_;
+  base::flat_set<raw_ptr<LayerImpl, CtnExperimental>>
+      layers_that_should_push_properties_;
 
   std::unordered_map<ElementId, float, ElementIdHash>
       element_id_to_opacity_animations_;
@@ -895,7 +897,8 @@ class CC_EXPORT LayerTreeImpl {
   // After commit (or impl-side invalidation), the LayerTreeHostImpl must walk
   // all PictureLayerImpls that have PaintWorklets to ensure they are painted.
   // To avoid unnecessary walking, we track that set here.
-  base::flat_set<PictureLayerImpl*> picture_layers_with_paint_worklets_;
+  base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>
+      picture_layers_with_paint_worklets_;
 
   base::flat_set<viz::SurfaceRange> surface_layer_ranges_;
 

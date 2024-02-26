@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/search_engines/template_url.h"
 
@@ -18,7 +19,7 @@
 // caller to ensure the right lifetime of them.
 class SearchHostToURLsMap {
  public:
-  using TemplateURLSet = base::flat_set<TemplateURL*>;
+  using TemplateURLSet = base::flat_set<raw_ptr<TemplateURL, CtnExperimental>>;
 
   SearchHostToURLsMap();
 

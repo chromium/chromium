@@ -462,16 +462,18 @@ class FullscreenContentsHolder : public base::SupportsUserData::Data {
   FullscreenContentsHolder(const FullscreenContentsHolder&) = delete;
   FullscreenContentsHolder& operator=(const FullscreenContentsHolder&) = delete;
 
-  base::flat_set<WebContentsImpl*>* set() { return &set_; }
+  base::flat_set<raw_ptr<WebContentsImpl, CtnExperimental>>* set() {
+    return &set_;
+  }
 
  private:
-  base::flat_set<WebContentsImpl*> set_;
+  base::flat_set<raw_ptr<WebContentsImpl, CtnExperimental>> set_;
 };
 
 const char kFullscreenContentsSet[] = "fullscreen-contents";
 
-base::flat_set<WebContentsImpl*>* FullscreenContentsSet(
-    BrowserContext* browser_context) {
+base::flat_set<raw_ptr<WebContentsImpl, CtnExperimental>>*
+FullscreenContentsSet(BrowserContext* browser_context) {
   auto* set_holder = static_cast<FullscreenContentsHolder*>(
       browser_context->GetUserData(kFullscreenContentsSet));
   if (!set_holder) {
@@ -6156,7 +6158,7 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
   // is theoretically quadratic-ish (fullscreen contentses x each one's opener
   // length) but neither of those is expected to ever be a large number.
   auto fullscreen_set_copy = *FullscreenContentsSet(GetBrowserContext());
-  for (auto* fullscreen_contents : fullscreen_set_copy) {
+  for (WebContentsImpl* fullscreen_contents : fullscreen_set_copy) {
     if (is_fullscreen(fullscreen_contents, display_id)) {
       auto opener_contentses = GetAllOpeningWebContents(fullscreen_contents);
       if (opener_contentses.count(this)) {

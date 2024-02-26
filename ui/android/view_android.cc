@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "cc/slim/layer.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -173,7 +174,7 @@ bool ViewAndroid::SubtreeHasEventForwarder(ViewAndroid* view) {
   if (view->has_event_forwarder())
     return true;
 
-  for (auto* child : view->children_) {
+  for (ViewAndroid* child : view->children_) {
     if (SubtreeHasEventForwarder(child))
       return true;
   }
@@ -287,7 +288,8 @@ void ViewAndroid::RemoveChild(ViewAndroid* child) {
 
   if (GetWindowAndroid())
     child->OnDetachedFromWindow();
-  std::list<ViewAndroid*>::iterator it = base::ranges::find(children_, child);
+  std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator it =
+      base::ranges::find(children_, child);
   DCHECK(it != children_.end());
   children_.erase(it);
   child->parent_ = nullptr;
@@ -334,15 +336,17 @@ std::unique_ptr<viz::CopyOutputRequest> ViewAndroid::MaybeRequestCopyOfView(
 void ViewAndroid::OnAttachedToWindow() {
   for (auto& observer : observer_list_)
     observer.OnAttachedToWindow();
-  for (auto* child : children_)
+  for (ViewAndroid* child : children_) {
     child->OnAttachedToWindow();
+  }
 }
 
 void ViewAndroid::OnDetachedFromWindow() {
   for (auto& observer : observer_list_)
     observer.OnDetachedFromWindow();
-  for (auto* child : children_)
+  for (ViewAndroid* child : children_) {
     child->OnDetachedFromWindow();
+  }
 }
 
 WindowAndroid* ViewAndroid::GetWindowAndroid() const {
@@ -465,7 +469,7 @@ int ViewAndroid::GetViewportInsetBottom() {
 void ViewAndroid::OnBrowserControlsHeightChanged() {
   if (event_handler_)
     event_handler_->OnBrowserControlsHeightChanged();
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->match_parent())
       child->OnBrowserControlsHeightChanged();
   }
@@ -501,7 +505,7 @@ void ViewAndroid::OnSizeChangedInternal(const gfx::Size& size) {
     return;
 
   bounds_.set_size(size);
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->match_parent())
       child->OnSizeChangedInternal(size);
   }
@@ -510,7 +514,7 @@ void ViewAndroid::OnSizeChangedInternal(const gfx::Size& size) {
 void ViewAndroid::DispatchOnSizeChanged() {
   if (event_handler_)
     event_handler_->OnSizeChanged();
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->match_parent())
       child->DispatchOnSizeChanged();
   }
@@ -525,8 +529,9 @@ void ViewAndroid::OnPhysicalBackingSizeChanged(
   if (event_handler_)
     event_handler_->OnPhysicalBackingSizeChanged(deadline_override);
 
-  for (auto* child : children_)
+  for (ViewAndroid* child : children_) {
     child->OnPhysicalBackingSizeChanged(size, deadline_override);
+  }
 }
 
 void ViewAndroid::OnControlsResizeViewChanged(bool controls_resize_view) {
@@ -536,8 +541,9 @@ void ViewAndroid::OnControlsResizeViewChanged(bool controls_resize_view) {
   if (event_handler_)
     event_handler_->OnControlsResizeViewChanged();
 
-  for (auto* child : children_)
+  for (ViewAndroid* child : children_) {
     child->OnControlsResizeViewChanged(controls_resize_view);
+  }
 }
 
 gfx::Size ViewAndroid::GetPhysicalBackingSize() const {
@@ -609,7 +615,7 @@ bool ViewAndroid::OnGenericMotionEvent(const MotionEventAndroid& event) {
   if (event_handler_ && event_handler_->OnGenericMotionEvent(event))
     return true;
 
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->OnGenericMotionEvent(event))
       return true;
   }
@@ -620,7 +626,7 @@ bool ViewAndroid::OnKeyUp(const KeyEventAndroid& event) {
   if (event_handler_ && event_handler_->OnKeyUp(event))
     return true;
 
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->OnKeyUp(event))
       return true;
   }
@@ -631,7 +637,7 @@ bool ViewAndroid::DispatchKeyEvent(const KeyEventAndroid& event) {
   if (event_handler_ && event_handler_->DispatchKeyEvent(event))
     return true;
 
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->DispatchKeyEvent(event))
       return true;
   }
@@ -642,7 +648,7 @@ bool ViewAndroid::ScrollBy(float delta_x, float delta_y) {
   if (event_handler_ && event_handler_->ScrollBy(delta_x, delta_y))
     return true;
 
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->ScrollBy(delta_x, delta_y))
       return true;
   }
@@ -653,7 +659,7 @@ bool ViewAndroid::ScrollTo(float x, float y) {
   if (event_handler_ && event_handler_->ScrollTo(x, y))
     return true;
 
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     if (child->ScrollTo(x, y))
       return true;
   }
@@ -665,7 +671,7 @@ void ViewAndroid::NotifyVirtualKeyboardOverlayRect(
   if (event_handler_)
     event_handler_->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
 
-  for (auto* child : children_) {
+  for (ViewAndroid* child : children_) {
     child->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
   }
 }
@@ -691,7 +697,7 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
     gfx::Point int_point = gfx::ToFlooredPoint(offset_point);
 
     // Match from back to front for hit testing.
-    for (auto* child : base::Reversed(children_)) {
+    for (ViewAndroid* child : base::Reversed(children_)) {
       bool matched = child->match_parent();
       if (!matched)
         matched = child->bounds_.Contains(int_point);

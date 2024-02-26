@@ -321,7 +321,8 @@ class CAPTURE_EXPORT RequestManager final
 
   // StreamBufferManager does not own the ResultMetadataObservers.  The
   // observers are responsible for removing itself before self-destruction.
-  std::unordered_set<ResultMetadataObserver*> result_metadata_observers_;
+  std::unordered_set<raw_ptr<ResultMetadataObserver, CtnExperimental>>
+      result_metadata_observers_;
 
   // The list of settings to set/override once in the capture request.
   std::vector<cros::mojom::CameraMetadataEntryPtr> capture_settings_override_;

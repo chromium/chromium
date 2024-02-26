@@ -8,6 +8,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -68,7 +69,7 @@ class CONTENT_EXPORT CompositorDependenciesAndroid {
   base::OnceClosure pending_connect_viz_on_main_thread_;
 
   // The set of visible CompositorImpls.
-  base::flat_set<CompositorImpl*> visible_compositors_;
+  base::flat_set<raw_ptr<CompositorImpl, CtnExperimental>> visible_compositors_;
   size_t visible_synchronous_compositors_ = 0u;
 };
 

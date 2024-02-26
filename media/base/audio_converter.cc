@@ -220,7 +220,7 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
   AudioGlitchInfo glitch_info = glitch_info_accumulator_.GetAndReset();
 
   // Have each mixer render its data into an output buffer then mix the result.
-  for (auto* input : transform_inputs_) {
+  for (InputCallback* input : transform_inputs_) {
     const float volume = input->ProvideInput(provide_input_dest,
                                              total_frames_delayed, glitch_info);
     // Optimize the most common single input, full volume case.

@@ -550,7 +550,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   std::vector<FaceInfo> face_infos_;
 
   // The texture refs that point to this Texture.
-  typedef base::flat_set<TextureRef*> RefSet;
+  typedef base::flat_set<raw_ptr<TextureRef, CtnExperimental>> RefSet;
   RefSet refs_;
   bool has_lightweight_ref_ = false;
 

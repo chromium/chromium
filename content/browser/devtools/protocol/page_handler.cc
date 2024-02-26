@@ -384,8 +384,9 @@ Response PageHandler::Disable() {
     pending_dialog_.Reset();
   }
 
-  for (auto* item : pending_downloads_)
+  for (download::DownloadItem* item : pending_downloads_) {
     item->RemoveObserver(this);
+  }
   pending_downloads_.clear();
   navigate_callbacks_.clear();
   SetPrerenderingAllowed(true);

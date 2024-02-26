@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -127,7 +128,7 @@ bool TabHelperFrameNodeSource::AddObservedFrameNode(
   auto insertion_result =
       observed_frame_nodes_.insert({performance_manager_tab_helper, {}});
 
-  base::flat_set<FrameNodeImpl*>& frame_nodes = insertion_result.first->second;
+  auto& frame_nodes = insertion_result.first->second;
   bool inserted = frame_nodes.insert(frame_node).second;
   DCHECK(inserted);
 
@@ -140,7 +141,8 @@ bool TabHelperFrameNodeSource::RemoveObservedFrameNode(
   auto it = observed_frame_nodes_.find(performance_manager_tab_helper);
   DCHECK(it != observed_frame_nodes_.end());
 
-  base::flat_set<FrameNodeImpl*>& frame_nodes = it->second;
+  base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>& frame_nodes =
+      it->second;
   size_t removed = frame_nodes.erase(frame_node);
   DCHECK_EQ(removed, 1u);
 

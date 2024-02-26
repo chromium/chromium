@@ -81,7 +81,7 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   void Reset();
 
   // Embedded render passes that contribute pixels to this render pass.
-  base::flat_set<ResolvedPassData*> embedded_passes;
+  base::flat_set<raw_ptr<ResolvedPassData, CtnExperimental>> embedded_passes;
 
   // True if the render pass is drawn to fulfil part of a copy request. This
   // property is transitive from parent pass to embedded passes.

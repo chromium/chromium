@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_socket.h"
@@ -187,8 +188,10 @@ class WifiLanMedium : public api::WifiLanMedium {
 
   // Track all pending connect/listen tasks in case Close() is called while
   // waiting.
-  base::flat_set<base::WaitableEvent*> pending_connect_waitable_events_;
-  base::flat_set<base::WaitableEvent*> pending_listen_waitable_events_;
+  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+      pending_connect_waitable_events_;
+  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+      pending_listen_waitable_events_;
 };
 
 }  // namespace chrome

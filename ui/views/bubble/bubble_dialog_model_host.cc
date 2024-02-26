@@ -212,7 +212,7 @@ class LayoutConsensusGroup {
     children_.insert(view);
     // Because this may change the max preferred/min size, invalidate all child
     // layouts.
-    for (auto* child : children_) {
+    for (View* child : children_) {
       child->InvalidateLayout();
     }
   }
@@ -222,7 +222,7 @@ class LayoutConsensusGroup {
   // Get the union of all preferred sizes within the group.
   gfx::Size GetMaxPreferredSize() const {
     gfx::Size size;
-    for (auto* child : children_) {
+    for (View* child : children_) {
       DCHECK_EQ(1u, child->children().size());
       size.SetToMax(child->children().front()->GetPreferredSize());
     }
@@ -232,7 +232,7 @@ class LayoutConsensusGroup {
   // Get the union of all minimum sizes within the group.
   gfx::Size GetMaxMinimumSize() const {
     gfx::Size size;
-    for (auto* child : children_) {
+    for (View* child : children_) {
       DCHECK_EQ(1u, child->children().size());
       size.SetToMax(child->children().front()->GetMinimumSize());
     }
@@ -240,7 +240,7 @@ class LayoutConsensusGroup {
   }
 
  private:
-  base::flat_set<View*> children_;
+  base::flat_set<raw_ptr<View, CtnExperimental>> children_;
 };
 
 class LayoutConsensusView : public View {

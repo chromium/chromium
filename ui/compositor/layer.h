@@ -741,7 +741,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   raw_ptr<Layer> subtree_reflected_layer_ = nullptr;
 
   // List of layers reflecting this layer and its subtree, if any.
-  base::flat_set<Layer*> subtree_reflecting_layers_;
+  base::flat_set<raw_ptr<Layer, CtnExperimental>> subtree_reflecting_layers_;
 
   // If true, and this is a destination mirror layer, changes to the bounds of
   // the source layer are propagated to this mirror layer.

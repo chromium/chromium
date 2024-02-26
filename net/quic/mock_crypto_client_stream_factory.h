@@ -63,7 +63,8 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
   MockCryptoClientStream::HandshakeMode handshake_mode_ =
       MockCryptoClientStream::CONFIRM_HANDSHAKE;
   std::vector<base::WeakPtr<MockCryptoClientStream>> streams_;
-  base::queue<const ProofVerifyDetailsChromium*> proof_verify_details_queue_;
+  base::queue<raw_ptr<const ProofVerifyDetailsChromium, CtnExperimental>>
+      proof_verify_details_queue_;
   std::unique_ptr<quic::QuicConfig> config_;
   bool use_mock_crypter_ = false;
 };

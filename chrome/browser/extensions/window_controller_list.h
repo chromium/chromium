@@ -7,6 +7,7 @@
 
 #include <list>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -20,7 +21,7 @@ class WindowControllerListObserver;
 // Class to maintain a list of WindowControllers.
 class WindowControllerList {
  public:
-  typedef std::list<WindowController*> ControllerList;
+  typedef std::list<raw_ptr<WindowController, CtnExperimental>> ControllerList;
 
   WindowControllerList();
   WindowControllerList(const WindowControllerList&) = delete;

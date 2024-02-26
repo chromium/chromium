@@ -128,7 +128,7 @@ ExtensionsMenuViewUnitTest::InstallExtensionAndLayout(const std::string& name) {
 }
 
 ExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetOnlyMenuItem() {
-  base::flat_set<ExtensionMenuItemView*> menu_items =
+  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
   if (menu_items.size() != 1u) {
     ADD_FAILURE() << "Not exactly one item; size is: " << menu_items.size();
@@ -172,7 +172,7 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
 
 ExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetExtensionMenuItemView(
     const std::string& name) {
-  base::flat_set<ExtensionMenuItemView*> menu_items =
+  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
   auto iter =
       base::ranges::find(menu_items, name, [](ExtensionMenuItemView* item) {
@@ -201,7 +201,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreShownInTheMenu) {
   InstallExtensionAndLayout(kExtensionName);
 
   {
-    base::flat_set<ExtensionMenuItemView*> menu_items =
+    base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
         extensions_menu()->extensions_menu_items_for_testing();
     ASSERT_EQ(1u, menu_items.size());
     EXPECT_EQ(kExtensionName,
@@ -312,7 +312,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionLayout) {
   for (int i = 0; i < 3; i++)
     InstallExtensionAndLayout(base::StringPrintf("Test %d", i));
-  for (auto* menu_item :
+  for (ExtensionMenuItemView* menu_item :
        extensions_menu()->extensions_menu_items_for_testing()) {
     ClickPinButton(menu_item);
   }

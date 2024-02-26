@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/cc_export.h"
 #include "cc/paint/discardable_image_map.h"
@@ -76,8 +77,9 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
   //      invalidate them when the property's value is changed by an animation.
   struct PropertyState {
     PropertyState();
-    explicit PropertyState(PaintWorkletInput::PropertyValue value,
-                           base::flat_set<PictureLayerImpl*> layers);
+    explicit PropertyState(
+        PaintWorkletInput::PropertyValue value,
+        base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>> layers);
     PropertyState(const PropertyState&);
     ~PropertyState();
 
@@ -88,7 +90,8 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
     // next commit.
     PaintWorkletInput::PropertyValue animation_value;
     PaintWorkletInput::PropertyValue last_animation_value;
-    base::flat_set<PictureLayerImpl*> associated_layers;
+    base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>
+        associated_layers;
   };
 
   // The set of input properties managed by AnimatedPaintWorkletTracker.

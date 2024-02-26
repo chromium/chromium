@@ -688,7 +688,7 @@ std::vector<ReturnNodeType> GraphImpl::GetAllNodesOfType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto type = NodeType::Type();
   std::vector<ReturnNodeType> ret;
-  for (auto* node : nodes_) {
+  for (NodeBase* node : nodes_) {
     if (node->type() == type)
       ret.push_back(NodeType::FromNodeBase(node));
   }
@@ -700,7 +700,7 @@ bool GraphImpl::VisitAllNodesOfType(
     base::FunctionRef<bool(VisitedNodeType)> visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto type = NodeType::Type();
-  for (auto* node : nodes_) {
+  for (NodeBase* node : nodes_) {
     if (node->type() == type) {
       VisitedNodeType visited_node = NodeType::FromNodeBase(node);
       if (!visitor(visited_node)) {

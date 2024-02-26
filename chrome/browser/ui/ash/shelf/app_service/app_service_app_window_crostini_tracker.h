@@ -63,7 +63,8 @@ class AppServiceAppWindowCrostiniTracker {
 
   // Windows that have been granted the permission to activate via the
   // exo::Permission window property.
-  base::flat_set<aura::Window*> activation_permissions_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>>
+      activation_permissions_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_APP_SERVICE_APP_WINDOW_CROSTINI_TRACKER_H_

@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -97,7 +98,8 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;
   int process_id_;
   RenderFrameHostImpl* frame_host_ = nullptr;
-  base::flat_set<WorkerOrWorkletDevToolsAgentHost*> child_targets_;
+  base::flat_set<raw_ptr<WorkerOrWorkletDevToolsAgentHost, CtnExperimental>>
+      child_targets_;
   ChildTargetCreatedCallback child_target_created_callback_;
   bool wait_for_debugger_ = false;
   base::OnceClosure set_report_completion_callback_;

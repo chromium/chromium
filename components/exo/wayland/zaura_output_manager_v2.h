@@ -82,7 +82,7 @@ class AuraOutputManagerV2 {
                                   wl_resource* manager_resource);
 
   // A set of resources for clients bound to the aura output manager global.
-  std::unordered_set<wl_resource*> manager_resources_;
+  std::unordered_set<raw_ptr<wl_resource, CtnExperimental>> manager_resources_;
 
   // Gets the currently active outputs tracked by the server.
   const ActiveOutputGetter active_output_getter_;

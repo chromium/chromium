@@ -540,7 +540,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                     // pointer of each element of |jobs_| stored either in
                     // |unassigned_jobs_|, or as the associated |job_| of an
                     // element of |unbound_requests_|.
-    std::list<ConnectJob*> unassigned_jobs_;
+    std::list<raw_ptr<ConnectJob, CtnExperimental>> unassigned_jobs_;
     RequestQueue unbound_requests_;
     int active_socket_count_ = 0;  // number of active sockets used by clients
     // A timer for when to start the backup job.

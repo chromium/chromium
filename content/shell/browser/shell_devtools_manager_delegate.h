@@ -41,7 +41,8 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
 
  private:
   raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
-  base::flat_set<content::DevToolsAgentHostClient*> clients_;
+  base::flat_set<raw_ptr<content::DevToolsAgentHostClient, CtnExperimental>>
+      clients_;
 };
 
 }  // namespace content

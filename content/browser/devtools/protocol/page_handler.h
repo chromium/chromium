@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -269,7 +270,8 @@ class PageHandler : public DevToolsDomainHandler,
   // Maps DevTools navigation tokens to pending NavigateCallbacks.
   base::flat_map<base::UnguessableToken, std::unique_ptr<NavigateCallback>>
       navigate_callbacks_;
-  base::flat_set<download::DownloadItem*> pending_downloads_;
+  base::flat_set<raw_ptr<download::DownloadItem, CtnExperimental>>
+      pending_downloads_;
 
   bool is_prerendering_allowed_ = true;
 

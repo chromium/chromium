@@ -171,10 +171,12 @@ class PrintCompositeClient
   raw_ptr<content::RenderFrameHost> initiator_frame_ = nullptr;
 
   // Stores the pending subframes for the composited document.
-  base::flat_set<content::RenderFrameHost*> pending_subframes_;
+  base::flat_set<raw_ptr<content::RenderFrameHost, CtnExperimental>>
+      pending_subframes_;
 
   // Stores the printed subframes for the composited document.
-  base::flat_set<content::RenderFrameHost*> printed_subframes_;
+  base::flat_set<raw_ptr<content::RenderFrameHost, CtnExperimental>>
+      printed_subframes_;
 
   struct RequestedSubFrame {
     RequestedSubFrame(content::GlobalRenderFrameHostId rfh_id,

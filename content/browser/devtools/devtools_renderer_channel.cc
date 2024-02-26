@@ -73,7 +73,7 @@ void DevToolsRendererChannel::CleanupConnection() {
 }
 
 void DevToolsRendererChannel::ForceDetachWorkerSessions() {
-  for (auto* host : child_targets_) {
+  for (WorkerOrWorkletDevToolsAgentHost* host : child_targets_) {
     host->ForceDetachAllSessions();
   }
 }

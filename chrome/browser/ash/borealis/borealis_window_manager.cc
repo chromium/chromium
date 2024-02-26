@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "base/memory/raw_ptr.h"
 
 #include <string>
 
@@ -203,7 +204,9 @@ void BorealisWindowManager::HandleWindowDestruction(aura::Window* window,
     observer.OnWindowFinished(app_id, window);
   }
 
-  base::flat_map<std::string, base::flat_set<aura::Window*>>::iterator iter =
+  base::flat_map<
+      std::string,
+      base::flat_set<raw_ptr<aura::Window, CtnExperimental>>>::iterator iter =
       ids_to_windows_.find(app_id);
   DCHECK(iter != ids_to_windows_.end());
   DCHECK(iter->second.contains(window));

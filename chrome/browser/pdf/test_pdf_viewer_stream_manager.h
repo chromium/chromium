@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,7 +83,7 @@ class TestPdfViewerStreamManagerFactory
  private:
   // Tracks managers this factory has created. It's safe to track raw pointers,
   // since the pointers are only for comparison and aren't dereferenced.
-  base::flat_set<PdfViewerStreamManager*> managers_;
+  base::flat_set<raw_ptr<PdfViewerStreamManager, CtnExperimental>> managers_;
 };
 
 }  // namespace pdf

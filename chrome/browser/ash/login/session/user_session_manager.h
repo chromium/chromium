@@ -624,7 +624,8 @@ class UserSessionManager
   // Mapped to `chrome::AttemptRestart`, except in tests.
   base::RepeatingClosure attempt_restart_closure_;
 
-  base::flat_set<Profile*> user_profile_initialized_called_;
+  base::flat_set<raw_ptr<Profile, CtnExperimental>>
+      user_profile_initialized_called_;
 
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
 

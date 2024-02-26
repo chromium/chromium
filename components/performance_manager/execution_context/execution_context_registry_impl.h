@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_EXECUTION_CONTEXT_REGISTRY_IMPL_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_EXECUTION_CONTEXT_REGISTRY_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
@@ -87,7 +88,7 @@ class ExecutionContextRegistryImpl
     bool operator()(const ExecutionContext* ec1,
                     const ExecutionContext* ec2) const;
   };
-  std::unordered_set<const ExecutionContext*,
+  std::unordered_set<raw_ptr<const ExecutionContext, CtnExperimental>,
                      ExecutionContextHash,
                      ExecutionContextKeyEqual>
       execution_contexts_ GUARDED_BY_CONTEXT(sequence_checker_);

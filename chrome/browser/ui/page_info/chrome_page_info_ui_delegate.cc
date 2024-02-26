@@ -171,7 +171,7 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
       extensions::WindowControllerList::GetInstance()->windows();
   int count = 0;
   auto site_origin = site_url_.DeprecatedGetOriginAsURL();
-  for (auto* window : windows) {
+  for (extensions::WindowController* window : windows) {
     const Browser* const browser = window->GetBrowser();
     if (!browser)
       continue;

@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
@@ -790,7 +791,7 @@ TargetHandler::Session* TargetHandler::FindWaitingSession(
 }
 
 void TargetHandler::ClearThrottles() {
-  base::flat_set<Throttle*> copy(throttles_);
+  base::flat_set<raw_ptr<Throttle, CtnExperimental>> copy(throttles_);
   for (Throttle* throttle : copy)
     throttle->Clear();
   throttles_.clear();
@@ -900,7 +901,7 @@ void TargetHandler::TargetInfoChanged(DevToolsAgentHost* host) {
 
 void TargetHandler::AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) {
   auto throttles = throttles_;
-  for (auto* throttle : throttles_) {
+  for (Throttle* throttle : throttles_) {
     if (throttle->auto_attacher() == auto_attacher)
       throttle->Clear();
   }

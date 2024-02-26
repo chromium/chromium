@@ -256,7 +256,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   // notifications for; this allows us to zero out the reference in realtime if
   // the element is deleted. We use a list because the individual elements need
   // to be memory-stable.
-  std::list<TrackedElement*> notification_elements_;
+  std::list<raw_ptr<TrackedElement, CtnExperimental>> notification_elements_;
   std::map<LookupKey, ElementData> element_data_;
   base::RepeatingCallbackList<void(TrackedElement*)>
       any_element_shown_callbacks_;

@@ -105,7 +105,7 @@ class LoginUIService : public KeyedService {
 
  private:
   // Weak pointers to the recently opened UIs, with the most recent in front.
-  std::list<LoginUI*> ui_list_;
+  std::list<raw_ptr<LoginUI, CtnExperimental>> ui_list_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<Profile> profile_;
   SigninUIError last_login_error_ = SigninUIError::Ok();

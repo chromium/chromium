@@ -161,7 +161,7 @@ class ASH_EXPORT WindowRestoreController
 
   // The set of windows that have had their widgets initialized and will be
   // shown later.
-  base::flat_set<aura::Window*> to_be_shown_windows_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>> to_be_shown_windows_;
 
   // When a window is restored, we post a task to clear its
   // `app_restore::kLaunchedFromAppRestoreKey` property. However, a window can

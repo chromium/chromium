@@ -118,7 +118,7 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
               associated_process_nodes.size());
     EXPECT_GE(num_hosts, associated_process_nodes.size());
 
-    for (auto* process_node : associated_process_nodes) {
+    for (ProcessNodeImpl* process_node : associated_process_nodes) {
       EXPECT_TRUE(base::Contains(process_nodes, process_node));
     }
 
@@ -129,10 +129,11 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
     EXPECT_EQ(kParentUrl, main_frame->GetURL().spec());
     EXPECT_EQ(2u, main_frame->child_frame_nodes().size());
 
-    for (auto* child_frame : main_frame->child_frame_nodes()) {
+    for (FrameNodeImpl* child_frame : main_frame->child_frame_nodes()) {
       if (child_frame->GetURL().spec() == kChild1Url) {
         ASSERT_EQ(1u, child_frame->child_frame_nodes().size());
-        auto* grandchild_frame = *(child_frame->child_frame_nodes().begin());
+        auto* grandchild_frame =
+            (*child_frame->child_frame_nodes().begin()).get();
         EXPECT_EQ(grandchild_url, grandchild_frame->GetURL().spec());
       } else if (child_frame->GetURL().spec() == kChild2Url) {
         EXPECT_TRUE(child_frame->child_frame_nodes().empty());

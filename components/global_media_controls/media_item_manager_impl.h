@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManagerImpl
   bool dialog_opened_for_single_item_ = false;
 
   // Pointers to all item producers used by |this|.
-  base::flat_set<MediaItemProducer*> item_producers_;
+  base::flat_set<raw_ptr<MediaItemProducer, CtnExperimental>> item_producers_;
 
   base::ObserverList<MediaItemManagerObserver> observers_;
 

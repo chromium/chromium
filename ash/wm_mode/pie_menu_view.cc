@@ -462,7 +462,7 @@ void PieMenuView::OpenSubMenu(PieSubMenuContainerView* sub_menu) {
   DCHECK(sub_menu);
   main_menu_container_->SetVisible(false);
   if (!active_sub_menus_stack_.empty()) {
-    auto* top_sub_menu = active_sub_menus_stack_.top();
+    auto* top_sub_menu = active_sub_menus_stack_.top().get();
     top_sub_menu->SetVisible(false);
   }
   active_sub_menus_stack_.push(sub_menu);
@@ -472,7 +472,7 @@ void PieMenuView::OpenSubMenu(PieSubMenuContainerView* sub_menu) {
 
 void PieMenuView::MaybePopSubMenu() {
   if (!active_sub_menus_stack_.empty()) {
-    auto* top_sub_menu = active_sub_menus_stack_.top();
+    auto* top_sub_menu = active_sub_menus_stack_.top().get();
     top_sub_menu->SetVisible(false);
     active_sub_menus_stack_.pop();
   }

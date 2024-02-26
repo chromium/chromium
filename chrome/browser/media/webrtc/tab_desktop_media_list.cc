@@ -169,7 +169,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
     // Find all AppWindows for the given profile.
     const extensions::AppWindowRegistry::AppWindowList& window_list =
         extensions::AppWindowRegistry::Get(profile)->app_windows();
-    for (const auto* app_window : window_list) {
+    for (const extensions::AppWindow* app_window : window_list) {
       if (!app_window->is_hidden())
         contents_list.push_back(app_window->web_contents());
     }

@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -77,7 +78,8 @@ class MEDIA_EXPORT AudioRendererMixer
   base::Lock lock_;
 
   // List of error callbacks used by this mixer.
-  base::flat_set<AudioRendererMixerInput*> error_callbacks_ GUARDED_BY(lock_);
+  base::flat_set<raw_ptr<AudioRendererMixerInput, CtnExperimental>>
+      error_callbacks_ GUARDED_BY(lock_);
 
   // Maps input sample rate to the dedicated converter.
   using AudioConvertersMap =

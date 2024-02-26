@@ -35,7 +35,8 @@ class WindowTreeHostTestApi {
     return host_->accelerated_widget_made_visible_;
   }
 
-  static const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
+  static const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>&
+  GetThrottledHosts() {
     return WindowTreeHost::GetThrottledHostsForTesting();
   }
 
@@ -62,7 +63,8 @@ void DisableNativeWindowOcclusionTracking(WindowTreeHost* host) {
   NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host);
 }
 
-const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
+const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>&
+GetThrottledHosts() {
   return WindowTreeHostTestApi::GetThrottledHosts();
 }
 

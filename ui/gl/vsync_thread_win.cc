@@ -180,8 +180,9 @@ void VSyncThreadWin::WaitForVSync() {
   PostTaskIfNeeded();
 
   const base::TimeTicks vsync_time = base::TimeTicks::Now();
-  for (auto* obs : observers_)
+  for (VSyncObserver* obs : observers_) {
     obs->OnVSync(vsync_time, vsync_interval);
+  }
 }
 
 }  // namespace gl

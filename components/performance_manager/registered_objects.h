@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 
 namespace performance_manager {
 
@@ -79,7 +80,8 @@ class RegisteredObjects {
     }
   };
 
-  base::flat_set<RegisteredType*, RegisteredComparator> objects_;
+  base::flat_set<raw_ptr<RegisteredType, CtnExperimental>, RegisteredComparator>
+      objects_;
 };
 
 }  // namespace performance_manager

@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -259,12 +260,16 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
     return on_final_response_url_determined_called_;
   }
 
-  const base::flat_map<const WorkerNode*, base::flat_set<const FrameNode*>>&
+  const base::flat_map<
+      const WorkerNode*,
+      base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>>&
   client_frames() const {
     return client_frames_;
   }
 
-  const base::flat_map<const WorkerNode*, base::flat_set<const WorkerNode*>>&
+  const base::flat_map<
+      const WorkerNode*,
+      base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>>>&
   client_workers() const {
     return client_workers_;
   }
@@ -276,9 +281,11 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
  private:
   bool on_final_response_url_determined_called_ = false;
 
-  base::flat_map<const WorkerNode*, base::flat_set<const FrameNode*>>
+  base::flat_map<const WorkerNode*,
+                 base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>>
       client_frames_;
-  base::flat_map<const WorkerNode*, base::flat_set<const WorkerNode*>>
+  base::flat_map<const WorkerNode*,
+                 base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>>>
       client_workers_;
 
   bool on_priority_and_reason_changed_called_ = false;
@@ -309,8 +316,8 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   for (const auto& worker_and_client_frames :
        worker_node_observer.client_frames()) {
     // For each worker, check that |frame| is a client.
-    const base::flat_set<const FrameNode*>& client_frames =
-        worker_and_client_frames.second;
+    const base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>&
+        client_frames = worker_and_client_frames.second;
     EXPECT_TRUE(client_frames.find(frame.get()) != client_frames.end());
   }
 
@@ -346,11 +353,13 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   EXPECT_EQ(worker_node_observer.client_frames().size(), 3u);
 
   // Check clients of the service worker.
-  const base::flat_set<const FrameNode*>& client_frames =
+  const base::flat_set<
+      raw_ptr<const FrameNode, CtnExperimental>>& client_frames =
       worker_node_observer.client_frames().find(service_worker.get())->second;
   EXPECT_TRUE(client_frames.find(frame.get()) != client_frames.end());
 
-  const base::flat_set<const WorkerNode*>& client_workers =
+  const base::flat_set<
+      raw_ptr<const WorkerNode, CtnExperimental>>& client_workers =
       worker_node_observer.client_workers().find(service_worker.get())->second;
   EXPECT_TRUE(client_workers.find(dedicated_worker.get()) !=
               client_workers.end());

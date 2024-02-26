@@ -101,7 +101,8 @@ class ScreenCaptureNotificationBlocker
 
   // Storing raw pointers here is fine because MediaStreamCaptureIndicator
   // notifies us before the WebContents is destroyed.
-  base::flat_set<content::WebContents*> capturing_web_contents_;
+  base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>
+      capturing_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_SCREEN_CAPTURE_NOTIFICATION_BLOCKER_H_

@@ -2382,7 +2382,7 @@ class MockURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Queue of URLLoaders that have yet to had their RunTest method called.
   // Separate list than |url_loaders_| so that old pipes aren't destroyed.
-  std::list<MockURLLoader*> url_loader_queue_;
+  std::list<raw_ptr<MockURLLoader, CtnExperimental>> url_loader_queue_;
 
   std::list<GURL> requested_urls_;
 

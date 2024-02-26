@@ -174,7 +174,7 @@ bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
   DCHECK(!extension_id.empty());
   AppWindowRegistry::AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(extension_id);
-  for (auto* window : windows) {
+  for (AppWindow* window : windows) {
     if (window->IsFullscreen() && window->GetBaseWindow()->IsActive())
       return true;
   }

@@ -61,7 +61,7 @@ class EVENTS_EXPORT EventHandler {
 
   // EventDispatcher pushes itself on the top of this stack while dispatching
   // events to this then pops itself off when done.
-  base::stack<EventDispatcher*> dispatchers_;
+  base::stack<raw_ptr<EventDispatcher, CtnExperimental>> dispatchers_;
 };
 
 using EventHandlerList = std::vector<raw_ptr<EventHandler, VectorExperimental>>;

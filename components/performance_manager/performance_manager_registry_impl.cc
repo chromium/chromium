@@ -258,7 +258,7 @@ void PerformanceManagerRegistryImpl::TearDown() {
 
   service_worker_context_adapters_.clear();
 
-  for (auto* web_contents : web_contents_) {
+  for (content::WebContents* web_contents : web_contents_) {
     PerformanceManagerTabHelper* tab_helper =
         PerformanceManagerTabHelper::FromWebContents(web_contents);
     DCHECK(tab_helper);
@@ -270,7 +270,8 @@ void PerformanceManagerRegistryImpl::TearDown() {
   }
   web_contents_.clear();
 
-  for (auto* render_process_host : render_process_hosts_) {
+  for (content::RenderProcessHost* render_process_host :
+       render_process_hosts_) {
     RenderProcessUserData* user_data =
         RenderProcessUserData::GetForRenderProcessHost(render_process_host);
     DCHECK(user_data);

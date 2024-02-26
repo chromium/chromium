@@ -323,8 +323,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   FRIEND_TEST_ALL_PREFIXES(HttpCacheTest_SplitCacheFeatureEnabled,
                            SplitCacheUsesRegistrableDomain);
 
-  using TransactionList = std::list<Transaction*>;
-  using TransactionSet = std::unordered_set<Transaction*>;
+  using TransactionList = std::list<raw_ptr<Transaction, CtnExperimental>>;
+  using TransactionSet =
+      std::unordered_set<raw_ptr<Transaction, CtnExperimental>>;
   typedef std::list<std::unique_ptr<WorkItem>> WorkItemList;
 
   // We implement a basic reader/writer lock for the disk cache entry. If there

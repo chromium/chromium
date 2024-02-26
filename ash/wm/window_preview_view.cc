@@ -51,8 +51,9 @@ WindowPreviewView::WindowPreviewView(aura::Window* window) : window_(window) {
 }
 
 WindowPreviewView::~WindowPreviewView() {
-  for (auto* window : unparented_transient_children_)
+  for (aura::Window* window : unparented_transient_children_) {
     window->RemoveObserver(this);
+  }
   for (auto entry : mirror_views_)
     entry.first->RemoveObserver(this);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);

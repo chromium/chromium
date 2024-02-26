@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -407,7 +408,7 @@ FrameNodeImpl* PageNodeImpl::main_frame_node() const {
 
   // Return the current frame node if there is one. Iterating over this set is
   // fine because it is almost always of length 1 or 2.
-  for (auto* frame : main_frame_nodes_) {
+  for (FrameNodeImpl* frame : main_frame_nodes_) {
     if (frame->IsCurrent()) {
       return frame;
     }
@@ -417,7 +418,8 @@ FrameNodeImpl* PageNodeImpl::main_frame_node() const {
   return *main_frame_nodes_.begin();
 }
 
-const base::flat_set<FrameNodeImpl*>& PageNodeImpl::main_frame_nodes() const {
+const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
+PageNodeImpl::main_frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return main_frame_nodes_;
 }
@@ -557,7 +559,7 @@ const FrameNode* PageNodeImpl::GetMainFrameNode() const {
 
 bool PageNodeImpl::VisitMainFrameNodes(const FrameNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto* frame_impl : main_frame_nodes_) {
+  for (FrameNodeImpl* frame_impl : main_frame_nodes_) {
     const FrameNode* frame = frame_impl;
     if (!visitor(frame)) {
       return false;
@@ -566,10 +568,11 @@ bool PageNodeImpl::VisitMainFrameNodes(const FrameNodeVisitor& visitor) const {
   return true;
 }
 
-const base::flat_set<const FrameNode*> PageNodeImpl::GetMainFrameNodes() const {
+const base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>
+PageNodeImpl::GetMainFrameNodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<const FrameNode*> main_frame_nodes(main_frame_nodes_.begin(),
-                                                    main_frame_nodes_.end());
+  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>> main_frame_nodes(
+      main_frame_nodes_.begin(), main_frame_nodes_.end());
   return main_frame_nodes;
 }
 

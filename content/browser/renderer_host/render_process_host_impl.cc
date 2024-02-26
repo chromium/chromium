@@ -5066,7 +5066,7 @@ void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
   ChildProcessImportance new_effective_importance =
       ChildProcessImportance::NORMAL;
 #endif
-  for (auto* client : priority_clients_) {
+  for (RenderProcessHostPriorityClient* client : priority_clients_) {
     RenderProcessHostPriorityClient::Priority priority = client->GetPriority();
 
     // Compute the lowest depth of widgets with highest visibility priority.

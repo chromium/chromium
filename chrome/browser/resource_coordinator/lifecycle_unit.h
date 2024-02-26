@@ -160,7 +160,8 @@ class LifecycleUnit {
   virtual ukm::SourceId GetUkmSourceId() const = 0;
 };
 
-using LifecycleUnitSet = base::flat_set<LifecycleUnit*>;
+using LifecycleUnitSet =
+    base::flat_set<raw_ptr<LifecycleUnit, CtnExperimental>>;
 using LifecycleUnitVector =
     std::vector<raw_ptr<LifecycleUnit, VectorExperimental>>;
 

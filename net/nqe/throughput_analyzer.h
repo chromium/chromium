@@ -152,7 +152,8 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // Set of URL requests to hold the requests that reduce the accuracy of
   // throughput computation. These requests are not used in throughput
   // computation.
-  typedef std::unordered_set<const URLRequest*> AccuracyDegradingRequests;
+  typedef std::unordered_set<raw_ptr<const URLRequest, CtnExperimental>>
+      AccuracyDegradingRequests;
 
   // Updates the response content size map for |request|. Also keeps the total
   // response content size counter updated. Adds an new entry if there is no

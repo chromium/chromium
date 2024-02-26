@@ -72,7 +72,7 @@ bool OperationRequestManager::IsInteractingWithUser() const {
   // which is at most once every 10 seconds per request (except tests).
   const extensions::WindowControllerList::ControllerList& windows =
       extensions::WindowControllerList::GetInstance()->windows();
-  for (auto* window : windows) {
+  for (extensions::WindowController* window : windows) {
     const Browser* const browser = window->GetBrowser();
     if (!browser)
       continue;

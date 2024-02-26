@@ -493,7 +493,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   base::TimeDelta last_known_vsync_interval_;
 
   // The set of surfaces owned by this frame sink that have pending frame.
-  base::flat_set<Surface*> pending_surfaces_;
+  base::flat_set<raw_ptr<Surface, CtnExperimental>> pending_surfaces_;
 
   base::TimeDelta preferred_frame_interval_ = BeginFrameArgs::MinInterval();
 

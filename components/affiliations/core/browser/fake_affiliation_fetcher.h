@@ -73,7 +73,8 @@ class FakeAffiliationFetcherFactory : public AffiliationFetcherFactory {
 
  private:
   // Fakes created by this factory.
-  base::queue<FakeAffiliationFetcher*> pending_fetchers_;
+  base::queue<raw_ptr<FakeAffiliationFetcher, CtnExperimental>>
+      pending_fetchers_;
 };
 
 }  // namespace affiliations

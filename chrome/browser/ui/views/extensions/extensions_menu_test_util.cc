@@ -242,7 +242,7 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
 
 ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     const extensions::ExtensionId& id) {
-  base::flat_set<ExtensionMenuItemView*> menu_items;
+  base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     ExtensionsMenuMainPageView* main_page =
@@ -250,7 +250,8 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
             ->GetControllerForTesting()
             ->GetMainPageViewForTesting();
     DCHECK(main_page);
-    menu_items = main_page->GetMenuItems();
+    auto items = main_page->GetMenuItems();
+    menu_items = {items.begin(), items.end()};
 
   } else {
     menu_items = menu_view_->extensions_menu_items_for_testing();

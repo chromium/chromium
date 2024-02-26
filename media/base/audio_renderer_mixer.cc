@@ -147,8 +147,9 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
 void AudioRendererMixer::OnRenderError() {
   // Call each mixer input and signal an error.
   base::AutoLock auto_lock(lock_);
-  for (auto* input : error_callbacks_)
+  for (AudioRendererMixerInput* input : error_callbacks_) {
     input->OnRenderError();
+  }
 }
 
 }  // namespace media

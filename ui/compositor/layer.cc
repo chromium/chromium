@@ -1630,8 +1630,9 @@ void Layer::SetBoundsFromAnimation(const gfx::Rect& bounds,
       mirror_dest->SetBounds(bounds);
   }
 
-  for (auto* reflecting_layer : subtree_reflecting_layers_)
+  for (Layer* reflecting_layer : subtree_reflecting_layers_) {
     reflecting_layer->MatchLayerSize(this);
+  }
 }
 
 void Layer::SetTransformFromAnimation(const gfx::Transform& new_transform,

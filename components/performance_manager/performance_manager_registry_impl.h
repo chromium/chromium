@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/browser_child_process_watcher.h"
@@ -153,10 +154,10 @@ class PerformanceManagerRegistryImpl
 
   // Tracks WebContents and RenderProcessHost for which we have created user
   // data. Used to destroy all user data when the registry is destroyed.
-  base::flat_set<content::WebContents*> web_contents_
+  base::flat_set<raw_ptr<content::WebContents, CtnExperimental>> web_contents_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::flat_set<content::RenderProcessHost*> render_process_hosts_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_set<raw_ptr<content::RenderProcessHost, CtnExperimental>>
+      render_process_hosts_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Maps each browser context to its ServiceWorkerContextAdapter.
   base::flat_map<content::BrowserContext*,

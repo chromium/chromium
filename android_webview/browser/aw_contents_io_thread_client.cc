@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -57,7 +58,8 @@ namespace {
 typedef map<content::GlobalRenderFrameHostToken, JavaObjectWeakGlobalRef>
     RenderFrameHostToWeakGlobalRefType;
 
-typedef pair<base::flat_set<RenderFrameHost*>, JavaObjectWeakGlobalRef>
+typedef pair<base::flat_set<raw_ptr<RenderFrameHost, CtnExperimental>>,
+             JavaObjectWeakGlobalRef>
     HostsAndWeakGlobalRefPair;
 
 // When browser side navigation is enabled, RenderFrameIDs do not have

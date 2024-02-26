@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_anonymization_key.h"
@@ -55,7 +56,7 @@ class ProxyHostResolverCache {
     bool is_ex_operation;
   };
 
-  using ExpirationList = std::list<const Key*>;
+  using ExpirationList = std::list<raw_ptr<const Key, CtnExperimental>>;
 
   struct Entry {
     Entry(std::vector<net::IPAddress> results,

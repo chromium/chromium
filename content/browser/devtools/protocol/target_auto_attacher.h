@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 
@@ -86,7 +87,8 @@ class TargetAutoAttacher {
 
  private:
   base::ObserverList<Client, false, true> clients_;
-  base::flat_set<Client*> clients_requesting_wait_for_debugger_;
+  base::flat_set<raw_ptr<Client, CtnExperimental>>
+      clients_requesting_wait_for_debugger_;
 };
 
 class RendererAutoAttacherBase : public TargetAutoAttacher {

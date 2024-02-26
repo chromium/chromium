@@ -339,8 +339,9 @@ void PageLoadTrackerDecorator::ScheduleDelayedUpdateLoadIdleStatePage(
 
 void PageLoadTrackerDecorator::UpdateLoadIdleStateProcess(
     ProcessNodeImpl* process_node) {
-  for (auto* frame_node : process_node->frame_nodes())
+  for (FrameNodeImpl* frame_node : process_node->frame_nodes()) {
     UpdateLoadIdleStateFrame(frame_node);
+  }
 }
 
 // static

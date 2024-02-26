@@ -172,7 +172,8 @@ class ASH_EXPORT PieMenuView : public views::View {
   // pressing on `back_button_` pops the top-most sub menu to show the previous
   // one, until there are no more active sub menus, at which point
   // `main_menu_container_` shows up and `back_button_` hides.
-  std::stack<PieSubMenuContainerView*> active_sub_menus_stack_;
+  std::stack<raw_ptr<PieSubMenuContainerView, CtnExperimental>>
+      active_sub_menus_stack_;
 
   const raw_ptr<views::ImageButton> back_button_;
 

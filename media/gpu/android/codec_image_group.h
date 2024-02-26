@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/gpu/android/codec_image.h"
@@ -66,7 +67,7 @@ class MEDIA_GPU_EXPORT CodecImageGroup
   scoped_refptr<CodecSurfaceBundle> surface_bundle_;
 
   // All the images that use |surface_bundle_|.
-  std::unordered_set<CodecImage*> images_;
+  std::unordered_set<raw_ptr<CodecImage, CtnExperimental>> images_;
 
   // Task runner for everything.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

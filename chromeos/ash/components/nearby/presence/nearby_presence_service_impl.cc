@@ -216,7 +216,7 @@ void NearbyPresenceServiceImpl::Shutdown() {
 
 void NearbyPresenceServiceImpl::OnDeviceFound(mojom::PresenceDevicePtr device) {
   auto build_device = BuildPresenceDevice(std::move(device));
-  for (auto* delegate : scan_delegate_set_) {
+  for (ScanDelegate* delegate : scan_delegate_set_) {
     delegate->OnPresenceDeviceFound(build_device);
   }
 }
@@ -224,14 +224,14 @@ void NearbyPresenceServiceImpl::OnDeviceFound(mojom::PresenceDevicePtr device) {
 void NearbyPresenceServiceImpl::OnDeviceChanged(
     mojom::PresenceDevicePtr device) {
   auto build_device = BuildPresenceDevice(std::move(device));
-  for (auto* delegate : scan_delegate_set_) {
+  for (ScanDelegate* delegate : scan_delegate_set_) {
     delegate->OnPresenceDeviceChanged(build_device);
   }
 }
 
 void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {
   auto build_device = BuildPresenceDevice(std::move(device));
-  for (auto* delegate : scan_delegate_set_) {
+  for (ScanDelegate* delegate : scan_delegate_set_) {
     delegate->OnPresenceDeviceLost(build_device);
   }
 }

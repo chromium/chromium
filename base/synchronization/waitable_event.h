@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -237,7 +238,7 @@ class BASE_EXPORT WaitableEvent {
     base::Lock lock_;
     const bool manual_reset_;
     bool signaled_;
-    std::list<Waiter*> waiters_;
+    std::list<raw_ptr<Waiter, CtnExperimental>> waiters_;
 
    private:
     friend class RefCountedThreadSafe<WaitableEventKernel>;

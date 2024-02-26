@@ -375,7 +375,7 @@ WaitableEvent::WaitableEventKernel::~WaitableEventKernel() = default;
 bool WaitableEvent::SignalAll() {
   bool signaled_at_least_one = false;
 
-  for (auto* i : kernel_->waiters_) {
+  for (Waiter* i : kernel_->waiters_) {
     if (i->Fire(this))
       signaled_at_least_one = true;
   }

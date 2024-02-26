@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -159,10 +160,11 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
 
     // Copy because the set can change while calling
     // SimulatePrimaryPageChanged() and the iteration is invalidated.
-    base::flat_set<content::WebContents*> load_initiated =
-        tab_loader_.tabs_load_initiated();
-    for (auto* web_contents : load_initiated)
+    base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>
+        load_initiated = tab_loader_.tabs_load_initiated();
+    for (content::WebContents* web_contents : load_initiated) {
       SimulatePrimaryPageChanged(web_contents);
+    }
   }
 
   void StartTabLoader() {

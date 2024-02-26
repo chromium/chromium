@@ -375,11 +375,11 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // windows. A window is added to this set the first time that occlusion is
   // computed after it was animated. It is removed when the animation ends or is
   // aborted.
-  base::flat_set<Window*> animated_windows_;
+  base::flat_set<raw_ptr<Window, CtnExperimental>> animated_windows_;
 
   // Windows that are excluded from occlustion tracking. See comment on
   // ScopedExclude.
-  base::flat_set<Window*> excluded_windows_;
+  base::flat_set<raw_ptr<Window, CtnExperimental>> excluded_windows_;
 
   // Root Windows of Windows in |tracked_windows_|.
   base::flat_map<Window*, RootWindowState> root_windows_;

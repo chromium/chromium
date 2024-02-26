@@ -137,7 +137,8 @@ class CONTENT_EXPORT AuctionProcessManager {
 
     // Entry in the corresponding PendingRequestQueue if the handle has yet to
     // be assigned a process.
-    std::list<ProcessHandle*>::iterator queued_request_;
+    std::list<raw_ptr<ProcessHandle, CtnExperimental>>::iterator
+        queued_request_;
 
     base::WeakPtrFactory<ProcessHandle> weak_ptr_factory_{this};
   };
@@ -228,7 +229,8 @@ class CONTENT_EXPORT AuctionProcessManager {
   // bidder further up the queue with a matching owner receives a process).
   // ProcessHandles are owned by consumers, and destroyed when they no longer
   // need to keep their processes alive.
-  using PendingRequestQueue = std::list<ProcessHandle*>;
+  using PendingRequestQueue =
+      std::list<raw_ptr<ProcessHandle, CtnExperimental>>;
 
   // Contains ProcessHandles for bidder or seller requests which have not yet
   // been assigned processes, indexed by origin. When the request in the

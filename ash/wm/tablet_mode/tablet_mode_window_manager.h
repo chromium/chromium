@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display_observer.h"
@@ -191,11 +192,12 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   WindowToState window_state_map_;
 
   // All container windows which have to be tracked.
-  std::unordered_set<aura::Window*> observed_container_windows_;
+  std::unordered_set<raw_ptr<aura::Window, CtnExperimental>>
+      observed_container_windows_;
 
   // Windows added to the container, but not yet shown or tracked. They will be
   // attempted to be tracked when the window is shown.
-  std::unordered_set<aura::Window*> windows_to_track_;
+  std::unordered_set<raw_ptr<aura::Window, CtnExperimental>> windows_to_track_;
 
   // All accounts that have been active at least once since tablet mode started.
   base::flat_set<AccountId> accounts_since_entering_tablet_;

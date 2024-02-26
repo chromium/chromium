@@ -168,7 +168,7 @@ class ArcInputOverlayManager : public KeyedService,
   // prepare or start loading the GIO default key mapping data. Once window is
   // destroying or the GIO data reading is finished, window is removed from this
   // set.
-  base::flat_set<aura::Window*> loading_data_windows_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>> loading_data_windows_;
   bool is_text_input_active_ = false;
   raw_ptr<ui::InputMethod> input_method_ = nullptr;
   std::unique_ptr<InputMethodObserver> input_method_observer_;

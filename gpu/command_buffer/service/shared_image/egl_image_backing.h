@@ -119,8 +119,8 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   // signalled.
   base::flat_map<gl::GLApi*, scoped_refptr<gl::SharedGLFenceEGL>> read_fences_
       GUARDED_BY(lock_);
-  base::flat_set<const GLRepresentationShared*> active_readers_
-      GUARDED_BY(lock_);
+  base::flat_set<raw_ptr<const GLRepresentationShared, CtnExperimental>>
+      active_readers_ GUARDED_BY(lock_);
 
   const bool use_passthrough_;
 };

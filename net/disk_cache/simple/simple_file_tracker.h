@@ -180,7 +180,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     std::unique_ptr<base::File> files[kSimpleEntryTotalFileCount];
 
     State state[kSimpleEntryTotalFileCount];
-    std::list<TrackedFiles*>::iterator position_in_lru;
+    std::list<raw_ptr<TrackedFiles, CtnExperimental>>::iterator position_in_lru;
 
     // true if position_in_lru is valid. For entries where we closed everything,
     // we try not to keep them in the LRU so that we don't have to constantly
@@ -217,7 +217,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   base::Lock lock_;
   std::unordered_map<uint64_t, std::vector<std::unique_ptr<TrackedFiles>>>
       tracked_files_;
-  std::list<TrackedFiles*> lru_;
+  std::list<raw_ptr<TrackedFiles, CtnExperimental>> lru_;
 
   int file_limit_;
 

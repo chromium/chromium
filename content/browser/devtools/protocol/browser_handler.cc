@@ -610,8 +610,9 @@ void BrowserHandler::DownloadWillBegin(FrameTreeNode* ftn,
 
 void BrowserHandler::SetDownloadEventsEnabled(bool enabled) {
   if (!enabled) {
-    for (auto* item : pending_downloads_)
+    for (download::DownloadItem* item : pending_downloads_) {
       item->RemoveObserver(this);
+    }
     pending_downloads_.clear();
   }
   download_events_enabled_ = enabled;

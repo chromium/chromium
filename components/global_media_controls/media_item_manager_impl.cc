@@ -84,7 +84,7 @@ void MediaItemManagerImpl::SetDialogDelegate(MediaDialogDelegate* delegate) {
   for (const std::string& id : item_ids) {
     ShowMediaItemUI(id);
   }
-  for (auto* item_producer : item_producers_) {
+  for (MediaItemProducer* item_producer : item_producers_) {
     item_producer->OnDialogDisplayed();
   }
   media_message_center::RecordConcurrentNotificationCount(item_ids.size());
@@ -118,7 +118,7 @@ bool MediaItemManagerImpl::HasActiveItems() {
 }
 
 bool MediaItemManagerImpl::HasFrozenItems() {
-  for (auto* item_producer : item_producers_) {
+  for (MediaItemProducer* item_producer : item_producers_) {
     if (item_producer->HasFrozenItems()) {
       return true;
     }
@@ -133,7 +133,7 @@ bool MediaItemManagerImpl::HasOpenDialog() {
 std::list<std::string> MediaItemManagerImpl::GetActiveItemIds() {
   // Get all the active item IDs and remove duplicates.
   std::set<std::string> item_ids;
-  for (auto* item_producer : item_producers_) {
+  for (MediaItemProducer* item_producer : item_producers_) {
     const std::set<std::string>& ids =
         item_producer->GetActiveControllableItemIds();
     item_ids.insert(ids.begin(), ids.end());
@@ -172,7 +172,7 @@ bool MediaItemManagerImpl::ShowMediaItemUI(const std::string& id) {
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
 MediaItemManagerImpl::GetItem(const std::string& id) {
-  for (auto* producer : item_producers_) {
+  for (MediaItemProducer* producer : item_producers_) {
     auto item = producer->GetMediaItem(id);
     if (item) {
       return item;
@@ -183,7 +183,7 @@ MediaItemManagerImpl::GetItem(const std::string& id) {
 
 MediaItemProducer* MediaItemManagerImpl::GetItemProducer(
     const std::string& item_id) {
-  for (auto* producer : item_producers_) {
+  for (MediaItemProducer* producer : item_producers_) {
     if (producer->GetMediaItem(item_id)) {
       return producer;
     }

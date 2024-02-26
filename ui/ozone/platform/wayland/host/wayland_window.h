@@ -560,8 +560,10 @@ class WaylandWindow : public PlatformWindow,
   // |subsurface_stack_above_| refers to subsurfaces that are stacked above the
   // primary. These include the subsurfaces to be hidden as well.
   // Subsurface at the front of the list is the closest to the primary.
-  std::list<WaylandSubsurface*> subsurface_stack_above_;
-  std::list<WaylandSubsurface*> subsurface_stack_below_;
+  std::list<raw_ptr<WaylandSubsurface, CtnExperimental>>
+      subsurface_stack_above_;
+  std::list<raw_ptr<WaylandSubsurface, CtnExperimental>>
+      subsurface_stack_below_;
 
   // The stack of sub-surfaces currently committed. This list is altered when
   // the subsurface arrangement are played back by WaylandFrameManager.

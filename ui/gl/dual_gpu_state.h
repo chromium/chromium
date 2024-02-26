@@ -6,6 +6,7 @@
 #define UI_GL_DUAL_GPU_STATE_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -30,7 +31,7 @@ class GL_EXPORT DualGPUState {
   virtual void AttemptSwitchToLowPowerGPUWithDelay() = 0;
   virtual void CancelDelayedSwitchToLowPowerGPU() = 0;
 
-  base::flat_set<GLContext*> contexts_;
+  base::flat_set<raw_ptr<GLContext, CtnExperimental>> contexts_;
 };
 
 }  // namespace gl

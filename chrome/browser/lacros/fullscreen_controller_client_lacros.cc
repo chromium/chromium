@@ -74,7 +74,7 @@ FullscreenControllerClientLacros::GetActiveAppWindowWebContents() {
 
   const auto& app_windows =
       extensions::AppWindowRegistry::Get(profile)->app_windows();
-  for (auto* app_window : app_windows) {
+  for (extensions::AppWindow* app_window : app_windows) {
     if (app_window->GetBaseWindow()->IsActive()) {
       return app_window->web_contents();
     }

@@ -136,7 +136,8 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   const Desk* active_desk() const { return active_desk_; }
 
-  const base::flat_set<aura::Window*>& visible_on_all_desks_windows() const {
+  const base::flat_set<raw_ptr<aura::Window, CtnExperimental>>&
+  visible_on_all_desks_windows() const {
     return visible_on_all_desks_windows_;
   }
 
@@ -534,7 +535,8 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Stores visible on all desks windows, that is normal type windows with
   // normal z-ordering and are visible on all workspaces. Store here to prevent
   // repeatedly retrieving these windows on desk switches.
-  base::flat_set<aura::Window*> visible_on_all_desks_windows_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>>
+      visible_on_all_desks_windows_;
 
   // True when desks addition, removal, or activation change are in progress.
   // This can be checked when overview mode is active to avoid exiting overview

@@ -236,7 +236,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest, SyncedLists);
 
   // The checks awaiting a full hash response from SafeBrowsing service.
-  typedef std::unordered_set<PendingCheck*> PendingChecks;
+  typedef std::unordered_set<raw_ptr<PendingCheck, CtnExperimental>>
+      PendingChecks;
 
   // Called when all the stores managed by the database have been read from
   // disk after startup and the database is ready for checking resource

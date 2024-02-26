@@ -52,7 +52,7 @@ class GraphImpl : public Graph {
   using ProcessNodeImplVisitor = base::FunctionRef<bool(ProcessNodeImpl*)>;
   using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
 
-  using NodeSet = std::unordered_set<NodeBase*>;
+  using NodeSet = std::unordered_set<raw_ptr<NodeBase, CtnExperimental>>;
 
   GraphImpl();
   ~GraphImpl() override;

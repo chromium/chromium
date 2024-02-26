@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -136,7 +137,9 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   void ActiveConfigurationChanged(int configuration_value);
   void NotifyDeviceRemoved();
 
-  std::list<UsbDeviceHandle*>& handles() { return handles_; }
+  std::list<raw_ptr<UsbDeviceHandle, CtnExperimental>>& handles() {
+    return handles_;
+  }
 
   // This member must be mutable by subclasses as necessary during device
   // enumeration. To preserve the thread safety of this object they must remain
@@ -160,7 +163,7 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
 
   // Weak pointers to open handles. HandleClosed() will be called before each
   // is freed.
-  std::list<UsbDeviceHandle*> handles_;
+  std::list<raw_ptr<UsbDeviceHandle, CtnExperimental>> handles_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 };

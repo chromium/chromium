@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
@@ -111,7 +112,8 @@ class DlpContentManagerLacros : public DlpContentManager,
       content::WebContents* web_contents) const override;
 
   // Tracks set of known confidential WebContents* for each Window*.
-  base::flat_map<aura::Window*, base::flat_set<content::WebContents*>>
+  base::flat_map<aura::Window*,
+                 base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>>
       window_webcontents_;
 
   // Tracks current restrictions applied to Window* based on visible

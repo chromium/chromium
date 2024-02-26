@@ -230,7 +230,7 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   const auto& frame_nodes = process_node->frame_nodes();
   auto public_frame_nodes = public_process_node->GetFrameNodes();
   EXPECT_EQ(frame_nodes.size(), public_frame_nodes.size());
-  for (const auto* frame_node : frame_nodes) {
+  for (const FrameNodeImpl* frame_node : frame_nodes) {
     const FrameNode* public_frame_node = frame_node;
     EXPECT_TRUE(base::Contains(public_frame_nodes, public_frame_node));
   }

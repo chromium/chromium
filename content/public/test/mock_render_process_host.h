@@ -323,7 +323,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   base::ObserverList<RenderProcessHostObserver> observers_;
 
   StoragePartitionConfig storage_partition_config_;
-  base::flat_set<RenderProcessHostPriorityClient*> priority_clients_;
+  base::flat_set<raw_ptr<RenderProcessHostPriorityClient, CtnExperimental>>
+      priority_clients_;
   int prev_routing_id_;
   base::IDMap<IPC::Listener*> listeners_;
   bool shutdown_requested_;

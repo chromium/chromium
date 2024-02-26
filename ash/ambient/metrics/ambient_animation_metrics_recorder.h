@@ -57,7 +57,8 @@ class ASH_EXPORT AmbientAnimationMetricsRecorder
       const lottie::Animation& animation_r) const;
 
   const AmbientUiSettings ui_settings_;
-  base::flat_set<const lottie::Animation*> registered_animations_;
+  base::flat_set<raw_ptr<const lottie::Animation, CtnExperimental>>
+      registered_animations_;
   base::ScopedMultiSourceObservation<lottie::Animation,
                                      lottie::AnimationObserver>
       animation_observations_{this};

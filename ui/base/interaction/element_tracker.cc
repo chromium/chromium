@@ -56,7 +56,9 @@ class ElementTracker::ElementData {
     return elements_.size();
   }
 
-  const std::list<TrackedElement*>& elements() const { return elements_; }
+  const std::list<raw_ptr<TrackedElement, CtnExperimental>>& elements() const {
+    return elements_;
+  }
 
   Subscription AddElementShownCallback(Callback callback) {
     return shown_callbacks_.Add(callback);
@@ -74,7 +76,7 @@ class ElementTracker::ElementData {
     return custom_event_callbacks_.Add(callback);
   }
 
-  void NotifyElementShown(TrackedElement*& element) {
+  void NotifyElementShown(raw_ptr<TrackedElement, CtnExperimental>& element) {
     DCHECK(element);
     DCHECK_EQ(identifier(), element->identifier());
     // Zero context data is the "all contexts" entry and doesn't actually store
@@ -89,7 +91,8 @@ class ElementTracker::ElementData {
     shown_callbacks_.Notify(element);
   }
 
-  void NotifyElementActivated(TrackedElement*& element) {
+  void NotifyElementActivated(
+      raw_ptr<TrackedElement, CtnExperimental>& element) {
     // Note: "All contexts" does not require the element to be present here.
     DCHECK(!context_ || base::Contains(element_lookup_, element));
     activated_callbacks_.Notify(element);
@@ -116,12 +119,13 @@ class ElementTracker::ElementData {
   // Holds elements in the order they were added to this data block, so that the
   // first element or the first element that matches some criterion can be
   // easily found.
-  std::list<TrackedElement*> elements_;
+  std::list<raw_ptr<TrackedElement, CtnExperimental>> elements_;
 
   // Provides a fast lookup into `elements_` by element for checking and
   // removal. Since there could be many elements (e.g. tabs in a browser) we
   // don't want removing a series of them to turn into an O(n^2) operation.
-  std::map<const TrackedElement*, std::list<TrackedElement*>::iterator>
+  std::map<const TrackedElement*,
+           std::list<raw_ptr<TrackedElement, CtnExperimental>>::iterator>
       element_lookup_;
 
   base::RepeatingCallbackList<void(TrackedElement*)> shown_callbacks_;
@@ -372,7 +376,7 @@ ElementTracker::~ElementTracker() = default;
 
 void ElementTracker::NotifyElementShown(TrackedElement* element) {
   notification_elements_.push_back(element);
-  TrackedElement*& safe_element = notification_elements_.back();
+  auto& safe_element = notification_elements_.back();
 
   // Prevent garbage collection of dead entries until after we send
   // notifications and all callbacks happen.
@@ -399,7 +403,7 @@ void ElementTracker::NotifyElementShown(TrackedElement* element) {
 
 void ElementTracker::NotifyElementActivated(TrackedElement* element) {
   notification_elements_.push_back(element);
-  TrackedElement*& safe_element = notification_elements_.back();
+  auto& safe_element = notification_elements_.back();
 
   // Prevent garbage collection of dead entries until after we send
   // notifications and all callbacks happen.
@@ -423,7 +427,7 @@ void ElementTracker::NotifyElementActivated(TrackedElement* element) {
 
 void ElementTracker::NotifyElementHidden(TrackedElement* element) {
   // Clear out any elements we're in the process of sending events for.
-  for (TrackedElement*& safe_element : notification_elements_) {
+  for (auto& safe_element : notification_elements_) {
     if (safe_element == element)
       safe_element = nullptr;
   }
@@ -463,7 +467,7 @@ void ElementTracker::NotifyCustomEvent(TrackedElement* element,
 #endif
 
   notification_elements_.push_back(element);
-  TrackedElement*& safe_element = notification_elements_.back();
+  auto& safe_element = notification_elements_.back();
 
   // Since event types are identifiers, we store callbacks by event type rather
   // than element identifier.

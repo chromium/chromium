@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -98,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
       profile());
 
   // Verify that dev tools opened.
-  std::list<AppWindow*> app_windows =
+  std::list<raw_ptr<AppWindow, CtnExperimental>> app_windows =
       AppWindowRegistry::Get(profile())->GetAppWindowsForApp(app->id());
   ASSERT_EQ(1u, app_windows.size());
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(

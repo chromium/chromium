@@ -71,7 +71,8 @@ class TestCompatModeButtonController : public CompatModeButtonController {
   }
 
  private:
-  base::flat_set<const aura::Window*> update_compat_mode_button_called;
+  base::flat_set<raw_ptr<const aura::Window, CtnExperimental>>
+      update_compat_mode_button_called;
 };
 
 class TestArcResizeLockManager : public ArcResizeLockManager {

@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "content/common/content_export.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -83,7 +84,8 @@ class CONTENT_EXPORT BluetoothAdapterFactoryWrapper {
   // We keep a list of all observers so that when the adapter gets swapped,
   // we can remove all observers from the old adapter and add them to the
   // new adapter.
-  std::unordered_set<WebBluetoothServiceImpl*> adapter_observers_;
+  std::unordered_set<raw_ptr<WebBluetoothServiceImpl, CtnExperimental>>
+      adapter_observers_;
 
   // Should only be called on the UI thread.
   THREAD_CHECKER(thread_checker_);

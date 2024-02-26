@@ -74,9 +74,12 @@ class WorkerNodeImpl
   ProcessNodeImpl* process_node() const;
 
   // Getters for non-const properties. These are not thread safe.
-  const base::flat_set<FrameNodeImpl*>& client_frames() const;
-  const base::flat_set<WorkerNodeImpl*>& client_workers() const;
-  const base::flat_set<WorkerNodeImpl*>& child_workers() const;
+  const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>& client_frames()
+      const;
+  const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
+  client_workers() const;
+  const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
+  child_workers() const;
 
   base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr();
@@ -133,17 +136,17 @@ class WorkerNodeImpl
   GURL url_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Frames that are clients of this worker.
-  base::flat_set<FrameNodeImpl*> client_frames_
+  base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>> client_frames_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Other workers that are clients of this worker. See the declaration of
   // WorkerNode for a distinction between client workers and child workers.
-  base::flat_set<WorkerNodeImpl*> client_workers_
+  base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>> client_workers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The child workers of this worker. See the declaration of WorkerNode for a
   // distinction between client workers and child workers.
-  base::flat_set<WorkerNodeImpl*> child_workers_
+  base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>> child_workers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   uint64_t resident_set_kb_estimate_ = 0;

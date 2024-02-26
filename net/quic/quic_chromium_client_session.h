@@ -897,7 +897,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   friend class test::QuicChromiumClientSessionPeer;
 
   typedef std::set<raw_ptr<Handle, SetExperimental>> HandleSet;
-  typedef std::list<StreamRequest*> StreamRequestQueue;
+  typedef std::list<raw_ptr<StreamRequest, CtnExperimental>> StreamRequestQueue;
 
   bool WasConnectionEverUsed();
 

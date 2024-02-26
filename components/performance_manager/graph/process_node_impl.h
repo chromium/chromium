@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -111,8 +112,10 @@ class ProcessNodeImpl
   ContentTypes GetHostedContentTypes() const override;
 
   // Private implementation properties.
-  const base::flat_set<FrameNodeImpl*>& frame_nodes() const;
-  const base::flat_set<WorkerNodeImpl*>& worker_nodes() const;
+  const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>& frame_nodes()
+      const;
+  const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>& worker_nodes()
+      const;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcessMetricsName(const std::string& metrics_name);
@@ -230,10 +233,10 @@ class ProcessNodeImpl
   // either currently or in the past.
   ContentTypes hosted_content_types_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::flat_set<FrameNodeImpl*> frame_nodes_
+  base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>> frame_nodes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::flat_set<WorkerNodeImpl*> worker_nodes_
+  base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>> worker_nodes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Inline storage for FrozenFrameAggregator user data.

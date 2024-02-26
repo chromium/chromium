@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
@@ -206,7 +207,8 @@ class PageNode : public Node {
   // are no main frames at the moment, returns the empty set. Note that this
   // incurs a full container copy of all main frame nodes. Please use
   // VisitMainFrameNodes when that makes sense.
-  virtual const base::flat_set<const FrameNode*> GetMainFrameNodes() const = 0;
+  virtual const base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>
+  GetMainFrameNodes() const = 0;
 
   // Returns the URL the main frame last committed a navigation to, or the
   // initial URL of the page before navigation. The latter case is distinguished

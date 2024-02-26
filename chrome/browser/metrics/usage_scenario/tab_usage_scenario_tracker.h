@@ -83,8 +83,8 @@ class TabUsageScenarioTracker : public TabStatsObserver,
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keep track of the WebContents currently playing video.
-  base::flat_set<content::WebContents*> contents_playing_video_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>
+      contents_playing_video_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The last reading of the number of displays.
   std::optional<int> last_num_displays_;

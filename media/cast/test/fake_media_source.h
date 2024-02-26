@@ -180,7 +180,7 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
   bool video_first_pts_set_;
   base::TimeDelta last_video_frame_timestamp_;
 
-  base::queue<AudioBus*> audio_bus_queue_;
+  base::queue<raw_ptr<AudioBus, CtnExperimental>> audio_bus_queue_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeMediaSource> weak_factory_{this};

@@ -2462,7 +2462,7 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
                              nullptr);
 
   // The set should correctly track which layers are in it.
-  const base::flat_set<PictureLayerImpl*>& layers =
+  const base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>>& layers =
       pending_tree->picture_layers_with_paint_worklets();
   EXPECT_EQ(layers.size(), 2u);
   EXPECT_TRUE(layers.contains(child1));

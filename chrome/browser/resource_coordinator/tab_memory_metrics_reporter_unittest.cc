@@ -74,7 +74,8 @@ class TestTabMemoryMetricsReporter : public TabMemoryMetricsReporter {
 
  private:
   unsigned emit_count_;
-  std::unordered_set<content::WebContents*> discarded_contents_;
+  std::unordered_set<raw_ptr<content::WebContents, CtnExperimental>>
+      discarded_contents_;
 };
 
 class TabMemoryMetricsReporterTest : public testing::Test {

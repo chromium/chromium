@@ -550,7 +550,7 @@ void UnifiedSystemTray::DestroyBubble() {
 }
 
 void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
-  for (auto* tray_item : tray_items_) {
+  for (TrayItemView* tray_item : tray_items_) {
     tray_item->UpdateLabelOrImageViewColor(is_active);
   }
 }

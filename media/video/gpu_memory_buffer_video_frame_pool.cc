@@ -256,7 +256,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
 
   // Pool of resources.
-  std::list<FrameResources*> resources_pool_;
+  std::list<raw_ptr<FrameResources, CtnExperimental>> resources_pool_;
 
   GpuVideoAcceleratorFactories::OutputFormat output_format_;
 
@@ -1452,7 +1452,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::Shutdown() {
 
   // Delete all the resources on the media thread.
   in_shutdown_ = true;
-  for (auto* frame_resources : resources_pool_) {
+  for (FrameResources* frame_resources : resources_pool_) {
     // Will be deleted later upon return to pool.
     if (frame_resources->is_used())
       continue;

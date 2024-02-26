@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/worker_node_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -175,17 +176,20 @@ ProcessNodeImpl* WorkerNodeImpl::process_node() const {
   return process_node_;
 }
 
-const base::flat_set<FrameNodeImpl*>& WorkerNodeImpl::client_frames() const {
+const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
+WorkerNodeImpl::client_frames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return client_frames_;
 }
 
-const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::client_workers() const {
+const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
+WorkerNodeImpl::client_workers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return client_workers_;
 }
 
-const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::child_workers() const {
+const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
+WorkerNodeImpl::child_workers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_workers_;
 }
@@ -230,8 +234,9 @@ const ProcessNode* WorkerNodeImpl::GetProcessNode() const {
 const base::flat_set<const FrameNode*> WorkerNodeImpl::GetClientFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::flat_set<const FrameNode*> client_frames;
-  for (auto* client : client_frames_)
+  for (FrameNodeImpl* client : client_frames_) {
     client_frames.insert(static_cast<const FrameNode*>(client));
+  }
   DCHECK_EQ(client_frames.size(), client_frames_.size());
   return client_frames;
 }
@@ -250,8 +255,9 @@ const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetClientWorkers()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::flat_set<const WorkerNode*> client_workers;
-  for (auto* client : client_workers_)
+  for (WorkerNodeImpl* client : client_workers_) {
     client_workers.insert(static_cast<const WorkerNode*>(client));
+  }
   DCHECK_EQ(client_workers.size(), client_workers_.size());
   return client_workers;
 }
@@ -271,8 +277,9 @@ const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::flat_set<const WorkerNode*> child_workers;
-  for (auto* child : child_workers_)
+  for (WorkerNodeImpl* child : child_workers_) {
     child_workers.insert(static_cast<const WorkerNode*>(child));
+  }
   DCHECK_EQ(child_workers.size(), child_workers_.size());
   return child_workers;
 }
@@ -280,7 +287,7 @@ const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()
 bool WorkerNodeImpl::VisitChildDedicatedWorkers(
     const WorkerNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto* worker_node_impl : child_workers_) {
+  for (WorkerNodeImpl* worker_node_impl : child_workers_) {
     const WorkerNode* node = worker_node_impl;
     if (node->GetWorkerType() == WorkerType::kDedicated && !visitor(node)) {
       return false;

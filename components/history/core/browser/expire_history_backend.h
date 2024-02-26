@@ -302,7 +302,7 @@ class ExpireHistoryBackend {
   // Work queue for periodic expiration tasks, used by DoExpireIteration() to
   // determine what to do at an iteration, as well as populate it for future
   // iterations.
-  base::queue<const ExpiringVisitsReader*> work_queue_;
+  base::queue<raw_ptr<const ExpiringVisitsReader, CtnExperimental>> work_queue_;
 
   // Readers for various types of visits.
   // TODO(dglazkov): If you are adding another one, please consider reorganizing

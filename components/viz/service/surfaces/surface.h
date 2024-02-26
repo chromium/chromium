@@ -417,7 +417,8 @@ class VIZ_SERVICE_EXPORT Surface final {
   std::vector<SurfaceId> last_surface_id_for_range_;
 
   // Allocation groups that this surface references by its active frame.
-  base::flat_set<SurfaceAllocationGroup*> referenced_allocation_groups_;
+  base::flat_set<raw_ptr<SurfaceAllocationGroup, CtnExperimental>>
+      referenced_allocation_groups_;
 
   // The set of the SurfaceIds that are blocking the pending frame from being
   // activated.
@@ -427,7 +428,8 @@ class VIZ_SERVICE_EXPORT Surface final {
   // |activation_dependencies_|. When an activation dependency is
   // resolved, the corresponding SurfaceAllocationGroup will call back into this
   // surface to let us know.
-  base::flat_set<SurfaceAllocationGroup*> blocking_allocation_groups_;
+  base::flat_set<raw_ptr<SurfaceAllocationGroup, CtnExperimental>>
+      blocking_allocation_groups_;
 
   bool is_fallback_ = false;
 

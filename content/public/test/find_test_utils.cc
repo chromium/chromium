@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/find_test_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include "build/build_config.h"
 #include "content/browser/find_request_manager.h"
@@ -153,13 +154,13 @@ void FindTestWebContentsDelegate::FindMatchRectsReply(
 }
 #endif
 
-std::unordered_set<RenderFrameHost*> GetRenderFrameHostsWithPendingFindResults(
-    WebContents* web_contents) {
+std::unordered_set<raw_ptr<RenderFrameHost, CtnExperimental>>
+GetRenderFrameHostsWithPendingFindResults(WebContents* web_contents) {
   if (auto* frm = static_cast<WebContentsImpl*>(web_contents)
                       ->GetFindRequestManagerForTesting()) {
     return frm->render_frame_hosts_pending_initial_reply_for_testing();
   }
-  return std::unordered_set<RenderFrameHost*>();
+  return std::unordered_set<raw_ptr<RenderFrameHost, CtnExperimental>>();
 }
 
 }  // namespace content

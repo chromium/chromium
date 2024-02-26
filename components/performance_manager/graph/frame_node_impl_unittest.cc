@@ -533,8 +533,9 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->GetProcessNode());
 
   auto child_frame_nodes = public_frame_node->GetChildFrameNodes();
-  for (auto* child : frame_node->child_frame_nodes())
+  for (FrameNodeImpl* child : frame_node->child_frame_nodes()) {
     EXPECT_TRUE(base::Contains(child_frame_nodes, child));
+  }
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 }
 

@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/i18n/string_search.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -345,7 +346,7 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
   }
 
   // The states returned by the MockApp when probed.
-  base::queue<CComObject<MockCurrentState>*> states_;
+  base::queue<raw_ptr<CComObject<MockCurrentState>, CtnExperimental>> states_;
 
   // A gmock sequence under which a series of get_CurrentState expectations are
   // evaluated.

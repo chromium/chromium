@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -272,13 +273,15 @@ ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
   return hosted_content_types_;
 }
 
-const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
+const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
+ProcessNodeImpl::frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
   return frame_nodes_;
 }
 
-const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
+const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
+ProcessNodeImpl::worker_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
   return worker_nodes_;
@@ -396,7 +399,7 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
 bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (auto* frame_impl : frame_nodes()) {
+  for (FrameNodeImpl* frame_impl : frame_nodes()) {
     const FrameNode* frame = frame_impl;
     if (!visitor(frame)) {
       return false;
@@ -408,7 +411,7 @@ bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
 bool ProcessNodeImpl::VisitWorkerNodes(const WorkerNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (auto* worker_impl : worker_nodes_) {
+  for (WorkerNodeImpl* worker_impl : worker_nodes_) {
     const WorkerNode* worker = worker_impl;
     if (!visitor(worker)) {
       return false;

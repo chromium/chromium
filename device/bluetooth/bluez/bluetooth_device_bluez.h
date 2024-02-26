@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -310,7 +311,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
 
   // Keeps track of all services for which we've called
   // NotifyGattDiscoveryComplete().
-  std::unordered_set<device::BluetoothRemoteGattService*>
+  std::unordered_set<
+      raw_ptr<device::BluetoothRemoteGattService, CtnExperimental>>
       discovery_complete_notified_;
 
   // UI thread task runner and socket thread object used to create sockets.

@@ -567,7 +567,8 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
   ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
                                 : ExtensionTabUtil::kDontPopulateTabs;
-  for (auto* controller : WindowControllerList::GetInstance()->windows()) {
+  for (WindowController* controller :
+       WindowControllerList::GetInstance()->windows()) {
     if (!controller->GetBrowser() ||
         !windows_util::CanOperateOnWindow(this, controller,
                                           extractor.type_filters())) {

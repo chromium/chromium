@@ -113,10 +113,14 @@ class FrameNodeImpl
   int render_frame_id() const;
 
   // Getters for non-const properties. These are not thread safe.
-  const base::flat_set<FrameNodeImpl*>& child_frame_nodes() const;
-  const base::flat_set<PageNodeImpl*>& opened_page_nodes() const;
-  const base::flat_set<PageNodeImpl*>& embedded_page_nodes() const;
-  const base::flat_set<WorkerNodeImpl*>& child_worker_nodes() const;
+  const base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>&
+  child_frame_nodes() const;
+  const base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>&
+  opened_page_nodes() const;
+  const base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>>&
+  embedded_page_nodes() const;
+  const base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>&
+  child_worker_nodes() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
@@ -279,13 +283,13 @@ class FrameNodeImpl
   // UI thread.
   const RenderFrameHostProxy render_frame_host_proxy_;
 
-  base::flat_set<FrameNodeImpl*> child_frame_nodes_;
+  base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>> child_frame_nodes_;
 
   // The set of pages that have been opened by this frame.
-  base::flat_set<PageNodeImpl*> opened_page_nodes_;
+  base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>> opened_page_nodes_;
 
   // The set of pages that have been embedded by this frame.
-  base::flat_set<PageNodeImpl*> embedded_page_nodes_;
+  base::flat_set<raw_ptr<PageNodeImpl, CtnExperimental>> embedded_page_nodes_;
 
   uint64_t resident_set_kb_estimate_ = 0;
 
@@ -325,7 +329,7 @@ class FrameNodeImpl
   DocumentProperties document_;
 
   // The child workers of this frame.
-  base::flat_set<WorkerNodeImpl*> child_worker_nodes_;
+  base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>> child_worker_nodes_;
 
   // Frame priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<

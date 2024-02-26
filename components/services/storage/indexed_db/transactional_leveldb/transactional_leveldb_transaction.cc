@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
@@ -143,8 +144,8 @@ void TransactionalLevelDBTransaction::EvictLoadedIterators() {
   if (loaded_iterators_.empty())
     return;
   is_evicting_all_loaded_iterators_ = true;
-  base::flat_set<TransactionalLevelDBIterator*> to_be_evicted =
-      std::move(loaded_iterators_);
+  base::flat_set<raw_ptr<TransactionalLevelDBIterator, CtnExperimental>>
+      to_be_evicted = std::move(loaded_iterators_);
   for (TransactionalLevelDBIterator* iter : to_be_evicted) {
     iter->EvictLevelDBIterator();
   }

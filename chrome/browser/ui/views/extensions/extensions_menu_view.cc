@@ -475,7 +475,7 @@ void ExtensionsMenuView::OnToolbarModelInitialized() {
 }
 
 void ExtensionsMenuView::OnToolbarPinnedActionsChanged() {
-  for (auto* menu_item : extensions_menu_items_) {
+  for (ExtensionMenuItemView* menu_item : extensions_menu_items_) {
     extensions::ExtensionId extension_id =
         GetAsMenuItemView(menu_item)->view_controller()->GetId();
     bool is_force_pinned =

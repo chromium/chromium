@@ -136,7 +136,7 @@ class HintSessionFactoryImpl : public HintSessionFactory {
 
   const raw_ptr<APerformanceHintManager> manager_;
   const base::flat_set<base::PlatformThreadId> permanent_thread_ids_;
-  base::flat_set<AdpfHintSession*> hint_sessions_;
+  base::flat_set<raw_ptr<AdpfHintSession, CtnExperimental>> hint_sessions_;
   THREAD_CHECKER(thread_checker_);
 };
 

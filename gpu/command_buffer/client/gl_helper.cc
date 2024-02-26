@@ -242,7 +242,7 @@ class GLHelper::CopyTextureToImpl final {
     void Add(Request* r) { requests_.push(r); }
 
    private:
-    base::queue<Request*> requests_;
+    base::queue<raw_ptr<Request, CtnExperimental>> requests_;
   };
 
   // A readback pipeline that also converts the data to YUV before
@@ -317,7 +317,7 @@ class GLHelper::CopyTextureToImpl final {
   // this object is destroyed. Must be declared before other Scoped* fields.
   ScopedFlush flush_;
 
-  base::queue<Request*> request_queue_;
+  base::queue<raw_ptr<Request, CtnExperimental>> request_queue_;
 
   // Lazily set by IsBGRAReadbackSupported().
   enum {

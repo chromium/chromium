@@ -1803,7 +1803,7 @@ MenuController::MenuController(bool for_drop,
       active_mouse_view_tracker_(std::make_unique<ViewTracker>()),
       delegate_(delegate),
       alert_animation_(this) {
-  delegate_stack_.push_back(delegate_);
+  delegate_stack_.push_back(delegate_.get());
   active_instance_ = this;
 }
 
@@ -3280,7 +3280,7 @@ MenuItemView* MenuController::ExitTopMostMenu() {
     // Even though the menus are nested, there may not be nested delegates.
     if (delegate_stack_.size() > 1) {
       delegate_stack_.pop_back();
-      delegate_ = delegate_stack_.back();
+      delegate_ = delegate_stack_.back().get();
     }
   } else {
 #if defined(USE_AURA)

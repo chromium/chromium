@@ -972,7 +972,7 @@ void RequestManager::SubmitCaptureResult(
   CaptureResult& pending_result = pending_results_[frame_number];
   DVLOG(2) << "Submit capture result of frame " << frame_number
            << " for stream " << static_cast<int>(stream_type);
-  for (auto* observer : result_metadata_observers_) {
+  for (ResultMetadataObserver* observer : result_metadata_observers_) {
     observer->OnResultMetadataAvailable(frame_number, pending_result.metadata);
   }
 

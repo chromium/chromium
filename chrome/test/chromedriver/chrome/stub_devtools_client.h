@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 
 class Status;
@@ -81,7 +82,7 @@ class StubDevToolsClient : public DevToolsClient {
   const std::string id_;
   std::string session_id_;
   std::string tunnel_session_id_;
-  std::list<DevToolsEventListener*> listeners_;
+  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>> listeners_;
   raw_ptr<WebViewImpl> owner_ = nullptr;
   bool is_connected_ = false;
 };

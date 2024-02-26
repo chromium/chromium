@@ -100,7 +100,7 @@ class WebContentsTaskProvider::WebContentsEntry
   // only as per FindLocalRoot()), and its RendererTask. The number of tracked
   // items is small, thus flat_map and flat_set.
   struct SiteInstanceInfo {
-    base::flat_set<RenderFrameHost*> frames;
+    base::flat_set<raw_ptr<RenderFrameHost, CtnExperimental>> frames;
     std::unique_ptr<RendererTask> renderer_task;
   };
   base::flat_map<SiteInstance*, SiteInstanceInfo> site_instance_infos_;
@@ -474,7 +474,7 @@ void WebContentsTaskProvider::WebContentsEntry::ClearTaskForFrame(
 
   bool only_bfcache_or_prerender_rfhs = true;
   for (auto& [ignore, site_instance_info] : site_instance_infos_) {
-    for (auto* rfh : site_instance_info.frames) {
+    for (RenderFrameHost* rfh : site_instance_info.frames) {
       const auto state = rfh->GetLifecycleState();
       if (state != RenderFrameHost::LifecycleState::kInBackForwardCache &&
           state != RenderFrameHost::LifecycleState::kPrerendering) {

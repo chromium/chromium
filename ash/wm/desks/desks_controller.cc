@@ -499,7 +499,8 @@ DesksController::GetVisibleOnAllDesksWindowsOnRoot(
     aura::Window* root_window) const {
   DCHECK(root_window->IsRootWindow());
   base::flat_set<aura::Window*> filtered_visible_on_all_desks_windows;
-  for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+  for (aura::Window* visible_on_all_desks_window :
+       visible_on_all_desks_windows_) {
     if (visible_on_all_desks_window->GetRootWindow() == root_window)
       filtered_visible_on_all_desks_windows.insert(visible_on_all_desks_window);
   }
@@ -2285,7 +2286,8 @@ void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(
   auto* mru_tracker = Shell::Get()->mru_window_tracker();
   mru_tracker->SetIgnoreActivations(true);
 
-  for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+  for (aura::Window* visible_on_all_desks_window :
+       visible_on_all_desks_windows_) {
     MoveWindowFromActiveDeskTo(
         visible_on_all_desks_window, new_desk,
         visible_on_all_desks_window->GetRootWindow(),
@@ -2323,7 +2325,8 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
 
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+  for (aura::Window* visible_on_all_desks_window :
+       visible_on_all_desks_windows_) {
     // If the window is floated, it will always be on top, so there is no need
     // to restack it.
     if (WindowState::Get(visible_on_all_desks_window)->IsFloated()) {

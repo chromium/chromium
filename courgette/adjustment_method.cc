@@ -152,7 +152,7 @@ struct Node {
   typedef std::map<LabelInfo*, Node*> Edges;
   Edges edges_;
   std::vector<int> places_;   // Indexes into sequence of this item.
-  std::list<Node*> edges_in_frequency_order;
+  std::list<raw_ptr<Node, CtnExperimental>> edges_in_frequency_order;
 
   bool in_queue_;
   bool Extended() const { return !edges_.empty(); }

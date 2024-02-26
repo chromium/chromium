@@ -109,7 +109,7 @@ class NearbyPresenceServiceImpl
 
   mojo::Receiver<::ash::nearby::presence::mojom::ScanObserver> scan_observer_{
       this};
-  base::flat_set<ScanDelegate*> scan_delegate_set_;
+  base::flat_set<raw_ptr<ScanDelegate, CtnExperimental>> scan_delegate_set_;
 
   base::WeakPtrFactory<NearbyPresenceServiceImpl> weak_ptr_factory_{this};
 };

@@ -761,7 +761,7 @@ bool WindowTreeHost::ShouldThrottle() const {
 }
 
 // static
-const base::flat_set<WindowTreeHost*>&
+const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>&
 WindowTreeHost::GetThrottledHostsForTesting() {
   return HostFrameRateThrottler::GetInstance().hosts();
 }

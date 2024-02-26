@@ -58,7 +58,7 @@ void TypedCountSorter::SortMatches(const TitledUrlNodeSet& matches,
   if (client_->SupportsTypedCountForUrls()) {
     UrlNodeMap url_node_map;
     UrlTypedCountMap url_typed_count_map;
-    for (auto* node : matches) {
+    for (const TitledUrlNode* node : matches) {
       const GURL& url = node->GetTitledUrlNodeUrl();
       url_node_map.insert(std::make_pair(&url, node));
       url_typed_count_map.insert(std::make_pair(&url, 0));

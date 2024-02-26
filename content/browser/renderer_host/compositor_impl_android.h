@@ -266,7 +266,8 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   ui::CompositorLockManager lock_manager_;
 
-  base::flat_set<SimpleBeginFrameObserver*> simple_begin_frame_observers_;
+  base::flat_set<raw_ptr<SimpleBeginFrameObserver, CtnExperimental>>
+      simple_begin_frame_observers_;
   std::unique_ptr<HostBeginFrameObserver> host_begin_frame_observer_;
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};

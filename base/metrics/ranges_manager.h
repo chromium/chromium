@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/synchronization/lock.h"
 
@@ -61,9 +62,10 @@ class BASE_EXPORT RangesManager {
 
   // Type for a set of unique RangesBucket, with their hash and equivalence
   // defined by `BucketRangesHash` and `BucketRangesEqual`.
-  typedef std::
-      unordered_set<const BucketRanges*, BucketRangesHash, BucketRangesEqual>
-          RangesMap;
+  typedef std::unordered_set<raw_ptr<const BucketRanges, CtnExperimental>,
+                             BucketRangesHash,
+                             BucketRangesEqual>
+      RangesMap;
 
   // Removes all registered BucketRanges and destroys them. This is called in
   // the destructor.

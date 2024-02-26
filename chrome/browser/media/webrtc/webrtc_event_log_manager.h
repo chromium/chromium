@@ -475,7 +475,8 @@ class WebRtcEventLogManager final
   // observation. Allows us to register for each RPH only once, and get notified
   // when it exits (cleanly or due to a crash).
   // This object is only to be accessed on the UI thread.
-  base::flat_set<content::RenderProcessHost*> observed_render_process_hosts_;
+  base::flat_set<raw_ptr<content::RenderProcessHost, CtnExperimental>>
+      observed_render_process_hosts_;
 
   // In production, this holds a small object that just tells WebRTC (via
   // PeerConnectionTracker) to start/stop producing event logs for a specific

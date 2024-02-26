@@ -221,11 +221,14 @@ class DevToolsClientImpl : public DevToolsClient {
   // For child sessions, it's the session id.
   const std::string id_;
   ParserFunc parser_func_;
-  std::list<DevToolsEventListener*> listeners_;
-  std::list<DevToolsEventListener*> unnotified_connect_listeners_;
-  std::list<DevToolsEventListener*> unnotified_event_listeners_;
+  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>> listeners_;
+  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>>
+      unnotified_connect_listeners_;
+  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>>
+      unnotified_event_listeners_;
   raw_ptr<const InspectorEvent> unnotified_event_ = nullptr;
-  std::list<DevToolsEventListener*> unnotified_cmd_response_listeners_;
+  std::list<raw_ptr<DevToolsEventListener, CtnExperimental>>
+      unnotified_cmd_response_listeners_;
   scoped_refptr<ResponseInfo> unnotified_cmd_response_info_;
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_ = 1;  // The id identifying a particular request.

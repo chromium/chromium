@@ -96,7 +96,7 @@ class TabLoader : public base::RefCounted<TabLoader>,
   };
 
   using LoadingTabSet = base::flat_set<LoadingTab>;
-  using TabSet = base::flat_set<content::WebContents*>;
+  using TabSet = base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>;
   using TabVector = std::vector<std::pair<float, content::WebContents*>>;
 
   TabLoader();

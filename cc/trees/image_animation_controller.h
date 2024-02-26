@@ -123,8 +123,8 @@ class CC_EXPORT ImageAnimationController {
   bool did_navigate() const { return did_navigate_; }
   void set_did_navigate() { did_navigate_ = true; }
 
-  const base::flat_set<AnimationDriver*>& GetDriversForTesting(
-      PaintImage::Id paint_image_id) const;
+  const base::flat_set<raw_ptr<AnimationDriver, CtnExperimental>>&
+  GetDriversForTesting(PaintImage::Id paint_image_id) const;
   size_t GetLastNumOfFramesSkippedForTesting(
       PaintImage::Id paint_image_id) const;
 
@@ -166,7 +166,8 @@ class CC_EXPORT ImageAnimationController {
     base::TimeTicks next_desired_tick_time() const {
       return current_state_.next_desired_tick_time;
     }
-    const base::flat_set<AnimationDriver*>& drivers_for_testing() const {
+    const base::flat_set<raw_ptr<AnimationDriver, CtnExperimental>>&
+    drivers_for_testing() const {
       return drivers_;
     }
     size_t last_num_frames_skipped_for_testing() const {
@@ -227,7 +228,7 @@ class CC_EXPORT ImageAnimationController {
     AnimationAdvancementState current_state_;
 
     // A set of drivers interested in animating this image.
-    base::flat_set<AnimationDriver*> drivers_;
+    base::flat_set<raw_ptr<AnimationDriver, CtnExperimental>> drivers_;
 
     // The index being used on the active tree, if a recording with this image
     // is still present.

@@ -322,7 +322,8 @@ class DownloadDeepScanningBrowserTestBase
     return last_request_;
   }
 
-  const base::flat_set<download::DownloadItem*>& download_items() {
+  const base::flat_set<raw_ptr<download::DownloadItem, CtnExperimental>>&
+  download_items() {
     return download_items_;
   }
 
@@ -492,7 +493,8 @@ class DownloadDeepScanningBrowserTestBase
   base::OnceClosure waiting_for_upload_closure_;
   base::OnceClosure waiting_for_metadata_closure_;
 
-  base::flat_set<download::DownloadItem*> download_items_;
+  base::flat_set<raw_ptr<download::DownloadItem, CtnExperimental>>
+      download_items_;
 
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;

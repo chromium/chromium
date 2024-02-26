@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/devtools/protocol/browser.h"
@@ -111,7 +112,8 @@ class BrowserHandler : public DevToolsDomainHandler,
   base::flat_set<std::string> contexts_with_overridden_downloads_;
   bool download_events_enabled_;
   const bool allow_set_download_behavior_;
-  base::flat_set<download::DownloadItem*> pending_downloads_;
+  base::flat_set<raw_ptr<download::DownloadItem, CtnExperimental>>
+      pending_downloads_;
   // Stores past histogram snapshots for producing histogram deltas.
   std::map<std::string, std::unique_ptr<base::HistogramSamples>>
       histograms_snapshots_;

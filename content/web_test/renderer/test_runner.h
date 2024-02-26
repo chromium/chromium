@@ -559,7 +559,7 @@ class TestRunner {
   // WAV audio data is stored here.
   std::vector<uint8_t> audio_data_;
 
-  base::flat_set<WebFrameTestProxy*> main_frames_;
+  base::flat_set<raw_ptr<WebFrameTestProxy, CtnExperimental>> main_frames_;
 
   // Keeps track of which WebViews that are main windows.
   std::vector<std::unique_ptr<MainWindowTracker>> main_windows_;

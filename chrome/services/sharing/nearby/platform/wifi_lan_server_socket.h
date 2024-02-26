@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_socket.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
@@ -112,7 +113,8 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
   mojo::SharedRemote<sharing::mojom::FirewallHole> firewall_hole_;
 
   // Track all pending accept tasks in case Close() is called while waiting.
-  base::flat_set<base::WaitableEvent*> pending_accept_waitable_events_;
+  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+      pending_accept_waitable_events_;
 };
 
 }  // namespace chrome

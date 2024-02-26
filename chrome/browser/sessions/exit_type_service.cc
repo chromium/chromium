@@ -108,7 +108,7 @@ class ExitTypeService::BrowserTabObserverImpl : public BrowserListObserver,
   raw_ptr<ExitTypeService> service_;
 
   // Browsers whose TabStripModel this is observing.
-  base::flat_set<Browser*> browsers_;
+  base::flat_set<raw_ptr<Browser, CtnExperimental>> browsers_;
 };
 
 ExitTypeService::CrashedLock::~CrashedLock() {

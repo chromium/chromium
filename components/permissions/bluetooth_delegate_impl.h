@@ -162,7 +162,8 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
    private:
     raw_ptr<BluetoothDelegateImpl> owning_delegate_;
     base::ObserverList<FramePermissionObserver> observer_list_;
-    std::list<FramePermissionObserver*> observers_pending_removal_;
+    std::list<raw_ptr<FramePermissionObserver, CtnExperimental>>
+        observers_pending_removal_;
     bool is_traversing_observers_ = false;
     base::ScopedObservation<ObjectPermissionContextBase,
                             ObjectPermissionContextBase::PermissionObserver>

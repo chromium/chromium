@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
@@ -1456,7 +1457,8 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
 void CompositorFrameSinkSupport::CheckPendingSurfaces() {
   if (pending_surfaces_.empty())
     return;
-  base::flat_set<Surface*> pending_surfaces(pending_surfaces_);
+  base::flat_set<raw_ptr<Surface, CtnExperimental>> pending_surfaces(
+      pending_surfaces_);
   for (Surface* surface : pending_surfaces) {
     surface->ActivateIfDeadlinePassed();
   }

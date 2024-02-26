@@ -176,7 +176,7 @@ void RasterScaleController::Unpause() {
   pause_count_--;
   DCHECK_GE(pause_count_, 0);
   if (pause_count_ == 0) {
-    for (auto* window : pending_windows_) {
+    for (aura::Window* window : pending_windows_) {
       MaybeSetRasterScale(window);
 
       // If we kept observing a window since it had a pending change, we can

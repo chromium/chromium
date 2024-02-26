@@ -324,7 +324,7 @@ void PageTimingMetricsSender::EnsureSendTimer(bool urgent) {
 void PageTimingMetricsSender::SendNow() {
   have_sent_ipc_ = true;
   std::vector<mojom::ResourceDataUpdatePtr> resources;
-  for (auto* resource : modified_resources_) {
+  for (PageResourceDataUse* resource : modified_resources_) {
     resources.push_back(resource->GetResourceDataUpdate());
     if (resource->IsFinishedLoading()) {
       page_resource_data_use_.erase(resource->resource_id());

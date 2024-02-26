@@ -24,6 +24,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -360,7 +361,9 @@ class VideoCaptureDeviceFactoryWin::ComThreadData
   friend class base::RefCountedThreadSafe<ComThreadData>;
   ~ComThreadData() = default;
 
-  std::unordered_set<IAsyncOperation<DeviceInformationCollection*>*> async_ops_;
+  std::unordered_set<
+      raw_ptr<IAsyncOperation<DeviceInformationCollection*>, CtnExperimental>>
+      async_ops_;
   base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;

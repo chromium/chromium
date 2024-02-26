@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -202,7 +203,8 @@ void ImageAnimationController::WillBeginImplFrame(
   scheduler_.WillBeginImplFrame(args);
 }
 
-const base::flat_set<ImageAnimationController::AnimationDriver*>&
+const base::flat_set<
+    raw_ptr<ImageAnimationController::AnimationDriver, CtnExperimental>>&
 ImageAnimationController::GetDriversForTesting(
     PaintImage::Id paint_image_id) const {
   const auto& it = animation_state_map_.find(paint_image_id);
@@ -494,7 +496,7 @@ void ImageAnimationController::AnimationState::RemoveDriver(
 
 void ImageAnimationController::AnimationState::UpdateStateFromDrivers() {
   should_animate_from_drivers_ = false;
-  for (auto* driver : drivers_) {
+  for (AnimationDriver* driver : drivers_) {
     if (driver->ShouldAnimate(paint_image_id_)) {
       should_animate_from_drivers_ = true;
       break;

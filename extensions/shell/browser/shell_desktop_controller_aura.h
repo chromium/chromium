@@ -177,7 +177,7 @@ class ShellDesktopControllerAura
   std::unique_ptr<AppWindowClient> app_window_client_;
 
   // NativeAppWindow::Close() deletes the AppWindow.
-  std::list<AppWindow*> app_windows_;
+  std::list<raw_ptr<AppWindow, CtnExperimental>> app_windows_;
 
   // Non-null between WillRunMainMessageLoop() and MaybeQuit().
   base::OnceClosure quit_when_idle_closure_;

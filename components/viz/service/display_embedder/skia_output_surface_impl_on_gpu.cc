@@ -344,7 +344,7 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
 
 void SkiaOutputSurfaceImplOnGpu::ReleaseAsyncReadResultHelpers() {
   base::AutoLock auto_lock(async_read_result_lock_->lock());
-  for (auto* helper : async_read_result_helpers_) {
+  for (AsyncReadResultHelper* helper : async_read_result_helpers_) {
     helper->reset();
   }
   async_read_result_helpers_.clear();
@@ -2006,18 +2006,19 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
 }
 
 void SkiaOutputSurfaceImplOnGpu::ResetStateOfImages() {
-  for (auto* context : image_contexts_to_apply_end_state_) {
+  for (ImageContextImpl* context : image_contexts_to_apply_end_state_) {
     context->ApplyAccessEndState();
   }
   image_contexts_to_apply_end_state_.clear();
 }
 
 void SkiaOutputSurfaceImplOnGpu::EndAccessImages(
-    const base::flat_set<ImageContextImpl*>& image_contexts) {
+    const base::flat_set<raw_ptr<ImageContextImpl, CtnExperimental>>&
+        image_contexts) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::EndAccessImages");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(image_contexts_to_apply_end_state_.empty());
-  for (auto* context : image_contexts) {
+  for (ImageContextImpl* context : image_contexts) {
     context->EndAccessIfNecessary();
   }
 }

@@ -35,7 +35,7 @@ class BrowserListObserver;
 // Maintains a list of Browser objects.
 class BrowserList {
  public:
-  using BrowserSet = base::flat_set<Browser*>;
+  using BrowserSet = base::flat_set<raw_ptr<Browser, CtnExperimental>>;
   using BrowserVector = std::vector<raw_ptr<Browser, VectorExperimental>>;
   using CloseCallback = base::RepeatingCallback<void(const base::FilePath&)>;
   using const_iterator = BrowserVector::const_iterator;

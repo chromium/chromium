@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread.h"
 #include "ui/gl/gl_export.h"
@@ -66,7 +67,8 @@ class GL_EXPORT VSyncThreadWin final : public base::PowerSuspendObserver {
   base::Lock lock_;
   bool GUARDED_BY(lock_) is_vsync_task_posted_ = false;
   bool GUARDED_BY(lock_) is_suspended_ = false;
-  base::flat_set<VSyncObserver*> GUARDED_BY(lock_) observers_;
+  base::flat_set<raw_ptr<VSyncObserver, CtnExperimental>> GUARDED_BY(lock_)
+      observers_;
 };
 }  // namespace gl
 

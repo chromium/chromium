@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -58,7 +59,8 @@ using ::testing::ElementsAre;
 
 class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
  public:
-  static base::flat_set<ExtensionMenuItemView*> GetExtensionMenuItemViews() {
+  static base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
+  GetExtensionMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
         ->extensions_menu_items_for_testing();
   }

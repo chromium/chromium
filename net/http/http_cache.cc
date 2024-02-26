@@ -1117,7 +1117,7 @@ void HttpCache::WritersDoneWritingToEntry(scoped_refptr<ActiveEntry> entry,
 
   if (success) {
     // Add any idle writers to readers.
-    for (auto* reader : make_readers) {
+    for (Transaction* reader : make_readers) {
       reader->WriteModeTransactionAboutToBecomeReader();
       entry->readers().insert(reader);
     }
@@ -1144,7 +1144,7 @@ void HttpCache::DoomEntryValidationNoMatch(scoped_refptr<ActiveEntry> entry) {
   // and the add_to_entry_queue transactions. Reset the queued transaction's
   // cache pending state so that in case it's destructor is invoked, it's ok
   // for the transaction to not be found in this entry.
-  for (auto* transaction : entry->add_to_entry_queue()) {
+  for (net::HttpCache::Transaction* transaction : entry->add_to_entry_queue()) {
     transaction->ResetCachePendingState();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -1166,7 +1166,7 @@ void HttpCache::ProcessEntryFailure(ActiveEntry* entry) {
   DoomActiveEntry(entry->GetEntry()->GetKey());
 
   // ERR_CACHE_RACE causes the transaction to restart the whole process.
-  for (auto* queued_transaction : list) {
+  for (Transaction* queued_transaction : list) {
     queued_transaction->cache_io_callback().Run(net::ERR_CACHE_RACE);
   }
 }

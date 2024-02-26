@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -140,7 +141,7 @@ class ClientConnectionManager
   // profiling - it does not reflect whether a renderer is currently still being
   // profiled. That information is only known by the profiling service, and for
   // simplicity, it's easier to just track this variable in this process.
-  std::unordered_set<void*> profiled_renderers_;
+  std::unordered_set<raw_ptr<void, CtnExperimental>> profiled_renderers_;
 };
 
 }  // namespace heap_profiling

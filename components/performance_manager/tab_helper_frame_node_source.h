@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TAB_HELPER_FRAME_NODE_SOURCE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TAB_HELPER_FRAME_NODE_SOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/frame_node_source.h"
 
 #include "base/observer_list_types.h"
@@ -61,7 +62,8 @@ class TabHelperFrameNodeSource : public FrameNodeSource,
 
   // Maps each tab helper to the set of observed frame nodes that belongs to
   // that tab helper.
-  base::flat_map<PerformanceManagerTabHelper*, base::flat_set<FrameNodeImpl*>>
+  base::flat_map<PerformanceManagerTabHelper*,
+                 base::flat_set<raw_ptr<FrameNodeImpl, CtnExperimental>>>
       observed_frame_nodes_;
 
   // Observes frame node deletions.

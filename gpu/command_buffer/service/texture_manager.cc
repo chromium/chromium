@@ -566,7 +566,7 @@ void Texture::RemoveTextureRef(TextureRef* ref, bool have_context) {
     size_t result = refs_.erase(ref);
     DCHECK_EQ(result, 1u);
     if (!memory_tracking_ref_ && !refs_.empty())
-      memory_tracking_ref_ = *refs_.begin();
+      memory_tracking_ref_ = (*refs_.begin()).get();
   }
   MaybeDeleteThis(have_context);
 }
@@ -3888,7 +3888,7 @@ GLenum TextureManager::ExtractTypeFromStorageFormat(GLenum internalformat) {
 }
 
 void Texture::IncrementManagerServiceIdGeneration() {
-  for (auto* ref : refs_) {
+  for (TextureRef* ref : refs_) {
     TextureManager* manager = ref->manager();
     manager->IncrementServiceIdGeneration();
   }

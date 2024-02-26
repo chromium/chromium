@@ -306,7 +306,7 @@ void RasterScaleLayerObserver::SetRasterScales(float raster_scale) {
 
   ScopedSetRasterScale::SetOrUpdateRasterScale(apply_window_, raster_scale,
                                                &raster_scales_[apply_window_]);
-  for (auto* window : transient_windows_) {
+  for (aura::Window* window : transient_windows_) {
     ScopedSetRasterScale::SetOrUpdateRasterScale(window, raster_scale,
                                                  &raster_scales_[window]);
   }

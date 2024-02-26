@@ -509,7 +509,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   uint64_t prepare_tiles_count_;
   uint64_t next_tile_id_;
 
-  std::unordered_set<Tile*> pending_gpu_work_tiles_;
+  std::unordered_set<raw_ptr<Tile, CtnExperimental>> pending_gpu_work_tiles_;
   uint64_t pending_required_for_activation_callback_id_ = 0;
   uint64_t pending_required_for_draw_callback_id_ = 0;
   // If true, we should re-compute tile requirements in

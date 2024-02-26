@@ -436,7 +436,7 @@ class WebTestControlHost : public WebContentsObserver,
   std::map<int, std::string> frame_to_layout_dump_map_;
 
   std::vector<std::unique_ptr<Node>> composite_all_frames_node_storage_;
-  std::queue<Node*> composite_all_frames_node_queue_;
+  std::queue<raw_ptr<Node, CtnExperimental>> composite_all_frames_node_queue_;
 
   // Map from one frame to one mojo pipe.
   std::map<GlobalRenderFrameHostId,

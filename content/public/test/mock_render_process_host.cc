@@ -167,7 +167,7 @@ void MockRenderProcessHost::UpdateClientPriority(
 
 int MockRenderProcessHost::VisibleClientCount() {
   int count = 0;
-  for (auto* client : priority_clients_) {
+  for (RenderProcessHostPriorityClient* client : priority_clients_) {
     const RenderProcessHostPriorityClient::Priority priority =
         client->GetPriority();
     if (!priority.is_hidden) {

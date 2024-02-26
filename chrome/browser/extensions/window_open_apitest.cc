@@ -352,7 +352,7 @@ namespace {
 
 aura::Window* GetCurrentWindow() {
   extensions::WindowController* controller = nullptr;
-  for (auto* iter :
+  for (extensions::WindowController* iter :
        extensions::WindowControllerList::GetInstance()->windows()) {
     if (iter->window()->IsActive()) {
       controller = iter;

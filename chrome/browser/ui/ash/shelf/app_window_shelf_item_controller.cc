@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <iterator>
 #include <utility>
@@ -63,15 +64,16 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
 
 // Launches a new lacros window if there isn't already one on the active desk,
 // or the icon is clicked with CTRL.
-bool ShouldLaunchNewLacrosWindow(const ui::Event& event,
-                                 const std::list<AppWindowBase*>& app_windows) {
+bool ShouldLaunchNewLacrosWindow(
+    const ui::Event& event,
+    const std::list<raw_ptr<AppWindowBase, CtnExperimental>>& app_windows) {
   // If the icon is clicked with holding the CTRL, launch a new window.
   if (event.IsControlDown())
     return true;
 
   // Do not launch a new window if there is already a lacros window on the
   // current desk.
-  for (auto* window : app_windows) {
+  for (AppWindowBase* window : app_windows) {
     aura::Window* aura_window = window->GetNativeWindow();
     if (crosapi::browser_util::IsLacrosWindow(aura_window) &&
         chromeos::DesksHelper::Get(aura_window)
@@ -91,11 +93,13 @@ AppWindowShelfItemController::AppWindowShelfItemController(
 
 AppWindowShelfItemController::~AppWindowShelfItemController() {
   WindowList windows(windows_);
-  for (auto* window : hidden_windows_)
+  for (AppWindowBase* window : hidden_windows_) {
     windows.push_back(window);
+  }
 
-  for (auto* window : windows)
+  for (AppWindowBase* window : windows) {
     window->SetController(nullptr);
+  }
 }
 
 void AppWindowShelfItemController::AddWindow(AppWindowBase* app_window) {
@@ -167,7 +171,7 @@ void AppWindowShelfItemController::ItemSelected(
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
   WindowList filtered_windows;
-  for (auto* window : windows_) {
+  for (AppWindowBase* window : windows_) {
     if (filter_predicate.is_null() ||
         filter_predicate.Run(window->GetNativeWindow())) {
       filtered_windows.push_back(window);
@@ -199,7 +203,7 @@ void AppWindowShelfItemController::ItemSelected(
   }
 
   AppWindowBase* window_to_show =
-      last_active ? last_active : filtered_windows.front();
+      last_active ? last_active : filtered_windows.front().get();
   // If the event was triggered by a keystroke, we try to advance to the next
   // item if the window we are trying to activate is already active.
   ash::ShelfAction action = ash::SHELF_ACTION_NONE;
@@ -228,7 +232,7 @@ AppWindowShelfItemController::GetAppMenuItems(
   std::u16string app_title = ShelfControllerHelper::GetAppTitle(
       ChromeShelfController::instance()->profile(), app_id());
   int command_id = -1;
-  for (const auto* it : windows()) {
+  for (const AppWindowBase* it : windows()) {
     ++command_id;
     aura::Window* window = it->GetNativeWindow();
     // Can window be null?
@@ -264,10 +268,12 @@ void AppWindowShelfItemController::GetContextMenu(
 }
 
 void AppWindowShelfItemController::Close() {
-  for (auto* window : windows_)
+  for (AppWindowBase* window : windows_) {
     window->Close();
-  for (auto* window : hidden_windows_)
+  }
+  for (AppWindowBase* window : hidden_windows_) {
     window->Close();
+  }
 }
 
 void AppWindowShelfItemController::ActivateIndexedApp(size_t index) {

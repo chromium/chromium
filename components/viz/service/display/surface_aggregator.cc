@@ -2216,7 +2216,8 @@ void SurfaceAggregator::MarkAndPropagateCopyRequestPasses(
     return;
 
   resolved_pass.aggregation().in_copy_request_pass = true;
-  for (auto* child_pass : resolved_pass.aggregation().embedded_passes) {
+  for (ResolvedPassData* child_pass :
+       resolved_pass.aggregation().embedded_passes) {
     MarkAndPropagateCopyRequestPasses(*child_pass);
   }
 }

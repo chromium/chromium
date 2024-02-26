@@ -233,7 +233,8 @@ class RenderWidgetTargeter {
   uint32_t last_request_id_ = 0;
   std::queue<TargetingRequest> requests_;
 
-  std::unordered_set<RenderWidgetHostViewBase*> unresponsive_views_;
+  std::unordered_set<raw_ptr<RenderWidgetHostViewBase, CtnExperimental>>
+      unresponsive_views_;
 
   // Target to send events to if autoscroll is in progress
   RenderWidgetTargetResult middle_click_result_;

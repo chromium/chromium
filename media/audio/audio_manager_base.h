@@ -201,7 +201,7 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   base::ObserverList<AudioDeviceListener>::Unchecked output_listeners_;
 
   // Contains currently open input streams.
-  std::unordered_set<AudioInputStream*> input_streams_;
+  std::unordered_set<raw_ptr<AudioInputStream, CtnExperimental>> input_streams_;
 
   // Map of cached AudioOutputDispatcher instances.  Must only be touched
   // from the audio thread (no locking).

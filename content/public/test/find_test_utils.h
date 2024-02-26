@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_utils.h"
@@ -147,8 +148,8 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
 // FindRequestManager could be owned by an outer WebContents of |web_contents|
 // and the returned RenderFrameHosts are not necessarily part of |web_contents|
 // frame tree.
-std::unordered_set<RenderFrameHost*> GetRenderFrameHostsWithPendingFindResults(
-    WebContents* web_contents);
+std::unordered_set<raw_ptr<RenderFrameHost, CtnExperimental>>
+GetRenderFrameHostsWithPendingFindResults(WebContents* web_contents);
 
 }  // namespace content
 
