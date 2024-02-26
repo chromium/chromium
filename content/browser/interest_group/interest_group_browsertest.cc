@@ -14327,27 +14327,20 @@ function validateAuctionConfig(auctionConfig) {
                                 embedded_https_test_server().GetURL(
                                     "a.test", kBiddingLogicPath))));
 
-  TestFencedFrameURLMappingResultObserver observer;
-  ConvertFencedFrameURNToURL(
-      GURL(EvalJs(shell(), JsReplace(
-                               R"(
-(async function() {
-  return await navigator.runAdAuction({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionSignals: 3,
-    sellerSignals: 4,
-    perBuyerSignals: {$1: 5}
-  });
-})())",
-                               test_origin,
-                               embedded_https_test_server().GetURL(
-                                   "a.test", kDecisionLogicPath)))
-               .ExtractString()),
-      &observer);
-
-  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+  EXPECT_EQ(
+      "https://example.com/render",
+      RunAuctionAndWaitForUrl(JsReplace(
+          R"(
+{
+  seller: $1,
+  decisionLogicURL: $2,
+  interestGroupBuyers: [$1],
+  auctionSignals: 3,
+  sellerSignals: 4,
+  perBuyerSignals: {$1: 5}
+})",
+          test_origin,
+          embedded_https_test_server().GetURL("a.test", kDecisionLogicPath))));
 }
 
 // Test for auctionSignals, perBuyerSignals, and sellerSignals being passed to
