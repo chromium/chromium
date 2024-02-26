@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Sync protocol datatype extension for compare.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// A Compare sync entity, containing sufficient data to enable all data
+// acquisition for rendering the Compare experience.
+message CompareSpecifics {
+  // The primary key for local storage.
+  optional string uuid = 1;
+
+  // Tracks when this entity was created.
+  optional int64 creation_time_unix_epoch_micros = 2;
+
+  // Tracks when this entity was last modified.
+  optional int64 update_time_unix_epoch_micros = 3;
+
+  // The name of the comparison group.
+  optional string name = 4;
+
+  // The list of product URLs that constitute this comparison group.
+  repeated ComparisonData data = 5;
+}
+
+message ComparisonData {
+  // The URL of the item in the comparison.
+  optional string url = 1;
+}

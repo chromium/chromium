@@ -16,6 +16,7 @@
 #include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
+#include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
@@ -337,6 +338,18 @@ VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::CollaborationGroupSpecifics& proto) {
   VISIT(collaboration_id);
   VISIT(last_updated_timestamp_millis_since_unix_epoch);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::ComparisonData& proto) {
+  VISIT(url);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CompareSpecifics& proto) {
+  VISIT(uuid);
+  VISIT(creation_time_unix_epoch_micros);
+  VISIT(update_time_unix_epoch_micros);
+  VISIT(name);
+  VISIT_REP(data);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {

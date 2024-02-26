@@ -16,6 +16,7 @@ sync_protocol_sources = [
   "client_commands.proto",
   "client_debug_info.proto",
   "collaboration_group_specifics.proto",
+  "compare_specifics.proto",
   "contact_info_specifics.proto",
   "data_type_progress_marker.proto",
   "device_info_specifics.proto",

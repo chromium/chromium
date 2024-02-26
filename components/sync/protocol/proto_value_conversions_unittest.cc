@@ -18,6 +18,7 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
+#include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -347,6 +348,40 @@ TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
   EXPECT_FALSE(value_without_specifics.empty());
   EXPECT_FALSE(
       ValueHasSpecifics(value_without_specifics, "get_updates.entries"));
+}
+
+TEST(ProtoValueConversionsTest, CompareSpecificsData) {
+  sync_pb::CompareSpecifics specifics;
+  specifics.set_uuid("my_uuid");
+  specifics.set_creation_time_unix_epoch_micros(1708532099);
+  specifics.set_update_time_unix_epoch_micros(1708642103);
+  specifics.set_name("my_name");
+  specifics.add_data();
+  specifics.mutable_data(0)->set_url("https://www.foo.com");
+  specifics.add_data();
+  specifics.mutable_data(1)->set_url("https://www.bar.com");
+
+  base::Value::Dict value = CompareSpecificsToValue(specifics).TakeDict();
+  EXPECT_FALSE(value.empty());
+  EXPECT_TRUE(value.FindString("uuid"));
+  EXPECT_STREQ("my_uuid", value.FindString("uuid")->c_str());
+  EXPECT_TRUE(value.FindString("creation_time_unix_epoch_micros"));
+  EXPECT_STREQ("1708532099",
+               value.FindString("creation_time_unix_epoch_micros")->c_str());
+  EXPECT_TRUE(value.FindString("update_time_unix_epoch_micros"));
+  EXPECT_STREQ("1708642103",
+               value.FindString("update_time_unix_epoch_micros")->c_str());
+  EXPECT_TRUE(value.FindString("name"));
+  EXPECT_STREQ("my_name", value.FindString("name")->c_str());
+  const base::Value::List* data_list = value.FindList("data");
+  EXPECT_TRUE(data_list);
+  EXPECT_EQ(2u, data_list->size());
+  EXPECT_TRUE((*data_list)[0].GetDict().FindString("url"));
+  EXPECT_STREQ("https://www.foo.com",
+               (*data_list)[0].GetDict().FindString("url")->c_str());
+  EXPECT_TRUE((*data_list)[1].GetDict().FindString("url"));
+  EXPECT_STREQ("https://www.bar.com",
+               (*data_list)[1].GetDict().FindString("url")->c_str());
 }
 
 }  // namespace

@@ -26,6 +26,7 @@ class ClientConfigParams;
 class ClientToServerMessage;
 class ClientToServerResponse;
 class CollaborationGroupSpecifics;
+class CompareSpecifics;
 class ContactInfoSpecifics;
 class CrossUserSharingPublicKey;
 class DebugEventInfo;
@@ -137,6 +138,9 @@ base::Value ClientConfigParamsToValue(const sync_pb::ClientConfigParams& proto);
 
 base::Value CollaborationGroupSpecificsToValue(
     const sync_pb::CollaborationGroupSpecifics& proto);
+
+base::Value CompareSpecificsToValue(
+    const sync_pb::CompareSpecifics& compare_specifics);
 
 base::Value ContactInfoSpecificsToValue(
     const sync_pb::ContactInfoSpecifics& proto);
