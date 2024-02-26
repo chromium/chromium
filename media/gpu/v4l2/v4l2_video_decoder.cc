@@ -648,6 +648,14 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   DVLOGF(3) << "size: " << size.ToString()
             << ", visible_rect: " << visible_rect.ToString();
 
+  if (bit_depth == 10u) {
+    VLOGF(1) << "10-bit format, need to set EXT_CTRLS first";
+    CroStatus ext_status = SetExtCtrls10Bit(size);
+    if (ext_status != CroStatus::Codes::kOk) {
+      return ext_status;
+    }
+  }
+
   const auto v4l2_pix_fmts = EnumerateSupportedPixFmts(
       base::BindRepeating(&V4L2Device::Ioctl, device_),
       V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
@@ -666,8 +674,9 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     // P010 and NV12, and then down sample to NV12 if it is selected. This is
     // not desired, so drop the candidates that don't match the bit depth of the
     // stream.
-    const size_t candidate_bit_depth =
-        BitDepth(candidate->ToVideoPixelFormat());
+    size_t candidate_bit_depth = (candidate == Fourcc(Fourcc::MT2T))
+                                     ? 10u
+                                     : (candidate->ToVideoPixelFormat());
     if (candidate_bit_depth != bit_depth) {
       DVLOGF(1) << "Enumerated format " << candidate->ToString()
                 << " with a bit depth of " << candidate_bit_depth
@@ -756,6 +765,47 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
         return CroStatus::Codes::kFailedToChangeResolution;
       }
     }
+  }
+
+  return CroStatus::Codes::kOk;
+}
+
+CroStatus V4L2VideoDecoder::SetExtCtrls10Bit(const gfx::Size& size) {
+  struct v4l2_ext_control ctrl;
+  std::vector<struct v4l2_ext_control> ctrls;
+
+  if (input_format_fourcc_ == V4L2_PIX_FMT_HEVC_SLICE) {
+    VLOGF(1) << "Setting EXT_CTRLS for 10-bit HEVC";
+    // For 10-bit formats the CAPTURE queue will not report the proper formats
+    // until the SPS data is sent in to indicate 10-bit content. We also set the
+    // size and chroma format since that should be all the information needed in
+    // order to know the format.
+    struct v4l2_ctrl_hevc_sps v4l2_sps;
+    memset(&v4l2_sps, 0, sizeof(v4l2_sps));
+    v4l2_sps.pic_width_in_luma_samples = size.width();
+    v4l2_sps.pic_height_in_luma_samples = size.height();
+    v4l2_sps.bit_depth_luma_minus8 = 2;
+    v4l2_sps.bit_depth_chroma_minus8 = 2;
+    v4l2_sps.chroma_format_idc = 1;  // 4:2:0
+    memset(&ctrl, 0, sizeof(ctrl));
+    ctrl.id = V4L2_CID_STATELESS_HEVC_SPS;
+    ctrl.size = sizeof(v4l2_sps);
+    ctrl.ptr = &v4l2_sps;
+    ctrls.push_back(ctrl);
+  } else {
+    // TODO(b/): Add other 10-bit codecs
+    return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
+  }
+
+  struct v4l2_ext_controls ext_ctrls;
+  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
+  ext_ctrls.count = ctrls.size();
+  ext_ctrls.controls = ctrls.data();
+  ext_ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
+  ext_ctrls.request_fd = -1;
+  if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
+    VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
+    return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
   }
 
   return CroStatus::Codes::kOk;

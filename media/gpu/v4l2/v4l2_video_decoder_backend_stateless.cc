@@ -405,7 +405,7 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
   while (true) {
     switch (decoder_->Decode()) {
       case AcceleratedVideoDecoder::kConfigChange:
-        if (decoder_->GetBitDepth() != 8u) {
+        if (decoder_->GetBitDepth() != 8u && decoder_->GetBitDepth() != 10u) {
           VLOGF(2) << "Unsupported bit depth: "
                    << base::strict_cast<int>(decoder_->GetBitDepth());
           return false;
