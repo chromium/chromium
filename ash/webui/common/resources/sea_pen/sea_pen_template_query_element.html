@@ -132,15 +132,17 @@
 </style>
 <div class="main">
   <!-- TODO(b/326299109): Extract into a separate component. -->
-  <div id="options">
-    <template is="dom-repeat" items="[[options_]]" as="option">
-      <cr-button
-          on-click="onClickOption_"
-          aria-selected$="[[isSelected_(option, selectedChip_, selectedOptions_)]]">
-        [[option.translation]]
-      </cr-button>
-    </template>
-  </div>
+  <template is="dom-if" if="[[shouldShowOptions_(options_)]]">
+    <div id="options">
+      <template is="dom-repeat" items="[[options_]]" as="option">
+        <cr-button
+            on-click="onClickOption_"
+            aria-selected$="[[isSelected_(option, selectedChip_, selectedOptions_)]]">
+          [[option.translation]]
+        </cr-button>
+      </template>
+    </div>
+  </template>
   <div id="template">
     <template is="dom-repeat" items="[[templateTokens_]]" as="token">
       <template is="dom-if" if="[[isChip_(token)]]">
