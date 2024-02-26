@@ -83,80 +83,6 @@ bool IsOwnerInTests(const std::string& user_id) {
   return value->GetString() == user_id;
 }
 
-void LoadPrivateKeyByPublicKeyOnWorkerThread(
-    const scoped_refptr<OwnerKeyUtil>& owner_key_util,
-    crypto::ScopedPK11Slot public_slot,
-    crypto::ScopedPK11Slot private_slot,
-    ReloadKeyCallback callback) {
-  scoped_refptr<PublicKey> public_key = owner_key_util->ImportPublicKey();
-  if (!public_key) {
-    scoped_refptr<PrivateKey> private_key;
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), public_key, private_key));
-    return;
-  }
-
-  // If private slot is already available, this will check it. If not, we'll get
-  // called again later when the TPM Token is ready, and the slot will be
-  // available then. FindPrivateKeyInSlot internally checks for a null slot if
-  // needbe.
-  //
-  // TODO(davidben): The null check should be in the caller rather than
-  // internally in the OwnerKeyUtil implementation. The tests currently get a
-  // null private_slot and expect the mock OwnerKeyUtil to still be called.
-  scoped_refptr<PrivateKey> private_key(
-      new PrivateKey(owner_key_util->FindPrivateKeyInSlot(public_key->data(),
-                                                          private_slot.get())));
-  if (!private_key->key()) {
-    private_key = new PrivateKey(owner_key_util->FindPrivateKeyInSlot(
-        public_key->data(), public_slot.get()));
-  }
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), public_key, private_key));
-}
-
-void ContinueLoadPrivateKeyOnIOThread(
-    const scoped_refptr<OwnerKeyUtil>& owner_key_util,
-    const std::string username_hash,
-    ReloadKeyCallback callback,
-    crypto::ScopedPK11Slot private_slot) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  // TODO(eseckler): It seems loading the key is important for the UsersPrivate
-  // extension API to work correctly during startup, which is why we cannot
-  // currently use the BEST_EFFORT TaskPriority here.
-  scoped_refptr<base::TaskRunner> task_runner =
-      base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoadPrivateKeyByPublicKeyOnWorkerThread, owner_key_util,
-                     crypto::GetPublicSlotForChromeOSUser(username_hash),
-                     std::move(private_slot), std::move(callback)));
-}
-
-void LoadPrivateKeyOnIOThread(const scoped_refptr<OwnerKeyUtil>& owner_key_util,
-                              const std::string username_hash,
-                              ReloadKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  crypto::EnsureNSSInit();
-
-  // GetPrivateSlotForChromeOSUser() will only invoke the callback if the
-  // private slot has not already been loaded. Split it here so we can invoke
-  // the callback separately if the private slot has already been loaded.
-  auto callback_split = base::SplitOnceCallback(
-      base::BindOnce(&ContinueLoadPrivateKeyOnIOThread, owner_key_util,
-                     username_hash, std::move(callback)));
-  crypto::ScopedPK11Slot private_slot = crypto::GetPrivateSlotForChromeOSUser(
-      username_hash, std::move(callback_split.first));
-  if (private_slot) {
-    std::move(callback_split.second).Run(std::move(private_slot));
-  }
-}
-
 bool DoesPrivateKeyExistAsyncHelper(
     const scoped_refptr<OwnerKeyUtil>& owner_key_util) {
   scoped_refptr<PublicKey> public_key = owner_key_util->ImportPublicKey();
@@ -424,26 +350,16 @@ void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
   RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeySet, success);
 
-  if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
-    // If the new owner key was successfully set and there was a different owner
-    // key before, it can be deleted now.
-    if (success && old_owner_key_) {
-      base::ThreadPool::PostTask(
-          FROM_HERE,
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-          base::BindOnce(&DeleteKeyPairOnWorkerThread,
-                         std::move(old_owner_key_)));
-    }
-
-    // OwnerKeySet notification is used to reload the owner key in Chrome when
-    // session manager generates it. If Chrome is responsible for generating the
-    // owner key, the notification is not useful.
-    return;
+  // If the new owner key was successfully set and there was a different owner
+  // key before, it can be deleted now.
+  if (success && old_owner_key_) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&DeleteKeyPairOnWorkerThread,
+                       std::move(old_owner_key_)));
   }
-
-  if (success)
-    ReloadKeypair();
 }
 
 void OwnerSettingsServiceAsh::OwnershipStatusChanged() {
@@ -796,24 +712,16 @@ void OwnerSettingsServiceAsh::ReloadKeypairImpl(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
-    const bool is_enterprise_managed = g_browser_process->platform_part()
-                                           ->browser_policy_connector_ash()
-                                           ->IsDeviceEnterpriseManaged();
+  const bool is_enterprise_managed = g_browser_process->platform_part()
+                                         ->browser_policy_connector_ash()
+                                         ->IsDeviceEnterpriseManaged();
 
-    auto cb = base::BindOnce(&OwnerSettingsServiceAsh::OnReloadedKeypairImpl,
-                             weak_factory_.GetWeakPtr(), std::move(callback));
-    owner_key_loader_ = std::make_unique<OwnerKeyLoader>(
-        profile_, device_settings_service_, owner_key_util_,
-        is_enterprise_managed, std::move(cb));
-    return owner_key_loader_->Run();
-  }
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoadPrivateKeyOnIOThread, owner_key_util_,
-                     ProfileHelper::GetUserIdHashFromProfile(profile_),
-                     std::move(callback)));
+  auto cb = base::BindOnce(&OwnerSettingsServiceAsh::OnReloadedKeypairImpl,
+                           weak_factory_.GetWeakPtr(), std::move(callback));
+  owner_key_loader_ = std::make_unique<OwnerKeyLoader>(
+      profile_, device_settings_service_, owner_key_util_,
+      is_enterprise_managed, std::move(cb));
+  return owner_key_loader_->Run();
 }
 
 void OwnerSettingsServiceAsh::OnReloadedKeypairImpl(
@@ -841,9 +749,7 @@ void OwnerSettingsServiceAsh::StorePendingChanges() {
              device_settings_service_->device_settings()) {
     settings = *device_settings_service_->device_settings();
     MigrateFeatureFlags(&settings);
-  } else if (base::FeatureList::IsEnabled(
-                 ownership::kChromeSideOwnerKeyGeneration) &&
-             public_key_ && !public_key_->is_persisted()) {
+  } else if (public_key_ && !public_key_->is_persisted()) {
     // A new owner key was generated and is not stored yet. Proceed to send it
     // to session manager.
   } else {

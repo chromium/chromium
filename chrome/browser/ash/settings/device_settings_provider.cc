@@ -1694,9 +1694,7 @@ bool DeviceSettingsProvider::UpdateFromService() {
         break;
       [[fallthrough]];
     case DeviceSettingsService::STORE_KEY_UNAVAILABLE:
-      if (base::FeatureList::IsEnabled(
-              ownership::kChromeSideOwnerKeyGeneration) &&
-          user_manager::UserManager::Get()->GetOwnerEmail().has_value()) {
+      if (user_manager::UserManager::Get()->GetOwnerEmail().has_value()) {
         // On the consumer owned device Chrome is responsible for generating a
         // new key and/or policy if they are missing (which happens after the
         // user session starts).

@@ -58,10 +58,8 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
   std::unique_ptr<em::PolicyFetchResponse> policy_response(
       new em::PolicyFetchResponse());
 
-  if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
-    policy_response->set_new_public_key(public_key->data().data(),
-                                        public_key->data().size());
-  }
+  policy_response->set_new_public_key(public_key->data().data(),
+                                      public_key->data().size());
 
   if (!policy->SerializeToString(policy_response->mutable_policy_data())) {
     LOG(ERROR) << "Failed to encode policy payload.";
@@ -94,10 +92,6 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
 }
 
 }  // namespace
-
-BASE_FEATURE(kChromeSideOwnerKeyGeneration,
-             "ChromeSideOwnerKeyGeneration",
-             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
 
 OwnerSettingsService::OwnerSettingsService(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)
