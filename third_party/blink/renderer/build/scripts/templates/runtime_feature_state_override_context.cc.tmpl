@@ -134,6 +134,12 @@ void RuntimeFeatureStateOverrideContext::EnablePersistentTrial(
 
 mojom::blink::OriginTrialStateHost*
 RuntimeFeatureStateOverrideContext::GetOrBindOriginTrialStateHost(){
+  // It's possible that the prior interface we bound is no longer available
+  // in which case we should reset the connection and re-bind a new one.
+  if (origin_trial_state_host_remote_.is_bound() &&
+      !origin_trial_state_host_remote_.is_connected()) {
+    origin_trial_state_host_remote_.reset();
+  }
   // TODO(https://crbug.com/1410817): add support for workers/non-frames that
   // are enabling origin trials to send their information to the browser too.
   if (!origin_trial_state_host_remote_.is_bound()) {
