@@ -79,5 +79,4 @@
 
 # crbug.com/1489659
 -PDFExtensionAccessibilityNavigationTest.LinkNavigation
--WebAppBrowserTest.WindowsOffsetForMultiWindowPWA
 -WebAppTabStripBrowserTest.ActiveTabColorIsBackgroundColor
