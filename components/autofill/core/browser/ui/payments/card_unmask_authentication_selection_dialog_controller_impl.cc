@@ -210,7 +210,8 @@ std::u16string CardUnmaskAuthenticationSelectionDialogControllerImpl::
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AUTHENTICATION_MODE_GET_EMAIL);
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AUTHENTICATION_MODE_THREE_DOMAIN_SECURE);
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return std::u16string();
@@ -239,10 +240,9 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND);
     case CardUnmaskChallengeOptionType::kCvc:
+    case CardUnmaskChallengeOptionType::kThreeDomainSecure:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE);
-    case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return std::u16string();

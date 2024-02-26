@@ -147,7 +147,8 @@ INSTANTIATE_TEST_SUITE_P(
             CardUnmaskChallengeOptionType::kSmsOtp},
         std::vector<CardUnmaskChallengeOptionType>{
             CardUnmaskChallengeOptionType::kSmsOtp,
-            CardUnmaskChallengeOptionType::kCvc}));
+            CardUnmaskChallengeOptionType::kCvc,
+            CardUnmaskChallengeOptionType::kThreeDomainSecure}));
 
 // Ensures the UI can be shown.
 IN_PROC_BROWSER_TEST_P(

@@ -13,7 +13,9 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace autofill::payments {
@@ -374,6 +376,10 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
               challenge_option_7.type);
     EXPECT_EQ("fake_challenge_id_7", challenge_option_7.id.value());
     EXPECT_EQ(GURL("https://example.com/"), challenge_option_7.url_to_open);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_THREE_DOMAIN_SECURE_CHALLENGE_INFO),
+        challenge_option_7.challenge_info);
   }
 }
 
