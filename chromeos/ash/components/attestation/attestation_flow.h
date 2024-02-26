@@ -52,16 +52,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) ServerProxy {
   virtual void CheckIfAnyProxyPresent(ProxyPresenceCallback callback) = 0;
 };
 
-// Implements the message flow for Chrome OS attestation tasks.  Generally this
-// consists of coordinating messages between the Chrome OS attestation service
-// and the Chrome OS Privacy CA server.  Sample usage:
-//
-//    AttestationFlow flow(std::move(my_server_proxy));
-//    AttestationFlow::CertificateCallback callback =
-//        base::BindOnce(&MyCallback);
-//    flow.GetCertificate(ENTERPRISE_USER_CERTIFICATE, false, callback);
-//
-// This class is not thread safe.
+// The interface of the message flow for Chrome OS attestation tasks.
+// Generally this consists of coordinating messages between the Chrome OS
+// attestation service and the Chrome OS Privacy CA server.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
  public:
   using CertificateCallback =
@@ -83,27 +76,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   static AttestationKeyType GetKeyTypeForProfile(
       AttestationCertificateProfile certificate_profile);
 
-  explicit AttestationFlow(std::unique_ptr<ServerProxy> server_proxy);
-
-  AttestationFlow(const AttestationFlow&) = delete;
-  AttestationFlow& operator=(const AttestationFlow&) = delete;
-
-  virtual ~AttestationFlow();
-
-  // Sets the timeout for attestation to be ready.
-  void set_ready_timeout(base::TimeDelta ready_timeout) {
-    ready_timeout_ = ready_timeout;
-  }
-  // Gets the timeout for attestation to be ready.
-  base::TimeDelta ready_timeout() const { return ready_timeout_; }
-
-  // Sets the retry delay.
-  void set_retry_delay(base::TimeDelta retry_delay) {
-    retry_delay_ = retry_delay;
-  }
-
-  // Returns the retry delay.
-  base::TimeDelta retry_delay() { return retry_delay_; }
+  virtual ~AttestationFlow() = default;
 
   // Gets an attestation certificate for a hardware-protected key.  If a key for
   // the given profile does not exist, it will be generated and a certificate
@@ -137,7 +110,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
       const std::optional<CertProfileSpecificData>& profile_specific_data,
-      CertificateCallback callback);
+      CertificateCallback callback) = 0;
 
  protected:
   enum class EnrollState {
@@ -152,6 +125,64 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   };
 
   using EnrollCallback = base::OnceCallback<void(EnrollState)>;
+};
+
+// Implements the message flow for Chrome OS attestation tasks.  Generally this
+// consists of coordinating messages between the Chrome OS attestation service
+// and the Chrome OS Privacy CA server.  Sample usage:
+//
+//    AttestationFlowLegacy flow(std::move(my_server_proxy));
+//    AttestationFlowLegacy::CertificateCallback callback =
+//        base::BindOnce(&MyCallback);
+//    flow.GetCertificate(ENTERPRISE_USER_CERTIFICATE, false, callback);
+//
+// This class is not thread safe.
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
+    AttestationFlowLegacy : public AttestationFlow {
+ public:
+  using CertificateCallback =
+      base::OnceCallback<void(AttestationStatus status,
+                              const std::string& pem_certificate_chain)>;
+
+  // Certificate profile specific request data. Loosely corresponds to `oneof`
+  // the proto fields at `GetCertificateRequest::metadata` in
+  // `third_party/cros_system_api/dbus/attestation/interface.proto`.
+  // `CertProfileSpecificData` itself is equivalent to a type-safe tagged union
+  // type that can represent any of the types inside the `absl::variant`.
+  using CertProfileSpecificData =
+      absl::variant<::attestation::DeviceSetupCertificateRequestMetadata>;
+
+  explicit AttestationFlowLegacy(std::unique_ptr<ServerProxy> server_proxy);
+
+  AttestationFlowLegacy(const AttestationFlowLegacy&) = delete;
+  AttestationFlowLegacy& operator=(const AttestationFlowLegacy&) = delete;
+
+  ~AttestationFlowLegacy() override;
+
+  // Sets the timeout for attestation to be ready.
+  void set_ready_timeout(base::TimeDelta ready_timeout) {
+    ready_timeout_ = ready_timeout;
+  }
+  // Gets the timeout for attestation to be ready.
+  base::TimeDelta ready_timeout() const { return ready_timeout_; }
+
+  // Sets the retry delay.
+  void set_retry_delay(base::TimeDelta retry_delay) {
+    retry_delay_ = retry_delay;
+  }
+
+  // Returns the retry delay.
+  base::TimeDelta retry_delay() { return retry_delay_; }
+
+  void GetCertificate(
+      AttestationCertificateProfile certificate_profile,
+      const AccountId& account_id,
+      const std::string& request_origin,
+      bool force_new_key,
+      ::attestation::KeyType key_crypto_type,
+      const std::string& key_name,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
+      CertificateCallback callback) override;
 
  private:
   // Handles the result of a call to `GetStatus()` for enrollment status.
@@ -341,7 +372,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   base::TimeDelta ready_timeout_;
   base::TimeDelta retry_delay_;
 
-  base::WeakPtrFactory<AttestationFlow> weak_factory_{this};
+  base::WeakPtrFactory<AttestationFlowLegacy> weak_factory_{this};
 };
 
 }  // namespace attestation

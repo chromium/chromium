@@ -22,7 +22,7 @@ namespace attestation {
 // TODO(b/232893759): Remove this transitional state along with the removal of
 // |AttestationFlow|.
 FakeAttestationFlow::FakeAttestationFlow(const std::string& certificate)
-    : AttestationFlow(/*server_proxy=*/nullptr), certificate_(certificate) {}
+    : certificate_(certificate) {}
 
 FakeAttestationFlow::~FakeAttestationFlow() = default;
 

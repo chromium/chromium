@@ -36,10 +36,9 @@ AttestationFlow* AttestationFlowFactory::GetFallback() {
   if (!fallback_attestation_flow_) {
     DCHECK(server_proxy_.get());
     fallback_attestation_flow_ =
-        std::make_unique<AttestationFlow>(std::move(server_proxy_));
+        std::make_unique<AttestationFlowLegacy>(std::move(server_proxy_));
   }
   return fallback_attestation_flow_.get();
 }
-
 }  // namespace attestation
 }  // namespace ash
