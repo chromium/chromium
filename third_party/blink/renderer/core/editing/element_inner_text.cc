@@ -257,7 +257,7 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
     // |OffsetMapping| due to failures in layout. As the root cause is hard to
     // fix at the moment, we work around it here so that the production build
     // doesn't crash.
-    NOTREACHED() << layout_text;
+    DUMP_WILL_BE_NOTREACHED_NORETURN() << layout_text;
     return;
   }
 
