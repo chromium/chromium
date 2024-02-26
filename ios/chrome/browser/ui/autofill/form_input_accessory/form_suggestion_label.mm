@@ -41,6 +41,9 @@ const CGFloat kShadowRadius = 0.5;
 const CGFloat kShadowVerticalOffset = 1.0;
 const CGFloat kShadowOpacity = 1.0;
 
+// The preferred minimum width of the icon shown on the label.
+const CGFloat kSuggestionIconWidth = 40;
+
 // Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
 UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
@@ -89,8 +92,19 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
     AddSameConstraints(stackView, self);
 
     if (suggestion.icon != nil) {
-      UIImageView* iconView =
-          [[UIImageView alloc] initWithImage:suggestion.icon];
+      UIImage* icon = suggestion.icon;
+      if (IsKeyboardAccessoryUpgradeEnabled()) {
+        if (icon && (icon.size.width > 0) &&
+            (icon.size.width < kSuggestionIconWidth)) {
+          // For a simple image resize, we can keep the same underlying image
+          // and only adjust the ratio.
+          CGFloat ratio = icon.size.width / kSuggestionIconWidth;
+          icon = [UIImage imageWithCGImage:[icon CGImage]
+                                     scale:icon.scale * ratio
+                               orientation:icon.imageOrientation];
+        }
+      }
+      UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
       [stackView addArrangedSubview:iconView];
     }
 
