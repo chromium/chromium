@@ -15,12 +15,14 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-isolate.h"
+#include "v8/include/v8-source-location.h"
 
 namespace base {
 class TimeTicks;
@@ -342,6 +344,8 @@ GIN_EXPORT v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
 // This crashes when input.size() > v8::String::kMaxLength.
 GIN_EXPORT v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
                                                 const base::StringPiece16& val);
+
+GIN_EXPORT base::Location V8ToBaseLocation(const v8::SourceLocation& location);
 
 template<typename T>
 bool ConvertFromV8(v8::Isolate* isolate, v8::Local<v8::Value> input,

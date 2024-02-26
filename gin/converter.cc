@@ -285,6 +285,11 @@ v8::Local<v8::String> StringToSymbol(v8::Isolate* isolate,
       .ToLocalChecked();
 }
 
+base::Location V8ToBaseLocation(const v8::SourceLocation& location) {
+  return base::Location::Current(location.Function(), location.FileName(),
+                                 location.Line());
+}
+
 std::string V8ToString(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   if (value.IsEmpty())
     return std::string();
