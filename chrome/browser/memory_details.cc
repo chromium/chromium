@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <set>
+#include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -347,7 +347,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
     return process.process_type == content::PROCESS_TYPE_UNKNOWN;
   };
   auto& vector = chrome_browser->processes;
-  base::EraseIf(vector, is_unknown);
+  std::erase_if(vector, is_unknown);
 
   // Grab a memory dump for all processes.
   memory_instrumentation::MemoryInstrumentation::GetInstance()

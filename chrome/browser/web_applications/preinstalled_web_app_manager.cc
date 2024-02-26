@@ -9,9 +9,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -858,7 +858,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   std::string user_type = apps::DetermineUserType(profile_);
   size_t disabled_count = 0;
   size_t corrupt_user_uninstall_prefs_count = 0;
-  base::EraseIf(
+  std::erase_if(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
         SynchronizeDecision install_decision = GetSynchronizeDecision(
             options, profile_, &provider_->registrar_unsafe(),

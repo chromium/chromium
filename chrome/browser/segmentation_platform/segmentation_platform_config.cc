@@ -5,8 +5,8 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 
 #include <memory>
+#include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -190,7 +190,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForDesktopNtpModule());
   }
 
-  base::EraseIf(configs, [](const auto& config) { return !config.get(); });
+  std::erase_if(configs, [](const auto& config) { return !config.get(); });
 
   AppendConfigsFromExperiments(configs);
   return configs;

@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
@@ -122,7 +121,7 @@ class PendingApprovals : public ProfileObserver {
   // ProfileObserver
   // Remove pending approvals if the Profile is being destroyed.
   void OnProfileWillBeDestroyed(Profile* profile) override {
-    base::EraseIf(approvals_, [profile](const auto& approval) {
+    std::erase_if(approvals_, [profile](const auto& approval) {
       return approval->profile == profile;
     });
     observation_.RemoveObservation(profile);

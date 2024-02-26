@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/usb/usb_host_bridge.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
@@ -317,7 +317,7 @@ ArcUsbHostPermissionManager::GetEventPackageList(
 
 void ArcUsbHostPermissionManager::DeviceRemoved(const std::string& guid) {
   // Remove pending requests.
-  base::EraseIf(pending_requests_,
+  std::erase_if(pending_requests_,
                 [guid](const UsbPermissionRequest& usb_permission_request) {
                   return !usb_permission_request.is_scan_request() &&
                          usb_permission_request.usb_device_entry()->guid ==
@@ -340,7 +340,7 @@ void ArcUsbHostPermissionManager::OnPackageRemoved(
     const std::string& package_name,
     bool uninstalled) {
   // Remove pending requests.
-  base::EraseIf(
+  std::erase_if(
       pending_requests_,
       [package_name](const UsbPermissionRequest& usb_permission_request) {
         return usb_permission_request.package_name() == package_name;

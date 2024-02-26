@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -78,7 +77,7 @@ void ListChangesTask::DidListChanges(
   // google_apis::ChangeList can contain both FileResource and TeamDriveResource
   // entries. We only care about FileResource entries, so filter out any entries
   // that are TeamDriveReasource.
-  base::EraseIf(*mutable_items, [](const auto& change_resource) {
+  std::erase_if(*mutable_items, [](const auto& change_resource) {
     return change_resource->type() ==
            google_apis::ChangeResource::ChangeType::TEAM_DRIVE;
   });

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
@@ -503,7 +502,7 @@ std::vector<URLPattern> ExtensionInfoGenerator::GetDistinctHosts(
 
     // Otherwise, add the host. This might mean we get to prune some hosts
     // from |distinct_hosts|.
-    base::EraseIf(distinct_hosts, [host](const URLPattern& other_host) {
+    std::erase_if(distinct_hosts, [host](const URLPattern& other_host) {
       return host.Contains(other_host);
     });
 

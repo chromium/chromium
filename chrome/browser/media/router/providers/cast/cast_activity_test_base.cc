@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -44,7 +43,7 @@ MockCastSessionClient::MockCastSessionClient(const std::string& client_id,
 }
 
 MockCastSessionClient::~MockCastSessionClient() {
-  base::Erase(instances_, this);
+  std::erase(instances_, this);
 }
 
 std::vector<MockCastSessionClient*> MockCastSessionClient::instances_;

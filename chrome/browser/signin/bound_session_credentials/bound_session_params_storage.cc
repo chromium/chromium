@@ -6,9 +6,9 @@
 
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
@@ -143,7 +143,7 @@ bool BoundSessionParamsInMemoryStorage::SaveParams(
   }
 
   // Erase existing params for this session, if any.
-  base::EraseIf(in_memory_params_, [&params](const auto& saved_params) {
+  std::erase_if(in_memory_params_, [&params](const auto& saved_params) {
     return bound_session_credentials::AreSameSessionParams(params,
                                                            saved_params);
   });
@@ -160,7 +160,7 @@ BoundSessionParamsInMemoryStorage::ReadAllParams() const {
 bool BoundSessionParamsInMemoryStorage::ClearParams(
     std::string_view site,
     std::string_view session_id) {
-  return base::EraseIf(in_memory_params_, [&site,
+  return std::erase_if(in_memory_params_, [&site,
                                            session_id](const auto& params) {
            return params.site() == site && params.session_id() == session_id;
          }) > 0;

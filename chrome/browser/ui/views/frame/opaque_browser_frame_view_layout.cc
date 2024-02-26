@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/rtl.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -338,12 +337,12 @@ void OpaqueBrowserFrameViewLayout::LayoutWindowControls() {
   if (delegate_->ShouldShowCaptionButtons()) {
     for (const auto& button : leading_buttons_) {
       ConfigureButton(button, ALIGN_LEADING);
-      base::Erase(buttons_not_shown, button);
+      std::erase(buttons_not_shown, button);
     }
 
     for (const auto& button : base::Reversed(trailing_buttons_)) {
       ConfigureButton(button, ALIGN_TRAILING);
-      base::Erase(buttons_not_shown, button);
+      std::erase(buttons_not_shown, button);
     }
   }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/search_engine.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
@@ -99,7 +100,7 @@ size_t SearchEngine::ReplaceProvidersForResultTypeForTest(
 
   size_t removed_providers = 0;
   for (auto& [category, providers] : providers_) {
-    removed_providers += base::EraseIf(
+    removed_providers += std::erase_if(
         providers, [&](const std::unique_ptr<SearchProvider>& provider) {
           return provider->ResultType() == result_type;
         });

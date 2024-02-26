@@ -5,9 +5,9 @@
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -390,7 +390,7 @@ TEST_P(TabDesktopMediaListTest, RemoveTab) {
   ASSERT_TRUE(tab_strip_model);
   std::unique_ptr<WebContents> released_web_contents =
       tab_strip_model->DetachWebContentsAtForInsertion(kDefaultSourceCount - 1);
-  base::Erase(manually_added_web_contents_, released_web_contents.get());
+  std::erase(manually_added_web_contents_, released_web_contents.get());
 
   EXPECT_CALL(observer_, OnSourceRemoved(0))
       .WillOnce(

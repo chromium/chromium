@@ -5,6 +5,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 
 #include <array>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/metrics/field_trial_params.h"
@@ -180,7 +181,7 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
   std::set<std::u16string> seen_cluster_labels = {};
   NTPHistoryClustersIneligibleReason ineligible_reason =
       clusters.empty() ? kNoClusters : kNone;
-  base::EraseIf(clusters, [&](auto& cluster) {
+  std::erase_if(clusters, [&](auto& cluster) {
     // Cull clusters that do not have a label.
     if (!cluster.label.has_value()) {
       return true;
@@ -214,14 +215,14 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
     // Ensure visits contains at most one SRP visit and its the first one in the
     // list.
     history::ClusterVisit first_srp_visit = *srp_visits_it;
-    base::EraseIf(cluster.visits, [&](auto& visit) {
+    std::erase_if(cluster.visits, [&](auto& visit) {
       return default_search_provider->IsSearchURL(
           visit.normalized_url, template_url_service_->search_terms_data());
     });
     cluster.visits.insert(cluster.visits.begin(), first_srp_visit);
 
     // Cull visits that have a zero relevance score, are Hidden, or Done.
-    base::EraseIf(cluster.visits, [&](auto& visit) {
+    std::erase_if(cluster.visits, [&](auto& visit) {
       return visit.score == 0.0 ||
              visit.interaction_state ==
                  history::ClusterVisit::InteractionState::kHidden ||

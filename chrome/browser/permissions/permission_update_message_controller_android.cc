@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/permissions/android/android_permission_util.h"
@@ -75,7 +75,7 @@ void PermissionUpdateMessageController::ShowMessageInternal(
 
 void PermissionUpdateMessageController::DeleteMessage(
     PermissionUpdateMessageDelegate* delegate) {
-  base::EraseIf(
+  std::erase_if(
       message_delegates_,
       [delegate](const std::unique_ptr<PermissionUpdateMessageDelegate>& d) {
         return delegate == d.get();

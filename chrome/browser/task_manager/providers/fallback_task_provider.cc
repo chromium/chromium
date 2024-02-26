@@ -4,8 +4,9 @@
 
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -222,7 +223,7 @@ void FallbackTaskProvider::SubproviderSource::TaskAdded(Task* task) {
 void FallbackTaskProvider::SubproviderSource::TaskRemoved(Task* task) {
   DCHECK(task);
 
-  base::Erase(tasks_, task);
+  std::erase(tasks_, task);
   fallback_task_provider_->OnTaskRemovedBySource(task, this);
 }
 

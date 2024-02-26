@@ -6,10 +6,10 @@
 
 #include <cstddef>
 #include <utility>
+#include <vector>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -119,7 +119,7 @@ ash::LacrosProfileSummary& DeskProfilesAsh::UpsertProfile(
 }
 
 bool DeskProfilesAsh::RemoveProfile(uint64_t profile_id) {
-  return base::EraseIf(profiles_,
+  return std::erase_if(profiles_,
                        [profile_id](const ash::LacrosProfileSummary& summary) {
                          return summary.profile_id == profile_id;
                        }) != 0;

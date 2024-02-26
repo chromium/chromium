@@ -6,11 +6,11 @@
 
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
@@ -100,13 +100,13 @@ void OnProbeFinished(AndroidUsbDevicesCallback callback,
 
 void OnDeviceClosed(const std::string& guid,
                     mojo::Remote<device::mojom::UsbDevice> device) {
-  base::Erase(g_open_devices.Get(), guid);
+  std::erase(g_open_devices.Get(), guid);
 }
 
 void OnDeviceClosedWithBarrier(const std::string& guid,
                                mojo::Remote<device::mojom::UsbDevice> device,
                                const base::RepeatingClosure& barrier) {
-  base::Erase(g_open_devices.Get(), guid);
+  std::erase(g_open_devices.Get(), guid);
   barrier.Run();
 }
 
@@ -154,7 +154,7 @@ void OnDeviceOpened(AndroidUsbDevices* devices,
         base::BindOnce(&CreateDeviceOnInterfaceClaimed, devices, rsa_key,
                        android_device_info, std::move(device), barrier));
   } else {
-    base::Erase(g_open_devices.Get(), android_device_info.guid);
+    std::erase(g_open_devices.Get(), android_device_info.guid);
     barrier.Run();
   }
 }
@@ -485,7 +485,7 @@ void AndroidUsbDevice::Terminate() {
   // For connection error, remove the guid from recored opening/opened list.
   // For transfer errors, we'll do this after releasing the interface.
   if (!device_) {
-    base::Erase(g_open_devices.Get(), android_device_info_.guid);
+    std::erase(g_open_devices.Get(), android_device_info_.guid);
     return;
   }
 

@@ -22,7 +22,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -995,7 +994,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
       if (user != GetActiveUser()) {
         DeleteUser(user);
       } else {
-        base::Erase(users_, user);
+        std::erase(users_, user);
       }
     }
   }
@@ -1123,7 +1122,7 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
 }
 
 void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
-  CHECK(base::EraseIf(profile_observations_, [profile](auto& observation) {
+  CHECK(std::erase_if(profile_observations_, [profile](auto& observation) {
     return observation->IsObservingSource(profile);
   }));
   // TODO(crbug.com/1325210): User ash::AnnotatedAccountId::Get(), when it gets

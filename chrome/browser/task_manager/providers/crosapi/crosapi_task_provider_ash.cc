@@ -5,9 +5,9 @@
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task_provider_ash.h"
 
 #include <set>
+#include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task.h"
@@ -165,7 +165,7 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   // Remove the stale lacros tasks.
   for (const auto& uuid : uuid_to_remove) {
     NotifyObserverTaskRemoved(uuid_to_task_[uuid].get());
-    base::Erase(sorted_task_ids_, uuid_to_task_[uuid]->task_id());
+    std::erase(sorted_task_ids_, uuid_to_task_[uuid]->task_id());
     uuid_to_task_.erase(uuid);
     DCHECK_EQ(uuid_to_task_.size(), sorted_task_ids_.size());
     task_added_or_removed = true;

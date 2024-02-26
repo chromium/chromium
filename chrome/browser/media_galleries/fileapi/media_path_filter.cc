@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
@@ -89,7 +89,7 @@ std::vector<base::FilePath::StringType> GetMediaExtensionList(
     const std::string& mime_type) {
   std::vector<base::FilePath::StringType> extensions;
   net::GetExtensionsForMimeType(mime_type, &extensions);
-  base::EraseIf(extensions, &IsUnsupportedExtension);
+  std::erase_if(extensions, &IsUnsupportedExtension);
   return extensions;
 }
 

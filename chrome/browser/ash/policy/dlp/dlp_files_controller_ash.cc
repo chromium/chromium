@@ -844,7 +844,7 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
                                                  response.files_paths().end());
     // If any of the selected files/folders is restricted or contains a
     // restricted file, it'll be removed.
-    base::EraseIf(
+    std::erase_if(
         selected_files,
         [&restricted_files](const ui::SelectedFileInfo& selected_file) -> bool {
           return base::ranges::any_of(

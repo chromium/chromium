@@ -4,8 +4,9 @@
 
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -177,7 +178,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
       // initiated but hasn't started.
       const bool erased =
           ErasePageNodeToLoadData(page_node) ||
-          base::Erase(page_nodes_load_initiated_, page_node) != 0;
+          std::erase(page_nodes_load_initiated_, page_node) != 0;
 
       // Keep track of all PageNodes that are loading, even when the load isn't
       // initiated by this policy.
@@ -473,7 +474,7 @@ void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
 
 void BackgroundTabLoadingPolicy::RemovePageNode(const PageNode* page_node) {
   ErasePageNodeToLoadData(page_node);
-  base::Erase(page_nodes_load_initiated_, page_node);
+  std::erase(page_nodes_load_initiated_, page_node);
   page_nodes_loading_.erase(page_node);
 
   // All restored tabs may be loaded.
@@ -550,9 +551,9 @@ bool BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(
         // |tabs_scored_| count.
         DCHECK_GT(tabs_scored_, 0U);
         --tabs_scored_;
-        base::Erase(page_nodes_to_load_, page_node_to_load_data);
+        std::erase(page_nodes_to_load_, page_node_to_load_data);
       } else {
-        base::Erase(page_nodes_to_load_, page_node_to_load_data);
+        std::erase(page_nodes_to_load_, page_node_to_load_data);
 
         // If the PageNode has not been scored yet, then removing it may trigger
         // all tabs scored notification.

@@ -5,7 +5,8 @@
 #include "chrome/browser/installable/installed_webapp_geolocation_context.h"
 
 #include <utility>
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "chrome/browser/installable/installed_webapp_geolocation_bridge.h"
 #include "url/origin.h"
 
@@ -28,7 +29,7 @@ void InstalledWebappGeolocationContext::BindGeolocation(
 
 void InstalledWebappGeolocationContext::OnPermissionRevoked(
     const url::Origin& origin) {
-  base::EraseIf(impls_, [&origin](const auto& impl) {
+  std::erase_if(impls_, [&origin](const auto& impl) {
     if (!origin.IsSameOriginWith(impl->url())) {
       return false;
     }

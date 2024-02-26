@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -1112,7 +1113,7 @@ ProfilePickerHandler::GetProfileAttributes() {
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributesSortedByLocalProfileNameWithCheck();
-  base::EraseIf(ordered_entries, [](const ProfileAttributesEntry* entry) {
+  std::erase_if(ordered_entries, [](const ProfileAttributesEntry* entry) {
     return entry->IsOmitted();
   });
   size_t number_of_profiles = ordered_entries.size();

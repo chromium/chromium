@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/raw_ptr.h"
@@ -309,12 +310,12 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
   // the readable lists.
   std::set<base::FilePath> writable_directories(
       usage.writable_directories.begin(), usage.writable_directories.end());
-  base::EraseIf(usage.readable_directories, [&](const base::FilePath& path) {
+  std::erase_if(usage.readable_directories, [&](const base::FilePath& path) {
     return base::Contains(writable_directories, path);
   });
   std::set<base::FilePath> writable_files(usage.writable_files.begin(),
                                           usage.writable_files.end());
-  base::EraseIf(usage.readable_files, [&](const base::FilePath& path) {
+  std::erase_if(usage.readable_files, [&](const base::FilePath& path) {
     return base::Contains(writable_files, path);
   });
 

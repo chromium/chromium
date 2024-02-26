@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/hash/md5.h"
 #include "base/ranges/algorithm.h"
@@ -255,7 +254,7 @@ bool ConvertToPrinter(const std::string& service_type,
         metadata.pdl, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (!media_types.empty() && !media_types.back().empty()) {
       // Prune any empty splits.
-      base::EraseIf(media_types, [](std::string_view s) { return s.empty(); });
+      std::erase_if(media_types, [](std::string_view s) { return s.empty(); });
 
       base::ranges::transform(
           media_types,

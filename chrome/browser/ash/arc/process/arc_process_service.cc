@@ -15,12 +15,12 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -252,7 +252,7 @@ std::vector<mojom::ArcMemoryDumpPtr> UpdateAndReturnMemoryInfo(
       auto it = pid_map.find(proc->pid);
       proc->pid = it == pid_map.end() ? kNullProcessId : it->second;
     }
-    base::EraseIf(process_dumps,
+    std::erase_if(process_dumps,
                   [](const auto& proc) { return proc->pid == kNullProcessId; });
   }
   return process_dumps;

@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -123,7 +122,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
 
   void TaskRemoved(Task* task) override {
     DCHECK(task);
-    base::Erase(tasks_, task);
+    std::erase(tasks_, task);
 
     if (expected_task_count_ == tasks_.size())
       StopWaiting();

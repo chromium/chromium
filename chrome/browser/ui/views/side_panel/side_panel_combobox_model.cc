@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -59,7 +59,7 @@ void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
 }
 
 void SidePanelComboboxModel::RemoveItem(const SidePanelEntry::Key& entry_key) {
-  if (base::EraseIf(entries_, [entry_key](Item entry) {
+  if (std::erase_if(entries_, [entry_key](Item entry) {
         return entry.key == entry_key;
       })) {
     for (auto& observer : observers()) {

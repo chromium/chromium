@@ -4,7 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
@@ -42,7 +43,7 @@ void FakeServerSyncInvalidationSender::AddFakeGCMDriver(
 void FakeServerSyncInvalidationSender::RemoveFakeGCMDriver(
     instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver) {
   fake_gcm_driver->RemoveConnectionObserver(this);
-  base::Erase(fake_gcm_drivers_, fake_gcm_driver);
+  std::erase(fake_gcm_drivers_, fake_gcm_driver);
 }
 
 void FakeServerSyncInvalidationSender::OnWillCommit() {

@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "apps/launcher.h"
 #include "ash/constants/ash_features.h"
@@ -177,7 +178,7 @@ bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
 
 // Removes all tasks except tasks handled by file manager.
 void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
-  base::EraseIf(*tasks, [](const auto& task) {
+  std::erase_if(*tasks, [](const auto& task) {
     return !IsFilesAppId(task.task_descriptor.app_id);
   });
 }
@@ -185,7 +186,7 @@ void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
 // Removes task |actions| handled by file manager.
 void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
                                       std::vector<FullTaskDescriptor>* tasks) {
-  base::EraseIf(*tasks, [&actions](const auto& task) {
+  std::erase_if(*tasks, [&actions](const auto& task) {
     const auto& td = task.task_descriptor;
     return IsFilesAppId(td.app_id) &&
            base::Contains(actions, ParseFilesAppActionId(td.action_id));
@@ -195,7 +196,7 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
 // Removes tasks handled by |app_id|".
 void RemoveActionsForApp(const std::string& app_id,
                          std::vector<FullTaskDescriptor>* tasks) {
-  base::EraseIf(*tasks, [&](const auto& task) {
+  std::erase_if(*tasks, [&](const auto& task) {
     return task.task_descriptor.app_id == app_id;
   });
 }

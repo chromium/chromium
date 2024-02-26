@@ -13,7 +13,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -218,7 +217,7 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
   }
   std::vector<password_manager::CredentialUIEntry> credentials =
       saved_passwords_presenter_.GetSavedCredentials();
-  base::EraseIf(credentials, [](const auto& credential) {
+  std::erase_if(credentials, [](const auto& credential) {
     return credential.blocked_by_user;
   });
 

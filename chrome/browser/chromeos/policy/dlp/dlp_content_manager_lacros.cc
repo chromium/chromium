@@ -4,7 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_lacros.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -151,7 +152,7 @@ void DlpContentManagerLacros::OnScreenShareStopped(
       lacros_service->GetRemote<crosapi::mojom::Dlp>()->OnScreenShareStopped(
           label, ConvertToScreenShareArea(media_id));
     }
-    base::EraseIf(
+    std::erase_if(
         running_remote_screen_shares_,
         [=](const std::unique_ptr<
             DlpContentManagerLacros::ScreenShareStateChangeDelegate>& delegate)

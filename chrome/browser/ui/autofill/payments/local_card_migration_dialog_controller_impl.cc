@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
@@ -227,7 +226,7 @@ void LocalCardMigrationDialogControllerImpl::DeleteCard(
   DCHECK(delete_local_card_callback_);
   delete_local_card_callback_.Run(deleted_card_guid);
 
-  base::EraseIf(migratable_credit_cards_, [&](const auto& card) {
+  std::erase_if(migratable_credit_cards_, [&](const auto& card) {
     return card.credit_card().guid() == deleted_card_guid;
   });
 

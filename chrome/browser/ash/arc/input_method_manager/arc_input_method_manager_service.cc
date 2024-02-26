@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/ime_mojom_traits.h"
@@ -15,7 +16,6 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -466,7 +466,7 @@ void ArcInputMethodManagerService::OnActiveImeChanged(
     auto* imm = ash::input_method::InputMethodManager::Get();
     // Create a list of enabled Chrome OS IMEs.
     auto enabled_imes = imm->GetActiveIMEState()->GetEnabledInputMethodIds();
-    base::EraseIf(enabled_imes, ash::extension_ime_util::IsArcIME);
+    std::erase_if(enabled_imes, ash::extension_ime_util::IsArcIME);
     DCHECK(!enabled_imes.empty());
     imm->GetActiveIMEState()->ChangeInputMethod(enabled_imes[0],
                                                 false /* show_message */);

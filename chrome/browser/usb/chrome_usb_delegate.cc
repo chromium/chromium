@@ -5,9 +5,9 @@
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -244,12 +244,12 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
       });
 
   if (base::Contains(kHidPrivilegedExtensionIds, origin.host())) {
-    base::Erase(classes, device::mojom::kUsbHidClass);
+    std::erase(classes, device::mojom::kUsbHidClass);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::Contains(kSmartCardPrivilegedExtensionIds, origin.host())) {
-    base::Erase(classes, device::mojom::kUsbSmartCardClass);
+    std::erase(classes, device::mojom::kUsbSmartCardClass);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }

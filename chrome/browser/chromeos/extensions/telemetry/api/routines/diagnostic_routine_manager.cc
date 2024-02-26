@@ -8,6 +8,7 @@
 #include <memory>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/containers/flat_tree.h"
@@ -165,7 +166,7 @@ void DiagnosticRoutineManager::CancelRoutineForExtension(
 
   // We can just remove the corresponding routine object, this will cut the
   // `RoutineControl` connection signalling to stop the routine.
-  base::EraseIf(
+  std::erase_if(
       it->second,
       [routine_id](const std::unique_ptr<DiagnosticRoutine>& routine) {
         return routine->uuid() == routine_id;
@@ -245,7 +246,7 @@ void DiagnosticRoutineManager::OnRoutineExceptionOrFinished(
     return;
   }
 
-  base::EraseIf(it->second,
+  std::erase_if(it->second,
                 [info](const std::unique_ptr<DiagnosticRoutine>& ptr) {
                   return ptr->uuid() == info.uuid;
                 });

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -63,7 +62,7 @@ class CrosapiTaskProviderAshTest : public testing::Test,
   void TaskRemoved(Task* task) override {
     ++task_removed_count_;
     size_t count = GetTaskCount();
-    base::Erase(task_ids_, task->task_id());
+    std::erase(task_ids_, task->task_id());
     DCHECK_EQ(count - 1, GetTaskCount());
   }
 

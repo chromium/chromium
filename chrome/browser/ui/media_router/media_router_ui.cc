@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/atomic_sequence_num.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -293,7 +293,7 @@ std::vector<MediaSinkWithCastModes> MediaRouterUI::GetEnabledSinks() const {
   const std::string display_sink_id =
       WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(
           display_observer_->GetCurrentDisplay());
-  base::EraseIf(enabled_sinks,
+  std::erase_if(enabled_sinks,
                 [&display_sink_id](const MediaSinkWithCastModes& sink) {
                   return sink.sink.id() == display_sink_id;
                 });

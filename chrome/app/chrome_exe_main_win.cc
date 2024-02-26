@@ -13,11 +13,11 @@
 #include <algorithm>
 #include <array>
 #include <string>
+#include <vector>
 
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/debug/handle_hooks_win.h"
 #include "base/feature_list.h"
@@ -165,7 +165,7 @@ bool RemoveAppCompatFlagsEntry() {
           L"WINSRV03SP1", L"WINSRV08SP1", L"WIN8RTM",
       };
       for (const wchar_t* compat_mode_token : kCompatModeTokens) {
-        base::Erase(tokens, compat_mode_token);
+        std::erase(tokens, compat_mode_token);
       }
       LONG result;
       if (tokens.empty()) {

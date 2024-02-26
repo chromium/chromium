@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
@@ -99,7 +99,7 @@ void TelemetryEventServiceAsh::IsEventSupported(
 
 void TelemetryEventServiceAsh::OnConnectionClosed(
     SelfOwnedMojoProxyInterface* closed_connection) {
-  base::EraseIf(
+  std::erase_if(
       observers_,
       [closed_connection](const raw_ptr<SelfOwnedMojoProxyInterface>& ptr) {
         return ptr.get() == closed_connection;

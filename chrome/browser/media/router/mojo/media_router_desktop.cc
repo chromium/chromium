@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -1022,7 +1023,7 @@ MediaSource MediaRouterDesktop::MediaSinksQuery::GetKey(
 void MediaRouterDesktop::MediaSinksQuery::SetSinksForProvider(
     mojom::MediaRouteProviderId provider_id,
     const std::vector<MediaSink>& sinks) {
-  base::EraseIf(cached_sink_list_, [&provider_id](const MediaSink& sink) {
+  std::erase_if(cached_sink_list_, [&provider_id](const MediaSink& sink) {
     return sink.provider_id() == provider_id;
   });
   cached_sink_list_.insert(cached_sink_list_.end(), sinks.begin(), sinks.end());

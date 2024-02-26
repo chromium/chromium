@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
-#include "base/containers/cxx20_erase_vector.h"
+
+#include <vector>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -211,7 +213,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
         absl::get_if<blink::StorageKey>(&entry.data_key);
     ASSERT_TRUE(storage_key);
     EXPECT_THAT(expected_keys, Contains(*storage_key));
-    base::Erase(expected_keys, *storage_key);
+    std::erase(expected_keys, *storage_key);
 
     EXPECT_GT(entry.storage_size, 0u);
 

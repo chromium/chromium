@@ -4,7 +4,8 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -114,7 +115,7 @@ void AllPasswordsBottomSheetController::Show() {
 void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   CHECK(on_password_forms_received_barrier_callback_);
-  base::EraseIf(results,
+  std::erase_if(results,
                 [](const auto& form_ptr) { return form_ptr->blocked_by_user; });
   on_password_forms_received_barrier_callback_.Run(std::move(results));
 }

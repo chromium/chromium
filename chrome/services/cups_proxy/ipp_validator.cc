@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -151,7 +150,7 @@ IppValidator::ValidateHttpHeaders(
   std::vector<ipp_converter::HttpHeader> ret(headers.begin(), headers.end());
 
   // Update the ContentLength.
-  base::EraseIf(ret, [](const ipp_converter::HttpHeader& header) {
+  std::erase_if(ret, [](const ipp_converter::HttpHeader& header) {
     return header.first == "Content-Length";
   });
   ret.push_back({"Content-Length", base::NumberToString(http_content_length)});

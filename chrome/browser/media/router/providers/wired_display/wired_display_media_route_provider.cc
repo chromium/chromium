@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/ranges/algorithm.h"
@@ -342,7 +341,7 @@ std::vector<Display> WiredDisplayMediaRouteProvider::GetAvailableDisplays()
   // Remove displays that mirror the primary display. On some platforms such as
   // Windows, mirrored displays are reported as one display. On others, mirrored
   // displays are reported separately but with the same bounds.
-  base::EraseIf(displays, [&primary_display](const Display& display) {
+  std::erase_if(displays, [&primary_display](const Display& display) {
     return display.id() != primary_display.id() &&
            display.bounds() == primary_display.bounds();
   });

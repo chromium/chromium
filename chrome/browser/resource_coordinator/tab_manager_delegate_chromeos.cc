@@ -20,7 +20,6 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -570,7 +569,7 @@ void TabManagerDelegate::LowMemoryKillImpl(
 
   // Prevent persistent ARC processes from being killed.
   if (arc_processes) {
-    base::EraseIf(*arc_processes,
+    std::erase_if(*arc_processes,
                   [](auto& proc) { return proc.IsPersistent(); });
   }
 

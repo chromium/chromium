@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -188,7 +189,7 @@ const std::vector<std::string> GetEquivalentInstalledExtensions(
   if (extension_ids.empty())
     return std::vector<std::string>();
 
-  base::EraseIf(extension_ids, [registry](std::string extension_id) {
+  std::erase_if(extension_ids, [registry](std::string extension_id) {
     return !registry->GetInstalledExtension(extension_id);
   });
   return extension_ids;

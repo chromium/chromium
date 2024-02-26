@@ -141,7 +141,7 @@ void ValidateSignonRealm(const PasswordFormDigest& form_digest_to_match,
     std::move(callback).Run(std::move(logins_or_error));
     return;
   }
-  base::EraseIf(absl::get<LoginsResult>(logins_or_error),
+  std::erase_if(absl::get<LoginsResult>(logins_or_error),
                 [&form_digest_to_match, include_psl](const auto& form) {
                   return !MatchesIncludedPSLAndFederation(
                       form, form_digest_to_match, include_psl);
@@ -182,7 +182,7 @@ void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
   // Remove grouped only matches if filling across groups is disabled.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossGroupedSites)) {
-    base::EraseIf(absl::get<LoginsResult>(logins_or_error),
+    std::erase_if(absl::get<LoginsResult>(logins_or_error),
                   [](const auto& form) {
                     return form.match_type == PasswordForm::MatchType::kGrouped;
                   });

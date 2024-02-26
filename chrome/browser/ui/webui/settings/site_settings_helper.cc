@@ -8,6 +8,7 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -1123,7 +1124,7 @@ GetSingleOriginExceptionsForContentType(HostContentSettingsMap* map,
   ContentSettingsForOneType entries = map->GetSettingsForOneType(content_type);
   // Exclude any entries that are allowlisted or don't represent a single
   // top-frame origin.
-  base::EraseIf(entries, [](const ContentSettingPatternSource& e) {
+  std::erase_if(entries, [](const ContentSettingPatternSource& e) {
     return !content_settings::PatternAppliesToSingleOrigin(
                e.primary_pattern, e.secondary_pattern) ||
            IsFromWebUIAllowlistSource(e);

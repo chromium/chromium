@@ -4,9 +4,10 @@
 
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -474,7 +475,7 @@ void AccountProfileMapper::OnAddAccountCompleted(
     std::move(callback).Run(result);
 
   size_t erased_count =
-      base::EraseIf(add_account_helpers_, base::MatchesUniquePtr(helper));
+      std::erase_if(add_account_helpers_, base::MatchesUniquePtr(helper));
   DCHECK_EQ(erased_count, 1u);
   if (add_account_helpers_.empty()) {
     account_manager_facade_->GetAccounts(
@@ -656,7 +657,7 @@ ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()
   std::vector<ProfileAttributesEntry*> entries =
       profile_attributes_storage_->GetAllProfilesAttributes();
   // Ignore omitted profiles.
-  base::EraseIf(entries,
+  std::erase_if(entries,
                 [](const auto* entry) -> bool { return entry->IsOmitted(); });
   if (entries.empty())
     return nullptr;  // Happens in tests.
