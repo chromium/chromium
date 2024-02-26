@@ -592,16 +592,18 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
       # disable them in these cases to reduce the noise.
       if input_api.no_diffs:
         continue
-      # Support for policies can only be removed for past version until we have
-      # a better reminder process to cleanup the code related to deprecated
-      # policies.
-      if new_policy_platforms[platform]['to'] > current_version:
-        previous_version = int(current_version) - 1
+      # An end-milestone for policies can only be added for versions that have
+      # already branched, until we have a better reminder process to cleanup
+      # the code related to deprecated policies.
+      end_version = new_policy_platforms[platform]['to']
+      if end_version >= current_version:
         results.append(output_api.PresubmitPromptWarning(
-          f"In policy {policy_name}: Support on platform {platform} can only "
-          f"be removed for version {previous_version}. Please remove all "
-          "references in the code to that policy since it will not be "
-          f"supported in the current version {current_version}."))
+          f"In policy {policy_name} for platform {platform}: An end-milestone "
+          f"of {end_version} was used. But policies are only allowed to be end-"
+          f"dated at versions that have already branched, currently "
+          f"M{current_version - 1} or before. Please remove all references in "
+          f"the code to {end_version}, and instead file a bug with a reminder "
+          f"to add the end milestone after M{end_version - 1} branches."))
   return results
 
 
