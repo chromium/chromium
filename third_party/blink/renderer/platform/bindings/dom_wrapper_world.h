@@ -133,11 +133,9 @@ class PLATFORM_EXPORT DOMWrapperWorld final
                   bool is_default_world_of_isolate);
   ~DOMWrapperWorld();
 
-  // Explicitly dispose a world. The object will still stick around and is still
-  // visible.
-  //
-  // Note that calling `EnsureIsolatedWorld()` with the same world id will
-  // result in creation of a new world object!
+  // Explicitly dispose internal data of the world. The world itself will only
+  // be reclaimed by GC. Note that calling `EnsureIsolatedWorld()` with the same
+  // id will yield in the same world object.
   void Dispose();
 
   // Called from performance-sensitive functions, so we should keep this simple
@@ -222,7 +220,7 @@ class PLATFORM_EXPORT DOMWrapperWorld final
 
   const WorldType world_type_;
   const int32_t world_id_;
-  Member<DOMDataStore> dom_data_store_;
+  const Member<DOMDataStore> dom_data_store_;
   Member<V8ObjectDataStore> v8_object_data_store_;
 };
 

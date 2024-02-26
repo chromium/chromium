@@ -41,6 +41,14 @@ CollectInitialWorlds(v8::Isolate* isolate) {
   return {initial_worlds, used_isolated_world_id};
 }
 
+auto NumberOfWorlds(v8::Isolate* isolate) {
+  HeapVector<Member<DOMWrapperWorld>> worlds;
+  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
+  const auto num_worlds = worlds.size();
+  worlds.clear();
+  return num_worlds;
+}
+
 }  // namespace
 
 TEST(DOMWrapperWorldTest, MainWorld) {
@@ -69,15 +77,11 @@ TEST(DOMWrapperWorldTest, IsolatedWorlds) {
   EXPECT_TRUE(isolated_world2->IsIsolatedWorld());
   EXPECT_TRUE(DOMWrapperWorld::NonMainWorldsExistInMainThread());
 
-  HeapVector<Member<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
-  EXPECT_EQ(worlds.size(), initial_worlds->size() + 2);
-  worlds.clear();
+  EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds->size() + 2);
   // Remove temporary worlds via stackless GC.
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
-  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
-  EXPECT_EQ(worlds.size(), initial_worlds->size());
+  EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds->size());
 }
 
 TEST(DOMWrapperWorldTest, ExplicitDispose) {
@@ -107,16 +111,16 @@ TEST(DOMWrapperWorldTest, ExplicitDispose) {
       worker_world_ids.insert(worker_world3->GetWorldId()).is_new_entry);
   EXPECT_TRUE(DOMWrapperWorld::NonMainWorldsExistInMainThread());
 
-  HeapVector<Member<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
-  EXPECT_EQ(worlds.size(), initial_worlds->size() + 3);
-  worlds.clear();
-  // Explicitly disposing worlds should also remove them.
+  EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds->size() + 3);
+  // Explicitly disposing worlds will clear internal state but not remove them.
   worker_world1->Dispose();
   worker_world2->Dispose();
   worker_world3->Dispose();
-  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
-  EXPECT_EQ(worlds.size(), initial_worlds->size());
+  EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds->size() + 3);
+  // GC will remove the worlds.
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      ThreadState::StackState::kNoHeapPointers);
+  EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds->size());
 }
 
 namespace {
@@ -139,10 +143,7 @@ void WorkerThreadFunc(
       isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
   auto* worker_world2 = DOMWrapperWorld::Create(
       isolate, DOMWrapperWorld::WorldType::kWorkerOrWorklet);
-  HeapVector<Member<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
-  EXPECT_EQ(worlds.size(), initial_worlds.size() + 2);
-  worlds.clear();
+  EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds.size() + 2);
 
   // Dispose of remaining worlds.
   worker_world1->Dispose();
@@ -181,10 +182,7 @@ TEST(DOMWrapperWorldTest, NonMainThreadWorlds) {
   loop.Run();
 
   // Worlds on the worker thread should not be visible from the main thread.
-  HeapVector<Member<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
-  EXPECT_EQ(worlds.size(), initial_worlds->size());
-  worlds.clear();
+  EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds->size());
 }
 
 }  // namespace blink
