@@ -222,6 +222,29 @@ class OpenUrlAction final : public BrowserAction {
   base::WeakPtrFactory<OpenUrlAction> weak_ptr_factory_;
 };
 
+class OpenCaptivePortalSigninAction final : public BrowserAction {
+ public:
+  explicit OpenCaptivePortalSigninAction(const GURL& url)
+      : BrowserAction(true), url_(url), weak_ptr_factory_(this) {}
+
+  void Perform(const VersionedBrowserService& service,
+               BrowserManagerCallback on_performed) override {
+    if (service.interface_version <
+        mojom::BrowserService::kOpenCaptivePortalSigninMinVersion) {
+      LOG(ERROR) << "BrowserService does not support OpenCaptivePortalSignin";
+      return;
+    }
+    service.service->OpenCaptivePortalSignin(
+        url_, base::BindOnce(&OpenCaptivePortalSigninAction::OnPerformed,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(on_performed)));
+  }
+
+ private:
+  const GURL url_;
+  base::WeakPtrFactory<OpenCaptivePortalSigninAction> weak_ptr_factory_;
+};
+
 class NewGuestWindowAction final : public BrowserAction {
  public:
   explicit NewGuestWindowAction(int64_t target_display_id)
@@ -454,6 +477,12 @@ std::unique_ptr<BrowserAction> BrowserAction::OpenUrl(
     crosapi::mojom::OpenUrlFrom from,
     NavigateParams::PathBehavior path_behavior) {
   return std::make_unique<OpenUrlAction>(url, disposition, from, path_behavior);
+}
+
+// static
+std::unique_ptr<BrowserAction> BrowserAction::OpenCaptivePortalSignin(
+    const GURL& url) {
+  return std::make_unique<OpenCaptivePortalSigninAction>(url);
 }
 
 // static

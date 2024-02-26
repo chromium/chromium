@@ -1142,8 +1142,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 77
-// Next id: 77
+// Next version: 78
+// Next id: 78
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1593,6 +1593,10 @@ struct BrowserInitParams {
   // chrome.
   [MinVersion=76]
   uint64 limited_entropy_synthetic_trial_seed@76;
+
+  // If true, captive portal signin windows are opened as a popup window.
+  [MinVersion=77]
+  bool is_captive_portal_popup_window_enabled@77;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
@@ -1742,8 +1746,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 77.
-// Next ID: 23
+// Next MinVersion: 78.
+// Next ID: 24
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1910,6 +1914,11 @@ interface BrowserService {
   // Opens the Lacros profile manger window.
   [MinVersion=74]
   OpenProfileManager@21();
+
+  // Opens the specified URL in a browser popup window using the captive portal
+  // signin profile.
+  [MinVersion=77]
+  OpenCaptivePortalSignin@23(url.mojom.Url url) => (CreationResult result);
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

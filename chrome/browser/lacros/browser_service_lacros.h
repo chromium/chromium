@@ -69,6 +69,8 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   void UpdateKeepAlive(bool enabled) override;
   void OpenForFullRestore(bool skip_crash_restore) override;
   void OpenProfileManager() override;
+  void OpenCaptivePortalSignin(const GURL& url,
+                               OpenUrlCallback callback) override;
 
  private:
   struct PendingOpenUrl;
@@ -110,6 +112,9 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
                           crosapi::mojom::OpenUrlParamsPtr params,
                           OpenUrlCallback callback,
                           Profile* profile);
+  void OpenCaptivePortalSigninWithProfile(const GURL& url,
+                                          OpenUrlCallback callback,
+                                          Profile* profile);
   void RestoreTabWithProfile(RestoreTabCallback callback, Profile* profile);
   void OpenForFullRestoreWithProfile(bool skip_crash_restore, Profile* profile);
   void UpdateComponentPolicy(policy::ComponentPolicyMap policy) override;

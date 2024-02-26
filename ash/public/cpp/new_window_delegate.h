@@ -130,6 +130,9 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Show the Personalization hub.
   virtual void OpenPersonalizationHub() = 0;
 
+  // Shows the a captive portal signin window.
+  virtual void OpenCaptivePortalSignin(const GURL& url) = 0;
+
  protected:
   NewWindowDelegate();
   NewWindowDelegate(const NewWindowDelegate&) = delete;

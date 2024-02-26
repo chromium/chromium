@@ -1016,7 +1016,10 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chromeos/constants",
+      "//chromeos/crosapi/mojom",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -1062,6 +1065,10 @@ source_set("unit_tests") {
       "//components/user_manager:test_support",
       "//extensions/shell:app_shell_lib",
     ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
   }
 
   data = [

@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
+#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/profile_util.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -280,6 +282,18 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest, LaunchWithProfileId) {
   // Try to launch a new browser window with non-exist profile.
   LaunchSync(/*profile_id=*/1, CreationResult::kProfileNotExist);
   EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
+                       OpenCaptivePortalSigninWithProfile) {
+  base::test::TestFuture<CreationResult> launch_future;
+  browser_service()->OpenCaptivePortalSignin(
+      GURL("http://www.gstatic.com/generate_204"), launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Wait()) << "Launch did not trigger the callback.";
+  EXPECT_EQ(launch_future.Get(), CreationResult::kSuccess);
+
+  EXPECT_TRUE(
+      chromeos::NetworkPortalSigninWindow::Get()->GetBrowserForTesting());
 }
 
 class BrowserServiceLacrosKioskBrowserTest

@@ -60,6 +60,8 @@ class BrowserAction {
       crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
       crosapi::mojom::OpenUrlFrom from,
       NavigateParams::PathBehavior path_behavior);
+  static std::unique_ptr<BrowserAction> OpenCaptivePortalSignin(
+      const GURL& url);
   static std::unique_ptr<BrowserAction> OpenForFullRestore(
       bool skip_crash_restore);
   static std::unique_ptr<BrowserAction> RestoreTab();

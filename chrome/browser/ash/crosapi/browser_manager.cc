@@ -717,6 +717,10 @@ void BrowserManager::OpenUrl(
       BrowserAction::OpenUrl(url, disposition, from, path_behavior));
 }
 
+void BrowserManager::OpenCaptivePortalSignin(const GURL& url) {
+  PerformOrEnqueue(BrowserAction::OpenCaptivePortalSignin(url));
+}
+
 void BrowserManager::SwitchToTab(const GURL& url,
                                  NavigateParams::PathBehavior path_behavior) {
   PerformOrEnqueue(BrowserAction::OpenUrl(

@@ -97,6 +97,10 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   // in tests.
   virtual void ShowTab(Profile* profile, const GURL& url);
 
+  // Shows the signin UI in a browser tab using the active user profile.
+  // Overridden in tests.
+  virtual void ShowActiveProfileTab(const GURL& url);
+
   SigninMode GetSigninMode(NetworkState::PortalState portal_state) const;
 
  private:

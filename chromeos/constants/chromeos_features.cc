@@ -246,7 +246,12 @@ bool IsAppInstallServiceUriEnabled() {
 }
 
 bool IsCaptivePortalPopupWindowEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()
+      ->IsCaptivePortalPopupWindowEnabled();
+#else
   return base::FeatureList::IsEnabled(kCaptivePortalPopupWindow);
+#endif
 }
 
 bool IsClipboardHistoryRefreshEnabled() {

@@ -49,6 +49,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void OpenFeedbackPage(FeedbackSource source,
                         const std::string& description_template) override;
   void OpenPersonalizationHub() override;
+  void OpenCaptivePortalSignin(const GURL& url) override;
 
   // arc::ControlCameraAppDelegate:
   void LaunchCameraApp(const std::string& queries, int32_t task_id) override;

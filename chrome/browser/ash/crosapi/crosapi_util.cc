@@ -801,6 +801,9 @@ void InjectBrowserInitParams(
 
   params->should_disable_chrome_compose_on_chromeos =
       chromeos::features::ShouldDisableChromeComposeOnChromeOS();
+
+  params->is_captive_portal_popup_window_enabled =
+      chromeos::features::IsCaptivePortalPopupWindowEnabled();
 }
 
 template <typename BrowserParams>

@@ -162,6 +162,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool ShouldDisableChromeComposeOnChromeOS() const;
 
+  bool IsCaptivePortalPopupWindowEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

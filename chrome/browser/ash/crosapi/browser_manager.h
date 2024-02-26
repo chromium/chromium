@@ -209,6 +209,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
       NavigateParams::PathBehavior path_behavior = NavigateParams::RESPECT);
 
+  // Opens the captive portal signin window in lacros-chrome.
+  void OpenCaptivePortalSignin(const GURL& url);
+
   // If there's already a tab opening the URL in lacros-chrome, in some window
   // of the primary profile, activate the tab. Otherwise, opens a tab for
   // the given URL. `path_behavior` will be assigned to the variable of the same

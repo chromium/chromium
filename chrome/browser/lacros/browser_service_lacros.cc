@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_launcher.h"
@@ -381,6 +382,20 @@ void BrowserServiceLacros::OpenUrl(const GURL& url,
                                  weak_ptr_factory_.GetWeakPtr(), url,
                                  std::move(params), std::move(callback)),
                   /*can_trigger_fre=*/true);
+}
+
+void BrowserServiceLacros::OpenCaptivePortalSignin(const GURL& url,
+                                                   OpenUrlCallback callback) {
+  if (g_browser_process->IsShuttingDown()) {
+    std::move(callback).Run(crosapi::mojom::CreationResult::kBrowserShutdown);
+    return;
+  }
+  // Ensure that the main profile is loaded so that the captive portal signin
+  // profile (which is derived from the main profile) can be created if needed.
+  LoadMainProfile(
+      base::BindOnce(&BrowserServiceLacros::OpenCaptivePortalSigninWithProfile,
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)),
+      /*can_trigger_fre=*/true);
 }
 
 void BrowserServiceLacros::RestoreTab(RestoreTabCallback callback) {
@@ -786,6 +801,21 @@ void BrowserServiceLacros::OpenUrlWithProfile(
   } else {
     OpenUrlImpl(profile, url, std::move(params), std::move(callback));
   }
+}
+
+void BrowserServiceLacros::OpenCaptivePortalSigninWithProfile(
+    const GURL& url,
+    OpenUrlCallback callback,
+    Profile* profile) {
+  if (!profile) {
+    LOG(WARNING) << "No profile, it might be an early exit from the FRE. "
+                    "Aborting the requested action.";
+    std::move(callback).Run(crosapi::mojom::CreationResult::kProfileNotExist);
+    return;
+  }
+
+  chromeos::NetworkPortalSigninWindow::Get()->Show(url);
+  std::move(callback).Run(crosapi::mojom::CreationResult::kSuccess);
 }
 
 void BrowserServiceLacros::RestoreTabWithProfile(RestoreTabCallback callback,

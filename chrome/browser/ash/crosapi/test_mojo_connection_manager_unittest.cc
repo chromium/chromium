@@ -111,6 +111,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void OpenProfileManager() override {}
   void UpdateComponentPolicy(
       base::flat_map<policy::PolicyNamespace, base::Value> policy) override {}
+  void OpenCaptivePortalSignin(const GURL& url,
+                               OpenUrlCallback callback) override {}
 
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;

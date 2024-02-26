@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
@@ -157,7 +158,11 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       ShowSigninDialog(url);
       break;
     case SigninMode::kNormalTab:
-      ShowTab(ProfileManager::GetActiveUserProfile(), url);
+      if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
+        ShowActiveProfileTab(url);
+      } else {
+        ShowTab(ProfileManager::GetActiveUserProfile(), url);
+      }
       break;
     case SigninMode::kSigninDefault: {
       if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
@@ -310,7 +315,9 @@ void NetworkPortalSigninController::ShowSigninDialog(const GURL& url) {
 }
 
 void NetworkPortalSigninController::ShowSigninWindow(const GURL& url) {
-  chromeos::NetworkPortalSigninWindow::Get()->Show(url);
+  // Calls NetworkPortalSigninWindow::Show in the appropriate browser (Ash or
+  // Lacros).
+  ash::NewWindowDelegate::GetPrimary()->OpenCaptivePortalSignin(url);
 }
 
 void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
@@ -322,6 +329,13 @@ void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
   NavigateParams params(displayer.browser(), url, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   ::Navigate(&params);
+}
+
+void NetworkPortalSigninController::ShowActiveProfileTab(const GURL& url) {
+  // Opens a new tab the appropriate browser (Ash or Lacros).
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 std::ostream& operator<<(

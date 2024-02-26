@@ -217,6 +217,10 @@ void CrosapiNewWindowDelegate::OpenPersonalizationHub() {
   delegate_->OpenPersonalizationHub();
 }
 
+void CrosapiNewWindowDelegate::OpenCaptivePortalSignin(const GURL& url) {
+  crosapi::BrowserManager::Get()->OpenCaptivePortalSignin(url);
+}
+
 void CrosapiNewWindowDelegate::DestroyWindowObserver() {
   window_observer_.reset();
 }
