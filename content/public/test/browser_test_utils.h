@@ -661,8 +661,9 @@ base::Value ListValueOf(Args&&... args) {
   return base::Value(std::move(values));
 }
 
-// Replaces $1, $2, $3, etc in |script_template| with JS literal values
-// constructed from |args|, similar to base::ReplaceStringPlaceholders.
+// Replaces $1, $2, $3, ..., $9 in |script_template| with JS literal values
+// constructed from |args|, similar to base::ReplaceStringPlaceholders. Note
+// that $10 and above aren't allowed.
 //
 // Unlike StringPrintf or manual concatenation, this version will properly
 // escape string content, even if it contains slashes or quotation marks.
