@@ -28,14 +28,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -43,10 +41,8 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
-import org.chromium.components.browser_ui.notifications.NotificationsFeatureList;
 import org.chromium.services.media_session.MediaMetadata;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -59,14 +55,6 @@ import java.util.concurrent.TimeoutException;
         manifest = Config.NONE,
         shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationServiceLifecycleTest extends MediaNotificationTestBase {
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-        FeatureList.setTestFeatures(
-                Map.of(NotificationsFeatureList.ASYNC_NOTIFICATION_MANAGER, true));
-    }
-
     @Test
     public void testServiceLifeCycle() {
         ensureMediaNotificationInfo();

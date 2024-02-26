@@ -6,13 +6,14 @@ package org.chromium.components.browser_ui.notifications;
 
 import android.content.Context;
 
+import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
+
 /** Factory class for creating BaseNotificationManagerProxyFactory. */
 public class BaseNotificationManagerProxyFactory {
     private BaseNotificationManagerProxyFactory() {}
 
     public static BaseNotificationManagerProxy create(Context context) {
-        if (NotificationsFeatureMap.isEnabled(
-                NotificationsFeatureList.ASYNC_NOTIFICATION_MANAGER)) {
+        if (BrowserUiUtilsCachedFlags.getInstance().getAsyncNotificationManagerFlag()) {
             return new AsyncNotificationManagerProxyImpl(context);
         } else {
             return new NotificationManagerProxyImpl(context);

@@ -27,16 +27,12 @@ import org.robolectric.shadows.ShadowNotification;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
-import org.chromium.components.browser_ui.notifications.NotificationsFeatureList;
 import org.chromium.net.ConnectionType;
-
-import java.util.Map;
 
 /**
  * Tests for ClickToCallMessageHandler that check how we handle Click to Call messages. We either
@@ -52,8 +48,6 @@ public class ClickToCallMessageHandlerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        FeatureList.setTestFeatures(
-                Map.of(NotificationsFeatureList.ASYNC_NOTIFICATION_MANAGER, true));
         ContextUtils.initApplicationContextForTests(mContext);
     }
 

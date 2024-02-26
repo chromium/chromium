@@ -166,6 +166,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
     &kArchiveTabService,
+    &kAsyncNotificationManager,
     &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackGestureActivityTabProvider,
@@ -450,6 +451,10 @@ BASE_FEATURE(kAppSpecificHistory,
 
 BASE_FEATURE(kArchiveTabService,
              "ArchiveTabService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAsyncNotificationManager,
+             "AsyncNotificationManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAuxiliarySearchDonation,

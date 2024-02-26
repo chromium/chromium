@@ -64,6 +64,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             BrowserUiUtilsCachedFlags.getInstance()
                     .setVerticalAutomotiveBackButtonToolbarFlag(
                             ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled());
+            BrowserUiUtilsCachedFlags.getInstance()
+                    .setAsyncNotificationManagerFlag(
+                            ChromeFeatureList.sAsyncNotificationManager.isEnabled());
 
             // Only load the native library early for bundle builds since some tests use the
             // "--disable-native-initialization" switch, and the CommandLine is not initialized at

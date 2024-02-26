@@ -22,13 +22,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.notifications.NotificationsFeatureList;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -42,7 +40,6 @@ import java.util.UUID;
 /** Tests of {@link DownloadNotificationService}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DisableFeatures({ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API})
-@EnableFeatures({NotificationsFeatureList.ASYNC_NOTIFICATION_MANAGER})
 @Batch(Batch.UNIT_TESTS)
 public class DownloadNotificationServiceTest {
     private static final ContentId ID1 =

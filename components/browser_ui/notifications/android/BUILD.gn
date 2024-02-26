@@ -5,22 +5,6 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-source_set("android") {
-  sources = [
-    "features.cc",
-    "features.h",
-    "notifications_feature_map.cc",
-  ]
-  deps = [
-    ":notifications_jni_headers",
-    "//base",
-  ]
-}
-
-generate_jni("notifications_jni_headers") {
-  sources = [ "java/src/org/chromium/components/browser_ui/notifications/NotificationsFeatureMap.java" ]
-}
-
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxy.java",
@@ -35,8 +19,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperBuilder.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperCompatBuilder.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperStandardBuilder.java",
-    "java/src/org/chromium/components/browser_ui/notifications/NotificationsFeatureList.java",
-    "java/src/org/chromium/components/browser_ui/notifications/NotificationsFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/notifications/PendingIntentProvider.java",
     "java/src/org/chromium/components/browser_ui/notifications/PendingNotificationTask.java",
     "java/src/org/chromium/components/browser_ui/notifications/ThrottlingNotificationScheduler.java",
@@ -46,13 +28,13 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//components/browser_ui/util/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_media_media_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
-  srcjar_deps = [ ":notifications_jni_headers" ]
 }
 
 android_library("test_support_java") {

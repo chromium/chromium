@@ -163,6 +163,7 @@ public abstract class ChromeFeatureList {
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ARCHIVE_TAB_SERVICE = "ArchiveTabService";
+    public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
     public static final String AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT =
             "AutofillAddressProfileSavePromptNicknameSupport";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
@@ -530,6 +531,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_TAB_GROUP_STABLE_IDS, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, false);
     public static final CachedFlag sArchiveTabService = newCachedFlag(ARCHIVE_TAB_SERVICE, false);
+    public static final CachedFlag sAsyncNotificationManager =
+            newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
             newCachedFlag(BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
     public static final CachedFlag sBackGestureMoveToBackDuringStartup =
@@ -683,6 +686,7 @@ public abstract class ChromeFeatureList {
                     sAndroidTabGroupStableIds,
                     sAppSpecificHistory,
                     sArchiveTabService,
+                    sAsyncNotificationManager,
                     sBackGestureActivityTabProvider,
                     sBackGestureMoveToBackDuringStartup,
                     sBackGestureRefactorAndroid,
