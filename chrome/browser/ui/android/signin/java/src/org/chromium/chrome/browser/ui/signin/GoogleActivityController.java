@@ -29,4 +29,22 @@ public class GoogleActivityController {
         intent.setPackage(activity.getPackageName());
         activity.startActivity(intent);
     }
+
+    /**
+     * Opens the "Linked Google services" settings that allows the user to control with what other
+     * Google Services Chrome can share data.
+     *
+     * @param activity The activity to open the settings.
+     * @param accountName The account for which is requested.
+     */
+    public void openLinkedGoogleServicesSettings(Activity activity, String accountName) {
+        Intent intent =
+                new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(UrlConstants.GOOGLE_ACCOUNT_LINKED_SERVICES_URL));
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
+        intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        intent.setPackage(activity.getPackageName());
+        activity.startActivity(intent);
+    }
 }
