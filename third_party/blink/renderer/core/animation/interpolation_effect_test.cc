@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -22,7 +23,7 @@ double GetInterpolableNumber(Interpolation* value) {
   TypedInterpolationValue* interpolated_value =
       interpolation->GetInterpolatedValue();
   return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
-      .Value();
+      .Value(CSSToLengthConversionData());
 }
 
 Interpolation* CreateInterpolation(int from, int to) {
