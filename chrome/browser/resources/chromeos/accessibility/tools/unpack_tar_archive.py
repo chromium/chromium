@@ -12,7 +12,7 @@ import tarfile
 import tempfile
 from typing import List,Optional
 
-# A python script that unpacks the mediapipe_task_vision tar archive by:
+# A python script that unpacks the supplied tar archive by:
 # 1. Extracting the tar into a temporary directory
 # 2. Copying the file contents from the temporary directory to the destination
 # directory
@@ -32,9 +32,6 @@ from typing import List,Optional
 # CQ builds all targets, then triggers the same build again and asserts that
 # it was a no-op. Without this indirect extraction, we'd fail the CQ every time.
 
-
-# TODO(b:309121742): Unify this with unpack_pumpkin.py, since the logic is
-# almost identical.
 def main(argv: Optional[List[str]] = None) -> Optional[int]:
   parser = optparse.OptionParser(description=__doc__)
   parser.usage = '%prog [options] <tar-file_path>'
@@ -53,11 +50,14 @@ def main(argv: Optional[List[str]] = None) -> Optional[int]:
 
   tarArchive = args[0]
   outputFiles = args[1].split(',')
+  stripFilePattern = args[2]
   destDir = options.dest_dir
 
   with tempfile.TemporaryDirectory() as tempDir:
-    # Extract just the file names without the full path.
-    outputFiles = [os.path.basename(file) for file in outputFiles]
+    # Update the file paths so that they're relative to the temporary directory.
+    for i in range(0, len(outputFiles)):
+      path = outputFiles[i]
+      outputFiles[i] = path.replace(stripFilePattern, "")
 
     # Extract tar into temporary directory.
     tar = tarfile.open(tarArchive)

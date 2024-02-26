@@ -178,7 +178,7 @@ source_set("browser_tests") {
 
   deps = [
     ":accessibility_common_extjs_tests",
-    ":extract_mediapipe_task_vision_files_for_test",
+    ":facegaze_test_files",
     ":pumpkin_test_files",
   ]
 
@@ -244,52 +244,51 @@ js2gtest("accessibility_common_extjs_tests") {
 
 action("pumpkin_test_files") {
   testonly = true
-
-  pumpkin_output_dir = "$accessibility_common_dir/third_party/pumpkin"
-  script = "third_party/pumpkin/unpack_pumpkin.py"
-  sources = [ "third_party/pumpkin/pumpkin-3.0.tar.xz" ]
+  script = "../tools/unpack_tar_archive.py"
+  sources = [ "../common/testing/fake_pumpkin_dlc.tar.xz" ]
+  out_dir = "$accessibility_common_dir/third_party/pumpkin/"
   files_to_extract = [
-    "$pumpkin_output_dir/js_pumpkin_tagger_bin.js",
-    "$pumpkin_output_dir/tagger_wasm_main.js",
-    "$pumpkin_output_dir/tagger_wasm_main.wasm",
-    "$pumpkin_output_dir/en_us/action_config.binarypb",
-    "$pumpkin_output_dir/en_us/pumpkin_config.binarypb",
-    "$pumpkin_output_dir/fr_fr/action_config.binarypb",
-    "$pumpkin_output_dir/fr_fr/pumpkin_config.binarypb",
-    "$pumpkin_output_dir/it_it/action_config.binarypb",
-    "$pumpkin_output_dir/it_it/pumpkin_config.binarypb",
-    "$pumpkin_output_dir/de_de/action_config.binarypb",
-    "$pumpkin_output_dir/de_de/pumpkin_config.binarypb",
-    "$pumpkin_output_dir/es_es/action_config.binarypb",
-    "$pumpkin_output_dir/es_es/pumpkin_config.binarypb",
+    "$out_dir" + "js_pumpkin_tagger_bin.js",
+    "$out_dir" + "tagger_wasm_main.js",
+    "$out_dir" + "tagger_wasm_main.wasm",
+    "$out_dir" + "en_us/action_config.binarypb",
+    "$out_dir" + "en_us/pumpkin_config.binarypb",
+    "$out_dir" + "fr_fr/action_config.binarypb",
+    "$out_dir" + "fr_fr/pumpkin_config.binarypb",
+    "$out_dir" + "it_it/action_config.binarypb",
+    "$out_dir" + "it_it/pumpkin_config.binarypb",
+    "$out_dir" + "de_de/action_config.binarypb",
+    "$out_dir" + "de_de/pumpkin_config.binarypb",
+    "$out_dir" + "es_es/action_config.binarypb",
+    "$out_dir" + "es_es/pumpkin_config.binarypb",
   ]
+
   args = [
     "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/pumpkin",
-    rebase_path("third_party/pumpkin/pumpkin-3.0.tar.xz", root_build_dir),
+    rebase_path("../common/testing/fake_pumpkin_dlc.tar.xz", root_build_dir),
     string_join(",", files_to_extract),
-    pumpkin_output_dir,
+    out_dir,
   ]
   outputs = files_to_extract
 }
 
 # Extracts the FaceLandmarker model and WASM for testing purposes.
-action("extract_mediapipe_task_vision_files_for_test") {
+action("facegaze_test_files") {
   testonly = true
-  script = "third_party/mediapipe_task_vision/unpack.py"
-  sources = [ "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
-  out_dir = "$accessibility_common_dir/third_party/mediapipe_task_vision"
-
+  script = "../tools/unpack_tar_archive.py"
+  sources = [ "../common/testing/fake_facegaze_assets_dlc.tar.xz" ]
+  out_dir = "$accessibility_common_dir/third_party/mediapipe_task_vision/"
   files_to_extract = [
-    "$out_dir/face_landmarker.task",
-    "$out_dir/vision_wasm_internal.wasm",
+    "$out_dir" + "face_landmarker.task",
+    "$out_dir" + "vision_wasm_internal.wasm",
   ]
 
   args = [
     "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/mediapipe_task_vision",
-    rebase_path(
-        "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
-        root_build_dir),
+    rebase_path("../common/testing/fake_facegaze_assets_dlc.tar.xz",
+                root_build_dir),
     string_join(",", files_to_extract),
+    out_dir,
   ]
   outputs = files_to_extract
 }
