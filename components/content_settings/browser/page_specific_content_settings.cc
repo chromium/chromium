@@ -1535,6 +1535,16 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
   if (is_capturing) {
     microphone_camera_state_.Put(state);
     in_use_.insert(type);
+
+    // Camera and Microphone share the same activity indicator view. If one of
+    // them is in use, reset a blocked state for another as we cannot display
+    // in-use and blocked indicator at once.
+    auto t = type == ContentSettingsType::MEDIASTREAM_CAMERA
+                 ? ContentSettingsType::MEDIASTREAM_MIC
+                 : ContentSettingsType::MEDIASTREAM_CAMERA;
+    if (media_blocked_indicator_timer_.contains(t)) {
+      ResetMediaBlockedState(t, /*update_indicators=*/false);
+    }
   } else {
     microphone_camera_state_.Remove(state);
     in_use_.erase(type);
@@ -1619,12 +1629,15 @@ void PageSpecificContentSettings::StartBlockedIndicatorTimer(
   }
   media_blocked_indicator_timer_[type].Start(
       FROM_HERE, blocked_indicator_delay,
-      base::BindOnce(&PageSpecificContentSettings::HideMediaBlockedIndicator,
-                     weak_factory_.GetWeakPtr(), type));
+      base::BindOnce(&PageSpecificContentSettings::ResetMediaBlockedState,
+                     weak_factory_.GetWeakPtr(), type,
+                     /*update_indicators=*/true));
 }
 
-void PageSpecificContentSettings::HideMediaBlockedIndicator(
-    ContentSettingsType type) {
+void PageSpecificContentSettings::ResetMediaBlockedState(
+    ContentSettingsType type,
+    bool update_indicators) {
+  LOG(ERROR) << "message";
   media_blocked_indicator_timer_.erase(type);
 
   if (type == ContentSettingsType::MEDIASTREAM_MIC) {
@@ -1636,7 +1649,9 @@ void PageSpecificContentSettings::HideMediaBlockedIndicator(
     microphone_camera_state_.Remove(kCameraAccessed);
   }
 
-  MaybeUpdateLocationBar();
+  if (update_indicators) {
+    MaybeUpdateLocationBar();
+  }
 }
 
 void PageSpecificContentSettings::MaybeNotifySiteDataObservers(

@@ -492,11 +492,14 @@ class PageSpecificContentSettings
   void OnCapturingStateChangedInternal(ContentSettingsType type,
                                        bool is_capturing);
 
-  // This methods is called when a camera and/or mic blocked indicator is
+  // This method is called when a camera and/or mic blocked indicator is
   // displayed.
   void StartBlockedIndicatorTimer(ContentSettingsType type);
 
-  void HideMediaBlockedIndicator(ContentSettingsType type);
+  // This method resets a media blocked state for `type`. If `update_indicators`
+  // is true, then it will try to update activity indicators in the location
+  // bar.
+  void ResetMediaBlockedState(ContentSettingsType type, bool update_indicators);
 
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
