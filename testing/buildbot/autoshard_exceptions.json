@@ -1,6 +1,21 @@
 {
     "chromium.android": {
         "android-12-x64-rel": {
+            "android_sync_integration_tests": {
+                "debug": {
+                    "avg_num_builds_per_peak_hour": 102,
+                    "estimated_bot_hour_delta": 2.92,
+                    "prev_avg_pending_time_sec": 14.5,
+                    "prev_p50_pending_time_sec": 0.0,
+                    "prev_p90_pending_time_sec": 45.0,
+                    "prev_percentile_duration_minutes": 17.51,
+                    "prev_shard_count": 3,
+                    "simulated_max_shard_duration": 13.13,
+                    "test_overhead_min": 1.7166666666666666,
+                    "try_builder": "android-12-x64-rel"
+                },
+                "shards": 4
+            },
             "services_unittests": {
                 "debug": {
                     "avg_num_builds_per_peak_hour": "85.0",
