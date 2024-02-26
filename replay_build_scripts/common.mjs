@@ -132,7 +132,10 @@ function updateRepo(repo, treeish) {
 
 export function updateBackendRepo() {
   const backend = getBackendDir();
-  const rev = fs.readFileSync("REPLAY_BACKEND_REV", "utf8").trim();
+  // if process.env.REPLAY_BACKEND_REV is set, use that, otherwise use the REPLAY_BACKEND_REV file
+  const rev = process.env.REPLAY_BACKEND_REV
+    ? process.env.REPLAY_BACKEND_REV
+    : fs.readFileSync("REPLAY_BACKEND_REV", "utf8").trim();
   updateRepo(backend, rev);
   // create a symlink to chromium in the backend checkout
   const chromiumRepoPath = process.cwd();
