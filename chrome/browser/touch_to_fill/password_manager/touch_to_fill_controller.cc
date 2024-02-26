@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view_factory.h"
@@ -45,10 +46,11 @@ std::vector<UiCredential> SortCredentials(
 }  // namespace
 
 TouchToFillController::TouchToFillController(
+    Profile* profile,
     base::WeakPtr<
         password_manager::KeyboardReplacingSurfaceVisibilityController>
         visibility_controller)
-    : visibility_controller_(visibility_controller) {}
+    : profile_(profile), visibility_controller_(visibility_controller) {}
 TouchToFillController::~TouchToFillController() = default;
 
 bool TouchToFillController::Show(
@@ -186,6 +188,10 @@ void TouchToFillController::OnDismiss() {
   // Unretained is safe here because TouchToFillController owns the delegate.
   ttf_delegate_->OnDismiss(base::BindOnce(
       &TouchToFillController::ActionCompleted, base::Unretained(this)));
+}
+
+Profile* TouchToFillController::GetProfile() {
+  return profile_;
 }
 
 gfx::NativeView TouchToFillController::GetNativeView() {

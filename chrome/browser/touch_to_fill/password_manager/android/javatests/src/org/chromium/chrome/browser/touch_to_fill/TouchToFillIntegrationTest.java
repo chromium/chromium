@@ -118,6 +118,7 @@ public class TouchToFillIntegrationTest {
                                     mActivityTestRule.getActivity().getWindowAndroid());
                     mTouchToFill.initialize(
                             mActivityTestRule.getActivity(),
+                            mActivityTestRule.getProfile(false),
                             mBottomSheetController,
                             mMockBridge,
                             mMockFocusHelper);

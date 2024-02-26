@@ -90,16 +90,13 @@ class TouchToFillMediator {
     private List<Credential> mCredentials;
     private boolean mManagePasskeysHidesPasswords;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
-    private final ImageFetcher mImageFetcher;
-
-    public TouchToFillMediator(ImageFetcher imageFetcher) {
-        mImageFetcher = imageFetcher;
-    }
+    private ImageFetcher mImageFetcher;
 
     void initialize(
             Context context,
             TouchToFillComponent.Delegate delegate,
             PropertyModel model,
+            ImageFetcher imageFetcher,
             LargeIconBridge largeIconBridge,
             @Px int desiredIconSize,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
@@ -107,6 +104,7 @@ class TouchToFillMediator {
         mContext = context;
         mDelegate = delegate;
         mModel = model;
+        mImageFetcher = imageFetcher;
         mLargeIconBridge = largeIconBridge;
         mDesiredIconSize = desiredIconSize;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;

@@ -13,6 +13,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/touch_to_fill/password_manager/android/internal/jni/TouchToFillBridge_jni.h"
 #include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/Credential_jni.h"
 #include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/WebauthnCredential_jni.h"
@@ -198,6 +200,7 @@ bool TouchToFillViewImpl::RecreateJavaObject() {
   }
   java_object_internal_ = Java_TouchToFillBridge_create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      ProfileAndroid::FromProfile(controller_->GetProfile())->GetJavaObject(),
       controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
   return !!java_object_internal_;
 }

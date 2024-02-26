@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
@@ -70,6 +71,7 @@ public interface TouchToFillComponent {
      */
     void initialize(
             Context context,
+            Profile profile,
             BottomSheetController sheetController,
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper);

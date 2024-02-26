@@ -155,7 +155,7 @@ public class TouchToFillControllerTest {
 
     private TestImageFetcher mImageFetcher = spy(new TestImageFetcher());
     private final Context mContext = ContextUtils.getApplicationContext();
-    private final TouchToFillMediator mMediator = new TouchToFillMediator(mImageFetcher);
+    private final TouchToFillMediator mMediator = new TouchToFillMediator();
     private final PropertyModel mModel =
             TouchToFillProperties.createDefaultModel(mMediator::onDismissed);
 
@@ -168,6 +168,7 @@ public class TouchToFillControllerTest {
                 mContext,
                 mMockDelegate,
                 mModel,
+                mImageFetcher,
                 mMockIconBridge,
                 DESIRED_FAVICON_SIZE,
                 mMockFocusHelper);

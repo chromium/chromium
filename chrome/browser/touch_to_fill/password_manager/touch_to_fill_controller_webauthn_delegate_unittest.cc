@@ -107,7 +107,7 @@ class TouchToFillControllerWebAuthnTest
     visibility_controller_ = std::make_unique<
         password_manager::MockKeyboardReplacingSurfaceVisibilityController>();
     touch_to_fill_controller_ = std::make_unique<TouchToFillController>(
-        visibility_controller_->AsWeakPtr());
+        profile(), visibility_controller_->AsWeakPtr());
     auto mock_view = std::make_unique<MockTouchToFillView>();
     mock_view_ = mock_view.get();
     touch_to_fill_controller().set_view(std::move(mock_view));
