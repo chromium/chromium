@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_factory.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
@@ -61,6 +62,7 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
@@ -301,6 +303,12 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 
   multitask_menu_nudge_delegate_ =
       std::make_unique<MultitaskMenuNudgeDelegateLacros>();
+
+  if (chromeos::features::IsMahiEnabled() &&
+      chromeos::LacrosService::Get()
+          ->IsAvailable<crosapi::mojom::MahiBrowserDelegate>()) {
+    mahi::MahiWebContentsManager::Get()->Initialize();
+  }
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

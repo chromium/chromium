@@ -5,7 +5,18 @@
 #ifndef CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_H_
 
+#include <memory>
+#include <string>
+
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/mahi/mahi_browser_client_impl.h"
+#include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
+#include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
+#include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
+#include "ui/accessibility/ax_tree_update.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -15,6 +26,10 @@ namespace mahi {
 
 class ScopedMahiWebContentsManagerForTesting;
 class MockMahiWebContentsManager;
+class FakeMahiWebContentsManager;
+
+using GetContentCallback =
+    base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
 
 // `MahiWebContentsManager` is the central class for mahi web contents in the
 // browser (ash and lacros) responsible for:
@@ -30,6 +45,8 @@ class MahiWebContentsManager {
 
   static MahiWebContentsManager* Get();
 
+  void Initialize();
+
   // Called when the focused tab changed.
   // Virtual so we can override in tests.
   virtual void OnFocusChanged(content::WebContents* web_contents);
@@ -38,17 +55,51 @@ class MahiWebContentsManager {
   // Virtual so we can override in tests.
   virtual void OnFocusedPageLoadComplete(content::WebContents* web_contents);
 
+  // Called when the browser context menu has been clicked by the user.
+  // `question` is used only if `ButtonType` is kQA.
+  void OnContextMenuClicked(int64_t display_id,
+                            ButtonType button_type,
+                            const std::u16string& question);
+
  private:
   friend base::NoDestructor<MahiWebContentsManager>;
   // Friends to access some test-only functions.
   friend class ScopedMahiWebContentsManagerForTesting;
   friend class MockMahiWebContentsManager;
+  friend class FakeMahiWebContentsManager;
 
   static void SetInstanceForTesting(MahiWebContentsManager* manager);
   static void ResetInstanceForTesting();
 
   MahiWebContentsManager();
   virtual ~MahiWebContentsManager();
+
+  void OnGetSnapshot(const base::UnguessableToken& page_id,
+                     const ui::AXTreeUpdate& snapshot);
+
+  void OnFinishDistillableCheck(const base::UnguessableToken& page_id,
+                                bool is_distillable);
+
+  // Callback function of the user request from the OS side to get the page
+  // content.
+  void RequestContent(const base::UnguessableToken& page_id,
+                      GetContentCallback callback);
+
+  // Should be called when user requests on the focused page. We should update
+  // the focused page state to the requested page state and reset the focused
+  // page state.
+  void FocusedPageGotRequest();
+
+  std::unique_ptr<MahiContentExtractionDelegate> content_extraction_delegate_;
+  std::unique_ptr<MahiBrowserClientImpl> client_;
+  bool is_initialized_ = false;
+
+  // The state of the web content which get focus in the browser.
+  WebContentState focused_web_content_state_{/*url=*/GURL(), /*title=*/u""};
+  // The state of the web content which is requested by the user.
+  WebContentState requested_web_content_state_{/*url=*/GURL(), /*title=*/u""};
+
+  base::WeakPtrFactory<MahiWebContentsManager> weak_pointer_factory_{this};
 };
 
 }  // namespace mahi
