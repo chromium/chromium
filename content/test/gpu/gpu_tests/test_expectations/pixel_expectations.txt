@@ -295,6 +295,19 @@ crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-qemu-x64 renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
+# Android Graphite/Dawn/Vulkan video isn't implemented yet.
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_AV1 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_Context_Loss_VP9 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_HEVC [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_180 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_270 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_FourColors_Rot_90 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_VP9 [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -353,6 +366,10 @@ crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
 # Pixel 6 failures.
 crbug.com/1286915 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/324003994 [ android-pixel-6 android-u angle-disabled no-passthrough ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+
+# Android Graphite/Dawn/Vulkan failures to be investigated.
+crbug.com/41494082 [ android android-pixel-6 passthrough graphite-enabled ] Pixel_Video_BackdropFilter [ Failure ]
+crbug.com/41494082 [ android android-pixel-6 passthrough graphite-enabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]

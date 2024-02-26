@@ -98,6 +98,11 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# Android Graphite/Dawn/Vulkan video isn't implemented yet.
+crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFrom2DCanvas [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
+crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################

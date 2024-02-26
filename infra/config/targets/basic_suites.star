@@ -2892,10 +2892,58 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_passthrough_graphite_telemetry_tests",
     tests = {
+        "expected_color_pixel_passthrough_graphite_test": targets.legacy_test_config(
+            args = [
+                "--dont-restore-color-profile-after-test",
+                "--test-machine-name",
+                "${buildername}",
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
+            ],
+            android_args = [
+                "--extra-browser-args=--force-online-connection-state-for-indicator",
+                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+            ],
+            chromeos_args = [
+                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+            ],
+            lacros_args = [
+                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+            ci_only = True,
+        ),
+        "pixel_skia_gold_passthrough_graphite_test": targets.legacy_test_config(
+            args = [
+                "--dont-restore-color-profile-after-test",
+                "--test-machine-name",
+                "${buildername}",
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+            ],
+            android_args = [
+                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                "--extra-browser-args=--force-online-connection-state-for-indicator",
+                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+            ],
+            chromeos_args = [
+                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+            ],
+            lacros_args = [
+                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+            ci_only = True,
+        ),
         "screenshot_sync_passthrough_graphite_tests": targets.legacy_test_config(
             args = [
                 "--dont-restore-color-profile-after-test",
-                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle  --enable-features=SkiaGraphite",
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
             ],
             android_args = [
                 # TODO(crbug.com/1093085): Remove this once we fix the tests.

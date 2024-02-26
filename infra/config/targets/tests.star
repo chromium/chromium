@@ -916,6 +916,15 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "expected_color_pixel_passthrough_graphite_test",
+    telemetry_test_name = "expected_color",
+    mixins = [
+        "skia_gold_test",
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "expected_color_pixel_passthrough_test",
     telemetry_test_name = "expected_color",
     mixins = [
@@ -1754,6 +1763,15 @@ targets.tests.gpu_telemetry_test(
 
 targets.tests.gpu_telemetry_test(
     name = "pixel_skia_gold_metal_passthrough_graphite_test",
+    telemetry_test_name = "pixel",
+    mixins = [
+        "skia_gold_test",
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "pixel_skia_gold_passthrough_graphite_test",
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",

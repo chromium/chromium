@@ -289,6 +289,53 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "expected_color_pixel_passthrough_graphite_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "UQ1A.240105.002",
+            "device_os_type": "userdebug",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "expiration": 21600,
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
+      {
+        "args": [
+          "expected_color",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
@@ -496,6 +543,54 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--jobs=1",
+          "--git-revision=${got_revision}"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "pixel_skia_gold_passthrough_graphite_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "UQ1A.240105.002",
+            "device_os_type": "userdebug",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "expiration": 21600,
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
+      {
+        "args": [
+          "pixel",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
@@ -590,7 +685,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle  --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test"
         ],
@@ -3577,6 +3672,52 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "expected_color_pixel_passthrough_graphite_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_type": "userdebug",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
+      {
+        "args": [
+          "expected_color",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
@@ -3779,6 +3920,53 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--jobs=1",
+          "--git-revision=${got_revision}"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "pixel_skia_gold_passthrough_graphite_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "device_os": "TP1A.220624.021",
+            "device_os_type": "userdebug",
+            "device_type": "oriole",
+            "os": "Android",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "idempotent": false,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test_android_chrome",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      },
+      {
+        "args": [
+          "pixel",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
@@ -3871,7 +4059,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle  --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite --force-online-connection-state-for-indicator",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test"
         ],
