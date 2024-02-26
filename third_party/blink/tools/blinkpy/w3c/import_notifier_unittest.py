@@ -350,20 +350,19 @@ class ImportNotifierTest(unittest.TestCase):
         # Only one directory has WPT-NOTIFY enabled.
         self.assertEqual(len(bugs), 1)
         # The formatting of imported commits and new failures are already tested.
-        self.assertEqual(set(bugs[0].body['cc']),
+        self.assertEqual(set(bugs[0].cc),
                          {'team-email@chromium.org', 'foolip@chromium.org'})
-        self.assertEqual(bugs[0].body['components'], ['999'])
+        self.assertEqual(bugs[0].component_id, '999')
         self.assertEqual(
-            bugs[0].body['summary'],
-            '[WPT] New failures introduced in external/wpt/foo by import https://crrev.com/c/12345'
-        )
+            bugs[0].title, '[WPT] New failures introduced in '
+            'external/wpt/foo by import https://crrev.com/c/12345')
         self.assertIn('crbug.com/12345 external/wpt/foo/baz.html [ Fail ]',
-                      bugs[0].body['description'].splitlines())
+                      bugs[0].description.splitlines())
         self.assertIn(
             'This bug was filed automatically due to a new WPT test failure '
             'for which you are marked an OWNER. If you do not want to receive '
             'these reports, please add "wpt { notify: NO }"  to the relevant '
-            'DIR_METADATA file.', bugs[0].body['description'].splitlines())
+            'DIR_METADATA file.', bugs[0].description.splitlines())
 
         self.notifier.file_bugs(bugs)
         self.buganizer_client.NewIssue.assert_called_once()
@@ -385,11 +384,10 @@ class ImportNotifierTest(unittest.TestCase):
                                return_value=dir_metadata):
             (bug, ) = self.notifier.create_bugs_from_new_failures(
                 'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
-            self.assertEqual(bug.body['cc'], [])
-            self.assertEqual(bug.body['components'], ['123'])
+            self.assertEqual(bug.cc, [])
+            self.assertEqual(bug.component_id, '123')
             self.assertEqual(
-                bug.body['summary'],
-                '[WPT] New failures introduced in external/wpt/foo '
+                bug.title, '[WPT] New failures introduced in external/wpt/foo '
                 'by import https://crrev.com/c/12345')
 
     def test_no_bugs_filed_in_dry_run(self):

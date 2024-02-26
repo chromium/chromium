@@ -13,7 +13,7 @@ from collections import defaultdict
 import logging
 import re
 import typing
-from typing import NamedTuple, Optional
+from typing import List, NamedTuple, Optional
 
 from blinkpy.common import path_finder
 from blinkpy.common.system.executive import ScriptError
@@ -24,8 +24,7 @@ from blinkpy.web_tests.models.testharness_results import (
 )
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
-from blinkpy.w3c.monorail import MonorailIssue
-from blinkpy.w3c.buganizer import BuganizerClient
+from blinkpy.w3c.buganizer import BuganizerClient, BuganizerIssue
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_results_processor import TestType
 
@@ -38,7 +37,6 @@ BUGANIZER_WPT_COMPONENT = '1456176'
 
 
 class ImportNotifier:
-
     def __init__(self,
                  host,
                  chromium_git,
@@ -197,8 +195,9 @@ class ImportNotifier:
                     TestFailure.from_expectation_line(test_name,
                                                       expectation_line))
 
-    def create_bugs_from_new_failures(self, wpt_revision_start,
-                                      wpt_revision_end, gerrit_url):
+    def create_bugs_from_new_failures(self, wpt_revision_start: str,
+                                      wpt_revision_end: str,
+                                      gerrit_url: str) -> List[BuganizerIssue]:
         """Files bug reports for new failures.
 
         Args:
@@ -209,7 +208,7 @@ class ImportNotifier:
             gerrit_url: Gerrit URL of the CL.
 
         Return:
-            A list of MonorailIssue objects that should be filed.
+            A list of issues that should be filed.
         """
         imported_commits = self.local_wpt.commits_in_range(
             wpt_revision_start, wpt_revision_end)
@@ -235,32 +234,21 @@ class ImportNotifier:
                 _log.warning(f'{owners_file!r} does not exist and '
                              'was not added to the CC list.')
 
-            # component could be None.
-            # TODO(crbug.com/40283194): A Buganizer bug can only have one
-            # component. Reshape `MonorailIssue` so that components is not a
-            # list.
-            component_ids = ([metadata.buganizer_public_component]
-                             if metadata.buganizer_public_component else None)
-
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
                         'List of new failures:\n'.format(
                             gerrit_url, directory))
             failure_list = ''.join(f'{failure.message}\n'
                                    for failure in failures)
-
             expectations_statement = (
                 '\nExpectations or baseline files [0] have been automatically '
                 'added for the failing results to keep the bots green. Please '
                 'investigate the new failures and triage as appropriate.\n')
-
             range_statement = '\nUpstream changes imported:\n'
             range_statement += WPT_GH_RANGE_URL_TEMPLATE.format(
                 wpt_revision_start, wpt_revision_end) + '\n'
             commit_list = self.format_commit_list(imported_commits,
                                                   full_directory)
-
             links_list = '\n[0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md\n'
-
             dir_metadata_path = self.host.filesystem.join(
                 directory, "DIR_METADATA")
             epilogue = (
@@ -268,18 +256,18 @@ class ImportNotifier:
                 'failure for which you are marked an OWNER. '
                 'If you do not want to receive these reports, please add '
                 '"wpt { notify: NO }"  to the relevant DIR_METADATA file.')
-
             description = (prologue + failure_list + expectations_statement +
                            range_statement + commit_list + links_list +
                            epilogue)
 
-            bug = MonorailIssue.new_chromium_issue(summary,
-                                                   description,
-                                                   cc,
-                                                   component_ids,
-                                                   labels=['Test-WebTest'])
-            _log.info(bug)
+            bug = BuganizerIssue(
+                title=summary,
+                description=description,
+                component_id=(metadata.buganizer_public_component
+                              or BUGANIZER_WPT_COMPONENT),
+                cc=cc)
             _log.info("WPT-NOTIFY enabled in %s; adding the bug to the pending list." % full_directory)
+            _log.info(f'{bug}')
             bugs.append(bug)
         return bugs
 
@@ -334,13 +322,13 @@ class ImportNotifier:
         return short_directory
 
     def file_bugs(self,
-                  bugs,
+                  bugs: List[BuganizerIssue],
                   dry_run: bool = False,
                   service_account_key_json=None):
-        """Files a list of bugs to Monorail.
+        """Files a list of bugs to Buganizer.
 
         Args:
-            bugs: A list of MonorailIssue objects.
+            bugs: A list of bugs to file.
             dry_run: A boolean, whether we are in dry run mode.
             service_account_key_json: Optional, see docs for main().
         """
@@ -354,29 +342,14 @@ class ImportNotifier:
         _log.info('Filing %d bugs in the pending list to Buganizer', len(bugs))
         for index, bug in enumerate(bugs, start=1):
             issue_link = None
-            if 'summary' not in bug.body:
-                _log.warning('failed to file bug')
-                _log.warning('summary missing from bug:')
-                _log.warning(bug)
-                continue
-            if 'description' not in bug.body:
-                _log.warning('failed to file bug')
-                _log.warning('description missing from bug:')
-                _log.warning(bug)
-                continue
-            title = bug.body['summary']
-            description = bug.body['description']
-            cc = bug.body.get('cc', [])
-            component_ids = bug.body['components']
-            component_id = (component_ids[0]
-                            if component_ids else BUGANIZER_WPT_COMPONENT)
             try:
+                # TODO(crbug.com/40283194): Pass `bug` to `NewIssue()` directly.
                 buganizer_res = self._buganizer_client.NewIssue(
-                    title=title,
-                    description=description,
-                    cc=cc,
-                    status="New",
-                    componentId=component_id)
+                    title=bug.title,
+                    description=bug.description,
+                    cc=bug.cc,
+                    status=bug.status.name,
+                    componentId=bug.component_id)
                 issue_link = f'crbug.com/{buganizer_res["issue_id"]}'
             except Exception as e:
                 _log.warning('buganizer api call to new issue failed')

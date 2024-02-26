@@ -2,8 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from http import client as http_client
+import enum
+import functools
 import logging
+import textwrap
+from dataclasses import dataclass, field
+from http import client as http_client
+from typing import List, Optional
 
 import google.auth
 import google_auth_httplib2
@@ -20,10 +25,69 @@ MAX_DISCOVERY_RETRIES = 3
 MAX_REQUEST_RETRIES = 5
 
 
+class Status(enum.Enum):
+    NEW = enum.auto()
+    ASSIGNED = enum.auto()
+    ACCEPTED = enum.auto()
+    FIXED = enum.auto()
+    VERIFIED = enum.auto()
+    NOT_REPRODUCIBLE = enum.auto()
+    INTENDED_BEHAVIOR = enum.auto()
+    OBSOLETE = enum.auto()
+    INFEASIBLE = enum.auto()
+    DUPLICATE = enum.auto()
+
+
+class Priority(enum.IntEnum):
+    P0 = 0
+    P1 = 1
+    P2 = 2
+    P3 = 3
+    P4 = 4
+
+
+class Severity(enum.IntEnum):
+    S0 = 0
+    S1 = 1
+    S2 = 2
+    S3 = 3
+    S4 = 4
+
+
+@dataclass(frozen=True)
+class BuganizerIssue:
+    """A (simplified) representation Buganizer's `Issue` message."""
+    title: str
+    description: str
+    component_id: str
+    issue_id: Optional[int] = None
+    cc: List[str] = field(default_factory=list)
+    status: Status = Status.NEW
+    # `priority` and `severity` are `IntEnum`s to create orderings.
+    priority: Priority = Priority.P3
+    severity: Severity = Severity.S4
+
+    def __str__(self) -> str:
+        link = f' {self.link}' if self.link else ''
+        formatted_issue = textwrap.dedent(f"""\
+            Issue{link}: {self.title}
+              Status: {self.status.name}
+              Component ID: {self.component_id}
+              CC: {", ".join(self.cc) or "(none)"}
+              Priority: {self.priority.name}
+              Severity: {self.severity.name}
+              Description:
+            """)
+        formatted_issue += textwrap.indent(self.description, ' ' * 4)
+        return f'{formatted_issue.rstrip()}\n'
+
+    @functools.cached_property
+    def link(self) -> Optional[str]:
+        return f'https://crbug.com/{self.issue_id}' if self.issue_id else None
+
+
 class BuganizerClient:
-    """Testing call buganizer api"""
     def __init__(self):
-        """Initializes an object for communicate to the Buganizer."""
         http = ServiceAccountHttp(BUGANIZER_SCOPES)
         http.timeout = 30
 
