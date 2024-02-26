@@ -94,6 +94,14 @@ on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
   base::UmaHistogramCounts1000(
       "OnDeviceModel.BenchmarkEstimatedTokensPerSecond.Output", output_speed);
 
+  // Integrated GPUs can use at least 1/2 of system RAM as VRAM. Mac doesn't
+  // allow directly querying VRAM, and instead returns the "recommended" maximum
+  // VRAM to use, which may change depending on system load. This ensures that
+  // for integrated GPUs we have a more reasonable value in that case.
+  if (is_integrated_gpu) {
+    device_heap_mb =
+        std::max(static_cast<uint64_t>(system_ram / 2), device_heap_mb);
+  }
   // Devices with low RAM are considered very low perf.
   if (device_heap_mb < static_cast<uint64_t>(kLowRAMThreshold.Get())) {
     LogVeryLowReason(VeryLowPerformanceReason::kLowRAM);
