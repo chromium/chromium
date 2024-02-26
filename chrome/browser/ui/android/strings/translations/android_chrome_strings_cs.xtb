@@ -632,6 +632,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="4461614516424362539">Když jiné zařízení propojíte pomocí QR kódu, můžete tento telefon používat jako bezpečnostní klíč. Pokud ho odstraníte, k opětovnému propojení bude potřeba znovu naskenovat QR kód.</translation>
 <translation id="4478161224666880173">Na tomto webu můžete použít účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Pokud chcete pokračovat, přihlaste se k účtu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalace modulu <ph name="MODULE" /> pro Chrome…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Záložka byla uložena do „<ph name="FOLDER_NAME" />“. Je uložena pouze na tomto zařízení.}few{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“. Jsou uloženy pouze na tomto zařízení.}many{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“. Jsou uloženy pouze na tomto zařízení.}other{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“. Jsou uloženy pouze na tomto zařízení.}}</translation>
 <translation id="4484496141267039529">Nejste připojeni. Zkuste to později.</translation>
 <translation id="4487967297491345095">Všechna data aplikace Chrome budou trvale smazána. Zahrnuje to soubory, nastavení, účty, databáze apod.</translation>
 <translation id="4491323382106587961">Vyberte účet. Momentálně vybráno: <ph name="EMAIL" />.</translation>
@@ -852,6 +853,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="557018954714092179">Vytvořit novou složku</translation>
 <translation id="5578795271662203820">Hledat obrázek pomocí <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK1" />nastavení<ph name="END_LINK1" />.</translation>
+<translation id="558429399979870715">Propojte Chrome a další služby Google, pokud chcete, aby mezi sebou sdílely data</translation>
 <translation id="5590372121997663538">Zapamatovat si tento počítač</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5599455543593328020">Anonymní režim</translation>
@@ -881,6 +883,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="571930967925877633">Vaše záložky, historie a další data v Chromu se už nebudou synchronizovat do vašeho účtu Google</translation>
 <translation id="572328651809341494">Nedávno použité karty</translation>
 <translation id="5726692708398506830">Zvětšit veškerý obsah stránky</translation>
+<translation id="5728072125198221967">Propojené služby Google</translation>
 <translation id="5744751019568455640">Tohle jsou hlasy, které si můžete vybrat ke čtení webových stránek. Pokud se vám tento hlas líbí a chcete, aby byl používán i nadále, klepněte na jeho název.</translation>
 <translation id="5748802427693696783">Přepnuto na standardní karty</translation>
 <translation id="5749068826913805084">Aby bylo možné stahovat soubory, Chrome potřebuje přístup k úložišti.</translation>
@@ -1165,6 +1168,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7063006564040364415">K synchronizačnímu serveru se nelze připojit.</translation>
 <translation id="7071521146534760487">Spravovat účet</translation>
 <translation id="707155805709242880">Níže zvolte typy dat, která chcete synchronizovat</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Záložka byla uložena do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}few{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}many{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}other{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD karta</translation>
 <translation id="7080806333218412752">Odesílá adresy URL ke kontrole ve funkci Bezpečné prohlížení. Odesílá také malý vzorek stránek, stažených souborů, rozšíření, aktivity a informací o systému a pomáhá tak odhalovat nové hrozby. Když jste přihlášeni k účtu Google, jsou s ním tato data dočasně spojena, abychom vás mohli v aplikacích Google chránit.</translation>
 <translation id="7085332316435785646">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii Chromu</translation>
@@ -1432,6 +1436,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8310344678080805313">Standardní karty</translation>
 <translation id="831192587911042850">Tento web bude přidán na seznam sledovaných.</translation>
 <translation id="8333340769932050274">Témata, která nechcete sdílet s weby, můžete zablokovat. Chrome také automaticky maže témata starší než 4 týdny. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Zahrňte historii Chromu, pokud ji chcete přidat do Aktivity na webu a v aplikacích ve svém účtu Google</translation>
 <translation id="834313815369870491">Weby nikdy nepřekládat</translation>
 <translation id="8348430946834215779">Používejte HTTPS, kdykoli je to možné, a nechte se upozornit, než načtete web, který tento protokol nepodporuje</translation>
 <translation id="8354977102499939946">Rychle vyhledávat hlasem. Tuto zkratku můžete upravit v Nastavení.</translation>
@@ -1577,6 +1582,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="9081543426177426948">V anonymním režimu se navštívené weby neukládají</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9086455579313502267">Nelze získat přístup k síti.</translation>
+<translation id="909756639352028172">Pokud chcete získat maximálně přizpůsobené prostředí, zahrňte Chrome do Aktivity na webu a v aplikacích a do propojených služeb Google</translation>
 <translation id="9099220545925418560">Na základě vaší historie prohlížení. Toto nastavení je vypnuté.</translation>
 <translation id="9100610230175265781">Je vyžadována heslová fráze</translation>
 <translation id="9101137867221042551">Správa</translation>

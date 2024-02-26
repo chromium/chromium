@@ -2427,7 +2427,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2778471504622896352">Voeg afstandprogramme by die Chrome-bedryfstelsellanseerder</translation>
 <translation id="2779728796406650689">Dit laat Google Assistent toe om gepasmaakte antwoorde te verskaf wanneer jy vrae vra.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Uitbreidings word op hierdie werf toegelaat</translation>
 <translation id="2782104745158847185">Kon nie Linux-program installeer nie</translation>
 <translation id="2783024642731649028">1 item in jou <ph name="DISCOUNT_TEXT" />-mandjie van <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> af, is <ph name="RELATIVE_TIME" /> bekyk</translation>
 <translation id="2783298271312924866">Afgelaai</translation>
@@ -5291,7 +5290,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5026874946691314267">Moet dit nie weer wys nie</translation>
 <translation id="5027550639139316293">E-possertifikaat</translation>
 <translation id="5027562294707732951">Voeg uitbreiding by</translation>
-<translation id="5028445315206872221">Uitbreidings word op hierdie werf geblokkeer</translation>
 <translation id="5029287942302939687">Jou wagwoord is gestel</translation>
 <translation id="5029873138381728058">Kon nie VM'e nagaan nie</translation>
 <translation id="503155457707535043">Programme laai nou af</translation>
@@ -7273,6 +7271,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6596916244504302242">Herlaai hierdie bladsy om jou opgedateerde uitbreidinginstellings op hierdie webwerf toe te pas</translation>
 <translation id="6597017209724497268">Voorbeelde</translation>
+<translation id="6597324406048772521">Uitbreidings word nie op hierdie werf toegelaat nie</translation>
 <translation id="6597331566371766302">Jou administrateur het die volgende uitbreidings geblokkeer:</translation>
 <translation id="659894938503552850">nuutste</translation>
 <translation id="6601262427770154296">Bestuur gebruikerwoordeboeke</translation>

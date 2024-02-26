@@ -2412,7 +2412,6 @@
 <translation id="2778471504622896352">Добавление приложений с удаленным доступом на панель запуска Chrome OS</translation>
 <translation id="2779728796406650689">Это позволяет Google Ассистенту давать персонализированные ответы на ваши вопросы.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Расширения разрешены на этом сайте</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
 <translation id="2783024642731649028">1 товар в вашей корзине, к которому относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Сохранено</translation>
@@ -3820,7 +3819,7 @@
 <translation id="3875815154304214043">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Копировать материалы этого сайта запрещено</translation>
-<translation id="3879748587602334249">Диспетчер загрузки</translation>
+<translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3880513902716032002">Некоторые страницы, которые вы посещаете, загружаются заранее</translation>
 <translation id="3883482240657453056">Получайте скидки в магазинах "<ph name="MERCHANT_NAME_1" />" и "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -5270,7 +5269,6 @@
 <translation id="5026874946691314267">Больше не показывать это сообщение</translation>
 <translation id="5027550639139316293">Сертификат электронной почты</translation>
 <translation id="5027562294707732951">Установить расширение</translation>
-<translation id="5028445315206872221">Расширения заблокированы на этом сайте</translation>
 <translation id="5029287942302939687">Пароль установлен</translation>
 <translation id="5029873138381728058">Не удалось проверить виртуальные машины.</translation>
 <translation id="503155457707535043">Скачивание приложений</translation>
@@ -7254,6 +7252,7 @@
 <translation id="6596816719288285829">IP-адрес</translation>
 <translation id="6596916244504302242">Чтобы применить обновленные настройки расширения к текущему сайту, перезагрузите страницу.</translation>
 <translation id="6597017209724497268">Примеры</translation>
+<translation id="6597324406048772521">Расширения на этом сайте запрещены</translation>
 <translation id="6597331566371766302">Администратор заблокировал следующие расширения:</translation>
 <translation id="659894938503552850">сначала новые</translation>
 <translation id="6601262427770154296">Управление словарями пользователя</translation>

@@ -2409,7 +2409,6 @@
 <translation id="2778471504622896352">ChromeOS लन्चरमा रिमोट एपहरू हाल्नुहोस्</translation>
 <translation id="2779728796406650689">तपाईंले प्रश्नहरू सोध्दा यसले Google एसिस्टेन्टलाई आवश्यकताअनुसारका जवाफ दिने अनुमति दिन्छ।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">यो साइटमा एक्स्टेन्सनहरूलाई अनुमति दिइएको छ</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2783024642731649028">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएको <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> को १ वस्तु <ph name="RELATIVE_TIME" /> हेरिए</translation>
 <translation id="2783298271312924866">डाउनलोड गरिएको</translation>
@@ -5272,7 +5271,6 @@
 <translation id="5026874946691314267">यो पुनः नदेखाउनुहोस्</translation>
 <translation id="5027550639139316293">इमेल प्रमाणपत्र</translation>
 <translation id="5027562294707732951">विस्तार थप्नुहोस्</translation>
-<translation id="5028445315206872221">यो साइटमा एक्स्टेन्सनहरू ब्लक गरिएका छन्</translation>
 <translation id="5029287942302939687">तपाईंको पासवर्ड सेट भएको छ</translation>
 <translation id="5029873138381728058">VM हरू जाँच गर्न सकिएन</translation>
 <translation id="503155457707535043">एपहरू डाउनलोड गर्दै</translation>
@@ -7252,6 +7250,7 @@
 <translation id="6596816719288285829">IP ​​ठेगाना</translation>
 <translation id="6596916244504302242">तपाईंले परिवर्तन गरेका एक्स्टेन्सनसम्बन्धी सेटिङ यो साइटमा लागू गर्न यो पेज रिलोड गर्नुहोस्</translation>
 <translation id="6597017209724497268">नमूनाहरू</translation>
+<translation id="6597324406048772521">यो साइटमा प्रयोग गर्न अनुमति नदिइएका एक्स्टेन्सनहरू</translation>
 <translation id="6597331566371766302">तपाईंका एड्मिनले निम्न एक्स्टेन्सनहरू ब्लक गरेका छन्:</translation>
 <translation id="659894938503552850">सबैभन्दा नयाँ</translation>
 <translation id="6601262427770154296">प्रयोगकर्ताले तयार पारेको शब्दकोश व्यवस्थापन गर्नुहोस्</translation>

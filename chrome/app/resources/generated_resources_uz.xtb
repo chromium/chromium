@@ -2414,7 +2414,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2778471504622896352">Ilovalarni masofadan ChromeOS ishga tushirgichiga qoʻshish</translation>
 <translation id="2779728796406650689">Bu Google Assistentga savollar berganingizda batafsil javoblarni taqdim etish imkonini beradi.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Bu saytda kengaytmalarga ruxsat berilgan</translation>
 <translation id="2782104745158847185">Linux ilovasini o‘rnatishda xatolik yuz berdi</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> xarid savatchasida 1 ta mahsulot (<ph name="DISCOUNT_TEXT" />) bor, koʻrilgan vaqti: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Yuklab olingan</translation>
@@ -5278,7 +5277,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5026874946691314267">Bu xabar boshqa ko‘rsatilmasin</translation>
 <translation id="5027550639139316293">Email sertifikati</translation>
 <translation id="5027562294707732951">Kengaytmani o‘rnatish</translation>
-<translation id="5028445315206872221">Bu saytda kengaytmalar taqiqlangan</translation>
 <translation id="5029287942302939687">Parol sozlandi</translation>
 <translation id="5029873138381728058">VM tekshirilmadi</translation>
 <translation id="503155457707535043">Ilovalar yuklab olinishi</translation>
@@ -7259,6 +7257,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6596816719288285829">IP manzil</translation>
 <translation id="6596916244504302242">Bu saytda yangilangan kengaytma sozlamalarini tatbiq qilish uchun ushbu sahifani qayta yuklang</translation>
 <translation id="6597017209724497268">Namunalar</translation>
+<translation id="6597324406048772521">Bu saytda kengaytmalarga ruxsat berilmagan</translation>
 <translation id="6597331566371766302">Quyidagi kengaytmalar administrator tomonidan bloklandi:</translation>
 <translation id="659894938503552850">eng yangi</translation>
 <translation id="6601262427770154296">Foydalanuvchi lugʻatlarini boshqarish</translation>

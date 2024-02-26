@@ -238,6 +238,7 @@
 <translation id="2252674110805316998">Веб-претрага</translation>
 <translation id="2252749852083403809">Чува се на Диску за <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Организација вам дозвољава да се пријавите само помоћу одређених налога.</translation>
+<translation id="2257594476751932246">Персонализоване вести</translation>
 <translation id="2258326562203545455">{count,plural, =1{Можете да сачувате обележивач на Google налогу, {email}.}one{Можете да сачувате обележиваче на Google налогу, {email}.}few{Можете да сачувате обележиваче на Google налогу, {email}.}other{Можете да сачувате обележиваче на Google налогу, {email}.}}</translation>
 <translation id="225943865679747347">Кôд грешке: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Додај налог</translation>

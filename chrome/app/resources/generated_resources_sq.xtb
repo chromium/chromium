@@ -2410,7 +2410,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2778471504622896352">Shto aplikacione në distancë te nisësi i ChromeOS</translation>
 <translation id="2779728796406650689">Kjo lejon që "Asistenti i Google" të ofrojë përgjigje të personalizuara kur ti bën pyetje.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Shtesat nuk lejohen në këtë sajt</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
 <translation id="2783024642731649028">1 artikull në karrocën tënde me <ph name="DISCOUNT_TEXT" /> nga <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, shikuar <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">U shkarkua</translation>
@@ -5273,7 +5272,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5026874946691314267">Mos e trego më këtë</translation>
 <translation id="5027550639139316293">Dërgo certifikatën me mail</translation>
 <translation id="5027562294707732951">Shto një shtesë</translation>
-<translation id="5028445315206872221">Shtesat bllokohen në këtë sajt</translation>
 <translation id="5029287942302939687">Fjalëkalimi yt është caktuar</translation>
 <translation id="5029873138381728058">Nuk mund të kontrolloheshin VM-të</translation>
 <translation id="503155457707535043">Po shkarkon aplikacionet</translation>
@@ -7254,6 +7252,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6596816719288285829">Adresa e IP-së</translation>
 <translation id="6596916244504302242">Ringarko këtë faqe për të zbatuar cilësimet e përditësuara të shtesës në këtë sajt</translation>
 <translation id="6597017209724497268">Shembuj</translation>
+<translation id="6597324406048772521">Shtesat nuk lejohen në këtë sajt</translation>
 <translation id="6597331566371766302">Shtesat e mëposhtme janë bllokuar nga administratori yt:</translation>
 <translation id="659894938503552850">më e reja</translation>
 <translation id="6601262427770154296">Menaxho fjalorët e përdoruesit</translation>

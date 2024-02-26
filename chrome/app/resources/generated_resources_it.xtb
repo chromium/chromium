@@ -2412,7 +2412,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2778471504622896352">Aggiunta di app remote ad Avvio app di ChromeOS</translation>
 <translation id="2779728796406650689">In questo modo l'Assistente Google potrà fornire risposte personalizzate alle tue domande.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Le estensioni sono consentite su questo sito</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
 <translation id="2783024642731649028">1 articolo nel carrello <ph name="DISCOUNT_TEXT" /> da <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visualizzato <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Scaricato</translation>
@@ -5275,7 +5274,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5026874946691314267">Non visualizzare più</translation>
 <translation id="5027550639139316293">Certificato email</translation>
 <translation id="5027562294707732951">Aggiungi estensione</translation>
-<translation id="5028445315206872221">Le estensioni sono bloccate su questo sito</translation>
 <translation id="5029287942302939687">La tua password è stata impostata</translation>
 <translation id="5029873138381728058">Impossibile controllare le VM</translation>
 <translation id="503155457707535043">Download delle app in corso</translation>
@@ -7253,6 +7251,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6596916244504302242">Ricarica la pagina per applicare le impostazioni delle estensioni aggiornate a questo sito</translation>
 <translation id="6597017209724497268">Esempi</translation>
+<translation id="6597324406048772521">Estensioni non consentite su questo sito</translation>
 <translation id="6597331566371766302">Le seguenti estensioni sono state bloccate dall'amministratore:</translation>
 <translation id="659894938503552850">più recenti</translation>
 <translation id="6601262427770154296">Gestisci i dizionari utente</translation>

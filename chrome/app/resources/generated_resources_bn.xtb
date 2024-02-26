@@ -2428,7 +2428,6 @@
 <translation id="2778471504622896352">ChromeOS লঞ্চারে রিমোট অ্যাপ যোগ করুন</translation>
 <translation id="2779728796406650689">আপনি কোনও প্রশ্ন জিজ্ঞাসা করলে এটির সাহায্যে Google Assistant আরও ভালোভাবে উত্তর দিতে পারে।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">এই সাইটে এক্সটেনশনের অনুমতি দেওয়া আছে</translation>
 <translation id="2782104745158847185">Linux অ্যাপ ইনস্টল করার সময় সমস্যা</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" /> থেকে আপনার কার্টে থাকা ১টি আইটেমে <ph name="DISCOUNT_TEXT" /> আছে, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> দেখা হয়েছে</translation>
 <translation id="2783298271312924866">ডাউনলোড হয়েছে</translation>
@@ -5293,7 +5292,6 @@
 <translation id="5026874946691314267">এটিকে আবার দেখাবেন না</translation>
 <translation id="5027550639139316293">ইমেল সার্টিফিকেট</translation>
 <translation id="5027562294707732951">এক্সটেনশন যোগ করুন</translation>
-<translation id="5028445315206872221">এই সাইটে এক্সটেনশন ব্লক করা আছে</translation>
 <translation id="5029287942302939687">আপনার পাসওয়ার্ড সেট করা হয়েছে</translation>
 <translation id="5029873138381728058">VM চেক করা যায়নি</translation>
 <translation id="503155457707535043">অ্যাপ ডাউনলোড করা হচ্ছে</translation>
@@ -7278,6 +7276,7 @@
 <translation id="6596816719288285829">আইপি অ্যাড্রেস</translation>
 <translation id="6596916244504302242">এই পৃষ্ঠাটি রিলোড করুন যাতে এই সাইটে আপনার আপডেট করা এক্সটেনশন সেটিংস প্রয়োগ করা যায়</translation>
 <translation id="6597017209724497268">নমুনাগুলি</translation>
+<translation id="6597324406048772521">এই সাইটে এক্সটেনশনের অনুমতি নেই</translation>
 <translation id="6597331566371766302">নিচের এক্সটেনশন আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে ব্লক করা হয়েছে:</translation>
 <translation id="659894938503552850">সবচেয়ে নতুন</translation>
 <translation id="6601262427770154296">ব্যবহারকারীর অভিধান ম্যানেজ করুন</translation>

@@ -2409,7 +2409,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2778471504622896352">Remote-Apps zum Chrome OS-Launcher hinzufügen</translation>
 <translation id="2779728796406650689">Durch diese Option kann Google Assistant relevantere Antworten auf deine Fragen geben.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Erweiterungen sind auf dieser Website erlaubt</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
 <translation id="2783024642731649028">1 Artikel in deinem Einkaufswagen mit <ph name="DISCOUNT_TEXT" /> von <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> angesehen</translation>
 <translation id="2783298271312924866">Heruntergeladen</translation>
@@ -5272,7 +5271,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5026874946691314267">Nicht mehr anzeigen</translation>
 <translation id="5027550639139316293">E-Mail-Zertifikat</translation>
 <translation id="5027562294707732951">Erweiterung hinzufügen</translation>
-<translation id="5028445315206872221">Erweiterungen sind auf dieser Website blockiert</translation>
 <translation id="5029287942302939687">Dein Passwort ist festgelegt</translation>
 <translation id="5029873138381728058">Fehler beim Überprüfen von VMs</translation>
 <translation id="503155457707535043">Apps werden heruntergeladen</translation>
@@ -7250,6 +7248,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6596916244504302242">Diese Seite aktualisieren, um die neuen Erweiterungseinstellungen auf dieser Website zu übernehmen</translation>
 <translation id="6597017209724497268">Proben</translation>
+<translation id="6597324406048772521">Auf dieser Website nicht zulässige Erweiterungen</translation>
 <translation id="6597331566371766302">Die folgenden Erweiterungen wurden von deinem Administrator blockiert:</translation>
 <translation id="659894938503552850">neuestem</translation>
 <translation id="6601262427770154296">Meine Wörterbücher verwalten</translation>

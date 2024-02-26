@@ -2427,7 +2427,6 @@
 <translation id="2778471504622896352">ChromeOS தொடக்கியில் ரிமோட் ஆப்ஸைச் சேருங்கள்</translation>
 <translation id="2779728796406650689">நீங்கள் கேள்விகளைக் கேட்கும்போது பொருத்தமான பதில்களை வழங்குவதற்கு இது Google Assistantடை அனுமதிக்கும்.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">இந்தத் தளத்தில் நீட்டிப்புகள் அனுமதிக்கப்பட்டுள்ளன</translation>
 <translation id="2782104745158847185">ஒரு Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது</translation>
 <translation id="2783024642731649028">உங்கள் கார்ட்டில் உள்ள ஒரு தயாரிப்பு <ph name="MERCHANT_NAME" /> இல் <ph name="DISCOUNT_TEXT" /> கொண்டுள்ளது, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> பார்த்துள்ளீர்கள்</translation>
 <translation id="2783298271312924866">பதிவிறக்கப்பட்டது</translation>
@@ -5291,7 +5290,6 @@
 <translation id="5026874946691314267">இதை மீண்டும் காட்டாதே</translation>
 <translation id="5027550639139316293">மின்னஞ்சல் சான்றிதழ்</translation>
 <translation id="5027562294707732951">நீட்டிப்பைச் சேர்</translation>
-<translation id="5028445315206872221">இந்தத் தளத்தில் நீட்டிப்புகள் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="5029287942302939687">கடவுச்சொல் அமைக்கப்பட்டது</translation>
 <translation id="5029873138381728058">VMகளைச் சரிபார்க்க முடியவில்லை</translation>
 <translation id="503155457707535043">ஆப்ஸ் பதிவிறக்கப்படுகின்றன</translation>
@@ -7273,6 +7271,7 @@
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6596916244504302242">புதுப்பிக்கப்பட்ட நீட்டிப்பு அமைப்புகளை இந்தத் தளத்தில் பயன்படுத்த, இந்தப் பக்கத்தை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="6597017209724497268">மாதிரிகள்</translation>
+<translation id="6597324406048772521">இந்தத் தளத்தில் நீட்டிப்புகள் அனுமதிக்கப்படாது</translation>
 <translation id="6597331566371766302">பின்வரும் நீட்டிப்புகள் உங்கள் நிர்வாகியால் தடுக்கப்பட்டுள்ளன:</translation>
 <translation id="659894938503552850">புதியவை முதலில்</translation>
 <translation id="6601262427770154296">பயனர் அகராதிகளை நிர்வகித்தல்</translation>

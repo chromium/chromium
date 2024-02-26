@@ -2406,7 +2406,6 @@
 <translation id="2778471504622896352">ChromeOS ランチャーにリモートアプリを追加する</translation>
 <translation id="2779728796406650689">質問すると、Google アシスタントからカスタマイズされた回答が提供されるようになります。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">このサイトでは拡張機能が許可されています</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
 <translation id="2783024642731649028">カート内の 1 件の商品が <ph name="MERCHANT_NAME" />（<ph name="MERCHANT_DOMAIN" />）で <ph name="DISCOUNT_TEXT" />（<ph name="RELATIVE_TIME" /> に閲覧）</translation>
 <translation id="2783298271312924866">ダウンロード済み</translation>
@@ -5267,7 +5266,6 @@
 <translation id="5026874946691314267">今後このメッセージを表示しない</translation>
 <translation id="5027550639139316293">メール証明書</translation>
 <translation id="5027562294707732951">拡張機能を追加</translation>
-<translation id="5028445315206872221">このサイトでは拡張機能がブロックされています</translation>
 <translation id="5029287942302939687">パスワードを設定しました</translation>
 <translation id="5029873138381728058">VM を確認できませんでした</translation>
 <translation id="503155457707535043">アプリをダウンロード中</translation>
@@ -7245,6 +7243,7 @@
 <translation id="6596816719288285829">IP アドレス</translation>
 <translation id="6596916244504302242">更新した拡張機能の設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="6597017209724497268">サンプル</translation>
+<translation id="6597324406048772521">拡張機能はこのサイトで許可されていません</translation>
 <translation id="6597331566371766302">次の拡張機能は管理者によってブロックされました。</translation>
 <translation id="659894938503552850">新しい順</translation>
 <translation id="6601262427770154296">単語リストの管理</translation>

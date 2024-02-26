@@ -2428,7 +2428,6 @@
 <translation id="2778471504622896352">Додајте далечински апликации на стартерот на ChromeOS</translation>
 <translation id="2779728796406650689">Ова овозможува „Помошникот на Google“ да дава приспособени одговори кога поставувате прашања.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Екстензиите се дозволени на овој сајт</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
 <translation id="2783024642731649028">1 ставка во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Преземено</translation>
@@ -5292,7 +5291,6 @@
 <translation id="5026874946691314267">Не покажувај го ова повторно</translation>
 <translation id="5027550639139316293">Сертификат за е-пошта</translation>
 <translation id="5027562294707732951">Инсталирај екстензија</translation>
-<translation id="5028445315206872221">Екстензиите се блокирани на овој сајт</translation>
 <translation id="5029287942302939687">Лозинката е поставена</translation>
 <translation id="5029873138381728058">Не успеаја да се проверат виртуелните машини</translation>
 <translation id="503155457707535043">Апликациите се преземаат</translation>
@@ -7275,6 +7273,7 @@
 <translation id="6596816719288285829">IP-адреса</translation>
 <translation id="6596916244504302242">Вчитајте ја страницава повторно за да се применат ажурираните поставки за екстензии на сајтов</translation>
 <translation id="6597017209724497268">Примероци</translation>
+<translation id="6597324406048772521">Екстензиите не се дозволени на сајтов</translation>
 <translation id="6597331566371766302">Следниве екстензии се блокирани од администраторот:</translation>
 <translation id="659894938503552850">најнов</translation>
 <translation id="6601262427770154296">Управувајте со речниците на корисникот</translation>

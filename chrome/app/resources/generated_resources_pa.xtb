@@ -117,6 +117,7 @@
 <translation id="1082214733466244292">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਡੀਵਾਈਸ ਲਈ ਕੁਝ ਪ੍ਰਕਾਰਜਾਤਮਕਤਾ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ਤੁਹਾਡੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਦੇ ਅਸਲੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਰੂਪ 'ਤੇ ਰੀਸਟੋਰ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ। ਇਹ ਤੁਹਾਡਾ ਹੋਮ ਪੰਨਾ, ਨਵਾਂ ਟੈਬ ਪੰਨਾ ਅਤੇ ਖੋਜ ਇੰਜਣ ਰੀਸੈੱਟ ਕਰੇਗਾ, ਤੁਹਾਡੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰੇਗਾ ਅਤੇ ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਅਣਪਿੰਨ ਕਰੇਗਾ। ਇਹ ਹੋਰ ਅਸਥਾਈ ਅਤੇ ਕੈਸ਼ੇ ਕੀਤਾ ਡਾਟਾ ਵੀ ਹਟਾ ਦੇਵੇਗਾ, ਜਿਵੇਂ ਕੁਕੀਜ਼, ਸਮੱਗਰੀ ਅਤੇ ਸਾਈਟ ਡਾਟਾ।</translation>
 <translation id="1082725763867769612">ਆਫ਼ਲਾਈਨ ਫ਼ਾਈਲਾਂ</translation>
+<translation id="1084026333130513768">ਰੱਖਿਅਤ ਕਰੋ, ਸਾਂਝਾ ਕਰੋ ਅਤੇ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="1084096383128641877">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਹਟਾਉਣ ਨਾਲ <ph name="DOMAIN" /> 'ਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ। ਇਸਨੂੰ ਹੋਰਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲੋ ਜਾਂ <ph name="DOMAIN_LINK" /> 'ਤੇ ਆਪਣਾ ਖਾਤਾ ਮਿਟਾਓ।</translation>
 <translation id="1084288067399862432">ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਕ ਬਦਲਿਆ ਗਿਆ।
 
@@ -1242,6 +1243,7 @@
 <translation id="1910721550319506122">ਸੁਆਗਤ ਹੈ!</translation>
 <translation id="1910736334623230603">ਇੱਕ ਤੋਂ ਵੱਧ ਚਿੱਤਰ ਖੋਜੇ ਨਹੀਂ ਜਾ ਸਕਦੇ। ਇੱਕ ਵਾਰ ਵਿੱਚ ਇੱਕ ਚਿੱਤਰ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> ਸਿਰਫ਼ ਸਵੈਚਲਿਤ ਜਾਂਚ ਲਈ ਹੈ। ਨਿਯਮਿਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਲਈ, Chrome ਦਾ ਕੋਈ ਮਿਆਰੀ ਵਰਜਨ ਵਰਤੋ ਜੋ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਹੋ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="1913749768968678106">ਕਾਸਟ ਕਰੋ, ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1915073950770830761">ਕੈਨਰੀ</translation>
 <translation id="1915307458270490472">ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="1915734383465415025">ਸਟੋਰ ਨੰਬਰ</translation>
@@ -1343,6 +1345,7 @@
 <translation id="197989455406964291">KDC ਵਿੱਚ ਇਨਕ੍ਰਿਪਸ਼ਨ ਕਿਸਮ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ</translation>
 <translation id="1981434377190976112">ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਸਾਰਾ ਡਾਟਾ ਪੜ੍ਹੋ</translation>
 <translation id="1984417487208496350">ਕੋਈ ਸੁਰੱਖਿਆ ਨਹੀਂ (ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ)</translation>
+<translation id="1986836014090708999">ਅਡਵਾਂਸ ਟਿਕਾਣਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1987317783729300807">ਖਾਤੇ</translation>
 <translation id="1987574314042117472">ਪ੍ਰਸਿੱਧ ਐਪਾਂ ਨੂੰ ਚੁਣੋ ਅਤੇ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="1988259784461813694">ਲੋੜ</translation>
@@ -1612,6 +1615,7 @@
 <translation id="2182058453334755893">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2182419606502127232">ਮੇਰੇ ਸਰਵਰ ਲੌਗਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="2183570493397356669">'ਜਾਰੀ ਰੱਖੋ' ਬਟਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="2184272387334793084">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2184515124301515068">Chrome ਨੂੰ ਚੁਣਨ ਦਿਓ ਕਿ ਸਾਈਟਾਂ ਕਦੋਂ ਧੁਨੀ ਚਲਾ ਸਕਦੀਆਂ ਹਨ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">ਪੰਨੇ ਨੂੰ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
@@ -2428,7 +2432,6 @@
 <translation id="2778471504622896352">ChromeOS ਲਾਂਚਰ ਵਿੱਚ ਰਿਮੋਟ ਐਪਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2779728796406650689">ਇਹ Google Assistant ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਵਾਲ ਪੁੱਛਣ 'ਤੇ ਵਿਉਂਤਬੱਧ ਜਵਾਬ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">ਇਸ ਸਾਈਟ 'ਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਆਗਿਆ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
 <translation id="2782104745158847185">Linux ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="2783024642731649028">ਤੁਹਾਡੇ ਕਾਰਡ ਵਿੱਚ ਮੌਜੂਦ 1 ਆਈਟਮ ਲਈ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> 'ਤੇ <ph name="DISCOUNT_TEXT" /> ਮਿਲ ਰਹੀ ਹੈ, <ph name="RELATIVE_TIME" /> ਪਹਿਲਾਂ ਦੇਖਿਆ ਗਿਆ</translation>
 <translation id="2783298271312924866">ਡਾਊਨਲੋਡ ਕੀਤਾ</translation>
@@ -2585,6 +2588,7 @@
 <translation id="2893180576842394309">Google Search ਅਤੇ ਹੋਰਾਂ Google ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="2893701697603065178">ਪ੍ਰਬੰਧਨ ਕੀਤੇ ਵਿਕਾਸਕਾਰ ਵਾਤਾਵਰਨ</translation>
 <translation id="2894757982205307093">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ</translation>
+<translation id="2895730582088342039">ਰੱਖਿਅਤ ਕਰੋ, ਸਾਂਝਾ ਕਰੋ ਅਤੇ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="289695669188700754">ਕੁੰਜੀ ਆਈ.ਡੀ.: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੀ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ 'ਤੇ ਇਸ ਵਿਉਂਤਬੱਧ ਸੈਟਿੰਗ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="2897878306272793870">ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ ਤੇ <ph name="TAB_COUNT" /> ਟੈਬਸ ਖੋਲ੍ਹਣੀਆਂ ਹਨ?</translation>
@@ -3218,6 +3222,7 @@
 <translation id="3420501302812554910">ਅੰਦਰੂਨੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3421387094817716717">ਅੰਡਾਕਾਰ ਘੁਮਾਓ ਜਨਤਕ ਕੁੰਜੀ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕੋਈ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਰਿਕਾਰਡਿੰਗ ਤੁਹਾਡੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਜਾਂ ਤੁਹਾਡੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ।</translation>
+<translation id="3421835120203732951">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ਵਿੱਚ ਨਤੀਜੇ ਮਿਲੇ</translation>
 <translation id="3423463006624419153">ਆਪਣੇ '<ph name="PHONE_NAME_1" />' ਅਤੇ '<ph name="PHONE_NAME_2" />' 'ਤੇ:</translation>
 <translation id="3423858849633684918">ਕਿਰਪਾ ਕਰਕੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਰੀਲੌਂਚ ਕਰੋ</translation>
@@ -4608,6 +4613,7 @@
 <translation id="4481448477173043917">ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਅਚਾਨਕ ਮੁੜ-ਸ਼ੁਰੂ ਹੋ ਗਿਆ</translation>
 <translation id="4481467543947557978">ਸੇਵਾ ਕਰਮਚਾਰੀ</translation>
 <translation id="4482990632723642375">ਹਾਲ ਹੀ ਵਿੱਚ ਬੰਦ ਕੀਤੀ ਗਈ ਟੈਬ</translation>
+<translation id="4486333480498805415">ਟਿਕਾਣਾ ਸਟੀਕਤਾ</translation>
 <translation id="4487489714832036847">Chromebooks ਰਵਾਇਤੀ ਸਾਫ਼ਟਵੇਅਰ ਦੀ ਬਜਾਏ ਐਪਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੀਆਂ ਹਨ। ਉਤਪਾਦਕਤਾ, ਮਨੋਰੰਜਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਲਈ ਐਪਾਂ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="4488257340342212116">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="4490086832405043258">ਇਸ ਪ੍ਰੋਫਾਈਲ ਲਈ ChromeOS ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
@@ -5293,7 +5299,6 @@
 <translation id="5026874946691314267">ਇਹ ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="5027550639139316293">ਈਮੇਲ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="5027562294707732951">ਐਕਸਟੈਂਸ਼ਨ ਜੋੜੋ</translation>
-<translation id="5028445315206872221">ਇਸ ਸਾਈਟ 'ਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5029287942302939687">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5029873138381728058">VM ਲਈ ਜਾਂਚ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="503155457707535043">ਐਪਾਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ</translation>
@@ -5469,6 +5474,7 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5163910114647549394">ਟੈਬ ਨੂੰ ਟੈਬ ਪੱਟੀ ਦੇ ਅੰਤ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> ਲਈ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
+<translation id="5165989352025966137">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਿੱਚ ਦਾਖਲ ਹੋਣ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="516747639689914043">ਹਾਇਪਰਟੈਕਸਟ ਟਰਾਂਸਪੋਰਟ ਪ੍ਰੋਟੋਕੋਲ (HTTP)</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5171045022955879922">ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
@@ -7276,6 +7282,7 @@
 <translation id="6596816719288285829">IP ਪਤਾ</translation>
 <translation id="6596916244504302242">ਇਸ ਸਾਈਟ 'ਤੇ ਆਪਣੀਆਂ ਅੱਪਡੇਟ ਕੀਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨ ਸੈਟਿੰਗਾਂ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ ਇਸ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="6597017209724497268">ਨਮੂਨੇ</translation>
+<translation id="6597324406048772521">ਇਸ ਸਾਈਟ 'ਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="6597331566371766302">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ:</translation>
 <translation id="659894938503552850">ਸਭ ਤੋਂ ਨਵਾਂ</translation>
 <translation id="6601262427770154296">ਵਰਤੋਂਕਾਰ ਸ਼ਬਦਕੋਸ਼ਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -8149,6 +8156,7 @@
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> ਵੱਲੋਂ ਹੋਸਟ ਕੀਤੀ ਗਈ, ਇਹ ਸਾਈਨ-ਇਨ ਸੇਵਾ, ਤੁਹਾਡੇ ਕੈਮਰੇ 'ਤੇ ਪਹੁੰਚ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ <ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7295305918366078219">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਿੱਚ ਦਾਖਲ ਹੋਣ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="7295614427631867477">ਨੋਟ ਕਰੋ ਕਿ Android, Play ਅਤੇ ਸੰਬੰਧਿਤ ਐਪਾਂ ਉਹਨਾਂ ਦੀਆਂ ਖੁਦ ਦੀਆਂ ਡਾਟਾ ਸੰਗ੍ਰਹਿ ਅਤੇ ਵਰਤੋਂ ਨੀਤੀਆਂ ਦੇ ਅਧੀਨ ਹਨ।</translation>
 <translation id="729583233778673644">AES ਅਤੇ RC4 ਇਨਕ੍ਰਿਪਸ਼ਨ ਕਰਨ ਦਿਓ। ਇਸ ਵਿਕਲਪ ਦੀ ਵਰਤੋਂ ਕਰਨਾ, RC4 ciphers ਦੇ ਅਸੁਰੱਖਿਅਤ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡੇ ਜੋਖਮ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ।</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ਫੋਲਡਰ ਚੁਣੋ</translation>
@@ -8577,6 +8585,7 @@
 <translation id="7622768823216805500">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਆਸਾਨ ਚੈੱਕਆਊਟ ਜਿਹੀਆਂ ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="7622966771025050155">ਕੈਪਚਰ ਕੀਤੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="7624337243375417909">ਕੈਪਸ ਲੌਕ ਬੰਦ</translation>
+<translation id="7625025537587898155">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7625568159987162309">ਇਜਾਜ਼ਤਾਂ ਅਤੇ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਡਾਟਾ ਦੇਖੋ</translation>
 <translation id="7625823789272218216">ਖੱਬੇ ਪਾਸੇ ਵਾਲੀ ਨਵੀਂ ਟੈਬ</translation>
 <translation id="7628201176665550262">ਰਿਫ੍ਰੈਸ਼ ਦਰ</translation>
@@ -9254,6 +9263,7 @@
 <translation id="810185532889603849">ਵਿਉਂਤਿਆ ਰੰਗ</translation>
 <translation id="8101987792947961127">ਅਗਲੇ ਰੀਬੂਟ 'ਤੇ ਪਾਵਰਵਾਸ਼ ਲੁੜੀਂਦਾ</translation>
 <translation id="8102139037507939978">system_logs.txt ਤੋਂ ਨਿੱਜੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨੂੰ ਹਟਾਓ।</translation>
+<translation id="8102344699913991108">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਦੇ ਸ਼ਾਨਦਾਰ ਅਨੁਭਵਾਂ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰਨ ਲਈ ਸਾਈਟਾਂ ਇਸ ਸੈਟਿੰਗ ਦੀ ਵਰਤੋਂ ਕਰਦੀਆਂ ਹਨ, ਭਾਵੇਂ ਵਰਤੋਂਕਾਰ ਇਸ਼ਾਰਾ ਕੋਈ ਵੀ ਹੋਵੇ</translation>
 <translation id="810362914482827094">ਪਾਸਕੀਆਂ ਖੋਜੋ</translation>
 <translation id="8104088837833760645">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="8105273883928376822">ਕਿਰਪਾ ਕਰਕੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
@@ -9575,6 +9585,7 @@
 <translation id="8351630282875799764">ਬੈਟਰੀ ਚਾਰਜ ਨਹੀਂ ਹੋ ਰਹੀ ਹੈ</translation>
 <translation id="8352287103893778223">ਟੈਬ ਗਰੁੱਪ ਦਾ ਸਿਰਲੇਖ</translation>
 <translation id="835238322900896202">ਅਣਸਥਾਪਨਾ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਟਰਮੀਨਲ ਰਾਹੀਂ ਅਣਸਥਾਪਤ ਕਰੋ।</translation>
+<translation id="8353420862507374944">ਕਾਸਟ ਕਰੋ, ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="8353683614194668312">ਇਹ ਕਰ ਸਕਦਾ ਹੈ:</translation>
 <translation id="8354034204605718473">ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਪਿੰਨ ਸ਼ਾਮਲ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
@@ -9681,6 +9692,7 @@
 <translation id="8428271547607112339">ਸਕੂਲੀ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="84297032718407999">ਤੁਹਾਨੂੰ <ph name="LOGOUT_TIME_LEFT" /> ਵਿੱਚ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="8431190899827883166">ਟੈਪਾਂ ਦਿਖਾਓ</translation>
+<translation id="8432724317983466962">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਿੱਚ ਦਾਖਲ ਹੋਣ ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋਂਕਾਰ ਇਸ਼ਾਰਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="8433186206711564395">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8434480141477525001">NaCl ਡੀਬੱਗ ਪੋਰਟ</translation>
 <translation id="8436054240208929121">Chrome ਵੱਲੋਂ ਟੈਬ ਗਰੁੱਪਾਂ ਦਾ ਸੁਝਾਅ ਦੇਣ ਅਤੇ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਰੱਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰ ਕੇ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
@@ -10065,6 +10077,7 @@
 <translation id="8729133765463465108">QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
 <translation id="8731029916209785242">ਇਜਾਜ਼ਤਾਂ (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="873125854638499125">ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਬਿਹਤਰ ਬਣਾਓ</translation>
 <translation id="8731268612289859741">ਸੁਰੱਖਿਆ ਕੋਡ</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> ਇਹ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">ਪੋਰਟ ਨੰਬਰ</translation>

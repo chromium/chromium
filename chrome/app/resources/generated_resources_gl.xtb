@@ -2411,7 +2411,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2778471504622896352">Engadir aplicacións remotas ao menú de aplicacións de ChromeOS</translation>
 <translation id="2779728796406650689">Esta opción permite que o Asistente de Google forneza respostas adaptadas cando lle fagas preguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Permitíronse as extensións neste sitio</translation>
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
 <translation id="2783024642731649028">Hai 1 produto no teu carro cun <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) visto <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -5277,7 +5276,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5026874946691314267">Non volver mostrar</translation>
 <translation id="5027550639139316293">Certificado de correo electrónico</translation>
 <translation id="5027562294707732951">Engadir extensión</translation>
-<translation id="5028445315206872221">Bloqueáronse as extensións neste sitio</translation>
 <translation id="5029287942302939687">Definiuse o contrasinal</translation>
 <translation id="5029873138381728058">Produciuse un erro ao comprobar as máquinas virtuais</translation>
 <translation id="503155457707535043">Descargando aplicacións</translation>
@@ -7255,6 +7253,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6596816719288285829">Enderezo IP</translation>
 <translation id="6596916244504302242">Volve cargar esta páxina para aplicar a configuración da extensión actualizada a este sitio</translation>
 <translation id="6597017209724497268">Mostras</translation>
+<translation id="6597324406048772521">As extensións non están permitidas neste sitio</translation>
 <translation id="6597331566371766302">O teu administrador bloqueou as seguintes extensións:</translation>
 <translation id="659894938503552850">menor antigüidade</translation>
 <translation id="6601262427770154296">Xestionar dicionarios do usuario</translation>

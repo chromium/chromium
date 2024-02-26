@@ -2412,7 +2412,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2778471504622896352">Gehitu urruneko aplikazioak Chrome OS-ren abiarazlean</translation>
 <translation id="2779728796406650689">Galderak egiten dituzunean, erantzun pertsonalizatuak eman ahal izango dizkizu Google-ren Laguntzailea zerbitzuak.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Webgune honetan luzapenak baimenduta daude</translation>
 <translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
 <translation id="2783024642731649028"><ph name="DISCOUNT_TEXT" /> daukan elementu bat dago saskian, <ph name="MERCHANT_NAME" /> saltzailearena, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> ikusi zenuen</translation>
 <translation id="2783298271312924866">Deskargatu da</translation>
@@ -5275,7 +5274,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5026874946691314267">Ez erakutsi berriro</translation>
 <translation id="5027550639139316293">Posta elektronikoko ziurtagiria</translation>
 <translation id="5027562294707732951">Gehitu luzapena</translation>
-<translation id="5028445315206872221">Webgune honetan luzapenak blokeatuta daude</translation>
 <translation id="5029287942302939687">Ezarri da pasahitza</translation>
 <translation id="5029873138381728058">Ezin izan dira egiaztatu makina birtualak</translation>
 <translation id="503155457707535043">Deskargatzen ari dira aplikazioak</translation>
@@ -7253,6 +7251,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6596816719288285829">IP helbidea</translation>
 <translation id="6596916244504302242">Kargatu berriro orria ezarpen berriak webgune honetan aplikatzeko</translation>
 <translation id="6597017209724497268">Adibideak</translation>
+<translation id="6597324406048772521">Webgune honetan ezin da erabili luzapenik</translation>
 <translation id="6597331566371766302">Administratzaileak blokeatu egin ditu luzapen hauek:</translation>
 <translation id="659894938503552850">berrienak</translation>
 <translation id="6601262427770154296">Kudeatu erabiltzailearen hiztegiak</translation>

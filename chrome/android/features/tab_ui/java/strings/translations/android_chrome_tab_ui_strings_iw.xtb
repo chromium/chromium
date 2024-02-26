@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{הסרת הכרטיסייה מהקבוצה}one{הסרת הכרטיסיות מהקבוצה}two{הסרת הכרטיסיות מהקבוצה}other{הסרת הכרטיסיות מהקבוצה}}</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{הוספת הכרטיסייה לסימניות}one{הוספת הכרטיסיות לסימניות}two{הוספת הכרטיסיות לסימניות}other{הוספת הכרטיסיות לסימניות}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="2569352796411618312">הצעה: <ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
 <translation id="2613747923081026172">יצירת קבוצה</translation>

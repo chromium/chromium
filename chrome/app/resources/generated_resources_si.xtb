@@ -2416,7 +2416,6 @@
 <translation id="2778471504622896352">ChromeOS දියත්කරණය වෙත දුරස්ථ යෙදුම් එක් කරන්න</translation>
 <translation id="2779728796406650689">ඔබ ප්‍රශ්න අසන විට Google සහායකට ගැළපෙන ප්‍රතිචාර සැපයීමට මෙය ඉඩ දෙයි.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">මෙම අඩවියෙහි දිගුවලට ඉඩ දී ඇත</translation>
 <translation id="2782104745158847185">Linux යෙදුම් ස්ථාපනය කිරීමේ දෝෂයකි</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> වෙතින් ඔබේ කරත්තයේ ඇති 1 අයිතමයක් <ph name="DISCOUNT_TEXT" />, බැලුවා <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">බාගන්නා ලද</translation>
@@ -5280,7 +5279,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5026874946691314267">නැවත මෙය පෙන්වන්න එපා</translation>
 <translation id="5027550639139316293">ඊමේල් සහතිකය</translation>
 <translation id="5027562294707732951">දිගුව එක් කරන්න</translation>
-<translation id="5028445315206872221">මෙම අඩවියෙහි දිගු අවහිර කර ඇත</translation>
 <translation id="5029287942302939687">ඔබේ මුරපදය සකසා ඇත</translation>
 <translation id="5029873138381728058">VM පරීක්ෂා කිරීම අසාර්ථක විය</translation>
 <translation id="503155457707535043">යෙදුම් බාගනිමින්</translation>
@@ -7262,6 +7260,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6596816719288285829">IP ලිපිනය</translation>
 <translation id="6596916244504302242">මෙම වෙබ් අඩවියට ඔබේ යාවත්කාලීන කරන ලද දිගු සැකසීම් යෙදීමට මෙම පිටුව නැවත පූරණ කරන්න</translation>
 <translation id="6597017209724497268">සාම්පල</translation>
+<translation id="6597324406048772521">මෙම අඩවියෙහි දිගුවලට ඉඩ නොදෙයි</translation>
 <translation id="6597331566371766302">ඔබගේ පරිපාලක විසින් පහත දිගු අවහිර කරන ලදි:</translation>
 <translation id="659894938503552850">නවතම</translation>
 <translation id="6601262427770154296">පරිශීලක ශබ්ධකෝෂ කළමනාකරණය කරන්න</translation>

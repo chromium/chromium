@@ -2411,7 +2411,6 @@
 <translation id="2778471504622896352">ChromeOS ലോഞ്ചറിൽ വിദൂര ആപ്പുകൾ ചേർക്കുക</translation>
 <translation id="2779728796406650689">നിങ്ങൾ ചോദ്യങ്ങൾ ചോദിക്കുമ്പോൾ ഉചിതമായ പ്രതികരണങ്ങൾ നൽകാൻ ഇത് Google Assistant-നെ അനുവദിക്കുന്നു.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">ഈ സൈറ്റിൽ വിപുലീകരണങ്ങൾ അനുവദനീയമാണ്</translation>
 <translation id="2782104745158847185">Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിൽ പിഴവ്</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-ൽ നിന്നുള്ള നിങ്ങളുടെ കാർട്ടിലെ 1 ഇനത്തിന് <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> സന്ദർശിച്ചു</translation>
 <translation id="2783298271312924866">ഡൗൺലോഡുചെയ്‌തു</translation>
@@ -5273,7 +5272,6 @@
 <translation id="5026874946691314267">ഇത് വീണ്ടും ദൃശ്യമാക്കരുത്</translation>
 <translation id="5027550639139316293">ഇമെയില്‍‌ സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="5027562294707732951">വിപുലീകരണം ചേർക്കുക</translation>
-<translation id="5028445315206872221">ഈ സൈറ്റിൽ വിപുലീകരണങ്ങൾ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="5029287942302939687">നിങ്ങളുടെ പാസ്‍വേഡ് സജ്ജീകരിച്ചു</translation>
 <translation id="5029873138381728058">VM-കൾ പരിശോധിക്കാനായില്ല</translation>
 <translation id="503155457707535043">ആപ്പുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
@@ -7256,6 +7254,7 @@
 <translation id="6596816719288285829">IP വിലാസം</translation>
 <translation id="6596916244504302242">ഈ സൈറ്റിലേക്ക് നിങ്ങളുടെ അപ്ഡേറ്റ് ചെയ്ത വിപുലീകരണ ക്രമീകരണം ബാധകമാക്കാൻ ഈ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="6597017209724497268">സാമ്പിളുകൾ</translation>
+<translation id="6597324406048772521">ഈ സൈറ്റിൽ വിപുലീകരണങ്ങൾ അനുവദനീയമല്ല</translation>
 <translation id="6597331566371766302">നിങ്ങളുടെ അഡ്‌മിൻ ഇനിപ്പറയുന്ന വിപുലീകരണങ്ങൾ ബ്ലോക്ക് ചെയ്‌തു:</translation>
 <translation id="659894938503552850">ഏറ്റവും പുതിയത്</translation>
 <translation id="6601262427770154296">ഉപയോക്തൃ നിഘണ്ടുക്കൾ മാനേജ് ചെയ്യുക</translation>

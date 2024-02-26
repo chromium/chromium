@@ -2421,7 +2421,6 @@
 <translation id="2778471504622896352">የርቀት መተግበሪያዎችን በChromeOS ማስጀመሪያ ላይ ያክሉ</translation>
 <translation id="2779728796406650689">ይህ እርስዎ ጥያቄዎችን ሲጠይቁ Google ረዳት የተበጁ ምላሾችን እንዲሰጥ ያስችለዋል።</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">በዚህ ጣቢያ ላይ ቅጥያዎች ተፈቅዶላቸዋል</translation>
 <translation id="2782104745158847185">የLinux መተግበሪያን መጫን ላይ ስህተት</translation>
 <translation id="2783024642731649028">በተሳቢዎ ውስጥ 1 ንጥል <ph name="DISCOUNT_TEXT" /> ከ<ph name="MERCHANT_NAME" />፣ <ph name="MERCHANT_DOMAIN" />፣ የታየው <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ወርዷል</translation>
@@ -5282,7 +5281,6 @@
 <translation id="5026874946691314267">ይህን ዳግም አታሳይ</translation>
 <translation id="5027550639139316293">የኢሜይል ሰርቲፊኬት</translation>
 <translation id="5027562294707732951">ቅጥያ ያክሉ</translation>
-<translation id="5028445315206872221">በዚህ ጣቢያ ላይ ቅጥያዎች ታግደዋል</translation>
 <translation id="5029287942302939687">የይለፍ ቃልዎ ተቀናብሯል</translation>
 <translation id="5029873138381728058">VMsን መፈተሽ አልተሳካም</translation>
 <translation id="503155457707535043">መተግበሪያዎች በመውረድ ላይ</translation>
@@ -7265,6 +7263,7 @@
 <translation id="6596816719288285829">IP አድራሻ</translation>
 <translation id="6596916244504302242">የእርስዎን የተዘመኑ የቅጥያ ቅንብሮች በዚህ ጣቢያ ላይ ለመተግበር ይህን ገፅ እንደገና ይጫኑ</translation>
 <translation id="6597017209724497268">ናሙናዎች</translation>
+<translation id="6597324406048772521">በዚህ ጣቢያ ላይ ያልተፈቀዱ ቅጥያዎች</translation>
 <translation id="6597331566371766302">የሚከተሉት ቅጥያዎች በአስተዳዳሪዎ ታግደዋል፦</translation>
 <translation id="659894938503552850">በጣም አዲስ</translation>
 <translation id="6601262427770154296">የተጠቃሚ መዝገበ ቃላትን ያስተዳድሩ</translation>

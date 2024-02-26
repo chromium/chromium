@@ -2413,7 +2413,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2778471504622896352">Ajouter des applications distantes au lanceur d'applications ChromeOS</translation>
 <translation id="2779728796406650689">Cela permet à l'Assistant Google de vous fournir des réponses personnalisées lorsque vous posez des questions.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Les extensions sont autorisées sur ce site</translation>
 <translation id="2782104745158847185">Erreur pendant l'installation de l'application Linux</translation>
 <translation id="2783024642731649028">1 article dans votre panier <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) avec <ph name="DISCOUNT_TEXT" /> consulté <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Téléchargé</translation>
@@ -5276,7 +5275,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5026874946691314267">Ne plus afficher ce message</translation>
 <translation id="5027550639139316293">Certificat de courrier électronique</translation>
 <translation id="5027562294707732951">Ajouter l'extension</translation>
-<translation id="5028445315206872221">Les extensions sont bloquées sur ce site</translation>
 <translation id="5029287942302939687">Votre mot de passe est défini</translation>
 <translation id="5029873138381728058">Échec de la vérification des VM</translation>
 <translation id="503155457707535043">Téléchargement des applications</translation>
@@ -7260,6 +7258,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6596816719288285829">Adresse IP</translation>
 <translation id="6596916244504302242">Actualisez cette page pour appliquer les modifications apportées aux paramètres pour l'extension sur ce site</translation>
 <translation id="6597017209724497268">échantillons</translation>
+<translation id="6597324406048772521">Extensions non autorisées sur ce site</translation>
 <translation id="6597331566371766302">Les extensions suivantes ont été bloquées par votre administrateur :</translation>
 <translation id="659894938503552850">le plus récent</translation>
 <translation id="6601262427770154296">Gérer les dictionnaires personnels</translation>
@@ -9025,7 +9024,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7945703887991230167">Voix favorite</translation>
 <translation id="7946586320617670168">L'origine doit être sûre</translation>
 <translation id="794676567536738329">Confirmer les autorisations</translation>
-<translation id="7947962633355574091">C&amp;opier l'adresse vidéo</translation>
+<translation id="7947962633355574091">C&amp;opier l'adresse de la vidéo</translation>
 <translation id="7947964080535614577">Les sites diffusent généralement des annonces en contrepartie de contenus ou services offerts. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="7948407723851303488">Toutes les pages de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Motif : LBS n'accepte que les URL incluant http://, https:// et file://.</translation>

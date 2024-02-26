@@ -65,9 +65,7 @@
 <translation id="4118525110028899586">ჩაწერის დაპაუზება</translation>
 <translation id="4121305183798804752">დოკუმენტი აღმოჩენილია</translation>
 <translation id="414641094616694804">ამ კამერის გარჩევადობა ვერ შეიცვლება</translation>
-<translation id="4176463684765177261">გამორთული</translation>
 <translation id="428234092390943511">გვერდის ესკიზი</translation>
-<translation id="4349714250734879769">ფრეიმების სკალირება Chrome-ის მიერ</translation>
 <translation id="4383571725254449280">წარმადობის ჟურნალების ბეჭდვა</translation>
 <translation id="4445542136948522167">ფოტოს გადაღების შეწყვეტა</translation>
 <translation id="4570032796877367747">წინა კამერა</translation>
@@ -80,7 +78,6 @@
 <translation id="4864143361253542638">სკანირებული გვერდების სია</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">დაკოპირდეს ბმულის მისამართი <ph name="URL" /></translation>
-<translation id="491895758387112773">მრავალნაკადოვანი ვიდეოჩაწერა</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">ფოტოს თანაფარდობა</translation>
@@ -153,7 +150,6 @@
 <translation id="8145038249676204903">ფოტოს გადაღებაზე გადართვა</translation>
 <translation id="8167081290930651932">ფოტოს სახით შენახვა</translation>
 <translation id="8239780215768881278">ვიდეოსნეპშოტის გადაღება</translation>
-<translation id="8346544573713510785">ფრეიმების სკალირება Camera HAL-ის მიერ</translation>
 <translation id="8425673304802773841">ქვემოთკენ დახრა</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8609951387004618906"><ph name="URL" />-ის გახსნა</translation>

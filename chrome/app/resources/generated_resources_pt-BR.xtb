@@ -2427,7 +2427,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2778471504622896352">Adicionar apps remotos ao iniciador do ChromeOS</translation>
 <translation id="2779728796406650689">Essa opção permite que o Google Assistente dê respostas personalizadas quando você fizer perguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">As extensões são permitidas neste site</translation>
 <translation id="2782104745158847185">Erro ao instalar o aplicativo Linux</translation>
 <translation id="2783024642731649028">1 item no seu carrinho com <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) visualizado <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Download concluído</translation>
@@ -5292,7 +5291,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5026874946691314267">Não mostrar isto novamente</translation>
 <translation id="5027550639139316293">Certificado de e-mail</translation>
 <translation id="5027562294707732951">Adicionar extensão</translation>
-<translation id="5028445315206872221">As extensões estão bloqueadas neste site</translation>
 <translation id="5029287942302939687">Sua senha foi definida</translation>
 <translation id="5029873138381728058">Falha ao verificar as VMs</translation>
 <translation id="503155457707535043">Fazendo o download dos apps</translation>
@@ -7276,6 +7274,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6596816719288285829">Endereço IP</translation>
 <translation id="6596916244504302242">Atualize a página para aplicar as configurações de extensão atualizadas ao site</translation>
 <translation id="6597017209724497268">Exemplos</translation>
+<translation id="6597324406048772521">Não são permitidas extensões neste site</translation>
 <translation id="6597331566371766302">As seguintes extensões foram bloqueadas pelo administrador:</translation>
 <translation id="659894938503552850">mais recente</translation>
 <translation id="6601262427770154296">Gerenciar dicionários do usuário</translation>

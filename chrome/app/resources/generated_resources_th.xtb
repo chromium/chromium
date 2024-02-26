@@ -2412,7 +2412,6 @@
 <translation id="2778471504622896352">เพิ่มแอประยะไกลลงใน Launcher ของ Chrome OS</translation>
 <translation id="2779728796406650689">วิธีนี้ช่วยให้ Google Assistant แสดงคำตอบที่ปรับเปลี่ยนให้เหมาะกับคุณได้เมื่อคุณถามคำถาม</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">ส่วนขยายใช้ได้ในเว็บไซต์นี้</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2783024642731649028">สินค้า 1 รายการในรถเข็นของคุณ <ph name="DISCOUNT_TEXT" /> จาก <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> ดูเมื่อ <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ดาวน์โหลดแล้ว</translation>
@@ -5275,7 +5274,6 @@
 <translation id="5026874946691314267">ไม่ต้องแสดงข้อความนี้อีก</translation>
 <translation id="5027550639139316293">ใบรับรองอีเมล</translation>
 <translation id="5027562294707732951">เพิ่มส่วนขยาย</translation>
-<translation id="5028445315206872221">ส่วนขยายถูกบล็อกในเว็บไซต์นี้</translation>
 <translation id="5029287942302939687">ตั้งรหัสผ่านแล้ว</translation>
 <translation id="5029873138381728058">ตรวจสอบ VM ไม่สำเร็จ</translation>
 <translation id="503155457707535043">กำลังดาวน์โหลดแอป</translation>
@@ -7253,6 +7251,7 @@
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
 <translation id="6596916244504302242">โหลดหน้านี้ซ้ำเพื่อใช้การตั้งค่าส่วนขยายที่อัปเดตแล้วในเว็บไซต์นี้</translation>
 <translation id="6597017209724497268">ตัวอย่าง</translation>
+<translation id="6597324406048772521">ไม่อนุญาตให้ใช้ส่วนขยายบนเว็บไซต์นี้</translation>
 <translation id="6597331566371766302">ผู้ดูแลระบบได้บล็อกส่วนขยายต่อไปนี้</translation>
 <translation id="659894938503552850">ใหม่ที่สุด</translation>
 <translation id="6601262427770154296">จัดการพจนานุกรมของผู้ใช้</translation>

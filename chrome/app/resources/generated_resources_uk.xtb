@@ -2430,7 +2430,6 @@
 <translation id="2778471504622896352">Додайте віддалені додатки на панель запуску ОС Chrome</translation>
 <translation id="2779728796406650689">Так Google Асистент зможе надавати персоналізовані відповіді, коли ви ставитимете запитання.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">На цьому сайті дозволено розширення</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2783024642731649028">1 товар у кошику (<ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Завантажено</translation>
@@ -5294,7 +5293,6 @@
 <translation id="5026874946691314267">Більше не показувати це</translation>
 <translation id="5027550639139316293">Сертифікат електронної пошти</translation>
 <translation id="5027562294707732951">Додати розширення</translation>
-<translation id="5028445315206872221">На цьому сайті заблоковано розширення</translation>
 <translation id="5029287942302939687">Пароль налаштовано</translation>
 <translation id="5029873138381728058">Не вдалося перевірити віртуальні машини</translation>
 <translation id="503155457707535043">Завантаження додатків</translation>
@@ -7278,6 +7276,7 @@
 <translation id="6596816719288285829">ІР-адреса</translation>
 <translation id="6596916244504302242">Щоб застосувати оновлені налаштування для розширень на цьому сайті, оновіть сторінку</translation>
 <translation id="6597017209724497268">Зразки</translation>
+<translation id="6597324406048772521">Розширення на цьому сайті заборонені</translation>
 <translation id="6597331566371766302">Адміністратор заблокував такі розширення:</translation>
 <translation id="659894938503552850">найновіші</translation>
 <translation id="6601262427770154296">Керування словниками користувача</translation>

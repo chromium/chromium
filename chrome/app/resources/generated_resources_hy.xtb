@@ -2412,7 +2412,6 @@
 <translation id="2778471504622896352">Ավելացնել հեռակա հավելվածներ ChromeOS-ի գործարկիչում</translation>
 <translation id="2779728796406650689">Սա թույլ է տալիս, որ Google Օգնականը ձեր հարցերին տրամադրի անհատականացված պատասխաններ։</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Ընդլայնումները թույլատրված են այս կայքում</translation>
 <translation id="2782104745158847185">Չհաջողվեց տեղադրել Լինուքսի հավելվածը</translation>
 <translation id="2783024642731649028">1 ապրանք ձեր զամբյուղում. <ph name="DISCOUNT_TEXT" /> <ph name="MERCHANT_NAME" />-ից, <ph name="MERCHANT_DOMAIN" />, վերջին դիտումը՝ <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Ներբեռնված է</translation>
@@ -5274,7 +5273,6 @@
 <translation id="5026874946691314267">Այլևս ցույց չտալ</translation>
 <translation id="5027550639139316293">Էլփոստի վկայագիր</translation>
 <translation id="5027562294707732951">Ավելացնել ընդլայնում</translation>
-<translation id="5028445315206872221">Ընդլայնումներն արգելափակված են այս կայքում</translation>
 <translation id="5029287942302939687">Ձեր գաղտնաբառը սահմանված է</translation>
 <translation id="5029873138381728058">Չհաջողվեց ստուգել վիրտուալ մեքենաները</translation>
 <translation id="503155457707535043">Հավելվածները ներբեռնվում են</translation>
@@ -7254,6 +7252,7 @@
 <translation id="6596816719288285829">IP հասցե</translation>
 <translation id="6596916244504302242">Վերաբեռնեք էջը՝ այս կայքում ընդլայնման թարմացված կարգավորումները կիրառելու համար</translation>
 <translation id="6597017209724497268">Նմուշներ</translation>
+<translation id="6597324406048772521">Ընդլայնումներն արգելված են այս կայքում</translation>
 <translation id="6597331566371766302">Հետևյալ ընդլայնումներն արգելափակվել են ձեր ադմինիստրատորի կողմից՝</translation>
 <translation id="659894938503552850">ամենանորը</translation>
 <translation id="6601262427770154296">Կառավարել օգտատիրոջ բառարանները</translation>

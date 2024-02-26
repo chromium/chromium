@@ -238,6 +238,7 @@
 <translation id="2252674110805316998">Veb-pretraga</translation>
 <translation id="2252749852083403809">Čuva se na Disku za <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Organizacija vam dozvoljava da se prijavite samo pomoću određenih naloga.</translation>
+<translation id="2257594476751932246">Personalizovane vesti</translation>
 <translation id="2258326562203545455">{count,plural, =1{Možete da sačuvate obeleživač na Google nalogu, {email}.}one{Možete da sačuvate obeleživače na Google nalogu, {email}.}few{Možete da sačuvate obeleživače na Google nalogu, {email}.}other{Možete da sačuvate obeleživače na Google nalogu, {email}.}}</translation>
 <translation id="225943865679747347">Kôd greške: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Dodaj nalog</translation>

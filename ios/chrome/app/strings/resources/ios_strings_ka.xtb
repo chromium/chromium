@@ -238,6 +238,7 @@
 <translation id="2252674110805316998">ვებ-ძიება</translation>
 <translation id="2252749852083403809">მიმდინარეობს Drive-ში შენახვა <ph name="USER_EMAIL" />-ისთვის.</translation>
 <translation id="2256933947031277845">თქვენი ორგანიზაცია სისტემაში მხოლოდ კონკრეტული ანგარიშებით შესვლის უფლებას გაძლებთ.</translation>
+<translation id="2257594476751932246">პერსონალიზებული ახალი ამბები</translation>
 <translation id="2258326562203545455">{count,plural, =1{თქვენი სანიშნის შენახვა შეგიძლიათ თქვენს Google ანგარიშში ({email}).}other{თქვენი სანიშნეების შენახვა შეგიძლიათ თქვენს Google ანგარიშში ({email}).}}</translation>
 <translation id="225943865679747347">შეცდომის კოდი: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ანგარიშის დამატება</translation>

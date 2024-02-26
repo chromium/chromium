@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">ਕੀ-ਬੋਰਡ ਖਾਕਾ ਬਦਲਣ ਲਈ <ph name="KEYBOARD_SHORTCUT" /> ਦਬਾਓ।</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
 <translation id="2487915095798731898">ਸ਼ਾਮਲ ਹੋਵੋ</translation>
+<translation id="2499445554382787206">ਡੈਸਕ ਪ੍ਰੋਫਾਈਲ ਮੀਨੂ। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ਸਟਿਕੀ ਕੁੰਜੀਆਂ</translation>
 <translation id="2504454902900101003">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="2509468283778169019">CAPS LOCK ਔਨ ਹੈ</translation>
@@ -604,6 +605,7 @@
 <translation id="3509391053705095206">ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਹੀਂ ਲੱਭਿਆ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3510164367642747937">ਮਾਊਸ ਕਰਸਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="3517037892157925473">ਕਾਰਜਾਂ ਨੂੰ ਆਖਰੀ ਵਾਰ ਅੱਪਡੇਟ ਕਰਨ ਦਾ ਸਮਾਂ: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="3522979239100719575">ਉਪਲਬਧ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="3526440770046466733">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ ਅਤੇ ਮੌਜੂਦਾ ਟੈਬ ਵਿੱਚ ਬਣੇ ਰਹੋ</translation>
@@ -1143,6 +1145,7 @@
 <translation id="5536723544185013515">ਹਾਲੀਆ ਐਪਾਂ, ਸਾਰੀਆਂ ਹਾਲੀਆ ਐਪਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਖੱਬੀ ਜਾਂ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="553675580533261935">ਸੈਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
+<translation id="554017492391497564">ਇਸਦੀ ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="5546397813406633847">ਵਰਤੋਂਕਾਰ ਦੇ ਪਾਸਵਰਡ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰੋ</translation>
 <translation id="554893713779400387">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5550417424894892620">ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਡੈਸਕਟਾਪ 'ਤੇ ਛੱਡੋ। ਤੁਸੀਂ ਡੈਸਕਟਾਪ 'ਤੇ ਫ਼ਾਈਲਾਂ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰ ਸਕਦੇ।</translation>
@@ -1337,6 +1340,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">ਬੈਟਰੀ ਘੱਟ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ।</translation>
 <translation id="6247728804802644171">ਸੂਚਨਾਵਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="6249795363855770621">ਇਸਦੀ ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਆਨਲਾਈਨ ਹੋਣ 'ਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6254629735336163724">ਲੇਟਵੀਂ ਸਥਿਤੀ ਵਿੱਚ ਲਾਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="6259254695169772643">ਚੁਣਨ ਲਈ ਆਪਣੇ ਸਟਾਈਲਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ਐਕਟੀਵੇਟ ਹੋ ਰਿਹਾ ਹੈ...</translation>
@@ -1497,6 +1501,7 @@
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6912841030378044227">ਪਤਾ ਬਾਰ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="6912901278692845878">ਤਤਕਾਲ ਟੂਰ</translation>
+<translation id="6917259695595127329">ਕਾਰਜਾਂ ਨੂੰ ਆਖਰੀ ਵਾਰ ਅੱਪਡੇਟ ਕਰਨ ਦਾ ਸਮਾਂ: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">ਤੁਹਾਡਾ ਸਮਾਰਟ ਕਾਰਡ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="692135145298539227">ਮਿਟਾਓ</translation>
 <translation id="6929081673585394903">ਕੰਟਰੋਲ ਦਿਖਾਓ</translation>

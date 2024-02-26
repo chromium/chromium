@@ -2427,7 +2427,6 @@
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2779728796406650689">這可讓「Google 助理」在你提問時提供更貼近需要的回覆。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">系統已允許此網站上的擴充程式</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2783024642731649028">購物車入面有 1 件商品喺 <ph name="MERCHANT_NAME" /> 享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，已經喺 <ph name="RELATIVE_TIME" />睇過</translation>
 <translation id="2783298271312924866">已下載</translation>
@@ -5287,7 +5286,6 @@
 <translation id="5026874946691314267">不要再顯示這則通知</translation>
 <translation id="5027550639139316293">電郵憑證</translation>
 <translation id="5027562294707732951">新增擴充程式</translation>
-<translation id="5028445315206872221">系統已封鎖此網站上的擴充程式</translation>
 <translation id="5029287942302939687">已設定密碼</translation>
 <translation id="5029873138381728058">無法檢查虛擬機器</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
@@ -7266,6 +7264,7 @@
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6596916244504302242">重新載入此頁面，即可將更新後的擴充程式設定套用至此網站</translation>
 <translation id="6597017209724497268">樣本數目</translation>
+<translation id="6597324406048772521">不允許在此網站上執行擴充程式</translation>
 <translation id="6597331566371766302">管理員已封鎖以下擴充程式：</translation>
 <translation id="659894938503552850">由新到舊</translation>
 <translation id="6601262427770154296">管理用戶字典</translation>

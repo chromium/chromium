@@ -2415,7 +2415,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2778471504622896352">Dodavanje udaljenih aplikacija u pokretač OS-a Chrome</translation>
 <translation id="2779728796406650689">To Google asistentu omogućuje da pruži prilagođene odgovore kad postavljate pitanja.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Proširenja su dopuštena na ovoj web-lokaciji</translation>
 <translation id="2782104745158847185">Pogreška pri instaliranju Linux aplikacije</translation>
 <translation id="2783024642731649028">Jedan artikl u vašoj košarici: <ph name="DISCOUNT_TEXT" />, <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledan <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Preuzeto</translation>
@@ -5278,7 +5277,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5026874946691314267">Ne prikazuj to ponovo</translation>
 <translation id="5027550639139316293">Certifikat e-pošte</translation>
 <translation id="5027562294707732951">Dodaj proširenje</translation>
-<translation id="5028445315206872221">Proširenja su blokirana na ovoj web-lokaciji</translation>
 <translation id="5029287942302939687">Zaporka je postavljena</translation>
 <translation id="5029873138381728058">Provjera VM-ova nije uspjela</translation>
 <translation id="503155457707535043">Preuzimanje aplikacija</translation>
@@ -7260,6 +7258,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6596916244504302242">Ponovno učitajte ovu stranicu da biste primijenili ažurirane postavke proširenja na ovoj web-lokaciji</translation>
 <translation id="6597017209724497268">Uzorci</translation>
+<translation id="6597324406048772521">Proširenja nisu dopuštena na ovoj web-lokaciji</translation>
 <translation id="6597331566371766302">Administrator je blokirao sljedeća proširenja:</translation>
 <translation id="659894938503552850">najnovija</translation>
 <translation id="6601262427770154296">Upravljajte korisničkim rječnicima</translation>

@@ -2418,7 +2418,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2778471504622896352">Kaugrakenduste lisamine ChromeOS-i käivitajasse</translation>
 <translation id="2779728796406650689">See võimaldab Google’i assistendil anda kohandatud vastuseid, kui esitate küsimusi.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Laiendused on sellel saidil lubatud</translation>
 <translation id="2782104745158847185">Viga Linuxi rakenduse installimisel</translation>
 <translation id="2783024642731649028">1 ostukorvis olev kaup <ph name="DISCOUNT_TEXT" /> soodsamalt kaupmehelt <ph name="MERCHANT_NAME" />, (<ph name="MERCHANT_DOMAIN" />), vaadatud <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Allalaaditud</translation>
@@ -5281,7 +5280,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5026874946691314267">Ära näita seda uuesti</translation>
 <translation id="5027550639139316293">Meili sertifikaat</translation>
 <translation id="5027562294707732951">Lisa laiendus</translation>
-<translation id="5028445315206872221">Laiendused on sellel saidil blokeeritud</translation>
 <translation id="5029287942302939687">Teie parool on määratud</translation>
 <translation id="5029873138381728058">Virtuaalmasinate kontrollimine ebaõnnestus</translation>
 <translation id="503155457707535043">Rakendusi laaditakse alla</translation>
@@ -7262,6 +7260,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6596816719288285829">IP-aadress</translation>
 <translation id="6596916244504302242">Laadige see leht uuesti, et rakendada sellele saidile värskendatud laienduse seaded</translation>
 <translation id="6597017209724497268">Näidised</translation>
+<translation id="6597324406048772521">Laiendused pole sellel saidil lubatud</translation>
 <translation id="6597331566371766302">Administraator blokeeris järgmised laiendused:</translation>
 <translation id="659894938503552850">uusimad</translation>
 <translation id="6601262427770154296">Kasutaja sõnaraamatute haldamine</translation>

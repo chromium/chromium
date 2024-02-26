@@ -2423,7 +2423,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2778471504622896352">Добавяйте отдалечени приложения към стартовия панел на ChromeOS</translation>
 <translation id="2779728796406650689">Това дава възможност на Google Асистент да ви предоставя персонализирани отговори, когато задавате въпроси.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Разширенията са разрешени на този сайт</translation>
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
 <translation id="2783024642731649028">В кошницата ви има 1 артикул: <ph name="DISCOUNT_TEXT" /> от <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледан <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Изтеглено</translation>
@@ -5288,7 +5287,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5026874946691314267">Без повторно показване</translation>
 <translation id="5027550639139316293">Сертификат за имейл</translation>
 <translation id="5027562294707732951">Добавяне на разширението</translation>
-<translation id="5028445315206872221">Разширенията са блокирани на този сайт</translation>
 <translation id="5029287942302939687">Паролата ви е зададена</translation>
 <translation id="5029873138381728058">Проверката на виртуалните машини не бе успешна</translation>
 <translation id="503155457707535043">Приложенията се изтеглят</translation>
@@ -7270,6 +7268,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6596816719288285829">IP адрес</translation>
 <translation id="6596916244504302242">Презаредете страницата, за да приложите актуализираните настройки за разширението за този сайт</translation>
 <translation id="6597017209724497268">Извадки</translation>
+<translation id="6597324406048772521">Разширенията не са разрешени в този сайт</translation>
 <translation id="6597331566371766302">Разширенията по-долу са блокирани от администратора ви:</translation>
 <translation id="659894938503552850">най-нови</translation>
 <translation id="6601262427770154296">Управление на потребителските речници</translation>

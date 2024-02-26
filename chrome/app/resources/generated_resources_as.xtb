@@ -2425,7 +2425,6 @@
 <translation id="2778471504622896352">ChromeOS লঞ্চাৰটোত ৰিম’ট এপ্ যোগ দিয়ক</translation>
 <translation id="2779728796406650689">আপুনি প্ৰশ্ন সুধিলে, এইটোৱে Google Assistantক প্ৰস্তুত কৰি থোৱা সঁহাৰিসমূহ প্ৰদান কৰিবলৈ দিয়ে।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">এই ছাইটটোত এক্সটেনশ্বনৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2782104745158847185">Linux এপ্লিকেশ্বন ইনষ্টল কৰোঁতে কিবা আসোঁৱাহ হ’ল</translation>
 <translation id="2783024642731649028">আপোনাৰ কাৰ্টত থকা ১ টা বস্তুত <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />ৰ পৰা <ph name="DISCOUNT_TEXT" /> পাইছে, <ph name="RELATIVE_TIME" /> চোৱা হৈছে</translation>
 <translation id="2783298271312924866">ডাউনল’ড কৰা হ‘ল</translation>
@@ -5288,7 +5287,6 @@
 <translation id="5026874946691314267">এইটো আকৌ নেদেখুওৱাব</translation>
 <translation id="5027550639139316293">ইমেইলৰ প্ৰমাণপত্ৰ</translation>
 <translation id="5027562294707732951">এক্সটেনশ্বন যোগ কৰক</translation>
-<translation id="5028445315206872221">এই ছাইটটোত এক্সটেনশ্বন অৱৰোধ কৰা হৈছে</translation>
 <translation id="5029287942302939687">আপোনাৰ পাছৱৰ্ডটো ছেট কৰা হৈছে</translation>
 <translation id="5029873138381728058">VM পৰীক্ষা কৰিব পৰা নগ’ল</translation>
 <translation id="503155457707535043">এপ্‌ ডাউনল’ড হৈ আছে</translation>
@@ -7271,6 +7269,7 @@
 <translation id="6596816719288285829">আইপি ঠিকনা</translation>
 <translation id="6596916244504302242">এই ছাইটটোত আপোনাৰ আপডে’ট কৰা এক্সটেনশ্বনৰ ছেটিং প্ৰয়োগ কৰিবলৈ এই পৃষ্ঠাখন পুনৰ ল’ড কৰক</translation>
 <translation id="6597017209724497268">নমুনা</translation>
+<translation id="6597324406048772521">এই ছাইটটোত এক্সটেনশ্বনসমূহৰ অনুমতি দিয়া নহয়</translation>
 <translation id="6597331566371766302">আপোনাৰ প্ৰশাসকে তলত দিয়া এক্সটেনশ্বনসমূহ অৱৰোধ কৰিছে:</translation>
 <translation id="659894938503552850">আটাইতকৈ নতুন</translation>
 <translation id="6601262427770154296">ব্যৱহাৰকাৰীৰ অভিধানসমূহ পৰিচালনা কৰক</translation>

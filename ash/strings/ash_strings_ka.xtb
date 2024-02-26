@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">კლავიატურის განლაგების გადასართველად გამოიყენეთ კლავიშთა კომბინაცია: <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-ის გადასახედი ვერსია. აქტიური სამუშაო მაგიდა.</translation>
 <translation id="2487915095798731898">გაწევრიანება</translation>
+<translation id="2499445554382787206">სამუშაო მაგიდის პროფილის მენიუ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">კლავიშების ფიქსაცია</translation>
 <translation id="2504454902900101003">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილებისა და შეტყობინებების ნახვის დაყენების დახურვა</translation>
 <translation id="2509468283778169019">CAPS LOCK ჩართულია</translation>
@@ -604,6 +605,7 @@
 <translation id="3509391053705095206">თქვენი ტელეფონი ვერ მოიძებნა. დარწმუნდით, რომ თქვენს ტელეფონზე ჩართულია Bluetooth.</translation>
 <translation id="3510164367642747937">მაუსის კურსორის გამოყოფა</translation>
 <translation id="3513798432020909783">ანგარიშს მართავს <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">ამოცანების ბოლო განახლება: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{განაახლეთ მოწყობილობა 1 წუთის განმავლობაში}other{განაახლეთ მოწყობილობა # წუთის განმავლობაში}}</translation>
 <translation id="3522979239100719575">იძებნება ხელმისაწვდომი პროფილები. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="3526440770046466733">ბმულის გახსნა ახალ ჩანართზე და მიმდინარე ჩანართზე დარჩენა</translation>
@@ -1142,6 +1144,7 @@
 <translation id="5536723544185013515">ბოლოდროინდელი აპები, ყველა ბოლოდროინდელ აპზე წვდომისთვის გამოიყენეთ კლავიში მარცხნივ ან მარჯვნივ მიმართული ისრით</translation>
 <translation id="553675580533261935">მიმდინარეობს სესიიდან გამოსვლა</translation>
 <translation id="5537725057119320332">მაუწყებლობა</translation>
+<translation id="554017492391497564">დასრულებულად ვერ მოინიშნა.</translation>
 <translation id="5546397813406633847">მომხმარებლის აღდგენა</translation>
 <translation id="554893713779400387">კარნახის გადართვა</translation>
 <translation id="5550417424894892620">ჩავლებით გადაიტანეთ ფაილები დესკტოპზე, ისინი <ph name="HOLDING_SPACE_TITLE" />-ს რომ დაამატოთ. ფაილებს დესკტოპს ვერ დაამატებთ.</translation>
@@ -1336,6 +1339,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">ბატარეა იცლება. ბატარეის დამზოგველი ჩართულია.</translation>
 <translation id="6247728804802644171">შეტყობინებების გახსნა</translation>
+<translation id="6249795363855770621">დასრულებულად ვერ მოინიშნა. ცადეთ ხელახლა, როცა ონლაინ იქნებით.</translation>
 <translation id="6254629735336163724">ჩაკეტილია ჰორიზონტალურზე</translation>
 <translation id="6259254695169772643">ასარჩევად ისარგებლეთ სტილუსით</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: გააქტიურება…</translation>
@@ -1496,6 +1500,7 @@
 <translation id="6896758677409633944">კოპირება</translation>
 <translation id="6912841030378044227">მისამართთა ზოლის ფოკუსში მოქცევა</translation>
 <translation id="6912901278692845878">სწრაფი ტური</translation>
+<translation id="6917259695595127329">ამოცანების ბოლო განახლება <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">თქვენი სმარტ-ბარათის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="692135145298539227">წაშლა</translation>
 <translation id="6929081673585394903">მართვის საშუალებების ჩვენება</translation>

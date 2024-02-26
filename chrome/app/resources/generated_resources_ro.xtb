@@ -2413,7 +2413,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2778471504622896352">Adaugă aplicații la distanță în lansatorul sistemului de operare Chrome</translation>
 <translation id="2779728796406650689">Astfel, Asistentul Google poate să-ți ofere răspunsuri personalizate când pui întrebări.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Extensiile sunt permise pe acest site</translation>
 <translation id="2782104745158847185">Eroare la instalarea aplicației Linux</translation>
 <translation id="2783024642731649028">Un articol din coșul de cumpărături cu <ph name="DISCOUNT_TEXT" /> de la <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, văzut <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Descărcat</translation>
@@ -5276,7 +5275,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5026874946691314267">Nu mai afișați acest mesaj din nou</translation>
 <translation id="5027550639139316293">Certificat pentru e-mail</translation>
 <translation id="5027562294707732951">Adaugă extensia</translation>
-<translation id="5028445315206872221">Extensiile sunt blocate pe acest site</translation>
 <translation id="5029287942302939687">Parola este setată</translation>
 <translation id="5029873138381728058">Nu s-au putut verifica mașinile virtuale</translation>
 <translation id="503155457707535043">Aplicațiile se descarcă</translation>
@@ -7259,6 +7257,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6596816719288285829">Adresă IP</translation>
 <translation id="6596916244504302242">Reîncarcă pagina pentru a aplica setările actualizate pentru extensii la acest site</translation>
 <translation id="6597017209724497268">Eșantioane</translation>
+<translation id="6597324406048772521">Extensiile nu sunt permise pe acest site</translation>
 <translation id="6597331566371766302">Următoarele extensii au fost blocate de administrator:</translation>
 <translation id="659894938503552850">cel mai recent</translation>
 <translation id="6601262427770154296">Gestionează dicționarele utilizatorului</translation>

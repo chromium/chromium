@@ -2412,7 +2412,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2778471504622896352">Externe apps toevoegen aan de ChromeOS Launcher</translation>
 <translation id="2779728796406650689">Hierdoor kan de Google Assistent aangepaste antwoorden geven als je vragen stelt.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Extensies zijn toegestaan op deze site</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
 <translation id="2783024642731649028">1 artikel in je winkelwagen <ph name="DISCOUNT_TEXT" /> bij <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> bekeken</translation>
 <translation id="2783298271312924866">Gedownload</translation>
@@ -5273,7 +5272,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5026874946691314267">Dit bericht niet meer bekijken</translation>
 <translation id="5027550639139316293">Certificaat voor e-mail</translation>
 <translation id="5027562294707732951">Extensie toevoegen</translation>
-<translation id="5028445315206872221">Extensies worden geblokkeerd op deze site</translation>
 <translation id="5029287942302939687">Je wachtwoord is ingesteld</translation>
 <translation id="5029873138381728058">Kan VM's niet checken</translation>
 <translation id="503155457707535043">Apps downloaden</translation>
@@ -7250,6 +7248,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6596916244504302242">Laad deze pagina opnieuw om je geüpdatete extensie-instellingen toe te passen op deze site</translation>
 <translation id="6597017209724497268">Voorbeelden</translation>
+<translation id="6597324406048772521">Extensies niet toegestaan op deze site</translation>
 <translation id="6597331566371766302">De volgende extensies zijn geblokkeerd door je beheerder:</translation>
 <translation id="659894938503552850">nieuwste</translation>
 <translation id="6601262427770154296">Gebruikerswoordenboeken beheren</translation>

@@ -2409,7 +2409,6 @@
 <translation id="2778471504622896352">ChromeOS іске қосу панеліне қашықтағы құрылғыларды қосу</translation>
 <translation id="2779728796406650689">Сұрақ қойған кезіңізде, Google Assistant сізге арнаулы жауаптар береді.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Бұл сайтта кеңейтімдерге рұқсат етілген</translation>
 <translation id="2782104745158847185">Linux қолданбасын орнату кезінде қате кетті</translation>
 <translation id="2783024642731649028"><ph name="RELATIVE_TIME" /> көрген <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) дүкенінде себетіңіздегі 1 элементке <ph name="DISCOUNT_TEXT" /></translation>
 <translation id="2783298271312924866">Жүктелген</translation>
@@ -5272,7 +5271,6 @@
 <translation id="5026874946691314267">Бұны қайта көрсетпеу</translation>
 <translation id="5027550639139316293">Электрондық пошта сертификаты</translation>
 <translation id="5027562294707732951">Кеңейтім қосу</translation>
-<translation id="5028445315206872221">Бұл сайтта кеңейтімдер блокталған</translation>
 <translation id="5029287942302939687">Құпия сөзіңіз орнатылды</translation>
 <translation id="5029873138381728058">Виртуалдық машиналар тексерілмеді.</translation>
 <translation id="503155457707535043">Қолданбалар жүктеп алынуда</translation>
@@ -7250,6 +7248,7 @@
 <translation id="6596816719288285829">IP мекенжайы</translation>
 <translation id="6596916244504302242">Бұл сайтқа жаңартылған кеңейтім параметрлерін қолдану үшін осы бетті қайта жүктеңіз</translation>
 <translation id="6597017209724497268">Үлгілер</translation>
+<translation id="6597324406048772521">Бұл сайтта кеңейтімдер рұқсат етілмейді</translation>
 <translation id="6597331566371766302">Әкімші келесі кеңейтімдерді бөгеген:</translation>
 <translation id="659894938503552850">ең жаңасы</translation>
 <translation id="6601262427770154296">Пайдаланушы сөздіктерін басқару</translation>

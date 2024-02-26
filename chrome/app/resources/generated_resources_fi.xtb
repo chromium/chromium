@@ -2426,7 +2426,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2778471504622896352">Etäsovellusten lisääminen Chrome-käyttöjärjestelmän käynnistysohjelmaan</translation>
 <translation id="2779728796406650689">Tämän avulla Google Assistant voi antaa räätälöityjä vastauksia, kun kysyt jotain.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Laajennukset on sallittu tällä sivustolla</translation>
 <translation id="2782104745158847185">Virhe Linux-sovelluksen asennuksessa</translation>
 <translation id="2783024642731649028">Yksi ostoskorissasi oleva tuote <ph name="DISCOUNT_TEXT" />, myyjä <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, katsottu <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Ladatut</translation>
@@ -5287,7 +5286,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5026874946691314267">Älä näytä tätä uudelleen</translation>
 <translation id="5027550639139316293">Sähköpostivarmenne</translation>
 <translation id="5027562294707732951">Lisää laajennus</translation>
-<translation id="5028445315206872221">Laajennukset on estetty tällä sivustolla</translation>
 <translation id="5029287942302939687">Salasana on asetettu</translation>
 <translation id="5029873138381728058">VM:ien tarkistus ei onnistunut</translation>
 <translation id="503155457707535043">Sovelluksia ladataan</translation>
@@ -7268,6 +7266,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6596816719288285829">IP-osoite</translation>
 <translation id="6596916244504302242">Päivitä tämä sivu, jotta voit ottaa päivitetyt laajennusasetukset käyttöön tällä sivustolla</translation>
 <translation id="6597017209724497268">Esimerkit</translation>
+<translation id="6597324406048772521">Laajennukset eivät ole sallittuja tällä sivustolla</translation>
 <translation id="6597331566371766302">Järjestelmänvalvojasi on estänyt seuraavat laajennukset:</translation>
 <translation id="659894938503552850">uusin</translation>
 <translation id="6601262427770154296">Hallinnoi käyttäjän sanakirjoja</translation>

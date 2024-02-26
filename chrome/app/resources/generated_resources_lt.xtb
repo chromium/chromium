@@ -2430,7 +2430,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2778471504622896352">Pridėkite nuotolinių programų prie „ChromeOS“ paleidimo priemonės</translation>
 <translation id="2779728796406650689">Taip, „Google“ padėjėjas gali teikti pritaikytus atsakymus, kai užduodate klausimų.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Šioje svetainėje plėtiniai leidžiami</translation>
 <translation id="2782104745158847185">Įdiegiant „Linux“ programą įvyko klaida</translation>
 <translation id="2783024642731649028">Viena prekė krepšelyje su <ph name="DISCOUNT_TEXT" /> iš „<ph name="MERCHANT_NAME" />“, <ph name="MERCHANT_DOMAIN" />; peržiūrėta <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Atsisiųsta</translation>
@@ -5294,7 +5293,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5026874946691314267">Daugiau nerodyti</translation>
 <translation id="5027550639139316293">El. pašto sertifikatas</translation>
 <translation id="5027562294707732951">Pridėti plėtinį</translation>
-<translation id="5028445315206872221">Šioje svetainėje plėtiniai blokuojami</translation>
 <translation id="5029287942302939687">Slaptažodis nustatytas</translation>
 <translation id="5029873138381728058">Nepavyko patikrinti virtualaus įrenginio</translation>
 <translation id="503155457707535043">Programos atsisiunčiamos</translation>
@@ -7282,6 +7280,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6596816719288285829">IP adresas</translation>
 <translation id="6596916244504302242">Atnaujintų plėtinio nustatymų pritaikymas šioje svetainėje iš naujo įkėlus šį puslapį</translation>
 <translation id="6597017209724497268">Duomenų imčių skaičius</translation>
+<translation id="6597324406048772521">Šioje svetainėje plėtiniai neleidžiami</translation>
 <translation id="6597331566371766302">Toliau nurodytus plėtinius užblokavo administratorius.</translation>
 <translation id="659894938503552850">naujausias</translation>
 <translation id="6601262427770154296">Tvarkyti naudotojo žodynus</translation>

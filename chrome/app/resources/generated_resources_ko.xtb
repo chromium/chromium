@@ -2429,7 +2429,6 @@
 <translation id="2778471504622896352">Chrome OS 런처에 원격 앱 추가</translation>
 <translation id="2779728796406650689">이를 통해 사용자가 질문할 때 Google 어시스턴트가 맞춤형 대답을 제공할 수 있습니다.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">이 사이트에서 확장 프로그램이 허용되었습니다.</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
 <translation id="2783024642731649028">장바구니에 있는 상품 1개 <ph name="MERCHANT_NAME" />(<ph name="MERCHANT_DOMAIN" />)에서 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" />에 확인함</translation>
 <translation id="2783298271312924866">다운로드됨</translation>
@@ -5291,7 +5290,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5026874946691314267">이 메시지를 다시 표시하지 않음</translation>
 <translation id="5027550639139316293">이메일 인증서</translation>
 <translation id="5027562294707732951">확장 프로그램 추가</translation>
-<translation id="5028445315206872221">이 사이트에서 확장 프로그램이 차단되었습니다.</translation>
 <translation id="5029287942302939687">비밀번호가 설정됨</translation>
 <translation id="5029873138381728058">VM 확인에 실패했습니다.</translation>
 <translation id="503155457707535043">앱 다운로드 중</translation>
@@ -7272,6 +7270,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6596816719288285829">IP 주소</translation>
 <translation id="6596916244504302242">이 페이지를 새로고침하여 이 사이트에 업데이트된 확장 프로그램 설정 적용</translation>
 <translation id="6597017209724497268">샘플</translation>
+<translation id="6597324406048772521">이 사이트에서 허용되지 않는 확장 프로그램</translation>
 <translation id="6597331566371766302">관리자가 다음 확장 프로그램을 차단했습니다.</translation>
 <translation id="659894938503552850">가장 최근 날짜</translation>
 <translation id="6601262427770154296">사용자 사전 관리</translation>

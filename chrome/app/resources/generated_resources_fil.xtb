@@ -2428,7 +2428,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2778471504622896352">Magdagdag ng mga remote na app sa launcher ng ChromeOS</translation>
 <translation id="2779728796406650689">Binibigyang-daan nito ang Google Assistant na magbigay ng mga iniangkop na sagot kapag nagtatanong ka.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Pinapayagan ang mga extension sa site na ito</translation>
 <translation id="2782104745158847185">Nagkaroon ng error sa pag-install ng Linux application</translation>
 <translation id="2783024642731649028">1 item sa iyong cart na may <ph name="DISCOUNT_TEXT" /> mula sa <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, na tiningnan noong <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Na-download</translation>
@@ -5292,7 +5291,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5026874946691314267">Huwag itong ipakita muli</translation>
 <translation id="5027550639139316293">Email Certificate</translation>
 <translation id="5027562294707732951">Idagdag ang extension</translation>
-<translation id="5028445315206872221">Naka-block ang mga extension sa site na ito</translation>
 <translation id="5029287942302939687">Nakatakda na ang iyong password</translation>
 <translation id="5029873138381728058">Hindi nasuri ang mga VM</translation>
 <translation id="503155457707535043">Dina-download ang mga app</translation>
@@ -7275,6 +7273,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6596916244504302242">I-reload ang page na ito para i-apply ang iyong mga in-update na setting ng extension sa site na ito</translation>
 <translation id="6597017209724497268">Mga Sample</translation>
+<translation id="6597324406048772521">Hindi pinapayagan ang mga extension sa site na ito</translation>
 <translation id="6597331566371766302">Na-block ng iyong administrator ang mga sumusunod na extension:</translation>
 <translation id="659894938503552850">pinakabago</translation>
 <translation id="6601262427770154296">Pamahalaan ang mga diksyunaryo ng user</translation>

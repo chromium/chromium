@@ -2409,7 +2409,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2778471504622896352">Agregar apps remotas al selector de ChromeOS</translation>
 <translation id="2779728796406650689">Esto permite que Asistente de Google proporcione respuestas personalizadas cuando hagas preguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Se permiten las extensiones en este sitio</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
 <translation id="2783024642731649028"><ph name="DISCOUNT_TEXT" /> en 1 artículo de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visto <ph name="RELATIVE_TIME" /> que está en tu carrito</translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -5272,7 +5271,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5026874946691314267">No volver a mostrar</translation>
 <translation id="5027550639139316293">Enviar certificado por correo electrónico</translation>
 <translation id="5027562294707732951">Agregar extensión</translation>
-<translation id="5028445315206872221">Las extensiones están bloqueadas en este sitio</translation>
 <translation id="5029287942302939687">Se estableció la contraseña</translation>
 <translation id="5029873138381728058">No se pudieron comprobar las VM</translation>
 <translation id="503155457707535043">Se están descargando las apps</translation>
@@ -7253,6 +7251,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6596916244504302242">Vuelve a cargar esta página para aplicar la configuración actualizada de la extensión en este sitio</translation>
 <translation id="6597017209724497268">Muestras</translation>
+<translation id="6597324406048772521">No se permiten las extensiones en este sitio</translation>
 <translation id="6597331566371766302">Tu administrador bloqueó las siguientes extensiones:</translation>
 <translation id="659894938503552850">más recientes</translation>
 <translation id="6601262427770154296">Administrar diccionarios del usuario</translation>

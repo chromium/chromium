@@ -2404,7 +2404,6 @@
 <translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
 <translation id="2779728796406650689">这样一来，Google 助理便可在您提问时给出量身定制的回答。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">已允许在此网站上使用扩展程序</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
 <translation id="2783024642731649028">您的购物车中有 1 件商品享受了由 <ph name="MERCHANT_DOMAIN" /> 的 <ph name="MERCHANT_NAME" /> 提供的 <ph name="DISCOUNT_TEXT" />，距离上次查看已有 <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">已下载</translation>
@@ -5266,7 +5265,6 @@
 <translation id="5026874946691314267">不再显示此通知</translation>
 <translation id="5027550639139316293">电子邮件证书</translation>
 <translation id="5027562294707732951">添加扩展程序</translation>
-<translation id="5028445315206872221">已阻止在此网站上使用扩展程序</translation>
 <translation id="5029287942302939687">您的密码已设置完毕</translation>
 <translation id="5029873138381728058">未能检查虚拟机</translation>
 <translation id="503155457707535043">正在下载所选应用</translation>
@@ -7244,6 +7242,7 @@
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6596916244504302242">请重新加载此页面，以便将更新后的扩展程序相关设置应用于此网站</translation>
 <translation id="6597017209724497268">个样本的平均值</translation>
+<translation id="6597324406048772521">不允许在此网站上使用扩展程序</translation>
 <translation id="6597331566371766302">您的管理员已屏蔽以下扩展程序：</translation>
 <translation id="659894938503552850">从新到旧</translation>
 <translation id="6601262427770154296">管理用户字典</translation>

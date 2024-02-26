@@ -33,6 +33,7 @@
 <translation id="1516530951338665275">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
  ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
+<translation id="155168855724261758">ປັບແຕ່ງ Chrome ຂອງທ່ານ</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chrome ນີ້ຢູ່ກ່ອນແລ້ວ. ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chrome ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ກໍາລັງໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
@@ -72,6 +73,7 @@
 <translation id="2121284319307530122">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chrome</translation>
 <translation id="2123055963409958220">ຊ່ວຍເຮັດໃຫ້ Chrome ດີຂຶ້ນໂດຍການລາຍງານ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າປັດຈຸບັນ<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">ໄຟລ໌ທີ່ດາວໂຫຼດໄວ້ບໍ່ຜ່ານການຢັ້ງຢືນ.</translation>
+<translation id="2128411189117340671">ຈັດການໂປຣໄຟລ໌ Chrome</translation>
 <translation id="2130870084309816036">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. ຫາກທ່ານໃຊ້ firewall, ກະລຸນາເພີ່ມ <ph name="PRODUCT_EXE_NAME" /> ໃສ່ໃນລາຍຊື່ອະນຸຍາດ.</translation>
 <translation id="2131230230468101642">ເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ, ພວກເຮົາຈະລຶບຄວາມສົນໃຈຂອງທ່ານທີ່ເກົ່າກວ່າ 4 ອາທິດອອກໂດຍອັດຕະໂນມັດ. ໃນເວລາທີ່ທ່ານສືບຕໍ່ການທ່ອງເວັບ, ຄວາມສົນໃຈອາດປາກົດຢູ່ລາຍຊື່ຄືນໃໝ່. ຫຼື ທ່ານສາມາດລຶບຄວາມສົນໃຈອອກໄດ້ຫາກທ່ານບໍ່ຕ້ອງການໃຫ້ Chrome ພິຈາລະນາ.</translation>
 <translation id="2139300032719313227">ຣີສະຕາດ ChromeOS</translation>
@@ -425,6 +427,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7917876797003313048">ທ່ານສາມາດຈັດການບັນຊີ Google ທີ່ເຂົ້າສູ່ລະບົບແລ້ວຂອງທ່ານໄດ້. ບັນຊີ Google ຂອງທ່ານແມ່ນໃຊ້ສຳລັບໂປຣແກຣມທ່ອງເວັບ Chrome, Play Store, Gmail ແລະ ອື່ນໆ. ຫາກທ່ານຕ້ອງການເພີ່ມບັນຊີໃຫ້ຄົນອື່ນ ເຊັ່ນ: ສະມາຊິກຄອບຄົວ, ໃຫ້ເພີ່ມຄົນໃໝ່ໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານແທນ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ມີການຫຼອກລວງ ແລະ ອາດເຮັດການປ່ຽນແປງທີ່ບໍ່ຄາດຄິດກັບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7951272445806340501">ຈຳເປັນຕ້ອງຣີສະຕາດ ChromeOS Flex ເພື່ອນຳໃຊ້ອັບເດດ.</translation>
+<translation id="7959172989483770734">ຈັດການໂປຣໄຟລ໌ Chrome</translation>
 <translation id="7962368738413920945">ເວັບໄຊຈະເຮັດວຽກຕາມທີ່ທ່ານຄາດໄວ້ແຕ່ຈະບໍ່ຈື່ທ່ານຫຼັງຈາກທີ່ທ່ານປິດໜ້າຈໍ Chrome ທັງໝົດແລ້ວ</translation>
 <translation id="7962410387636238736">ຄອມພິວເຕີນີ້ຈະບໍ່ໄດ້ຮັບການອັບເດດ Google Chrome ອີກຕໍ່ໄປ ເພາະວ່າບໍ່ຮອງຮັບ Windows XP ແລະ Windows Vista ອີກຕໍ່ໄປ</translation>
 <translation id="8005666035647241369">ຫາຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້</translation>
@@ -432,6 +435,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8009904340233602924">ໃຊ້ Chrome ໂດຍບໍ່ມີບັນຊີ</translation>
 <translation id="8013993649590906847">ຖ້າຮູບບໍ່ມີລາຍລະອຽດທີ່ເປັນປະໂຫຍດ, Chrome ຈະພະຍາຍາມໃຫ້ລາຍລະອຽດແກ່ທ່ານ. ເພື່ອສ້າງລາຍລະອຽດ, ລະບົບຈະສົ່ງຮູບພາບໃຫ້ Google.</translation>
 <translation id="8019103195866286235">ນັກພັດທະນາຍົກເລີກການເຜີຍແຜ່ສ່ວນຂະຫຍາຍນີ້ແລ້ວ ແລະ ອາດບໍ່ປອດໄພ. ລຶບສ່ວນຂະຫຍາຍດັ່ງກ່າວອອກຈາກ Chrome ເພື່ອບໍ່ໃຫ້ເບິ່ງ ແລະ ປ່ຽນຂໍ້ມູນຂອງທ່ານຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ, ເຊິ່ງຮວມເຖິງຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ.</translation>
+<translation id="8031641407207794385">ປັບແຕ່ງ Chrome ຂອງທ່ານ</translation>
 <translation id="80471789339884597">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານທັງໝົດກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>

@@ -238,6 +238,7 @@
 <translation id="2252674110805316998">Vyhledávání</translation>
 <translation id="2252749852083403809">Ukládání na Disk pro uživatele <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Vaše organizace umožňuje pouze přihlášení pomocí určitých účtů.</translation>
+<translation id="2257594476751932246">Personalizované zprávy</translation>
 <translation id="2258326562203545455">{count,plural, =1{Záložku si můžete uložit do svého účtu Google {email}.}few{Záložky si můžete uložit do svého účtu Google {email}.}many{Záložky si můžete uložit do svého účtu Google {email}.}other{Záložky si můžete uložit do svého účtu Google {email}.}}</translation>
 <translation id="225943865679747347">Kód chyby: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Přidat účet</translation>

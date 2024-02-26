@@ -2425,7 +2425,6 @@
 <translation id="2778471504622896352">ChromeOS లాంచర్‌కు రిమోట్ యాప్‌లను జోడించండి</translation>
 <translation id="2779728796406650689">మీరు ప్రశ్నలు అడిగినప్పుడు, తగిన సమాధానాలను అందించేలా ఇది Google Assistantకు అనుమతినిస్తుంది.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">ఈ సైట్‌లోని ఎక్స్‌టెన్షన్‌లు అనుమతించబడతాయి</translation>
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />‌లోని మీ కార్ట్‌లోని <ph name="DISCOUNT_TEXT" /> గల 1 ఐటెమ్‌ను, <ph name="RELATIVE_TIME" /> చూడటం జరిగింది</translation>
 <translation id="2783298271312924866">డౌన్‌లోడ్ చేయబడింది</translation>
@@ -5289,7 +5288,6 @@
 <translation id="5026874946691314267">దీన్ని మళ్లీ చూపవద్దు</translation>
 <translation id="5027550639139316293">ఈమెయిల్‌ సర్టిఫికెట్</translation>
 <translation id="5027562294707732951">ఎక్స్‌టెన్షన్‌ని జోడించండి</translation>
-<translation id="5028445315206872221">ఈ సైట్‌లోని ఎక్స్‌టెన్షన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5029287942302939687">మీ పాస్‌వర్డ్ సెట్ చేయబడింది</translation>
 <translation id="5029873138381728058">వర్చువల్ మెషీన్‌లను చెక్ చేయడం విఫలమైంది</translation>
 <translation id="503155457707535043">యాప్‌లు డౌన్‌లోడ్ చేయబడుతున్నాయి</translation>
@@ -7270,6 +7268,7 @@
 <translation id="6596816719288285829">IP అడ్రస్‌</translation>
 <translation id="6596916244504302242">ఈ సైట్‌లో మీ అప్‌డేట్ చేయబడిన ఎక్స్‌టెన్షన్‌ను వర్తింపజేయడానికి ఈ పేజీని రీలోడ్ చేయండి</translation>
 <translation id="6597017209724497268">నమూనాలు</translation>
+<translation id="6597324406048772521">ఈ సైట్‌లో ఎక్స్‌టెన్షన్‌లకు అనుమతి లేదు</translation>
 <translation id="6597331566371766302">మీ అడ్మినిస్ట్రేటర్ ఈ కింది ఎక్స్‌టెన్షన్‌లను బ్లాక్ చేశారు:</translation>
 <translation id="659894938503552850">సరికొత్తది</translation>
 <translation id="6601262427770154296">యూజర్ డిక్షనరీలను మేనేజ్ చేయండి</translation>

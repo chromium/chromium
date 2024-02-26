@@ -358,6 +358,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" /> da biste promenili raspored tastature.</translation>
 <translation id="2486214324139475545">Pregled radne površine <ph name="DESK_NAME" />. Aktivna radna površina.</translation>
 <translation id="2487915095798731898">Pridruži me</translation>
+<translation id="2499445554382787206">Meni za profil na radnoj površini. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
 <translation id="2504454902900101003">Odbacite podešavanje pregleda nedavnih slika, medija i obaveštenja na telefonu</translation>
 <translation id="2509468283778169019">CAPS LOCK je uključen</translation>
@@ -604,6 +605,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3509391053705095206">Pronalaženje telefona nije uspelo. Proverite da li je Bluetooth na telefonu uključen.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
 <translation id="3513798432020909783">Nalogom upravlja <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Datum i vreme poslednjeg ažuriranja zadataka: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Ažurirajte uređaj u roku od 1 minuta}one{Ažurirajte uređaj u roku od # minuta}few{Ažurirajte uređaj u roku od # minuta}other{Ažurirajte uređaj u roku od # minuta}}</translation>
 <translation id="3522979239100719575">Traže se dostupni profili. To može da potraje nekoliko minuta.</translation>
 <translation id="3526440770046466733">Otvori link na novoj kartici i ostani na aktuelnoj kartici</translation>
@@ -1143,6 +1145,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5536723544185013515">Nedavne aplikacije, krećite se pomoću tastera sa strelicom nalevo ili nadesno da biste pristupali svim nedavnim aplikacijama</translation>
 <translation id="553675580533261935">Napuštanje sesije</translation>
 <translation id="5537725057119320332">Prebacuj</translation>
+<translation id="554017492391497564">Označavanje stavke kao da je dovršena nije uspelo.</translation>
 <translation id="5546397813406633847">Vrati pristup korisničkom nalogu</translation>
 <translation id="554893713779400387">Uključi/isključi diktiranje</translation>
 <translation id="5550417424894892620">Otpustite fajlove na pozadini da biste ih dodali u <ph name="HOLDING_SPACE_TITLE" />. Ne možete da dodajete fajlove na pozadini.</translation>
@@ -1337,6 +1340,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Slaba baterija. Ušteda baterije je uključena.</translation>
 <translation id="6247728804802644171">Otvorite obaveštenja</translation>
+<translation id="6249795363855770621">Označavanje stavke kao da je dovršena nije uspelo. Probajte ponovo kada budete onlajn.</translation>
 <translation id="6254629735336163724">Horizontalni prikaz je zaključan</translation>
 <translation id="6259254695169772643">Izaberite pomoću pisaljke</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiviranje...</translation>
@@ -1497,6 +1501,7 @@ Novo instaliranje</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6912841030378044227">Fokusiranje na traku za adresu</translation>
 <translation id="6912901278692845878">Kratak obilazak</translation>
+<translation id="6917259695595127329">Vreme poslednjeg ažuriranja zadataka: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nismo uspeli da prepoznamo pametnu karticu. Probajte ponovo.</translation>
 <translation id="692135145298539227">izbriši</translation>
 <translation id="6929081673585394903">Pokaži kontrole</translation>

@@ -2414,7 +2414,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2778471504622896352">Pievienot attālās lietotnes Chrome OS palaidējam</translation>
 <translation id="2779728796406650689">Tādējādi Google asistents varēs sniegt pielāgotas atbildes, kad uzdosiet jautājumus.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Paplašinājumi ir atļauti šajā vietnē</translation>
 <translation id="2782104745158847185">Instalējot Linux lietojumprogrammu, radās kļūda</translation>
 <translation id="2783024642731649028">Vienai precei jūsu grozā ir <ph name="DISCOUNT_TEXT" /> no tirgotāja <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />); prece skatīta <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Lejupielādēts</translation>
@@ -5277,7 +5276,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5026874946691314267">Vairs nerādīt šo paziņojumu</translation>
 <translation id="5027550639139316293">E-pasta sertifikāts</translation>
 <translation id="5027562294707732951">Pievienot paplašinājumu</translation>
-<translation id="5028445315206872221">Paplašinājumi ir bloķēti šajā vietnē</translation>
 <translation id="5029287942302939687">Parole ir iestatīta</translation>
 <translation id="5029873138381728058">Neizdevās pārbaudīt virtuālās mašīnas</translation>
 <translation id="503155457707535043">Pašlaik lejupielādētās lietotnes</translation>
@@ -7259,6 +7257,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6596816719288285829">IP adrese</translation>
 <translation id="6596916244504302242">Atkārtoti ielādējiet šo lapu, lai lietotu atjauninātos paplašinājuma iestatījumus šajā vietnē.</translation>
 <translation id="6597017209724497268">Paraugi</translation>
+<translation id="6597324406048772521">Paplašinājumi nav atļauti šajā vietnē</translation>
 <translation id="6597331566371766302">Jūsu administrators bloķēja tālāk norādītos paplašinājumus:</translation>
 <translation id="659894938503552850">jaunākajām</translation>
 <translation id="6601262427770154296">Pārvaldīt lietotāja vārdnīcas</translation>

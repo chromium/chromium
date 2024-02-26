@@ -358,6 +358,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2484513351006226581">Rozložení klávesnice změníte stisknutím kláves <ph name="KEYBOARD_SHORTCUT" /></translation>
 <translation id="2486214324139475545">Náhled plochy <ph name="DESK_NAME" />. Aktivní plocha.</translation>
 <translation id="2487915095798731898">Připojit se</translation>
+<translation id="2499445554382787206">Nabídka profilu plochy. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Jedním prstem</translation>
 <translation id="2504454902900101003">Zavřít nastavení zobrazování nedávných fotek, médií a oznámení z telefonu</translation>
 <translation id="2509468283778169019">CAPS LOCK je zapnutý</translation>
@@ -604,6 +605,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3509391053705095206">Telefon se nepodařilo najít. Zkontrolujte, jestli je na něm zapnutý Bluetooth.</translation>
 <translation id="3510164367642747937">Zvýraznit ukazatel myši</translation>
 <translation id="3513798432020909783">Správce účtu: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Poslední aktualizace úkolů: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Do jedné minuty zařízení aktualizujte}few{Do # minut zařízení aktualizujte}many{Do # minuty zařízení aktualizujte}other{Do # minut zařízení aktualizujte}}</translation>
 <translation id="3522979239100719575">Probíhá vyhledávání dostupných profilů. Může to trvat několik minut.</translation>
 <translation id="3526440770046466733">Otevřít odkaz na nové kartě a zůstat na aktuální kartě</translation>
@@ -1142,6 +1144,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5536723544185013515">Nedávné aplikace, můžete je procházet pomocí kláves se šipkami vlevo a vpravo</translation>
 <translation id="553675580533261935">Ukončení návštěvy</translation>
 <translation id="5537725057119320332">Odeslat</translation>
+<translation id="554017492391497564">Nelze označit jako dokončené.</translation>
 <translation id="5546397813406633847">Obnovit uživatele</translation>
 <translation id="554893713779400387">Přepnout diktování</translation>
 <translation id="5550417424894892620">Soubory přetažené na plochu budou přidány do prostoru <ph name="HOLDING_SPACE_TITLE" />. Na plochu soubory přidat nemůžete.</translation>
@@ -1336,6 +1339,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Baterie je téměř vybitá. Zapnul se spořič baterie.</translation>
 <translation id="6247728804802644171">Otevřít oznámení</translation>
+<translation id="6249795363855770621">Nelze označit jako dokončené. Zkuste to, až budete online.</translation>
 <translation id="6254629735336163724">Uzamknuto na šířku</translation>
 <translation id="6259254695169772643">K výběru použijte dotykové pero</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Probíhá aktivace...</translation>
@@ -1496,6 +1500,7 @@ Nová instalace</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6912841030378044227">Přejít do adresního řádku</translation>
 <translation id="6912901278692845878">Rychlá prohlídka</translation>
+<translation id="6917259695595127329">Poslední aktualizace úkolů: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
 <translation id="692135145298539227">smazat</translation>
 <translation id="6929081673585394903">Zobrazit ovládací prvky</translation>

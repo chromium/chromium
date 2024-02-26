@@ -631,6 +631,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="4461614516424362539">Kada povežete drugi uređaj pomoću QR koda, on može da koristi ovaj telefon kao bezbednosni ključ. Ako ga uklonite, morate da skenirate QR kôd da biste ga ponovo povezali.</translation>
 <translation id="4478161224666880173">Možete da koristite <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nalog na ovom sajtu. Da biste nastavili, prijavite se na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalira se <ph name="MODULE" /> za Chrome…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" />. Čuva se samo na ovom uređaju.}one{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}few{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}other{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="4484496141267039529">Nema internet veze. Probajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi podaci Chrome aplikacija će biti trajno izbrisani. To obuhvata sve datoteke, podešavanja, naloge, baze podataka itd.</translation>
 <translation id="4491323382106587961">Izaberite nalog. Trenutno je izabran <ph name="EMAIL" />.</translation>
@@ -851,6 +852,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="557018954714092179">Napravi novi folder</translation>
 <translation id="5578795271662203820">Potraži ovu sliku na <ph name="SEARCH_ENGINE" />-u</translation>
 <translation id="5581519193887989363">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK1" />podešavanjima<ph name="END_LINK1" />.</translation>
+<translation id="558429399979870715">Povežite Chrome i druge Google usluge ako želite da međusobno dele podatke</translation>
 <translation id="5590372121997663538">Zapamti ovaj računar</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="5599455543593328020">Režim bez arhiviranja</translation>
@@ -880,6 +882,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="571930967925877633">Obeleživači, istorija i drugi Chrome podaci više se neće sinhronizovati sa Google nalogom</translation>
 <translation id="572328651809341494">Nedavno korišćene kartice</translation>
 <translation id="5726692708398506830">Uvećavanje celokupnog prikaza stranice</translation>
+<translation id="5728072125198221967">Povezane Google usluge</translation>
 <translation id="5744751019568455640">Evo glasova koje možete da izaberete za čitanje veb-stranica. Ako vam se sviđa ovaj glas i želite da nastavim da ga koristim, samo dodirnite naziv glasa.</translation>
 <translation id="5748802427693696783">Prebacili ste na standardne kartice</translation>
 <translation id="5749068826913805084">Chrome-u je potreban pristup memorijskom prostoru da bi preuzimao datoteke.</translation>
@@ -1164,6 +1167,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7063006564040364415">Nije moguće povezivanje sa serverom za sinhronizaciju.</translation>
 <translation id="7071521146534760487">Upravljajte nalogom</translation>
 <translation id="707155805709242880">Odaberite stavke za sinhronizaciju u nastavku</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}one{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}few{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}other{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD kartica</translation>
 <translation id="7080806333218412752">Šalje URL-ove u Bezbedno pregledanje na proveru. Šalje i mali uzorak stranica, preuzimanja, aktivnosti dodataka i informacija sistema da bi se otkrile nove pretnje. Privremeno povezuje te podatke sa Google nalogom kada ste prijavljeni da biste bili zaštićeni u svim Google aplikacijama.</translation>
 <translation id="7085332316435785646">Odaberite da li ćete uvrstiti istoriju Chrome-a radi personalizovanijih doživljaja u Google uslugama</translation>
@@ -1431,6 +1435,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8310344678080805313">Standardne kartice</translation>
 <translation id="831192587911042850">Dodaje aktuelni veb-sajt na listu veb-sajtova koje pratite.</translation>
 <translation id="8333340769932050274">Možete da blokirate teme koje ne želite da delite sa sajtovima. Chrome takođe automatski briše teme starije od 4 nedelje. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">Uvrstite istoriju Chrome-a ako želite da je dodate u aktivnosti na vebu i u aplikacijama na Google nalogu</translation>
 <translation id="834313815369870491">Nikad ne prevodi sajtove</translation>
 <translation id="8348430946834215779">Koristite HTTPS kad god je to moguće i dobijajte upozorenje pre učitavanja sajtova koji ga ne podržavaju</translation>
 <translation id="8354977102499939946">Brzo pretražujte pomoću glasa. Da biste izmenili ovu prečicu, idite u Podešavanja.</translation>
@@ -1576,6 +1581,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="9081543426177426948">Sajtovi koje posećujete se ne čuvaju u režimu bez arhiviranja</translation>
 <translation id="9086302186042011942">Sinhronizovanje</translation>
 <translation id="9086455579313502267">Ne možemo da pristupimo mreži</translation>
+<translation id="909756639352028172">Da biste imali najpersonalizovaniji doživljaj, uvrstite Chrome u aktivnosti na vebu i u aplikacijama i povezane Google usluge</translation>
 <translation id="9099220545925418560">Na osnovu istorije pregledanja. Ovo podešavanje je isključeno.</translation>
 <translation id="9100610230175265781">Potrebna je pristupna fraza</translation>
 <translation id="9101137867221042551">Upravljanje</translation>

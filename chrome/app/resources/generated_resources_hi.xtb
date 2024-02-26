@@ -2424,7 +2424,6 @@
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2779728796406650689">इससे Google Assistant, आपके सवाल पूछने पर ज़रूरत के हिसाब से जवाब दे पाती है.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">इस साइट पर एक्सटेंशन को अनुमति दी गई है</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
 <translation id="2783024642731649028">आपके कार्ट में मौजूद एक आइटम के लिए <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> पर <ph name="DISCOUNT_TEXT" /> मिल रहा है, <ph name="RELATIVE_TIME" /> देखा गया</translation>
 <translation id="2783298271312924866">डाउनलोड किए गए</translation>
@@ -5277,7 +5276,6 @@
 <translation id="5026874946691314267">इसे दोबारा न दिखाएं</translation>
 <translation id="5027550639139316293">ईमेल प्रमाणपत्र</translation>
 <translation id="5027562294707732951">एक्‍सटेंशन जोड़ें</translation>
-<translation id="5028445315206872221">इस साइट पर एक्सटेंशन को ब्लॉक कर दिया गया है</translation>
 <translation id="5029287942302939687">आपका पासवर्ड सेट हो गया है</translation>
 <translation id="5029873138381728058">यह पता नहीं चला कि कितने वीएम मौजूद हैं</translation>
 <translation id="503155457707535043">ऐप्लिकेशन डाउनलोड हो रहे हैं</translation>
@@ -7257,6 +7255,7 @@
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6596916244504302242">इस साइट पर, अपनी अपडेट की गई एक्सटेंशन सेटिंग लागू करने के लिए, इस पेज को फिर से लोड करें</translation>
 <translation id="6597017209724497268">नमूने</translation>
+<translation id="6597324406048772521">इस साइट पर एक्सटेंशन को अनुमति नहीं दी गई है</translation>
 <translation id="6597331566371766302">आपके एडमिन ने इन एक्सटेंशन को ब्लॉक किया है:</translation>
 <translation id="659894938503552850">सबसे नया</translation>
 <translation id="6601262427770154296">उपयोगकर्ता डिक्शनरी मैनेज करें</translation>

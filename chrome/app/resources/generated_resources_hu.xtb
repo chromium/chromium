@@ -2426,7 +2426,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2778471504622896352">Távoli alkalmazások hozzáadása a ChromeOS indítójához</translation>
 <translation id="2779728796406650689">Ez lehetővé teszi a Google Segéd számára, hogy személyre szabott válaszokat adjon, amikor Ön kérdéseket tesz fel.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">A bővítmények engedélyezve vannak ezen a webhelyen</translation>
 <translation id="2782104745158847185">Hiba történt a Linux-alkalmazás telepítése során</translation>
 <translation id="2783024642731649028">A kosárban lévő 1 tételre a kereskedő (<ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />) <ph name="DISCOUNT_TEXT" /> kedvezményt adott; megtekintve: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Letöltött</translation>
@@ -5289,7 +5288,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5026874946691314267">Ez ne jelenjen meg többé</translation>
 <translation id="5027550639139316293">E-mail tanúsítvány</translation>
 <translation id="5027562294707732951">Bővítmény hozzáadása</translation>
-<translation id="5028445315206872221">A bővítmények le vannak tiltva ezen a webhelyen</translation>
 <translation id="5029287942302939687">Jelszó beállítva</translation>
 <translation id="5029873138381728058">Nem sikerült a VM-ek ellenőrzése</translation>
 <translation id="503155457707535043">Alkalmazások letöltése folyamatban</translation>
@@ -7271,6 +7269,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6596816719288285829">IP-cím</translation>
 <translation id="6596916244504302242">Az oldal újratöltésével alkalmazhatja a frissített bővítménybeállításokat erre a webhelyre</translation>
 <translation id="6597017209724497268">Minták</translation>
+<translation id="6597324406048772521">A bővítmények nincsenek engedélyezve ezen a webhelyen</translation>
 <translation id="6597331566371766302">A következő bővítményeket letiltotta a rendszergazda:</translation>
 <translation id="659894938503552850">legújabb</translation>
 <translation id="6601262427770154296">Felhasználói szótárak kezelése</translation>

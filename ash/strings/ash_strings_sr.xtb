@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">Притисните <ph name="KEYBOARD_SHORTCUT" /> да бисте променили распоред тастатуре.</translation>
 <translation id="2486214324139475545">Преглед радне површине <ph name="DESK_NAME" />. Активна радна површина.</translation>
 <translation id="2487915095798731898">Придружи ме</translation>
+<translation id="2499445554382787206">Мени за профил на радној површини. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Лепљиви тастери</translation>
 <translation id="2504454902900101003">Одбаците подешавање прегледа недавних слика, медија и обавештења на телефону</translation>
 <translation id="2509468283778169019">CAPS LOCK је укључен</translation>
@@ -604,6 +605,7 @@
 <translation id="3509391053705095206">Проналажење телефона није успело. Проверите да ли је Bluetooth на телефону укључен.</translation>
 <translation id="3510164367642747937">Истакни курсор миша</translation>
 <translation id="3513798432020909783">Налогом управља <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Датум и време последњег ажурирања задатака: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Ажурирајте уређај у року од 1 минута}one{Ажурирајте уређај у року од # минута}few{Ажурирајте уређај у року од # минута}other{Ажурирајте уређај у року од # минута}}</translation>
 <translation id="3522979239100719575">Траже се доступни профили. То може да потраје неколико минута.</translation>
 <translation id="3526440770046466733">Отвори линк на новој картици и остани на актуелној картици</translation>
@@ -1143,6 +1145,7 @@
 <translation id="5536723544185013515">Недавне апликације, крећите се помоћу тастера са стрелицом налево или надесно да бисте приступали свим недавним апликацијама</translation>
 <translation id="553675580533261935">Напуштање сесије</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
+<translation id="554017492391497564">Означавање ставке као да је довршена није успело.</translation>
 <translation id="5546397813406633847">Врати приступ корисничком налогу</translation>
 <translation id="554893713779400387">Укључи/искључи диктирање</translation>
 <translation id="5550417424894892620">Отпустите фајлове на позадини да бисте их додали у <ph name="HOLDING_SPACE_TITLE" />. Не можете да додајете фајлове на позадини.</translation>
@@ -1337,6 +1340,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Слаба батерија. Уштеда батерије је укључена.</translation>
 <translation id="6247728804802644171">Отворите обавештења</translation>
+<translation id="6249795363855770621">Означавање ставке као да је довршена није успело. Пробајте поново када будете онлајн.</translation>
 <translation id="6254629735336163724">Хоризонтални приказ је закључан</translation>
 <translation id="6259254695169772643">Изаберите помоћу писаљке</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Активирање...</translation>
@@ -1497,6 +1501,7 @@
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6912841030378044227">Фокусирање на траку за адресу</translation>
 <translation id="6912901278692845878">Кратак обилазак</translation>
+<translation id="6917259695595127329">Време последњег ажурирања задатака: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="692135145298539227">избриши</translation>
 <translation id="6929081673585394903">Покажи контроле</translation>

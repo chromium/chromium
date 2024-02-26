@@ -2428,7 +2428,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2778471504622896352">Bættu fjartengdum forritum við ChromeOS ræsiforritið</translation>
 <translation id="2779728796406650689">Þetta gerir Google-hjálpara kleift að veita sérsniðin svör þegar þú spyrð spurninga.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Viðbætur eru leyfðar á þessari síðu</translation>
 <translation id="2782104745158847185">Villa við uppsetningu Linux-forrits</translation>
 <translation id="2783024642731649028">1 vara í körfunni þinni <ph name="DISCOUNT_TEXT" /> frá <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, skoðuð <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Sótt</translation>
@@ -5292,7 +5291,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5026874946691314267">Ekki sýna þetta aftur</translation>
 <translation id="5027550639139316293">Vottorð tölvupósts</translation>
 <translation id="5027562294707732951">Bæta viðbót við</translation>
-<translation id="5028445315206872221">Lokað er fyrir viðbætur á þessari síðu</translation>
 <translation id="5029287942302939687">Aðgangsorð var stillt</translation>
 <translation id="5029873138381728058">Ekki tókst að leita að sýndarvélum</translation>
 <translation id="503155457707535043">Sækir forrit</translation>
@@ -7275,6 +7273,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6596816719288285829">IP-tala</translation>
 <translation id="6596916244504302242">Endurhladdu þessari síðu til að nota uppfærðar viðbótastillingar á þessu vefsvæði</translation>
 <translation id="6597017209724497268">Dæmi</translation>
+<translation id="6597324406048772521">Viðbætur ekki leyfðar á þessu vefsvæði</translation>
 <translation id="6597331566371766302">Kerfisstjórinn setti eftirfarandi atriði á bannlista:</translation>
 <translation id="659894938503552850">nýjast</translation>
 <translation id="6601262427770154296">Stjórna orðabókum notanda</translation>

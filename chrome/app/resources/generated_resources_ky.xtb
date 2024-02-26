@@ -2427,7 +2427,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2778471504622896352">ChromeOS жүргүзгүчүнө пульт колдонмолорун кошуу</translation>
 <translation id="2779728796406650689">Бул аркылуу Google Жардамчы суроолоруңузга ылайыкташтырылган жоопторду бере алат.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Бул сайтта кеңейтүүлөргө уруксат берилди</translation>
 <translation id="2782104745158847185">Linux колдонмосун орнотууда ката кетти</translation>
 <translation id="2783024642731649028">Себеттеги <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> товарларынын ичинен 1 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> көрүлдү</translation>
 <translation id="2783298271312924866">Жүктөлүп алынды</translation>
@@ -5291,7 +5290,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5026874946691314267">Бул нерсе экинчи көрүнбөсүн</translation>
 <translation id="5027550639139316293">Электрондук почта тастыктамасы</translation>
 <translation id="5027562294707732951">Кеңейтүү кошуу</translation>
-<translation id="5028445315206872221">Бул сайтта кеңейтүүлөр бөгөттөлдү</translation>
 <translation id="5029287942302939687">Сырсөз коюлду</translation>
 <translation id="5029873138381728058">Виртуалдык машиналар текшерилбей койду</translation>
 <translation id="503155457707535043">Колдонмолор жүктөлүп алынууда</translation>
@@ -7272,6 +7270,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6596816719288285829">IP дарек</translation>
 <translation id="6596916244504302242">Бул сайтка жаңыртылган кеңейтүү параметрлерин колдонуу үчүн бул баракты кайрадан жүктөңүз</translation>
 <translation id="6597017209724497268">Үлгүлөр</translation>
+<translation id="6597324406048772521">Бул сайтта кеңейтүүлөргө уруксат берилбейт</translation>
 <translation id="6597331566371766302">Төмөнкү кеңейтүүлөрдү администраторуңуз бөгөттөп койду:</translation>
 <translation id="659894938503552850">эң жаңы</translation>
 <translation id="6601262427770154296">Колдонуучунун сөздүктөрүн тескөө</translation>

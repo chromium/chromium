@@ -33,6 +33,7 @@
 <translation id="1516530951338665275">Google Chrome захтева приступ Bluetooth-у ради настављања са 
  упаривањем. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OС je могућ захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Прилагодите Chrome</translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
 <translation id="1583073672411044740">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome користи камеру.</translation>
@@ -72,6 +73,7 @@
 <translation id="2121284319307530122">Поново покрени да би се &amp;Chrome ажурирао</translation>
 <translation id="2123055963409958220">Помозите да побољшамо Chrome тако што ћете послати извештај о <ph name="BEGIN_LINK" />актуелним подешавањима<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Верификација преузетог фајла није успела.</translation>
+<translation id="2128411189117340671">Управљај Chrome профилима</translation>
 <translation id="2130870084309816036">Повезивање са интернетом није успело. Ако користите заштитни зид, на листу дозвољених ставите <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Ради заштите приватности аутоматски бришемо интересовања старија од 4 недеље. Када наставите да прегледате, интересовање ће се можда поново појавити на листи. Можете и да уклањате интересовања за која не желите да их Chrome узима у обзир.</translation>
 <translation id="2139300032719313227">Рестартујте Chrome ОС</translation>
@@ -425,6 +427,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7917876797003313048">Можете да управљате Google налозима на које сте пријављени. Google налози се користе за Chrome прегледач, Play продавницу, Gmail и друго. Ако желите да додате налог за неког другог, нпр. члана породице, уместо тога додајте нову особу на свој уређај <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome је блокирао ово преузимање јер је овај фајл обмањујући и може да изврши неочекиване промене на уређај</translation>
 <translation id="7951272445806340501">Треба да рестартујете Chrome OS Flex да бисте применили ажурирање.</translation>
+<translation id="7959172989483770734">Управљај Chrome профилима</translation>
 <translation id="7962368738413920945">Сајтови ће вероватно радити на очекивани начин, али вас неће запамтити када затворите све Chrome прозоре</translation>
 <translation id="7962410387636238736">Овај рачунар више неће добијати ажурирања за Google Chrome јер Windows XP и Windows Vista више нису подржани</translation>
 <translation id="8005666035647241369">У Google менаџеру лозинки на овом уређају</translation>
@@ -432,6 +435,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8009904340233602924">Користите Chrome без налога</translation>
 <translation id="8013993649590906847">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
 <translation id="8019103195866286235">Програмер је објавио овај додатак и он можда није безбедан. Уклоните га из Chrome-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
+<translation id="8031641407207794385">Прилагодите Chrome</translation>
 <translation id="80471789339884597">Хвала вам на инсталацији. Морате да рестартујете све прегледаче пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Други Chrome профили</translation>

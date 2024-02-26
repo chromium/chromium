@@ -2427,7 +2427,6 @@
 <translation id="2778471504622896352">Προσθήκη απομακρυσμένων εφαρμογών στην εφαρμογή εκκίνησης ChromeOS</translation>
 <translation id="2779728796406650689">Αυτή η ρύθμιση επιτρέπει στον Βοηθό Google να παρέχει προσαρμοσμένες απαντήσεις όταν κάνετε ερωτήσεις.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Οι επεκτάσεις επιτρέπονται σε αυτόν τον ιστότοπο</translation>
 <translation id="2782104745158847185">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής Linux</translation>
 <translation id="2783024642731649028">1 στοιχείο στο καλάθι σας με έκπτωση <ph name="DISCOUNT_TEXT" /> από <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, προβλήθηκε στις <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Η λήψη ολοκληρώθηκε</translation>
@@ -5291,7 +5290,6 @@
 <translation id="5026874946691314267">Να μην εμφανιστεί ξανά</translation>
 <translation id="5027550639139316293">Πιστοποιητικό ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5027562294707732951">Προσθήκη επέκτασης</translation>
-<translation id="5028445315206872221">Οι επεκτάσεις αποκλείονται από αυτόν τον ιστότοπο</translation>
 <translation id="5029287942302939687">Ο κωδικός πρόσβασής σας ορίστηκε</translation>
 <translation id="5029873138381728058">Απέτυχε ο έλεγχος των VM</translation>
 <translation id="503155457707535043">Λήψη εφαρμογών</translation>
@@ -7273,6 +7271,7 @@
 <translation id="6596816719288285829">Διεύθυνση IP</translation>
 <translation id="6596916244504302242">Επαναλάβετε τη φόρτωση αυτής της σελίδας, για να εφαρμοστούν οι ενημερωμένες ρυθμίσεις επέκτασης σε αυτόν τον ιστότοπο</translation>
 <translation id="6597017209724497268">Δείγματα</translation>
+<translation id="6597324406048772521">Οι επεκτάσεις δεν επιτρέπονται σε αυτόν τον ιστότοπο</translation>
 <translation id="6597331566371766302">Οι παρακάτω επεκτάσεις αποκλείστηκαν από τον διαχειριστή σας:</translation>
 <translation id="659894938503552850">νεότερα</translation>
 <translation id="6601262427770154296">Διαχείριση λεξικών χρήστη</translation>

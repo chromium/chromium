@@ -2427,7 +2427,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2778471504622896352">Lägg till fjärrappar i ChromeOS-startaren</translation>
 <translation id="2779728796406650689">Detta gör att Google Assistent kan ge anpassade svar när du ställer frågor.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Tillägg är tillåtna på den här webbplatsen</translation>
 <translation id="2782104745158847185">Ett fel uppstod när Linux-programmet skulle installeras</translation>
 <translation id="2783024642731649028">1 vara i kundvagnen <ph name="DISCOUNT_TEXT" /> från <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visades <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Nedladdad</translation>
@@ -5291,7 +5290,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5026874946691314267">Visa inte detta igen</translation>
 <translation id="5027550639139316293">E-postcertifikat</translation>
 <translation id="5027562294707732951">Lägg till tillägg</translation>
-<translation id="5028445315206872221">Tillägg är blockerade på den här webbplatsen</translation>
 <translation id="5029287942302939687">Ditt lösenord har ställts in</translation>
 <translation id="5029873138381728058">Kontrollen av virtuella maskiner misslyckades</translation>
 <translation id="503155457707535043">Appar laddas ned</translation>
@@ -7272,6 +7270,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6596816719288285829">IP-adress</translation>
 <translation id="6596916244504302242">Läs in sidan igen så att de uppdaterade inställningarna för tillägg tillämpas på webbplatsen</translation>
 <translation id="6597017209724497268">Stickprov</translation>
+<translation id="6597324406048772521">Tillägg tillåts inte på den här webbplatsen</translation>
 <translation id="6597331566371766302">Följande tillägg har blockerats av administratören:</translation>
 <translation id="659894938503552850">senaste</translation>
 <translation id="6601262427770154296">Hantera egna ordlistor</translation>

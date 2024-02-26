@@ -33,6 +33,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1516530951338665275">Google Chrome zahteva pristup Bluetooth-u radi nastavljanja sa 
  uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru sa otvorenim kodom<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Prilagodite Chrome</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
 <translation id="1583073672411044740">Korisnik <ph name="EXISTING_USER" /> je već prijavljen na ovaj Chrome profil. Ovim će se napraviti nov Chrome profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome koristi kameru.</translation>
@@ -72,6 +73,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2121284319307530122">Ponovo pokreni da bi se &amp;Chrome ažurirao</translation>
 <translation id="2123055963409958220">Pomozite da poboljšamo Chrome tako što ćete poslati izveštaj o <ph name="BEGIN_LINK" />aktuelnim podešavanjima<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Verifikacija preuzetog fajla nije uspela.</translation>
+<translation id="2128411189117340671">Upravljaj Chrome profilima</translation>
 <translation id="2130870084309816036">Povezivanje sa internetom nije uspelo. Ako koristite zaštitni zid, na listu dozvoljenih stavite <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="2131230230468101642">Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chrome uzima u obzir.</translation>
 <translation id="2139300032719313227">Restartujte Chrome OS</translation>
@@ -425,6 +427,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7917876797003313048">Možete da upravljate Google nalozima na koje ste prijavljeni. Google nalozi se koriste za Chrome pregledač, Play prodavnicu, Gmail i drugo. Ako želite da dodate nalog za nekog drugog, npr. člana porodice, umesto toga dodajte novu osobu na svoj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome je blokirao ovo preuzimanje jer je ovaj fajl obmanjujući i može da izvrši neočekivane promene na uređaj</translation>
 <translation id="7951272445806340501">Treba da restartujete Chrome OS Flex da biste primenili ažuriranje.</translation>
+<translation id="7959172989483770734">Upravljaj Chrome profilima</translation>
 <translation id="7962368738413920945">Sajtovi će verovatno raditi na očekivani način, ali vas neće zapamtiti kada zatvorite sve Chrome prozore</translation>
 <translation id="7962410387636238736">Ovaj računar više neće dobijati ažuriranja za Google Chrome jer Windows XP i Windows Vista više nisu podržani</translation>
 <translation id="8005666035647241369">U Google menadžeru lozinki na ovom uređaju</translation>
@@ -432,6 +435,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8009904340233602924">Koristite Chrome bez naloga</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
 <translation id="8019103195866286235">Programer je objavio ovaj dodatak i on možda nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
+<translation id="8031641407207794385">Prilagodite Chrome</translation>
 <translation id="80471789339884597">Hvala vam na instalaciji. Morate da restartujete sve pregledače pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Drugi Chrome profili</translation>

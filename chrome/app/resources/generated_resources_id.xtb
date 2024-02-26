@@ -2427,7 +2427,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2778471504622896352">Menambahkan aplikasi jarak jauh ke peluncur ChromeOS</translation>
 <translation id="2779728796406650689">Hal ini memungkinkan Asisten Google memberikan respons yang disesuaikan saat Anda mengajukan pertanyaan.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Ekstensi diizinkan di situs ini</translation>
 <translation id="2782104745158847185">Error saat menginstal aplikasi Linux</translation>
 <translation id="2783024642731649028">1 item di keranjang <ph name="DISCOUNT_TEXT" /> dari <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, dilihat <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Telah Didownload</translation>
@@ -5291,7 +5290,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5026874946691314267">Jangan tampilkan pemberitahuan ini lagi</translation>
 <translation id="5027550639139316293">Sertifikat Email</translation>
 <translation id="5027562294707732951">Tambahkan ekstensi</translation>
-<translation id="5028445315206872221">Ekstensi diblokir di situs ini</translation>
 <translation id="5029287942302939687">Sandi Anda telah disetel</translation>
 <translation id="5029873138381728058">Gagal memeriksa VM</translation>
 <translation id="503155457707535043">Aplikasi sedang didownload</translation>
@@ -7272,6 +7270,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6596816719288285829">Alamat IP</translation>
 <translation id="6596916244504302242">Muat ulang halaman ini untuk menerapkan setelan ekstensi yang diperbarui ke situs ini</translation>
 <translation id="6597017209724497268">Contoh</translation>
+<translation id="6597324406048772521">Ekstensi tidak diizinkan di situs ini</translation>
 <translation id="6597331566371766302">Ekstensi berikut diblokir oleh administrator Anda:</translation>
 <translation id="659894938503552850">terbaru</translation>
 <translation id="6601262427770154296">Kelola kamus pengguna</translation>

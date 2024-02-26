@@ -2396,7 +2396,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2778471504622896352">Dodaj aplikacje zdalne do Menu z aplikacjami w ChromeOS</translation>
 <translation id="2779728796406650689">Dzięki temu, gdy zadajesz pytania, Asystent Google może udzielać spersonalizowanych odpowiedzi.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Rozszerzenia są dozwolone w tej witrynie</translation>
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
 <translation id="2783024642731649028">1 produkt w koszyku ze zniżką <ph name="DISCOUNT_TEXT" /> od sprzedawcy <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, wyświetlony <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Pobrane</translation>
@@ -5257,7 +5256,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5026874946691314267">Nie pokazuj więcej tego komunikatu</translation>
 <translation id="5027550639139316293">Certyfikat poczty e-mail</translation>
 <translation id="5027562294707732951">Dodaj rozszerzenie</translation>
-<translation id="5028445315206872221">Rozszerzenia są zablokowane w tej witrynie</translation>
 <translation id="5029287942302939687">Hasło jest ustawione</translation>
 <translation id="5029873138381728058">Nie udało się sprawdzić maszyn wirtualnych</translation>
 <translation id="503155457707535043">Pobieram aplikacje</translation>
@@ -7241,6 +7239,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6596816719288285829">Adres IP</translation>
 <translation id="6596916244504302242">Załaduj ponownie tę stronę, aby zastosować w tej witrynie zaktualizowane ustawienia rozszerzeń</translation>
 <translation id="6597017209724497268">Przykłady</translation>
+<translation id="6597324406048772521">Rozszerzenia w tej witrynie są niedozwolone</translation>
 <translation id="6597331566371766302">Te rozszerzenia zablokował administrator:</translation>
 <translation id="659894938503552850">od najnowszej</translation>
 <translation id="6601262427770154296">Zarządzanie słownikami użytkownika</translation>

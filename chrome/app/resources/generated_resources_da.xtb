@@ -2426,7 +2426,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2778471504622896352">Føj eksterne apps til ChromeOS-applisten</translation>
 <translation id="2779728796406650689">Dette giver Google Assistent mulighed for at give dig tilpassede svar, når du stiller spørgsmål.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Udvidelser er tilladt på dette website</translation>
 <translation id="2782104745158847185">Der opstod en fejl ved installation af Linux-appen</translation>
 <translation id="2783024642731649028">Du har 1 vare i din kurv fra <ph name="MERCHANT_NAME" /> med <ph name="DISCOUNT_TEXT" />, som du har set på <ph name="MERCHANT_DOMAIN" /> <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Downloadet</translation>
@@ -5285,7 +5284,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5026874946691314267">Vis ikke denne notifikation igen</translation>
 <translation id="5027550639139316293">Mail-certifikat</translation>
 <translation id="5027562294707732951">Tilføj udvidelsen</translation>
-<translation id="5028445315206872221">Udvidelser er blokeret på dette website</translation>
 <translation id="5029287942302939687">Din adgangskode er indstillet</translation>
 <translation id="5029873138381728058">Det var ikke muligt at tjekke VM'er</translation>
 <translation id="503155457707535043">De valgte apps downloades</translation>
@@ -7268,6 +7266,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6596916244504302242">Genindlæs denne side for at anvende dine opdaterede indstillinger for udvidelser på dette website</translation>
 <translation id="6597017209724497268">Prøver</translation>
+<translation id="6597324406048772521">Udvidelser er ikke tilladt på dette website</translation>
 <translation id="6597331566371766302">Følgende udvidelser er blevet blokeret af din administrator:</translation>
 <translation id="659894938503552850">nyeste</translation>
 <translation id="6601262427770154296">Administrer brugerordbøger</translation>

@@ -2411,7 +2411,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2778471504622896352">Uzaqdan tətbiqləri ChromeOS başladıcıya əlavə edin</translation>
 <translation id="2779728796406650689">Bu, sual soruşanda Google Assistentin uyğun cavablar verməsini təmin edir.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2781800772148653810">Bu saytda artırmalara icazə verilib</translation>
 <translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
 <translation id="2783024642731649028">Səbətdə <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> tərəfindən təqdim edilən 1 məhsul (<ph name="DISCOUNT_TEXT" />) var. Baxılıb: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Endirildi</translation>
@@ -5272,7 +5271,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5026874946691314267">Bunu bir daha göstərməyin</translation>
 <translation id="5027550639139316293">E-poçt Sertifikatı</translation>
 <translation id="5027562294707732951">Artırma əlavə edin</translation>
-<translation id="5028445315206872221">Bu saytda artırmalar bloklanıb</translation>
 <translation id="5029287942302939687">Parol ayarlanıb</translation>
 <translation id="5029873138381728058">VM'ləri yoxlamaq alınmadı</translation>
 <translation id="503155457707535043">Tətbiqlər endirilir</translation>
@@ -7251,6 +7249,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6596816719288285829">IP Ünvanı</translation>
 <translation id="6596916244504302242">Yenilənmiş artırma ayarlarını bu sayta tətbiq etmək üçün bu səhifəni təkrar yükləyin</translation>
 <translation id="6597017209724497268">Nümunələr</translation>
+<translation id="6597324406048772521">Bu saytda artırmalara icazə verilməyib</translation>
 <translation id="6597331566371766302">Aşağıdakı artırmalar administratorunuz tərəfindən bloklanıb:</translation>
 <translation id="659894938503552850">ən yeni</translation>
 <translation id="6601262427770154296">İstifadəçi lüğətlərini idarə edin</translation>

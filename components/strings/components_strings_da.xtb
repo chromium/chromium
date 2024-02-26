@@ -2463,7 +2463,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5813119285467412249">&amp;Annuller fortryd tilføjelse</translation>
 <translation id="5813753398265398978">Fysik</translation>
 <translation id="5817918615728894473">Start parring</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Dette kort debiteres, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}one{Det kort, du vælger, debiteres, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}other{De kort, du vælger, debiteres, når du betaler, men kortenes faktiske numre deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}}</translation>
+<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Dette kort opkræves, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}one{Det kort, du vælger, opkræves, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}other{De kort, du vælger, opkræves, når du betaler, men kortenes faktiske numre deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}}</translation>
 <translation id="5826507051599432481">Kaldenavn (CN)</translation>
 <translation id="5829215001860862731">Gem på din konto</translation>
 <translation id="5830698870816298009">kamerabrug og -bevægelse</translation>
@@ -2754,7 +2754,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6379054959395292297">Eventfotografering og fotografering i studie</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Krympefolie</translation>
-<translation id="6383221683286411806">Potentielle debiteringer forude</translation>
+<translation id="6383221683286411806">Potentielle opkrævninger forude</translation>
 <translation id="6385164437039878414">Rygsække og udstyrstasker</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 andet forslag}one{# andet forslag}other{# andre forslag}}</translation>
 <translation id="6386565501269869892">Konvolut Dig 4</translation>
@@ -3082,7 +3082,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014042602717177828">Lydsystemer til biler</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
-<translation id="7016992613359344582">Disse debiteringer kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt.</translation>
+<translation id="7016992613359344582">Disse opkrævninger kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt.</translation>
 <translation id="701757816833614688">Uddannelse inden for visuel kunst og design</translation>
 <translation id="702146556168549005">Webadresserne for de sider, du besøger, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. undersøge, om nogen af de tilhørende websites er usikre, eller filtrere websites baseret på de regler, som administratoren har angivet.</translation>
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
@@ -3808,7 +3808,7 @@ Yderligere oplysninger:
 <translation id="8374636051559112948">Varierer</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8380941800586852976">Farlig</translation>
-<translation id="8381674639488873545">Disse debiteringer kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
+<translation id="8381674639488873545">Disse opkrævninger kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="838307841291975086">Stationcars</translation>
 <translation id="8389532092404711541">Normalt <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Ombyggede biler og sportsvogne</translation>
