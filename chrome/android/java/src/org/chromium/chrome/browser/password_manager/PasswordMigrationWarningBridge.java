@@ -74,7 +74,7 @@ class PasswordMigrationWarningBridge {
         passwordMigrationWarningCoordinator.showWarning();
     }
 
-    // TODO(321218513): Use this method to trigger showing the sheet from cpp.
+    @CalledByNative
     static void maybeShowPostMigrationSheet(WindowAndroid windowAndroid) {
         PostPasswordMigrationSheetCoordinator postMigrationSheet =
                 PostPasswordMigrationSheetCoordinatorFactory

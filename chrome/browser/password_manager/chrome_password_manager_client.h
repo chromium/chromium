@@ -397,6 +397,10 @@ class ChromePasswordManagerClient
   // from the store as that is a prerequisite for showing the warning.
   void TryToShowLocalPasswordMigrationWarning();
 
+  // Called on startup. It will show the post password migration sheet if
+  // needed.
+  void TryToShowPostPasswordMigrationSheet();
+
   password_manager::CredManController* GetOrCreateCredManController();
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>

@@ -178,6 +178,10 @@ inline constexpr char kLocalPasswordMigrationWarningPrefsVersion[] =
 inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
     "password_generation_bottom_sheet_dismiss_count";
 
+// Whether the post password migration sheet ahould be shown at startup.
+inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
+    "should_show_post_password_migration_sheet_at_startup";
+
 // Becomes true when a user received an error from GMSCore. It's later used to
 // guard activation algorithm of "Remove unenrollment" experiment.
 inline constexpr char kUserReceivedGMSCoreError[] =

@@ -125,6 +125,7 @@
 #include "chrome/browser/password_manager/android/auto_signin_prompt_controller.h"
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
+#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge_impl.h"
@@ -1414,6 +1415,8 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
     tried_launching_warning_on_startup = true;
     TryToShowLocalPasswordMigrationWarning();
   }
+
+  TryToShowPostPasswordMigrationSheet();
 #endif
 }
 
@@ -1653,6 +1656,15 @@ void ChromePasswordManagerClient::TryToShowLocalPasswordMigrationWarning() {
           base::BindOnce(&local_password_migration::ShowWarning));
   password_migration_warning_startup_launcher_
       ->MaybeFetchPasswordsAndShowWarning(GetProfilePasswordStore());
+}
+
+void ChromePasswordManagerClient::TryToShowPostPasswordMigrationSheet() {
+  // This is to let the method run after all the initialization tasks have been
+  // completed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&local_password_migration::MaybeShowPostMigrationSheet,
+                     web_contents()->GetTopLevelNativeWindow(), profile_));
 }
 #endif
 

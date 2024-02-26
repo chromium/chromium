@@ -333,6 +333,8 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
   registry->RegisterIntegerPref(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);
+  registry->RegisterBooleanPref(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);
   registry->RegisterBooleanPref(prefs::kUserReceivedGMSCoreError, false);
   // This pref is used to decide whether the PasswordStore can be connected to
   // the new Android backend without migrating existing entries in the
