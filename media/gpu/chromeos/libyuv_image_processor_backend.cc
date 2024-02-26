@@ -233,7 +233,8 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
   // format that can be easily cropped.
   scoped_refptr<FrameResource> crop_intermediate_frame;
   if (input_config.visible_rect.origin() != gfx::Point(0, 0) &&
-      input_config.fourcc == Fourcc(Fourcc::MM21)) {
+      (input_config.fourcc == Fourcc(Fourcc::MM21) ||
+       input_config.fourcc == Fourcc(Fourcc::MT2T))) {
     if (transform != Transform::kScaling) {
       crop_intermediate_frame =
           VideoFrameResource::Create(VideoFrame::CreateFrame(
@@ -244,8 +245,8 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
         return nullptr;
       }
     } else {
-      VLOGF(1)
-          << "Scaling and cropping simultaneously are not supported for MM21.";
+      VLOGF(1) << "Scaling and cropping simultaneously are not supported for "
+                  "MM21/M2T2.";
       return nullptr;
     }
   }
@@ -340,7 +341,8 @@ void LibYUVImageProcessorBackend::ProcessFrame(
                  mapped_frame->AsHumanReadableString());
     SCOPED_UMA_HISTOGRAM_TIMER("LibYUVImageProcessorBackend::Process");
     if (input_config_.visible_rect.origin() == gfx::Point(0, 0) ||
-        input_config_.fourcc != Fourcc(Fourcc::MM21)) {
+        (input_config_.fourcc != Fourcc(Fourcc::MM21) &&
+         input_config_.fourcc != Fourcc(Fourcc::MT2T))) {
       res = DoConversion(input_frame.get(), mapped_frame.get());
     } else {
       res = DoConversion(input_frame.get(), crop_intermediate_frame_.get());
