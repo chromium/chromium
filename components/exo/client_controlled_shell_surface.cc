@@ -855,6 +855,11 @@ void ClientControlledShellSurface::OnWindowAddedToRootWindow(
 ////////////////////////////////////////////////////////////////////////////////
 // views::WidgetDelegate overrides:
 
+void ClientControlledShellSurface::WindowClosing() {
+  wide_frame_.reset();
+  ShellSurfaceBase::WindowClosing();
+}
+
 bool ClientControlledShellSurface::CanMaximize() const {
   return can_maximize_;
 }

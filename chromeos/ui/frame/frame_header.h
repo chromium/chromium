@@ -225,7 +225,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
 
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.
-  raw_ptr<views::Widget, DanglingUntriaged> target_widget_;
+  raw_ptr<views::Widget> target_widget_;
 
   // The view into which |this| paints.
   raw_ptr<views::View, DanglingUntriaged> view_;

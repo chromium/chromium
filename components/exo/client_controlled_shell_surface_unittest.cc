@@ -2490,6 +2490,21 @@ TEST_P(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
   }
 }
 
+// WideFrameView should be safely deleted even when the window is
+// deleted directly.
+TEST_P(ClientControlledShellSurfaceTest, DeleteWindowWithWideframe) {
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder({64, 64})
+          .SetWindowState(chromeos::WindowStateType::kMaximized)
+          .SetGeometry(gfx::Rect(100, 0, 64, 64))
+          .SetInputRegion(gfx::Rect(0, 0, 64, 64))
+          .SetFrame(SurfaceFrameType::NORMAL)
+          .BuildClientControlledShellSurface();
+  auto* wide_frame = shell_surface->wide_frame_for_test();
+  ASSERT_TRUE(wide_frame);
+  delete shell_surface->GetWidget()->GetNativeWindow();
+}
+
 // WideFrameView follows its respective surface when it is eventually parented.
 // See crbug.com/1223135.
 TEST_P(ClientControlledShellSurfaceTest, WideframeForUnparentedTasks) {
