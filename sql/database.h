@@ -500,7 +500,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   bool HasActiveTransactions() const {
     DCHECK_GE(transaction_nesting_, 0);
-    return transaction_nesting_ > 0;
+    return is_open() && transaction_nesting_ > 0;
   }
 
   // Deprecated in favor of HasActiveTransactions().

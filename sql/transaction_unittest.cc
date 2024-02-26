@@ -61,6 +61,26 @@ TEST_F(SQLTransactionTest, Commit) {
   EXPECT_EQ(1, CountFoo()) << "Transaction changes not committed";
 }
 
+// Regression test for <https://crbug.com/326498384>.
+TEST_F(SQLTransactionTest, CloseDatabase) {
+  EXPECT_FALSE(db_.HasActiveTransactions());
+
+  {
+    Transaction transaction(&db_);
+    EXPECT_FALSE(db_.HasActiveTransactions());
+    EXPECT_FALSE(transaction.IsActiveForTesting());
+
+    ASSERT_TRUE(transaction.Begin());
+    EXPECT_TRUE(db_.HasActiveTransactions());
+    EXPECT_TRUE(transaction.IsActiveForTesting());
+
+    db_.Close();
+    EXPECT_FALSE(db_.HasActiveTransactions());
+  }
+
+  EXPECT_FALSE(db_.HasActiveTransactions());
+}
+
 TEST_F(SQLTransactionTest, RollbackOnDestruction) {
   EXPECT_FALSE(db_.HasActiveTransactions());
 

@@ -429,6 +429,13 @@ void Database::Close() {
   }
 
   CloseInternal(false);
+
+  // Closing a SQLite database connection implicitly rolls back transactions.
+  // (See https://www.sqlite.org/c3ref/close.html for details.) Thus, we can
+  // omit the call to `RollbackAllTransactions()`, but we still must account for
+  // the implicit rollback in our internal bookkeeping.
+  CHECK_GE(transaction_nesting_, 0);
+  transaction_nesting_ = 0;
 }
 
 void Database::Preload() {
