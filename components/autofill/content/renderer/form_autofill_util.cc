@@ -982,8 +982,8 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
                          bool is_initiating_element) {
   // Skip all checkable or non-modifiable elements, except select fields because
   // some synthetic select element use a hidden select element.
-  if (!element.IsEnabled() || element.IsReadOnly() ||
-      IsCheckableElement(element) ||
+  if (!IsAutofillableElement(element) || !element.IsEnabled() ||
+      element.IsReadOnly() || IsCheckableElement(element) ||
       (!IsWebElementFocusableForAutofill(element) &&
        !IsSelectElement(element))) {
     return true;
