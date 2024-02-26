@@ -429,9 +429,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   if ([self isRunningTest:@selector(testSignInWithNoAccount)] ||
       [self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
-      // TODO(b/325521694): Test fails on device and simulator.
-      [self
-          isRunningTest:@selector(DISABLED_testHistorySyncShownAfterSignIn)] ||
+      [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
       [self isRunningTest:@selector
             (testSignInSubtitleIfHistorySyncOptInEnabled)] ||
       [self
@@ -1400,10 +1398,9 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   [self verifyDefaultBrowserIsDisplayed];
 }
 
-// TODO(b/325521694): Test fails on device and simulator.
 // Tests if the user signs in with the first screen, the History Sync Opt-In
 // screen is shown next.
-- (void)DISABLED_testHistorySyncShownAfterSignIn {
+- (void)testHistorySyncShownAfterSignIn {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
