@@ -270,8 +270,12 @@ void PositionView(UIView* view, CGPoint point) {
 - (void)didMoveToWindow {
   if (self.window) {
     if (self.theme == GridThemeLight) {
+      UIUserInterfaceStyle previousStyle =
+          self.window.overrideUserInterfaceStyle;
+      self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
       self.overrideUserInterfaceStyle =
           self.window.traitCollection.userInterfaceStyle;
+      self.window.overrideUserInterfaceStyle = previousStyle;
     }
   }
 }
