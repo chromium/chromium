@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.price_change;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -67,6 +69,7 @@ public class PriceChangeModuleBuilderUnitTest {
         MockitoAnnotations.initMocks(this);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
 
         mModuleBuilder =
                 new PriceChangeModuleBuilder(
@@ -114,5 +117,15 @@ public class PriceChangeModuleBuilderUnitTest {
 
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback, times(1)).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetRegularProfile() {
+        Profile regularProfile = Mockito.mock(Profile.class);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(regularProfile);
+
+        assertEquals(regularProfile, mModuleBuilder.getRegularProfile());
     }
 }

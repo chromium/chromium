@@ -35,7 +35,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
     public boolean build(
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
-        Profile profile = mProfileSupplier.get();
+        Profile profile = getRegularProfile();
         if (!TabResumptionModuleUtils.shouldShowTabResumptionModule(profile)) {
             return false;
         }
@@ -75,6 +75,15 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         // See b/324138242.
         if (!mProfileSupplier.hasValue()) return false;
 
-        return TabResumptionModuleUtils.shouldShowTabResumptionModule(mProfileSupplier.get());
+        return TabResumptionModuleUtils.shouldShowTabResumptionModule(getRegularProfile());
+    }
+
+    /** Gets the regular profile if exists. */
+    private Profile getRegularProfile() {
+        assert mProfileSupplier.hasValue();
+
+        Profile profile = mProfileSupplier.get();
+        // It is possible that an incognito profile is provided by the supplier. See b/326619334.
+        return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
     }
 }
