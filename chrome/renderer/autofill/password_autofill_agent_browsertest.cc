@@ -630,19 +630,14 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   void SimulateUsernameSingleFieldAutofill(const std::u16string& text) {
-    // Simulate set `username_element_` in focus.
-    static_cast<content::RenderFrameObserver*>(autofill_agent_)
-        ->FocusedElementChanged(username_element_);
-    // Fill focused element (i.e. `username_element_`).
+    FocusElement(kUsernameName);
     autofill_agent_->ApplyFieldAction(
         mojom::FieldActionType::kReplaceAll, mojom::ActionPersistence::kFill,
         form_util::GetFieldRendererId(username_element_), text);
   }
 
   void SimulateUsernameFormAutofill(const std::u16string& text) {
-    // Simulate set `username_element_` in focus.
-    static_cast<content::RenderFrameObserver*>(autofill_agent_)
-        ->FocusedElementChanged(username_element_);
+    FocusElement(kUsernameName);
     // Fill the form.
     std::vector<autofill::FormFieldData::FillData> field_data;
     FormFieldData::FillData field;

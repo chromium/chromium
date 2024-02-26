@@ -345,7 +345,6 @@ std::optional<FormData> FindFormForContentEditable(
 std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
     const blink::WebDocument& document,
     base::span<const FormFieldData::FillData> fields,
-    const blink::WebFormControlElement& initiating_element,
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     FieldDataManager& field_data_manager);

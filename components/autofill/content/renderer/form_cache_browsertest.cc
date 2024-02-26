@@ -420,13 +420,11 @@ FormFieldData* FindFieldByName(FormData& form_data,
 }
 
 // Fills the fields referenced in `form_fill_data`. Fills `checkbox_element`, if
-// non-null. `autofill_initiating_element` is the element which initiates the
-// autofill.
+// non-null.
 void FillAndCheckState(
     const WebDocument& document,
     const FormData& form_data,
     FieldDataManager& field_data_manager,
-    const blink::WebFormControlElement& autofill_initiating_element,
     const std::vector<FillElementData>& form_to_fill,
     std::optional<blink::WebInputElement> checkbox_element = std::nullopt,
     CheckStatus fill_checkbox_check_status =
@@ -454,9 +452,8 @@ void FillAndCheckState(
     fields_to_fill.emplace_back(field);
   }
   form_util::ApplyFormAction(
-      document, fields_to_fill, autofill_initiating_element,
-      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-      field_data_manager);
+      document, fields_to_fill, mojom::FormActionType::kFill,
+      mojom::ActionPersistence::kFill, field_data_manager);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
     EXPECT_EQ(field_to_fill.value, field_to_fill.element->Value().Utf16());
@@ -494,7 +491,7 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   auto select_element = GetFormControlElementById(doc, "select");
   auto selectlist_element = GetFormControlElementById(doc, "selectlist");
 
-  FillAndCheckState(doc, forms.updated_forms[0], GetFieldDataManager(), text,
+  FillAndCheckState(doc, forms.updated_forms[0], GetFieldDataManager(),
                     {{raw_ref(text), u"test"},
                      {raw_ref(select_element), u"first"},
                      {raw_ref(selectlist_element), u"uno"}});
@@ -544,7 +541,7 @@ TEST_F(FormCacheBrowserTest,
 
   // Simulate filling the form using Autofill.
   form_util::ApplyFormAction(GetMainFrame()->GetDocument(), values_to_fill,
-                             fname, mojom::FormActionType::kFill,
+                             mojom::FormActionType::kFill,
                              mojom::ActionPersistence::kFill,
                              GetFieldDataManager());
 

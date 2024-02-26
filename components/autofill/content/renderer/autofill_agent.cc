@@ -642,16 +642,15 @@ void AutofillAgent::ApplyFormAction(mojom::FormActionType action_type,
   ClearPreviewedForm();
 
   if (action_persistence == mojom::ActionPersistence::kPreview) {
-    previewed_elements_ = form_util::ApplyFormAction(
-        document, form.fields, last_queried_element, action_type,
-        action_persistence, field_data_manager());
+    previewed_elements_ =
+        form_util::ApplyFormAction(document, form.fields, action_type,
+                                   action_persistence, field_data_manager());
   } else {
     was_last_action_fill_ = true;
 
     std::vector<std::pair<FieldRef, WebAutofillState>> filled_fields =
-        form_util::ApplyFormAction(document, form.fields, last_queried_element,
-                                   action_type, action_persistence,
-                                   field_data_manager());
+        form_util::ApplyFormAction(document, form.fields, action_type,
+                                   action_persistence, field_data_manager());
 
     // Notify Password Manager of filled fields.
     for (const auto& [filled_field, field_autofill_state] : filled_fields) {
