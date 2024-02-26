@@ -406,6 +406,66 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   }
 }
 
+void ViewAccessibility::SetName(const std::string& name,
+                                ax::mojom::NameFrom name_from) {
+  DCHECK_NE(name_from, ax::mojom::NameFrom::kNone);
+  // Ensure we have a current `name_from` value. For instance, the name might
+  // still be an empty string, but a view is now indicating that this is by
+  // design by setting `NameFrom::kAttributeExplicitlyEmpty`.
+  DCHECK_EQ(name.empty(),
+            name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
+      << "If the name is being removed to improve the user experience, "
+         "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
+  data_.SetNameFrom(name_from);
+
+  if (name == GetViewAccessibilityName()) {
+    return;
+  }
+
+  if (name.empty()) {
+    data_.RemoveStringAttribute(ax::mojom::StringAttribute::kName);
+  } else {
+    // |AXNodeData::SetName| expects a valid role. Some Views call |SetRole|
+    // prior to setting the name. For those that don't, see if we can get the
+    // default role from the View.
+    // TODO(accessibility): This is a temporary workaround to avoid a DCHECK,
+    // once we have migrated all Views to use the new setters and we always set
+    // a role in the constructors for views, we can remove this.
+    if (data_.role == ax::mojom::Role::kUnknown) {
+      ui::AXNodeData data;
+      view_->GetAccessibleNodeData(&data);
+      data_.role = data.role;
+    }
+
+    data_.SetName(name);
+  }
+
+  view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+}
+
+void ViewAccessibility::SetName(const std::u16string& name,
+                                ax::mojom::NameFrom name_from) {
+  std::string string_name = base::UTF16ToUTF8(name);
+  SetName(string_name, name_from);
+}
+
+void ViewAccessibility::SetName(View& naming_view) {
+  DCHECK_NE(view_, &naming_view);
+
+  const std::string& name =
+      naming_view.GetViewAccessibility().GetViewAccessibilityName();
+  DCHECK(!name.empty());
+
+  SetName(name, ax::mojom::NameFrom::kRelatedElement);
+  data_.AddIntListAttribute(
+      ax::mojom::IntListAttribute::kLabelledbyIds,
+      {naming_view.GetViewAccessibility().GetUniqueId().Get()});
+}
+
+const std::string& ViewAccessibility::GetViewAccessibilityName() const {
+  return data_.GetStringAttribute(ax::mojom::StringAttribute::kName);
+}
+
 ax::mojom::Role ViewAccessibility::GetViewAccessibilityRole() const {
   return data_.role;
 }

@@ -123,6 +123,40 @@ class VIEWS_EXPORT ViewAccessibility {
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
   ax::mojom::Role GetViewAccessibilityRole() const;
 
+  // For the same reasons as GetViewAccessibilityRole, this function cannot
+  // follow the established pattern and be named GetName()
+  // TODO(accessibility): Rename to GetName once the ViewsAX project is
+  // completed and we don't have ViewAXPlatformNodeDelegate anymore.
+  const std::string& GetViewAccessibilityName() const;
+
+  // Sets the accessible name to the specified string and source type.
+  // To indicate that this view should never have an accessible name, e.g. to
+  // prevent screen readers from speaking redundant information, set the type to
+  // `kAttributeExplicitlyEmpty`. NOTE: Do not use `kAttributeExplicitlyEmpty`
+  // on a view which may or may not have a name depending on circumstances. Also
+  // please seek review from accessibility OWNERs when removing the name,
+  // especially for views which are focusable or otherwise interactive.
+  // The source type options are:
+  //
+  // * kNone: No name provided.
+  // * kAttribute: Name from a flat string (e.g. aria-label or View).
+  // * kAttributeExplicitlyEmpty: Name removed for accessibility reasons.
+  // * kCaption: Name from a table caption.
+  // * kContents: Name from the displayed text (e.g. label or link).
+  // * kPlaceholder: Name from a textfield placeholder.
+  // * kRelatedElement: Name from another object in the UI(e.g. figcaption or
+  // View).
+  // * kTitle: Name from a title attribute or element (HTML or SVG).
+  // * kValue: Name from a value attribute (e.g. button).
+  // * kPopoverAttribute: Name from a tooltip-style popover.
+  void SetName(const std::string& name, ax::mojom::NameFrom name_from);
+  void SetName(const std::u16string& name, ax::mojom::NameFrom name_from);
+
+  // Sets the accessible name of this view to that of `naming_view`. Often
+  // `naming_view` is a `views::Label`, but any view with an accessible name
+  // will work.
+  void SetName(View& naming_view);
+
   void SetBounds(const gfx::RectF& bounds);
 
   void SetIsSelected(bool selected);
