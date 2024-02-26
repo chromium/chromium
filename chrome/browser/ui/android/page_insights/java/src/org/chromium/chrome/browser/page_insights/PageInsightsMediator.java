@@ -716,9 +716,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
         if (mCurrentFeedView != null) {
             getSurfaceRenderer().unbindView(mCurrentFeedView);
+            mCurrentFeedView = null;
         }
         if (mCurrentChildView != null) {
             getSurfaceRenderer().unbindView(mCurrentChildView);
+            mCurrentChildView = null;
         }
 
         if (oldState == PageInsightsSheetState.PEEK) {

@@ -217,6 +217,11 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         mLayoutView.removeOnLayoutChangeListener(this);
         mCurrentRecyclerView = null;
         mShouldHavePeekState = false;
+        // Remove expensive XSurface views from hierarchy.
+        ((ViewGroup) mSheetContentView.findViewById(R.id.page_insights_feed_content))
+                .removeAllViews();
+        ((ViewGroup) mSheetContentView.findViewById(R.id.page_insights_child_content))
+                .removeAllViews();
     }
 
     @Override
