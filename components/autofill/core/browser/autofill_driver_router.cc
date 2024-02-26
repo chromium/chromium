@@ -411,13 +411,13 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
 
 base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     AutofillDriver* source,
-    mojom::ActionType action_type,
+    mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
     void (*callback)(AutofillDriver* target,
-                     mojom::ActionType action_type,
+                     mojom::FormActionType action_type,
                      mojom::ActionPersistence action_persistence,
                      const FormData::FillData& form)) {
   // Since Undo only affects fields that were already filled, and only sets
@@ -426,7 +426,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
   // `TrustAllOrigins()`.
   internal::FormForest::RendererForms renderer_forms =
       form_forest_.GetRendererFormsOfBrowserForm(
-          data, action_type == mojom::ActionType::kUndo
+          data, action_type == mojom::FormActionType::kUndo
                     ? internal::FormForest::SecurityOptions::TrustAllOrigins()
                     : internal::FormForest::SecurityOptions(&triggered_origin,
                                                             &field_type_map));
@@ -446,18 +446,17 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
 
 void AutofillDriverRouter::ApplyFieldAction(
     AutofillDriver* source,
+    mojom::FieldActionType action_type,
     mojom::ActionPersistence action_persistence,
-    mojom::TextReplacement text_replacement,
     const FieldGlobalId& field,
     const std::u16string& value,
     void (*callback)(AutofillDriver* target,
+                     mojom::FieldActionType action_type,
                      mojom::ActionPersistence action_persistence,
-                     mojom::TextReplacement text_replacement,
                      const FieldRendererId& field,
                      const std::u16string& value)) {
   if (auto* target = DriverOfFrame(field.frame_token)) {
-    callback(target, action_persistence, text_replacement, field.renderer_id,
-             value);
+    callback(target, action_type, action_persistence, field.renderer_id, value);
   }
 }
 

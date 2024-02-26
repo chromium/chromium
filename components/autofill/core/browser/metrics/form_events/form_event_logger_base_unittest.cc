@@ -255,7 +255,7 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
       test::GetFullProfile(),
       {.trigger_source = AutofillTriggerSource::kPopup});
   autofill_manager().FillOrPreviewField(
-      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields[2], u"CC_NAME_VALUE",
       PopupItemId::kCreditCardFieldByFieldFilling);
   autofill_manager().FillOrPreviewCreditCardForm(
@@ -286,7 +286,7 @@ TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
       test::GetFullProfile(),
       {.trigger_source = AutofillTriggerSource::kManualFallback});
   autofill_manager().FillOrPreviewField(
-      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields[3], u"SOME_VALUE",
       PopupItemId::kCreditCardFieldByFieldFilling);
 

@@ -453,7 +453,7 @@ void FillAndCheckState(
     fields_to_fill.emplace_back(field);
   }
   form_util::ApplyFormAction(
-      fields_to_fill, autofill_initiating_element, mojom::ActionType::kFill,
+      fields_to_fill, autofill_initiating_element, mojom::FormActionType::kFill,
       mojom::ActionPersistence::kFill, field_data_manager);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
@@ -541,9 +541,9 @@ TEST_F(FormCacheBrowserTest,
       GetFormControlElementById(GetMainFrame()->GetDocument(), "fname");
 
   // Simulate filling the form using Autofill.
-  form_util::ApplyFormAction(values_to_fill, fname, mojom::ActionType::kFill,
-                             mojom::ActionPersistence::kFill,
-                             GetFieldDataManager());
+  form_util::ApplyFormAction(
+      values_to_fill, fname, mojom::FormActionType::kFill,
+      mojom::ActionPersistence::kFill, GetFieldDataManager());
 
   // Simulate clearing the form.
   form_cache.ClearSectionWithElement(fname, GetFieldDataManager());

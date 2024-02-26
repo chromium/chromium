@@ -345,7 +345,7 @@ std::optional<FormData> FindFormForContentEditable(
 std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
     base::span<const FormFieldData::FillData> fields,
     const blink::WebFormControlElement& initiating_element,
-    mojom::ActionType action_type,
+    mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     FieldDataManager& field_data_manager);
 
@@ -354,7 +354,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
 // `old_autofill_state` is the previous state of the field that initiated the
 // preview.
 void ClearPreviewedElements(
-    mojom::ActionType action_type,
+    mojom::FormActionType action_type,
     base::span<std::pair<blink::WebFormControlElement, blink::WebAutofillState>>
         previewed_elements,
     const blink::WebFormControlElement& initiating_element);

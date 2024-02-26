@@ -600,7 +600,7 @@ void AutofillAgent::UserGestureObserved() {
 }
 
 // mojom::AutofillAgent:
-void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
+void AutofillAgent::ApplyFormAction(mojom::FormActionType action_type,
                                     mojom::ActionPersistence action_persistence,
                                     const FormData::FillData& form) {
   WebFormControlElement last_queried_element = last_queried_element_.GetField();
@@ -741,8 +741,8 @@ void AutofillAgent::TriggerSuggestions(
 }
 
 void AutofillAgent::ApplyFieldAction(
+    mojom::FieldActionType action_type,
     mojom::ActionPersistence action_persistence,
-    mojom::TextReplacement text_replacement,
     FieldRendererId field_id,
     const std::u16string& value) {
   if (!unsafe_render_frame()) {
@@ -757,12 +757,12 @@ void AutofillAgent::ApplyFieldAction(
     ClearPreviewedForm();
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
-        switch (text_replacement) {
-          case mojom::TextReplacement::kReplaceSelection:
+        switch (action_type) {
+          case mojom::FieldActionType::kReplaceSelection:
             NOTIMPLEMENTED()
                 << "Previewing replacement of selection is not implemented";
             break;
-          case mojom::TextReplacement::kReplaceAll:
+          case mojom::FieldActionType::kReplaceAll:
             previewed_elements_.emplace_back(last_queried_element_,
                                              form_control.GetAutofillState());
             form_control.SetSuggestedValue(WebString::FromUTF16(value));
@@ -770,20 +770,26 @@ void AutofillAgent::ApplyFieldAction(
                                          form_control.Value().Utf16(),
                                          form_control);
             break;
+          case mojom::FieldActionType::kSelectAll:
+            DCHECK(value.empty());
+            break;
         }
         break;
       case mojom::ActionPersistence::kFill:
-        switch (text_replacement) {
-          case mojom::TextReplacement::kReplaceSelection: {
+        switch (action_type) {
+          case mojom::FieldActionType::kReplaceSelection: {
             form_control.PasteText(WebString::FromUTF16(value),
                                    /*replace_all=*/false);
             break;
           }
-          case mojom::TextReplacement::kReplaceAll: {
+          case mojom::FieldActionType::kReplaceAll: {
             DoFillFieldWithValue(value, form_control,
                                  WebAutofillState::kAutofilled);
             break;
           }
+          case mojom::FieldActionType::kSelectAll:
+            DCHECK(value.empty());
+            break;
         }
         break;
     }
@@ -799,10 +805,14 @@ void AutofillAgent::ApplyFieldAction(
             << "Previewing replacement of selection is not implemented";
         break;
       case mojom::ActionPersistence::kFill:
+        if (action_type == mojom::FieldActionType::kSelectAll) {
+          DCHECK(value.empty());
+          break;
+        }
         content_editable.PasteText(
             WebString::FromUTF16(value),
             /*replace_all=*/
-            (text_replacement == mojom::TextReplacement::kReplaceAll));
+            (action_type == mojom::FieldActionType::kReplaceAll));
         break;
     }
   }

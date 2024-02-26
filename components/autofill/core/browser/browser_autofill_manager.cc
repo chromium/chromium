@@ -1233,7 +1233,7 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
 
 void BrowserAutofillManager::FillOrPreviewField(
     mojom::ActionPersistence action_persistence,
-    mojom::TextReplacement text_replacement,
+    mojom::FieldActionType action_type,
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& value,
@@ -1241,8 +1241,8 @@ void BrowserAutofillManager::FillOrPreviewField(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   GetCachedFormAndField(form, field, &form_structure, &autofill_field);
-  form_filler_->FillOrPreviewField(action_persistence, text_replacement, form,
-                                   field, form_structure, autofill_field, value,
+  form_filler_->FillOrPreviewField(action_persistence, action_type, form, field,
+                                   form_structure, autofill_field, value,
                                    popup_item_id);
   if (action_persistence == mojom::ActionPersistence::kFill) {
     const AutofillField* const_autofill_field = autofill_field;

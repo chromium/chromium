@@ -86,7 +86,7 @@ class MockAutofillDriver : public TestAutofillDriver {
   // Mock methods to enable testability.
   MOCK_METHOD((base::flat_set<FieldGlobalId>),
               ApplyFormAction,
-              (mojom::ActionType action_type,
+              (mojom::FormActionType action_type,
                mojom::ActionPersistence action_persistence,
                const FormData& data,
                const url::Origin& triggered_origin,
@@ -94,8 +94,8 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
   MOCK_METHOD(void,
               ApplyFieldAction,
-              (mojom::ActionPersistence action_persistence,
-               mojom::TextReplacement text_replacement,
+              (mojom::FieldActionType text_replacement,
+               mojom::ActionPersistence action_persistence,
                const FieldGlobalId& field_id,
                const std::u16string& value),
               (override));
@@ -469,7 +469,7 @@ TEST_F(FormFillerTest, UndoSavesFieldByFieldFillingData) {
 
   EXPECT_CALL(autofill_driver_, ApplyFieldAction);
   browser_autofill_manager_->FillOrPreviewField(
-      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields.front(), u"Test Value",
       PopupItemId::kAddressFieldByFieldFilling);
   // Undo early returns if it has no filling history for the trigger field,

@@ -64,8 +64,8 @@ class TestAutofillDriverTemplate : public T {
   bool IsPrerendering() const override { return false; }
   bool HasSharedAutofillPermission() const override { return shared_autofill_; }
   bool CanShowAutofillUi() const override { return true; }
-  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
-                        mojom::TextReplacement text_replacement,
+  void ApplyFieldAction(mojom::FieldActionType action_type,
+                        mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field,
                         const std::u16string& value) override {}
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
@@ -100,12 +100,12 @@ class TestAutofillDriverTemplate : public T {
   // type) of `field_type_map` for which
   // `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
   base::flat_set<FieldGlobalId> ApplyFormAction(
-      mojom::ActionType action_type,
+      mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& form_data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override {
-    if (action_type == mojom::ActionType::kUndo) {
+    if (action_type == mojom::FormActionType::kUndo) {
       return {};
     }
     std::vector<FieldGlobalId> result;

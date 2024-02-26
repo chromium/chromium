@@ -403,7 +403,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kFillExistingPlusAddress:
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kPreview,
-          mojom::TextReplacement::kReplaceAll, query_form_, query_field_,
+          mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
           suggestion.main_text.value, suggestion.popup_item_id);
       break;
     case PopupItemId::kAddressFieldByFieldFilling:
@@ -511,7 +511,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                             if (delegate) {
                               delegate->manager_->FillOrPreviewField(
                                   mojom::ActionPersistence::kFill,
-                                  mojom::TextReplacement::kReplaceAll,
+                                  mojom::FieldActionType::kReplaceAll,
                                   delegate->query_form_, delegate->query_field_,
                                   value, PopupItemId::kIbanEntry);
                             }
@@ -579,7 +579,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // User selected an Autocomplete or Merchant Promo Code field, so we fill
       // directly.
       manager_->FillOrPreviewField(
-          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           suggestion.popup_item_id);
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
@@ -640,7 +640,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                 kExistingPlusAddressChosen);
       }
       manager_->FillOrPreviewField(
-          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           PopupItemId::kFillExistingPlusAddress);
       break;
@@ -658,7 +658,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             if (delegate) {
               delegate->manager_->FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
-                  mojom::TextReplacement::kReplaceAll, form, field,
+                  mojom::FieldActionType::kReplaceAll, form, field,
                   base::UTF8ToUTF16(plus_address),
                   PopupItemId::kCreateNewPlusAddress);
             }
@@ -980,7 +980,7 @@ void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
       manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
-        mojom::ActionPersistence::kPreview, mojom::TextReplacement::kReplaceAll,
+        mojom::ActionPersistence::kPreview, mojom::FieldActionType::kReplaceAll,
         query_form_, query_field_, filling_value, suggestion.popup_item_id);
   }
 }
@@ -1038,7 +1038,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
       manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
-        mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+        mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
         query_form_, query_field_, filling_value, suggestion.popup_item_id);
   }
 }
@@ -1046,7 +1046,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
 void AutofillExternalDelegate::PreviewCreditCardFieldByFieldFillingSuggestion(
     const Suggestion& suggestion) {
   manager_->FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                               mojom::TextReplacement::kReplaceAll, query_form_,
+                               mojom::FieldActionType::kReplaceAll, query_form_,
                                query_field_, suggestion.main_text.value,
                                suggestion.popup_item_id);
 }
@@ -1062,7 +1062,7 @@ void AutofillExternalDelegate::FillCreditCardFieldByFieldFillingSuggestion(
     return;
   }
   manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                               mojom::TextReplacement::kReplaceAll, query_form_,
+                               mojom::FieldActionType::kReplaceAll, query_form_,
                                query_field_, suggestion.main_text.value,
                                suggestion.popup_item_id);
 }
@@ -1079,7 +1079,7 @@ void AutofillExternalDelegate::OnCreditCardFetched(
 
   manager_->OnCreditCardFetchedSuccessfully(*credit_card);
   manager_->FillOrPreviewField(
-      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       query_form_, query_field_,
       credit_card->GetInfo(CREDIT_CARD_NUMBER, manager_->app_locale()),
       PopupItemId::kCreditCardFieldByFieldFilling);

@@ -177,15 +177,16 @@ class AutofillDriver {
   //
   // This method is a no-op if the renderer is not currently available.
   virtual base::flat_set<FieldGlobalId> ApplyFormAction(
-      mojom::ActionType action_type,
+      mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& form,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map) = 0;
 
-  // Tells the renderer to set the node text.
-  virtual void ApplyFieldAction(mojom::ActionPersistence action_persistence,
-                                mojom::TextReplacement text_replacement,
+  // Tells the renderer to perform actions on the node text.
+  // If the `action_type` is kSelectAll, then `value` needs to be empty.
+  virtual void ApplyFieldAction(mojom::FieldActionType action_type,
+                                mojom::ActionPersistence action_persistence,
                                 const FieldGlobalId& field_id,
                                 const std::u16string& value) = 0;
 

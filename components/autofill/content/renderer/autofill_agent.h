@@ -156,11 +156,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   void TriggerFormExtraction() override;
   void TriggerFormExtractionWithResponse(
       base::OnceCallback<void(bool)> callback) override;
-  void ApplyFormAction(mojom::ActionType action_type,
+  void ApplyFormAction(mojom::FormActionType action_type,
                        mojom::ActionPersistence action_persistence,
                        const FormData::FillData& form) override;
-  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
-                        mojom::TextReplacement text_replacement,
+  void ApplyFieldAction(mojom::FieldActionType action_type,
+                        mojom::ActionPersistence action_persistence,
                         FieldRendererId field_id,
                         const std::u16string& value) override;
   void ExtractForm(FormRendererId form,
@@ -432,7 +432,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Records the last autofill action (Fill or Undo) done by the agent. Used in
   // ClearPreviewedForm to get the default state of previewed fields
   // post-clearing.
-  mojom::ActionType last_action_type_ = mojom::ActionType::kFill;
+  mojom::FormActionType last_action_type_ = mojom::FormActionType::kFill;
 
   // Last form which was interacted with by the user.
   struct {

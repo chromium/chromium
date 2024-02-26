@@ -115,16 +115,16 @@ bool AutofillDriverIOS::CanShowAutofillUi() const {
 }
 
 base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
-    mojom::ActionType action_type,
+    mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   switch (action_type) {
-    case mojom::ActionType::kUndo:
+    case mojom::FormActionType::kUndo:
       // TODO(crbug.com/1441410) Add Undo support on iOS.
       return {};
-    case mojom::ActionType::kFill:
+    case mojom::FormActionType::kFill:
       web::WebFrame* frame = web_frame();
       if (frame) {
         [bridge_ fillFormData:data inFrame:frame];
@@ -138,8 +138,8 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
 }
 
 void AutofillDriverIOS::ApplyFieldAction(
+    mojom::FieldActionType action_type,
     mojom::ActionPersistence action_persistence,
-    mojom::TextReplacement text_replacement,
     const FieldGlobalId& field,
     const std::u16string& value) {
   // For now, only support filling.

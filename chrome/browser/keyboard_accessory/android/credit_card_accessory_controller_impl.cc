@@ -221,8 +221,8 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   // Credit card number fields have a GUID populated to allow deobfuscation
   // before filling.
   if (selection.id().empty()) {
-    GetDriver()->ApplyFieldAction(mojom::ActionPersistence::kFill,
-                                  mojom::TextReplacement::kReplaceAll,
+    GetDriver()->ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                                  mojom::ActionPersistence::kFill,
                                   focused_field_id, selection.text_to_fill());
     return;
   }
@@ -352,8 +352,8 @@ void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
   DCHECK(credit_card);
   DCHECK(GetDriver());
 
-  GetDriver()->ApplyFieldAction(mojom::ActionPersistence::kFill,
-                                mojom::TextReplacement::kReplaceAll,
+  GetDriver()->ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                                mojom::ActionPersistence::kFill,
                                 last_focused_field_id_, credit_card->number());
   last_focused_field_id_ = {};
 }

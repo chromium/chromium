@@ -543,15 +543,16 @@ enum ActionPersistence {
 };
 
 // The possible actions that Autofill can perform on forms.
-enum ActionType {
+enum FormActionType {
   kFill,  // Autofill should fill the form.
   kUndo,  // Autofill should undo some previous fill operation on the form.
 };
 
-// Indicates which part of a text field's value Autofill replaces.
-enum TextReplacement {
+// The possible actions that Autofill can perform on fields.
+enum FieldActionType {
   kReplaceAll,        // Replace the field's current value.
   kReplaceSelection,  // Replace only the currently selected text.
+  kSelectAll,         // Selects all the text within this field.
 };
 
 // Describes which action triggered Autofill suggestions. This has implications

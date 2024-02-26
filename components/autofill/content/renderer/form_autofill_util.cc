@@ -2211,7 +2211,7 @@ std::optional<FormData> FindFormForContentEditable(
 std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     base::span<const FormFieldData::FillData> fields,
     const WebFormControlElement& initiating_element,
-    mojom::ActionType action_type,
+    mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     FieldDataManager& field_data_manager) {
   DCHECK(!initiating_element.IsNull());
@@ -2236,7 +2236,7 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
 
   // If this is a preview, prevent already autofilled fields from being
   // highlighted.
-  if (action_type == mojom::ActionType::kFill &&
+  if (action_type == mojom::FormActionType::kFill &&
       action_persistence == mojom::ActionPersistence::kPreview &&
       base::FeatureList::IsEnabled(
           features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
@@ -2263,9 +2263,10 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     }
     element.SetAutofillSection(WebString::FromUTF8(field.section.ToString()));
 
-    if ((action_type == mojom::ActionType::kFill &&
+    if ((action_type == mojom::FormActionType::kFill &&
          ShouldSkipFillField(field, element, initiating_element)) ||
-        (action_type == mojom::ActionType::kUndo && !element.IsAutofilled())) {
+        (action_type == mojom::FormActionType::kUndo &&
+         !element.IsAutofilled())) {
       continue;
     }
 
@@ -2328,11 +2329,11 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
 }
 
 void ClearPreviewedElements(
-    mojom::ActionType action_type,
+    mojom::FormActionType action_type,
     base::span<std::pair<WebFormControlElement, WebAutofillState>>
         previewed_elements,
     const WebFormControlElement& initiating_element) {
-  if (action_type == mojom::ActionType::kFill &&
+  if (action_type == mojom::FormActionType::kFill &&
       base::FeatureList::IsEnabled(
           features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
     // If this is a synthetic form, get the unowned form elements. Otherwise,

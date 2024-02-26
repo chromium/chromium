@@ -23,18 +23,20 @@ interface AutofillAgent {
   // Fills or previews the form identified by `form` with the data of its
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
-  ApplyFormAction(ActionType action_type,
+  ApplyFormAction(FormActionType action_type,
                   ActionPersistence action_persistence,
                   FormData_FillData form);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.
-  // `text_replacement` indicates whether to replace the field's entire value
-  // or only the current selection. For non-text fields, this parameter has no
-  // effect. This must not be `kReplaceSelection` if `action_persistence` is
-  // `kPreview`. Enabling this is desirable but not implemented, yet.
-  ApplyFieldAction(ActionPersistence action_persistence,
-                   TextReplacement text_replacement,
+  // `action_type` indicates whether to replace the field's entire value
+  // or only the current selection or select all text inside the field.
+  // For non-text fields, this parameter has no effect. This must not be
+  // `kReplaceSelection` if `action_persistence` is `kPreview`.
+  // Enabling this is desirable but not implemented, yet.
+  // If `action_type` is `kSelectAll`, then the `value` must be empty.
+  ApplyFieldAction(FieldActionType action_type,
+                   ActionPersistence action_persistence,
                    FieldRendererId field,
                    mojo_base.mojom.String16 value);
 

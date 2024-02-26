@@ -199,7 +199,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override {}
 
-  void ApplyFormAction(mojom::ActionType action_type,
+  void ApplyFormAction(mojom::FormActionType action_type,
                        mojom::ActionPersistence action_persistence,
                        const FormData::FillData& form) override {
     switch (action_persistence) {
@@ -213,11 +213,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
-  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
-                        mojom::TextReplacement text_replacement,
+  void ApplyFieldAction(mojom::FieldActionType action_type,
+                        mojom::ActionPersistence action_persistence,
                         FieldRendererId field,
                         const std::u16string& value) override {
-    CHECK_EQ(text_replacement, mojom::TextReplacement::kReplaceAll)
+    CHECK_EQ(action_type, mojom::FieldActionType::kReplaceAll)
         << "FakeAutofillAgent only supports kReplaceAll";
     value_renderer_id_ = field;
     switch (action_persistence) {
@@ -719,8 +719,8 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(
-      mojom::ActionType::kFill, mojom::ActionPersistence::kFill, address_form(),
-      triggered_origin, {});
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+      address_form(), triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -746,7 +746,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(
-      mojom::ActionType::kFill, mojom::ActionPersistence::kPreview,
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kPreview,
       address_form(), triggered_origin, {});
 
   run_loop.RunUntilIdle();
@@ -847,7 +847,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm, ApplyFieldAction_Fill) {
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFieldAction(
-      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      mojom::FieldActionType::kReplaceAll, mojom::ActionPersistence::kFill,
       field, input_value);
   run_loop.RunUntilIdle();
 
@@ -861,7 +861,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm, ApplyFieldAction_Preview) {
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFieldAction(
-      mojom::ActionPersistence::kPreview, mojom::TextReplacement::kReplaceAll,
+      mojom::FieldActionType::kReplaceAll, mojom::ActionPersistence::kPreview,
       field, input_value);
   run_loop.RunUntilIdle();
 

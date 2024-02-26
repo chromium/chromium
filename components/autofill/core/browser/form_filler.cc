@@ -399,7 +399,7 @@ FillingProduct FormFiller::UndoAutofill(
   // values to fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
   // dummy values for `triggered_origin` and `field_type_map`.
-  manager_->driver().ApplyFormAction(mojom::ActionType::kUndo,
+  manager_->driver().ApplyFormAction(mojom::FormActionType::kUndo,
                                      action_persistence, form, url::Origin(),
                                      /*field_type_map=*/{});
 
@@ -413,7 +413,7 @@ FillingProduct FormFiller::UndoAutofill(
 }
 
 void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                                    mojom::TextReplacement text_replacement,
+                                    mojom::FieldActionType action_type,
                                     const FormData& form,
                                     const FormFieldData& field,
                                     FormStructure* form_structure,
@@ -439,7 +439,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
   }
-  manager_->driver().ApplyFieldAction(action_persistence, text_replacement,
+  manager_->driver().ApplyFieldAction(action_type, action_persistence,
                                       field.global_id(), value);
 }
 
@@ -695,7 +695,7 @@ void FormFiller::FillOrPreviewForm(
                               field->Type().GetStorableType());
       });
   base::flat_set<FieldGlobalId> safe_fields =
-      manager_->driver().ApplyFormAction(mojom::ActionType::kFill,
+      manager_->driver().ApplyFormAction(mojom::FormActionType::kFill,
                                          action_persistence, result_form,
                                          field.origin, field_types);
 

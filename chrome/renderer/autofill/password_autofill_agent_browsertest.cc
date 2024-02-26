@@ -635,7 +635,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         ->FocusedElementChanged(username_element_);
     // Fill focused element (i.e. `username_element_`).
     autofill_agent_->ApplyFieldAction(
-        mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+        mojom::FieldActionType::kReplaceAll, mojom::ActionPersistence::kFill,
         form_util::GetFieldRendererId(username_element_), text);
   }
 
@@ -655,7 +655,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     form.fields = field_data;
     form.renderer_id = form_util::GetFormRendererId(username_element_.Form());
 
-    autofill_agent_->ApplyFormAction(mojom::ActionType::kFill,
+    autofill_agent_->ApplyFormAction(mojom::FormActionType::kFill,
                                      mojom::ActionPersistence::kFill, form);
   }
 

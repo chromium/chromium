@@ -285,7 +285,7 @@ void ApplyFillFormAction(
     base::span<const FormFieldData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::ActionPersistence action_persistence,
-    mojom::ActionType action_type = mojom::ActionType::kFill) {
+    mojom::FormActionType action_type = mojom::FormActionType::kFill) {
   std::vector<FormFieldData::FillData> filling_fields;
   filling_fields.reserve(fields.size());
   for (const FormFieldData& field : fields) {
@@ -2165,7 +2165,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     }
 
     // Clear the previewed fields.
-    ClearPreviewedElements(mojom::ActionType::kFill, elements, lastname);
+    ClearPreviewedElements(mojom::FormActionType::kFill, elements, lastname);
 
     // Verify the previewed fields are cleared.
     for (size_t i = 0; i < elements.size(); ++i) {
@@ -2217,7 +2217,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     // Clear the previewed fields.
-    ClearPreviewedElements(mojom::ActionType::kFill, elements, firstname);
+    ClearPreviewedElements(mojom::FormActionType::kFill, elements, firstname);
 
     // Fields with non-empty values are restored.
     EXPECT_EQ(u"W", firstname.Value().Utf16());
@@ -2272,7 +2272,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     // Clear the previewed fields.
-    ClearPreviewedElements(mojom::ActionType::kFill, elements, firstname);
+    ClearPreviewedElements(mojom::FormActionType::kFill, elements, firstname);
 
     // Fields with non-empty values are restored.
     EXPECT_EQ(u"W", firstname.Value().Utf16());
@@ -5088,7 +5088,7 @@ TEST_F(FormAutofillTest, UndoAutofill) {
   form.fields = undo_fields;
   ApplyFillFormAction(form.fields, text_element_1,
                       mojom::ActionPersistence::kFill,
-                      mojom::ActionType::kUndo);
+                      mojom::FormActionType::kUndo);
   EXPECT_THAT(text_element_1,
               HasAutofillValue("undo_text_1", WebAutofillState::kNotFilled));
   EXPECT_THAT(text_element_2, HasAutofillValue("autofill_text_2",

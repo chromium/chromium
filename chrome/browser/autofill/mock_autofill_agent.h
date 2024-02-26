@@ -39,14 +39,14 @@ class MockAutofillAgent : public mojom::AutofillAgent {
       (override));
   MOCK_METHOD(void,
               ApplyFormAction,
-              (mojom::ActionType action_type,
+              (mojom::FormActionType action_type,
                mojom::ActionPersistence action_persistence,
                const FormData::FillData& form),
               (override));
   MOCK_METHOD(void,
               ApplyFieldAction,
-              (mojom::ActionPersistence action_persistence,
-               mojom::TextReplacement text_replacement,
+              (mojom::FieldActionType action_type,
+               mojom::ActionPersistence action_persistence,
                FieldRendererId field,
                const std::u16string& value),
               (override));

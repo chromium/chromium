@@ -220,13 +220,13 @@ class ContentAutofillDriver : public AutofillDriver,
   // Group (1b): browser -> renderer events, routed (see comment above).
   // autofill::AutofillDriver:
   base::flat_set<FieldGlobalId> ApplyFormAction(
-      mojom::ActionType action_type,
+      mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override;
-  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
-                        mojom::TextReplacement text_replacement,
+  void ApplyFieldAction(mojom::FieldActionType action_type,
+                        mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
   void ExtractForm(FormGlobalId form,

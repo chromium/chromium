@@ -130,7 +130,7 @@ class FormFiller {
 
   // Records filling information if possible and routes back to the renderer.
   void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                          mojom::TextReplacement text_replacement,
+                          mojom::FieldActionType action_type,
                           const FormData& form,
                           const FormFieldData& field,
                           FormStructure* form_structure,

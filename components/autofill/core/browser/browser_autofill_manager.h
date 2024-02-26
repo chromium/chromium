@@ -150,7 +150,7 @@ class BrowserAutofillManager : public AutofillManager {
   // Virtual for testing.
   // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
   virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                                  mojom::TextReplacement text_replacement,
+                                  mojom::FieldActionType action_type,
                                   const FormData& form,
                                   const FormFieldData& field,
                                   const std::u16string& value,

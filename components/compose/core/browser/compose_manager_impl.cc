@@ -32,7 +32,7 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
   }
   static_cast<autofill::BrowserAutofillManager*>(manager.get())
       ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
-                           autofill::mojom::TextReplacement::kReplaceSelection,
+                           autofill::mojom::FieldActionType::kReplaceSelection,
                            form, field, trimmed_text,
                            autofill::PopupItemId::kCompose);
 }
