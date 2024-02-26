@@ -265,9 +265,6 @@ struct PassedData {
   // The slot_id passed into FakeChapsSlotSessionFactory.
   std::optional<CK_SLOT_ID> slot_id;
 
-  // Attributes passed for the secret key template to GenerateKey.
-  ObjectAttributes secret_key_gen_attributes;
-
   // Attributes passed for the public key template to GenerateKeyPair.
   ObjectAttributes public_key_gen_attributes;
 
@@ -336,25 +333,6 @@ class FakeChapsSlotSession : public ChapsSlotSession {
     if (parsed_object_type.CkULong() == CKO_CERTIFICATE) {
       passed_data_->pkcs12_cert_attributes.push_back(parsing_result);
     }
-
-    return CKR_OK;
-  }
-
-  CK_RV GenerateKey(CK_MECHANISM_PTR pMechanism,
-                    CK_ATTRIBUTE_PTR pTemplate,
-                    CK_ULONG ulCount,
-                    CK_OBJECT_HANDLE_PTR phKey) override {
-    EXPECT_TRUE(session_ok_);
-    CK_RV configured_result = ApplyConfiguredResult();
-    if (configured_result != CKR_OK) {
-      return configured_result;
-    }
-
-    passed_data_->secret_key_gen_attributes =
-        ObjectAttributes::ParseFrom(pTemplate, ulCount);
-
-    // TODO(b/288880151): Finish fake implementation of `GenerateKey()`, when it
-    // becomes necessary for testing `ChapsUtilImpl`.
 
     return CKR_OK;
   }

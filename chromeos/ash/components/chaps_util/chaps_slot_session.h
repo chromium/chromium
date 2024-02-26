@@ -31,13 +31,6 @@ class ChapsSlotSession {
                              CK_ULONG ulCount,
                              CK_OBJECT_HANDLE_PTR phObject) = 0;
 
-  // Calls C_GenerateKey.
-  // PKCS #11 v2.20 section 11.14 page 175.
-  virtual CK_RV GenerateKey(CK_MECHANISM_PTR pMechanism,
-                            CK_ATTRIBUTE_PTR pTemplate,
-                            CK_ULONG ulCount,
-                            CK_OBJECT_HANDLE_PTR phKey) = 0;
-
   // Calls C_GenerateKeyPair.
   // PKCS #11 v2.20 section 11.14 page 176.
   virtual CK_RV GenerateKeyPair(CK_MECHANISM_PTR pMechanism,
