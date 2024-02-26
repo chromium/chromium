@@ -36,14 +36,11 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
-#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "third_party/crashpad/crashpad/client/crash_report_database.h"
-#include "third_party/crashpad/crashpad/client/settings.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "chrome/updater/ipc/ipc_support.h"
@@ -93,10 +90,6 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
   if (!CrashClient::GetInstance()->InitializeCrashReporting(updater_scope)) {
     VLOG(1) << "Crash reporting is not available.";
     return;
-  }
-  if (AreRawUsageStatsEnabled(updater_scope)) {
-    CrashClient::GetInstance()->database()->GetSettings()->SetUploadsEnabled(
-        true);
   }
   VLOG(1) << "Crash reporting initialized.";
 }

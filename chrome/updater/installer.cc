@@ -22,7 +22,6 @@
 #include "chrome/updater/action_handler.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
@@ -93,8 +92,7 @@ Installer::Installer(
       policy_same_version_update_(policy_same_version_update),
       persisted_data_(persisted_data),
       crx_verifier_format_(crx_verifier_format),
-      usage_stats_enabled_(persisted_data->GetUsageStatsEnabled() ||
-                           AreRawUsageStatsEnabled(updater_scope_)),
+      usage_stats_enabled_(persisted_data->GetUsageStatsEnabled()),
       app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {})) {}
 
 Installer::~Installer() = default;

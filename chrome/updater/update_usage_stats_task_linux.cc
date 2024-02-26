@@ -15,9 +15,4 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
   return false;
 }
 
-bool AreRawUsageStatsEnabled(UpdaterScope scope) {
-  // TODO(b/325316125): Implement.
-  return false;
-}
-
 }  // namespace updater

@@ -1424,35 +1424,6 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest,
-       LegacyAppCommandWeb_InstallUpdaterAndApp_UsageStatsEnabled_ExpectPing) {
-  ScopedServer test_server(test_commands_);
-  const std::string kAppId("test");
-  const base::Version v1("1");
-  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), v1));
-
-  ASSERT_NO_FATAL_FAILURE(
-      InstallUpdaterAndApp(kAppId, /*is_silent_install=*/true, "usagestats=1"));
-  ASSERT_TRUE(WaitForUpdaterExit());
-
-  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
-
-  // The test runs the appcommand twice, so two pings.
-  ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandBegin));
-  ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandBegin));
-  base::Value::List parameters;
-  parameters.Append("5432");
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
-
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
 TEST_F(IntegrationTest, LegacyPolicyStatus) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());

@@ -42,7 +42,6 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/progress_sampler.h"
@@ -1045,7 +1044,6 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     bool send_pings) {
   app_command_runner_ =
       AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
-  scope_ = scope;
   app_id_ = base::WideToUTF8(app_id);
   send_pings_ = send_pings;
   return app_command_runner_.error_or(S_OK);
@@ -1085,10 +1083,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
 
 namespace {
 
-void SendPing(UpdaterScope scope,
-              const std::string& app_id,
-              HRESULT hr,
-              int event_type) {
+void SendPing(const std::string& app_id, HRESULT hr, int event_type) {
   struct SendPingResult : public base::RefCountedThreadSafe<SendPingResult> {
     base::WaitableEvent completion_event;
 
@@ -1099,8 +1094,8 @@ void SendPing(UpdaterScope scope,
 
   auto result = base::MakeRefCounted<SendPingResult>();
   AppServerWin::PostRpcTask(base::BindOnce(
-      [](UpdaterScope scope, const std::string& app_id, const HRESULT hr,
-         int event_type, scoped_refptr<SendPingResult> result) {
+      [](const std::string& app_id, const HRESULT hr, int event_type,
+         scoped_refptr<SendPingResult> result) {
         const base::ScopedClosureRunner signal_event(base::BindOnce(
             [](scoped_refptr<SendPingResult> result) {
               result->completion_event.Signal();
@@ -1111,8 +1106,7 @@ void SendPing(UpdaterScope scope,
             GetAppServerWinInstance()->config();
         scoped_refptr<PersistedData> persisted_data =
             config->GetUpdaterPersistedData();
-        if (!persisted_data->GetUsageStatsEnabled() &&
-            !AreRawUsageStatsEnabled(scope)) {
+        if (!persisted_data->GetUsageStatsEnabled()) {
           return;
         }
 
@@ -1131,7 +1125,7 @@ void SendPing(UpdaterScope scope,
              .extra_code1 = 0},
             base::DoNothing());
       },
-      scope, app_id, hr, event_type, result));
+      app_id, hr, event_type, result));
 
   result->completion_event.TimedWait(base::Seconds(60));
 }
@@ -1167,7 +1161,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
 
   const HRESULT hr = app_command_runner_->Run(substitutions, process_);
   if (send_pings_) {
-    SendPing(scope_, app_id_, hr,
+    SendPing(app_id_, hr,
              update_client::protocol_request::kEventAppCommandBegin);
   }
   return hr;

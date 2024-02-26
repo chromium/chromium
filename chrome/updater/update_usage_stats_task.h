@@ -19,10 +19,6 @@ namespace updater {
 bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
                                UpdaterScope scope);
 
-// Reads usage stats for each app from the system instead of persisted data,
-// specifically from the registry for Windows.
-bool AreRawUsageStatsEnabled(UpdaterScope scope);
-
 class PersistedData;
 
 class UpdateUsageStatsTask
