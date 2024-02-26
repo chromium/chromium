@@ -74,6 +74,7 @@ using testing::_;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Ref;
+using testing::Return;
 using testing::SaveArg;
 using testing::WithArg;
 
@@ -934,10 +935,10 @@ TEST_F(RTCPeerConnectionHandlerTest, OnIceCandidate) {
   EXPECT_EQ(kDummySdp, mock_client_->candidate_sdp());
 }
 
-// TODO(https://crbug.com/326753408): Reenable and fix after
-// https://webrtc-review.googlesource.com/c/src/+/340481 has been imported.
-TEST_F(RTCPeerConnectionHandlerTest, DISABLED_OnRenegotiationNeeded) {
+TEST_F(RTCPeerConnectionHandlerTest, OnRenegotiationNeeded) {
   testing::InSequence sequence;
+  EXPECT_CALL(*mock_peer_connection_, ShouldFireNegotiationNeededEvent)
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_tracker_.Get(),
               TrackOnRenegotiationNeeded(pc_handler_.get()));
   EXPECT_CALL(*mock_client_.Get(), NegotiationNeeded());
