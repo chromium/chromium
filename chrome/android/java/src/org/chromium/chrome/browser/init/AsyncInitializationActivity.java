@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
@@ -57,7 +58,7 @@ import org.chromium.ui.display.DisplayUtil;
  * An activity that talks with application and activity level delegates for async initialization.
  */
 public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatActivity
-        implements ChromeActivityNativeDelegate, BrowserParts {
+        implements ChromeActivityNativeDelegate, BrowserParts, ActivityLifecycleDispatcherProvider {
     @VisibleForTesting
     public static final String FIRST_DRAW_COMPLETED_TIME_MS_UMA = "FirstDrawCompletedTime";
 
@@ -866,6 +867,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     /**
      * @return {@link ActivityLifecycleDispatcher} associated with this activity.
      */
+    @Override
     public ActivityLifecycleDispatcher getLifecycleDispatcher() {
         return mLifecycleDispatcher;
     }

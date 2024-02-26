@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -92,6 +93,12 @@ class SurveyClientBridge implements SurveyClient {
         }
 
         Activity activity = windowAndroid.getActivity().get();
-        showSurvey(activity, null, bitsValues, stringValues);
+        ActivityLifecycleDispatcher lifecycleDispatcher = null;
+        if (activity instanceof ActivityLifecycleDispatcherProvider) {
+            // TODO(crbug/326643655): Allow access ActivityLifecycleDispatcher from WindowAndroid.
+            lifecycleDispatcher =
+                    ((ActivityLifecycleDispatcherProvider) activity).getLifecycleDispatcher();
+        }
+        showSurvey(activity, lifecycleDispatcher, bitsValues, stringValues);
     }
 }
