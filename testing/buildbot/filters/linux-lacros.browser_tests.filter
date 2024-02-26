@@ -79,4 +79,3 @@
 
 # crbug.com/1489659
 -PDFExtensionAccessibilityNavigationTest.LinkNavigation
--WebAppTabStripBrowserTest.ActiveTabColorIsBackgroundColor
