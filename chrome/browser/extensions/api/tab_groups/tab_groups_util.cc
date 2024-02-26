@@ -145,6 +145,9 @@ api::tab_groups::Color ColorIdToColor(
       return api::tab_groups::Color::kCyan;
     case tab_groups::TabGroupColorId::kOrange:
       return api::tab_groups::Color::kOrange;
+    case tab_groups::TabGroupColorId::kNumEntries:
+      NOTREACHED() << "kNumEntries is not a support color enum.";
+      return api::tab_groups::Color::kGrey;
   }
 
   NOTREACHED();

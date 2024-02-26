@@ -1460,6 +1460,9 @@ SyncTabGroupColor SyncTabColorFromTabGroupColorId(
       return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN;
     case TabGroupColor::kOrange:
       return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE;
+    case TabGroupColor::kNumEntries:
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
+      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY;
   };
 }
 
@@ -2098,6 +2101,9 @@ std::string ConvertTabGroupColorIdToString(GroupColor color) {
       return tab_groups::kTabGroupColorCyan;
     case GroupColor::kOrange:
       return tab_groups::kTabGroupColorOrange;
+    case GroupColor::kNumEntries:
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
+      return tab_groups::kTabGroupColorGrey;
   }
 }
 

@@ -31,7 +31,7 @@ public class ColorPickerUtils {
         // The color ids used here can be found in {@link TabGroupColorId}. Note that it is assumed
         // the id list is contiguous from 0 to size-1.
         List<Integer> colors = new ArrayList<>();
-        for (int i = 0; i < TabGroupColorId.class.getDeclaredFields().length; i++) {
+        for (int i = 0; i < TabGroupColorId.NUM_ENTRIES; i++) {
             colors.add(i);
         }
         return colors;

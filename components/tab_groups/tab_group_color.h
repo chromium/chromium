@@ -46,6 +46,7 @@ enum class TabGroupColorId {
   kCyan = 7,
   kOrange = 8,
   // Next value: 9
+  kNumEntries = 9,
 };
 
 using ColorLabelMap = base::flat_map<TabGroupColorId, std::u16string>;

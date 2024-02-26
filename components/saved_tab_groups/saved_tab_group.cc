@@ -398,6 +398,9 @@ SavedTabGroup::TabGroupColorToSyncColor(
       return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_CYAN;
     case tab_groups::TabGroupColorId::kOrange:
       return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_ORANGE;
+    case tab_groups::TabGroupColorId::kNumEntries:
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
+      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY;
   }
 
   NOTREACHED() << "No known conversion for the supplied color.";
