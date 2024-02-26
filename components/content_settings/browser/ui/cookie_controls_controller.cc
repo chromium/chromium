@@ -304,11 +304,6 @@ void CookieControlsController::SetUserChangedCookieBlockingForSite(
   user_changed_cookie_blocking_ = changed && !user_changed_cookie_blocking_;
 }
 
-CookieControlsStatus CookieControlsController::GetCookieControlsStatus() {
-  auto status = GetStatus(GetWebContents());
-  return status.status;
-}
-
 int CookieControlsController::GetAllowedThirdPartyCookiesSitesCount() const {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       GetWebContents()->GetPrimaryPage());

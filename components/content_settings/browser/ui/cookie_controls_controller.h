@@ -67,9 +67,6 @@ class CookieControlsController final
   bool HasUserChangedCookieBlockingForSite();
   void SetUserChangedCookieBlockingForSite(bool changed);
 
-  // Returns the current cookie controls status.
-  CookieControlsStatus GetCookieControlsStatus();
-
   void AddObserver(CookieControlsObserver* obs);
   void RemoveObserver(CookieControlsObserver* obs);
 

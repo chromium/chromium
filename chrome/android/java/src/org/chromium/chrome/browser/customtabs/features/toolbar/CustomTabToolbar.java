@@ -101,7 +101,6 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -154,7 +153,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private OnClickListener mCloseClickListener;
     private CookieControlsBridge mCookieControlsBridge;
     private boolean mShouldHighlightCookieControlsIcon;
-    private int mCookieBlockingStatus;
+    private boolean mCookieControlsVisible;
+    private boolean mThirdPartyCookiesBlocked;
     private int mBlockingStatus3pcd;
 
     private final Handler mTaskHandler = new Handler();
@@ -1174,8 +1174,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void onStatusChanged(
-                int status, int enforcement, int blockingStatus, long expiration) {
-            mCookieBlockingStatus = status;
+                boolean controlsVisible,
+                boolean protectionsOn,
+                int enforcement,
+                int blockingStatus,
+                long expiration) {
+            mCookieControlsVisible = controlsVisible;
+            mThirdPartyCookiesBlocked = protectionsOn;
             mBlockingStatus3pcd = blockingStatus;
         }
 
@@ -1389,9 +1394,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (activity == null) return;
                 mPageInfoIPHController = new PageInfoIPHController(activity, getSecurityIconView());
             }
-
             if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
-                if (mCookieBlockingStatus != CookieControlsStatus.ENABLED) return;
+                if (!mCookieControlsVisible || !mThirdPartyCookiesBlocked) return;
                 mPageInfoIPHController.showCookieControlsReminderIPH(
                         COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT,
                         R.string.cookie_controls_reminder_iph_message);

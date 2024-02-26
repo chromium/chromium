@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
-import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.prefs.PrefService;
@@ -629,7 +628,8 @@ public final class StatusMediatorUnitTest {
     public void iphCookieControls_showIPHOnlyWhenNotIn3pcd() {
         setupCookieControlsTest();
         mMediator.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
                 /* expiration= */ 0);
@@ -641,7 +641,8 @@ public final class StatusMediatorUnitTest {
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
 
         mMediator.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -683,7 +684,8 @@ public final class StatusMediatorUnitTest {
         setupCookieControlsTest();
 
         mMediator.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -706,7 +708,8 @@ public final class StatusMediatorUnitTest {
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.NONE, false, false);
 
         mMediator.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -729,7 +732,8 @@ public final class StatusMediatorUnitTest {
         doReturn(0).when(mPrefs).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION);
 
         mMediator.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -749,7 +753,8 @@ public final class StatusMediatorUnitTest {
         setupCookieControlsTest();
 
         mMediator.onStatusChanged(
-                CookieControlsStatus.DISABLED,
+                /* controls_visible= */ false,
+                /* protections_on= */ false,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -770,7 +775,8 @@ public final class StatusMediatorUnitTest {
         setupCookieControlsTest();
 
         mMediator.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
                 /* expiration= */ 0);

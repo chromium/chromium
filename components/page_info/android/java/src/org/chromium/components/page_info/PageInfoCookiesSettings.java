@@ -26,7 +26,6 @@ import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
-import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.AttrUtils;
@@ -179,11 +178,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     public void setCookieStatus(
-            @CookieControlsStatus int status,
+            boolean controlsVisible,
+            boolean protectionsOn,
             @CookieControlsEnforcement int enforcement,
             long expiration) {
-        boolean visible = status != CookieControlsStatus.DISABLED;
-        boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
         boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
 
         if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
@@ -217,19 +215,19 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             return;
         }
 
-        mCookieSwitch.setVisible(visible);
-        mThirdPartyCookiesTitle.setVisible(visible);
-        mThirdPartyCookiesSummary.setVisible(visible);
+        mCookieSwitch.setVisible(controlsVisible);
+        mThirdPartyCookiesTitle.setVisible(controlsVisible);
+        mThirdPartyCookiesSummary.setVisible(controlsVisible);
 
-        if (!visible) return;
+        if (!controlsVisible) return;
 
         mCookieSwitch.setIcon(
                 SettingsUtils.getTintedIcon(
                         getContext(),
-                        blockingEnabled
+                        protectionsOn
                                 ? R.drawable.ic_visibility_off_black
                                 : R.drawable.ic_visibility_black));
-        mCookieSwitch.setChecked(!blockingEnabled);
+        mCookieSwitch.setChecked(!protectionsOn);
         mCookieSwitch.setEnabled(!isEnforced);
         mCookieSwitch.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(
@@ -249,7 +247,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             mOnFeedbackClicked.onResult(this.getActivity());
                         });
 
-        if (blockingEnabled) {
+        if (protectionsOn) {
             mThirdPartyCookiesTitle.setTitle(
                     getString(R.string.page_info_cookies_site_not_working_title));
             int resId =

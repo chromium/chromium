@@ -82,7 +82,6 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
-import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -538,7 +537,8 @@ public class CustomTabToolbarUnitTest {
 
         mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -556,7 +556,8 @@ public class CustomTabToolbarUnitTest {
 
         mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                CookieControlsStatus.DISABLED,
+                /* controls_visible= */ false,
+                /* protections_on= */ false,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -574,7 +575,8 @@ public class CustomTabToolbarUnitTest {
 
         mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
                 /* expiration= */ 0);

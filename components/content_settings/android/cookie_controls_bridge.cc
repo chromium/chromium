@@ -62,20 +62,21 @@ void CookieControlsBridge::OnStatusChanged(
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
-  // TODO(b/317975095): Utilize `controls_visible` and `protections_on` in place
-  // of CookieControlsStatus.
   // Only invoke the callback when there is a change.
-  if (status_ == status && enforcement_ == enforcement &&
+  if (controls_visible_ == controls_visible &&
+      protections_on_ == protections_on && enforcement_ == enforcement &&
       expiration_ == expiration) {
     return;
   }
-  status_ = status;
+  controls_visible_ = controls_visible;
+  protections_on_ = protections_on;
   enforcement_ = enforcement;
   expiration_ = expiration;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CookieControlsBridge_onStatusChanged(
-      env, jobject_, static_cast<int>(status_), static_cast<int>(enforcement_),
-      static_cast<int>(blocking_status),
+      env, jobject_, static_cast<int>(status),
+      static_cast<bool>(controls_visible), static_cast<bool>(protections_on),
+      static_cast<int>(enforcement_), static_cast<int>(blocking_status),
       expiration.InMillisecondsSinceUnixEpoch());
 }
 
@@ -122,10 +123,6 @@ void CookieControlsBridge::OnUiClosing(JNIEnv* env) {
 
 void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
   controller_->OnEntryPointAnimated();
-}
-
-int CookieControlsBridge::GetCookieControlsStatus(JNIEnv* env) {
-  return static_cast<int>(controller_->GetCookieControlsStatus());
 }
 
 CookieControlsBridge::~CookieControlsBridge() = default;

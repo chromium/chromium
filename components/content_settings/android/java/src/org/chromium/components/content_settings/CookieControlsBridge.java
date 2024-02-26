@@ -78,21 +78,16 @@ public class CookieControlsBridge {
         return CookieControlsBridgeJni.get().isCookieControlsEnabled(handle);
     }
 
-    public @CookieControlsStatus int getCookieControlsStatus() {
-        if (mNativeCookieControlsBridge != 0) {
-            return CookieControlsBridgeJni.get()
-                    .getCookieControlsStatus(mNativeCookieControlsBridge);
-        }
-        return CookieControlsStatus.UNINITIALIZED;
-    }
-
     @CalledByNative
     private void onStatusChanged(
             @CookieControlsStatus int status,
+            boolean controlsVisible,
+            boolean protectionsOn,
             @CookieControlsEnforcement int enforcement,
             @CookieBlocking3pcdStatus int blockingStatus,
             long expiration) {
-        mObserver.onStatusChanged(status, enforcement, blockingStatus, expiration);
+        mObserver.onStatusChanged(
+                controlsVisible, protectionsOn, enforcement, blockingStatus, expiration);
     }
 
     @CalledByNative
@@ -127,7 +122,5 @@ public class CookieControlsBridge {
         void onEntryPointAnimated(long nativeCookieControlsBridge);
 
         boolean isCookieControlsEnabled(BrowserContextHandle browserContextHandle);
-
-        int getCookieControlsStatus(long nativeCookieControlsBridge);
     }
 }

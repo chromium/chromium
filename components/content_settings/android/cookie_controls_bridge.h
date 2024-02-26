@@ -49,11 +49,7 @@ class CookieControlsBridge : public CookieControlsObserver {
 
   void OnEntryPointAnimated(JNIEnv* env);
 
-  int GetCookieControlsStatus(JNIEnv* env);
-
   // CookieControlsObserver:
-  // TODO(b/317975095): Remove `status` in favor of `control_visible` and
-  // `protections_on`.
   void OnStatusChanged(CookieControlsStatus status,
                        bool controls_visible,
                        bool protections_on,
@@ -70,7 +66,8 @@ class CookieControlsBridge : public CookieControlsObserver {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
-  CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+  bool controls_visible_ = false;
+  bool protections_on_ = false;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
   std::optional<base::Time> expiration_;
