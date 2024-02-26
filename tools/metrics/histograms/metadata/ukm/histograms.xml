@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="UKM.AppVersionDifferentWhenPurging" enum="BooleanChanged"
+    expires_after="2024-09-01">
+  <owner>jwd@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logged when doing a partial purges of unsent UKM logs. If the unsent log has
+    a different app version that the client's current version then a true is
+    logged and the report's log_written_by_app_version should be set with the
+    current version. Otherwise a false is logged.
+  </summary>
+</histogram>
+
 <histogram name="UKM.BuildAndStoreLogIsEmpty" enum="Boolean"
     expires_after="2025-05-01">
   <owner>rkaplow@chromium.org</owner>
