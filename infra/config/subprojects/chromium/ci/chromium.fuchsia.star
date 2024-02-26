@@ -115,6 +115,53 @@ ci.builder(
 )
 
 ci.builder(
+    name = "fuchsia-x64-cast-receiver-dbg",
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
+    description_html = "x64 debug build of fuchsia components with cast receiver",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_x64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia",
+            "cast_receiver_size_optimized",
+        ],
+    ),
+    # TODO: crbug.com/1509109 - Enable once it's green.
+    tree_closing = False,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "cast-receiver",
+            short_name = "x64-dbg",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.selector.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "gardener|ci|x64",
+            short_name = "cast-dbg",
+        ),
+    ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+)
+
+ci.builder(
     name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
     builder_spec = builder_config.builder_spec(
@@ -158,6 +205,7 @@ ci.builder(
     contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
+# TODO: crbug.com/1509109 - Remove and replace by fuchsia-x64-cast-receiver-dbg.
 ci.builder(
     name = "fuchsia-x64-dbg",
     builder_spec = builder_config.builder_spec(
@@ -186,7 +234,6 @@ ci.builder(
             "compile_only",
         ],
     ),
-    # TODO: crbug.com/1509109 - should use size-optimization and be re-enabled.
     tree_closing = False,
     console_view_entry = [
         consoles.console_view_entry(

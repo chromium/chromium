@@ -184,6 +184,29 @@ try_.builder(
     execution_timeout = 10 * time.hour,
 )
 
+try_.builder(
+    name = "fuchsia-x64-cast-receiver-dbg",
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
+    description_html = "try replica of ci/fuchsia-x64-cast-receiver-dbg",
+    mirrors = ["ci/fuchsia-x64-cast-receiver-dbg"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-x64-cast-receiver-dbg",
+            "debug_try_builder",
+        ],
+    ),
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+    execution_timeout = 10 * time.hour,
+    main_list_view = "try",
+    # This is the only bot that builds //chromecast code for Fuchsia on x64
+    # so trigger it when changes are made.
+    tryjob = try_.job(
+        location_filters = [
+            "chromecast/.+",
+        ],
+    ),
+)
+
 try_.orchestrator_builder(
     name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,

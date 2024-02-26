@@ -2932,6 +2932,28 @@
           'linux-jammy-or-focal',
         ],
       },
+      'fuchsia-x64-cast-receiver-dbg': {
+        'additional_compile_targets': [
+          'all',
+          'cast_test_lists',
+        ],
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
+        'mixins': [
+          'isolate_profile_data',
+          'linux-jammy',
+        ],
+        'swarming': {
+          'dimensions': {
+            'kvm': '1',
+          },
+        },
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'fuchsia_isolated_scripts',
+        },
+      },
       'fuchsia-x64-cast-receiver-rel': {
         'additional_compile_targets': [
           'all',
