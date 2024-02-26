@@ -380,6 +380,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     AppMenuItemProperties.ICON_SHOW_BADGE, shouldShowBadgeOnMenuItemIcon(item));
             propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
             propertyModel.set(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart());
+            propertyModel.set(AppMenuItemProperties.TITLE_CONDENSED, getContentDescription(item));
             if (item.hasSubMenu()) {
                 // Only support top level menu items have SUBMENU, and a SUBMENU item cannot have a
                 // SUBMENU.
@@ -1014,6 +1015,35 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                             != SyncSettingsUtils.SyncError.NO_ERROR;
         }
         return false;
+    }
+
+    /**
+     * Returns content description for the menu item, if different from the titleCondensed xml
+     * attribute.
+     */
+    protected String getContentDescription(MenuItem item) {
+        if (item.getItemId() == R.id.preferences_id) {
+            if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
+                return null;
+            }
+            // Theoretically mTabModelSelector could return a stub model.
+            Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+            if (profile == null) {
+                return null;
+            }
+            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            if (syncService == null || syncService.isSyncDisabledByEnterprisePolicy()) {
+                return null;
+            }
+            if (SyncSettingsUtils.getIdentityError(syncService)
+                            != SyncSettingsUtils.SyncError.NO_ERROR
+                    || SyncSettingsUtils.getSyncError(syncService)
+                            != SyncSettingsUtils.SyncError.NO_ERROR) {
+                return mContext.getResources().getString(R.string.menu_settings_account_error);
+            }
+        }
+        return null;
     }
 
     @Override

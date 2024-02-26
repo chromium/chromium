@@ -2416,6 +2416,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         Verify
       </message>
 
+      <!-- Accessibility strings for identity error visual cues -->
+      <message name="IDS_ACCESSIBILITY_ACCOUNT_MANAGEMENT_ROW_ACCOUNT_ERROR" desc="Accessibility string for alert icon in the account management row in the settings in case of identity error.">
+        Google Account error
+      </message>
+
       <!-- Tab switcher -->
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_STANDARD_STACK" desc="Content description for the standard stack selection 'button'.">
         Standard tabs
@@ -3777,6 +3782,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       </message>
       <message name="IDS_MENU_SETTINGS" desc="Menu item for opening browser settings. [CHAR_LIMIT=27]">
         Settings
+      </message>
+      <message name="IDS_MENU_SETTINGS_ACCOUNT_ERROR" desc="Accessibility string for settings menu item with a badge on the icon in case of sync/identity error.">
+        Settings, Google Account error
       </message>
       <message name="IDS_MENU_CLOSE_ALL_TABS" desc="Menu item for closing all open tabs. [CHAR_LIMIT=27]">
         Close all tabs

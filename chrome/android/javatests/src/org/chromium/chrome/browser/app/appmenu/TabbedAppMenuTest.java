@@ -490,7 +490,9 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSettingsMenuItem_NoBadgeShownForNotSignedInUsers() throws IOException {
-        mRenderTestRule.render(getSettingsMenuItemView(), "settings_menu_item_not_signed_in_user");
+        View view = getSettingsMenuItemView();
+        Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
+        mRenderTestRule.render(view, "settings_menu_item_not_signed_in_user");
     }
 
     @Test
@@ -514,8 +516,12 @@ public class TabbedAppMenuTest {
         mSigninTestRule.addTestAccountThenSignin();
 
         showAppMenuAndAssertMenuShown();
-        mRenderTestRule.render(
-                getSettingsMenuItemView(), "settings_menu_item_signed_in_user_identity_error");
+        View view = getSettingsMenuItemView();
+        assertEquals(
+                "Content description should mention an error.",
+                view.findViewById(R.id.menu_item_text).getContentDescription(),
+                mActivityTestRule.getActivity().getString(R.string.menu_settings_account_error));
+        mRenderTestRule.render(view, "settings_menu_item_signed_in_user_identity_error");
     }
 
     @Test
@@ -528,8 +534,9 @@ public class TabbedAppMenuTest {
         mSigninTestRule.addTestAccountThenSignin();
 
         showAppMenuAndAssertMenuShown();
-        mRenderTestRule.render(
-                getSettingsMenuItemView(), "settings_menu_item_signed_in_user_no_error");
+        View view = getSettingsMenuItemView();
+        Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
+        mRenderTestRule.render(view, "settings_menu_item_signed_in_user_no_error");
     }
 
     @Test
@@ -551,8 +558,12 @@ public class TabbedAppMenuTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
         showAppMenuAndAssertMenuShown();
-        mRenderTestRule.render(
-                getSettingsMenuItemView(), "settings_menu_item_syncing_user_sync_error");
+        View view = getSettingsMenuItemView();
+        assertEquals(
+                "Content description should mention an error.",
+                view.findViewById(R.id.menu_item_text).getContentDescription(),
+                mActivityTestRule.getActivity().getString(R.string.menu_settings_account_error));
+        mRenderTestRule.render(view, "settings_menu_item_syncing_user_sync_error");
     }
 
     @Test
@@ -565,8 +576,9 @@ public class TabbedAppMenuTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
         showAppMenuAndAssertMenuShown();
-        mRenderTestRule.render(
-                getSettingsMenuItemView(), "settings_menu_item_syncing_user_no_error");
+        View view = getSettingsMenuItemView();
+        Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
+        mRenderTestRule.render(view, "settings_menu_item_syncing_user_no_error");
     }
 
     private void showAppMenuAndAssertMenuShown() {
