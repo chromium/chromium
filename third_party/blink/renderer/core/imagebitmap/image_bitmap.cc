@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -552,7 +553,8 @@ sk_sp<SkImage> ImageBitmap::GetSkImageFromDecoder(
 ImageBitmap::ImageBitmap(ImageElementBase* image,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
-  scoped_refptr<Image> input = image->CachedImage()->GetImage();
+  auto* cached = image->CachedImage();
+  scoped_refptr<Image> input = cached ? cached->GetImage() : Image::NullImage();
   DCHECK(!input->IsTextureBacked());
 
   ParsedOptions parsed_options =
