@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import './strings.m.js';
 import './app_content_item.js';
@@ -52,6 +53,10 @@ export class WebAppSettingsAppElement extends WebAppSettingsAppElementBase {
       iconUrl_: {type: String, computed: 'getAppIcon_(app_)'},
       showSearch_: {type: Boolean, value: false, readonly: true},
       apps_: Object,
+      showSystemNotificationsSettingsLink_: {
+        type: Boolean,
+        computed: 'shouldShowSystemNotificationsSettingsLink_(app_)',
+      },
     };
   }
 
@@ -116,6 +121,24 @@ export class WebAppSettingsAppElement extends WebAppSettingsAppElementBase {
           'appManagementPermissionsWithOriginLabel', formattedOrigin);
     } else {
       return this.i18n('appManagementPermissionsLabel');
+    }
+  }
+
+  private shouldShowSystemNotificationsSettingsLink_(app: App|null): boolean {
+    return app ? app.showSystemNotificationsSettingsLink : false;
+  }
+
+  private openNotificationsSystemSettings_(e: CustomEvent<{event: Event}>):
+      void {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+    if (this.app_) {
+      // <if expr="is_macosx">
+      BrowserProxy.getInstance().handler.openSystemNotificationSettings(
+          this.app_.id);
+      // </if>
     }
   }
 }

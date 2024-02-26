@@ -35,6 +35,10 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementFileHandlingHeader",
        IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER},
       {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
+#if BUILDFLAG(IS_MAC)
+      {"appManagementNotificationsDescription",
+       IDS_APP_MANAGEMENT_NOTIFICATIONS_DESCRIPTION},
+#endif
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},
       {"appManagementMicrophonePermissionLabel", IDS_APP_MANAGEMENT_MICROPHONE},

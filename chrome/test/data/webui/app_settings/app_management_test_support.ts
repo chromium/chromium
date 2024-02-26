@@ -62,6 +62,7 @@ export function createTestApp(id: string, optConfig?: AppConfig): App {
     formattedOrigin: '',
     scopeExtensions: [],
     supportedLocales: [],
+    showSystemNotificationsSettingsLink: false,
   };
 
   if (optConfig) {

@@ -142,6 +142,8 @@ export class FakePageHandler implements PageHandlerInterface {
   }
 
   openStorePage(_appId: string) {}
+
+  openSystemNotificationSettings(_appId: string) {}
 }
 
 export class TestAppManagementBrowserProxy implements BrowserProxy {

@@ -172,6 +172,10 @@ struct App {
   array<string> scope_extensions;
   array<Locale> supported_locales;
   Locale? selected_locale;
+  // Set to true to include a link using the
+  //"appManagementNotificationsDescription" string to the system level
+  // notification settings for this app.
+  bool show_system_notifications_settings_link;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be
@@ -244,6 +248,11 @@ interface PageHandler {
   // Sets app locale for an app with the given |app_id|. Empty |locale_tag|
   // indicates system language being chosen.
   SetAppLocale(string app_id, string locale_tag);
+  // Called when the user clicks on the system notification settings link for an
+  // app with the given `app_id`, when that link was displayed because
+  // `show_system_notifications_settings_link` was true for the app.
+  [EnableIf=is_mac]
+  OpenSystemNotificationSettings(string app_id);
 };
 
 // Frontend interface.

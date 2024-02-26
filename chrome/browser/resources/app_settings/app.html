@@ -1,4 +1,4 @@
-<style include="app-management-shared-style">
+<style include="cr-page-host-style app-management-shared-style">
   #content {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
@@ -56,7 +56,12 @@
         app="[[app_]]"
         permission-label="$i18n{appManagementNotificationsLabel}"
         permission-type="kNotifications">
-    </app-management-permission-item>
+        <template is="dom-if" if="[[showSystemNotificationsSettingsLink_]]">
+          <localized-link slot="description"
+            localized-string="[[i18nAdvanced('appManagementNotificationsDescription')]]"
+            on-link-clicked="openNotificationsSystemSettings_"></localized-link>
+        </template>
+      </app-management-permission-item>
     <div id="permissions-card" class="permission-card-row">
       <div class="permission-section-header">
         <div class="header-text">

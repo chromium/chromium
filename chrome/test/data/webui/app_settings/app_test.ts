@@ -53,6 +53,7 @@ suite('AppSettingsAppTest', () => {
       formattedOrigin: '',
       scopeExtensions: [],
       supportedLocales: [],
+      showSystemNotificationsSettingsLink: false,
     };
 
     if (optConfig) {

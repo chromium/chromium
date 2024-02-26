@@ -16,6 +16,11 @@
   <message name="IDS_APP_MANAGEMENT_NOTIFICATIONS" desc="Label for notifications section in the app settings page.">
     Notifications
   </message>
+  <if expr="is_macosx">
+    <message name="IDS_APP_MANAGEMENT_NOTIFICATIONS_DESCRIPTION" desc="Description for notifications section in the app settings page on macOS with a link to macOS's System Settings.">
+      Enable notifications in the Notification Center. Open <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>System Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+  </if>
   <message name="IDS_APP_MANAGEMENT_PERMISSIONS" desc="Label for permissions section in the app settings page.">
     Permissions
   </message>

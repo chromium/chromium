@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +23,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/default_apps_util.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #endif
 
 namespace {
@@ -108,6 +114,11 @@ WebAppSettingsPageHandler::WebAppSettingsPageHandler(
       delegate_(delegate) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   registrar_observation_.Observe(&provider->registrar_unsafe());
+#if BUILDFLAG(IS_MAC)
+  app_shim_observation_ = AppShimRegistry::Get()->RegisterAppChangedCallback(
+      base::BindRepeating(&WebAppSettingsPageHandler::NotifyAppChanged,
+                          base::Unretained(this)));
+#endif
 }
 
 WebAppSettingsPageHandler::~WebAppSettingsPageHandler() = default;
@@ -216,6 +227,15 @@ void WebAppSettingsPageHandler::SetAppLocale(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
+#if BUILDFLAG(IS_MAC)
+void WebAppSettingsPageHandler::OpenSystemNotificationSettings(
+    const std::string& app_id) {
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kNotifications,
+      web_app::GetBundleIdentifierForShim(app_id));
+}
+#endif
+
 void WebAppSettingsPageHandler::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
 }
@@ -259,6 +279,19 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
   }
 
   app->hide_window_mode = provider->registrar_unsafe().IsIsolated(app->id);
+
+  app->show_system_notifications_settings_link = false;
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
+    auto system_permission_status =
+        AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(app->id);
+    app->show_system_notifications_settings_link =
+        system_permission_status !=
+            mac_notifications::mojom::PermissionStatus::kGranted &&
+        system_permission_status !=
+            mac_notifications::mojom::PermissionStatus::kNotDetermined;
+  }
+#endif
 
   return app;
 }

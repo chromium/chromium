@@ -101,6 +101,7 @@ export class FakePageHandler implements PageHandlerInterface {
       formattedOrigin: '',
       scopeExtensions: [],
       supportedLocales: [],
+      showSystemNotificationsSettingsLink: false,
     };
 
     if (optConfig) {
@@ -293,6 +294,8 @@ export class FakePageHandler implements PageHandlerInterface {
   }
 
   openStorePage(_appId: string): void {}
+
+  openSystemNotificationSettings(_appId: string): void {}
 
   async addApp(optId?: string, optConfig?: AppConfig): Promise<App> {
     optId = optId || String(this.guid++);
