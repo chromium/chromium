@@ -71,6 +71,25 @@ public class CredManSupportProvider {
         return sCredManSupport;
     }
 
+    public static @CredManSupport int getCredManSupportForWebView() {
+        if (sCredManSupport != CredManSupport.NOT_EVALUATED) {
+            return sCredManSupport;
+        }
+        if (!sOverrideVersionCheckForTesting) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                sCredManSupport = CredManSupport.DISABLED;
+                return sCredManSupport;
+            }
+            if (ContextUtils.getApplicationContext().getSystemService(Context.CREDENTIAL_SERVICE)
+                    == null) {
+                sCredManSupport = CredManSupport.DISABLED;
+                return sCredManSupport;
+            }
+        }
+        sCredManSupport = CredManSupport.FULL_UNLESS_INAPPLICABLE;
+        return sCredManSupport;
+    }
+
     private static void recordCredManAvailability(boolean available) {
         RecordHistogram.recordBooleanHistogram(
                 "WebAuthentication.Android.CredManAvailability", available);

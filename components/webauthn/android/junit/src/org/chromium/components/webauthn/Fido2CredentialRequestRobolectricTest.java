@@ -293,6 +293,44 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testMakeCredential_webauthnModeAppAndBelowAndroid14_goesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        CredManSupportProvider.setupForTesting(/* override= */ false);
+
+        mRequest.handleMakeCredentialRequest(
+                mCreationOptions,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mCallback::onRegisterResponse,
+                mCallback::onError);
+
+        assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
+        verifyNoInteractions(mCredManHelperMock);
+    }
+
+    @Test
+    @SmallTest
+    public void testMakeCredential_webauthnModeAppAndAboveAndroid14_goesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        CredManSupportProvider.setupForTesting(/* override= */ true);
+
+        mRequest.handleMakeCredentialRequest(
+                mCreationOptions,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mCallback::onRegisterResponse,
+                mCallback::onError);
+
+        assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isFalse();
+        verify(mCredManHelperMock).startMakeRequest(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
     public void testGetAssertion_prfRequestedOverHybrid_goesToPlayServices() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
@@ -648,7 +686,7 @@ public class Fido2CredentialRequestRobolectricTest {
     public void testGetAssertion_WebAuthnModeApp_GoesToPlayServices() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
-        Assume.assumeTrue(Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
+        CredManSupportProvider.setupForTesting(/* override= */ false);
 
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
         final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
@@ -673,7 +711,7 @@ public class Fido2CredentialRequestRobolectricTest {
     public void testGetAssertion_WebAuthnModeApp_failsIfGmscoreNotAvailable() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
-        Assume.assumeTrue(Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
+        CredManSupportProvider.setupForTesting(/* override= */ false);
 
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
         final byte[] clientDataHash = new byte[] {1, 2, 3, 4};

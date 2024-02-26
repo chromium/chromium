@@ -209,6 +209,40 @@ public class Fido2CredentialRequest
         mAttestationAcceptable = rkDiscouraged;
         mEchoCredProps = options.credProps;
 
+        if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
+            if (CredManSupportProvider.getCredManSupportForWebView() == CredManSupport.DISABLED) {
+                if (!mPlayServicesAvailable) {
+                    Log.e(TAG, "Google Play Services' Fido2 API is not available.");
+                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    return;
+                }
+                try {
+                    Fido2ApiCallHelper.getInstance()
+                            .invokeFido2MakeCredential(
+                                    mAuthenticationContextProvider,
+                                    options,
+                                    Uri.parse(convertOriginToString(origin)),
+                                    maybeClientDataHash,
+                                    getMaybeResultReceiver(),
+                                    this::onGotPendingIntent,
+                                    this::onBinderCallException);
+                } catch (NoSuchAlgorithmException e) {
+                    returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
+                    return;
+                }
+                return;
+            }
+            int result =
+                    mCredManHelper.startMakeRequest(
+                            options,
+                            convertOriginToString(origin),
+                            maybeClientDataHash,
+                            mMakeCredentialCallback,
+                            this::returnErrorAndResetCallback);
+            if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
+            return;
+        }
+
         // If the PRF option is requested over hybrid then send the request
         // directly to Play Services. PRF evaluation points come over hybrid
         // pre-hashed, so it's not possible to send them via CredMan because
@@ -362,7 +396,7 @@ public class Fido2CredentialRequest
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
                 return;
             }
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            if (CredManSupportProvider.getCredManSupportForWebView() == CredManSupport.DISABLED) {
                 if (!mPlayServicesAvailable) {
                     Log.e(TAG, "Google Play Services' Fido2 Api is not available.");
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
@@ -370,18 +404,18 @@ public class Fido2CredentialRequest
                 }
                 maybeDispatchGetAssertionRequest(
                         options, callerOriginString, maybeClientDataHash, null);
-            } else {
-                int result =
-                        mCredManHelper.startGetRequest(
-                                options,
-                                callerOriginString,
-                                mIsCrossOrigin,
-                                maybeClientDataHash,
-                                mGetAssertionCallback,
-                                this::returnErrorAndResetCallback,
-                                /* ignoreGpm= */ false);
-                if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
+                return;
             }
+            int result =
+                    mCredManHelper.startGetRequest(
+                            options,
+                            callerOriginString,
+                            mIsCrossOrigin,
+                            maybeClientDataHash,
+                            mGetAssertionCallback,
+                            this::returnErrorAndResetCallback,
+                            /* ignoreGpm= */ false);
+            if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
             return;
         }
 
