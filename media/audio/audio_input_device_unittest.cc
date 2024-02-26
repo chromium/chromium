@@ -104,6 +104,7 @@ TEST_P(AudioInputDeviceTest, FailToCreateStream) {
 }
 
 TEST_P(AudioInputDeviceTest, CreateStream) {
+  base::test::TaskEnvironment ste;
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          ChannelLayoutConfig::Stereo(), 48000, 480);
   base::MappedReadOnlyRegion shared_memory;
@@ -123,7 +124,6 @@ TEST_P(AudioInputDeviceTest, CreateStream) {
       shared_memory.region.Duplicate();
   ASSERT_TRUE(duplicated_shared_memory_region.IsValid());
 
-  base::test::TaskEnvironment ste;
   MockCaptureCallback callback;
   MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
   scoped_refptr<AudioInputDevice> device(new AudioInputDevice(
@@ -141,6 +141,22 @@ TEST_P(AudioInputDeviceTest, CreateStream) {
 
   EXPECT_CALL(callback, OnCaptureStarted());
   device->Start();
+
+  // Test that data is propagated properly through the shared memory.
+  uint8_t *ptr = static_cast<uint8_t *>(shared_memory.mapping.memory());
+  AudioInputBuffer *buffer = reinterpret_cast<AudioInputBuffer *>(ptr);
+  uint32_t buffer_index = 0;
+  const base::TimeTicks capture_time =
+      base::TimeTicks() + base::Microseconds(123);
+  buffer->params.id = 0;
+  buffer->params.capture_time_us =
+      (capture_time - base::TimeTicks()).InMicroseconds();
+  buffer->params.glitch_duration_us = 0;
+  buffer->params.glitch_count = 0;
+  EXPECT_CALL(callback, Capture(_, capture_time, _, _));
+  browser_socket.Send(&buffer_index, sizeof(buffer_index));
+  ste.RunUntilIdle();
+
   EXPECT_CALL(*input_ipc, CloseStream());
   device->Stop();
 }
