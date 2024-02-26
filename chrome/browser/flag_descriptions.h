@@ -2689,6 +2689,11 @@ extern const char kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName[];
 extern const char
     kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationDescription[];
 
+extern const char
+    kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationName[];
+extern const char
+    kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationDescription[];
+
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
 

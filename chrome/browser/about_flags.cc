@@ -10709,6 +10709,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration)},
+    {"upm-local-with-migration",
+     flag_descriptions::
+         kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationName,
+     flag_descriptions::
+         kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

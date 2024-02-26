@@ -4583,9 +4583,23 @@ const char kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationName[] =
     "storage";
 const char
     kUnifiedPasswordManagerLocalPasswordsAndroidNoMigrationDescription[] =
-        "Uses Google Mobile Services to store and retrieve passwords."
+        "Uses Google Mobile Services to store and retrieve passwords. "
         "This only applies for users with no passwords saved locally and "
-        "default password settings."
+        "default password settings. "
+        "Warning: Highly experimental. May lead to loss of passwords and "
+        "impact performance.";
+
+const char kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationName[] =
+    "Google Mobile Services for passwords for users with non-empty local "
+    "password storage";
+const char
+    kUnifiedPasswordManagerLocalPasswordsAndroidWithMigrationDescription[] =
+        "Uses Google Mobile Services to store and retrieve passwords. "
+        "This only applies for users with passwords saved locally or "
+        "custom password settings. "
+        "This flag must only be enabled together with upm-local-no-migration "
+        "(the 2 should actually have been bundled under a single entry, but "
+        "weren't for technical reasons). "
         "Warning: Highly experimental. May lead to loss of passwords and "
         "impact performance.";
 
