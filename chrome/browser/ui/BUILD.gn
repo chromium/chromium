@@ -748,6 +748,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
       "//components/device_signals/core/browser",
     ]
+
+    if (enterprise_client_certificates) {
+      deps += [ "//components/enterprise/client_certificates/core" ]
+    }
   }
 
   if (enterprise_data_controls) {

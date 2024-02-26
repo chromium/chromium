@@ -36,6 +36,9 @@ class CertificateProvisioningService : public KeyedService {
     // Whether the service is still currently provisioning the identity.
     bool is_provisioning{};
 
+    // Whether the certificate provisioning policy is enabled at this level.
+    bool is_policy_enabled{};
+
     // Cached identity.
     std::optional<ClientIdentity> identity = std::nullopt;
 

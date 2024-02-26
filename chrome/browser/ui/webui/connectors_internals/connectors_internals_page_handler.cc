@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_page_handler.h"
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
@@ -18,12 +20,20 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/cert/x509_certificate.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+#include "components/enterprise/client_certificates/core/client_identity.h"
+#include "components/enterprise/client_certificates/core/private_key.h"
+#endif
 
 namespace enterprise_connectors {
 
@@ -94,9 +104,40 @@ void ConnectorsInternalsPageHandler::DeleteDeviceTrustKey(
 
 void ConnectorsInternalsPageHandler::GetClientCertificateState(
     GetClientCertificateStateCallback callback) {
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+  auto* certificate_provisioning_service =
+      client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
+          profile_);
+  if (!certificate_provisioning_service) {
+    std::move(callback).Run(
+        connectors_internals::mojom::ClientCertificateState::New(
+            std::vector<std::string>(), nullptr, nullptr));
+    return;
+  }
+
+  const auto& status = certificate_provisioning_service->GetCurrentStatus();
+  std::vector<std::string> enabled_levels;
+  if (status.is_policy_enabled) {
+    enabled_levels.push_back("Profile");
+  }
+
+  connectors_internals::mojom::ClientIdentityPtr managed_profile_identity =
+      nullptr;
+  if (status.identity.has_value()) {
+    managed_profile_identity = utils::ConvertIdentity(status.identity.value(),
+                                                      status.last_upload_code);
+  }
+
+  std::move(callback).Run(
+      connectors_internals::mojom::ClientCertificateState::New(
+          std::move(enabled_levels), std::move(managed_profile_identity),
+          nullptr));
+
+#else
   std::move(callback).Run(
       connectors_internals::mojom::ClientCertificateState::New(
           std::vector<std::string>(), nullptr, nullptr));
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 }
 
 void ConnectorsInternalsPageHandler::OnSignalsCollected(

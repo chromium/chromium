@@ -111,8 +111,8 @@ export class DeviceTrustConnectorElement extends CustomElement {
             utils.trustLevelToString(keyMetadata.trustLevel);
         keyTypeStateEl.innerText = utils.keyTypeToString(keyMetadata.keyType);
         spkiHashStateEl.innerText = keyMetadata.encodedSpkiHash;
-        keySyncStateEl.innerText =
-            utils.keySyncCodeToString(keyMetadata.syncKeyResponseCode);
+        keySyncStateEl.innerText = utils.keySyncCodeToString(
+            keyMetadata.keyUploadStatus?.syncKeyResponseCode);
 
         this.showElement(keyLoadedRows);
       } else {

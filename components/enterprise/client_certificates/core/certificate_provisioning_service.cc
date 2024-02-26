@@ -134,6 +134,7 @@ CertificateProvisioningService::Status
 CertificateProvisioningServiceImpl::GetCurrentStatus() const {
   Status status(is_provisioning_);
 
+  status.is_policy_enabled = IsPolicyEnabled();
   status.identity = cached_identity_;
   status.last_upload_code = last_upload_code_;
   return status;

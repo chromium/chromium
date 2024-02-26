@@ -110,24 +110,28 @@ export class ManagedClientCertificateElement extends CustomElement {
           key: 'Public Key Hash',
           value: managedIdentity.loadedKeyInfo.encodedSpkiHash,
         },
-        {
-          key: 'Key Upload Response',
-          value: utils.keySyncCodeToString(
-              managedIdentity.loadedKeyInfo.syncKeyResponseCode),
-        },
       ]);
+
+      if (managedIdentity.loadedKeyInfo.keyUploadStatus) {
+        if (managedIdentity.loadedKeyInfo.keyUploadStatus.uploadClientError) {
+          keyValuePairs.push({
+            key: 'Key Upload Client Error',
+            value:
+                managedIdentity.loadedKeyInfo.keyUploadStatus.uploadClientError,
+          });
+        } else {
+          keyValuePairs.push({
+            key: 'Key Upload Response',
+            value: utils.keySyncCodeToString(
+                managedIdentity.loadedKeyInfo.keyUploadStatus
+                    .syncKeyResponseCode),
+          });
+        }
+      }
     }
 
     if (managedIdentity.certificateMetadata) {
       keyValuePairs = keyValuePairs.concat([
-        {
-          key: 'Thumbprint',
-          value: managedIdentity.certificateMetadata.thumbprint,
-        },
-        {
-          key: 'Expiration Date',
-          value: managedIdentity.certificateMetadata.expirationDateString,
-        },
         {
           key: 'Subject',
           value: managedIdentity.certificateMetadata.subjectDisplayName,
@@ -135,6 +139,22 @@ export class ManagedClientCertificateElement extends CustomElement {
         {
           key: 'Issuer',
           value: managedIdentity.certificateMetadata.issuerDisplayName,
+        },
+        {
+          key: 'Serial Number',
+          value: managedIdentity.certificateMetadata.serialNumber,
+        },
+        {
+          key: 'SHA-256 Fingerprint',
+          value: managedIdentity.certificateMetadata.fingerprint,
+        },
+        {
+          key: 'Creation Date',
+          value: managedIdentity.certificateMetadata.creationDateString,
+        },
+        {
+          key: 'Expiration Date',
+          value: managedIdentity.certificateMetadata.expirationDateString,
         },
       ]);
     }
