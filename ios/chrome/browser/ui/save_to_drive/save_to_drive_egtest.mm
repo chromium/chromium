@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_screen/account_picker_screen_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/download/download_manager_constants.h"
 #import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -26,6 +28,13 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 
 namespace {
+
+id<GREYMatcher> IdentityButtonMatcherForIdentity(id<SystemIdentity> identity) {
+  NSString* accessibility_label = [NSString
+      stringWithFormat:@"%@, %@", identity.userFullName, identity.userEmail];
+  return grey_allOf(grey_accessibilityID(kIdentityButtonControlIdentifier),
+                    grey_accessibilityLabel(accessibility_label), nil);
+}
 
 // Matcher for "SAVE..." button on Download Manager UI, which is presented
 // instead of the "DOWNLOAD" button when multiple destinations are available for
@@ -283,6 +292,71 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
   // Check that the "DOWNLOAD" button is presented instead of "SAVE...".
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
+}
+
+// Tests that when the user taps "Save" in the account selection, the selected
+// account and file destination are memorized and presented as the default
+// option for the next time.
+- (void)testSaveToDriveMemorizesLastSelectedAccount {
+  [ChromeEarlGrey clearUserPrefWithName:prefs::kIosSaveToDriveDefaultGaiaId];
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
+  // Add a second fake identity to the device.
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "SAVE..." button is presented and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+  // Check that the identity button is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity1)]
+      assertWithMatcher:grey_notVisible()];
+  // Select "Drive" as destination.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:FileDestinationDriveButton()];
+  [[EarlGrey selectElementWithMatcher:FileDestinationDriveButton()]
+      performAction:grey_tap()];
+  // Check that the selected identity is initially the signed-in identity.
+  [[EarlGrey
+      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity1)]
+      assertWithMatcher:grey_interactable()];
+  // Tap the identity button and select the second account.
+  [[EarlGrey
+      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity1)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::IdentityCellMatcherForEmail(
+                                   fakeIdentity2.userEmail)]
+      performAction:grey_tap()];
+  // Check that the second identity is now selected.
+  [[EarlGrey
+      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity2)]
+      assertWithMatcher:grey_interactable()];
+  // Tap "Save".
+  [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
+      performAction:grey_tap()];
+  // Wait for the account picker to disappear.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
+  // Check that after a few seconds, the "GET THE APP" button appears.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
+                                  timeout:base::test::ios::
+                                              kWaitForDownloadTimeout];
+  // Tap the download button and the "SAVE..." button again.
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+  // Check that the second identity is now selected by default.
+  [[EarlGrey
+      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity2)]
+      assertWithMatcher:grey_interactable()];
 }
 
 @end

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/drive/drive_api.h"
 
 namespace drive {
@@ -33,6 +34,7 @@ DriveServiceFactory::DriveServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DriveService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
 }
 
@@ -51,6 +53,9 @@ std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
   configuration.sso_service = application_context->GetSSOService();
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
+  configuration.pref_service = chrome_browser_state->GetPrefs();
+  configuration.identity_manager =
+      IdentityManagerFactory::GetForBrowserState(chrome_browser_state);
   configuration.account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           chrome_browser_state);

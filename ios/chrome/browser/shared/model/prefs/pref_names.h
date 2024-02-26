@@ -299,6 +299,11 @@ inline constexpr char kIosSafetyCheckManagerUpdateCheckResult[] =
 inline constexpr char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
     "ios.safety_check_manager.safe_browsing_check_result";
 
+// String preference containing the default account to use for saving files to
+// Google Drive.
+inline constexpr char kIosSaveToDriveDefaultGaiaId[] =
+    "ios.save_to_drive.default_gaia_id";
+
 // Integer preference indicating whether Save to Drive is enabled by enterprise
 // policy.
 inline constexpr char kIosSaveToDriveDownloadManagerPolicySettings[] =

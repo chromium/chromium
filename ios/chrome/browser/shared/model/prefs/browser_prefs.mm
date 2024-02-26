@@ -692,6 +692,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       static_cast<int>(SaveToPhotosPolicySettings::kEnabled));
 
   // Preferences related to Save to Drive settings.
+  registry->RegisterStringPref(prefs::kIosSaveToDriveDefaultGaiaId,
+                               std::string());
   registry->RegisterIntegerPref(
       prefs::kIosSaveToDriveDownloadManagerPolicySettings,
       static_cast<int>(SaveToDrivePolicySettings::kEnabled));
