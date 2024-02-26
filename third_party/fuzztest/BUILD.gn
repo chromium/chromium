@@ -171,6 +171,7 @@ if (use_centipede) {
       "src/centipede/fuzztest_mutator.h",
       "src/centipede/hash.cc",
       "src/centipede/minimize_crash.cc",
+      "src/centipede/resource_pool.cc",
       "src/centipede/rusage_profiler.cc",
       "src/centipede/rusage_stats.cc",
       "src/centipede/shard_reader.cc",
