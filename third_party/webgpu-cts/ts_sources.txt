@@ -612,6 +612,7 @@ src/webgpu/shader/execution/expression/call/builtin/unpack4x8unorm.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/unpack4xU8.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/workgroupBarrier.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/workgroupUniformLoad.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/harness.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicAdd.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicAnd.spec.ts
