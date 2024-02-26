@@ -71,6 +71,7 @@ using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::FloatEq;
+using ::testing::InSequence;
 using ::testing::Key;
 using ::testing::Le;
 using ::testing::Matcher;
@@ -774,12 +775,12 @@ TEST_F(PaintOpBufferOffsetsTest, ContiguousIndices) {
   push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays all items.
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(2u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u)).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(2u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u));
   Playback(&canvas, Select({0, 1, 2, 3, 4}));
 }
 
@@ -793,11 +794,11 @@ TEST_F(PaintOpBufferOffsetsTest, NonContiguousIndices) {
   push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays 0, 1, 3, 4 indices.
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u)).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u));
   Playback(&canvas, Select({0, 1, 3, 4}));
 }
 
@@ -811,9 +812,9 @@ TEST_F(PaintOpBufferOffsetsTest, FirstTwoIndices) {
   push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays first two indices.
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u)).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u));
   Playback(&canvas, Select({0, 1}));
 }
 
@@ -827,8 +828,8 @@ TEST_F(PaintOpBufferOffsetsTest, MiddleIndex) {
   push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays index 2.
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(2u)).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(2u));
   Playback(&canvas, Select({2}));
 }
 
@@ -842,9 +843,9 @@ TEST_F(PaintOpBufferOffsetsTest, LastTwoElements) {
   push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays last two elements.
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u)).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u));
   Playback(&canvas, Select({3, 4}));
 }
 
@@ -862,13 +863,13 @@ TEST_F(PaintOpBufferOffsetsTest, ContiguousIndicesWithSaveLayerAlphaRestore) {
 
   // Items are {0, 1, save, restore, 2, 3, 4}.
 
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u)).InSequence(s);
+  testing::Sequence sequence;
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(0u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(1u));
   // The empty kSaveLayerAlpha/kRestore is dropped.
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(2u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u)).InSequence(s);
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(2u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(3u));
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(4u));
   Playback(&canvas, Select({0, 1, 2, 3, 4, 5, 6}));
   Mock::VerifyAndClearExpectations(&canvas);
 }
@@ -890,28 +891,28 @@ TEST_F(PaintOpBufferOffsetsTest,
 
   // Plays back all indices.
   {
-    testing::Sequence s;
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(0u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(1u)).InSequence(s);
+    InSequence sequence;
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(0u));
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(1u));
     // The kSaveLayerAlpha/kRestore is not dropped if we draw the middle
     // range, as we need them to represent the two draws inside the layer
     // correctly.
-    EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(2u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(3u)).InSequence(s);
-    EXPECT_CALL(canvas, willRestore()).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(4u)).InSequence(s);
+    EXPECT_CALL(canvas, OnSaveLayer());
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(2u));
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(3u));
+    EXPECT_CALL(canvas, willRestore());
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(4u));
     Playback(&canvas, Select({0, 1, 2, 3, 4, 5, 6}));
   }
   Mock::VerifyAndClearExpectations(&canvas);
 
   // Skips the middle indices.
   {
-    testing::Sequence s;
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(0u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(1u)).InSequence(s);
+    InSequence sequence;
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(0u));
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(1u));
     // The now-empty kSaveLayerAlpha/kRestore is dropped
-    EXPECT_CALL(canvas, OnDrawPaintWithColor(4u)).InSequence(s);
+    EXPECT_CALL(canvas, OnDrawPaintWithColor(4u));
     Playback(&canvas, Select({0, 1, 2, 5, 6}));
   }
   Mock::VerifyAndClearExpectations(&canvas);
@@ -938,14 +939,14 @@ TEST_F(PaintOpBufferOffsetsTest,
 
   // Items are {0, 1, save, 2, restore, 3, 4}.
 
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawRectWithColor(0u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawRectWithColor(1u)).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnDrawRectWithColor(0u));
+  EXPECT_CALL(canvas, OnDrawRectWithColor(1u));
   // The empty kSaveLayerAlpha/kRestore is dropped, the containing
   // operation can be drawn with alpha.
-  EXPECT_CALL(canvas, OnDrawRectWithColor(2u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawRectWithColor(3u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawRectWithColor(4u)).InSequence(s);
+  EXPECT_CALL(canvas, OnDrawRectWithColor(2u));
+  EXPECT_CALL(canvas, OnDrawRectWithColor(3u));
+  EXPECT_CALL(canvas, OnDrawRectWithColor(4u));
   Playback(&canvas, Select({0, 1, 2, 3, 4, 5, 6}));
   Mock::VerifyAndClearExpectations(&canvas);
 }
@@ -974,14 +975,14 @@ TEST_F(PaintOpBufferOffsetsTest,
   // If the middle range is played, then the kSaveLayerAlpha/kRestore
   // can't be dropped.
   {
-    testing::Sequence s;
-    EXPECT_CALL(canvas, OnDrawRectWithColor(0u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(1u)).InSequence(s);
-    EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(2u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(3u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(4u)).InSequence(s);
-    EXPECT_CALL(canvas, willRestore()).InSequence(s);
+    InSequence sequence;
+    EXPECT_CALL(canvas, OnDrawRectWithColor(0u));
+    EXPECT_CALL(canvas, OnDrawRectWithColor(1u));
+    EXPECT_CALL(canvas, OnSaveLayer());
+    EXPECT_CALL(canvas, OnDrawRectWithColor(2u));
+    EXPECT_CALL(canvas, OnDrawRectWithColor(3u));
+    EXPECT_CALL(canvas, OnDrawRectWithColor(4u));
+    EXPECT_CALL(canvas, willRestore());
     Playback(&canvas, Select({0, 1, 2, 3, 4, 5, 6}));
   }
   Mock::VerifyAndClearExpectations(&canvas);
@@ -989,10 +990,10 @@ TEST_F(PaintOpBufferOffsetsTest,
   // If the middle range is not played, then the kSaveLayerAlpha/kRestore
   // can be dropped.
   {
-    testing::Sequence s;
-    EXPECT_CALL(canvas, OnDrawRectWithColor(0u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(1u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(4u)).InSequence(s);
+    InSequence sequence;
+    EXPECT_CALL(canvas, OnDrawRectWithColor(0u));
+    EXPECT_CALL(canvas, OnDrawRectWithColor(1u));
+    EXPECT_CALL(canvas, OnDrawRectWithColor(4u));
     Playback(&canvas, Select({0, 1, 2, 5, 6}));
   }
   Mock::VerifyAndClearExpectations(&canvas);
@@ -1000,10 +1001,10 @@ TEST_F(PaintOpBufferOffsetsTest,
   // If the middle range is not played, then the kSaveLayerAlpha/kRestore
   // can be dropped.
   {
-    testing::Sequence s;
-    EXPECT_CALL(canvas, OnDrawRectWithColor(0u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(1u)).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(2u)).InSequence(s);
+    InSequence sequence;
+    EXPECT_CALL(canvas, OnDrawRectWithColor(0u));
+    EXPECT_CALL(canvas, OnDrawRectWithColor(1u));
+    EXPECT_CALL(canvas, OnDrawRectWithColor(2u));
     Playback(&canvas, Select({0, 1, 2, 3, 6}));
   }
 }
@@ -1028,12 +1029,12 @@ TEST(PaintOpBufferTest, SaveLayerAlphaDrawRestoreWithBadBlendMode) {
   add_draw_rect(&buffer, 2u);
 
   {
-    testing::Sequence s;
-    EXPECT_CALL(canvas, OnDrawRectWithColor(0u)).InSequence(s);
-    EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(1u)).InSequence(s);
-    EXPECT_CALL(canvas, willRestore()).InSequence(s);
-    EXPECT_CALL(canvas, OnDrawRectWithColor(2u)).InSequence(s);
+    InSequence sequence;
+    EXPECT_CALL(canvas, OnDrawRectWithColor(0u));
+    EXPECT_CALL(canvas, OnSaveLayer());
+    EXPECT_CALL(canvas, OnDrawRectWithColor(1u));
+    EXPECT_CALL(canvas, willRestore());
+    EXPECT_CALL(canvas, OnDrawRectWithColor(2u));
     buffer.Playback(&canvas);
   }
 }
@@ -1059,15 +1060,15 @@ TEST(PaintOpBufferTest, UnmatchedSaveRestoreNoSideEffects) {
   // But only 1 restore.
   buffer.push<RestoreOp>();
 
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawRectWithColor(0u)).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawRectWithColor(1u)).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawRectWithColor(2u)).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, OnDrawRectWithColor(0u));
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, OnDrawRectWithColor(1u));
+  EXPECT_CALL(canvas, OnDrawRectWithColor(2u));
+  EXPECT_CALL(canvas, willRestore());
   // We will restore back to the original save count regardless with 2 restores.
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+  EXPECT_CALL(canvas, willRestore());
   buffer.Playback(&canvas);
 }
 
@@ -2790,10 +2791,10 @@ TEST(PaintOpBufferTest, SkipsOpsOutsideClip) {
   // The single save/restore call is from the PaintOpBuffer's use of
   // SkAutoRestoreCanvas.
   testing::StrictMock<MockCanvas> canvas;
-  testing::Sequence s;
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
-  EXPECT_CALL(canvas, OnDrawRectWithColor(_)).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas, OnDrawRectWithColor(_));
+  EXPECT_CALL(canvas, willRestore());
   buffer.Playback(&canvas, PlaybackParams(&image_provider));
 }
 
@@ -2810,8 +2811,8 @@ TEST(PaintOpBufferTest, SkipsOpsWithFailedDecodes) {
   buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrcOver);
 
   testing::StrictMock<MockCanvas> canvas;
-  testing::Sequence s;
-  EXPECT_CALL(canvas, OnDrawPaintWithColor(_)).InSequence(s);
+  InSequence sequence;
+  EXPECT_CALL(canvas, OnDrawPaintWithColor(_));
   buffer.Playback(&canvas, PlaybackParams(&image_provider));
 }
 
@@ -2876,18 +2877,18 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectBasicCase) {
                                      SkCanvas::kStrict_SrcRectConstraint);
 
   testing::StrictMock<MockCanvas> canvas;
-  testing::Sequence s;
+  InSequence sequence;
 
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didTranslate(8.0f, 8.0f));
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
+  EXPECT_CALL(canvas, OnSaveLayer());
   EXPECT_CALL(canvas, OnDrawRectWithColor(0u));
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
 
   blink_buffer.Playback(&canvas, PlaybackParams(&provider));
 }
@@ -2918,24 +2919,24 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
                                      SkCanvas::kStrict_SrcRectConstraint);
 
   testing::StrictMock<MockCanvas> canvas;
-  testing::Sequence s;
+  InSequence sequence;
 
   SkSamplingOptions sampling({0, 1.0f / 2});
 
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
+  EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didConcat44(SkM44::Translate(5.0f, 7.0f)));
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
   EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
                                        SkRect::MakeWH(10, 10), sampling, _,
                                        SkCanvas::kFast_SrcRectConstraint));
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
 
   blink_buffer.Playback(&canvas, PlaybackParams(&provider));
 }
@@ -2966,24 +2967,24 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
                                      SkCanvas::kStrict_SrcRectConstraint);
 
   testing::StrictMock<MockCanvas> canvas;
-  testing::Sequence s;
+  InSequence sequence;
 
   SkSamplingOptions sampling({0, 1.0f / 2});
 
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
+  EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didConcat44(SkM44::Scale(2.f, 1.5f)));
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
   EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
                                        SkRect::MakeWH(10, 10), sampling, _,
                                        SkCanvas::kFast_SrcRectConstraint));
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
 
   blink_buffer.Playback(&canvas, PlaybackParams(&provider));
 }
@@ -3017,23 +3018,23 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
                                      SkCanvas::kStrict_SrcRectConstraint);
 
   testing::StrictMock<MockCanvas> canvas;
-  testing::Sequence s;
+  InSequence sequence;
 
   SkSamplingOptions sampling({0, 1.0f / 2});
 
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, OnSaveLayer()).InSequence(s);
-  EXPECT_CALL(canvas, willSave()).InSequence(s);
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
                                1.0f / scale_adjustment[0].height()));
   EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
                                        SkRect::MakeWH(10, 10), sampling, _,
                                        SkCanvas::kFast_SrcRectConstraint));
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
-  EXPECT_CALL(canvas, willRestore()).InSequence(s);
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
 
   blink_buffer.Playback(&canvas, PlaybackParams(&provider));
 }
@@ -3176,18 +3177,18 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProviderOOP) {
   for (const PaintOp& op : *deserialized_buffer) {
     testing::NiceMock<MockCanvas> canvas;
     PlaybackParams params(nullptr);
-    testing::Sequence s;
+    InSequence sequence;
 
     if (op.GetType() == PaintOpType::kDrawImage) {
       // Save/scale/image/restore from DrawImageop.
-      EXPECT_CALL(canvas, willSave()).InSequence(s);
+      EXPECT_CALL(canvas, willSave());
       EXPECT_CALL(canvas, didScale(1.0f / expected_scale.width(),
                                    1.0f / expected_scale.height()));
       EXPECT_CALL(canvas,
                   onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
                                    SkRect::MakeWH(10, 10), _, _,
                                    SkCanvas::kFast_SrcRectConstraint));
-      EXPECT_CALL(canvas, willRestore()).InSequence(s);
+      EXPECT_CALL(canvas, willRestore());
       op.Raster(&canvas, params);
     } else if (op.GetType() == PaintOpType::kDrawImageRect) {
       EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(),
