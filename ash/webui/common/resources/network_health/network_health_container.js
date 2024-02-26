@@ -5,7 +5,7 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_health_container.html.js';
 
@@ -14,41 +14,55 @@ import {getTemplate} from './network_health_container.html.js';
  * health info.
  */
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-health-container',
+/** @polymer */
+class NetworkHealthContainerElement extends PolymerElement {
+  static get is() {
+    return 'network-health-container';
+  }
 
-  properties: {
-    /**
-     * Boolean flag if the container is expanded.
-     */
-    expanded: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Container label.
-     */
-    label: {
-      type: String,
-      value: '',
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * Boolean flag if the container is expanded.
+       */
+      expanded: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Container label.
+       */
+      label: {
+        type: String,
+        value: '',
+      },
+
+    };
+  }
 
   /**
    * Returns the correct arrow icon depending on if the container is expanded.
-   * @param {boolean} expanded
    */
-  getArrowIcon_(expanded) {
-    return expanded ? 'cr:expand-less' : 'cr:expand-more';
-  },
+  getArrowIcon_() {
+    return this.expanded ? 'cr:expand-less' : 'cr:expand-more';
+  }
 
   /**
    * Helper function to fire the toggle event when clicked.
    * @private
    */
   onClick_() {
-    this.fire('toggle-expanded');
-  },
-});
+    this.dispatchEvent(new CustomEvent('toggle-expanded', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
+
+customElements.define(
+    NetworkHealthContainerElement.is, NetworkHealthContainerElement);

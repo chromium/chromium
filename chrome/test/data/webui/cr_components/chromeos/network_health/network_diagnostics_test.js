@@ -69,7 +69,7 @@ suite('NetworkDiagnosticsTest', () => {
    */
   function checkRoutinesRunning(running) {
     for (const group of getRoutineGroups()) {
-      const spinner = group.$$('paper-spinner-lite');
+      const spinner = group.shadowRoot.querySelector('paper-spinner-lite');
       assertEquals(isVisible(spinner), running);
     }
   }
@@ -80,7 +80,7 @@ suite('NetworkDiagnosticsTest', () => {
    */
   function checkRoutinesVerdict(verdict) {
     for (const group of getRoutineGroups()) {
-      const icon = group.$$('.routine-icon');
+      const icon = group.shadowRoot.querySelector('.routine-icon');
       switch (verdict) {
         case RoutineVerdict.kNoProblem:
           assertEquals(getIconFromSrc(icon.src), Icons.TEST_PASSED);
@@ -103,8 +103,9 @@ suite('NetworkDiagnosticsTest', () => {
    */
   async function checkRoutinesProblems(verdict) {
     for (const group of getRoutineGroups()) {
-      const container = group.$$('network-health-container');
-      const header = container.$$('.container-header');
+      const container =
+          group.shadowRoot.querySelector('network-health-container');
+      const header = container.shadowRoot.querySelector('.container-header');
       header.click();
       await flushTasks();
       assertTrue(group.expanded.valueOf());
