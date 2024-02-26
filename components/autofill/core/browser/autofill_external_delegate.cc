@@ -107,9 +107,9 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
 
 // Returns a pointer to the first Suggestion whose GUID matches that of a
 // PersonalDataManager::test_addresses() profile.
-const Suggestion* FindFirstTestSuggestion(
-    PersonalDataManager& pdm,
-    base::span<const Suggestion> suggestions) {
+const Suggestion* FindTestSuggestion(PersonalDataManager& pdm,
+                                     base::span<const Suggestion> suggestions,
+                                     int index) {
   auto is_test_suggestion = [&pdm](const Suggestion& suggestion) {
     auto* backend_id = absl::get_if<Suggestion::BackendId>(&suggestion.payload);
     auto* guid =
@@ -117,13 +117,17 @@ const Suggestion* FindFirstTestSuggestion(
     return guid && base::Contains(pdm.test_addresses(), guid->value(),
                                   &AutofillProfile::guid);
   };
-  auto it = base::ranges::find_if(suggestions, is_test_suggestion);
-  return it != suggestions.end() ? &*it : nullptr;
+  for (const Suggestion& suggestion : suggestions) {
+    if (is_test_suggestion(suggestion) && index-- == 0) {
+      return &suggestion;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
 
-bool AutofillExternalDelegate::shortcut_autofill_popup_for_testing_ = false;
+int AutofillExternalDelegate::shortcut_test_suggestion_index_ = -1;
 
 AutofillExternalDelegate::AutofillExternalDelegate(
     BrowserAutofillManager* manager)
@@ -256,9 +260,10 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
   // Send to display.
   if (query_field_.is_focusable && manager_->driver().CanShowAutofillUi()) {
-    if (shortcut_autofill_popup_for_testing_) {
-      const Suggestion* test_suggestion = FindFirstTestSuggestion(
-          *manager_->client().GetPersonalDataManager(), suggestions);
+    if (shortcut_test_suggestion_index_ >= 0) {
+      const Suggestion* test_suggestion =
+          FindTestSuggestion(*manager_->client().GetPersonalDataManager(),
+                             suggestions, shortcut_test_suggestion_index_);
       CHECK(test_suggestion) << "Only test suggestions can shortcut the UI";
       DidAcceptSuggestion(*test_suggestion, {});
       return;

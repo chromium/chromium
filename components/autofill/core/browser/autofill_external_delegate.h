@@ -249,7 +249,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // If true, OnSuggestionsReturned() passes one of the suggestions directly to
   // DidAcceptSuggestion(). See ScopedAutofillPopupShortcutForTesting for
   // details.
-  static bool shortcut_autofill_popup_for_testing_;
+  static int shortcut_test_suggestion_index_;
 
   const raw_ref<BrowserAutofillManager> manager_;
 
@@ -289,8 +289,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 // When in scope, OnSuggestionsReturned() directly passes one of the Suggestions
 // to DidAcceptSuggestion() rather than displaying the Autofill popup.
 //
+// Specifically, the passed suggestion is the `index`th testing suggestion.
+// Testing suggestions come from PersonalDataManager::test_*().
+//
 // For security reasons, the passed suggestion must correspond to a testing
-// profile from PersonalDataManager. This is asserted by a CHECK().
+// profile from PersonalDataManager. This is asserted by a CHECK(). The CHECK()
+// also fails if no `index`th test suggestion exists.
 //
 // Typical usage is as a member of a test fixture. It can also be used at a
 // narrower scope around, for example, AutofillDriver::AskForValuesToFill(),
@@ -298,14 +302,20 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 // asynchronous fetching of suggestions).
 class AutofillExternalDelegate::ScopedAutofillPopupShortcutForTesting {
  public:
-  ScopedAutofillPopupShortcutForTesting() {
-    CHECK(!shortcut_autofill_popup_for_testing_);
-    shortcut_autofill_popup_for_testing_ = true;
+  explicit ScopedAutofillPopupShortcutForTesting(int index = 0) {
+    DCHECK(index >= 0);
+    DCHECK(shortcut_test_suggestion_index_ < 0);
+    shortcut_test_suggestion_index_ = index;
   }
 
+  ScopedAutofillPopupShortcutForTesting(
+      const ScopedAutofillPopupShortcutForTesting&) = delete;
+  ScopedAutofillPopupShortcutForTesting& operator=(
+      const ScopedAutofillPopupShortcutForTesting&) = delete;
+
   ~ScopedAutofillPopupShortcutForTesting() {
-    CHECK(shortcut_autofill_popup_for_testing_);
-    shortcut_autofill_popup_for_testing_ = true;
+    DCHECK(shortcut_test_suggestion_index_ >= 0);
+    shortcut_test_suggestion_index_ = -1;
   }
 };
 
