@@ -1,0 +1,70 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/picker/views/picker_widget.h"
+
+#include <memory>
+
+#include "ash/picker/views/picker_view.h"
+#include "ash/picker/views/picker_view_delegate.h"
+#include "ash/test/ash_test_base.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/view_utils.h"
+
+namespace ash {
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::Truly;
+
+constexpr gfx::Rect kDefaultCaretBounds(200, 100, 0, 10);
+constexpr gfx::Point kDefaultCursorPoint(300, 400);
+constexpr gfx::Rect kDefaultFocusedWindowBounds(300, 400);
+
+class FakePickerViewDelegate : public PickerViewDelegate {
+ public:
+  // PickerViewDelegate:
+  std::unique_ptr<AshWebView> CreateWebView(
+      const AshWebView::InitParams& params) override {
+    return nullptr;
+  }
+  void GetResultsForCategory(PickerCategory category,
+                             SearchResultsCallback callback) override {}
+  void StartSearch(const std::u16string& query,
+                   std::optional<PickerCategory> category,
+                   SearchResultsCallback callback) override {}
+  void InsertResultOnNextFocus(const PickerSearchResult& result) override {}
+  PickerAssetFetcher* GetAssetFetcher() override { return nullptr; }
+};
+
+using PickerWidgetTest = AshTestBase;
+
+TEST_F(PickerWidgetTest, CreateWidgetHasCorrectHierarchy) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
+                                     kDefaultFocusedWindowBounds, &delegate);
+
+  // Widget should contain a NonClientView, which has a NonClientFrameView for
+  // borders and shadows, and a ClientView with a sole child of the PickerView.
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(widget->non_client_view());
+  ASSERT_TRUE(widget->non_client_view()->frame_view());
+  ASSERT_TRUE(widget->non_client_view()->client_view());
+  EXPECT_THAT(widget->non_client_view()->client_view()->children(),
+              ElementsAre(Truly(views::IsViewClass<PickerView>)));
+}
+
+TEST_F(PickerWidgetTest, CreateWidgetHasCorrectBorder) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
+                                     kDefaultFocusedWindowBounds, &delegate);
+
+  EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
+}
+
+}  // namespace
+}  // namespace ash

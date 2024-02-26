@@ -129,29 +129,6 @@ PickerItemView* GetNonEmojiCategoryItemView(PickerView* picker_view) {
       ->second->item_views_for_testing()[0];  // Should be open tabs
 }
 
-TEST_F(PickerViewTest, CreateWidgetHasCorrectHierarchy) {
-  FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
-                                     kDefaultFocusedWindowBounds, &delegate);
-
-  // Widget should contain a NonClientView, which has a NonClientFrameView for
-  // borders and shadows, and a ClientView with a sole child of the PickerView.
-  ASSERT_TRUE(widget);
-  ASSERT_TRUE(widget->non_client_view());
-  ASSERT_TRUE(widget->non_client_view()->frame_view());
-  ASSERT_TRUE(widget->non_client_view()->client_view());
-  EXPECT_THAT(widget->non_client_view()->client_view()->children(),
-              ElementsAre(Truly(views::IsViewClass<PickerView>)));
-}
-
-TEST_F(PickerViewTest, CreateWidgetHasCorrectBorder) {
-  FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
-                                     kDefaultFocusedWindowBounds, &delegate);
-
-  EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
-}
-
 TEST_F(PickerViewTest, BackgroundIsCorrect) {
   FakePickerViewDelegate delegate;
   auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
