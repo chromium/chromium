@@ -145,6 +145,11 @@ uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
   return found ? gpu::GetPlatformSpecificTextureTarget() : GL_TEXTURE_2D;
 }
 
+uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage) {
+  return GetTextureTarget(
+      usage, viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format));
+}
+
 ExportedSharedImage ClientSharedImage::Export() {
   if (creation_sync_token_.HasData() &&
       !creation_sync_token_.verified_flush()) {

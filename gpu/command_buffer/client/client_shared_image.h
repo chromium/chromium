@@ -89,6 +89,8 @@ class GPU_EXPORT ClientSharedImage
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
   const Mailbox& mailbox() { return mailbox_; }
+  uint32_t usage() { return metadata_.usage; }
+
   bool HasHolder() { return sii_holder_ != nullptr; }
 
   // Returns a clone of the GpuMemoryBufferHandle associated with this ClientSI.
@@ -111,6 +113,10 @@ class GPU_EXPORT ClientSharedImage
   // based on the underlying SharedImageCapabilities. Requires that
   // `HasHolder()` is true.
   uint32_t GetTextureTarget(gfx::BufferUsage usage, gfx::BufferFormat format);
+
+  // Same as the above, but uses this instance's SharedImageFormat (which must
+  // be a single-planar format) to compute the BufferFormat.
+  uint32_t GetTextureTarget(gfx::BufferUsage usage);
 
   base::trace_event::MemoryAllocatorDumpGuid GetGUIDForTracing() {
     return gpu::GetSharedImageGUIDForTracing(mailbox_);
