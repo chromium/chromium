@@ -366,50 +366,50 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
 
     const setTitleIfDone = (_, obs) => {
-      if (table.children.length === 4 &&
-          regTable.children.length === 5 &&
-          table.children[0].children[3]?.children[0]?.children.length === 2 &&
-          table.children[0].children[3]?.children[0]?.children[0]?.innerText === 'https://a.test' &&
-          table.children[0].children[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
-          table.children[1].children[3]?.innerText === 'https://conversion.test' &&
-          table.children[0].children[0]?.innerText === $1 &&
-          table.children[0].children[9]?.innerText === '3' &&
-          table.children[1].children[9]?.innerText === '1' &&
-          table.children[0].children[10]?.innerText === 'Navigation' &&
-          table.children[1].children[10]?.innerText === 'Event' &&
-          table.children[0].children[11]?.innerText === '0' &&
-          table.children[1].children[11]?.innerText === $2 &&
-          table.children[0].children[12]?.innerText === '{}' &&
-          table.children[1].children[12]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
-          table.children[0].children[13]?.innerText === '{}' &&
-          table.children[1].children[13]?.innerText === '{\n "a": "0x1"\n}' &&
-          table.children[0].children[14]?.innerText === 'modulus' &&
-          table.children[0].children[15]?.innerText === '14.000' &&
-          table.children[0].children[16]?.innerText === '0 / 65536' &&
-          table.children[1].children[16]?.innerText === '1300 / 65536' &&
-          table.children[0].children[17]?.innerText === '19' &&
-          table.children[1].children[17]?.innerText === '' &&
-          table.children[0].children[18]?.innerText === 'true' &&
-          table.children[1].children[18]?.innerText === 'false' &&
-          table.children[0].children[19]?.innerText === '' &&
-          table.children[1].children[19]?.children[0]?.children[0]?.innerText === '13' &&
-          table.children[1].children[19]?.children[0]?.children[1]?.innerText === '17' &&
-          table.children[0].children[20]?.innerText === '' &&
-          table.children[1].children[20]?.children[0]?.children[0]?.innerText === '14' &&
-          table.children[1].children[20]?.children[0]?.children[1]?.innerText === '18' &&
-          table.children[0].children[1]?.innerText === 'Unattributable: noised with no reports' &&
-          table.children[1].children[1]?.innerText === 'Attributable' &&
-          table.children[2].children[1]?.innerText === 'Attributable: reached event-level attribution limit' &&
-          table.children[3].children[1]?.innerText === 'Unattributable: noised with fake reports' &&
-          regTable.children[0].children[4]?.innerText === '' &&
-          regTable.children[0].children[6]?.innerText === 'Success' &&
-          regTable.children[1].children[6]?.innerText === 'Rejected: internal error' &&
-          regTable.children[2].children[6]?.innerText === 'Rejected: insufficient source capacity' &&
-          regTable.children[2].children[4]?.innerText === '987' &&
-          regTable.children[3].children[5]?.innerText === 'Navigation' &&
-          regTable.children[3].children[6]?.innerText === 'Rejected: insufficient unique destination capacity' &&
-          regTable.children[4].children[5]?.innerText === 'Event' &&
-          regTable.children[4].children[6]?.innerText === 'Rejected: excessive reporting origins') {
+      if (table.rows.length === 4 &&
+          regTable.rows.length === 5 &&
+          table.rows[0].cells[3]?.children[0]?.children.length === 2 &&
+          table.rows[0].cells[3]?.children[0]?.children[0]?.innerText === 'https://a.test' &&
+          table.rows[0].cells[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
+          table.rows[1].cells[3]?.innerText === 'https://conversion.test' &&
+          table.rows[0].cells[0]?.innerText === $1 &&
+          table.rows[0].cells[9]?.innerText === '3' &&
+          table.rows[1].cells[9]?.innerText === '1' &&
+          table.rows[0].cells[10]?.innerText === 'Navigation' &&
+          table.rows[1].cells[10]?.innerText === 'Event' &&
+          table.rows[0].cells[11]?.innerText === '0' &&
+          table.rows[1].cells[11]?.innerText === $2 &&
+          table.rows[0].cells[12]?.innerText === '{}' &&
+          table.rows[1].cells[12]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+          table.rows[0].cells[13]?.innerText === '{}' &&
+          table.rows[1].cells[13]?.innerText === '{\n "a": "0x1"\n}' &&
+          table.rows[0].cells[14]?.innerText === 'modulus' &&
+          table.rows[0].cells[15]?.innerText === '14.000' &&
+          table.rows[0].cells[16]?.innerText === '0 / 65536' &&
+          table.rows[1].cells[16]?.innerText === '1300 / 65536' &&
+          table.rows[0].cells[17]?.innerText === '19' &&
+          table.rows[1].cells[17]?.innerText === '' &&
+          table.rows[0].cells[18]?.innerText === 'true' &&
+          table.rows[1].cells[18]?.innerText === 'false' &&
+          table.rows[0].cells[19]?.innerText === '' &&
+          table.rows[1].cells[19]?.children[0]?.children[0]?.innerText === '13' &&
+          table.rows[1].cells[19]?.children[0]?.children[1]?.innerText === '17' &&
+          table.rows[0].cells[20]?.innerText === '' &&
+          table.rows[1].cells[20]?.children[0]?.children[0]?.innerText === '14' &&
+          table.rows[1].cells[20]?.children[0]?.children[1]?.innerText === '18' &&
+          table.rows[0].cells[1]?.innerText === 'Unattributable: noised with no reports' &&
+          table.rows[1].cells[1]?.innerText === 'Attributable' &&
+          table.rows[2].cells[1]?.innerText === 'Attributable: reached event-level attribution limit' &&
+          table.rows[3].cells[1]?.innerText === 'Unattributable: noised with fake reports' &&
+          regTable.rows[0].cells[4]?.innerText === '' &&
+          regTable.rows[0].cells[6]?.innerText === 'Success' &&
+          regTable.rows[1].cells[6]?.innerText === 'Rejected: internal error' &&
+          regTable.rows[2].cells[6]?.innerText === 'Rejected: insufficient source capacity' &&
+          regTable.rows[2].cells[4]?.innerText === '987' &&
+          regTable.rows[3].cells[5]?.innerText === 'Navigation' &&
+          regTable.rows[3].cells[6]?.innerText === 'Rejected: insufficient unique destination capacity' &&
+          regTable.rows[4].cells[5]?.innerText === 'Event' &&
+          regTable.rows[4].cells[6]?.innerText === 'Rejected: excessive reporting origins') {
         if (obs) {
           obs.disconnect();
         }
@@ -440,13 +440,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
 
     const setTitleIfDone = (_, obs) => {
-      if (table.children.length === 1 &&
-          table.children[0].children[1]?.innerText === 'OS Source' &&
-          table.children[0].children[2]?.innerText === 'https://a.test/' &&
-          table.children[0].children[3]?.innerText === 'https://b.test' &&
-          table.children[0].children[4]?.innerText === 'false' &&
-          table.children[0].children[5]?.innerText === 'false' &&
-          table.children[0].children[6]?.innerText === 'Passed to OS') {
+      if (table.rows.length === 1 &&
+          table.rows[0].cells[1]?.innerText === 'OS Source' &&
+          table.rows[0].cells[2]?.innerText === 'https://a.test/' &&
+          table.rows[0].cells[3]?.innerText === 'https://b.test' &&
+          table.rows[0].cells[4]?.innerText === 'false' &&
+          table.rows[0].cells[5]?.innerText === 'false' &&
+          table.rows[0].cells[6]?.innerText === 'Passed to OS') {
         if (obs) {
           obs.disconnect();
         }
@@ -677,23 +677,23 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
-        if (table.children.length === 5 &&
-            table.children[0].children[2]?.innerText ===
+        if (table.rows.length === 5 &&
+            table.rows[0].cells[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
-            table.children[0].children[5]?.innerText === '13' &&
-            table.children[0].children[6]?.innerText === 'true' &&
-            table.children[0].children[1]?.innerText === 'Pending' &&
-            table.children[1].children[5]?.innerText === '11' &&
-            table.children[1].children[1]?.innerText ===
+            table.rows[0].cells[5]?.innerText === '13' &&
+            table.rows[0].cells[6]?.innerText === 'true' &&
+            table.rows[0].cells[1]?.innerText === 'Pending' &&
+            table.rows[1].cells[5]?.innerText === '11' &&
+            table.rows[1].cells[1]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
-            table.children[2].children[5]?.innerText === '0' &&
-            table.children[2].children[6]?.innerText === 'false' &&
-            table.children[2].children[1]?.innerText === 'Sent: HTTP 200' &&
-            !table.children[2].classList.contains('send-error') &&
-            table.children[3].children[1]?.innerText === 'Prohibited by browser policy' &&
-            !table.children[3].classList.contains('send-error') &&
-            table.children[4].children[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
-            table.children[4].classList.contains('send-error')) {
+            table.rows[2].cells[5]?.innerText === '0' &&
+            table.rows[2].cells[6]?.innerText === 'false' &&
+            table.rows[2].cells[1]?.innerText === 'Sent: HTTP 200' &&
+            !table.rows[2].classList.contains('send-error') &&
+            table.rows[3].cells[1]?.innerText === 'Prohibited by browser policy' &&
+            !table.rows[3].classList.contains('send-error') &&
+            table.rows[4].cells[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
+            table.rows[4].classList.contains('send-error')) {
           if (obs) {
             obs.disconnect();
           }
@@ -724,20 +724,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
-        if (table.children.length === 5 &&
-            table.children[4].children[2]?.innerText ===
+        if (table.rows.length === 5 &&
+            table.rows[4].cells[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
-            table.children[4].children[5]?.innerText === '13' &&
-            table.children[4].children[6]?.innerText === 'true' &&
-            table.children[4].children[1]?.innerText === 'Pending' &&
-            table.children[3].children[5]?.innerText === '11' &&
-            table.children[3].children[1]?.innerText ===
+            table.rows[4].cells[5]?.innerText === '13' &&
+            table.rows[4].cells[6]?.innerText === 'true' &&
+            table.rows[4].cells[1]?.innerText === 'Pending' &&
+            table.rows[3].cells[5]?.innerText === '11' &&
+            table.rows[3].cells[1]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
-            table.children[2].children[5]?.innerText === '0' &&
-            table.children[2].children[6]?.innerText === 'false' &&
-            table.children[2].children[1]?.innerText === 'Sent: HTTP 200' &&
-            table.children[1].children[1]?.innerText === 'Prohibited by browser policy' &&
-            table.children[0].children[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
+            table.rows[2].cells[5]?.innerText === '0' &&
+            table.rows[2].cells[6]?.innerText === 'false' &&
+            table.rows[2].cells[1]?.innerText === 'Sent: HTTP 200' &&
+            table.rows[1].cells[1]?.innerText === 'Prohibited by browser policy' &&
+            table.rows[0].cells[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
           if (obs) {
             obs.disconnect();
           }
@@ -767,20 +767,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
-        if (table.children.length === 5 &&
-            table.children[0].children[2]?.innerText ===
+        if (table.rows.length === 5 &&
+            table.rows[0].cells[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
-            table.children[0].children[5]?.innerText === '13' &&
-            table.children[0].children[6]?.innerText === 'true' &&
-            table.children[0].children[1]?.innerText === 'Pending' &&
-            table.children[1].children[5]?.innerText === '11' &&
-            table.children[1].children[1]?.innerText ===
+            table.rows[0].cells[5]?.innerText === '13' &&
+            table.rows[0].cells[6]?.innerText === 'true' &&
+            table.rows[0].cells[1]?.innerText === 'Pending' &&
+            table.rows[1].cells[5]?.innerText === '11' &&
+            table.rows[1].cells[1]?.innerText ===
               'Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e' &&
-            table.children[2].children[5]?.innerText === '0' &&
-            table.children[2].children[6]?.innerText === 'false' &&
-            table.children[2].children[1]?.innerText === 'Sent: HTTP 200' &&
-            table.children[3].children[1]?.innerText === 'Prohibited by browser policy' &&
-            table.children[4].children[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
+            table.rows[2].cells[5]?.innerText === '0' &&
+            table.rows[2].cells[6]?.innerText === 'false' &&
+            table.rows[2].cells[1]?.innerText === 'Sent: HTTP 200' &&
+            table.rows[3].cells[1]?.innerText === 'Prohibited by browser policy' &&
+            table.rows[4].cells[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
           if (obs) {
             obs.disconnect();
           }
@@ -849,9 +849,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
 
     const setTitleIfDone = (_, obs) => {
-      if (table.children.length === 2 &&
-          table.children[0].children[5]?.innerText === '7' &&
-          table.children[1].children[1]?.innerText === 'Sent: HTTP 200') {
+      if (table.rows.length === 2 &&
+          table.rows[0].cells[5]?.innerText === '7' &&
+          table.rows[1].cells[1]?.innerText === 'Sent: HTTP 200') {
         if (obs) {
           obs.disconnect();
         }
@@ -921,10 +921,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const regTable = document.querySelector('#sourceRegistrationTable')
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
-      if (table.children.length === 1 &&
-          regTable.children.length === 1 &&
-          table.children[0].children[0]?.innerText === '5' &&
-          regTable.children[0].children[6]?.innerText === 'Rejected: internal error') {
+      if (table.rows.length === 1 &&
+          regTable.rows.length === 1 &&
+          table.rows[0].cells[0]?.innerText === '5' &&
+          regTable.rows[0].cells[6]?.innerText === 'Rejected: internal error') {
         if (obs) {
           obs.disconnect();
         }
@@ -1001,8 +1001,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#event-level-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
-      if (table.children.length === 1 &&
-          table.children[0].children[5]?.innerText === '7') {
+      if (table.rows.length === 1 &&
+          table.rows[0].cells[5]?.innerText === '7') {
           if (obs) {
             obs.disconnect();
           }
@@ -1130,21 +1130,21 @@ IN_PROC_BROWSER_TEST_F(
       const table = document.querySelector('#aggregatable-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
-        if (table.children.length === 6 &&
-            table.children[0].children[2]?.innerText ===
+        if (table.rows.length === 6 &&
+            table.rows[0].cells[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-aggregate-attribution' &&
-            table.children[0].children[1]?.innerText === 'Pending' &&
-            table.children[0].children[5]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
-            table.children[0].children[6]?.innerText === '' &&
-            table.children[0].children[7]?.innerText === 'https://aws.example.test' &&
-            table.children[0].children[8]?.innerText === 'false' &&
-            table.children[1].children[1]?.innerText === 'Sent: HTTP 200' &&
-            table.children[1].children[6]?.innerText === 'abc' &&
-            table.children[2].children[1]?.innerText === 'Prohibited by browser policy' &&
-            table.children[3].children[1]?.innerText === 'Dropped due to assembly failure' &&
-            table.children[4].children[1]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
-            table.children[5].children[5]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
-            table.children[5].children[8]?.innerText === 'true') {
+            table.rows[0].cells[1]?.innerText === 'Pending' &&
+            table.rows[0].cells[5]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
+            table.rows[0].cells[6]?.innerText === '' &&
+            table.rows[0].cells[7]?.innerText === 'https://aws.example.test' &&
+            table.rows[0].cells[8]?.innerText === 'false' &&
+            table.rows[1].cells[1]?.innerText === 'Sent: HTTP 200' &&
+            table.rows[1].cells[6]?.innerText === 'abc' &&
+            table.rows[2].cells[1]?.innerText === 'Prohibited by browser policy' &&
+            table.rows[3].cells[1]?.innerText === 'Dropped due to assembly failure' &&
+            table.rows[4].cells[1]?.innerText === 'Network error: ERR_INVALID_REDIRECT' &&
+            table.rows[5].cells[5]?.innerText === '[ {  "key": "0x0",  "value": 0 }]' &&
+            table.rows[5].cells[8]?.innerText === 'true') {
           if (obs) {
             obs.disconnect();
           }
@@ -1190,15 +1190,15 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const table = document.querySelector('#triggerTable')
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
-      if (table.children.length === 2 &&
-          table.children[0].children[5]?.innerText === 'Success: Report stored' &&
-          table.children[0].children[6]?.innerText === 'Success: Report stored' &&
-          table.children[0].children[1]?.innerText === 'https://d.test' &&
-          table.children[0].children[2]?.innerText === 'https://r.test' &&
-          table.children[0].children[3]?.innerText.includes('{') &&
-          table.children[0].children[4]?.innerText === '' &&
-          table.children[1].children[4]?.innerText === '123' &&
-          table.children[1].children[7]?.innerHTML === expectedVerification) {
+      if (table.rows.length === 2 &&
+          table.rows[0].cells[5]?.innerText === 'Success: Report stored' &&
+          table.rows[0].cells[6]?.innerText === 'Success: Report stored' &&
+          table.rows[0].cells[1]?.innerText === 'https://d.test' &&
+          table.rows[0].cells[2]?.innerText === 'https://r.test' &&
+          table.rows[0].cells[3]?.innerText.includes('{') &&
+          table.rows[0].cells[4]?.innerText === '' &&
+          table.rows[1].cells[4]?.innerText === '123' &&
+          table.rows[1].cells[7]?.innerHTML === expectedVerification) {
         if (obs) {
           obs.disconnect();
         }
@@ -1357,12 +1357,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     const url2 = 'https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution';
 
     const setTitleIfDone = (_, obs) => {
-      if (table.children.length === 3 &&
-          table.children[0].children[1]?.innerText === url0 &&
-          table.children[0].children[2]?.innerText === 'HTTP 200' &&
-          table.children[0].children[3]?.innerText.includes('source-unknown-error') &&
-          table.children[1].children[1]?.innerText === url1 &&
-          table.children[2].children[1]?.innerText === url2
+      if (table.rows.length === 3 &&
+          table.rows[0].cells[1]?.innerText === url0 &&
+          table.rows[0].cells[2]?.innerText === 'HTTP 200' &&
+          table.rows[0].cells[3]?.innerText.includes('source-unknown-error') &&
+          table.rows[1].cells[1]?.innerText === url1 &&
+          table.rows[2].cells[1]?.innerText === url2
       ) {
         if (obs) {
           obs.disconnect();
