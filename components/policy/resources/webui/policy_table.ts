@@ -20,29 +20,83 @@ export interface PolicyTableModel {
   precedenceOrder?: string[];
 }
 
+// Sortable columns/fields identifiers.
+enum SortButtonsField {
+  POLICY_NAME = 'name',
+  POLICY_SOURCE = 'source',
+  POLICY_SCOPE = 'scope',
+  POLICY_LEVEL = 'level',
+  POLICY_STATUS = 'status'
+}
+
+// The possible directions for sort.
+enum SortOrder {
+  ASCENDING = 1,
+  DESCENDING = -1
+}
+
 export class PolicyTableElement extends CustomElement {
   static override get template() {
     return getTemplate();
   }
 
+  dataModel: PolicyTableModel;
   filterPattern: string = '';
+  // The last sort order and column for the policy table.
+  // These are used when policies are updated to prevent un-desired sort reset.
+  mostRecentSortOrder: number = SortOrder.ASCENDING;
+  mostRecentSortedColumn: string = SortButtonsField.POLICY_NAME;
 
-  update(dataModel: PolicyTableModel) {
+  // Updates the data model and table.
+  updateDataModel(dataModel: PolicyTableModel) {
+    this.dataModel = dataModel;
+    // Update table based on the updated data model.
+    this.update();
+  }
+
+  addEventListeners() {
+    for (const field of Object.values(SortButtonsField)) {
+      const sortUpButton =
+          this.getRequiredElement(`#${field}-sort-up`) as HTMLButtonElement;
+      const sortDownButton =
+          this.getRequiredElement(`#${field}-sort-down`) as HTMLButtonElement;
+      sortUpButton.onclick = () => this.update(SortOrder.ASCENDING, field);
+      sortDownButton.onclick = () => this.update(SortOrder.DESCENDING, field);
+    }
+  }
+
+  update(
+      order: number = this.mostRecentSortOrder,
+      field: string = this.mostRecentSortedColumn) {
     // Clear policies
     const mainContent = this.getRequiredElement('.main');
     const policies = this.shadowRoot!.querySelectorAll('.policy-data');
-    this.getRequiredElement('.header').textContent = dataModel.name;
-    this.getRequiredElement('.id').textContent = dataModel.id || null;
-    this.getRequiredElement('.id').hidden = !dataModel.id;
+    this.getRequiredElement('.header').textContent = this.dataModel.name;
+    this.getRequiredElement('.id').textContent = this.dataModel.id || null;
+    this.getRequiredElement('.id').hidden = !this.dataModel.id;
     policies.forEach(row => mainContent.removeChild(row));
 
-    dataModel.policies
+    this.dataModel.policies
         .sort((a, b) => {
+          // Save most recent sort preference.
+          this.mostRecentSortOrder = order;
+          this.mostRecentSortedColumn = field;
           if ((a.value !== undefined && b.value !== undefined) ||
               a.value === b.value) {
             if (a.link !== undefined && b.link !== undefined) {
-              // Sorting the policies in ascending alpha order.
-              return a.name > b.name ? 1 : -1;
+              // Sorting the policies in chosen alpha order based on the field
+              // selected, with secondary sort based on Policy name.
+              if (field !== SortButtonsField.POLICY_NAME &&
+                  a[field as keyof Policy] === b[field as keyof Policy]) {
+                return order *
+                    (a[SortButtonsField.POLICY_NAME] >
+                             b[SortButtonsField.POLICY_NAME] ?
+                         1 :
+                         -1);
+              }
+              return order *
+                  (a[field as keyof Policy] > b[field as keyof Policy] ? 1 :
+                                                                         -1);
             }
 
             // Sorting so unknown policies are last.
@@ -61,14 +115,14 @@ export class PolicyTableElement extends CustomElement {
     this.filter();
 
     // Show the current policy precedence order in the Policy Precedence table.
-    if (dataModel.name === 'Policy Precedence') {
+    if (this.dataModel.name === 'Policy Precedence') {
       // Clear previous precedence row.
       const precedenceRowOld =
           this.shadowRoot!.querySelectorAll('.policy-precedence-data');
       precedenceRowOld.forEach(row => mainContent.removeChild(row));
-      if (dataModel.precedenceOrder != undefined) {
+      if (this.dataModel.precedenceOrder != undefined) {
         const precedenceRow = document.createElement('policy-precedence-row');
-        precedenceRow.initialize(dataModel.precedenceOrder);
+        precedenceRow.initialize(this.dataModel.precedenceOrder);
         mainContent.appendChild(precedenceRow);
       }
     }

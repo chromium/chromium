@@ -257,8 +257,9 @@ export class Page {
     if (!this.policyTables[id]) {
       this.policyTables[id] = document.createElement('policy-table');
       this.mainSection!.appendChild(this.policyTables[id]!);
+      this.policyTables[id]!.addEventListeners();
     }
-    this.policyTables[id]!.update(dataModel);
+    this.policyTables[id]!.updateDataModel(dataModel);
   }
 
   /**

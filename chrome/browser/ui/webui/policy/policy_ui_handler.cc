@@ -152,6 +152,9 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"reloadPoliciesDone", IDS_POLICY_RELOAD_POLICIES_DONE},
       {"copyPoliciesDone", IDS_COPY_POLICIES_DONE},
       {"exportPoliciesDone", IDS_EXPORT_POLICIES_JSON_DONE},
+      {"sort", IDS_POLICY_TABLE_COLUMN_SORT},
+      {"sortAscending", IDS_POLICY_TABLE_COLUMN_SORT_ASCENDING},
+      {"sortDescending", IDS_POLICY_TABLE_COLUMN_SORT_DESCENDING},
 #if !BUILDFLAG(IS_CHROMEOS)
       {"reportUploading", IDS_REPORT_UPLOADING},
       {"reportUploaded", IDS_REPORT_UPLOADED},

@@ -100,6 +100,9 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"reportUploaded", IDS_REPORT_UPLOADED},
       {"copyPoliciesDone", IDS_COPY_POLICIES_DONE},
       {"exportPoliciesDone", IDS_EXPORT_POLICIES_JSON_DONE},
+      {"sort", IDS_POLICY_TABLE_COLUMN_SORT},
+      {"sortAscending", IDS_POLICY_TABLE_COLUMN_SORT_ASCENDING},
+      {"sortDescending", IDS_POLICY_TABLE_COLUMN_SORT_DESCENDING},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddLocalizedStrings(policy::kPolicySources);
