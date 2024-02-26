@@ -111,11 +111,9 @@ void IntegrityBlockParser::ParseSignatureStack(
     return;
   }
 
-  if (*signature_stack_size != 1 && *signature_stack_size != 2) {
-    // TODO(cmfcmf): Support more signatures for key rotation.
+  if (*signature_stack_size == 0) {
     RunErrorCallback(
-        "The signature stack must contain one or two signatures (developer + "
-        "potentially distributor signature).");
+        "The signature stack must contain at least one signature.");
     return;
   }
 

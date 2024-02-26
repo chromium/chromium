@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -755,11 +756,12 @@ TEST_F(WebBundleParserTest, SignedBundleIntegrityBlockIsParsedCorrectly) {
                                     bundle_and_keys.key_pairs[0].public_key);
 }
 
-TEST_F(WebBundleParserTest,
-       SignedBundleIntegrityBlockIsParsedCorrectlyWithTwoSignatures) {
+TEST_F(WebBundleParserTest, SignedBundleSignatureStackWithMultipleEntries) {
+  unsigned long num_signatures = base::RandInt(2, 15);
+
   auto unsigned_bundle = CreateSmallBundle();
   auto bundle_and_keys =
-      SignBundle(unsigned_bundle, /*errors_for_testing=*/{}, 2);
+      SignBundle(unsigned_bundle, /*errors_for_testing=*/{}, num_signatures);
   TestDataSource data_source(bundle_and_keys.bundle);
 
   auto [integrity_block, error] = ParseSignedBundleIntegrityBlock(&data_source);
@@ -770,14 +772,15 @@ TEST_F(WebBundleParserTest,
   EXPECT_EQ(integrity_block->size,
             bundle_and_keys.bundle.size() - unsigned_bundle.size());
 
-  // There should be exactly one signature stack entry, corresponding to the
-  // public key that was used to sign the web bundle.
-  EXPECT_EQ(integrity_block->signature_stack.size(), 2ul);
+  // The signature stack should contain the expected number of signatures, and
+  // each entry should correspond to the public key that was used to sign the
+  // web bundle.
+  EXPECT_EQ(integrity_block->signature_stack.size(), num_signatures);
 
-  CheckIfSignatureStackEntryIsValid(integrity_block->signature_stack[0],
-                                    bundle_and_keys.key_pairs[0].public_key);
-  CheckIfSignatureStackEntryIsValid(integrity_block->signature_stack[1],
-                                    bundle_and_keys.key_pairs[1].public_key);
+  for (unsigned long i = 0; i < num_signatures; ++i) {
+    CheckIfSignatureStackEntryIsValid(integrity_block->signature_stack[i],
+                                      bundle_and_keys.key_pairs[i].public_key);
+  }
 }
 
 TEST_F(WebBundleParserTest, SignedBundleWrongMagic) {
@@ -824,24 +827,7 @@ TEST_F(WebBundleParserTest, SignedBundleEmptySignatureStack) {
   ASSERT_TRUE(error);
   EXPECT_EQ(error->type, mojom::BundleParseErrorType::kFormatError);
   EXPECT_EQ(error->message,
-            "The signature stack must contain one or two signatures (developer "
-            "+ potentially distributor signature).");
-}
-
-TEST_F(WebBundleParserTest, SignedBundleSignatureStackWithThreeEntries) {
-  WebBundleBuilder builder;
-  std::vector<uint8_t> unsigned_bundle = builder.CreateBundle();
-  auto bundle_and_keys = SignBundle(unsigned_bundle,
-                                    /*errors_for_testing=*/{}, 3);
-  TestDataSource data_source(bundle_and_keys.bundle);
-
-  mojom::BundleIntegrityBlockParseErrorPtr error =
-      ParseSignedBundleIntegrityBlock(&data_source).second;
-  ASSERT_TRUE(error);
-  EXPECT_EQ(error->type, mojom::BundleParseErrorType::kFormatError);
-  EXPECT_EQ(error->message,
-            "The signature stack must contain one or two signatures (developer "
-            "+ potentially distributor signature).");
+            "The signature stack must contain at least one signature.");
 }
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
