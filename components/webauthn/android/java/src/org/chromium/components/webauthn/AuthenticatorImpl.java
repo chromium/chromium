@@ -215,7 +215,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                     callback.call(isUvpaa);
                 };
 
-        if (!GmsCoreUtils.isWebauthnSupported()) {
+        if (!GmsCoreUtils.isWebauthnSupported()
+                || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
             decoratedCallback.call(false);
             return;
         }

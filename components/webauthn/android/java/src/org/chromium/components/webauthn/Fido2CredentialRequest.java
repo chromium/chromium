@@ -563,9 +563,11 @@ public class Fido2CredentialRequest
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
             IsUvpaaResponseCallback callback) {
-        // Barrier Mode is only relevant for Chrome.
-        if (isChrome(mAuthenticationContextProvider.getWebContents())
-                && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+        boolean chromeRequest = isChrome(mAuthenticationContextProvider.getWebContents());
+        if ((!chromeRequest
+                        && CredManSupportProvider.getCredManSupportForWebView()
+                                == CredManSupport.FULL_UNLESS_INAPPLICABLE)
+                || (chromeRequest && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN)) {
             callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(true);
             return;
         }
