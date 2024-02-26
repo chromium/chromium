@@ -710,4 +710,24 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   RunPaintForTest(animated_colors, offsets, property_values);
 }
 
+// Test that BackgroundColorPaintWorkletProxyClient::Paint handles colors with
+// differing color spaces - i.e won't crash/DCHECK.
+TEST_F(BackgroundColorPaintDefinitionTest,
+       ProxyClientPaintWithColorOfDifferingColorSpaces) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  Vector<Color> animated_colors = {
+      Color::FromColorSpace(Color::ColorSpace::kSRGBLegacy, 1, 0, 0, 1),
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0, 0.5, 0, 1),
+  };
+  Vector<double> offsets = {0, 1};
+  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
+  CompositorPaintWorkletInput::PropertyKey property_key(
+      CompositorPaintWorkletInput::NativePropertyType::kBackgroundColor,
+      CompositorElementId(1u));
+  float progress = 0.5f;
+  CompositorPaintWorkletInput::PropertyValue property_value(progress);
+  property_values.insert(std::make_pair(property_key, property_value));
+  RunPaintForTest(animated_colors, offsets, property_values);
+}
+
 }  // namespace blink

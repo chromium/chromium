@@ -260,11 +260,13 @@ PaintRecord BackgroundColorPaintDefinition::Paint(
   // Because the progress is a global one, we need to adjust it with offsets.
   float adjusted_progress = (progress - offsets[result_index]) /
                             (offsets[result_index + 1] - offsets[result_index]);
-  InterpolableValue* from = CSSColorInterpolationType::CreateInterpolableColor(
+  InterpolableColor* from = CSSColorInterpolationType::CreateInterpolableColor(
       animated_colors[result_index]);
-  InterpolableValue* to = CSSColorInterpolationType::CreateInterpolableColor(
+  InterpolableColor* to = CSSColorInterpolationType::CreateInterpolableColor(
       animated_colors[result_index + 1]);
-  InterpolableValue* result =
+  InterpolableColor::SetupColorInterpolationSpaces(*from, *to);
+
+  InterpolableColor* result =
       CSSColorInterpolationType::CreateInterpolableColor(
           animated_colors[result_index + 1]);
   from->Interpolate(*to, adjusted_progress, *result);
