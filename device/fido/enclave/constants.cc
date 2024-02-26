@@ -6,6 +6,8 @@
 
 #include <array>
 
+#include "base/command_line.h"
+#include "base/logging.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_constants.h"
 
@@ -18,6 +20,10 @@ const EnclaveIdentity* g_enclave_override = nullptr;
 // Once running, this should be "wss://enclave.ua5v.com/enclave" and the public
 // key should be updated.
 constexpr char kEnclaveUrl[] = "wss://127.0.0.1:8080/";
+
+// The name of the commandline flag that allows to specify the enclave URL.
+constexpr char kEnclaveUrlSwitch[] = "enclave-url";
+
 constexpr std::array<uint8_t, device::kP256X962Length> kEnclavePublicKey = {
     0x04, 0x6b, 0x17, 0xd1, 0xf2, 0xe1, 0x2c, 0x42, 0x47, 0xf8, 0xbc,
     0xe6, 0xe5, 0x63, 0xa4, 0x40, 0xf2, 0x77, 0x03, 0x7d, 0x81, 0x2d,
@@ -34,8 +40,16 @@ EnclaveIdentity GetEnclaveIdentity() {
     return *g_enclave_override;
   }
 
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+
   EnclaveIdentity ret;
-  ret.url = GURL(kEnclaveUrl);
+  if (command_line->HasSwitch(kEnclaveUrlSwitch)) {
+    GURL enclave_url(command_line->GetSwitchValueASCII(kEnclaveUrlSwitch));
+    CHECK(enclave_url.is_valid());
+    ret.url = enclave_url;
+  } else {
+    ret.url = GURL(kEnclaveUrl);
+  }
   ret.public_key = kEnclavePublicKey;
   return ret;
 }
