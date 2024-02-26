@@ -33,6 +33,63 @@ chromium-metrics-reviews@google.com.
                record them here."/>
 </variants>
 
+<variants name="IOSSaveToDriveQueryTypeVariant">
+  <variant name="CreateFolder"
+      summary="Recorded once when a query to create a Drive folder returns a
+               result."/>
+  <variant name="FetchStorageQuota"
+      summary="Recorded once when a query to fetch a user's Drive storage
+               quota returns a result."/>
+  <variant name="SearchFolder"
+      summary="Recorded once when a query to search a Drive folder returns a
+               result."/>
+  <variant name="UploadFile"
+      summary="Recorded once when a query to upload a file to Drive returns a
+               result."/>
+</variants>
+
+<variants name="IOSSaveToDriveUIOutcomeVariant">
+  <variant name="FailureCanceledDrive"
+      summary="Recorded once when the user tapped 'Cancel' in the Save to
+               Drive UI, while 'Drive' is selected as destination, either by
+               default or manually."/>
+  <variant name="FailureCanceledFiles"
+      summary="Recorded once when the user tapped 'Cancel' in the Save to
+               Drive UI, while 'Files' is selected as destination, either by
+               default or manually."/>
+  <variant name="SuccessSelectedDrive"
+      summary="Recorded once when the Save to Drive UI exits successfully
+               after the user tapped 'Save', after having selected 'Drive' as
+               destination for their download."/>
+  <variant name="SuccessSelectedDriveManageStorage"
+      summary="Recorded once when the Save to Drive UI exits successfully
+               after the user tapped 'Manage Storage' in the Manage Storage
+               alert, after having selected 'Drive' as destination for their
+               download."/>
+  <variant name="SuccessSelectedFiles"
+      summary="Recorded once when the Save to Drive UI exits successfully
+               after the user tapped 'Save', after having selected 'Files' as
+               destination for their download."/>
+</variants>
+
+<variants name="IOSSaveToDriveUploadTaskFinalStateVariant">
+  <variant name="Cancelled"
+      summary="Recorded once when a Drive upload task is destroyed, if the
+               final state of the task is 'Cancelled'."/>
+  <variant name="Complete"
+      summary="Recorded once when a Drive upload task is destroyed, if the
+               final state of the task is 'Complete'."/>
+  <variant name="Failed"
+      summary="Recorded once when a Drive upload task is destroyed, if the
+               final state of the task is 'Failed'."/>
+  <variant name="InProgress"
+      summary="Recorded once when a Drive upload task is destroyed, if the
+               final state of the task is 'In Progress'."/>
+  <variant name="NotStarted"
+      summary="Recorded once when a Drive upload task is destroyed, if the
+               final state of the task is 'Not Started'."/>
+</variants>
+
 <variants name="MXVersion">
   <variant name=""
       summary="Warning: This is only recorded when the current app version
@@ -3053,6 +3110,7 @@ chromium-metrics-reviews@google.com.
     user canceled, whether they selected Drive or Files, etc. Only logged if the
     size is available.
   </summary>
+  <token key="Outcome" variants="IOSSaveToDriveUIOutcomeVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.ManageStorageAlert.Cancelled"
@@ -3089,6 +3147,7 @@ chromium-metrics-reviews@google.com.
     file to download, as a function of the final outcome of the UI flow e.g.
     whether the user canceled, whether they selected Drive or Files, etc.
   </summary>
+  <token key="Outcome" variants="IOSSaveToDriveUIOutcomeVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.NumberOfAttempts.{Outcome}" units="count"
@@ -3102,6 +3161,7 @@ chromium-metrics-reviews@google.com.
     as a function of the final outcome of the UI flow e.g. whether the user
     canceled, whether they selected Drive or Files, etc.
   </summary>
+  <token key="Outcome" variants="IOSSaveToDriveUIOutcomeVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UI.Outcome" enum="IOSSaveToDriveOutcomeType"
@@ -3126,6 +3186,7 @@ chromium-metrics-reviews@google.com.
     size of the uploaded file as a function of the final state of the task e.g.
     Not Started, Cancelled, Completed or Failed.
   </summary>
+  <token key="FinalState" variants="IOSSaveToDriveUploadTaskFinalStateVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.FinalState"
@@ -3149,6 +3210,7 @@ chromium-metrics-reviews@google.com.
     MIME type of the uploaded file as a function of the final state of the task
     e.g. Not Started, Cancelled, Completed or Failed.
   </summary>
+  <token key="FinalState" variants="IOSSaveToDriveUploadTaskFinalStateVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.UploadTask.NumberOfAttempts.{FinalState}"
@@ -3162,6 +3224,7 @@ chromium-metrics-reviews@google.com.
     started) as a function of the final state of the task e.g. Not Started,
     Cancelled, Completed or Failed.
   </summary>
+  <token key="FinalState" variants="IOSSaveToDriveUploadTaskFinalStateVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.{QueryType}.ErrorCode" enum="HttpResponseCode"
@@ -3173,6 +3236,7 @@ chromium-metrics-reviews@google.com.
     Logged when receiving the response for a failed Drive query, indicating the
     error code associated with the response.
   </summary>
+  <token key="QueryType" variants="IOSSaveToDriveQueryTypeVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToDrive.{QueryType}.Successful" enum="BooleanSuccess"
@@ -3184,6 +3248,7 @@ chromium-metrics-reviews@google.com.
     Logged when receiving the response for a Drive query, indicating whether the
     response is successful or not.
   </summary>
+  <token key="QueryType" variants="IOSSaveToDriveQueryTypeVariant"/>
 </histogram>
 
 <histogram name="IOS.SaveToPhotos" enum="IOSSaveToPhotosType"
