@@ -462,7 +462,7 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
           {"Compose.Server", compose::kComposeRequestDurationOkSuffix}),
       1);
 
-  // Check that a no request duration Error metrics were emitted.
+  // Check that no request duration Error metrics were emitted.
   histograms().ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationErrorSuffix}),
       0);
@@ -479,7 +479,7 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
   FlushMojo();
 
-  // Check Compose Session Event Counts
+  // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kDialogShown, 1);
@@ -493,8 +493,8 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kInsertClicked, 1);
 
-  histograms().ExpectBucketCount("Compose.Session.EvalLocation",
-                                 compose::SessionEvalLocation::kServer, 1);
+  histograms().ExpectUniqueSample("Compose.Session.EvalLocation",
+                                  compose::SessionEvalLocation::kServer, 1);
 
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
@@ -585,8 +585,8 @@ TEST_F(ChromeComposeClientTest, TestComposeServerAndOnDeviceResponses) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
   FlushMojo();
 
-  histograms().ExpectBucketCount("Compose.Session.EvalLocation",
-                                 compose::SessionEvalLocation::kMixed, 1);
+  histograms().ExpectUniqueSample("Compose.Session.EvalLocation",
+                                  compose::SessionEvalLocation::kMixed, 1);
 
   histograms().ExpectBucketCount(compose::kComposeRequestReason,
                                  compose::ComposeRequestReason::kFirstRequest,
@@ -643,8 +643,8 @@ TEST_F(ChromeComposeClientTest, TestComposeEmptySession) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
   FlushMojo();
 
-  histograms().ExpectBucketCount("Compose.Session.EvalLocation",
-                                 compose::SessionEvalLocation::kNone, 1);
+  histograms().ExpectUniqueSample("Compose.Session.EvalLocation",
+                                  compose::SessionEvalLocation::kNone, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
@@ -672,7 +672,7 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
 
-  // Now show context menu twice on same page, and verify that second UKM record
+  // Now show context menu twice on same page and verify that second UKM record
   // reflects this.
   EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
   EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
@@ -1005,13 +1005,13 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kServerError, result->status);
-  // Check that the quality modeling log is still correct
 
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
       quality_test_future.Take();
 
+  // Check that the quality modeling log is still correct
   EXPECT_EQ(
       kSessionIdHigh,
       quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
@@ -1057,7 +1057,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
   histograms().ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationErrorSuffix}),
       1);
-  // Check that a no request duration OK metric was emitted.
+  // Check that no request duration OK metric was emitted.
   histograms().ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationOkSuffix}), 0);
 }
@@ -1151,7 +1151,7 @@ TEST_F(ChromeComposeClientTest, TestRestoreEmptyState) {
   EXPECT_FALSE(result->compose_state->has_pending_request);
 }
 
-// Tests that saved WebUI state is returned.
+// Tests that a saved WebUI state is properly returned.
 TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
   ShowDialogAndBindMojo();
 
@@ -1164,7 +1164,7 @@ TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
   EXPECT_EQ("web ui state", result->compose_state->webui_state);
 }
 
-// Tests that same saved WebUI state is returned after compose().
+// Tests that the same saved WebUI state is returned after compose().
 TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
   ShowDialogAndBindMojo();
   EXPECT_CALL(session(), ExecuteModel(_, _))
@@ -1199,8 +1199,7 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
 
 TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
   NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
-  // We skip the dialog showing here, as there is no dialog required at this
-  // URL.
+  // We skip showing the dialog here as there is no dialog required at this URL.
   BindMojo();
 
   EXPECT_CALL(session(), ExecuteModel(_, _))
@@ -1233,8 +1232,9 @@ TEST_F(ChromeComposeClientTest, TestCloseUI) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 }
 
-// Tests that closing after showing the dialog does not crash the browser.
-TEST_F(ChromeComposeClientTest, TestCancelMetrics) {
+// Tests that session level UKM metrics are properly captured after closing the
+// dialog.
+TEST_F(ChromeComposeClientTest, TestCancelUkmMetrics) {
   ShowDialogAndBindMojo();
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
   // Make sure the async call to CloseUI completes before navigating away.
@@ -1259,7 +1259,7 @@ TEST_F(ChromeComposeClientTest, TestCancelMetrics) {
 // the browser, even though there is no dialog shown at that URL.
 TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
   NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
-  // We skip the dialog showing here, as there is no dialog required at this
+  // We skip showing the dialog here as there is no dialog required at this
   // URL.
   BindMojo();
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
@@ -1310,11 +1310,12 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
   EXPECT_EQ("", result->compose_state->webui_state);
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Compose.EndedSession.NewSessionWithSelectedText"));
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kNewSessionWithSelectedText, 1);
 }
 
+// Checks proper propagation of Compose config params.
 TEST_F(ChromeComposeClientTest, TestInputParams) {
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.input_min_words = 5;
@@ -1330,7 +1331,7 @@ TEST_F(ChromeComposeClientTest, TestInputParams) {
   EXPECT_EQ(100, result->configurable_params->max_character_limit);
 }
 
-// Tests that undo is not possible when compose is never called and no response
+// Tests that Undo is not possible when Compose is never called and no response
 // is ever received.
 TEST_F(ChromeComposeClientTest, TestEmptyUndo) {
   ShowDialogAndBindMojo();
@@ -1364,7 +1365,7 @@ TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
       << "Undo should return null after only one Compose() invocation.";
 }
 
-// Tests undo after calling Compose() twice.
+// Tests Undo after calling Compose() twice.
 TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
   ShowDialogAndBindMojo();
 
@@ -1403,10 +1404,10 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
   EXPECT_EQ("this state should be restored with undo", state->webui_state);
 
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
-  // Make sure the async call to CloseUI completes before navigating away.
+  // Make sure the async call to CloseUI() completes before navigating away.
   FlushMojo();
 
-  // Check Compose Session Event Counts
+  // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kDialogShown, 1);
@@ -1432,7 +1433,7 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
                   ukm::builders::Compose_SessionProgress::kUndoCountName, 1)));
 }
 
-// Tests if undo can be done more than once.
+// Tests if Undo can be done more than once.
 TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
   ShowDialogAndBindMojo();
 
@@ -1473,7 +1474,7 @@ TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
   EXPECT_FALSE(state2->response->undo_available);
 }
 
-// Tests scenario: Undo returns state A. Compose, then undo again returns to
+// Tests scenario: Undo returns state A, Compose, then undo again returns to
 // state A.
 TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   ShowDialogAndBindMojo();
@@ -1512,7 +1513,8 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   EXPECT_EQ("first state", undo2_future.Take()->webui_state);
 }
 
-// Tests that the callback is run when AcceptComposeResponse is called.
+// Tests that the corresponding callback is run when AcceptComposeResponse is
+// called.
 TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
   base::test::TestFuture<const std::u16string&> accept_callback;
   ShowDialogAndBindMojo(accept_callback.GetCallback());
@@ -1608,6 +1610,7 @@ TEST_F(ChromeComposeClientTest, SurveyLinkOpensCorrectURL) {
             new_tab_webcontents->GetController().GetPendingEntry()->GetURL());
 }
 
+// Tests that all ComposeSessions are deleted on page navigation.
 TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
   ShowDialogAndBindMojo();
 
@@ -1625,17 +1628,19 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
   GURL next_page("http://example.com/a.html");
   NavigateAndCommit(web_contents(), next_page);
 
-  // All session should be deleted.
+  // All sessions should be deleted.
   EXPECT_EQ(0, client().GetSessionCountForTest());
 }
 
+// Tests that the dialog close button logs to the correct corresponding
+// histograms.
 TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   ShowDialogAndBindMojo();
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   BindComposeFutureToOnResponseReceived(compose_future);
 
-  // Simulate three compose requests - two from edits.
+  // Simulate three Compose requests - two from edits.
   page_handler()->Compose("", false);
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
 
@@ -1659,25 +1664,27 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
 
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Compose.EndedSession.CloseButtonClicked"));
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
 
   // Expect that three total Compose calls were recorded.
-  histograms().ExpectBucketCount("Compose.Session.ComposeCount.Ignored", 3, 1);
-  histograms().ExpectBucketCount("Compose.Server.Session.ComposeCount.Ignored",
-                                 3, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionComposeCount + std::string(".Ignored"), 3, 1);
+  histograms().ExpectUniqueSample("Compose.Server.Session.ComposeCount.Ignored",
+                                  3, 1);
 
   // Expect that two of the Compose calls were from edits.
-  histograms().ExpectBucketCount("Compose.Session.SubmitEditCount.Ignored", 2,
-                                 1);
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionUpdateInputCount + std::string(".Ignored"), 2, 1);
+  histograms().ExpectUniqueSample(
       "Compose.Server.Session.SubmitEditCount.Ignored", 2, 1);
 
   // Expect that two undos were done.
-  histograms().ExpectBucketCount("Compose.Session.UndoCount.Ignored", 2, 1);
-  histograms().ExpectBucketCount("Compose.Server.Session.UndoCount.Ignored", 2,
-                                 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeSessionUndoCount + std::string(".Ignored"), 2, 1);
+  histograms().ExpectUniqueSample("Compose.Server.Session.UndoCount.Ignored", 2,
+                                  1);
 
   // Expect that the dialog was shown twice.
   histograms().ExpectUniqueSample(
@@ -1708,11 +1715,11 @@ TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
 
   client().CloseUI(compose::mojom::CloseReason::kMSBBCloseButton);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeMSBBSessionCloseReason,
       compose::ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed, 1);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"),
       1,  // Expect that one total MSBB dialog was shown.
       1);
@@ -1729,7 +1736,7 @@ TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
   histograms().ExpectTotalCount(
       compose::kComposeSessionDuration + std::string(".Inserted"), 0);
-  histograms().ExpectBucketCount(compose::kComposeSessionOverOneDay, 0, 1);
+  histograms().ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -1743,20 +1750,20 @@ TEST_F(ChromeComposeClientTest,
 
   client().CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionComposeCount + std::string(".Ignored"),
       0,  // Expect that zero total Compose calls were recorded.
       1);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeMSBBSessionCloseReason,
       compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert, 1);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeMSBBSessionDialogShownCount + std::string(".Accepted"),
       1,  // Expect that the dialog was shown once.
       1);
@@ -1792,16 +1799,16 @@ TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
                                        false);
   ShowDialogAndBindMojo();
   client().CloseUI(compose::mojom::CloseReason::kFirstRunCloseButton);
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeFirstRunSessionCloseReason,
       compose::ComposeFirstRunSessionCloseReason::kCloseButtonPressed, 1);
   // Expect that the dialog was shown once ending without FRE completed.
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeFirstRunSessionDialogShownCount +
           std::string(".Ignored"),
       1, 1);
 
-  // Check expected session duration metrics
+  // Check expected session duration metrics.
   histograms().ExpectUniqueTimeSample(
       compose::kComposeSessionDuration + std::string(".FRE"),
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
@@ -1810,9 +1817,9 @@ TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
   histograms().ExpectTotalCount(
       compose::kComposeSessionDuration + std::string(".Ignored"), 0);
   histograms().ExpectTotalCount("Compose.Server.Session.Duration.Ignored", 0);
-  histograms().ExpectBucketCount(compose::kComposeSessionOverOneDay, 0, 1);
+  histograms().ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
 
-  // Show the FRE dialog and end the session by re-opening with selection
+  // Show the FRE dialog and end the session by re-opening with selection.
   ShowDialogAndBindMojo();
   field_data().value = u"user selected text";
   SetSelection(u"selected text");
@@ -1845,23 +1852,23 @@ TEST_F(ChromeComposeClientTest, FirstRunCompletedHistogramTest) {
   client().CompleteFirstRun();
   client().CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeFirstRunSessionCloseReason,
       compose::ComposeFirstRunSessionCloseReason::
           kFirstRunDisclaimerAcknowledgedWithoutInsert,
       1);
   // Expect that the dialog was shown twice ending with FRE completed.
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeFirstRunSessionDialogShownCount +
           std::string(".Acknowledged"),
       2, 1);
 
   // After FRE is completed, a new set of metrics should be collected for the
   // remainder of the session.
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
       1,  // The dialog was only shown once after having proceeded past FRE.
       1);
@@ -1877,12 +1884,12 @@ TEST_F(ChromeComposeClientTest,
   client().CompleteFirstRun();
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
-  histograms().ExpectBucketCount(compose::kComposeFirstRunSessionCloseReason,
-                                 compose::ComposeFirstRunSessionCloseReason::
-                                     kFirstRunDisclaimerAcknowledgedWithInsert,
-                                 1);
+  histograms().ExpectUniqueSample(compose::kComposeFirstRunSessionCloseReason,
+                                  compose::ComposeFirstRunSessionCloseReason::
+                                      kFirstRunDisclaimerAcknowledgedWithInsert,
+                                  1);
 
-  // Check Compose Session Event Counts
+  // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
                                  compose::ComposeSessionEventTypes::kFREShown,
                                  1);
@@ -1941,22 +1948,22 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
 
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Compose.EndedSession.InsertButtonClicked"));
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kAcceptedSuggestion, 1);
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionComposeCount + std::string(".Accepted"),
       3,  // Expect that three Compose calls were recorded.
       1);
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionUpdateInputCount + std::string(".Accepted"),
       2,  // Expect that two of the Compose calls were from edits.
       1);
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionUndoCount + std::string(".Accepted"),
       1,  // Expect that one undo was done.
       1);
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionDialogShownCount + std::string(".Accepted"),
       3,  // Expect that the dialog was shown three times.
       1);
@@ -1965,7 +1972,7 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
       3,  // Expect that the dialog was shown three times.
       1);
 
-  // Check expected session duration metrics
+  // Check expected session duration metrics.
   histograms().ExpectTotalCount(
       compose::kComposeSessionDuration + std::string(".FRE"), 0);
   histograms().ExpectTotalCount(
@@ -1976,7 +1983,7 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   histograms().ExpectUniqueTimeSample(
       "Compose.Server.Session.Duration.Inserted",
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
-  histograms().ExpectBucketCount(compose::kComposeSessionOverOneDay, 0, 1);
+  histograms().ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
 }
 
 TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
@@ -1988,7 +1995,7 @@ TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
 
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Compose.EndedSession.EndedImplicitly"));
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kEndedImplicitly, 1);
 }
@@ -2003,7 +2010,7 @@ TEST_F(ChromeComposeClientTest, LoseFocusFirstRunHistogramTest) {
   GURL next_page("http://example.com/a.html");
   NavigateAndCommit(web_contents(), next_page);
 
-  histograms().ExpectBucketCount(
+  histograms().ExpectUniqueSample(
       compose::kComposeFirstRunSessionCloseReason,
       compose::ComposeFirstRunSessionCloseReason::kEndedImplicitly, 1);
 }
@@ -2071,7 +2078,7 @@ TEST_F(ChromeComposeClientTest, ComposeDialogStatesSeenUserActionsTest) {
 TEST_F(ChromeComposeClientTest, TestAutoCompose) {
   EnableAutoCompose();
   base::test::TestFuture<void> execute_model_future;
-  // Make model execution hang
+  // Make model execution hang.
   EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
 
@@ -2105,8 +2112,8 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
   SetSelection(words);
   ShowDialogAndBindMojo();
 
-  histograms().ExpectBucketCount(compose::kComposeDialogSelectionLength,
-                                 base::UTF16ToUTF8(words).size(), 1);
+  histograms().ExpectUniqueSample(compose::kComposeDialogSelectionLength,
+                                  base::UTF16ToUTF8(words).size(), 1);
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
@@ -2157,7 +2164,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeDisabled) {
 TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithPopup) {
   EnableAutoCompose();
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
-  SetSelection(u"a");  // too short to cause auto compose.
+  SetSelection(u"a");  // Too short to cause auto compose.
 
   ShowDialogAndBindMojo();
 
@@ -2180,7 +2187,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
   EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
 
-  SetSelection(u"a");  // too short to cause auto compose.
+  SetSelection(u"a");  // Too short to cause auto compose.
 
   ShowDialogAndBindMojo();
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
@@ -2384,12 +2391,12 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
   page_handler()->Compose("a user typed this", false);
 
   EXPECT_TRUE(compose_future.Wait());
-  // Reset future for second compose call.
+  // Reset future for second Compose call.
   compose_future.Clear();
 
   page_handler()->Compose("a user typed that", false);
 
-  // Ensure compose is finished before calling undo
+  // Ensure Compose is finished before calling undo
   EXPECT_TRUE(compose_future.Wait());
 
   base::test::TestFuture<compose::mojom::ComposeStatePtr> undo_future;
@@ -2500,7 +2507,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackPositive) {
   // Close UI to submit remaining quality logs.
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  // Get quality logs sent for the Compose Request
+  // Get quality logs sent for the Compose Request.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
       quality_test_future.Take();
 
@@ -2543,7 +2550,7 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityFeedbackNegative) {
   // Close UI to submit remaining quality logs.
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  // Get quality logs sent for the Compose Request
+  // Get quality logs sent for the Compose Request.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
       quality_test_future.Take();
 
@@ -2680,7 +2687,7 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   // Make sure the async call to CloseUI completes before navigating away.
   FlushMojo();
 
-  // Check Compose Session Event Counts
+  // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kDialogShown, 1);
@@ -2787,7 +2794,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
-  // Check Compose Session Event Counts
+  // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kDialogShown, 1);
@@ -2834,7 +2841,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
                 ComposeResponse(true, "Cucumbers")));
           })));
 
-  // Rewrite with Elaborate
+  // Rewrite with Elaborate.
   optimization_guide::proto::ComposeRequest request;
   request.mutable_rewrite_params()->set_previous_response("Cucumbers");
   request.mutable_rewrite_params()->set_length(
@@ -2849,7 +2856,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
                 ComposeResponse(true, "Tomatoes")));
           })));
 
-  // Rewrite with Shorten
+  // Rewrite with Shorten.
   request.mutable_rewrite_params()->set_previous_response("Tomatoes");
   request.mutable_rewrite_params()->set_length(
       optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
@@ -2903,7 +2910,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
-  // Check Compose Session Event Counts
+  // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kDialogShown, 1);
@@ -2966,7 +2973,7 @@ TEST_F(ChromeComposeClientTest, TestOfflineError) {
             test_future.SetValue(std::move(response));
           }));
 
-  // Go offline and then run Compose
+  // Go offline and then run Compose.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_NONE);
   page_handler()->Compose("a user typed this", false);
@@ -3044,7 +3051,7 @@ TEST_F(ChromeComposeClientTest, TestCloseReasonCanceledWhileWaiting) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            // a no op.
+            // This is a no-op.
           })));
 
   page_handler()->Compose("a user typed this", false);
@@ -3066,7 +3073,7 @@ TEST_F(ChromeComposeClientTest, TestCloseReasonCanceledWhileWaiting) {
 // tries to bind mojo without opening the dialog at a non Compose URL.
 TEST_F(ChromeComposeClientTest, NoStateCrashesAtOtherUrls) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
-  // We skip the dialog showing here, to validate that non special URLs check.
+  // We skip showing the dialog here to validate that non special URLs check.
   EXPECT_DEATH(BindMojo(), "");
 }
 
