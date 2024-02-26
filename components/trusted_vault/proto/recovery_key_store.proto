@@ -41,15 +41,11 @@ message VaultMetadata {
   }
   LskfType lskf_type = 1;
 
-  reserved 2, 3;
-
   enum HashType {
     HASH_TYPE_UNSPECIFIED = 0;
     SCRYPT = 3;
     PBKDF2_AES256_1234 = 4;
     SHA256_TOP_HALF = 5;
-
-    reserved 1, 2;
   }
   HashType hash_type = 4;
   bytes hash_salt = 5;
@@ -62,7 +58,6 @@ message ChromeOsMetadata {
 }
 
 message Vault {
-  string name = 1;
   VaultParameters vault_parameters = 2;
   // This contains a serialized VaultMetadata proto.
   bytes vault_metadata = 3;

@@ -204,13 +204,10 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
   return response;
 }
 
-std::string MakeVaultResponse(std::string name) {
+std::string MakeVaultResponse() {
   trusted_vault_pb::Vault vault;
-  vault.set_name(std::move(name));
-
-  std::string ret;
-  vault.SerializeToString(&ret);
-  return ret;
+  vault.mutable_vault_parameters()->set_vault_handle("test vault handle");
+  return vault.SerializeAsString();
 }
 
 std::unique_ptr<network::NetworkService> CreateNetwork(
@@ -627,7 +624,7 @@ TEST_F(EnclaveManagerTest, SetPIN) {
   url_loader_factory_.AddResponse(
       std::string(EnclaveManager::recovery_key_store_url_for_testing()) +
           "0?alt=proto",
-      MakeVaultResponse("123456"));
+      MakeVaultResponse());
 
   manager_.SetupWithPIN("123456");
   // For now there's nothing to check other than that this doesn't crash.
