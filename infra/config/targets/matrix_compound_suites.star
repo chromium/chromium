@@ -44,6 +44,7 @@ targets.legacy_matrix_compound_suite(
         "chromium_gtests": None,
         "chromium_gtests_for_devices_with_graphical_output": None,
         "fieldtrial_android_tests": None,
+        "jni_zero_sample_apk_test": None,
         "linux_flavor_specific_chromium_gtests": None,
         "minidump_uploader_tests": None,
         "system_webview_shell_instrumentation_tests": None,  # Not an experimental test

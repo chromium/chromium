@@ -2120,6 +2120,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.gtest_test(
+    name = "test_sample_jni_apk",
+)
+
+targets.tests.gtest_test(
     name = "test_serde_json_lenient",
 )
 

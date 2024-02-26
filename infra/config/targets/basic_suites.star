@@ -4314,6 +4314,16 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "jni_zero_sample_apk_test",
+    tests = {
+        "test_sample_jni_apk": targets.legacy_test_config(
+            ci_only = True,
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "model_validation_tests",
     tests = {
         "model_validation_tests": targets.legacy_test_config(

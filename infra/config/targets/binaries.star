@@ -1201,6 +1201,11 @@ targets.binaries.console_test_launcher(
     label = "//components/minidump_uploader:minidump_uploader_test",
 )
 
+targets.binaries.console_test_launcher(
+    name = "test_sample_jni_apk",
+    label = "//third_party/jni_zero/sample:test_sample_jni_apk",
+)
+
 targets.binaries.generated_script(
     name = "model_validation_tests",
     label = "//components/optimization_guide/internal/testing:model_validation_tests",
