@@ -343,6 +343,7 @@ std::optional<FormData> FindFormForContentEditable(
 // Returns a list of pairs of the filled elements and their autofill state
 // prior to the filling.
 std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
+    const blink::WebDocument& document,
     base::span<const FormFieldData::FillData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::FormActionType action_type,

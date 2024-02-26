@@ -282,6 +282,7 @@ FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
 }
 
 void ApplyFillFormAction(
+    const blink::WebDocument& document,
     base::span<const FormFieldData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::ActionPersistence action_persistence,
@@ -291,7 +292,7 @@ void ApplyFillFormAction(
   for (const FormFieldData& field : fields) {
     filling_fields.emplace_back(field);
   }
-  ApplyFormAction(filling_fields, initiating_element, action_type,
+  ApplyFormAction(document, filling_fields, initiating_element, action_type,
                   action_persistence,
                   *base::MakeRefCounted<FieldDataManager>());
 }
@@ -493,7 +494,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     }
 
     // Autofill the form using the given fill form function.
-    ApplyFillFormAction(form.fields, input_element, action_persistence);
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
+                        action_persistence);
 
     // Validate Autofill or Preview results.
     for (size_t i = 0; i < number_of_field_cases; ++i) {
@@ -851,7 +853,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -934,7 +936,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].value = u"Brother";
     form.fields[1].value = u"Jonathan";
     form.fields[2].value = u"brotherj@example.com";
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -1009,7 +1011,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].value = u"Wyatt";
     form.fields[1].value = u"Earp";
     form.fields[2].value = u"wyatt@example.com";
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -1095,7 +1097,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[unowned_offset + 0].is_autofilled = true;
     form.fields[unowned_offset + 1].is_autofilled = true;
     form.fields[unowned_offset + 2].is_autofilled = true;
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -1215,14 +1217,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kPreview);
     // The selection should be set after the second character.
     EXPECT_EQ(2u, input_element.SelectionStart());
     EXPECT_EQ(2u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -1362,14 +1364,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[3].is_autofilled = true;
     form.fields[4].is_autofilled = true;
     form.fields[5].is_autofilled = true;
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kPreview);
     // The selection should be set after the fifth character.
     EXPECT_EQ(5u, input_element.SelectionStart());
     EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -1527,14 +1529,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = false;
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kPreview);
     // The selection should be set after the fifth character.
     EXPECT_EQ(5u, input_element.SelectionStart());
     EXPECT_EQ(5u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -1644,14 +1646,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kPreview);
     // The selection should be set after the 19th character.
     EXPECT_EQ(19u, input_element.SelectionStart());
     EXPECT_EQ(19u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -1765,14 +1767,14 @@ class FormAutofillTest : public ChromeRenderViewTest {
     form.fields[0].is_autofilled = true;
     form.fields[1].is_autofilled = true;
     form.fields[2].is_autofilled = true;
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kPreview);
     // The selection should be set after the 19th character.
     EXPECT_EQ(19u, input_element.SelectionStart());
     EXPECT_EQ(19u, input_element.SelectionEnd());
 
     // Fill the form.
-    ApplyFillFormAction(form.fields, input_element,
+    ApplyFillFormAction(input_element.GetDocument(), form.fields, input_element,
                         mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
@@ -5086,7 +5088,7 @@ TEST_F(FormAutofillTest, UndoAutofill) {
   }
 
   form.fields = undo_fields;
-  ApplyFillFormAction(form.fields, text_element_1,
+  ApplyFillFormAction(text_element_1.GetDocument(), form.fields, text_element_1,
                       mojom::ActionPersistence::kFill,
                       mojom::FormActionType::kUndo);
   EXPECT_THAT(text_element_1,

@@ -423,6 +423,7 @@ FormFieldData* FindFieldByName(FormData& form_data,
 // non-null. `autofill_initiating_element` is the element which initiates the
 // autofill.
 void FillAndCheckState(
+    const WebDocument& document,
     const FormData& form_data,
     FieldDataManager& field_data_manager,
     const blink::WebFormControlElement& autofill_initiating_element,
@@ -453,8 +454,9 @@ void FillAndCheckState(
     fields_to_fill.emplace_back(field);
   }
   form_util::ApplyFormAction(
-      fields_to_fill, autofill_initiating_element, mojom::FormActionType::kFill,
-      mojom::ActionPersistence::kFill, field_data_manager);
+      document, fields_to_fill, autofill_initiating_element,
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+      field_data_manager);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
     EXPECT_EQ(field_to_fill.value, field_to_fill.element->Value().Utf16());
@@ -492,7 +494,7 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   auto select_element = GetFormControlElementById(doc, "select");
   auto selectlist_element = GetFormControlElementById(doc, "selectlist");
 
-  FillAndCheckState(forms.updated_forms[0], GetFieldDataManager(), text,
+  FillAndCheckState(doc, forms.updated_forms[0], GetFieldDataManager(), text,
                     {{raw_ref(text), u"test"},
                      {raw_ref(select_element), u"first"},
                      {raw_ref(selectlist_element), u"uno"}});
@@ -541,9 +543,10 @@ TEST_F(FormCacheBrowserTest,
       GetFormControlElementById(GetMainFrame()->GetDocument(), "fname");
 
   // Simulate filling the form using Autofill.
-  form_util::ApplyFormAction(
-      values_to_fill, fname, mojom::FormActionType::kFill,
-      mojom::ActionPersistence::kFill, GetFieldDataManager());
+  form_util::ApplyFormAction(GetMainFrame()->GetDocument(), values_to_fill,
+                             fname, mojom::FormActionType::kFill,
+                             mojom::ActionPersistence::kFill,
+                             GetFieldDataManager());
 
   // Simulate clearing the form.
   form_cache.ClearSectionWithElement(fname, GetFieldDataManager());

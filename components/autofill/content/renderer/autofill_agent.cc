@@ -634,17 +634,22 @@ void AutofillAgent::ApplyFormAction(mojom::FormActionType action_type,
     return;
   }
 
+  if (!unsafe_render_frame()) {
+    return;
+  }
+  WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
+
   ClearPreviewedForm();
 
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     previewed_elements_ = form_util::ApplyFormAction(
-        form.fields, last_queried_element, action_type, action_persistence,
-        field_data_manager());
+        document, form.fields, last_queried_element, action_type,
+        action_persistence, field_data_manager());
   } else {
     was_last_action_fill_ = true;
 
     std::vector<std::pair<FieldRef, WebAutofillState>> filled_fields =
-        form_util::ApplyFormAction(form.fields, last_queried_element,
+        form_util::ApplyFormAction(document, form.fields, last_queried_element,
                                    action_type, action_persistence,
                                    field_data_manager());
 

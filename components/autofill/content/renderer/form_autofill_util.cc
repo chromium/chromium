@@ -198,16 +198,6 @@ WebString GetAttribute(const WebElement& element) {
   return element.GetAttribute(GetWebString<attribute>());
 }
 
-bool IsElementInControlElementSet(
-    const WebElement& element,
-    const std::vector<WebFormControlElement>& control_elements) {
-  if (!element.IsFormControlElement())
-    return false;
-  const WebFormControlElement form_control_element =
-      element.To<WebFormControlElement>();
-  return base::Contains(control_elements, form_control_element);
-}
-
 // Returns true if |node| is an element and it is a container type that
 // InferLabelForElement() can traverse.
 bool IsTraversableContainerElement(const WebNode& node) {
@@ -1554,6 +1544,34 @@ std::vector<WebFormControlElement> GetUnownedFormControlElements(
   return form_control_elements;
 }
 
+// Calls SetPreventHighlightingOfAutofilledFields() on all form controls in the
+// document.
+//
+// The effect is that, if `prevent_highlighting == true`, already autofilled
+// values are not highlighted as such (with blue background). The intention is
+// during a preview to make the previewed fields stand out.
+void SetPreventHighlightingOfAutofilledFields(const WebDocument& document,
+                                              bool prevent_highlighting) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
+    return;
+  }
+  for (const WebFormElement& form :
+       base::FeatureList::IsEnabled(
+           blink::features::kAutofillIncludeFormElementsInShadowDom)
+           ? document.GetTopLevelForms()
+           : document.Forms()) {
+    for (WebFormControlElement& form_control : form.GetFormControlElements()) {
+      form_control.SetPreventHighlightingOfAutofilledFields(
+          prevent_highlighting);
+    }
+  }
+  for (WebFormControlElement& form_control :
+       document.UnassociatedFormControls()) {
+    form_control.SetPreventHighlightingOfAutofilledFields(prevent_highlighting);
+  }
+}
+
 }  // namespace
 
 std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
@@ -2209,6 +2227,7 @@ std::optional<FormData> FindFormForContentEditable(
 }
 
 std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
+    const WebDocument& document,
     base::span<const FormFieldData::FillData> fields,
     const WebFormControlElement& initiating_element,
     mojom::FormActionType action_type,
@@ -2216,13 +2235,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
     FieldDataManager& field_data_manager) {
   DCHECK(!initiating_element.IsNull());
 
-  WebFormElement form_element = GetOwningForm(initiating_element);
-  std::vector<WebFormControlElement> control_elements =
-      GetAutofillableFormControlElements(initiating_element.GetDocument(),
-                                         form_element);
-  if (!IsElementInControlElementSet(initiating_element, control_elements)) {
-    return {};
-  }
   // This is the focused element that led to the filling. It might not exist in
   // scenarios like refills where no element is focused, but if it is then it
   // needs special treatment. See intended behavior comment below.
@@ -2237,12 +2249,8 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
   // If this is a preview, prevent already autofilled fields from being
   // highlighted.
   if (action_type == mojom::FormActionType::kFill &&
-      action_persistence == mojom::ActionPersistence::kPreview &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-    for (auto& element : control_elements) {
-      element.SetPreventHighlightingOfAutofilledFields(true);
-    }
+      action_persistence == mojom::ActionPersistence::kPreview) {
+    SetPreventHighlightingOfAutofilledFields(document, true);
   }
 
   auto fill_or_preview =
@@ -2333,19 +2341,9 @@ void ClearPreviewedElements(
     base::span<std::pair<WebFormControlElement, WebAutofillState>>
         previewed_elements,
     const WebFormControlElement& initiating_element) {
-  if (action_type == mojom::FormActionType::kFill &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-    // If this is a synthetic form, get the unowned form elements. Otherwise,
-    // get all element associated with the form of the initiated field.
-    std::vector<WebFormControlElement> form_elements =
-        GetAutofillableFormControlElements(initiating_element.GetDocument(),
-                                           initiating_element.Form());
-
-    // Allow the highlighting of already autofilled fields again.
-    for (auto& element : form_elements) {
-      element.SetPreventHighlightingOfAutofilledFields(false);
-    }
+  if (action_type == mojom::FormActionType::kFill) {
+    SetPreventHighlightingOfAutofilledFields(initiating_element.GetDocument(),
+                                             false);
   }
   for (auto& [control_element, prior_autofill_state] : previewed_elements) {
     // We do not add null elements to `previewed_elements_` in AutofillAgent.
