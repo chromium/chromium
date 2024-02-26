@@ -81,3 +81,20 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateSelection) {
   RunSidePanelTest("side_panel/read_anything/rate_selection_test.js",
                    "mocha.run()");
 }
+
+// Integration tests that need the actual Read Aloud flag enabled because they
+// use the full C++ pipeline
+class ReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
+ protected:
+  ReadAloudMochaTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAloudMochaTest, ReadAloudLinksToggled) {
+  RunSidePanelTest("side_panel/read_anything/read_aloud_links_toggled.js",
+                   "mocha.run()");
+}

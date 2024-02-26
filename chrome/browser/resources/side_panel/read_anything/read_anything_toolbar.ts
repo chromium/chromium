@@ -84,9 +84,9 @@ const moreOptionsClass = '.more-options-icon';
 const activeClass = ' active';
 
 // Link toggle button constants.
-const LINKS_ENABLED_ICON = 'read-anything:links-enabled';
-const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
-const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
+export const LINKS_ENABLED_ICON = 'read-anything:links-enabled';
+export const LINKS_DISABLED_ICON = 'read-anything:links-disabled';
+export const LINK_TOGGLE_BUTTON_ID = 'link-toggle-button';
 
 const ReadAnythingToolbarElementBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
