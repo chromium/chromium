@@ -28,10 +28,13 @@
 namespace media {
 namespace {
 
-// Returns if kRasterInterfaceInVideoResourceUpdater is enabled
 bool CanUseRasterInterface() {
+#if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
       media::kRasterInterfaceInVideoResourceUpdater);
+#else
+  return true;
+#endif
 }
 
 bool UseMultiplanarSoftwarePixelUpload() {

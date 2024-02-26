@@ -63,11 +63,7 @@ BASE_FEATURE(kUseRasterDecoderForBrowserContext,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseRasterDecoderForBrowserContext() {
-  // Using raster decoder is only possible if VideoResourceUpdater is using
-  // RasterImplementation so check that first.
-  return base::FeatureList::IsEnabled(
-             media::kRasterInterfaceInVideoResourceUpdater) &&
-         base::FeatureList::IsEnabled(kUseRasterDecoderForBrowserContext);
+  return base::FeatureList::IsEnabled(kUseRasterDecoderForBrowserContext);
 }
 
 // The client id for the browser process. It must not conflict with any
