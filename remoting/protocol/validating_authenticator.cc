@@ -29,6 +29,7 @@ ValidatingAuthenticator::ValidatingAuthenticator(
   DCHECK(!remote_jid_.empty());
   DCHECK(validation_callback_);
   DCHECK(current_authenticator_);
+  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
 }
 
 ValidatingAuthenticator::~ValidatingAuthenticator() = default;

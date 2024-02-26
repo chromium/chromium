@@ -160,6 +160,8 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
     case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
       NOTREACHED();
   }
+
+  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
 }
 
 void NegotiatingClientAuthenticator::CreateSharedSecretAuthenticator(

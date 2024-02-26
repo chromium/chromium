@@ -16,6 +16,7 @@
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
+#include "remoting/protocol/session_authz_reauthorizer.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
@@ -31,19 +32,10 @@ class SessionAuthzAuthenticator : public Authenticator {
   static constexpr jingle_xmpp::StaticQName kSessionTokenTag = {
       remoting::kChromotingXmlNamespace, "session-token"};
 
-  using ReauthTokenReadyCallback =
-      base::OnceCallback<void(const std::string& session_id,
-                              const std::string& session_reauth_token,
-                              base::TimeDelta session_reauth_token_lifetime)>;
-
-  // |reauth_token_ready_callback|: Callback to be called once the reauth token
-  // is known by the authenticator. Note that this is NOT necessarily called
-  // after the authentication has finished. Please call state() to get the
-  // actual authentication state.
   SessionAuthzAuthenticator(
       std::unique_ptr<SessionAuthzServiceClient> service_client,
-      const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
-      ReauthTokenReadyCallback reauth_token_ready_callback);
+      const CreateBaseAuthenticatorCallback&
+          create_base_authenticator_callback);
   ~SessionAuthzAuthenticator() override;
 
   SessionAuthzAuthenticator(const SessionAuthzAuthenticator&) = delete;
@@ -111,11 +103,15 @@ class SessionAuthzAuthenticator : public Authenticator {
       std::unique_ptr<internal::VerifySessionTokenResponseStruct> response);
   void HandleSessionAuthzError(const std::string_view& action_name,
                                const ProtobufHttpStatus& status);
+  void StartReauthorizerIfNecessary();
+  void OnReauthorizationFailed();
 
   std::unique_ptr<SessionAuthzServiceClient> service_client_;
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
-  ReauthTokenReadyCallback reauth_token_ready_callback_;
   std::unique_ptr<Authenticator> underlying_;
+  std::unique_ptr<internal::VerifySessionTokenResponseStruct>
+      verify_token_response_;
+  std::unique_ptr<SessionAuthzReauthorizer> reauthorizer_;
 
   SessionAuthzState session_authz_state_ = SessionAuthzState::NOT_STARTED;
 

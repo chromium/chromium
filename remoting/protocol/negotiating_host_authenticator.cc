@@ -154,8 +154,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
           config_->session_authz_client_factory->Create(),
           base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
                               remote_id_, config_->local_cert,
-                              config_->key_pair),
-          base::DoNothing());
+                              config_->key_pair));
       authenticator->Start(std::move(resume_callback));
       current_authenticator_ = std::move(authenticator);
       break;
@@ -192,6 +191,8 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       std::move(resume_callback).Run();
       break;
   }
+
+  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
 }
 
 }  // namespace remoting::protocol

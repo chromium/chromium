@@ -103,6 +103,7 @@ class JingleSession : public Session {
                        ReplyCallback reply_callback);
   void OnTerminate(std::unique_ptr<JingleMessage> message,
                    ReplyCallback reply_callback);
+  void OnAuthenticatorStateChangeAfterAccepted();
 
   // Called from OnAccept() to initialize session config.
   bool InitializeConfigFromDescription(const ContentDescription* description);
