@@ -19,14 +19,14 @@ struct EmojiSearchEntry {
 };
 
 struct EmojiSearchResult {
-  EmojiSearchResult(std::vector<std::string> emojis,
-                    std::vector<std::string> symbols,
-                    std::vector<std::string> emoticons);
+  EmojiSearchResult(std::vector<EmojiSearchEntry> emojis,
+                    std::vector<EmojiSearchEntry> symbols,
+                    std::vector<EmojiSearchEntry> emoticons);
   ~EmojiSearchResult();
 
-  std::vector<std::string> emojis;
-  std::vector<std::string> symbols;
-  std::vector<std::string> emoticons;
+  std::vector<EmojiSearchEntry> emojis;
+  std::vector<EmojiSearchEntry> symbols;
+  std::vector<EmojiSearchEntry> emoticons;
 };
 
 class EmojiSearch {

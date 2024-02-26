@@ -5,13 +5,29 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_search_proxy.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "chromeos/ash/components/emoji/emoji_search.mojom.h"
 
 namespace ash {
+
+namespace {
+
+emoji_search::mojom::SearchResultsPtr SearchResultsFromEmojiSearchEntries(
+    std::vector<emoji::EmojiSearchEntry> entries) {
+  std::vector<std::string> strings;
+  strings.reserve(entries.size());
+  for (emoji::EmojiSearchEntry& entry : entries) {
+    strings.push_back(std::move(entry).emoji_string);
+  }
+  return emoji_search::mojom::SearchResults::New(std::move(strings));
+}
+
+}  // namespace
 
 EmojiSearchProxy::EmojiSearchProxy(
     mojo::PendingReceiver<emoji_search::mojom::EmojiSearch> receiver)
@@ -27,9 +43,9 @@ void EmojiSearchProxy::SearchEmoji(const std::string& query,
   CHECK(search_);
   emoji::EmojiSearchResult result = search_->SearchEmoji(query);
   std::move(callback).Run(
-      emoji_search::mojom::SearchResults::New(std::move(result.emojis)),
-      emoji_search::mojom::SearchResults::New(std::move(result.symbols)),
-      emoji_search::mojom::SearchResults::New(std::move(result.emoticons)));
+      SearchResultsFromEmojiSearchEntries(std::move(result.emojis)),
+      SearchResultsFromEmojiSearchEntries(std::move(result.symbols)),
+      SearchResultsFromEmojiSearchEntries(std::move(result.emoticons)));
 }
 
 }  // namespace ash

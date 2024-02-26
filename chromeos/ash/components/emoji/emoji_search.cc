@@ -136,7 +136,7 @@ std::unordered_map<std::string, double> GetResultsFromASingleWordQuery(
   return scored_emoji;
 }
 
-std::vector<std::string> GetResultsFromMap(
+std::vector<EmojiSearchEntry> GetResultsFromMap(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
     const std::string_view query) {
@@ -162,24 +162,22 @@ std::vector<std::string> GetResultsFromMap(
     }
   }
   std::erase_if(scored_emoji, [](auto elem) { return elem.second == 0.0; });
-  std::vector<std::string> ret;
-  for (const auto& emoji : scored_emoji) {
-    ret.push_back(emoji.first);
+  std::vector<EmojiSearchEntry> ret;
+  for (const auto& [emoji, weighting] : scored_emoji) {
+    ret.push_back({weighting, emoji});
   }
-  // TODO(b/309343774): Sort first then project rather than project then sort
-  // which should be faster.
   std::sort(ret.begin(), ret.end(),
-            [&scored_emoji](const std::string& a, const std::string& b) {
-              return scored_emoji.at(a) > scored_emoji.at(b);
+            [](const EmojiSearchEntry& a, const EmojiSearchEntry& b) {
+              return a.weighting > b.weighting;
             });
   return ret;
 }
 
 }  // namespace
 
-EmojiSearchResult::EmojiSearchResult(std::vector<std::string> emojis,
-                                     std::vector<std::string> symbols,
-                                     std::vector<std::string> emoticons)
+EmojiSearchResult::EmojiSearchResult(std::vector<EmojiSearchEntry> emojis,
+                                     std::vector<EmojiSearchEntry> symbols,
+                                     std::vector<EmojiSearchEntry> emoticons)
     : emojis(std::move(emojis)),
       symbols(std::move(symbols)),
       emoticons(std::move(emoticons)) {}
@@ -206,14 +204,14 @@ EmojiSearchResult EmojiSearch::SearchEmoji(const std::string_view query) {
 std::vector<std::string> EmojiSearch::AllResultsForTesting(
     const std::string& query) {
   std::vector<std::string> ret;
-  for (std::string& r : GetResultsFromMap(emojis_, query)) {
-    ret.push_back(std::move(r));
+  for (EmojiSearchEntry& r : GetResultsFromMap(emojis_, query)) {
+    ret.push_back(std::move(r).emoji_string);
   }
-  for (std::string& r : GetResultsFromMap(emoticons_, query)) {
-    ret.push_back(std::move(r));
+  for (EmojiSearchEntry& r : GetResultsFromMap(emoticons_, query)) {
+    ret.push_back(std::move(r).emoji_string);
   }
-  for (std::string& r : GetResultsFromMap(symbols_, query)) {
-    ret.push_back(std::move(r));
+  for (EmojiSearchEntry& r : GetResultsFromMap(symbols_, query)) {
+    ret.push_back(std::move(r).emoji_string);
   }
   return ret;
 }

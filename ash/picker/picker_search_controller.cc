@@ -47,8 +47,8 @@ constexpr int kMaxEmojiResults = 3;
 constexpr int kMaxSymbolResults = 2;
 constexpr int kMaxEmoticonResults = 2;
 
-base::span<const std::string> FirstNOrLessElements(
-    base::span<const std::string> container,
+base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
+    base::span<const emoji::EmojiSearchEntry> container,
     size_t n) {
   return container.subspan(0, std::min(container.size(), n));
 }
@@ -311,20 +311,20 @@ void PickerSearchController::HandleEmojiSearchResults(
   emoji_results_.reserve(kMaxEmojiResults + kMaxSymbolResults +
                          kMaxEmoticonResults);
 
-  for (const std::string& result :
+  for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
     emoji_results_.push_back(
-        PickerSearchResult::Emoji(base::UTF8ToUTF16(result)));
+        PickerSearchResult::Emoji(base::UTF8ToUTF16(result.emoji_string)));
   }
-  for (const std::string& result :
+  for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
     emoji_results_.push_back(
-        PickerSearchResult::Symbol(base::UTF8ToUTF16(result)));
+        PickerSearchResult::Symbol(base::UTF8ToUTF16(result.emoji_string)));
   }
-  for (const std::string& result :
+  for (const emoji::EmojiSearchEntry& result :
        FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
     emoji_results_.push_back(
-        PickerSearchResult::Emoticon(base::UTF8ToUTF16(result)));
+        PickerSearchResult::Emoticon(base::UTF8ToUTF16(result.emoji_string)));
   }
 }
 
