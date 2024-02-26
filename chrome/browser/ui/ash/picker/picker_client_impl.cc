@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -52,6 +54,8 @@ enum class AppListSearchResultType;
 namespace {
 
 constexpr int kMaxGifsToSearch = 4;
+constexpr base::span<std::string_view> kImageExtensions = {
+    (std::string_view[]){".jpg", ".jpeg", ".png", ".gif", ".webp"}};
 
 int AutocompleteProviderTypes() {
   return AutocompleteProvider::TYPE_BOOKMARK |
@@ -180,7 +184,22 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
         }
         break;
       }
-      case ash::AppListSearchResultType::kFileSearch:
+      case ash::AppListSearchResultType::kFileSearch: {
+        // TODO: b/322926411 - Move this filtering to the search provider.
+        bool is_image = false;
+        for (std::string_view extension : kImageExtensions) {
+          if (result->filePath().MatchesFinalExtension(extension)) {
+            is_image = true;
+            break;
+          }
+        }
+
+        if (is_image) {
+          picker_results.push_back(
+              ash::PickerSearchResult::Text(result->title()));
+        }
+        break;
+      }
       case ash::AppListSearchResultType::kDriveSearch:
         picker_results.push_back(
             ash::PickerSearchResult::Text(result->title()));
