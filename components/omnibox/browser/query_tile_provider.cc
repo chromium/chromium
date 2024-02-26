@@ -20,8 +20,9 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
-// The relevance score for query tile match.
-constexpr int kQueryTilesMatchRelevanceScore = 100;
+// The relevance score for query tile match. Dictates deduplication direction,
+// i.e.: suggestions are deduped to the item with a higher relevance.
+constexpr int kQueryTilesMatchRelevanceScore = 1600;
 
 QueryTileProvider::QueryTileProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener)
@@ -141,7 +142,7 @@ void QueryTileProvider::BuildSuggestions() {
     match.suggestion_group_id = omnibox::GROUP_MOBILE_QUERY_TILES;
     match.keyword = keyword;
     match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
-        base::ASCIIToUTF16(tile.query_text));
+        base::ASCIIToUTF16(base::ToLowerASCII(tile.query_text)));
     match.search_terms_args->additional_query_params =
         base::JoinString(tile.search_params, "&");
     if (!tile.image_metadatas.empty()) {
