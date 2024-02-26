@@ -138,7 +138,7 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // property is set by the root RenderWidget in the renderer process, then
   // propagated to child local frame roots via RenderFrameProxy/
   // CrossProcessFrameConnector.
-  std::vector<gfx::Rect> root_widget_window_segments;
+  std::vector<gfx::Rect> root_widget_viewport_segments;
 
   // Indicates whether a pinch gesture is currently active. Originates in the
   // main frame's renderer, and needs to be shared with subframes.

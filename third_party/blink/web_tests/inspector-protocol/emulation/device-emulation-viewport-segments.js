@@ -19,7 +19,7 @@
   await session.navigate('../resources/device-emulation.html');
 
   testRunner.log("No segments:");
-  testRunner.log(await session.evaluate(`dumpWindowSegments()`));
+  testRunner.log(await session.evaluate(`dumpViewportSegments()`));
 
   testRunner.log("Side-by-side segments");
   deviceMetrics.displayFeature = {
@@ -28,7 +28,7 @@
       maskLength: 20
   };
   await session.protocol.Emulation.setDeviceMetricsOverride(deviceMetrics);
-  testRunner.log(await session.evaluate(`dumpWindowSegments()`));
+  testRunner.log(await session.evaluate(`dumpViewportSegments()`));
 
   testRunner.log("Unspecified display feature with scale");
   delete deviceMetrics.displayFeature;
@@ -39,7 +39,7 @@
   deviceMetrics.width = 0;
   deviceMetrics.height = 0;
   await session.protocol.Emulation.setDeviceMetricsOverride(deviceMetrics);
-  testRunner.log(await session.evaluate(`dumpWindowSegments()`));
+  testRunner.log(await session.evaluate(`dumpViewportSegments()`));
 
   testRunner.log("Stacked segments");
   deviceMetrics.width = 800;
@@ -50,11 +50,11 @@
       maskLength: 20
   };
   await session.protocol.Emulation.setDeviceMetricsOverride(deviceMetrics);
-  testRunner.log(await session.evaluate(`dumpWindowSegments()`));
+  testRunner.log(await session.evaluate(`dumpViewportSegments()`));
 
   testRunner.log("Emulation disabled");
   await dp.Emulation.clearDeviceMetricsOverride();
-  testRunner.log(await session.evaluate(`dumpWindowSegments()`));
+  testRunner.log(await session.evaluate(`dumpViewportSegments()`));
 
   testRunner.completeTest();
 })

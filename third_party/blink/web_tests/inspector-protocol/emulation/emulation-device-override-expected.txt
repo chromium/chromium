@@ -32,7 +32,7 @@ Tests emulation of the user agent.
 {
     error : {
         code : -32602
-        message : Display feature window segments outside screen width
+        message : Display feature viewport segments outside screen width
     }
     id : <number>
     sessionId : <string>
@@ -46,7 +46,7 @@ Tests emulation of the user agent.
 {
     error : {
         code : -32602
-        message : Display feature window segments outside screen height
+        message : Display feature viewport segments outside screen height
     }
     id : <number>
     sessionId : <string>

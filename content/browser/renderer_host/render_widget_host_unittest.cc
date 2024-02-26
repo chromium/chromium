@@ -1184,7 +1184,7 @@ TEST_F(RenderWidgetHostTest, ScreenSizeInFullscreen) {
   EXPECT_EQ(kViewBounds.size(), props.new_size);
 }
 
-TEST_F(RenderWidgetHostTest, RootWindowSegments) {
+TEST_F(RenderWidgetHostTest, RootViewportSegments) {
   gfx::Rect screen_rect(0, 0, 800, 600);
   display::ScreenInfo screen_info;
   screen_info.rect = screen_rect;
@@ -1193,7 +1193,7 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
       display::mojom::ScreenOrientation::kPortraitPrimary;
   view_->SetScreenInfo(screen_info);
 
-  // Set a vertical display feature which must result in two window segments,
+  // Set a vertical display feature which must result in two viewport segments,
   // side-by-side.
   const int kDisplayFeatureLength = 20;
   DisplayFeature emulated_display_feature{
@@ -1211,18 +1211,18 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
 
   ClearVisualProperties();
 
-  // Run SynchronizeVisualProperties and validate the window segments sent to
+  // Run SynchronizeVisualProperties and validate the viewport segments sent to
   // the renderer are correct.
   EXPECT_TRUE(host_->SynchronizeVisualProperties());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
-  auto window_segments =
-      widget_.ReceivedVisualProperties().at(0).root_widget_window_segments;
-  EXPECT_EQ(window_segments.size(), 2u);
+  auto viewport_segments =
+      widget_.ReceivedVisualProperties().at(0).root_widget_viewport_segments;
+  EXPECT_EQ(viewport_segments.size(), 2u);
   gfx::Rect expected_first_rect(0, 0, 390, 600);
-  EXPECT_EQ(window_segments[0], expected_first_rect);
+  EXPECT_EQ(viewport_segments[0], expected_first_rect);
   gfx::Rect expected_second_rect(410, 0, 390, 600);
-  EXPECT_EQ(window_segments[1], expected_second_rect);
+  EXPECT_EQ(viewport_segments[1], expected_second_rect);
   ClearVisualProperties();
 
   // Setting a bottom inset (simulating virtual keyboard displaying on Aura)
@@ -1234,11 +1234,11 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
   host_->SynchronizeVisualPropertiesIgnoringPendingAck();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
-  auto inset_window_segments =
-      widget_.ReceivedVisualProperties().at(0).root_widget_window_segments;
-  EXPECT_EQ(inset_window_segments.size(), 2u);
-  EXPECT_EQ(inset_window_segments[0], expected_first_rect);
-  EXPECT_EQ(inset_window_segments[1], expected_second_rect);
+  auto inset_viewport_segments =
+      widget_.ReceivedVisualProperties().at(0).root_widget_viewport_segments;
+  EXPECT_EQ(inset_viewport_segments.size(), 2u);
+  EXPECT_EQ(inset_viewport_segments[0], expected_first_rect);
+  EXPECT_EQ(inset_viewport_segments[1], expected_second_rect);
   ClearVisualProperties();
 
   view_->SetInsets(gfx::Insets(0));
@@ -1251,13 +1251,13 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
   host_->SynchronizeVisualPropertiesIgnoringPendingAck();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
-  auto single_window_segments =
-      widget_.ReceivedVisualProperties().at(0).root_widget_window_segments;
-  EXPECT_EQ(single_window_segments.size(), 1u);
-  EXPECT_EQ(single_window_segments[0], gfx::Rect(0, 0, 800, 600));
+  auto single_viewport_segments =
+      widget_.ReceivedVisualProperties().at(0).root_widget_viewport_segments;
+  EXPECT_EQ(single_viewport_segments.size(), 1u);
+  EXPECT_EQ(single_viewport_segments[0], gfx::Rect(0, 0, 800, 600));
   ClearVisualProperties();
 
-  // Set a horizontal display feature which results in two window segments
+  // Set a horizontal display feature which results in two viewport segments
   // stacked on top of each other.
   emulated_display_feature = {
       DisplayFeature::Orientation::kHorizontal,
@@ -1268,13 +1268,13 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
   host_->SynchronizeVisualPropertiesIgnoringPendingAck();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
-  auto vertical_window_segments =
-      widget_.ReceivedVisualProperties().at(0).root_widget_window_segments;
-  EXPECT_EQ(vertical_window_segments.size(), 2u);
+  auto vertical_viewport_segments =
+      widget_.ReceivedVisualProperties().at(0).root_widget_viewport_segments;
+  EXPECT_EQ(vertical_viewport_segments.size(), 2u);
   expected_first_rect = gfx::Rect(0, 0, 800, 290);
-  EXPECT_EQ(vertical_window_segments[0], expected_first_rect);
+  EXPECT_EQ(vertical_viewport_segments[0], expected_first_rect);
   expected_second_rect = gfx::Rect(0, 310, 800, 290);
-  EXPECT_EQ(vertical_window_segments[1], expected_second_rect);
+  EXPECT_EQ(vertical_viewport_segments[1], expected_second_rect);
   ClearVisualProperties();
 
   // If the segments don't change, there should be no IPC message sent.

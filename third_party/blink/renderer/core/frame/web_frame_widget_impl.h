@@ -240,7 +240,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   mojom::blink::DisplayMode DisplayMode() const override;
   ui::WindowShowState WindowShowState() const override;
   bool Resizable() const override;
-  const WebVector<gfx::Rect>& WindowSegments() const override;
+  const WebVector<gfx::Rect>& ViewportSegments() const override;
   void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) final;
   void DidOverscroll(const gfx::Vector2dF& overscroll_delta,
@@ -664,7 +664,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void OverrideDevicePostureForEmulation(
       mojom::blink::DevicePostureType device_posture_param);
   void DisableDevicePostureOverrideForEmulation();
-  void SetWindowSegments(const std::vector<gfx::Rect>& window_segments);
+  void SetViewportSegments(const std::vector<gfx::Rect>& viewport_segments);
   viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
                                          gfx::PointF* local_point);
 
@@ -1058,7 +1058,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   ui::WindowShowState window_show_state_;
   bool resizable_;
 
-  WebVector<gfx::Rect> window_segments_;
+  WebVector<gfx::Rect> viewport_segments_;
 
   // This is owned by the LayerTreeHostImpl, and should only be used on the
   // compositor thread, so we keep the TaskRunner where you post tasks to

@@ -211,9 +211,10 @@ class WebFrameWidget : public WebWidget {
   // Override the device scale factor for testing.
   virtual void SetDeviceScaleFactorForTesting(float factor) = 0;
 
-  // Get the window segments for this widget.
-  // See https://github.com/webscreens/window-segments/blob/master/EXPLAINER.md
-  virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;
+  // Get the viewport segments for this widget.
+  // See
+  // https://github.com/WICG/visual-viewport/blob/gh-pages/segments-explainer/SEGMENTS-EXPLAINER.md
+  virtual const WebVector<gfx::Rect>& ViewportSegments() const = 0;
 
   // Release any mouse lock or pointer capture held. This is used to reset
   // state between WebTest runs.

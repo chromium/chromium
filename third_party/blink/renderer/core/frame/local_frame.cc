@@ -1548,15 +1548,15 @@ void LocalFrame::MediaQueryAffectingValueChangedForLocalSubtree(
   }
 }
 
-void LocalFrame::WindowSegmentsChanged(
-    const WebVector<gfx::Rect>& window_segments) {
+void LocalFrame::ViewportSegmentsChanged(
+    const WebVector<gfx::Rect>& viewport_segments) {
   if (!RuntimeEnabledFeatures::ViewportSegmentsEnabled()) {
     return;
   }
 
   DCHECK(IsLocalRoot());
 
-  // A change in the window segments requires re-evaluation of media queries
+  // A change in the viewport segments requires re-evaluation of media queries
   // for the local frame subtree (the segments affect the
   // "horizontal-viewport-segments" and "vertical-viewport-segments" features).
   MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange::kOther);
@@ -1570,31 +1570,31 @@ void LocalFrame::WindowSegmentsChanged(
         .RebuildFullscreenRuleSetIfMediaQueriesChanged(*fullscreen);
   }
 
-  // Also need to update the environment variables related to window segments.
-  UpdateViewportSegmentCSSEnvironmentVariables(window_segments);
+  // Also need to update the environment variables related to viewport segments.
+  UpdateViewportSegmentCSSEnvironmentVariables(viewport_segments);
 }
 
 void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
-    const WebVector<gfx::Rect>& window_segments) {
+    const WebVector<gfx::Rect>& viewport_segments) {
   DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
 
   // Update the variable values on the root instance so that documents that
   // are created after the values change automatically have the right values.
   UpdateViewportSegmentCSSEnvironmentVariables(
-      StyleEnvironmentVariables::GetRootInstance(), window_segments);
+      StyleEnvironmentVariables::GetRootInstance(), viewport_segments);
 
   if (Element* fullscreen = Fullscreen::FullscreenElementFrom(*GetDocument())) {
     // Fullscreen has its own document so we need to update its variables as
     // well.
     UpdateViewportSegmentCSSEnvironmentVariables(
         fullscreen->GetDocument().GetStyleEngine().EnsureEnvironmentVariables(),
-        window_segments);
+        viewport_segments);
   }
 }
 
 void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
     StyleEnvironmentVariables& vars,
-    const WebVector<gfx::Rect>& window_segments) {
+    const WebVector<gfx::Rect>& viewport_segments) {
   // Unset all variables, since they will be set as a whole by the code below.
   // Since the number and configurations of the segments can change, and
   // removing variables clears all values that have previously been set,
@@ -1612,26 +1612,26 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
   }
 
   // Per [css-env-1], only set the segment variables if there is more than one.
-  if (window_segments.size() >= 2) {
+  if (viewport_segments.size() >= 2) {
     // Iterate the segments in row-major order, setting the segment variables
     // based on x and y index.
-    int current_y_position = window_segments[0].y();
+    int current_y_position = viewport_segments[0].y();
     unsigned x_index = 0;
     unsigned y_index = 0;
-    SetViewportSegmentVariablesForRect(vars, window_segments[0], x_index,
+    SetViewportSegmentVariablesForRect(vars, viewport_segments[0], x_index,
                                        y_index);
-    for (size_t i = 1; i < window_segments.size(); i++) {
-      if (window_segments[i].y() == current_y_position) {
+    for (size_t i = 1; i < viewport_segments.size(); i++) {
+      if (viewport_segments[i].y() == current_y_position) {
         x_index++;
-        SetViewportSegmentVariablesForRect(vars, window_segments[i], x_index,
+        SetViewportSegmentVariablesForRect(vars, viewport_segments[i], x_index,
                                            y_index);
       } else {
         // If there is a different y value, this is the next row so increase
         // y index and start again from 0 for x.
         y_index++;
         x_index = 0;
-        current_y_position = window_segments[i].y();
-        SetViewportSegmentVariablesForRect(vars, window_segments[i], x_index,
+        current_y_position = viewport_segments[i].y();
+        SetViewportSegmentVariablesForRect(vars, viewport_segments[i], x_index,
                                            y_index);
       }
     }

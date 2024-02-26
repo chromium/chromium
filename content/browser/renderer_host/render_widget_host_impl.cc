@@ -1073,7 +1073,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   }
   visual_properties.visible_viewport_size = viewport;
 
-  // The root widget's window segments are computed here - child frames just
+  // The root widget's viewport segments are computed here - child frames just
   // use the value provided from the parent.
   if (is_top_most_widget) {
     std::optional<DisplayFeature> display_feature = view_->GetDisplayFeature();
@@ -1085,17 +1085,17 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
               : visual_properties.browser_controls_params
                     .top_controls_min_height;
       float dip_scale = 1 / GetDeviceScaleFactor();
-      visual_properties.root_widget_window_segments =
-          display_feature->ComputeWindowSegments(
+      visual_properties.root_widget_viewport_segments =
+          display_feature->ComputeViewportSegments(
               visual_properties.visible_viewport_size,
               top_controls_height * dip_scale);
     } else {
-      visual_properties.root_widget_window_segments = {
+      visual_properties.root_widget_viewport_segments = {
           gfx::Rect(visual_properties.visible_viewport_size)};
     }
   } else {
-    visual_properties.root_widget_window_segments =
-        properties_from_parent_local_root_.root_widget_window_segments;
+    visual_properties.root_widget_viewport_segments =
+        properties_from_parent_local_root_.root_widget_viewport_segments;
   }
 
   visual_properties.capture_sequence_number = view_->GetCaptureSequenceNumber();
@@ -2389,7 +2389,7 @@ void RenderWidgetHostImpl::SetVisualPropertiesFromParentFrame(
     bool is_pinch_gesture_active,
     const gfx::Size& visible_viewport_size,
     const gfx::Rect& compositor_viewport,
-    std::vector<gfx::Rect> root_widget_window_segments) {
+    std::vector<gfx::Rect> root_widget_viewport_segments) {
   properties_from_parent_local_root_.page_scale_factor = page_scale_factor;
   properties_from_parent_local_root_.compositing_scale_factor =
       compositing_scale_factor;
@@ -2398,8 +2398,8 @@ void RenderWidgetHostImpl::SetVisualPropertiesFromParentFrame(
   properties_from_parent_local_root_.visible_viewport_size =
       visible_viewport_size;
   properties_from_parent_local_root_.compositor_viewport = compositor_viewport;
-  properties_from_parent_local_root_.root_widget_window_segments =
-      std::move(root_widget_window_segments);
+  properties_from_parent_local_root_.root_widget_viewport_segments =
+      std::move(root_widget_viewport_segments);
 }
 
 void RenderWidgetHostImpl::SetAutoResize(bool enable,
@@ -2828,8 +2828,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.cursor_accessibility_scale_factor ||
          old_visual_properties->is_pinch_gesture_active !=
              new_visual_properties.is_pinch_gesture_active ||
-         old_visual_properties->root_widget_window_segments !=
-             new_visual_properties.root_widget_window_segments ||
+         old_visual_properties->root_widget_viewport_segments !=
+             new_visual_properties.root_widget_viewport_segments ||
          old_visual_properties->window_controls_overlay_rect !=
              new_visual_properties.window_controls_overlay_rect;
 }

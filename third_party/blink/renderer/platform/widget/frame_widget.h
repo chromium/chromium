@@ -122,8 +122,8 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns the CanResize value of the widget.
   virtual bool Resizable() const = 0;
 
-  // Returns the window segments for the widget.
-  virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;
+  // Returns the viewport segments for the widget.
+  virtual const WebVector<gfx::Rect>& ViewportSegments() const = 0;
 
   // Sets the ink metadata on the layer tree host
   virtual void SetDelegatedInkMetadata(

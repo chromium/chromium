@@ -21,7 +21,8 @@ bool StructTraits<blink::mojom::FrameVisualPropertiesDataView,
       !data.ReadCompositorViewport(&out->compositor_viewport) ||
       !data.ReadRectInLocalRoot(&out->rect_in_local_root) ||
       !data.ReadLocalFrameSize(&out->local_frame_size) ||
-      !data.ReadRootWidgetWindowSegments(&out->root_widget_window_segments) ||
+      !data.ReadRootWidgetViewportSegments(
+          &out->root_widget_viewport_segments) ||
       !data.ReadLocalSurfaceId(&out->local_surface_id) ||
       data.page_scale_factor() <= 0 || data.compositing_scale_factor() <= 0 ||
       data.cursor_accessibility_scale_factor() < 1.f) {

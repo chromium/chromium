@@ -701,7 +701,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       bool is_pinch_gesture_active,
       const gfx::Size& visible_viewport_size,
       const gfx::Rect& compositor_viewport,
-      std::vector<gfx::Rect> root_widget_window_segments);
+      std::vector<gfx::Rect> root_widget_viewport_segments);
 
   // Indicates if the render widget host should track the render widget's size
   // as opposed to visa versa.
@@ -1366,7 +1366,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
     // The logical segments of the root widget, in DIPs relative to the root
     // RenderWidgetHost.
-    std::vector<gfx::Rect> root_widget_window_segments;
+    std::vector<gfx::Rect> root_widget_viewport_segments;
   } properties_from_parent_local_root_;
 
   bool waiting_for_screen_rects_ack_ = false;

@@ -60,7 +60,7 @@ struct FrameVisualProperties {
   // property is set by the root RenderWidget in the renderer process, then
   // propagated to child local frame roots via RenderFrameProxy/
   // CrossProcessFrameConnector.
-  array<gfx.mojom.Rect> root_widget_window_segments;
+  array<gfx.mojom.Rect> root_widget_viewport_segments;
 
   // The rect of compositor's viewport in pixels. Note that for top level
   // widgets this is roughly the DSF scaled new_size put into a rect. For child

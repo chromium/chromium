@@ -1777,7 +1777,7 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
     }
   }
 
-  SetWindowSegments(visual_properties.root_widget_window_segments);
+  SetViewportSegments(visual_properties.root_widget_viewport_segments);
 
   widget_base_->UpdateSurfaceAndScreenInfo(
       visual_properties.local_surface_id.value_or(viz::LocalSurfaceId()),
@@ -1916,8 +1916,8 @@ bool WebFrameWidgetImpl::Resizable() const {
   return resizable_;
 }
 
-const WebVector<gfx::Rect>& WebFrameWidgetImpl::WindowSegments() const {
-  return window_segments_;
+const WebVector<gfx::Rect>& WebFrameWidgetImpl::ViewportSegments() const {
+  return viewport_segments_;
 }
 
 bool WebFrameWidgetImpl::StartDeferringCommits(base::TimeDelta timeout,
@@ -2744,17 +2744,18 @@ void WebFrameWidgetImpl::DisableDevicePostureOverrideForEmulation() {
   frame->DisableDevicePostureOverrideForEmulation();
 }
 
-void WebFrameWidgetImpl::SetWindowSegments(
-    const std::vector<gfx::Rect>& window_segments_param) {
-  WebVector<gfx::Rect> window_segments(window_segments_param);
-  if (!window_segments_.Equals(window_segments)) {
-    window_segments_ = window_segments;
+void WebFrameWidgetImpl::SetViewportSegments(
+    const std::vector<gfx::Rect>& viewport_segments_param) {
+  WebVector<gfx::Rect> viewport_segments(viewport_segments_param);
+  if (!viewport_segments_.Equals(viewport_segments)) {
+    viewport_segments_ = viewport_segments;
     LocalFrame* frame = LocalRootImpl()->GetFrame();
-    frame->WindowSegmentsChanged(window_segments_);
+    frame->ViewportSegmentsChanged(viewport_segments_);
 
     ForEachRemoteFrameControlledByWidget(
-        [&window_segments = window_segments_param](RemoteFrame* remote_frame) {
-          remote_frame->DidChangeRootWindowSegments(window_segments);
+        [&viewport_segments =
+             viewport_segments_param](RemoteFrame* remote_frame) {
+          remote_frame->DidChangeRootViewportSegments(viewport_segments);
         });
   }
 }

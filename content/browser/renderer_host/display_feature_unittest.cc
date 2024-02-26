@@ -20,15 +20,15 @@ TEST_F(DisplayFeatureTest, ViewportSegmentsWithEmptyTopBrowserControls) {
       /*mask_length*/ 0, /*screen_width*/ 400,
       /*screen_height*/ 400, &error);
   EXPECT_TRUE(feature);
-  std::vector<gfx::Rect> segments = feature->ComputeWindowSegments(
+  std::vector<gfx::Rect> segments = feature->ComputeViewportSegments(
       gfx::Size(400, 400), /*top_controls_height*/ 0);
   EXPECT_EQ(segments.size(), 2u);
   EXPECT_EQ(gfx::Rect(0, 0, 400, 200), segments[0]);
   EXPECT_EQ(gfx::Rect(0, 200, 400, 200), segments[1]);
 
   feature->orientation = DisplayFeature::Orientation::kVertical;
-  segments = feature->ComputeWindowSegments(gfx::Size(400, 400),
-                                            /*top_controls_height*/ 0);
+  segments = feature->ComputeViewportSegments(gfx::Size(400, 400),
+                                              /*top_controls_height*/ 0);
   EXPECT_EQ(gfx::Rect(0, 0, 200, 400), segments[0]);
   EXPECT_EQ(gfx::Rect(200, 0, 200, 400), segments[1]);
 }
@@ -40,15 +40,15 @@ TEST_F(DisplayFeatureTest, ViewportSegmentsWithTopBrowserControls) {
       /*mask_length*/ 0, /*screen_width*/ 400,
       /*screen_height*/ 400, &error);
   EXPECT_TRUE(feature);
-  std::vector<gfx::Rect> segments = feature->ComputeWindowSegments(
+  std::vector<gfx::Rect> segments = feature->ComputeViewportSegments(
       gfx::Size(400, 400), /*top_controls_height*/ 100);
   EXPECT_EQ(segments.size(), 2u);
   EXPECT_EQ(gfx::Rect(0, 0, 400, 100), segments[0]);
   EXPECT_EQ(gfx::Rect(0, 100, 400, 300), segments[1]);
 
   feature->orientation = DisplayFeature::Orientation::kVertical;
-  segments = feature->ComputeWindowSegments(gfx::Size(400, 400),
-                                            /*top_controls_height*/ 100);
+  segments = feature->ComputeViewportSegments(gfx::Size(400, 400),
+                                              /*top_controls_height*/ 100);
   EXPECT_EQ(gfx::Rect(0, 0, 200, 400), segments[0]);
   EXPECT_EQ(gfx::Rect(200, 0, 200, 400), segments[1]);
 }
@@ -60,13 +60,13 @@ TEST_F(DisplayFeatureTest, ViewportSegmentsWithTooBigBrowserControls) {
       /*mask_length*/ 0, /*screen_width*/ 400,
       /*screen_height*/ 400, &error);
   EXPECT_TRUE(feature);
-  std::vector<gfx::Rect> segments = feature->ComputeWindowSegments(
+  std::vector<gfx::Rect> segments = feature->ComputeViewportSegments(
       gfx::Size(400, 400), /*top_controls_height*/ 400);
   EXPECT_TRUE(segments.empty());
 
   feature->orientation = DisplayFeature::Orientation::kVertical;
-  segments = feature->ComputeWindowSegments(gfx::Size(400, 400),
-                                            /*top_controls_height*/ 100);
+  segments = feature->ComputeViewportSegments(gfx::Size(400, 400),
+                                              /*top_controls_height*/ 400);
   EXPECT_EQ(gfx::Rect(0, 0, 200, 400), segments[0]);
   EXPECT_EQ(gfx::Rect(200, 0, 200, 400), segments[1]);
 }

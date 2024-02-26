@@ -202,7 +202,7 @@ std::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments() const {
   }
 
   WebVector<gfx::Rect> web_segments =
-      frame->GetWidgetForLocalRoot()->WindowSegments();
+      frame->GetWidgetForLocalRoot()->ViewportSegments();
 
   // If there is a single segment, return null as authors should use other
   // properties on VisualViewport to determine the size.

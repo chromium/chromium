@@ -111,9 +111,9 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.cursor_accessibility_scale_factor;
   }
 
-  static const std::vector<gfx::Rect>& root_widget_window_segments(
+  static const std::vector<gfx::Rect>& root_widget_viewport_segments(
       const blink::VisualProperties& r) {
-    return r.root_widget_window_segments;
+    return r.root_widget_viewport_segments;
   }
 
   static bool is_pinch_gesture_active(const blink::VisualProperties& r) {

@@ -435,12 +435,12 @@ class CORE_EXPORT LocalFrame final
   // media query value changed.
   void MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange);
 
-  void WindowSegmentsChanged(const WebVector<gfx::Rect>& window_segments);
+  void ViewportSegmentsChanged(const WebVector<gfx::Rect>& viewport_segments);
   void UpdateViewportSegmentCSSEnvironmentVariables(
-      const WebVector<gfx::Rect>& window_segments);
+      const WebVector<gfx::Rect>& viewport_segments);
   void UpdateViewportSegmentCSSEnvironmentVariables(
       StyleEnvironmentVariables& vars,
-      const WebVector<gfx::Rect>& window_segments);
+      const WebVector<gfx::Rect>& viewport_segments);
 
   void OverrideDevicePostureForEmulation(
       mojom::blink::DevicePostureType device_posture_param);

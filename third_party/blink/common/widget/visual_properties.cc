@@ -34,7 +34,7 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          compositing_scale_factor == other.compositing_scale_factor &&
          cursor_accessibility_scale_factor ==
              other.cursor_accessibility_scale_factor &&
-         root_widget_window_segments == other.root_widget_window_segments &&
+         root_widget_viewport_segments == other.root_widget_viewport_segments &&
          is_pinch_gesture_active == other.is_pinch_gesture_active &&
          window_controls_overlay_rect == other.window_controls_overlay_rect &&
          window_show_state == other.window_show_state &&

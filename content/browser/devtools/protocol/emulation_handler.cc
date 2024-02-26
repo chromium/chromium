@@ -582,10 +582,10 @@ Response EmulationHandler::SetDeviceMetricsOverride(
           return Response::InvalidParams("Negative display feature parameters");
         case content::DisplayFeature::ParamErrorEnum::kOutsideScreenWidth:
           return Response::InvalidParams(
-              "Display feature window segments outside screen width");
+              "Display feature viewport segments outside screen width");
         case content::DisplayFeature::ParamErrorEnum::kOutsideScreenHeight:
           return Response::InvalidParams(
-              "Display feature window segments outside screen height");
+              "Display feature viewport segments outside screen height");
       }
     }
   }
@@ -606,8 +606,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   params.screen_orientation_angle = orientationAngle;
 
   if (content_display_feature) {
-    params.window_segments =
-        content_display_feature->ComputeWindowSegments(params.view_size);
+    params.viewport_segments =
+        content_display_feature->ComputeViewportSegments(params.view_size);
   }
 
   if (device_posture.has_value()) {

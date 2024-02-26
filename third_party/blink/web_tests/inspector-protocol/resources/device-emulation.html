@@ -94,16 +94,16 @@ function dumpDevicePosture() {
   return output.join("\n");
 }
 
-function dumpWindowSegments() {
+function dumpViewportSegments() {
     let output = [];
     output.push("Main frame segments:");
-    output = output.concat(dumpWindowSegmentsForWindow(this));
+  output = output.concat(dumpViewportSegmentsForWindow(this));
     output.push("Iframe segments:");
-    output = output.concat(dumpWindowSegmentsForWindow(window.frames[0]));
+  output = output.concat(dumpViewportSegmentsForWindow(window.frames[0]));
     return output.join("\n");
 }
 
-function dumpWindowSegmentsForWindow(window_object) {
+function dumpViewportSegmentsForWindow(window_object) {
     let output = [];
     let segments = window_object.visualViewport.segments;
     output.push(segments ? segments.length : 0);

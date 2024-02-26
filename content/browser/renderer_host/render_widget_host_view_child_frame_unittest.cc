@@ -292,7 +292,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
   visual_properties.local_frame_size = compositor_viewport_pixel_rect.size();
   visual_properties.capture_sequence_number = 123u;
   visual_properties.local_surface_id = local_surface_id;
-  visual_properties.root_widget_window_segments.emplace_back(1, 2, 3, 4);
+  visual_properties.root_widget_viewport_segments.emplace_back(1, 2, 3, 4);
 
   base::RunLoop().RunUntilIdle();
   widget_.ClearVisualProperties();
@@ -310,9 +310,9 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
     EXPECT_EQ(rect_in_local_root.size(), sent_visual_properties.new_size);
     EXPECT_EQ(local_surface_id, sent_visual_properties.local_surface_id);
     EXPECT_EQ(123u, sent_visual_properties.capture_sequence_number);
-    EXPECT_EQ(1u, sent_visual_properties.root_widget_window_segments.size());
+    EXPECT_EQ(1u, sent_visual_properties.root_widget_viewport_segments.size());
     EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
-              sent_visual_properties.root_widget_window_segments[0]);
+              sent_visual_properties.root_widget_viewport_segments[0]);
   }
 }
 

@@ -57,8 +57,8 @@ struct DeviceEmulationParams {
   // Screen orientation angle, used together with screenOrientationType.
   uint32_t screen_orientation_angle = 0;
 
-  // Screen window segments dimensions.
-  std::vector<gfx::Rect> window_segments;
+  // Screen viewport segments dimensions.
+  std::vector<gfx::Rect> viewport_segments;
 
   // Device posture, the default is "continuous".
   mojom::DevicePostureType device_posture =
@@ -77,7 +77,7 @@ inline bool operator==(const DeviceEmulationParams& a,
          a.screen_orientation_angle == b.screen_orientation_angle &&
          a.viewport_offset == b.viewport_offset &&
          a.viewport_scale == b.viewport_scale &&
-         a.window_segments == b.window_segments &&
+         a.viewport_segments == b.viewport_segments &&
          a.device_posture == b.device_posture;
 }
 

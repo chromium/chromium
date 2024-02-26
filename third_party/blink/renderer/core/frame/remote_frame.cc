@@ -964,8 +964,8 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
           pending_visual_properties_.visible_viewport_size ||
       sent_visual_properties_->compositor_viewport !=
           pending_visual_properties_.compositor_viewport ||
-      sent_visual_properties_->root_widget_window_segments !=
-          pending_visual_properties_.root_widget_window_segments ||
+      sent_visual_properties_->root_widget_viewport_segments !=
+          pending_visual_properties_.root_widget_viewport_segments ||
       sent_visual_properties_->capture_sequence_number !=
           pending_visual_properties_.capture_sequence_number;
 
@@ -1052,10 +1052,10 @@ void RemoteFrame::ZoomLevelChanged(double zoom_level) {
   SynchronizeVisualProperties();
 }
 
-void RemoteFrame::DidChangeRootWindowSegments(
-    const std::vector<gfx::Rect>& root_widget_window_segments) {
-  pending_visual_properties_.root_widget_window_segments =
-      std::move(root_widget_window_segments);
+void RemoteFrame::DidChangeRootViewportSegments(
+    const std::vector<gfx::Rect>& root_widget_viewport_segments) {
+  pending_visual_properties_.root_widget_viewport_segments =
+      std::move(root_widget_viewport_segments);
   SynchronizeVisualProperties();
 }
 
