@@ -302,6 +302,12 @@ void ArcPowerBridge::ScreenBrightnessChanged(
 
 void ArcPowerBridge::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
+  // ARCVM doesn't use this message, since it gets the corresponding
+  // information from crosvm's goldfish battery device.
+  if (arc::IsArcVmEnabled()) {
+    return;
+  }
+
   mojom::PowerInstance* power_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->power(), PowerSupplyInfoChanged);
   if (!power_instance)
