@@ -1245,13 +1245,16 @@ void BrowserAutofillManager::FillOrPreviewField(
                                    form_structure, autofill_field, value,
                                    popup_item_id);
   if (action_persistence == mojom::ActionPersistence::kFill) {
+    const FormFieldData* const_field = &field;
     const AutofillField* const_autofill_field = autofill_field;
     if (popup_item_id == PopupItemId::kAddressFieldByFieldFilling) {
       address_form_event_logger_->RecordFillingOperation(
-          form.global_id(), base::make_span(&const_autofill_field, 1u));
+          form.global_id(), base::make_span(&const_field, 1u),
+          base::make_span(&const_autofill_field, 1u));
     } else if (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling) {
       credit_card_form_event_logger_->RecordFillingOperation(
-          form.global_id(), base::make_span(&const_autofill_field, 1u));
+          form.global_id(), base::make_span(&const_field, 1u),
+          base::make_span(&const_autofill_field, 1u));
     }
   }
 }
@@ -1980,7 +1983,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                                                   form_structure);
     } else {
       credit_card_form_event_logger_->RecordFillingOperation(
-          form_structure.global_id(), safe_filled_autofill_fields);
+          form_structure.global_id(), safe_filled_fields,
+          safe_filled_autofill_fields);
       // The originally selected masked card is `credit_card_`. So we must log
       // `credit_card_` as opposed to
       // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
@@ -2000,7 +2004,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                                                 form_structure);
       } else {
         address_form_event_logger_->RecordFillingOperation(
-            form_structure.global_id(), safe_filled_autofill_fields);
+            form_structure.global_id(), safe_filled_fields,
+            safe_filled_autofill_fields);
         address_form_event_logger_->OnDidFillFormFillingSuggestion(
             *absl::get<const AutofillProfile*>(profile_or_credit_card),
             form_structure, trigger_autofill_field, signin_state_for_metrics_,
@@ -2008,7 +2013,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       }
     } else if (!is_refill) {
       address_form_event_logger_->RecordFillingOperation(
-          form_structure.global_id(), safe_filled_autofill_fields);
+          form_structure.global_id(), safe_filled_fields,
+          safe_filled_autofill_fields);
       autocomplete_unrecognized_fallback_logger_
           ->OnDidFillFormFillingSuggestion();
     }
