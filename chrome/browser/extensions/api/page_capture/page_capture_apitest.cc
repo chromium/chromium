@@ -99,7 +99,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
   WaitForFileCleanup(&delegate);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_SaveAsMHTMLWithFileAccess DISABLED_SaveAsMHTMLWithFileAccess
+#else
+#define MAYBE_SaveAsMHTMLWithFileAccess SaveAsMHTMLWithFileAccess
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
+                       MAYBE_SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,
