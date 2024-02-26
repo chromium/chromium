@@ -46,7 +46,7 @@
           },
           {
             "name":"document_idle",
-            "description": "The browser chooses a time to inject the script between \"document_end\" and immediately after the window.onload event fires. The exact moment of injection depends on how complex the document is and how long it is taking to load, and is optimized for page load speed. Content scripts running at \"document_idle\" do not need to listen for the window.onload event; they are guaranteed to run after the DOM is complete. If a script definitely needs to run after window.onload, the extension can check if onload has already fired by using the document.readyState property."
+            "description": "The browser chooses a time to inject the script between \"document_end\" and immediately after the <code>window.onload</code> event fires. The exact moment of injection depends on how complex the document is and how long it is taking to load, and is optimized for page load speed. Content scripts running at \"document_idle\" don't need to listen for the <code>window.onload</code> event; they are guaranteed to run after the DOM completes. If a script definitely needs to run after <code>window.onload</code>, the extension can check if <code>onload</code> has already fired by using the <code>document.readyState</code> property."
           }
         ],
         "description": "The soonest that the JavaScript or CSS will be injected into the tab."
