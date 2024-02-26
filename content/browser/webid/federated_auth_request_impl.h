@@ -388,8 +388,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::optional<IdpNetworkRequestManager::FedCmErrorUrlType>
           error_url_type);
 
-  RpMode GetRpMode() const { return rp_mode_; }
-
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 
