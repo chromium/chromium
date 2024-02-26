@@ -52,6 +52,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
@@ -63,6 +64,7 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -178,6 +180,7 @@ public class PageInsightsMediatorTest {
     @Captor private ArgumentCaptor<Callback<Tab>> mTabObservableCallback;
 
     private ShadowLooper mShadowLooper;
+    private PausedExecutorService mBackgroundExecutor = new PausedExecutorService();
 
     private PageInsightsMediator mMediator;
 
@@ -185,6 +188,7 @@ public class PageInsightsMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mShadowLooper = ShadowLooper.shadowMainLooper();
+        PostTask.setPrenativeThreadPoolExecutorForTesting(mBackgroundExecutor);
         jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(any(String.class)))
                 .thenAnswer(
@@ -315,6 +319,7 @@ public class PageInsightsMediatorTest {
         when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
         createMediator(SHORT_TRIGGER_DELAY_MS);
         mMediator.onPageLoadStarted(mTab, null);
+        runAllAsyncTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
@@ -328,6 +333,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(250, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
@@ -345,6 +351,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
         verifyNoMoreInteractions(mOptimizationGuideBridgeJniMock);
@@ -359,6 +366,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
@@ -375,6 +383,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
@@ -391,6 +400,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         assertBottomSheetShownAfterAutoTrigger(feedView);
     }
@@ -405,6 +415,7 @@ public class PageInsightsMediatorTest {
 
         mMediator.onPageLoadStarted(mTab, null);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
 
         assertBottomSheetShownAfterAutoTrigger(feedView);
@@ -421,6 +432,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
 
@@ -442,6 +454,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
 
@@ -462,6 +475,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         assertBottomSheetShownAfterAutoTrigger(feedView);
     }
@@ -520,6 +534,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         RequestContextMetadata expectedMetadata =
                 RequestContextMetadata.newBuilder()
@@ -555,6 +570,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mSurfaceRenderer).onSurfaceCreated(mLoggingParameters.capture());
         assertEquals(
@@ -580,6 +596,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         verify(mSurfaceRenderer).onSurfaceCreated(mLoggingParameters.capture());
         assertEquals(
@@ -604,6 +621,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
         mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
         mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
 
@@ -631,6 +649,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
         mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
         mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
 
@@ -657,6 +676,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
         mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
         mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
 
@@ -940,6 +960,7 @@ public class PageInsightsMediatorTest {
         mMediator.onPageLoadStarted(mTab, null);
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
 
         histogramWatcher.assertExpected();
     }
@@ -1455,5 +1476,10 @@ public class PageInsightsMediatorTest {
                 PageInsightsSheetContent.HeightMode.DISABLED,
                 mMediator.getSheetContent().getPeekHeight());
         verify(mBottomSheetController, never()).expandSheet();
+    }
+
+    private void runAllAsyncTasks() {
+        mBackgroundExecutor.runAll();
+        mShadowLooper.idle();
     }
 }

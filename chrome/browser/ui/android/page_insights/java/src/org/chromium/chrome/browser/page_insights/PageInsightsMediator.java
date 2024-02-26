@@ -29,6 +29,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -157,7 +159,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final boolean mResizeInSync;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
-    @Nullable private PageInsightsSurfaceRenderer mSurfaceRenderer;
+    @Nullable private volatile PageInsightsSurfaceRenderer mSurfaceRenderer;
     @Nullable private PageInsightsMetadata mCurrentMetadata;
     @Nullable private PageInsightsConfig mCurrentConfig;
     @Nullable private View mCurrentFeedView;
@@ -180,6 +182,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         AutoTriggerStage.CANCELLED_OR_NOT_STARTED,
         AutoTriggerStage.AWAITING_TIMER,
         AutoTriggerStage.FETCHING_DATA,
+        AutoTriggerStage.PREPARING,
         AutoTriggerStage.READY_FOR_AUTO_TRIGGER,
         AutoTriggerStage.AUTO_TRIGGERED
     })
@@ -187,11 +190,13 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         int CANCELLED_OR_NOT_STARTED = 0;
         int AWAITING_TIMER = 1;
         int FETCHING_DATA = 2;
-        int READY_FOR_AUTO_TRIGGER = 3;
-        int AUTO_TRIGGERED = 4;
+        int PREPARING = 3;
+        int READY_FOR_AUTO_TRIGGER = 4;
+        int AUTO_TRIGGERED = 5;
     }
 
-    private @AutoTriggerStage int mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
+    private volatile @AutoTriggerStage int mAutoTriggerStage =
+            AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -507,15 +512,34 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                         // Don't proceed if something has changed since we started fetching data.
                         return;
                     }
-                    if (metadata.getAutoPeekConditions().getConfidence() > MINIMUM_CONFIDENCE) {
-                        mCurrentMetadata = metadata;
-                        mCurrentConfig = config;
-                        mAutoTriggerStage = AutoTriggerStage.READY_FOR_AUTO_TRIGGER;
-                        maybeAutoTrigger();
-                    } else {
+                    if (metadata.getAutoPeekConditions().getConfidence() <= MINIMUM_CONFIDENCE) {
                         mAutoTriggerStage = AutoTriggerStage.CANCELLED_OR_NOT_STARTED;
                         Log.v(TAG, "Cancelling auto-trigger as confidence too low");
+                        return;
                     }
+                    mCurrentMetadata = metadata;
+                    mCurrentConfig = config;
+                    prepareForAutoTrigger();
+                });
+    }
+
+    private void prepareForAutoTrigger() {
+        Log.v(TAG, "Preparing for auto-trigger.");
+        mAutoTriggerStage = AutoTriggerStage.PREPARING;
+        PostTask.postTask(
+                // Get surface renderer on background thread as it can be expensive
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> {
+                    if (mAutoTriggerStage != AutoTriggerStage.PREPARING) return;
+                    getSurfaceRenderer();
+                    PostTask.postTask(
+                            TaskTraits.UI_USER_VISIBLE,
+                            () -> {
+                                if (mAutoTriggerStage != AutoTriggerStage.PREPARING) return;
+                                Log.v(TAG, "Ready for auto-trigger.");
+                                mAutoTriggerStage = AutoTriggerStage.READY_FOR_AUTO_TRIGGER;
+                                maybeAutoTrigger();
+                            });
                 });
     }
 
