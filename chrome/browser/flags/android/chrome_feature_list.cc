@@ -335,6 +335,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &safe_browsing::kRedInterstitialFacelift,
+    &safe_browsing::kSafeBrowsingCallNewGmsApiOnStartup,
     &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
     &safe_browsing::kSafeBrowsingNewGmsApiForSubresourceFilterCheck,
     &segmentation_platform::features::kContextualPageActions,

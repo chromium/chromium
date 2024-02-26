@@ -163,6 +163,9 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
 BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
 
 #if BUILDFLAG(IS_ANDROID)
+// Whether to call the new API on startup to reduce latency.
+BASE_DECLARE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup);
+
 // Use new GMSCore API for hash database check on browser URLs.
 BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
 

@@ -411,6 +411,8 @@ public abstract class ChromeFeatureList {
     public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
             "ReplaceSyncPromosWithSignInPromos";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
+    public static final String SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP =
+            "SafeBrowsingCallNewGmsApiOnStartup";
     public static final String SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK =
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
     public static final String SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK =
@@ -613,6 +615,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sQueryTiles = newCachedFlag(QUERY_TILES, false);
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
+    public static final CachedFlag sSafeBrowsingCallNewGmsApiOnStartup =
+            newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sShowNtpAtStartupAndroid =
             newCachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
@@ -727,6 +731,7 @@ public abstract class ChromeFeatureList {
                     sPaintPreviewDemo,
                     sQueryTiles,
                     sRedirectExplicitCTAIntentsToExistingActivity,
+                    sSafeBrowsingCallNewGmsApiOnStartup,
                     sSearchEngineChoice,
                     sShowNtpAtStartupAndroid,
                     sSmallerTabStripTitleLimit,

@@ -206,6 +206,10 @@ BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup,
+             "SafeBrowsingCallNewGmsApiOnStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
              "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);

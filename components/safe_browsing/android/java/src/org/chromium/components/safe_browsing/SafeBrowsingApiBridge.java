@@ -17,23 +17,26 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiHandler.LookupResult
 /**
  * Helper for calling GMSCore APIs from native code to perform Safe Browsing checks.
  *
- * {@link #setSafetyNetApiHandler(SafetyNetApiHandler)} and {@link
- * #setSafeBrowsingApiHandler(SafeBrowsingApiHandler)} must be invoked first. After that
- * {@link #startUriLookupBySafetyNetApi(long, String, int[])}, {@link
+ * <p>{@link #setSafetyNetApiHandler(SafetyNetApiHandler)} and {@link
+ * #setSafeBrowsingApiHandler(SafeBrowsingApiHandler)} must be invoked first. After that {@link
+ * #startUriLookupBySafetyNetApi(long, String, int[])}, {@link
  * #startUriLookupBySafeBrowsingApi(long, String, int[], int)} and {@link
  * #startAllowlistLookup(String, int)} can be used to check the URLs. The SafetyNetApiHandler is
  * initialized lazily on the first URL check. There is no extra step needed to initialize the
  * SafeBrowsingApiHandler.
  *
- * Optionally calling {@link #ensureSafetyNetApiInitialized()} allows to initialize the
- * SafetyNetApiHandler eagerly.
+ * <p>Optionally calling {@link #ensureSafetyNetApiInitialized()} allows initializing the
+ * SafetyNetApiHandler eagerly. Calling {@link #initSafeBrowsingApi()} allows initializing the
+ * SafeBrowsingApiHandler eagerly.
  *
- * All of these methods can be called on any thread.
+ * <p>All of these methods can be called on any thread.
  */
 @JNINamespace("safe_browsing")
 public final class SafeBrowsingApiBridge {
     private static final String TAG = "SBApiBridge";
     private static final boolean DEBUG = false;
+    // A fake callback id used to init the Safe Browsing API.
+    private static final long CALLBACK_ID_FOR_STARTUP = -1;
 
     private static final Object sSafetyNetApiHandlerLock = new Object();
 
@@ -99,10 +102,10 @@ public final class SafeBrowsingApiBridge {
     }
 
     /**
-     * Initializes the singleton SafetyNetApiHandler instance on the first call. On subsequent
-     * calls it does nothing, returns the same value as returned on the first call.
+     * Initializes the singleton SafetyNetApiHandler instance on the first call. On subsequent calls
+     * it does nothing, returns the same value as returned on the first call.
      *
-     * The caller must {@link #setSafetyNetApiHandler(SafetyNetApiHandler)} first.
+     * <p>The caller must call {@link #setSafetyNetApiHandler(SafetyNetApiHandler)} first.
      *
      * @return true iff the initialization succeeded.
      */
@@ -111,6 +114,17 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafetyNetApiHandlerLock) {
             return getSafetyNetApiHandler() != null;
         }
+    }
+
+    /**
+     * Make a fake lookupUri request to the Safe Browsing API to accelerate subsequent calls. It is
+     * optional to call this function before sending a real request.
+     *
+     * <p>The caller must call {@link #setSafeBrowsingApiHandler(SafeBrowsingApiHandler)} first.
+     */
+    public static void initSafeBrowsingApi() {
+        // Use an empty URL so GMSCore won't send a real request to Safe Browsing.
+        startUriLookupBySafeBrowsingApi(CALLBACK_ID_FOR_STARTUP, "", new int[0], 0);
     }
 
     /** Observer to record latency from requests to GmsCore. */
@@ -212,6 +226,9 @@ public final class SafeBrowsingApiBridge {
                 int[] threatAttributes,
                 int responseStatus,
                 long checkDelta) {
+            if (callbackId == CALLBACK_ID_FOR_STARTUP) {
+                return;
+            }
             synchronized (sSafeBrowsingApiHandlerLock) {
                 if (sSafeBrowsingApiUrlCheckTimeObserver != null) {
                     sSafeBrowsingApiUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
