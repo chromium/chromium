@@ -1498,6 +1498,7 @@ if (is_android) {
       "//chrome:chrome_android_core",
       "//chrome/android:delegate_public_impl_java",
       "//components/bookmarks/browser",
+      "//components/browser_sync:switches",
       "//components/password_manager/core/browser/sharing",
       "//components/reading_list/core:test_support",
       "//components/reading_list/features:flags",

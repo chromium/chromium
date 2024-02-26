@@ -88,7 +88,7 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
       // client), or has an unknown/invalid value (which should never happen).
       return SyncToSigninMigrationDecision::kDontMigrateSyncStatusUndefined;
   }
-  // TODO(crbug.com/1486420): After some number of attempts, treat
+  // TODO(crbug.com/40282890): After some number of attempts, treat
   // "initializing" or "undefined/unknown" as "Sync disabled" and go ahead with
   // the migration?
 
@@ -156,17 +156,10 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
   // Selected-data-types prefs: No reverse migration - the user will just go
   // back to their previous Sync settings.
 
-#if BUILDFLAG(IS_IOS)
   // Bookmarks: The forward migration is an atomic file move. Either that
   // happened, in which case the Sync machinery will clean up the account store
   // and start over with the local-or-syncable store. Or the file move didn't
   // happen for some reason. Either way, nothing to be done here.
-#else
-  // TODO(crbug.com/1503647): On platforms other than iOS, the forward migration
-  // for bookmarks isn't implemented yet, so the reverse migration can't be
-  // implemented either.
-  NOTIMPLEMENTED();
-#endif  // BUILDFLAG(IS_IOS)
 
   // Passwords: Same as bookmarks, this is an atomic file move. Nothing to be
   // done here.
@@ -353,7 +346,6 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
         migration_successful && (error == base::File::Error::FILE_OK);
   }
 
-#if BUILDFLAG(IS_IOS)
   // Move bookmarks json file, if bookmark sync is enabled.
   if (bookmarks_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
     base::FilePath from_path =
@@ -369,11 +361,6 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     migration_successful =
         migration_successful && (error == base::File::Error::FILE_OK);
   }
-#else
-  // TODO(crbug.com/1503647): On platforms other than iOS, the on-disk layout of
-  // bookmarks may be different (no two separate JSON files).
-  NOTIMPLEMENTED();
-#endif  // BUILDFLAG(IS_IOS)
 
   // Reading list: Set migration pref. The ModelTypeStoreServiceImpl will read
   // it, and instruct the ModelTypeStoreBackend to actually migrate the data.

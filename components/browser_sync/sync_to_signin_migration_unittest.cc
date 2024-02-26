@@ -704,8 +704,6 @@ class SyncToSigninMigrationDataTypesTest : public SyncToSigninMigrationTestBase,
   }
 };
 
-// The Bookmarks migration isn't implemented on platforms other than iOS yet.
-#if BUILDFLAG(IS_IOS)
 TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_BothExist) {
   // Both bookmark stores exist on disk. The account store is empty, since it
   // was unused pre-migration. This is the typical pre-migration state.
@@ -841,7 +839,6 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_FolderNotWritable) {
       -base::File::FILE_ERROR_ACCESS_DENIED, 1);
 }
 #endif  // BUILDFLAG(IS_POSIX)
-#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_BothExist) {
   // Both password stores exist on disk. The account store is empty, since it

@@ -104,6 +104,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
+#include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/commerce/core/pref_names.h"
@@ -2705,6 +2706,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Deprecated 02/2024
   profile_prefs->ClearPref(kResetCheckDefaultBrowser);
+
+  // Added 02/2024, but DO NOT REMOVE after the usual year!
+  // TODO(crbug.com/40282890): Remove ~one year after full launch.
+  browser_sync::MaybeMigrateSyncingUserToSignedIn(profile_path, profile_prefs);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

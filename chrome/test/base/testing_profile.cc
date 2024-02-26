@@ -364,8 +364,6 @@ void TestingProfile::Init(bool is_supervised_profile) {
   else
     CreateTestingPrefService();
 
-  MigrateObsoleteProfilePrefs(prefs_.get(), GetPath());
-
   if (is_supervised_profile)
     SetIsSupervisedProfile();
 
@@ -450,6 +448,7 @@ void TestingProfile::Init(bool is_supervised_profile) {
     simple_dependency_manager_->RegisterProfilePrefsForServices(pref_registry);
     browser_context_dependency_manager_->RegisterProfilePrefsForServices(
         pref_registry);
+    MigrateObsoleteProfilePrefs(prefs_.get(), GetPath());
   }
 
   FullBrowserTransitionManager::Get()->OnProfileCreated(this);

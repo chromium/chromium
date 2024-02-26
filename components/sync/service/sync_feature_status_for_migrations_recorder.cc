@@ -54,7 +54,7 @@ SyncFeatureStatusForMigrationsRecorder::SyncFeatureStatusForMigrationsRecorder(
   // Start observing the SyncService, and query the initial state. This ensures
   // that any pre-existing pref values get overridden, and can't carry over into
   // this or future runs of Chrome.
-  // TODO(crbug.com/1486420): Find a way to clear the prefs even if this class
+  // TODO(crbug.com/40282890): Find a way to clear the prefs even if this class
   // doesn't even get instantiated, e.g. due to --disable-sync.
   sync->AddObserver(this);
   OnStateChanged(sync);
