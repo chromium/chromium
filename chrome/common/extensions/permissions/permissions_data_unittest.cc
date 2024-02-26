@@ -104,6 +104,9 @@ void CheckRestrictedUrls(const Extension* extension,
   const GURL self_url("chrome-extension://" + extension->id() + "/foo.html");
   const GURL invalid_url("chrome-debugger://foo/bar.html");
   const GURL chrome_untrusted_url(kChromeUntrustedURL);
+  const GURL blob_url("blob:https://example.com");
+  const GURL blob_opaque_origin_url =
+      url::Origin::Create(GURL("blob:null/uuid")).GetURL();
 
   std::string error;
   EXPECT_EQ(block_chrome_urls, extension->permissions_data()->IsRestrictedUrl(
@@ -157,6 +160,19 @@ void CheckRestrictedUrls(const Extension* extension,
   } else {
     EXPECT_TRUE(error.empty());
   }
+
+  // Blob URLs with a non-opaque origin should be restricted.
+  error.clear();
+  EXPECT_EQ(!allow_on_other_schemes,
+            extension->permissions_data()->IsRestrictedUrl(blob_url, &error))
+      << name;
+
+  // Blob URLs with opaque origin should be restricted.
+  error.clear();
+  EXPECT_EQ(!allow_on_other_schemes,
+            extension->permissions_data()->IsRestrictedUrl(
+                blob_opaque_origin_url, &error))
+      << name;
 }
 
 }  // namespace

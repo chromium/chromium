@@ -53,9 +53,11 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -120,6 +122,10 @@ void DebuggerApiTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void DebuggerApiTest::SetUpOnMainThread() {
   ExtensionApiTest::SetUpOnMainThread();
+
+  host_resolver()->AddRule("*", "127.0.0.1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
   test_extension_dir_.WriteManifest(
       R"({
          "name": "debugger",
@@ -283,6 +289,59 @@ class TestInterstitialPage
         GURL(), report_details, nullptr);
   }
 };
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       DebuggerNotAllowedOnRestrictedBlobUrls) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://settings")));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    var blob = new Blob([JSON.stringify({foo: 'bar'})], {
+      type: "application/json",
+    });
+    var burl = URL.createObjectURL(blob, 'application/json');
+    window.open(burl);
+  )"));
+  content::WebContents* blob_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(blob_web_contents, web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(blob_web_contents));
+  EXPECT_EQ("{\"foo\":\"bar\"}",
+            content::EvalJs(blob_web_contents, "document.body.innerText"));
+  EXPECT_TRUE(
+      RunAttachFunction(blob_web_contents, "Cannot access a chrome:// URL"));
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       DebuggerNotAllowedOnPolicyRestrictedBlobUrls) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/simple.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    var blob = new Blob([JSON.stringify({foo: 'bar'})], {
+      type: "application/json",
+    });
+    window.open(URL.createObjectURL(blob, 'application/json'));
+  )"));
+  content::WebContents* blob_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(blob_web_contents, web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(blob_web_contents));
+  EXPECT_EQ("{\"foo\":\"bar\"}",
+            content::EvalJs(blob_web_contents, "document.body.innerText"));
+  base::RunLoop run_loop;
+  URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_HTTP, "http://a.com/*"));
+  PermissionsData::SetDefaultPolicyHostRestrictions(
+      util::GetBrowserContextId(profile()), default_blocked_hosts,
+      URLPatternSet());
+  EXPECT_TRUE(
+      RunAttachFunction(blob_web_contents, "Cannot attach to this target."));
+}
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnSecirutyInterstitials) {
@@ -479,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       infobars::ContentInfoBarManager::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_test_server()->Started());
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/simple.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -572,7 +631,6 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
 
  private:
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -737,14 +795,17 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 // Tests that policy blocked hosts supersede the `debugger`
 // permission. Regression test for crbug.com/1139156.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url("https://example.com");
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url("https://example.com/test");
   EXPECT_TRUE(RunAttachFunction(url, std::string()));
-  policy::MockConfigurationPolicyProvider policy_provider;
-  ExtensionManagementPolicyUpdater pref(&policy_provider);
-  pref.AddPolicyBlockedHost("*", url.spec());
-  EXPECT_FALSE(
-      RunAttachFunction(url, manifest_errors::kCannotAccessExtensionUrl));
+  URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_HTTPS, "https://example.com/*"));
+  PermissionsData::SetDefaultPolicyHostRestrictions(
+      util::GetBrowserContextId(profile()), default_blocked_hosts,
+      URLPatternSet());
+
+  EXPECT_TRUE(RunAttachFunction(url, "Cannot attach to this target."));
 }
 
 class DebuggerExtensionApiTest : public ExtensionApiTest {
@@ -810,6 +871,10 @@ IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DebuggerExtensionApiPdfTest);
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {
+  ASSERT_TRUE(RunExtensionTest("debugger_attach_to_blob_urls")) << message_;
+}
 
 // Tests that navigation to a forbidden URL is properly denied and
 // does not cause a crash.

@@ -117,12 +117,23 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   // NOTE: The `debugger` permission implies all URLs access (and indicates
   // such to the user), so we don't check explicit page access. However, we
   // still need to check if it's an otherwise-restricted URL.
-  if (extension.permissions_data()->IsRestrictedUrl(url, error))
+  // NOTE: blob URLs are generally restricted but debugger should be able to
+  // attach if it has access to the origin that created the blob.
+  // See https://crbug.com/1492134.
+  const GURL& url_for_restriction_check =
+      url.SchemeIsBlob() ? url::Origin::Create(url).GetURL() : url;
+  if (extension.permissions_data()->IsRestrictedUrl(url_for_restriction_check,
+                                                    error)) {
     return false;
+  }
 
   // Policy blocked hosts supersede the `debugger` permission.
-  if (extension.permissions_data()->IsPolicyBlockedHost(url))
+  if (extension.permissions_data()->IsPolicyBlockedHost(url) ||
+      extension.permissions_data()->IsPolicyBlockedHost(
+          url_for_restriction_check)) {
+    *error = debugger_api_constants::kRestrictedError;
     return false;
+  }
 
   if (url.SchemeIsFile() &&
       !util::AllowFileAccess(extension.id(), extension_profile)) {
