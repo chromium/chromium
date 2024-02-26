@@ -4,6 +4,7 @@
 
 #include "ash/picker/search/picker_category_search.h"
 
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -11,29 +12,26 @@
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace ash {
-namespace {
-
-bool ContainsCaseInsensitive(std::u16string_view haystack,
-                             std::u16string_view needle) {
-  return base::ranges::search(haystack, needle,
-                              base::CaseInsensitiveCompareASCII<char>()) !=
-         haystack.end();
-}
-
-}  // namespace
 
 std::vector<PickerSearchResult> PickerCategorySearch(
     base::span<const PickerCategory> categories,
     std::u16string_view query) {
   CHECK(!query.empty());
+  string_matching::TokenizedString tokenized_query((std::u16string(query)));
 
   std::vector<PickerSearchResult> matches;
   for (const PickerCategory category : categories) {
-    if (ContainsCaseInsensitive(GetLabelForPickerCategory(category), query)) {
+    string_matching::TokenizedString tokenized_category(
+        GetLabelForPickerCategory(category));
+    // Both arguments are stored as `raw_ref`s in the `PrefixMatcher` below, so
+    // they need to outlive the matcher.
+    string_matching::PrefixMatcher matcher(tokenized_query, tokenized_category);
+    // TODO: b/325973235 - Use `matcher.relevance()` to sort these results.
+    if (matcher.Match()) {
       matches.push_back(PickerSearchResult::Category(category));
     }
   }

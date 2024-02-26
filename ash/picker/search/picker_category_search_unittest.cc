@@ -68,11 +68,17 @@ INSTANTIATE_TEST_SUITE_P(
             .query = u"e",
             .expected_categories = {PickerCategory::kEmojis},
         },
+        // Prefix match in second word
+        TestCase{
+            .available_categories = {PickerCategory::kOpenTabs},
+            .query = u"ta",
+            .expected_categories = {PickerCategory::kOpenTabs},
+        },
         // Substring match
         TestCase{
             .available_categories = {PickerCategory::kEmojis},
             .query = u"moj",
-            .expected_categories = {PickerCategory::kEmojis},
+            .expected_categories = {},
         },
         // Category unavailable
         TestCase{

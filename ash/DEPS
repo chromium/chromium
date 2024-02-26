@@ -78,6 +78,7 @@ include_rules = [
   "+chromeos/ash/components/peripheral_notification",
   "+chromeos/ash/components/proximity_auth",
   "+chromeos/ash/components/standalone_browser",
+  "+chromeos/ash/components/string_matching",
   "+chromeos/ash/components/system",
   "+chromeos/components/mahi",
   "+chromeos/components/quick_answers",
