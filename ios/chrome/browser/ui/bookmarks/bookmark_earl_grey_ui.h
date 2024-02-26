@@ -139,7 +139,8 @@ id<GREYMatcher> SearchIconButton();
 - (void)tapOnContextMenuButton:(int)menuButtonId
                     openEditor:(NSString*)editorId
              setParentFolderTo:(NSString*)destinationFolder
-                          from:(NSString*)sourceFolder;
+                          from:(NSString*)sourceFolder
+              onlyOnThisDevice:(BOOL)onlyOnThisDevice;
 
 - (void)tapOnLongPressContextMenuButton:(id<GREYMatcher>)actionMatcher
                                  onItem:(id<GREYMatcher>)item

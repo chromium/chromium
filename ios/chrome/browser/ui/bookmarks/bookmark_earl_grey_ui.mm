@@ -516,7 +516,8 @@ id<GREYMatcher> SearchIconButton() {
 - (void)tapOnContextMenuButton:(int)menuButtonId
                     openEditor:(NSString*)editorId
              setParentFolderTo:(NSString*)destinationFolder
-                          from:(NSString*)sourceFolder {
+                          from:(NSString*)sourceFolder
+              onlyOnThisDevice:(BOOL)onlyOnThisDevice {
   // Tap context menu.
   [[EarlGrey
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
@@ -532,10 +533,15 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify current parent folder for is correct.
+  NSString* sourceLabel =
+      (onlyOnThisDevice)
+          ? [NSString
+                stringWithFormat:@"%@. Only on this device.", sourceFolder]
+          : sourceFolder;
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(sourceFolder), nil)]
+                                   grey_accessibilityLabel(sourceLabel), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on Folder to open folder picker.
@@ -564,10 +570,15 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notVisible()];
 
   // Verify parent folder has been changed in edit page.
+  NSString* destinationLabel =
+      (onlyOnThisDevice)
+          ? [NSString
+                stringWithFormat:@"%@. Only on this device.", destinationFolder]
+          : destinationFolder;
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(destinationFolder),
+                                   grey_accessibilityLabel(destinationLabel),
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
