@@ -181,13 +181,14 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   CHECK(uploaded_resource.shared_image);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-  GLenum texture_target = uploaded_resource.shared_image->GetTextureTarget(
-      gfx::BufferUsage::SCANOUT,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format));
+  // NOTE: This resource will never be used as an overlay, as we we hardcode
+  // `is_overlay_candidate` to false. Hence, the texture target should always be
+  // GL_TEXTURE_2D (other texture targets are needed only for overlays).
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
-          uploaded_resource.shared_image, texture_target, sync_token,
-          resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false,
+          uploaded_resource.shared_image, /*texture_target=*/GL_TEXTURE_2D,
+          sync_token, resource_bitmap.GetSize(), format,
+          /*is_overlay_candidate=*/false,
           viz::TransferableResource::ResourceSource::kUI),
       base::BindOnce(&FrameSinkImpl::UIResourceReleased, base::Unretained(this),
                      resource_id));
