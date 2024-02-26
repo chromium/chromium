@@ -351,7 +351,7 @@ bool ViewAccessibility::IsAccessibilityFocusable() const {
   // be focusable, if there is test coverage, such a situation will cause a test
   // failure.
   return view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-         GetIsEnabled() && view_->IsDrawn() && !is_ignored_;
+         GetIsEnabled() && view_->IsDrawn() && !GetIsIgnored();
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
@@ -493,7 +493,9 @@ void ViewAccessibility::SetIsIgnored(bool is_ignored) {
 }
 
 bool ViewAccessibility::GetIsIgnored() const {
-  return data_.IsIgnored();
+  // TODO(javiercon): Once all views are migrated to the new setters remove the
+  // old is_ignored_ check and just return data_.HasState.
+  return is_ignored_ || data_.HasState(ax::mojom::State::kIgnored);
 }
 
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
