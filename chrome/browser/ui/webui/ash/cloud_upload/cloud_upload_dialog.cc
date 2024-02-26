@@ -787,7 +787,8 @@ void CloudOpenTask::FinishedDriveUpload(OfficeTaskResult task_result,
     OpenUploadedDriveUrl(url.value(), task_result);
   } else {
     cloud_open_metrics_->LogTaskResult(task_result);
-    has_upload_errors_ = task_result == OfficeTaskResult::kFailedToUpload;
+    has_upload_errors_ = has_upload_errors_ ||
+                         (task_result == OfficeTaskResult::kFailedToUpload);
   }
   file_urls_idx_++;
   if (file_urls_idx_ < file_urls_.size()) {
@@ -819,7 +820,8 @@ void CloudOpenTask::FinishedOneDriveUpload(
                                task_result));
   } else {
     cloud_open_metrics_->LogTaskResult(task_result);
-    has_upload_errors_ = task_result == OfficeTaskResult::kFailedToUpload;
+    has_upload_errors_ = has_upload_errors_ ||
+                         (task_result == OfficeTaskResult::kFailedToUpload);
   }
   file_urls_idx_++;
   if (file_urls_idx_ < file_urls_.size()) {

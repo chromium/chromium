@@ -245,6 +245,7 @@ class CloudOpenTask : public BrowserListObserver,
   raw_ptr<CloudUploadDialog> pending_dialog_ = nullptr;
   base::ElapsedTimer upload_timer_;
   int64_t upload_total_size_ = 0;
+  // True when there is at least one upload error.
   bool has_upload_errors_ = false;
   OfficeFilesTransferRequired transfer_required_ =
       OfficeFilesTransferRequired::kNotRequired;
