@@ -284,7 +284,14 @@ class BookmarksSnapshotTest : public UserDataSnapshotBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_Test) {}
-IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, Test) {}
+// TODO(crbug.com/326168468): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, MAYBE_Test) {}
+#undef MAYBE_Test
 
 class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
   struct HistoryEntry {
@@ -381,7 +388,14 @@ class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, PRE_PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, PRE_Test) {}
-IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, Test) {}
+// TODO(crbug.com/326168468): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, MAYBE_Test) {}
+#undef MAYBE_Test
 
 class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
  protected:
@@ -430,7 +444,14 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, PRE_PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, PRE_Test) {}
-IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, Test) {}
+// TODO(crbug.com/326168468): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, MAYBE_Test) {}
+#undef MAYBE_Test
 
 // Tests that Google Chrome does not takes snapshots on mid-milestone updates.
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, SameMilestoneSnapshot) {
