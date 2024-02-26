@@ -1016,6 +1016,12 @@ constexpr char kHatsSmartLockDeviceIsSelected[] =
 constexpr char kResetCheckDefaultBrowser[] =
     "browser.should_reset_check_default_browser";
 
+#if BUILDFLAG(IS_WIN)
+// Deprecated 02/2024
+constexpr char kOsCryptAppBoundFixedDataPrefName[] =
+    "os_crypt.app_bound_fixed_data";
+#endif  // BUILDFLAG(IS_WIN)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1132,6 +1138,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 02/2024.
   registry->RegisterFilePathPref(kSearchEnginesChoiceProfile, base::FilePath());
+
+#if BUILDFLAG(IS_WIN)
+  // Deprecated 02/2024.
+  registry->RegisterStringPref(kOsCryptAppBoundFixedDataPrefName,
+                               std::string());
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2305,6 +2317,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 02/2024
   local_state->ClearPref(kSearchEnginesChoiceProfile);
+
+#if BUILDFLAG(IS_WIN)
+  // Deprecated 02/2024.
+  local_state->ClearPref(kOsCryptAppBoundFixedDataPrefName);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

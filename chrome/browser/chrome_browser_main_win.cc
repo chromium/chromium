@@ -552,9 +552,7 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   }
 #endif
 
-  // Query feature first, to include full population in field trial.
-  if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics) &&
-      install_static::IsSystemInstall()) {
+  if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics)) {
     os_crypt::MeasureAppBoundEncryptionStatus(g_browser_process->local_state());
   }
 

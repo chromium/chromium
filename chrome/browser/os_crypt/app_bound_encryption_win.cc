@@ -10,12 +10,47 @@
 #include <wrl/client.h>
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/install_static/install_util.h"
 
 namespace os_crypt {
+
+SupportLevel GetAppBoundEncryptionSupportLevel() {
+  // Must be a system install.
+  if (!install_static::IsSystemInstall()) {
+    return SupportLevel::kNotSystemLevel;
+  }
+
+  std::string image_path(MAX_PATH, L'\0');
+  DWORD path_length = image_path.size();
+  BOOL success =
+      ::QueryFullProcessImageNameA(::GetCurrentProcess(), PROCESS_NAME_NATIVE,
+                                   image_path.data(), &path_length);
+  if (!success && ::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+    // Process name is potentially greater than MAX_PATH, try larger max size.
+    // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
+    image_path.resize(UNICODE_STRING_MAX_CHARS);
+    path_length = image_path.size();
+    success =
+        ::QueryFullProcessImageNameA(::GetCurrentProcess(), PROCESS_NAME_NATIVE,
+                                     image_path.data(), &path_length);
+  }
+  if (!success) {
+    return SupportLevel::kApiFailed;
+  }
+  image_path.resize(path_length);
+
+  // Must be running on a local disk.
+  if (!base::StartsWith(image_path, "\\Device\\HarddiskVolume",
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    return SupportLevel::kNotLocalDisk;
+  }
+
+  return SupportLevel::kSupported;
+}
 
 HRESULT EncryptAppBoundString(ProtectionLevel protection_level,
                               const std::string& plaintext,

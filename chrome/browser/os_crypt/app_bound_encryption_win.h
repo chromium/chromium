@@ -12,6 +12,21 @@
 
 namespace os_crypt {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SupportLevel {
+  kSupported = 0,
+  kNotSystemLevel = 1,
+  kNotLocalDisk = 2,
+  kApiFailed = 3,
+  kMaxValue = kApiFailed,
+};
+
+// Returns whether or not app-bound encryption is supported on the current
+// platform configuration. If this does not return kSupported then Encrypt and
+// Decrypt operations will fail. This can be called on any thread.
+SupportLevel GetAppBoundEncryptionSupportLevel();
+
 // Encrypts a string with a Protection level of `level`. See
 // `src/chrome/elevation_service/elevation-service_idl.idl` for the definition
 // of available protection levels.

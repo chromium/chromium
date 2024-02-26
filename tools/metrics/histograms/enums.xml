@@ -462,6 +462,13 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="First-party resource Allowed"/>
 </enum>
 
+<enum name="AppBoundEncryptionSupportLevel">
+  <int value="0" label="Supported"/>
+  <int value="1" label="Not supported as not running system-level"/>
+  <int value="2" label="Not supported as not running on local disk"/>
+  <int value="3" label="Not supported as API call failed"/>
+</enum>
+
 <enum name="AppInputEventSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Mouse"/>

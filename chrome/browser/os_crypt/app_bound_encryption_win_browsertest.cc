@@ -131,25 +131,28 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecrypt) {
 // browser in the PRE_ test stores the "Test Key" with app-bound encryption and
 // the second stage of the test verifies it can be retrieved successfully.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
-  ASSERT_TRUE(install_static::IsSystemInstall());
+  histogram_tester_.ExpectUniqueSample(
+      "OSCrypt.AppBoundEncryption.SupportLevel", SupportLevel::kSupported, 1);
   // These histograms are recorded on a background worker thread, so the test
   // needs to wait until this task completes and the histograms are recorded.
-  WaitForHistogram("OSCrypt.AppBoundEncryption.Encrypt.ResultCode");
+  WaitForHistogram(
+      "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode");
   histogram_tester_.ExpectBucketCount(
-      "OSCrypt.AppBoundEncryption.Encrypt.ResultCode", S_OK, 1);
+      "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode", S_OK, 1);
 
-  WaitForHistogram("OSCrypt.AppBoundEncryption.Encrypt.Time");
+  WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time");
 }
 
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
   ASSERT_TRUE(install_static::IsSystemInstall());
   // These histograms are recorded on a background worker thread, so the test
   // needs to wait until this task completes and the histograms are recorded.
-  WaitForHistogram("OSCrypt.AppBoundEncryption.Decrypt.ResultCode");
+  WaitForHistogram(
+      "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode");
   histogram_tester_.ExpectBucketCount(
-      "OSCrypt.AppBoundEncryption.Decrypt.ResultCode", S_OK, 1);
+      "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode", S_OK, 1);
 
-  WaitForHistogram("OSCrypt.AppBoundEncryption.Decrypt.Time");
+  WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Decrypt.Time");
 }
 
 // Run this test manually to force uninstall the service using

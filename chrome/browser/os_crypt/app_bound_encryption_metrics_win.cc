@@ -26,8 +26,10 @@ namespace os_crypt {
 
 namespace prefs {
 
-const char kOsCryptAppBoundFixedDataPrefName[] =
-    "os_crypt.app_bound_fixed_data";
+// Pref name changed 02/2024 to reset metrics for a new version of the app-bound
+// encryption service.
+const char kOsCryptAppBoundFixedData2PrefName[] =
+    "os_crypt.app_bound_fixed_data2";
 
 }  // namespace prefs
 
@@ -44,13 +46,15 @@ void DecryptAndRecordMetricsOnCOMThread(const std::string& encrypted_data) {
   DWORD last_error;
   HRESULT hr;
   {
-    SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.AppBoundEncryption.Decrypt.Time");
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.Time");
     hr = DecryptAppBoundString(encrypted_data, decrypted_data, last_error);
   }
 
   if (FAILED(hr)) {
     base::UmaHistogramSparse(
-        "OSCrypt.AppBoundEncryption.Decrypt.ResultLastError", last_error);
+        "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultLastError",
+        last_error);
   } else {
     // Check if it returned success but the data was invalid. This should never
     // happen. If it does, log a unique HRESULT to track it.
@@ -61,7 +65,8 @@ void DecryptAndRecordMetricsOnCOMThread(const std::string& encrypted_data) {
     }
   }
 
-  base::UmaHistogramSparse("OSCrypt.AppBoundEncryption.Decrypt.ResultCode", hr);
+  base::UmaHistogramSparse(
+      "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode", hr);
 }
 
 std::string EncryptAndRecordMetricsOnCOMThread() {
@@ -71,16 +76,19 @@ std::string EncryptAndRecordMetricsOnCOMThread() {
   DWORD last_error;
   HRESULT hr;
   {
-    SCOPED_UMA_HISTOGRAM_TIMER("OSCrypt.AppBoundEncryption.Encrypt.Time");
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time");
     hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION, kFixedData,
                                encrypted_data, last_error);
   }
 
-  base::UmaHistogramSparse("OSCrypt.AppBoundEncryption.Encrypt.ResultCode", hr);
+  base::UmaHistogramSparse(
+      "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode", hr);
 
   if (FAILED(hr)) {
     base::UmaHistogramSparse(
-        "OSCrypt.AppBoundEncryption.Encrypt.ResultLastError", last_error);
+        "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultLastError",
+        last_error);
   }
 
   return encrypted_data;
@@ -93,26 +101,36 @@ void StorePrefOnUiThread(PrefService* local_state,
     return;
   std::string base64_data = base::Base64Encode(encrypted_data);
 
-  local_state->SetString(prefs::kOsCryptAppBoundFixedDataPrefName, base64_data);
+  local_state->SetString(prefs::kOsCryptAppBoundFixedData2PrefName,
+                         base64_data);
 }
 
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kOsCryptAppBoundFixedDataPrefName, {});
+  registry->RegisterStringPref(prefs::kOsCryptAppBoundFixedData2PrefName, {});
 }
 
 bool MeasureAppBoundEncryptionStatus(PrefService* local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto support = GetAppBoundEncryptionSupportLevel();
+
+  base::UmaHistogramEnumeration("OSCrypt.AppBoundEncryption.SupportLevel",
+                                support);
+
+  if (support != SupportLevel::kSupported) {
+    return true;
+  }
 
   auto com_runner = base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
-  if (local_state->HasPrefPath(prefs::kOsCryptAppBoundFixedDataPrefName)) {
+  if (local_state->HasPrefPath(prefs::kOsCryptAppBoundFixedData2PrefName)) {
     const std::string base64_encrypted_data =
-        local_state->GetString(prefs::kOsCryptAppBoundFixedDataPrefName);
+        local_state->GetString(prefs::kOsCryptAppBoundFixedData2PrefName);
 
     std::string encrypted_data;
     // If this fails it will be caught later when trying to decrypt and logged
