@@ -129,8 +129,7 @@ export class VideoCaptureCandidate extends Camera3CaptureCandidate {
   }
 
   getStreamConstraintsCandidates(): StreamConstraints[] {
-    // For non-multistream recording, preview stream is used directly
-    // to do video recording.
+    // Preview stream is used directly to do video recording.
     const {width, height} = this.resolution;
     const buildConstraint = (frameRate: MediaTrackConstraints['frameRate']) =>
         ({
@@ -156,45 +155,6 @@ export class VideoCaptureCandidate extends Camera3CaptureCandidate {
 
   override getConstFps(): number|null {
     return this.constFps;
-  }
-}
-
-export class MultiStreamVideoCaptureCandidate extends VideoCaptureCandidate {
-  constructor(
-      deviceId: string, resolution: Resolution,
-      previewResolutions: Resolution[], constFps: number|null,
-      hasAudio: boolean) {
-    super(deviceId, resolution, previewResolutions, constFps, hasAudio);
-  }
-
-  override getStreamConstraintsCandidates(): StreamConstraints[] {
-    const frameRate =
-        this.constFps === null ? {min: 20, ideal: 30} : {exact: this.constFps};
-    const buildConstraint =
-        (frameRate: MediaTrackConstraints['frameRate'],
-         {width, height}: Resolution) => ({
-          deviceId: this.deviceId,
-          audio: this.hasAudio,
-          video: {
-            frameRate,
-            width,
-            height,
-          },
-        });
-    const streamConstraints = [];
-    for (const previewResolution of this.previewResolutions) {
-      streamConstraints.push(buildConstraint(frameRate, previewResolution));
-    }
-
-    // If another web app is opened and requests a low fps streaming, CCA will
-    // get an OverconstrainedError. In this case, the constraint is relaxed but
-    // the error message is kept in the log.
-    if (this.constFps === null) {
-      for (const previewResolution of this.previewResolutions) {
-        streamConstraints.push(buildConstraint({ideal: 30}, previewResolution));
-      }
-    }
-    return streamConstraints;
   }
 }
 
