@@ -4,6 +4,7 @@
 
 #include "ash/picker/views/picker_image_item_grid_view.h"
 
+#include <iterator>
 #include <memory>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -40,6 +42,17 @@ std::unique_ptr<views::View> CreateImageGridColumn() {
   column->SetDefault(views::kMarginsKey,
                      gfx::Insets::TLBR(0, 0, kImageGridPadding, 0));
   return column;
+}
+
+PickerItemView* ItemInColumnWithIndexClosestTo(const views::View* column,
+                                               const size_t index) {
+  if (column->children().empty()) {
+    return nullptr;
+  } else if (index < column->children().size()) {
+    return views::AsViewClass<PickerItemView>(column->children()[index].get());
+  } else {
+    return views::AsViewClass<PickerItemView>(column->children().back().get());
+  }
 }
 
 }  // namespace
@@ -71,6 +84,79 @@ PickerImageItemGridView::PickerImageItemGridView(int grid_width)
 
 PickerImageItemGridView::~PickerImageItemGridView() = default;
 
+PickerItemView* PickerImageItemGridView::GetTopItem() {
+  const views::View* column = children().front();
+  return column->children().empty() ? nullptr
+                                    : views::AsViewClass<PickerItemView>(
+                                          column->children().front().get());
+}
+
+PickerItemView* PickerImageItemGridView::GetBottomItem() {
+  views::View* tallest_column =
+      base::ranges::max(children(),
+                        /*comp=*/base::ranges::less(),
+                        /*proj=*/[](const views::View* v) {
+                          return v->GetPreferredSize().height();
+                        });
+  return tallest_column->children().empty()
+             ? nullptr
+             : views::AsViewClass<PickerItemView>(
+                   tallest_column->children().back().get());
+}
+
+PickerItemView* PickerImageItemGridView::GetItemAbove(
+    const PickerItemView* item) {
+  const views::View* column = GetColumnContaining(item);
+  if (!column) {
+    return nullptr;
+  }
+  const views::View::Views::const_iterator it = column->FindChild(item);
+  return it == column->children().cbegin()
+             ? nullptr
+             : views::AsViewClass<PickerItemView>(std::prev(it)->get());
+}
+
+PickerItemView* PickerImageItemGridView::GetItemBelow(
+    const PickerItemView* item) {
+  const views::View* column = GetColumnContaining(item);
+  if (!column) {
+    return nullptr;
+  }
+  const views::View::Views::const_iterator next_it =
+      std::next(column->FindChild(item));
+  return next_it == column->children().cend()
+             ? nullptr
+             : views::AsViewClass<PickerItemView>(next_it->get());
+}
+
+PickerItemView* PickerImageItemGridView::GetItemLeftOf(
+    const PickerItemView* item) {
+  const views::View* column = GetColumnContaining(item);
+  if (!column || column == children().front()) {
+    return nullptr;
+  }
+  // Prefer to return the item with the same index in the column to the left,
+  // since this will probably be at a similar height to `item` (at least in
+  // usual scenarios where the grid items all have similar dimensions).
+  const size_t item_index = column->GetIndexOf(item).value();
+  const views::View* left_column = std::prev(FindChild(column))->get();
+  return ItemInColumnWithIndexClosestTo(left_column, item_index);
+}
+
+PickerItemView* PickerImageItemGridView::GetItemRightOf(
+    const PickerItemView* item) {
+  const views::View* column = GetColumnContaining(item);
+  if (!column || column == children().back()) {
+    return nullptr;
+  }
+  // Prefer to return the item with the same index in the column to the right,
+  // since this will probably be at a similar height to `item` (at least in
+  // usual scenarios where the grid items all have similar dimensions).
+  const size_t item_index = column->GetIndexOf(item).value();
+  const views::View* right_column = std::next(FindChild(column))->get();
+  return ItemInColumnWithIndexClosestTo(right_column, item_index);
+}
+
 PickerImageItemView* PickerImageItemGridView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
   image_item->SetImageSizeFromWidth(GetImageGridColumnWidth(grid_width_));
@@ -81,6 +167,12 @@ PickerImageItemView* PickerImageItemGridView::AddImageItem(
                           return v->GetPreferredSize().height();
                         });
   return shortest_column->AddChildView(std::move(image_item));
+}
+
+const views::View* PickerImageItemGridView::GetColumnContaining(
+    const PickerItemView* item) const {
+  const views::View* column = item->parent();
+  return column && column->parent() == this ? column : nullptr;
 }
 
 BEGIN_METADATA(PickerImageItemGridView)

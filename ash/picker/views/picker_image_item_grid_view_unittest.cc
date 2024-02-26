@@ -19,10 +19,10 @@
 namespace ash {
 namespace {
 
-using ::testing::Eq;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Pointee;
 using ::testing::Property;
-using ::testing::SizeIs;
 
 constexpr int kDefaultGridWidth = 320;
 
@@ -41,73 +41,267 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
 }
 
 TEST(PickerImageItemGridViewTest, OneGifItem) {
-  PickerImageItemGridView image_item_grid(kDefaultGridWidth);
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
   // Two columns, one item in the first column.
   EXPECT_THAT(
-      image_item_grid.children(),
-      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1))),
-                  Pointee(Property(&views::View::children, SizeIs(0)))));
+      item_grid.children(),
+      ElementsAre(Pointee(Property(&views::View::children, ElementsAre(item))),
+                  Pointee(Property(&views::View::children, IsEmpty()))));
 }
 
 TEST(PickerImageItemGridViewTest, TwoGifItems) {
-  PickerImageItemGridView image_item_grid(kDefaultGridWidth);
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
   // Two columns, one item in each column.
   EXPECT_THAT(
-      image_item_grid.children(),
-      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1))),
-                  Pointee(Property(&views::View::children, SizeIs(1)))));
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1))),
+          Pointee(Property(&views::View::children, ElementsAre(item2)))));
 }
 
 TEST(PickerImageItemGridViewTest, GifItemsWithVaryingHeight) {
-  PickerImageItemGridView image_item_grid(kDefaultGridWidth);
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 20)));
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 30)));
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 20)));
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 20)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 30)));
+  const PickerItemView* item4 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 20)));
 
   // One item in first column, three items in second column.
   EXPECT_THAT(
-      image_item_grid.children(),
-      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1))),
-                  Pointee(Property(&views::View::children, SizeIs(3)))));
+      item_grid.children(),
+      ElementsAre(Pointee(Property(&views::View::children, ElementsAre(item1))),
+                  Pointee(Property(&views::View::children,
+                                   ElementsAre(item2, item3, item4)))));
 }
 
 TEST(PickerImageItemGridViewTest, GifItemsAreResizedToSameWidth) {
-  PickerImageItemGridView image_item_grid(kDefaultGridWidth);
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
 
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  image_item_grid.AddImageItem(CreateGifItem(gfx::Size(80, 160)));
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(80, 160)));
 
-  const views::View::Views& columns = image_item_grid.children();
-  ASSERT_THAT(
-      columns,
-      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1))),
-                  Pointee(Property(&views::View::children, SizeIs(1)))));
-  EXPECT_EQ(columns[0]->children()[0]->GetPreferredSize().width(),
-            columns[1]->children()[0]->GetPreferredSize().width());
+  EXPECT_EQ(item1->GetPreferredSize().width(),
+            item2->GetPreferredSize().width());
 }
 
 TEST(PickerImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
-  PickerImageItemGridView image_item_grid(kDefaultGridWidth);
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
 
   constexpr gfx::Size kGifDimensions(100, 200);
-  image_item_grid.AddImageItem(CreateGifItem(kGifDimensions));
+  const PickerItemView* item =
+      item_grid.AddImageItem(CreateGifItem(kGifDimensions));
 
-  const views::View::Views& columns = image_item_grid.children();
-  ASSERT_THAT(
-      columns,
-      ElementsAre(Pointee(Property(&views::View::children, SizeIs(1))),
-                  Pointee(Property(&views::View::children, SizeIs(0)))));
-  EXPECT_EQ(GetAspectRatio(columns[0]->children()[0]->GetPreferredSize()),
+  EXPECT_EQ(GetAspectRatio(item->GetPreferredSize()),
             GetAspectRatio(kGifDimensions));
+}
+
+TEST(PickerImageItemGridViewTest, GetsTopItem) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item3))),
+          Pointee(Property(&views::View::children, ElementsAre(item2)))));
+  EXPECT_EQ(item_grid.GetTopItem(), item1);
+}
+
+TEST(PickerImageItemGridViewTest, EmptyGridHasNoTopItem) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  EXPECT_EQ(item_grid.GetTopItem(), nullptr);
+}
+
+TEST(PickerImageItemGridViewTest, GetsBottomItem) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item3))),
+          Pointee(Property(&views::View::children, ElementsAre(item2)))));
+  EXPECT_EQ(item_grid.GetBottomItem(), item3);
+}
+
+TEST(PickerImageItemGridViewTest, EmptyGridHasNoBottomItem) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  EXPECT_EQ(item_grid.GetBottomItem(), nullptr);
+}
+
+TEST(PickerImageItemGridViewTest, GetsItemAbove) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+  const PickerItemView* item4 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
+
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::children,
+                                           ElementsAre(item1, item3))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item2, item4)))));
+  EXPECT_EQ(item_grid.GetItemAbove(item1), nullptr);
+  EXPECT_EQ(item_grid.GetItemAbove(item2), nullptr);
+  EXPECT_EQ(item_grid.GetItemAbove(item3), item1);
+  EXPECT_EQ(item_grid.GetItemAbove(item4), item2);
+}
+
+TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemAbove) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+  std::unique_ptr<PickerImageItemView> item_not_in_grid =
+      CreateGifItem(gfx::Size(100, 100));
+
+  EXPECT_EQ(item_grid.GetItemAbove(item_not_in_grid.get()), nullptr);
+}
+
+TEST(PickerImageItemGridViewTest, GetsItemBelow) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+  const PickerItemView* item4 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
+
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::children,
+                                           ElementsAre(item1, item3))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item2, item4)))));
+  EXPECT_EQ(item_grid.GetItemBelow(item1), item3);
+  EXPECT_EQ(item_grid.GetItemBelow(item2), item4);
+  EXPECT_EQ(item_grid.GetItemBelow(item3), nullptr);
+  EXPECT_EQ(item_grid.GetItemBelow(item4), nullptr);
+}
+
+TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemBelow) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+  std::unique_ptr<PickerImageItemView> item_not_in_grid =
+      CreateGifItem(gfx::Size(100, 100));
+
+  EXPECT_EQ(item_grid.GetItemBelow(item_not_in_grid.get()), nullptr);
+}
+
+TEST(PickerImageItemGridViewTest, GetsItemLeftOf) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+  const PickerItemView* item4 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
+
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::children,
+                                           ElementsAre(item1, item3))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item2, item4)))));
+  EXPECT_EQ(item_grid.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(item_grid.GetItemLeftOf(item2), item1);
+  EXPECT_EQ(item_grid.GetItemLeftOf(item3), nullptr);
+  EXPECT_EQ(item_grid.GetItemLeftOf(item4), item3);
+}
+
+TEST(PickerImageItemGridViewTest, GetsItemLeftOfWithUnbalancedColumns) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 300)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(Pointee(Property(&views::View::children, ElementsAre(item1))),
+                  Pointee(Property(&views::View::children,
+                                   ElementsAre(item2, item3)))));
+  EXPECT_EQ(item_grid.GetItemLeftOf(item1), nullptr);
+  EXPECT_EQ(item_grid.GetItemLeftOf(item2), item1);
+  EXPECT_EQ(item_grid.GetItemLeftOf(item3), item1);
+}
+
+TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemLeftOf) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+  std::unique_ptr<PickerImageItemView> item_not_in_grid =
+      CreateGifItem(gfx::Size(100, 100));
+
+  EXPECT_EQ(item_grid.GetItemLeftOf(item_not_in_grid.get()), nullptr);
+}
+
+TEST(PickerImageItemGridViewTest, GetsItemRightOf) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+
+  const PickerItemView* item1 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  const PickerItemView* item2 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 110)));
+  const PickerItemView* item3 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 120)));
+  const PickerItemView* item4 =
+      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 130)));
+
+  EXPECT_THAT(item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::children,
+                                           ElementsAre(item1, item3))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item2, item4)))));
+  EXPECT_EQ(item_grid.GetItemRightOf(item1), item2);
+  EXPECT_EQ(item_grid.GetItemRightOf(item2), nullptr);
+  EXPECT_EQ(item_grid.GetItemRightOf(item3), item4);
+  EXPECT_EQ(item_grid.GetItemRightOf(item4), nullptr);
+}
+
+TEST(PickerImageItemGridViewTest, ItemNotInGridHasNoItemRightOf) {
+  PickerImageItemGridView item_grid(kDefaultGridWidth);
+  std::unique_ptr<PickerImageItemView> item_not_in_grid =
+      CreateGifItem(gfx::Size(100, 100));
+
+  EXPECT_EQ(item_grid.GetItemRightOf(item_not_in_grid.get()), nullptr);
 }
 
 }  // namespace

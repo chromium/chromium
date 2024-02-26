@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_traversable_item_container.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -17,7 +18,9 @@ class PickerImageItemView;
 
 // Container view for the image items in a section. The image items are
 // displayed in a grid with two columns.
-class ASH_EXPORT PickerImageItemGridView : public views::View {
+class ASH_EXPORT PickerImageItemGridView
+    : public views::View,
+      public PickerTraversableItemContainer {
   METADATA_HEADER(PickerImageItemGridView, views::View)
 
  public:
@@ -26,10 +29,22 @@ class ASH_EXPORT PickerImageItemGridView : public views::View {
   PickerImageItemGridView& operator=(const PickerImageItemGridView&) = delete;
   ~PickerImageItemGridView() override;
 
+  // PickerTraversableItemContainer:
+  PickerItemView* GetTopItem() override;
+  PickerItemView* GetBottomItem() override;
+  PickerItemView* GetItemAbove(const PickerItemView* item) override;
+  PickerItemView* GetItemBelow(const PickerItemView* item) override;
+  PickerItemView* GetItemLeftOf(const PickerItemView* item) override;
+  PickerItemView* GetItemRightOf(const PickerItemView* item) override;
+
   PickerImageItemView* AddImageItem(
       std::unique_ptr<PickerImageItemView> image_item);
 
  private:
+  // Returns the column containing `item`, or nullptr if `item` is not part of
+  // this grid.
+  const views::View* GetColumnContaining(const PickerItemView* item) const;
+
   int grid_width_ = 0;
 };
 
