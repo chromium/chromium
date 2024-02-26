@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -154,6 +155,7 @@ public class RecentTabsPageTest {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
         final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title");
+        Token tabGroupId = new Token(27839L, 4789L);
         group.getTabs()
                 .add(
                         new RecentlyClosedTab(
@@ -161,7 +163,7 @@ public class RecentTabsPageTest {
                                 0,
                                 "Tab Title 0",
                                 new GURL("https://www.example.com/url/0"),
-                                "group1"));
+                                tabGroupId));
         group.getTabs()
                 .add(
                         new RecentlyClosedTab(
@@ -169,7 +171,7 @@ public class RecentTabsPageTest {
                                 0,
                                 "Tab Title 1",
                                 new GURL("https://www.example.com/url/1"),
-                                "group1"));
+                                tabGroupId));
         setRecentlyClosedEntries(Collections.singletonList(group));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
@@ -209,6 +211,7 @@ public class RecentTabsPageTest {
         long time = 904881600000L;
         // Set a recently closed group and confirm a view is rendered for it.
         final RecentlyClosedGroup group = new RecentlyClosedGroup(2, time, null);
+        Token tabGroupId = new Token(798L, 4389L);
         group.getTabs()
                 .add(
                         new RecentlyClosedTab(
@@ -216,7 +219,7 @@ public class RecentTabsPageTest {
                                 time,
                                 "Tab Title 0",
                                 new GURL("https://www.example.com/url/0"),
-                                "group1"));
+                                tabGroupId));
         group.getTabs()
                 .add(
                         new RecentlyClosedTab(
@@ -224,7 +227,7 @@ public class RecentTabsPageTest {
                                 time,
                                 "Tab Title 1",
                                 new GURL("https://www.example.com/url/1"),
-                                "group1"));
+                                tabGroupId));
         setRecentlyClosedEntries(Collections.singletonList(group));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
@@ -264,7 +267,8 @@ public class RecentTabsPageTest {
         long time = 904881600000L;
         // Set a recently closed bulk event and confirm a view is rendered for it.
         final RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(3, time);
-        event.getGroupIdToTitleMap().put("group1", "Group 1 Title");
+        Token tabGroupId = new Token(1L, 2L);
+        event.getTabGroupIdToTitleMap().put(tabGroupId, "Group 1 Title");
         event.getTabs()
                 .add(
                         new RecentlyClosedTab(
@@ -272,7 +276,7 @@ public class RecentTabsPageTest {
                                 time,
                                 "Tab Title 0",
                                 new GURL("https://www.example.com/url/0"),
-                                "group1"));
+                                tabGroupId));
         event.getTabs()
                 .add(
                         new RecentlyClosedTab(
@@ -280,7 +284,7 @@ public class RecentTabsPageTest {
                                 time,
                                 "Tab Title 1",
                                 new GURL("https://www.example.com/url/1"),
-                                "group1"));
+                                tabGroupId));
         event.getTabs()
                 .add(
                         new RecentlyClosedTab(

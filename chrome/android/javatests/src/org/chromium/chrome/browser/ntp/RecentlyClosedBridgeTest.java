@@ -1072,7 +1072,7 @@ public class RecentlyClosedBridgeTest {
 
         RecentlyClosedBulkEvent event = (RecentlyClosedBulkEvent) entry;
         final List<String> expectedTitles = Arrays.asList(groupTitles);
-        final List<String> actualTitles = new ArrayList<>(event.getGroupIdToTitleMap().values());
+        final List<String> actualTitles = new ArrayList<>(event.getTabGroupIdToTitleMap().values());
         Assert.assertEquals(expectedTitles.size(), actualTitles.size());
         Assert.assertTrue(
                 expectedTitles.containsAll(actualTitles)

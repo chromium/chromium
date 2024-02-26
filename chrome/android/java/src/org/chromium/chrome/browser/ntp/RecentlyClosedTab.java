@@ -4,48 +4,47 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Token;
 import org.chromium.url.GURL;
 
 /** Represents a recently closed tab from TabRestoreService. */
 public class RecentlyClosedTab extends RecentlyClosedEntry {
     private final String mTitle;
     private final GURL mUrl;
+    private final @Nullable Token mTabGroupId;
 
     /**
-     * Native tab_groups::TabGroupId. This is NOT equal to {@link RecentlyClosedEntry#id} for the
-     * corresponding {@link RecentlyClosedGroup}.
+     * @param sessionId The unique ID in the tab restore service for the entry.
+     * @param title The title of the tab.
+     * @param url The URL of the tab.
+     * @param tabGroupId The tab group ID the tab had before being closed or null if it was not part
+     *     of a group.
      */
-    private final String mGroupId;
-
     public RecentlyClosedTab(
-            int sessionId, long timestamp, String title, GURL url, String groupId) {
+            int sessionId, long timestamp, String title, GURL url, @Nullable Token tabGroupId) {
         super(sessionId, timestamp);
         mTitle = title;
         mUrl = url;
-
-        // Treat null and empty strings as equivalent.
-        mGroupId = (groupId == null || groupId.isEmpty()) ? null : groupId;
+        mTabGroupId = tabGroupId;
     }
 
-    /**
-     * @return Title of tab.
-     */
+    /** Returns the title of tab. */
     public String getTitle() {
         return mTitle;
     }
 
-    /**
-     * @return URL of the tab.
-     */
+    /** Returns the URL of the tab. */
     public GURL getUrl() {
         return mUrl;
     }
 
     /**
-     * @return Group ID of the tab. Useful when displaying groups from a {@link
-     *         RecentlyClosedBulkEvent}.
+     * Returns the tab group ID of the tab or null if the tab is not part of tab group. Useful when
+     * displaying groups from a {@link RecentlyClosedBulkEvent}.
      */
-    public String getGroupId() {
-        return mGroupId;
+    public @Nullable Token getTabGroupId() {
+        return mTabGroupId;
     }
 }

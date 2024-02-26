@@ -490,7 +490,7 @@ public class HistoricalTabSaverImplTest {
         Assert.assertEquals(
                 "Entry " + i + " group count mismatch.",
                 new HashSet<String>(groupTitles.values()).size(),
-                recentBulk.getGroupIdToTitleMap().size());
+                recentBulk.getTabGroupIdToTitleMap().size());
         for (int j = 0; j < expectedTabs.size(); j++) {
             Assert.assertEquals(
                     "Entry " + i + " tab " + j + " title mismatch.",
@@ -504,8 +504,8 @@ public class HistoricalTabSaverImplTest {
                     "Entry " + i + " tab " + j + " group mismatch.",
                     groupTitles.get(expectedTabs.get(j)),
                     recentBulk
-                            .getGroupIdToTitleMap()
-                            .get(recentBulk.getTabs().get(j).getGroupId()));
+                            .getTabGroupIdToTitleMap()
+                            .get(recentBulk.getTabs().get(j).getTabGroupId()));
         }
     }
 
