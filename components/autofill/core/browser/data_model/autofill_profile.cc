@@ -227,26 +227,12 @@ void GetFieldsForDistinguishingProfiles(
     const std::vector<FieldType>* suggested_fields,
     FieldTypeSet excluded_fields,
     std::vector<FieldType>* distinguishing_fields) {
-  static const FieldType kDefaultDistinguishingFields[] = {
-      NAME_FULL,
-      ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_LINE2,
-      ADDRESS_HOME_DEPENDENT_LOCALITY,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP,
-      ADDRESS_HOME_SORTING_CODE,
-      ADDRESS_HOME_COUNTRY,
-      EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER,
-      COMPANY_NAME,
-  };
-
   std::vector<FieldType> default_fields;
   if (!suggested_fields) {
     default_fields.assign(
-        kDefaultDistinguishingFields,
-        kDefaultDistinguishingFields + std::size(kDefaultDistinguishingFields));
+        AutofillProfile::kDefaultDistinguishingFieldsForLabels,
+        AutofillProfile::kDefaultDistinguishingFieldsForLabels +
+            std::size(AutofillProfile::kDefaultDistinguishingFieldsForLabels));
     if (excluded_fields.empty()) {
       distinguishing_fields->swap(default_fields);
       return;

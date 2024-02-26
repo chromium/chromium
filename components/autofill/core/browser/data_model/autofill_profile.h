@@ -52,6 +52,27 @@ class AutofillProfile : public AutofillDataModel {
     kMaxValue = kAccount,
   };
 
+  // These fields are, by default, the only candidates for being added to the
+  // list of profile labels. Note that the call to generate labels can specify a
+  // custom set of fields, in which case such set would be used instead of this
+  // one.
+  // TODO(b/40285811): Change this into a FieldTypeSet once the priority is not
+  // decided by the order of these entries anymore.
+  static constexpr FieldType kDefaultDistinguishingFieldsForLabels[] = {
+      NAME_FULL,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      COMPANY_NAME,
+  };
+
   // The values used to represent Autofill in the `initial_creator_id()` and
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
@@ -201,6 +222,7 @@ class AutofillProfile : public AutofillDataModel {
   // from it minus those in `excluded_fields`. Otherwise, the label fields are
   // drawn from a default set. Each label includes at least
   // `minimal_fields_shown` fields, if possible.
+  // TODO(b/40285811): Make `suggested_fields` non-optional.
   static void CreateInferredLabels(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,

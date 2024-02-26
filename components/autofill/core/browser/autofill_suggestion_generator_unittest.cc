@@ -1701,6 +1701,8 @@ TEST_F(
   }));
 }
 
+// This fixture contains tests for autofill being triggered from the context
+// menu on a field which is not classified as an address.
 class AutofillNonAddressFieldsSuggestionGeneratorTest
     : public AutofillChildrenSuggestionGeneratorTest {
  public:
@@ -1805,6 +1807,91 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                       std::vector<std::vector<Suggestion::Text>>{{}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false))));
+}
+
+// This test checks that the resulting string of
+// `AutofillProfile::CreateDifferentiatingLabels()` is split correctly into main
+// text and labels. In Japanese, the resulting string doesn't have separators.
+TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
+       MainTextAndLabelsAreCorrect_Japanese) {
+  AutofillProfile profile(AddressCountryCode("JP"));
+  profile.SetRawInfo(NAME_FULL, u"ミク初音");
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"港区六本木ヒルズ森タワー");
+  profile.set_language_code("ja");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {UNKNOWN_TYPE},
+          /*last_targeted_fields=*/std::nullopt, UNKNOWN_TYPE,
+          /*trigger_field_max_length=*/0);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(AllOf(
+                  Field(&Suggestion::main_text,
+                        Suggestion::Text(u"港区六本木ヒルズ森タワー",
+                                         Suggestion::Text::IsPrimary(true))),
+                  Field(&Suggestion::labels,
+                        std::vector<std::vector<Suggestion::Text>>{
+                            {Suggestion::Text(u"ミク初音")}}),
+                  Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+                  Field(&Suggestion::is_acceptable, false))));
+}
+
+// This test checks that the resulting string of
+// `AutofillProfile::CreateDifferentiatingLabels()` is split correctly into main
+// text and labels. In Arabic, the resulting string is separated by arabic
+// comma.
+TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
+       MainTextAndLabelsAreCorrect_Arabic) {
+  AutofillProfile profile(AddressCountryCode("EG"));
+  profile.SetRawInfo(NAME_FULL, u"صاحب");
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"الملكي");
+  profile.set_language_code("ar");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {UNKNOWN_TYPE},
+          /*last_targeted_fields=*/std::nullopt, UNKNOWN_TYPE,
+          /*trigger_field_max_length=*/0);
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(AllOf(
+          Field(&Suggestion::main_text,
+                Suggestion::Text(u"صاحب", Suggestion::Text::IsPrimary(true))),
+          Field(&Suggestion::labels,
+                std::vector<std::vector<Suggestion::Text>>{
+                    {Suggestion::Text(u"الملكي")}}),
+          Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+          Field(&Suggestion::is_acceptable, false))));
+}
+
+// This test checks that the resulting string of
+// `AutofillProfile::CreateDifferentiatingLabels()` is split correctly into main
+// text and labels. In Thai, the resulting string is separated by space.
+TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
+       MainTextAndLabelsAreCorrect_Thai) {
+  AutofillProfile profile(AddressCountryCode("TH"));
+  profile.SetRawInfo(NAME_FULL, u"แขวงลุมพินี");
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"57 ปาร์คเวนเชอร์");
+  profile.set_language_code("th");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {UNKNOWN_TYPE},
+          /*last_targeted_fields=*/std::nullopt, UNKNOWN_TYPE,
+          /*trigger_field_max_length=*/0);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(AllOf(
+                  Field(&Suggestion::main_text,
+                        Suggestion::Text(u"แขวงลุมพินี",
+                                         Suggestion::Text::IsPrimary(true))),
+                  Field(&Suggestion::labels,
+                        std::vector<std::vector<Suggestion::Text>>{
+                            {Suggestion::Text(u"57 ปาร์คเวนเชอร์")}}),
+                  Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
+                  Field(&Suggestion::is_acceptable, false))));
 }
 
 // Tests that a non-address field suggestion has all the profile fields as

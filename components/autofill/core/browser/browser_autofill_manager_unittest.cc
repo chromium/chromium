@@ -1192,8 +1192,8 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     AutofillProfile profile3(
         i18n_model_definition::kLegacyHierarchyCountryCode);
-    test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "", "",
-                         "");
+    test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "",
+                         "US", "");
     profile3.set_guid(MakeGuid(3));
     profile3.set_use_date(AutofillClock::Now());
     personal_data().AddProfile(profile3);

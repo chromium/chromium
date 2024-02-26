@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -141,22 +141,67 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 #endif
 }
 
+// First, check the comment of
+// `GetProfileSuggestionMainTextForNonAddressField()`.
+//
+// To find the position and length of the first address field, the code
+// iterates through all of the possible fields which can be part of the result
+// of `AutofillProfile::CreateDifferentiatingLabels()`, and checks which one is
+// the closest to the beginning of the string.
+//
+// Note: Right-to-left languages are only displayed from right to left, the
+// characters are stored from left to right.
+std::pair<size_t, size_t>
+GetFirstAddressFieldPositonAndLengthForNonAddressField(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    std::u16string_view suggestion_text) {
+  std::pair<size_t, size_t> result = {suggestion_text.size(), 0};
+  for (const FieldType field_type :
+       AutofillProfile::kDefaultDistinguishingFieldsForLabels) {
+    // For phone numbers, `suggestion_text` contains the user-formatted (raw)
+    // version of a field instead of the canonicalized version.
+    const std::u16string field_value =
+        field_type == PHONE_HOME_WHOLE_NUMBER
+            ? profile.GetRawInfo(field_type)
+            : profile.GetInfo(field_type, app_locale);
+    size_t field_value_position = suggestion_text.find(field_value);
+    if (!field_value.empty() && field_value_position != std::u16string::npos &&
+        field_value_position < result.first) {
+      result = {field_value_position, field_value.size()};
+    }
+  }
+  return result;
+}
+
 // For a profile containing a full address, the main text is the name, and
 // the label is the address. The problem arises when a profile isn't complete
 // (aka it doesn't have a name or an address etc.).
 //
-// `AutofillProfile::CreateDifferentiatingLabels` generates the a text which
-// contains 2 address fields.
+// `AutofillProfile::CreateDifferentiatingLabels()` generates a text which
+// contains 2 values from profile.
 //
-// Example for a full autofill profile:
+// Example for a full Autofill profile:
 // "Full Name, Address"
 //
-// Examples where autofill profiles are incomplete:
+// Examples where Autofill profiles are incomplete:
 // "City, Country"
 // "Country, Email"
 //
-// Note: the separator isn't actually ", ", it is
-// IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR
+// Note: the separator isn't necessarily ", ", it can be an arabic comma, a
+// space or no separator at all, depending on the language.
+//
+// The main text is located at the beginning of the aforementioned strings. In
+// order to extract it, we calculate its position into the string and its length
+// using `GetFirstAddressFieldPositonAndLengthForNonAddressField()`. We cannot
+// split the string by separators because of two reasons: some languages don't
+// have any separator, and because address fields can have commas inside them in
+// some countries.
+//
+// The reason why the position is also needed is because in some languages the
+// address can start with something different than an address field.
+// For example, in Japanese, addresses can start with the "〒" character, which
+// is the Japanese postal mark.
 std::u16string GetProfileSuggestionMainTextForNonAddressField(
     const AutofillProfile& profile,
     const std::string& app_locale) {
@@ -164,18 +209,13 @@ std::u16string GetProfileSuggestionMainTextForNonAddressField(
   AutofillProfile::CreateDifferentiatingLabels({&profile}, app_locale,
                                                &suggestion_text_array);
   CHECK_EQ(suggestion_text_array.size(), 1u);
-
-  const std::u16string separator =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-  // The first part contains the main text.
-  std::vector<std::u16string> text_pieces =
-      base::SplitStringUsingSubstr(suggestion_text_array[0], separator,
-                                   base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  return text_pieces[0];
+  auto [position, length] =
+      GetFirstAddressFieldPositonAndLengthForNonAddressField(
+          profile, app_locale, suggestion_text_array[0]);
+  return suggestion_text_array[0].substr(position, length);
 }
 
-// Check comment of method above:
-// `GetProfileSuggestionMainTextForNonAddressField`.
+// Check comment of `GetProfileSuggestionMainTextForNonAddressField()` method.
 std::vector<std::u16string> GetProfileSuggestionLabelForNonAddressField(
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
@@ -184,14 +224,20 @@ std::vector<std::u16string> GetProfileSuggestionLabelForNonAddressField(
   AutofillProfile::CreateDifferentiatingLabels(profiles, app_locale, &labels);
   CHECK_EQ(labels.size(), profiles.size());
 
-  for (std::u16string& label : labels) {
-    const std::u16string separator =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-    std::vector<std::u16string> text_pieces = base::SplitStringUsingSubstr(
-        label, separator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-    // `text_pieces[1]` contains the label.
-    label = text_pieces.size() > 1 ? text_pieces[1] : u"";
+  for (size_t index = 0; index < profiles.size(); index++) {
+    auto [main_text_position, main_text_length] =
+        GetFirstAddressFieldPositonAndLengthForNonAddressField(
+            *profiles[index], app_locale, labels[index]);
+    // Erasing the main text results in the label being the first address field
+    // in the string.
+    labels[index].erase(main_text_position, main_text_length);
+    size_t start_position_of_label =
+        GetFirstAddressFieldPositonAndLengthForNonAddressField(
+            *profiles[index], app_locale, labels[index])
+            .first;
+    labels[index] = start_position_of_label < labels[index].size()
+                        ? labels[index].substr(start_position_of_label)
+                        : u"";
   }
   return labels;
 }

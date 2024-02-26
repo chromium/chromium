@@ -622,7 +622,8 @@ TEST(
   // First check that when `triggering_field_type` is not present, a second
   // differentiating label is added.
   AutofillProfile::CreateInferredLabels(
-      {&profile1, &profile2}, /*suggested_fields=*/std::nullopt,
+      {&profile1, &profile2},
+      /*suggested_fields=*/std::nullopt,
       /*triggering_field_type=*/std::nullopt,
       /*excluded_fields=*/{}, /*minimal_fields_shown=*/1, "en-US", &labels);
   ASSERT_EQ(2U, labels.size());
@@ -632,7 +633,8 @@ TEST(
   // If the `triggering_field_type` is present and is unique, there is no need
   // for a second differentiating label.
   AutofillProfile::CreateInferredLabels(
-      {&profile1, &profile2}, /*suggested_fields=*/std::nullopt,
+      {&profile1, &profile2},
+      /*suggested_fields=*/std::nullopt,
       /*triggering_field_type=*/EMAIL_ADDRESS,
       /*excluded_fields=*/{}, /*minimal_fields_shown=*/1, "en-US", &labels);
   ASSERT_EQ(2U, labels.size());
@@ -642,7 +644,8 @@ TEST(
   // If the `triggering_field_type` is present and is not unique, a second
   // differentiating label is added.
   AutofillProfile::CreateInferredLabels(
-      {&profile1, &profile2}, /*suggested_fields=*/std::nullopt,
+      {&profile1, &profile2},
+      /*suggested_fields=*/std::nullopt,
       /*triggering_field_type=*/NAME_FIRST,
       /*excluded_fields=*/{}, /*minimal_fields_shown=*/1, "en-US", &labels);
   ASSERT_EQ(2U, labels.size());
