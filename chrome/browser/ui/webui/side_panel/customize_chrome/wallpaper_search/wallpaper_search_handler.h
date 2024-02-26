@@ -45,6 +45,16 @@ class ImageDecoder;
 using ImageDecodedCallback = base::OnceCallback<void(const gfx::Image&)>;
 }  // namespace image_fetcher
 
+// This matches to the enum of the same name that is used by
+// the histogram "NewTabPage.WallpaperSearch.SessionSetTheme"
+// and must be kept in sync. Do not renumber.
+enum class NtpWallpaperSearchThemeType {
+  kResult = 0,
+  kInspiration = 1,
+  kHistory = 2,
+  kMaxValue = kHistory,
+};
+
 class WallpaperSearchHandler
     : public side_panel::customize_chrome::mojom::WallpaperSearchHandler,
       public WallpaperSearchBackgroundManagerObserver {
@@ -158,6 +168,9 @@ class WallpaperSearchHandler
   // Theme to be sent to the background manager to be saved to history on
   // destruction of this handler.
   std::unique_ptr<HistoryEntry> history_entry_;
+  // Set inspiration image. This is the token of the last set inspiration image
+  // of this handler instance for metrics.
+  std::optional<base::Token> inspiration_token_;
   // `wallpaper_search_results_` points to entries in `log_entries_`. Therefore,
   // `wallpaper_search_results_` is defined below so that the pointers get
   // destructed before the pointed to objects in `log_entries_`.

@@ -143,6 +143,25 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
             *history_entry_);
   }
 
+  bool is_result = false;
+  if (background_id) {
+    if (base::Contains(wallpaper_search_results_, *background_id)) {
+      base::UmaHistogramEnumeration(
+          "NewTabPage.WallpaperSearch.SessionSetTheme",
+          NtpWallpaperSearchThemeType::kResult);
+      is_result = true;
+    } else {
+      base::UmaHistogramEnumeration(
+          "NewTabPage.WallpaperSearch.SessionSetTheme",
+          NtpWallpaperSearchThemeType::kHistory);
+    }
+  } else if (inspiration_token_ &&
+             wallpaper_search_background_manager_->IsCurrentBackground(
+                 *inspiration_token_)) {
+    base::UmaHistogramEnumeration("NewTabPage.WallpaperSearch.SessionSetTheme",
+                                  NtpWallpaperSearchThemeType::kInspiration);
+  }
+
   if (!log_entries_.empty()) {
     auto& [log_entry, render_time] = log_entries_.back();
     auto* quality =
@@ -153,8 +172,7 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
       quality->set_complete_latency_ms(
           (base::Time::Now() - *render_time).InMilliseconds());
     }
-    if (background_id.has_value() &&
-        base::Contains(wallpaper_search_results_, *background_id)) {
+    if (is_result) {
       auto* image_quality =
           std::get<0>(wallpaper_search_results_[*background_id]);
       if (image_quality) {
@@ -746,6 +764,7 @@ void WallpaperSearchHandler::OnInspirationImageDecoded(
     const base::Token& id,
     base::ElapsedTimer timer,
     const gfx::Image& image) {
+  inspiration_token_ = id;
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
       id, image.AsBitmap(), /*is_inspiration_image=*/true, std::move(timer));
 }

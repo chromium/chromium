@@ -172,6 +172,15 @@ std::vector<HistoryEntry> WallpaperSearchBackgroundManager::GetHistory() {
   return history;
 }
 
+bool WallpaperSearchBackgroundManager::IsCurrentBackground(
+    const base::Token& id) {
+  std::optional<CustomBackground> current_theme =
+      ntp_custom_background_service_->GetCustomBackground();
+  return current_theme.has_value() &&
+         current_theme->local_background_id.has_value() &&
+         current_theme->local_background_id->ToString() == id.ToString();
+}
+
 void WallpaperSearchBackgroundManager::SelectHistoryImage(
     const base::Token& id,
     const gfx::Image& image,

@@ -1931,6 +1931,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.WallpaperSearch.SessionSetTheme"
+    enum="NtpWallpaperSearchThemeType" expires_after="2024-08-22">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram that records the type of wallpaper search theme that was kept at
+    the end of a wallpaper search session, if any at all. This records the type
+    of wallpaper search theme set during a customize chrome side panel session
+    if it is still set when the customize chrome side panel is closed.
+  </summary>
+</histogram>
+
 <histogram
     name="NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency"
     units="ms" expires_after="2024-06-28">
