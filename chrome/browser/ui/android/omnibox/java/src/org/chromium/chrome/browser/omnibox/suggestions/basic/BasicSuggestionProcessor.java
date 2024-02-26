@@ -138,10 +138,11 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
 
-        if (!mUrlBarEditingTextProvider
-                .getTextWithoutAutocomplete()
-                .trim()
-                .equalsIgnoreCase(suggestion.getDisplayText())) {
+        if (suggestion.getType() != OmniboxSuggestionType.TILE_SUGGESTION
+                && !mUrlBarEditingTextProvider
+                        .getTextWithoutAutocomplete()
+                        .trim()
+                        .equalsIgnoreCase(suggestion.getDisplayText())) {
             setTabSwitchOrRefineAction(model, suggestion, position);
         }
     }
