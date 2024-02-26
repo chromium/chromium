@@ -76,7 +76,6 @@ constexpr char kIssueCaseIdKey[] = "issueCaseId";
 constexpr char kIssueDescriptionKey[] = "issueDescription";
 constexpr char kRequestedDataCollectorsKey[] = "requestedDataCollectors";
 constexpr char kRequestedPiiTypesKey[] = "requestedPiiTypes";
-constexpr char kRequesterId[] = "requesterMetadata";
 
 // JSON keys and values used for creating the upload metadata to File Storage
 // Server (go/crosman_fss_action#scotty-upload-agent).
@@ -290,11 +289,6 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
     support_packet_details_.requested_pii_types =
         GetPiiTypes(*requested_pii_types);
   }
-
-  const std::string* requester_metadata =
-      details_dict->FindString(kRequesterId);
-  support_packet_details_.requester_metadata =
-      requester_metadata ? *requester_metadata : std::string();
 
   return true;
 }

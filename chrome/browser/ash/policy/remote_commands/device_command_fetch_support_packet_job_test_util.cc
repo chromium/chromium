@@ -26,7 +26,6 @@ base::Value::Dict GetFetchSupportPacketCommandPayloadDict(
   base::Value::Dict support_packet_details;
   support_packet_details.Set("issueCaseId", "issue_case_id");
   support_packet_details.Set("issueDescription", "issue description");
-  support_packet_details.Set("requesterMetadata", "obfuscated123");
   base::Value::List data_collectors_list;
   for (const auto& data_collector : data_collectors) {
     data_collectors_list.Append(data_collector);
