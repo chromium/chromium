@@ -5,6 +5,16 @@
 import("//build/config/linux/pkg_config.gni")
 import("//build/shim_headers.gni")
 
+config("encoder_cfi_flags") {
+  cflags = []
+  if (current_toolchain == default_toolchain) {
+    openh264_cfi_ignorelist_path =
+        rebase_path("//build/linux/unbundle/openh264_encoder_cfi_ignores.txt",
+                    root_build_dir)
+    cflags += [ "-fsanitize-ignorelist=$openh264_cfi_ignorelist_path" ]
+  }
+}
+
 pkg_config("config") {
   packages = [ "openh264" ]
 }
@@ -32,5 +42,8 @@ source_set("processing") {
 
 source_set("encoder") {
   deps = [ ":openh264_shim" ]
-  public_configs = [ ":config" ]
+  public_configs = [
+    ":config",
+    ":encoder_cfi_flags",
+  ]
 }
