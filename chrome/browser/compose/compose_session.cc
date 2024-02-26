@@ -967,6 +967,7 @@ void ComposeSession::SetCloseReason(
 
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
+    case compose::ComposeSessionCloseReason::kNewSessionWithSelectedText:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
       session_events_.close_clicked = true;
@@ -978,10 +979,6 @@ void ComposeSession::SetCloseReason(
     case compose::ComposeSessionCloseReason::kAcceptedSuggestion:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
       session_events_.inserted_results = true;
-      break;
-    default:
-      final_status_ =
-          optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED;
       break;
   }
 }

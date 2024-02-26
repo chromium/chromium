@@ -2463,7 +2463,7 @@ TEST_F(ChromeComposeClientTest,
   // Close UI to submit remaining quality logs.
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
 
-  // This take should clear the quality future from the model that was undone.
+  // This take should clear the quality future from the abandoned request.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
       quality_test_future.Take();
 
@@ -2474,6 +2474,54 @@ TEST_F(ChromeComposeClientTest,
   result = quality_test_future_2.Take();
 
   EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->final_status());
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeQualityNewSessionWithSelectedText) {
+  ShowDialogAndBindMojo();
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
+  BindComposeFutureToOnResponseReceived(compose_future);
+
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose("a user typed this", false);
+  EXPECT_TRUE(compose_future.Take());  // Reset future for second compose call.
+
+  // Start a new session with selected text.
+  field_data().value = u"user selected text";
+  SetSelection(u"selected text");
+  ShowDialogAndBindMojo();
+
+  // Get quality result from the abandoned session.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
+      quality_test_future.Take();
+
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->final_status());
+
+  page_handler()->Compose("a user typed that", false);
+  EXPECT_TRUE(compose_future.Take());
+
+  // Close UI to submit remaining quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  result = quality_test_future.Take();
+
+  EXPECT_EQ(optimization_guide::proto::FinalStatus::STATUS_ABANDONED,
             result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
                 ->final_status());
 }
