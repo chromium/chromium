@@ -36,12 +36,13 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
+
+class StrokeData;
 
 // Encapsulates the state information we store for each pushed graphics state.
 // Only GraphicsContext can use this class.
@@ -58,11 +59,8 @@ class PLATFORM_EXPORT GraphicsContextState final {
 
   void Copy(const GraphicsContextState&);
 
-  // cc::PaintFlags objects that reflect the current state. If the length of the
-  // path to be stroked is known, pass it in for correct dash or dot placement.
-  const cc::PaintFlags& StrokeFlags(const int stroked_path_length,
-                                    const int dash_thickness,
-                                    const bool closed_path) const;
+  // cc::PaintFlags objects that reflect the current state.
+  const cc::PaintFlags& StrokeFlags() const { return stroke_flags_; }
   const cc::PaintFlags& FillFlags() const { return fill_flags_; }
 
   uint16_t SaveCount() const { return save_count_; }
@@ -77,9 +75,10 @@ class PLATFORM_EXPORT GraphicsContextState final {
   }
   void SetStrokeColor(const Color&);
 
-  const StyledStrokeData& GetStrokeData() const { return stroke_data_; }
-  void SetStrokeStyle(StrokeStyle);
+  float GetStrokeThickness() const { return stroke_flags_.getStrokeWidth(); }
   void SetStrokeThickness(float);
+
+  void SetStroke(const StrokeData& stroke_data);
 
   // Fill data
   Color FillColor() const {
@@ -123,13 +122,9 @@ class PLATFORM_EXPORT GraphicsContextState final {
   explicit GraphicsContextState(const GraphicsContextState&);
   GraphicsContextState& operator=(const GraphicsContextState&) = delete;
 
-  // This is mutable to enable dash path effect updates when the paint is
-  // fetched for use.
-  mutable cc::PaintFlags stroke_flags_;
+  cc::PaintFlags stroke_flags_;
   cc::PaintFlags fill_flags_;
   TextPaintOrder text_paint_order_ = kFillStroke;
-
-  StyledStrokeData stroke_data_;
 
   TextDrawingModeFlags text_drawing_mode_ = kTextModeFill;
 

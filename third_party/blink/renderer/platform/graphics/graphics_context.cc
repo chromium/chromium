@@ -44,6 +44,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -464,29 +466,29 @@ static void EnforceDotsAtEndpoints(GraphicsContext& context,
 
 void GraphicsContext::DrawLine(const gfx::Point& point1,
                                const gfx::Point& point2,
+                               const StyledStrokeData& styled_stroke,
                                const AutoDarkMode& auto_dark_mode,
                                bool is_text_line,
                                const cc::PaintFlags* paint_flags) {
   DCHECK(canvas_);
 
-  StrokeStyle pen_style = GetStrokeStyle();
+  StrokeStyle pen_style = styled_stroke.Style();
   if (pen_style == kNoStroke)
     return;
 
   gfx::PointF p1 = gfx::PointF(point1);
   gfx::PointF p2 = gfx::PointF(point2);
   bool is_vertical_line = (p1.x() == p2.x());
-  int width = roundf(StrokeThickness());
+  int width = roundf(styled_stroke.Thickness());
 
   // We know these are vertical or horizontal lines, so the length will just
   // be the sum of the displacement component vectors give or take 1 -
   // probably worth the speed up of no square root, which also won't be exact.
   gfx::Vector2dF disp = p2 - p1;
   int length = SkScalarRoundToInt(disp.x() + disp.y());
-  const DarkModeFlags flags(
-      this, auto_dark_mode,
-      paint_flags ? *paint_flags
-                  : ImmutableState()->StrokeFlags(length, width, false));
+  cc::PaintFlags flags =
+      paint_flags ? *paint_flags : ImmutableState()->StrokeFlags();
+  styled_stroke.SetupPaint(&flags, {length, width, false});
 
   if (pen_style == kDottedStroke) {
     if (StyledStrokeData::StrokeIsDashed(width, pen_style)) {
@@ -515,34 +517,35 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
   }
 
   AdjustLineToPixelBoundaries(p1, p2, width);
-  canvas_->drawLine(p1.x(), p1.y(), p2.x(), p2.y(), flags);
+  DrawLine(p1, p2, flags, auto_dark_mode);
 }
 
 void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
                                       float width,
+                                      const StyledStrokeData& styled_stroke,
                                       const AutoDarkMode& auto_dark_mode,
                                       const cc::PaintFlags* paint_flags) {
   if (width <= 0)
     return;
 
-  auto stroke_style = GetStrokeStyle();
+  auto stroke_style = styled_stroke.Style();
+  const float thickness = styled_stroke.Thickness();
   DCHECK_NE(stroke_style, kWavyStroke);
   if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetPointsForTextLine(pt, width, StrokeThickness());
-    DrawLine(start, end, auto_dark_mode, true, paint_flags);
+    auto [start, end] = GetPointsForTextLine(pt, width, thickness);
+    DrawLine(start, end, styled_stroke, auto_dark_mode, true, paint_flags);
   } else {
     if (paint_flags) {
       // In SVG, we don't round down the thickness to an integer for better
       // scaling behavior.  See crbug.com/1270336.
-      SkRect r =
-          gfx::RectFToSkRect(GetRectForTextLine(pt, width, StrokeThickness()));
+      SkRect r = gfx::RectFToSkRect(GetRectForTextLine(pt, width, thickness));
       DrawRect(r, *paint_flags, auto_dark_mode);
     } else {
       cc::PaintFlags flags = ImmutableState()->FillFlags();
       // Text lines are drawn using the stroke color.
-      flags.setColor(ImmutableState()->StrokeFlags(0, 0, false).getColor4f());
+      flags.setColor(ImmutableState()->StrokeFlags().getColor4f());
       SkRect r = gfx::RectFToSkRect(
-          GetRectForTextLine(pt, width, RoundDownThickness(StrokeThickness())));
+          GetRectForTextLine(pt, width, RoundDownThickness(thickness)));
       DrawRect(r, flags, auto_dark_mode);
     }
   }
@@ -575,9 +578,8 @@ void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
     }
   }
 
-  if ((mode_flags & kTextModeStroke) && GetStrokeStyle() != kNoStroke &&
-      StrokeThickness() > 0) {
-    cc::PaintFlags stroke_flags(ImmutableState()->StrokeFlags(0, 0, false));
+  if ((mode_flags & kTextModeStroke) && StrokeThickness() > 0) {
+    cc::PaintFlags stroke_flags(ImmutableState()->StrokeFlags());
     if (mode_flags & kTextModeFill) {
       // shadow was already applied during fill pass
       stroke_flags.setLooper(nullptr);
@@ -790,6 +792,15 @@ void GraphicsContext::DrawImageTiled(
   SetImagePainted(paint_timing_info.report_paint_timing);
 }
 
+void GraphicsContext::DrawLine(const gfx::PointF& from,
+                               const gfx::PointF& to,
+                               const cc::PaintFlags& flags,
+                               const AutoDarkMode& auto_dark_mode) {
+  DCHECK(canvas_);
+  canvas_->drawLine(from.x(), from.y(), to.x(), to.y(),
+                    DarkModeFlags(this, auto_dark_mode, flags));
+}
+
 void GraphicsContext::DrawOval(const SkRect& oval,
                                const cc::PaintFlags& flags,
                                const AutoDarkMode& auto_dark_mode) {
@@ -824,6 +835,16 @@ void GraphicsContext::FillPath(const Path& path_to_fill,
     return;
 
   DrawPath(path_to_fill.GetSkPath(), ImmutableState()->FillFlags(),
+           auto_dark_mode);
+}
+
+void GraphicsContext::StrokePath(const Path& path_to_stroke,
+                                 const AutoDarkMode& auto_dark_mode) {
+  if (path_to_stroke.IsEmpty()) {
+    return;
+  }
+
+  DrawPath(path_to_stroke.GetSkPath(), ImmutableState()->StrokeFlags(),
            auto_dark_mode);
 }
 
@@ -973,26 +994,15 @@ void GraphicsContext::FillEllipse(const gfx::RectF& ellipse,
            auto_dark_mode);
 }
 
-void GraphicsContext::StrokePath(const Path& path_to_stroke,
-                                 const AutoDarkMode& auto_dark_mode,
-                                 const int length,
-                                 const int dash_thickness) {
-  if (path_to_stroke.IsEmpty())
-    return;
-
-  DrawPath(path_to_stroke.GetSkPath(),
-           ImmutableState()->StrokeFlags(length, dash_thickness,
-                                         path_to_stroke.IsClosed()),
+void GraphicsContext::StrokeEllipse(const gfx::RectF& ellipse,
+                                    const AutoDarkMode& auto_dark_mode) {
+  DrawOval(gfx::RectFToSkRect(ellipse), ImmutableState()->StrokeFlags(),
            auto_dark_mode);
 }
 
 void GraphicsContext::StrokeRect(const gfx::RectF& rect,
-                                 float line_width,
                                  const AutoDarkMode& auto_dark_mode) {
-  cc::PaintFlags flags(ImmutableState()->StrokeFlags(0, 0, false));
-  flags.setStrokeWidth(WebCoreFloatToSkScalar(line_width));
-  // Reset the dash effect to account for the width
-  ImmutableState()->GetStrokeData().SetupPaintDashPathEffect(&flags, {});
+  const cc::PaintFlags& flags = ImmutableState()->StrokeFlags();
   // strokerect has special rules for CSS when the rect is degenerate:
   // if width==0 && height==0, do nothing
   // if width==0 || height==0, then just draw line for the other dimension
@@ -1010,12 +1020,6 @@ void GraphicsContext::StrokeRect(const gfx::RectF& rect,
     path.close();
     DrawPath(path.detach(), flags, auto_dark_mode);
   }
-}
-
-void GraphicsContext::StrokeEllipse(const gfx::RectF& ellipse,
-                                    const AutoDarkMode& auto_dark_mode) {
-  DrawOval(gfx::RectFToSkRect(ellipse),
-           ImmutableState()->StrokeFlags(0, 0, false), auto_dark_mode);
 }
 
 void GraphicsContext::ClipRoundedRect(const FloatRoundedRect& rrect,

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
+#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 
 namespace blink {
 
@@ -20,7 +21,6 @@ static inline cc::PaintFlags::FilterQuality FilterQualityForPaint(
 
 GraphicsContextState::GraphicsContextState() {
   stroke_flags_.setStyle(cc::PaintFlags::kStroke_Style);
-  stroke_flags_.setStrokeWidth(SkFloatToScalar(stroke_data_.Thickness()));
   stroke_flags_.setFilterQuality(FilterQualityForPaint(interpolation_quality_));
   stroke_flags_.setDynamicRangeLimit(dynamic_range_limit_);
   stroke_flags_.setAntiAlias(should_antialias_);
@@ -32,7 +32,6 @@ GraphicsContextState::GraphicsContextState() {
 GraphicsContextState::GraphicsContextState(const GraphicsContextState& other)
     : stroke_flags_(other.stroke_flags_),
       fill_flags_(other.fill_flags_),
-      stroke_data_(other.stroke_data_),
       text_drawing_mode_(other.text_drawing_mode_),
       interpolation_quality_(other.interpolation_quality_),
       dynamic_range_limit_(other.dynamic_range_limit_),
@@ -44,22 +43,12 @@ void GraphicsContextState::Copy(const GraphicsContextState& source) {
   new (this) GraphicsContextState(source);
 }
 
-const cc::PaintFlags& GraphicsContextState::StrokeFlags(
-    const int stroked_path_length,
-    const int dash_thickness,
-    const bool closed_path) const {
-  stroke_data_.SetupPaintDashPathEffect(
-      &stroke_flags_, {stroked_path_length, dash_thickness, closed_path});
-  return stroke_flags_;
-}
-
-void GraphicsContextState::SetStrokeStyle(StrokeStyle style) {
-  stroke_data_.SetStyle(style);
-}
-
 void GraphicsContextState::SetStrokeThickness(float thickness) {
-  stroke_data_.SetThickness(thickness);
   stroke_flags_.setStrokeWidth(SkFloatToScalar(thickness));
+}
+
+void GraphicsContextState::SetStroke(const StrokeData& stroke_data) {
+  stroke_data.SetupPaint(&stroke_flags_);
 }
 
 void GraphicsContextState::SetStrokeColor(const Color& color) {

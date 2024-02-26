@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -536,32 +538,38 @@ class ComplexOutlinePainter {
   }
 
   void PaintDottedOrDashedOutline() {
-    context_.SetStrokeColor(color_);
     auto stroke_style =
         outline_style_ == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke;
-    context_.SetStrokeStyle(stroke_style);
+    StyledStrokeData styled_stroke;
+    styled_stroke.SetStyle(stroke_style);
     if ((width_ % 2) &&
         StyledStrokeData::StrokeIsDashed(width_, stroke_style)) {
       // If width_ is odd, draw wider to fill the clip area.
-      context_.SetStrokeThickness(width_ + 2);
+      styled_stroke.SetThickness(width_ + 2);
     } else {
-      context_.SetStrokeThickness(width_);
+      styled_stroke.SetThickness(width_);
     }
+    context_.SetStrokeColor(color_);
 
     SkPath center_path = CenterPath();
     AutoDarkMode auto_dark_mode(
         PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
     if (is_rounded_) {
-      context_.StrokePath(center_path, auto_dark_mode,
-                          Path(center_path).length(), width_);
+      const Path path(center_path);
+      const StrokeData stroke_data = styled_stroke.ConvertToStrokeData(
+          {static_cast<int>(path.length()), width_, path.IsClosed()});
+      context_.SetStroke(stroke_data);
+      context_.StrokePath(path, auto_dark_mode);
     } else {
       // Draw edges one by one instead of the whole path to let the corners
       // have starting/ending dots/dashes.
-      IterateRightAnglePath(center_path,
-                            [this, &auto_dark_mode](const Vector<Line>& lines) {
-                              for (const auto& line : lines)
-                                PaintStraightEdge(line, auto_dark_mode);
-                            });
+      IterateRightAnglePath(
+          center_path,
+          [this, &styled_stroke, &auto_dark_mode](const Vector<Line>& lines) {
+            for (const auto& line : lines) {
+              PaintStraightEdge(line, styled_stroke, auto_dark_mode);
+            }
+          });
     }
   }
 
@@ -595,8 +603,9 @@ class ComplexOutlinePainter {
 
   void PaintTopLeftOrBottomRight(const SkPath& center_path,
                                  bool top_left_or_bottom_right) {
+    StyledStrokeData styled_stroke;
     // If width_ is odd, draw wider to fill the clip area.
-    context_.SetStrokeThickness(width_ % 2 ? width_ + 2 : width_);
+    styled_stroke.SetThickness(width_ % 2 ? width_ + 2 : width_);
     std::optional<RoundedEdgePathIterator> rounded_edge_path_iterator;
     if (is_rounded_)
       rounded_edge_path_iterator.emplace(center_path, (width_ + 1) / 2);
@@ -605,7 +614,7 @@ class ComplexOutlinePainter {
     IterateRightAnglePath(
         is_rounded_ ? right_angle_outer_path_ : center_path,
         [this, top_left_or_bottom_right, &rounded_edge_path_iterator,
-         &auto_dark_mode](const Vector<Line>& lines) {
+         &styled_stroke, &auto_dark_mode](const Vector<Line>& lines) {
           for (wtf_size_t i = 0; i < lines.size(); i++) {
             const Line& line = lines[i];
             std::optional<SkPath> rounded_edge_path;
@@ -622,9 +631,10 @@ class ComplexOutlinePainter {
                 MiterClipPath(prev_line.start, line, next_line.end),
                 kNotAntiAliased);
             if (is_rounded_) {
+              context_.SetStrokeThickness(styled_stroke.Thickness());
               context_.StrokePath(*rounded_edge_path, auto_dark_mode);
             } else {
-              PaintStraightEdge(line, auto_dark_mode);
+              PaintStraightEdge(line, styled_stroke, auto_dark_mode);
             }
           }
         });
@@ -701,7 +711,9 @@ class ComplexOutlinePainter {
     return path;
   }
 
-  void PaintStraightEdge(const Line& line, const AutoDarkMode& auto_dark_mode) {
+  void PaintStraightEdge(const Line& line,
+                         const StyledStrokeData& styled_stroke,
+                         const AutoDarkMode& auto_dark_mode) {
     Line adjusted_line = line;
     // GraphicsContext::DrawLine requires the line to be top-to-down or
     // left-to-right get correct interval among dots/dashes.
@@ -714,7 +726,7 @@ class ComplexOutlinePainter {
     context_.DrawLine(
         gfx::ToRoundedPoint(gfx::SkPointToPointF(adjusted_line.start)),
         gfx::ToRoundedPoint(gfx::SkPointToPointF(adjusted_line.end)),
-        auto_dark_mode);
+        styled_stroke, auto_dark_mode);
   }
 
   GraphicsContext& context_;

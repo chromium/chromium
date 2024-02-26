@@ -137,12 +137,17 @@ std::optional<DashDescription> DashEffectFromStrokeStyle(
 }  // namespace
 
 void StyledStrokeData::SetupPaint(cc::PaintFlags* flags) const {
+  SetupPaint(flags, {});
+}
+
+void StyledStrokeData::SetupPaint(cc::PaintFlags* flags,
+                                  const GeometryInfo& info) const {
   flags->setStyle(cc::PaintFlags::kStroke_Style);
   flags->setStrokeWidth(SkFloatToScalar(thickness_));
   flags->setStrokeCap(cc::PaintFlags::kDefault_Cap);
   flags->setStrokeJoin(cc::PaintFlags::kDefault_Join);
   flags->setStrokeMiter(SkFloatToScalar(4));
-  SetupPaintDashPathEffect(flags, {});
+  SetupPaintDashPathEffect(flags, info);
 }
 
 void StyledStrokeData::SetupPaintDashPathEffect(

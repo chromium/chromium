@@ -8,14 +8,16 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 
 namespace blink {
 
 void AppliedDecorationPainter::Paint(const Color& color,
                                      const cc::PaintFlags* flags) {
-  ETextDecorationStyle decoration_style = decoration_info_.DecorationStyle();
+  StyledStrokeData styled_stroke;
+  styled_stroke.SetStyle(decoration_info_.StrokeStyle());
+  styled_stroke.SetThickness(decoration_info_.ResolvedThickness());
 
-  context_.SetStrokeStyle(decoration_info_.StrokeStyle());
   context_.SetStrokeColor(color);
 
   AutoDarkMode auto_dark_mode(
@@ -23,7 +25,7 @@ void AppliedDecorationPainter::Paint(const Color& color,
                         DarkModeFilter::ElementRole::kForeground));
 
   // TODO(crbug.com/1346281) make other decoration styles work with PaintFlags
-  switch (decoration_style) {
+  switch (decoration_info_.DecorationStyle()) {
     case ETextDecorationStyle::kWavy:
       PaintWavyTextDecoration();
       break;
@@ -33,13 +35,14 @@ void AppliedDecorationPainter::Paint(const Color& color,
       [[fallthrough]];
     default:
       context_.DrawLineForText(decoration_info_.StartPoint(),
-                               decoration_info_.Width(), auto_dark_mode, flags);
+                               decoration_info_.Width(), styled_stroke,
+                               auto_dark_mode, flags);
 
       if (decoration_info_.DecorationStyle() == ETextDecorationStyle::kDouble) {
         context_.DrawLineForText(
             decoration_info_.StartPoint() +
                 gfx::Vector2dF(0, decoration_info_.DoubleOffset()),
-            decoration_info_.Width(), auto_dark_mode, flags);
+            decoration_info_.Width(), styled_stroke, auto_dark_mode, flags);
       }
   }
 }

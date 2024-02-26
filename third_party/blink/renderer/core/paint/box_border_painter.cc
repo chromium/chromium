@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -258,9 +260,9 @@ void DrawSolidBorderRect(GraphicsContext& context,
   if (!was_antialias)
     context.SetShouldAntialias(true);
 
-  context.SetStrokeStyle(kSolidStroke);
   context.SetStrokeColor(color);
-  context.StrokeRect(stroke_rect, border_width, auto_dark_mode);
+  context.SetStrokeThickness(border_width);
+  context.StrokeRect(stroke_rect, auto_dark_mode);
 
   if (!was_antialias)
     context.SetShouldAntialias(false);
@@ -403,8 +405,9 @@ void DrawDashedOrDottedBoxSide(GraphicsContext& context,
   GraphicsContextStateSaver state_saver(context);
   context.SetShouldAntialias(antialias);
   context.SetStrokeColor(color);
-  context.SetStrokeThickness(thickness);
-  context.SetStrokeStyle(style == EBorderStyle::kDashed ? kDashedStroke
+  StyledStrokeData styled_stroke;
+  styled_stroke.SetThickness(thickness);
+  styled_stroke.SetStyle(style == EBorderStyle::kDashed ? kDashedStroke
                                                         : kDottedStroke);
 
   switch (side) {
@@ -412,14 +415,14 @@ void DrawDashedOrDottedBoxSide(GraphicsContext& context,
     case BoxSide::kTop: {
       int mid_y = y1 + thickness / 2;
       context.DrawLine(gfx::Point(x1, mid_y), gfx::Point(x2, mid_y),
-                       auto_dark_mode);
+                       styled_stroke, auto_dark_mode);
       break;
     }
     case BoxSide::kRight:
     case BoxSide::kLeft: {
       int mid_x = x1 + thickness / 2;
       context.DrawLine(gfx::Point(mid_x, y1), gfx::Point(mid_x, y2),
-                       auto_dark_mode);
+                       styled_stroke, auto_dark_mode);
       break;
     }
   }
@@ -1485,25 +1488,34 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
   // the extra multiplier so that the clipping mask can antialias
   // the edges to prevent jaggies.
   const float thickness_multiplier = 2 * 1.1f;
-  context_.SetStrokeThickness(stroke_thickness * thickness_multiplier);
-  context_.SetStrokeStyle(stroke_style);
+  StyledStrokeData styled_stroke;
+  styled_stroke.SetThickness(stroke_thickness * thickness_multiplier);
+  styled_stroke.SetStyle(stroke_style);
 
   // TODO(crbug.com/344234): stroking the border path causes issues with
   // tight corners.
-  context_.StrokePath(centerline_path, PaintAutoDarkMode(style_, element_role_),
-                      centerline_path.length(), border_thickness);
+  const StrokeData stroke_data = styled_stroke.ConvertToStrokeData(
+      {static_cast<int>(centerline_path.length()), border_thickness,
+       centerline_path.IsClosed()});
+  context_.SetStroke(stroke_data);
+  context_.StrokePath(centerline_path,
+                      PaintAutoDarkMode(style_, element_role_));
 }
 
 void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
     const Path& border_path,
     int border_thickness) const {
-  context_.SetStrokeThickness(border_thickness);
-  context_.SetStrokeStyle(kDottedStroke);
+  StyledStrokeData styled_stroke;
+  styled_stroke.SetThickness(border_thickness);
+  styled_stroke.SetStyle(kDottedStroke);
 
   // TODO(crbug.com/344234): stroking the border path causes issues with
   // tight corners.
-  context_.StrokePath(border_path, PaintAutoDarkMode(style_, element_role_),
-                      border_path.length(), border_thickness);
+  const StrokeData stroke_data = styled_stroke.ConvertToStrokeData(
+      {static_cast<int>(border_path.length()), border_thickness,
+       border_path.IsClosed()});
+  context_.SetStroke(stroke_data);
+  context_.StrokePath(border_path, PaintAutoDarkMode(style_, element_role_));
 }
 
 void BoxBorderPainter::DrawDoubleBoxSideFromPath(const Path& border_path,

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 
 namespace blink {
@@ -176,21 +177,21 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
           : marker.UnderlineColor();
   if (marker.UnderlineStyle() !=
       ui::mojom::ImeTextSpanUnderlineStyle::kSquiggle) {
-    context.SetStrokeColor(marker_color);
-    context.SetStrokeThickness(line_thickness);
+    StyledStrokeData styled_stroke;
+    styled_stroke.SetThickness(line_thickness);
     // Set the style of the underline if there is any.
     switch (marker.UnderlineStyle()) {
       case ui::mojom::ImeTextSpanUnderlineStyle::kDash:
-        context.SetStrokeStyle(StrokeStyle::kDashedStroke);
+        styled_stroke.SetStyle(StrokeStyle::kDashedStroke);
         break;
       case ui::mojom::ImeTextSpanUnderlineStyle::kDot:
-        context.SetStrokeStyle(StrokeStyle::kDottedStroke);
+        styled_stroke.SetStyle(StrokeStyle::kDottedStroke);
         break;
       case ui::mojom::ImeTextSpanUnderlineStyle::kSolid:
-        context.SetStrokeStyle(StrokeStyle::kSolidStroke);
+        styled_stroke.SetStyle(StrokeStyle::kSolidStroke);
         break;
       case ui::mojom::ImeTextSpanUnderlineStyle::kNone:
-        context.SetStrokeStyle(StrokeStyle::kNoStroke);
+        styled_stroke.SetStyle(StrokeStyle::kNoStroke);
         break;
       case ui::mojom::ImeTextSpanUnderlineStyle::kSquiggle:
         // Wavy stroke style is not implemented in DrawLineForText so we handle
@@ -198,11 +199,12 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
         // markers.
         break;
     }
+    context.SetStrokeColor(marker_color);
     context.DrawLineForText(
         gfx::PointF(box_origin.left + start,
                     (box_origin.top + logical_height.ToInt() - line_thickness)
                         .ToFloat()),
-        width,
+        width, styled_stroke,
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
   } else {
     // For wavy underline format we use this logic that is very similar to

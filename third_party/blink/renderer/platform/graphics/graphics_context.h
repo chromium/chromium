@@ -71,6 +71,8 @@ class FloatRoundedRect;
 class KURL;
 class PaintController;
 class Path;
+class StrokeData;
+class StyledStrokeData;
 struct TextRunPaintInfo;
 
 // Tiling parameters for the DrawImageTiled() method.
@@ -211,17 +213,14 @@ class PLATFORM_EXPORT GraphicsContext {
 #endif
 
   float StrokeThickness() const {
-    return ImmutableState()->GetStrokeData().Thickness();
+    return ImmutableState()->GetStrokeThickness();
   }
   void SetStrokeThickness(float thickness) {
     MutableState()->SetStrokeThickness(thickness);
   }
 
-  StrokeStyle GetStrokeStyle() const {
-    return ImmutableState()->GetStrokeData().Style();
-  }
-  void SetStrokeStyle(StrokeStyle style) {
-    MutableState()->SetStrokeStyle(style);
+  void SetStroke(const StrokeData& stroke_data) {
+    MutableState()->SetStroke(stroke_data);
   }
 
   Color StrokeColor() const { return ImmutableState()->StrokeColor(); }
@@ -283,23 +282,13 @@ class PLATFORM_EXPORT GraphicsContext {
   // top-to-down or left-to-right to get correct interval of dots/dashes.
   void DrawLine(const gfx::Point&,
                 const gfx::Point&,
+                const StyledStrokeData&,
                 const AutoDarkMode& auto_dark_mode,
                 bool is_text_line = false,
                 const cc::PaintFlags* flags = nullptr);
 
   void FillPath(const Path&, const AutoDarkMode& auto_dark_mode);
-
-  // The length parameter is only used when the path has a dashed or dotted
-  // stroke style, with the default dash/dot path effect. If a non-zero length
-  // is provided the number of dashes/dots on a dashed/dotted
-  // line will be adjusted to start and end that length with a dash/dot.
-  // The dash_thickness parameter is only used when drawing dashed borders,
-  // where the stroke thickness has been set for corner miters but we want the
-  // dash length set from the border width.
-  void StrokePath(const Path&,
-                  const AutoDarkMode& auto_dark_mode,
-                  const int length = 0,
-                  const int dash_thickness = 0);
+  void StrokePath(const Path&, const AutoDarkMode& auto_dark_mode);
 
   void FillEllipse(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
   void StrokeEllipse(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
@@ -327,7 +316,6 @@ class PLATFORM_EXPORT GraphicsContext {
                                const AutoDarkMode& auto_dark_mode);
 
   void StrokeRect(const gfx::RectF&,
-                  float line_width,
                   const AutoDarkMode& auto_dark_mode);
 
   void DrawRecord(PaintRecord);
@@ -366,6 +354,10 @@ class PLATFORM_EXPORT GraphicsContext {
   // These methods write to the canvas.
   // Also drawLine(const gfx::Point& point1, const gfx::Point& point2) and
   // fillRoundedRect().
+  void DrawLine(const gfx::PointF& from,
+                const gfx::PointF& to,
+                const cc::PaintFlags& flags,
+                const AutoDarkMode& auto_dark_mode);
   void DrawOval(const SkRect&,
                 const cc::PaintFlags&,
                 const AutoDarkMode& auto_dark_mode);
@@ -431,6 +423,7 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void DrawLineForText(const gfx::PointF&,
                        float width,
+                       const StyledStrokeData&,
                        const AutoDarkMode& auto_dark_mode,
                        const cc::PaintFlags* flags = nullptr);
 
@@ -468,13 +461,8 @@ class PLATFORM_EXPORT GraphicsContext {
   const cc::PaintFlags& FillFlags() const {
     return ImmutableState()->FillFlags();
   }
-  // If the length of the path to be stroked is known, pass it in for correct
-  // dash or dot placement. Border painting uses a stroke thickness determined
-  // by the corner miters. Set the dash_thickness to a non-zero number for
-  // cases where dashes should be based on a different thickness.
-  const cc::PaintFlags& StrokeFlags(const int length = 0,
-                                    const int dash_thickness = 0) const {
-    return ImmutableState()->StrokeFlags(length, dash_thickness, false);
+  const cc::PaintFlags& StrokeFlags() const {
+    return ImmutableState()->StrokeFlags();
   }
 
   // ---------- Transformation methods -----------------

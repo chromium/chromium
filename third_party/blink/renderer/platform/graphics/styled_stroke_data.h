@@ -79,8 +79,9 @@ class PLATFORM_EXPORT StyledStrokeData final {
     bool closed_path = false;
   };
 
-  // Resolve and set any DashPathEffect on the paint.
-  void SetupPaintDashPathEffect(cc::PaintFlags*, const GeometryInfo&) const;
+  // Transfer the stroke data to the PaintFlags object, resolving any
+  // DashPathEffect using the specified GeometryInfo.
+  void SetupPaint(cc::PaintFlags*, const GeometryInfo&) const;
 
   // Convert this stroke geometry information to the "resolved" representation.
   StrokeData ConvertToStrokeData(const GeometryInfo&) const;
@@ -91,6 +92,9 @@ class PLATFORM_EXPORT StyledStrokeData final {
   static bool StrokeIsDashed(float width, StrokeStyle);
 
  private:
+  // Resolve and set any DashPathEffect on the paint.
+  void SetupPaintDashPathEffect(cc::PaintFlags*, const GeometryInfo&) const;
+
   StrokeStyle style_ = kSolidStroke;
   float thickness_ = 0;
 };

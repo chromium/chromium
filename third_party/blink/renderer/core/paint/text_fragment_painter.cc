@@ -217,14 +217,13 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   // Apply the color to the list marker text.
   context.SetFillColor(color);
   context.SetStrokeColor(color);
-  context.SetStrokeStyle(kSolidStroke);
-  context.SetStrokeThickness(1.0f);
   const gfx::Rect snapped_rect = ToPixelSnappedRect(marker_rect);
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kListSymbol));
   if (type == keywords::kDisc) {
     context.FillEllipse(gfx::RectF(snapped_rect), auto_dark_mode);
   } else if (type == keywords::kCircle) {
+    context.SetStrokeThickness(1.0f);
     context.StrokeEllipse(gfx::RectF(snapped_rect), auto_dark_mode);
   } else if (type == keywords::kSquare) {
     context.FillRect(snapped_rect, color, auto_dark_mode);

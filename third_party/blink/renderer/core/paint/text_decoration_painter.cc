@@ -150,8 +150,6 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
         for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount();
              i++) {
           decoration_info.SetDecorationIndex(i);
-          paint_info_.context.SetStrokeThickness(
-              decoration_info.ResolvedThickness());
 
           if (decoration_info.HasSpellingOrGrammerError() &&
               EnumHasFlags(lines_to_paint,
@@ -205,8 +203,6 @@ void TextDecorationPainter::PaintLineThroughDecorations(
           TextDecorationLine lines = decoration.Lines();
           if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
             decoration_info.SetDecorationIndex(applied_decoration_index);
-            paint_info_.context.SetStrokeThickness(
-                decoration_info.ResolvedThickness());
 
             decoration_info.SetLineThroughLineData();
 
