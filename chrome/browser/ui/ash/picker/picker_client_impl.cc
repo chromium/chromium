@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
@@ -180,6 +181,7 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
         break;
       }
       case ash::AppListSearchResultType::kFileSearch:
+      case ash::AppListSearchResultType::kDriveSearch:
         picker_results.push_back(
             ash::PickerSearchResult::Text(result->title()));
         break;
@@ -237,6 +239,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
 
   search_engine_->AddProvider(
       std::make_unique<app_list::FileSearchProvider>(profile_));
+  search_engine_->AddProvider(
+      std::make_unique<app_list::DriveSearchProvider>(profile_));
 }
 
 PickerClientImpl::PickerAppListControllerDelegate::

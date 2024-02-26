@@ -87,6 +87,8 @@ std::u16string GetSectionTitleForPickerSectionType(
       return u"Matching links";
     case PickerSectionType::kFiles:
       return u"Matching files";
+    case PickerSectionType::kDriveFiles:
+      return u"Matching Google Drive files";
     case PickerSectionType::kGifs:
       return u"Other expressions";
     case PickerSectionType::kRecentlyUsed:

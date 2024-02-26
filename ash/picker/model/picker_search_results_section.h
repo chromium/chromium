@@ -19,6 +19,7 @@ enum class ASH_EXPORT PickerSectionType {
   kExpressions,
   kLinks,
   kFiles,
+  kDriveFiles,
   kGifs,
   kRecentlyUsed,
 };

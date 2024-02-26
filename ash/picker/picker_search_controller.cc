@@ -179,6 +179,10 @@ void PickerSearchController::PublishBurnInResults() {
     sections.emplace_back(PickerSectionType::kFiles,
                           std::move(local_file_results_));
   }
+  if (!drive_file_results_.empty()) {
+    sections.emplace_back(PickerSectionType::kDriveFiles,
+                          std::move(drive_file_results_));
+  }
   if (!gif_results_.empty()) {
     sections.push_back(PickerSearchResultsSection(PickerSectionType::kGifs,
                                                   std::move(gif_results_)));
@@ -230,6 +234,24 @@ void PickerSearchController::HandleCrosSearchResults(
             PickerSectionType::kLinks, std::move(omnibox_results_)));
       }
       break;
+    case AppListSearchResultType::kDriveSearch: {
+      if (cros_search_start_.has_value()) {
+        base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
+        base::UmaHistogramTimes("Ash.Picker.Search.DriveProvider.QueryTime",
+                                elapsed);
+      }
+      drive_file_results_ = std::move(results);
+      size_t files_to_remove =
+          std::max<size_t>(drive_file_results_.size(), 3) - 3;
+      drive_file_results_.erase(drive_file_results_.end() - files_to_remove,
+                                drive_file_results_.end());
+
+      if (IsPostBurnIn()) {
+        AppendPostBurnInResults(PickerSearchResultsSection(
+            PickerSectionType::kDriveFiles, std::move(drive_file_results_)));
+      }
+      break;
+    }
     case AppListSearchResultType::kFileSearch: {
       if (cros_search_start_.has_value()) {
         base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
