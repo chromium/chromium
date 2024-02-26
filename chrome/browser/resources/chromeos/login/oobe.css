@@ -25,8 +25,7 @@
         screen and (min-width:1040px) {
   :root.jelly-modal-enabled:not([tablet]),
   :root.boot-animation-enabled:not([tablet]) {
-    /* TODO(b/268463435) Migrate to cros.sys.app-elevation3 when available */
-    --oobe-container-elevation: 0 12px 12px 0 var(--cros-shadow-color-key);
+    --oobe-container-elevation: var(--cros-sys-app-elevation-3-shadow);
   }
 }
 
