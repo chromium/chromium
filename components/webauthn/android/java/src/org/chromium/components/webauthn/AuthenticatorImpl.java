@@ -35,7 +35,7 @@ import java.util.Queue;
 import java.util.Set;
 
 /** Android implementation of the authenticator.mojom interface. */
-public final class AuthenticatorImpl implements Authenticator {
+public final class AuthenticatorImpl implements Authenticator, AuthenticationContextProvider {
     private final Context mContext;
     private final FidoIntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
@@ -112,7 +112,7 @@ public final class AuthenticatorImpl implements Authenticator {
         if (sFido2CredentialRequestOverrideForTesting != null) {
             return sFido2CredentialRequestOverrideForTesting;
         }
-        Fido2CredentialRequest request = new Fido2CredentialRequest(mIntentSender);
+        Fido2CredentialRequest request = new Fido2CredentialRequest(this);
         mUnclosedFido2CredentialRequests.add(request);
         return request;
     }
@@ -165,13 +165,11 @@ public final class AuthenticatorImpl implements Authenticator {
             PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleMakeCredentialRequest(
-                mContext,
                 options,
-                mRenderFrameHost,
                 /* maybeClientDataHash= */ null,
                 mOrigin,
-                (status, response) -> onRegisterResponse(status, response),
-                status -> onError(status));
+                this::onRegisterResponse,
+                this::onError);
     }
 
     @Override
@@ -193,15 +191,13 @@ public final class AuthenticatorImpl implements Authenticator {
 
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleGetAssertionRequest(
-                mContext,
                 options,
-                mRenderFrameHost,
                 /* maybeClientDataHash= */ null,
                 mOrigin,
                 mTopOrigin,
                 mPayment,
-                (status, response) -> onSignResponse(status, response),
-                status -> onError(status));
+                this::onSignResponse,
+                this::onError);
     }
 
     @Override
@@ -222,9 +218,7 @@ public final class AuthenticatorImpl implements Authenticator {
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(decoratedCallback);
         getFido2CredentialRequest()
                 .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                        mContext,
-                        isUvpaa ->
-                                onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+                        this::onIsUserVerifyingPlatformAuthenticatorAvailableResponse);
     }
 
     /**
@@ -248,12 +242,11 @@ public final class AuthenticatorImpl implements Authenticator {
 
         getFido2CredentialRequest()
                 .handleGetMatchingCredentialIdsRequest(
-                        mRenderFrameHost,
                         relyingPartyId,
                         credentialIds,
                         requireThirdPartyPayment,
                         callback,
-                        status -> onError(status));
+                        this::onError);
     }
 
     @Override
@@ -272,7 +265,7 @@ public final class AuthenticatorImpl implements Authenticator {
         mIsConditionalMediationAvailableCallbackQueue.add(callback);
         getFido2CredentialRequest()
                 .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                        mContext, isUvpaa -> onIsConditionalMediationAvailableResponse(isUvpaa));
+                        this::onIsConditionalMediationAvailableResponse);
     }
 
     @Override
@@ -285,7 +278,7 @@ public final class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        mPendingFido2CredentialRequest.cancelConditionalGetAssertion(mRenderFrameHost);
+        mPendingFido2CredentialRequest.cancelConditionalGetAssertion();
     }
 
     /** Callbacks for receiving responses from the internal handlers. */
@@ -356,6 +349,21 @@ public final class AuthenticatorImpl implements Authenticator {
     static boolean isChrome() {
         return WebauthnModeProvider.getInstance().getWebauthnMode()
                 == WebauthnModeProvider.WebauthnMode.CHROME;
+    }
+
+    @Override
+    public Context getContext() {
+        return mContext;
+    }
+
+    @Override
+    public RenderFrameHost getRenderFrameHost() {
+        return mRenderFrameHost;
+    }
+
+    @Override
+    public FidoIntentSender getIntentSender() {
+        return mIntentSender;
     }
 
     /** Implements {@link IntentSender} using a {@link WindowAndroid}. */

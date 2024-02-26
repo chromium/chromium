@@ -26,6 +26,7 @@ android_library("java") {
     ":jni_headers",
   ]
   sources = [
+    "java/src/org/chromium/components/webauthn/AuthenticationContextProvider.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
     "java/src/org/chromium/components/webauthn/Barrier.java",

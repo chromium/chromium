@@ -8,7 +8,6 @@ import static org.chromium.components.webauthn.AuthenticatorImpl.isChrome;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -69,11 +68,10 @@ public class Fido2CredentialRequest
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
 
-    private final FidoIntentSender mIntentSender;
     // mPlayServicesAvailable caches whether the Play Services FIDO API is
     // available.
     private final boolean mPlayServicesAvailable;
-    private Context mContext;
+    private final AuthenticationContextProvider mAuthenticationContextProvider;
     private GetAssertionResponseCallback mGetAssertionCallback;
     private MakeCredentialResponseCallback mMakeCredentialCallback;
     private FidoErrorResponseCallback mErrorCallback;
@@ -82,7 +80,6 @@ public class Fido2CredentialRequest
     // mFrameHost is null in makeCredential requests. For getAssertion requests
     // it's non-null for conditional requests and may be non-null in other
     // requests.
-    private RenderFrameHost mFrameHost;
     private boolean mAppIdExtensionUsed;
     private boolean mEchoCredProps;
     private WebauthnBrowserBridge mBrowserBridge;
@@ -114,10 +111,11 @@ public class Fido2CredentialRequest
      *
      * @param intentSender Interface for starting {@link Intent}s from Play Services.
      */
-    public Fido2CredentialRequest(FidoIntentSender intentSender) {
-        mIntentSender = intentSender;
+    public Fido2CredentialRequest(AuthenticationContextProvider authenticationContextProvider) {
+        mAuthenticationContextProvider = authenticationContextProvider;
         mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
-        mCredManHelper = new CredManHelper(this, mPlayServicesAvailable);
+        mCredManHelper =
+                new CredManHelper(mAuthenticationContextProvider, this, mPlayServicesAvailable);
         mBarrier = new Barrier(this::returnErrorAndResetCallback);
     }
 
@@ -157,25 +155,22 @@ public class Fido2CredentialRequest
      *
      * @param context The context used for both Play Services and CredMan calls.
      * @param options The arguments to create()
-     * @param frameHost The source RenderFrameHost, or null. If null, `maybeClientDataHash` must be
-     *     non-null and no security checks will be performed.
-     * @param maybeClientDataHash The SHA-256 of the ClientDataJSON. Non-null iff frameHost is null.
+     * @param maybeClientDataHash The SHA-256 of the ClientDataJSON. Must be non-null iff frameHost
+     *     from mAuthenticationContextProvider.frameHost is null.
      * @param origin The origin that made the WebAuthn call.
      * @param callback Success callback.
      * @param errorCallback Failure callback.
      */
     @SuppressWarnings("NewApi")
     public void handleMakeCredentialRequest(
-            Context context,
             PublicKeyCredentialCreationOptions options,
-            RenderFrameHost frameHost,
             byte[] maybeClientDataHash,
             Origin origin,
             MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert (frameHost != null) ^ (maybeClientDataHash != null);
         assert mMakeCredentialCallback == null && mErrorCallback == null;
-        mContext = context;
         mMakeCredentialCallback = callback;
         mErrorCallback = errorCallback;
 
@@ -190,20 +185,17 @@ public class Fido2CredentialRequest
                             return;
                         }
                         continueMakeCredentialRequestAfterRpIdValidation(
-                                options, frameHost, maybeClientDataHash, origin);
+                                options, maybeClientDataHash, origin);
                     });
         } else {
-            continueMakeCredentialRequestAfterRpIdValidation(
-                    options, frameHost, maybeClientDataHash, origin);
+            continueMakeCredentialRequestAfterRpIdValidation(options, maybeClientDataHash, origin);
         }
     }
 
     @SuppressWarnings("NewApi")
     private void continueMakeCredentialRequestAfterRpIdValidation(
-            PublicKeyCredentialCreationOptions options,
-            RenderFrameHost frameHost,
-            byte[] maybeClientDataHash,
-            Origin origin) {
+            PublicKeyCredentialCreationOptions options, byte[] maybeClientDataHash, Origin origin) {
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         // Attestation is only for non-discoverable credentials in the Android
         // platform authenticator and discoverable credentials aren't supported
         // on security keys. There was a bug where discoverable credentials
@@ -245,8 +237,6 @@ public class Fido2CredentialRequest
                 && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             int result =
                     mCredManHelper.startMakeRequest(
-                            mContext,
-                            mFrameHost,
                             options,
                             convertOriginToString(origin),
                             maybeClientDataHash,
@@ -285,12 +275,10 @@ public class Fido2CredentialRequest
     /**
      * Process a WebAuthn get() request.
      *
-     * @param context The context used for both Play Services and CredMan calls.
      * @param options The arguments to get(). If `isConditional` is true then `frameHost` must be
      *     non-null.
-     * @param frameHost The source RenderFrameHost, or null. If null, `maybeClientDataHash` must be
-     *     non-null and no security checks will be performed.
-     * @param maybeClientDataHash The SHA-256 of the ClientDataJSON. Non-null iff frameHost is null.
+     * @param maybeClientDataHash The SHA-256 of the ClientDataJSON. Must be non-null iff frameHost
+     *     from mAuthenticationContextProvider.frameHost is null.
      * @param origin The origin that made the WebAuthn call.
      * @param topOrigin The origin of the main frame.
      * @param payment Options for Secure Payment Confirmation. May only be non-null if `frameHost`
@@ -300,23 +288,20 @@ public class Fido2CredentialRequest
      */
     @SuppressWarnings("NewApi")
     public void handleGetAssertionRequest(
-            Context context,
             PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost,
             byte[] maybeClientDataHash,
             Origin origin,
             Origin topOrigin,
             PaymentOptions payment,
             GetAssertionResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert (frameHost != null) ^ (maybeClientDataHash != null);
         assert payment == null || frameHost != null;
         assert !options.isConditional || frameHost != null;
         assert mGetAssertionCallback == null && mErrorCallback == null;
-        mContext = context;
         mGetAssertionCallback = callback;
         mErrorCallback = errorCallback;
-        mFrameHost = frameHost;
 
         if (frameHost != null) {
             mConditionalUiState = ConditionalUiState.WAITING_FOR_RP_ID_VALIDATION;
@@ -339,29 +324,24 @@ public class Fido2CredentialRequest
                         }
                         mIsCrossOrigin = results.isCrossOrigin;
                         continueGetAssertionRequestAfterRpIdValidation(
-                                options,
-                                frameHost,
-                                maybeClientDataHash,
-                                origin,
-                                topOrigin,
-                                payment);
+                                options, maybeClientDataHash, origin, topOrigin, payment);
                     });
             return;
         }
 
         mIsCrossOrigin = false;
         continueGetAssertionRequestAfterRpIdValidation(
-                options, frameHost, maybeClientDataHash, origin, topOrigin, payment);
+                options, maybeClientDataHash, origin, topOrigin, payment);
     }
 
     @SuppressWarnings("NewApi")
     private void continueGetAssertionRequestAfterRpIdValidation(
             PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost,
             byte[] maybeClientDataHash,
             Origin origin,
             Origin topOrigin,
             PaymentOptions payment) {
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         boolean hasAllowCredentials =
                 options.allowCredentials != null && options.allowCredentials.length != 0;
 
@@ -391,8 +371,6 @@ public class Fido2CredentialRequest
             } else {
                 int result =
                         mCredManHelper.startGetRequest(
-                                mContext,
-                                mFrameHost,
                                 options,
                                 callerOriginString,
                                 mIsCrossOrigin,
@@ -414,8 +392,6 @@ public class Fido2CredentialRequest
             if (options.isConditional) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
                 mCredManHelper.startPrefetchRequest(
-                        mContext,
-                        mFrameHost,
                         options,
                         convertOriginToString(origin),
                         mIsCrossOrigin,
@@ -438,8 +414,6 @@ public class Fido2CredentialRequest
                                         /* credentialId= */ null));
                 int response =
                         mCredManHelper.startGetRequest(
-                                mContext,
-                                mFrameHost,
                                 options,
                                 convertOriginToString(origin),
                                 mIsCrossOrigin,
@@ -477,7 +451,7 @@ public class Fido2CredentialRequest
             }
         }
 
-        if (mFrameHost != null && (options.isConditional || !hasAllowCredentials)) {
+        if (frameHost != null && (options.isConditional || !hasAllowCredentials)) {
             // Enumerate credentials from Play Services so that we can show the
             // picker in Chrome UI.
             final byte[] finalClientDataHash = clientDataHash;
@@ -485,8 +459,6 @@ public class Fido2CredentialRequest
             if (getBarrierMode() == Barrier.Mode.BOTH) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.BOTH);
                 mCredManHelper.startPrefetchRequest(
-                        mContext,
-                        frameHost,
                         options,
                         callerOriginString,
                         mIsCrossOrigin,
@@ -525,8 +497,8 @@ public class Fido2CredentialRequest
         maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
     }
 
-    public void cancelConditionalGetAssertion(RenderFrameHost frameHost) {
-        mCredManHelper.cancelConditionalGetAssertion(frameHost);
+    public void cancelConditionalGetAssertion() {
+        mCredManHelper.cancelConditionalGetAssertion();
 
         switch (mConditionalUiState) {
             case WAITING_FOR_RP_ID_VALIDATION:
@@ -537,7 +509,7 @@ public class Fido2CredentialRequest
                 mBarrier.onFido2ApiCancelled();
                 break;
             case WAITING_FOR_SELECTION:
-                getBridge().cleanupRequest(frameHost);
+                getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
                 mConditionalUiState = ConditionalUiState.NONE;
                 mBarrier.onFido2ApiCancelled();
                 break;
@@ -553,7 +525,7 @@ public class Fido2CredentialRequest
     }
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-            Context context, IsUvpaaResponseCallback callback) {
+            IsUvpaaResponseCallback callback) {
         // Barrier Mode is only relevant for Chrome.
         if (isChrome() && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(true);
@@ -569,7 +541,7 @@ public class Fido2CredentialRequest
             return;
         }
 
-        Fido2ApiCall call = new Fido2ApiCall(context);
+        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext());
         Fido2ApiCall.BooleanResult result = new Fido2ApiCall.BooleanResult();
         Parcel args = call.start();
         args.writeStrongBinder(result);
@@ -594,7 +566,6 @@ public class Fido2CredentialRequest
     }
 
     public void handleGetMatchingCredentialIdsRequest(
-            RenderFrameHost frameHost,
             String relyingPartyId,
             byte[][] allowCredentialIds,
             boolean requireThirdPartyPayment,
@@ -718,7 +689,7 @@ public class Fido2CredentialRequest
         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
         getBridge()
                 .onCredentialsDetailsListReceived(
-                        mFrameHost,
+                        mAuthenticationContextProvider.getRenderFrameHost(),
                         discoverableCredentials,
                         isConditionalRequest,
                         (selectedCredentialId) ->
@@ -771,8 +742,6 @@ public class Fido2CredentialRequest
                                             + mode,
                                     e);
                             mCredManHelper.startGetRequest(
-                                    mContext,
-                                    mFrameHost,
                                     options,
                                     convertOriginToString(callerOrigin),
                                     mIsCrossOrigin,
@@ -832,8 +801,6 @@ public class Fido2CredentialRequest
         // No elements of the allowlist are local, non-discoverable credentials
         // so route to CredMan.
         mCredManHelper.startGetRequest(
-                mContext,
-                mFrameHost,
                 options,
                 convertOriginToString(callerOrigin),
                 mIsCrossOrigin,
@@ -866,7 +833,7 @@ public class Fido2CredentialRequest
                     // An empty credential ID means an error from native code, which can happen if
                     // the embedder does not support Conditional UI.
                     Log.e(TAG, "Empty credential ID from account selection.");
-                    getBridge().cleanupRequest(mFrameHost);
+                    getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
@@ -910,7 +877,7 @@ public class Fido2CredentialRequest
         }
         mConditionalUiState = ConditionalUiState.REQUEST_SENT_TO_PLATFORM;
 
-        Fido2ApiCall call = new Fido2ApiCall(mContext);
+        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext());
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult();
         args.writeStrongBinder(result);
@@ -940,7 +907,7 @@ public class Fido2CredentialRequest
             return;
         }
 
-        if (!mIntentSender.showIntent(pendingIntent, this)) {
+        if (!mAuthenticationContextProvider.getIntentSender().showIntent(pendingIntent, this)) {
             Log.e(TAG, "Failed to send intent to FIDO API");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
@@ -1022,6 +989,7 @@ public class Fido2CredentialRequest
     }
 
     private void handleFido2Response(int errorCode, Object response) {
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         if (mConditionalUiState != ConditionalUiState.NONE) {
             if (response == null || response instanceof Pair) {
                 if (response != null) {
@@ -1037,7 +1005,7 @@ public class Fido2CredentialRequest
 
                 if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                     mConditionalUiState = ConditionalUiState.NONE;
-                    getBridge().cleanupRequest(mFrameHost);
+                    getBridge().cleanupRequest(frameHost);
                     mBarrier.onFido2ApiCancelled();
                 } else {
                     // The user can try again by selecting another conditional UI credential.
@@ -1046,7 +1014,7 @@ public class Fido2CredentialRequest
                 return;
             }
             mConditionalUiState = ConditionalUiState.NONE;
-            getBridge().cleanupRequest(mFrameHost);
+            getBridge().cleanupRequest(frameHost);
         }
 
         if (response == null) {
@@ -1080,8 +1048,8 @@ public class Fido2CredentialRequest
                 GetAssertionAuthenticatorResponse r = (GetAssertionAuthenticatorResponse) response;
                 if (mClientDataJson != null) {
                     r.info.clientDataJson = mClientDataJson;
-                    if (mFrameHost != null) {
-                        mFrameHost.notifyWebAuthnAssertionRequestSucceeded();
+                    if (frameHost != null) {
+                        frameHost.notifyWebAuthnAssertionRequestSucceeded();
                     }
                 }
                 r.extensions.echoAppidExtension = mAppIdExtensionUsed;

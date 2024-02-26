@@ -25,9 +25,12 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
+import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
+import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.components.webauthn.WebauthnModeProvider;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -37,7 +40,7 @@ import java.nio.ByteBuffer;
  * CableAuthenticator implements makeCredential and getAssertion operations on top of the Privileged
  * FIDO2 API.
  */
-class CableAuthenticator {
+class CableAuthenticator implements AuthenticationContextProvider {
     private static final String TAG = "CableAuthenticator";
 
     private static final int REGISTER_REQUEST_CODE = 1;
@@ -144,13 +147,11 @@ class CableAuthenticator {
         mAttestationAcceptable =
                 params.authenticatorSelection.residentKey == ResidentKeyRequirement.DISCOURAGED;
 
-        final Fido2CredentialRequest request = new Fido2CredentialRequest(mUi);
+        final Fido2CredentialRequest request = new Fido2CredentialRequest(this);
         request.setIsHybridRequest(true);
         final Origin origin = Origin.create(new GURL("https://" + params.relyingParty.id));
         request.handleMakeCredentialRequest(
-                mContext,
                 params,
-                null,
                 params.challenge,
                 origin,
                 (status, response) -> {
@@ -187,13 +188,11 @@ class CableAuthenticator {
         PublicKeyCredentialRequestOptions params =
                 PublicKeyCredentialRequestOptions.deserialize(ByteBuffer.wrap(serializedParams));
 
-        final Fido2CredentialRequest request = new Fido2CredentialRequest(mUi);
+        final Fido2CredentialRequest request = new Fido2CredentialRequest(this);
         request.setIsHybridRequest(true);
         final Origin origin = Origin.create(new GURL("https://" + params.relyingPartyId));
         request.handleGetAssertionRequest(
-                mContext,
                 params,
-                /* frameHost= */ null,
                 /* maybeClientDataHash= */ params.challenge,
                 origin,
                 origin,
@@ -218,6 +217,21 @@ class CableAuthenticator {
                                                     CTAP2_ERR_OPERATION_DENIED, null));
                     mUi.onAuthenticatorResult(Result.SIGN_ERROR);
                 });
+    }
+
+    @Override
+    public Context getContext() {
+        return mContext;
+    }
+
+    @Override
+    public RenderFrameHost getRenderFrameHost() {
+        return null;
+    }
+
+    @Override
+    public FidoIntentSender getIntentSender() {
+        return mUi;
     }
 
     /**

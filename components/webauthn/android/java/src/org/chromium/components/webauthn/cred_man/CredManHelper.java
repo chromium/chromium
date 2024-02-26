@@ -28,6 +28,7 @@ import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiState;
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
@@ -64,18 +65,20 @@ public class CredManHelper {
     private boolean mIsCrossOrigin;
     private boolean mPlayServicesAvailable;
     private boolean mRequestPasswords;
-    private WebauthnBrowserBridge.Provider mBridgeProvider;
+    private final AuthenticationContextProvider mAuthenticationContextProvider;
+    private final WebauthnBrowserBridge.Provider mBridgeProvider;
     private byte[] mClientDataJson;
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
-    private Context mContext;
     private CredManRequestDecorator mCredManRequestDecorator;
     private CredManMetricsHelper mMetricsHelper;
-    private RenderFrameHost mFrameHost;
     private Runnable mNoCredentialsFallback;
 
     public CredManHelper(
-            WebauthnBrowserBridge.Provider bridgeProvider, boolean playServicesAvailable) {
+            AuthenticationContextProvider authenticationContextProvider,
+            WebauthnBrowserBridge.Provider bridgeProvider,
+            boolean playServicesAvailable) {
         mMetricsHelper = new CredManMetricsHelper();
+        mAuthenticationContextProvider = authenticationContextProvider;
         mBridgeProvider = bridgeProvider;
         mPlayServicesAvailable = playServicesAvailable;
         mCredManRequestDecorator = WebauthnModeProvider.getInstance().getCredManRequestDecorator();
@@ -84,15 +87,11 @@ public class CredManHelper {
     /** Create a credential using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public int startMakeRequest(
-            Context context,
-            RenderFrameHost frameHost,
             PublicKeyCredentialCreationOptions options,
             String originString,
             byte[] maybeClientDataHash,
             MakeCredentialResponseCallback makeCallback,
             Callback<Integer> errorCallback) {
-        mContext = context;
-        mFrameHost = frameHost;
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize());
         final byte[] clientDataHash =
@@ -188,9 +187,10 @@ public class CredManHelper {
                         .build();
         final CreateCredentialRequest request =
                 requestHelper.getCreateCredentialRequest(mCredManRequestDecorator);
+        Context context = mAuthenticationContextProvider.getContext();
         final CredentialManager manager =
-                (CredentialManager) mContext.getSystemService(Context.CREDENTIAL_SERVICE);
-        manager.createCredential(mContext, request, null, mContext.getMainExecutor(), receiver);
+                (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
+        manager.createCredential(context, request, null, context.getMainExecutor(), receiver);
         mMetricsHelper.recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SENT_REQUEST);
         return AuthenticatorStatus.SUCCESS;
     }
@@ -198,8 +198,6 @@ public class CredManHelper {
     /** Queries credential availability using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void startPrefetchRequest(
-            Context context,
-            RenderFrameHost frameHost,
             PublicKeyCredentialRequestOptions options,
             String originString,
             boolean isCrossOrigin,
@@ -209,12 +207,11 @@ public class CredManHelper {
             Barrier barrier,
             boolean ignoreGpm) {
         long startTimeMs = SystemClock.elapsedRealtime();
-        mContext = context;
-        mFrameHost = frameHost;
         mErrorCallback = errorCallback;
         mIsCrossOrigin = isCrossOrigin;
         mBarrier = barrier;
 
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> receiver =
                 new OutcomeReceiver<>() {
                     @Override
@@ -239,7 +236,7 @@ public class CredManHelper {
                             // The request was completed synchronously when the cancellation was
                             // received.
                             mConditionalUiState = ConditionalUiState.NONE;
-                            mBridgeProvider.getBridge().cleanupCredManRequest(mFrameHost);
+                            mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
                             return;
                         }
                         if (mConditionalUiState != ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
@@ -257,19 +254,18 @@ public class CredManHelper {
                                 prepareGetCredentialResponse.hasAuthenticationResults();
 
                         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
+
                         mBarrier.onCredManSuccessful(
                                 () -> {
                                     mBridgeProvider
                                             .getBridge()
                                             .onCredManConditionalRequestPending(
-                                                    mFrameHost,
+                                                    frameHost,
                                                     hasPublicKeyCredentials
                                                             || hasAuthenticationResults,
                                                     (requestPasswords) -> {
                                                         setRequestPasswords(requestPasswords);
                                                         startGetRequest(
-                                                                mContext,
-                                                                mFrameHost,
                                                                 options,
                                                                 originString,
                                                                 isCrossOrigin,
@@ -305,10 +301,11 @@ public class CredManHelper {
             return;
         }
 
+        Context context = mAuthenticationContextProvider.getContext();
         final CredentialManager manager =
-                (CredentialManager) mContext.getSystemService(Context.CREDENTIAL_SERVICE);
+                (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
         manager.prepareGetCredential(
-                getCredentialRequest, null, mContext.getMainExecutor(), receiver);
+                getCredentialRequest, null, context.getMainExecutor(), receiver);
         mMetricsHelper.recordCredmanPrepareRequestHistogram(CredManPrepareRequestEnum.SENT_REQUEST);
     }
 
@@ -319,8 +316,6 @@ public class CredManHelper {
     /** Gets the credential using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public int startGetRequest(
-            Context context,
-            RenderFrameHost frameHost,
             PublicKeyCredentialRequestOptions options,
             String originString,
             boolean isCrossOrigin,
@@ -328,10 +323,9 @@ public class CredManHelper {
             GetAssertionResponseCallback getCallback,
             Callback<Integer> errorCallback,
             boolean ignoreGpm) {
-        mContext = context;
-        mFrameHost = frameHost;
         mErrorCallback = errorCallback;
         mIsCrossOrigin = isCrossOrigin;
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -347,7 +341,7 @@ public class CredManHelper {
                         notifyBrowserOnCredManClosed(false);
                         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                             mConditionalUiState = ConditionalUiState.NONE;
-                            mBridgeProvider.getBridge().cleanupCredManRequest(mFrameHost);
+                            mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
                             mBarrier.onCredManCancelled();
                             return;
                         }
@@ -394,7 +388,7 @@ public class CredManHelper {
                         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
                             notifyBrowserOnCredManClosed(false);
                             mConditionalUiState = ConditionalUiState.NONE;
-                            mBridgeProvider.getBridge().cleanupCredManRequest(mFrameHost);
+                            mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
                             mBarrier.onCredManCancelled();
                             return;
                         }
@@ -405,7 +399,7 @@ public class CredManHelper {
                             mBridgeProvider
                                     .getBridge()
                                     .onPasswordCredentialReceived(
-                                            mFrameHost,
+                                            frameHost,
                                             data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"),
                                             data.getString(
                                                     CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
@@ -462,8 +456,8 @@ public class CredManHelper {
                         notifyBrowserOnCredManClosed(true);
                         mMetricsHelper.reportGetCredentialMetrics(
                                 CredManGetRequestEnum.SUCCESS_PASSKEY, mConditionalUiState);
-                        if (mFrameHost != null) {
-                            mFrameHost.notifyWebAuthnAssertionRequestSucceeded();
+                        if (frameHost != null) {
+                            frameHost.notifyWebAuthnAssertionRequestSucceeded();
                         }
                         getCallback.onSignResponse(AuthenticatorStatus.SUCCESS, response);
                     }
@@ -496,23 +490,26 @@ public class CredManHelper {
                             : ConditionalUiState.NONE;
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
+        Context context = mAuthenticationContextProvider.getContext();
         final CredentialManager manager =
-                (CredentialManager) mContext.getSystemService(Context.CREDENTIAL_SERVICE);
+                (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
         manager.getCredential(
-                mContext, getCredentialRequest, null, mContext.getMainExecutor(), receiver);
+                context, getCredentialRequest, null, context.getMainExecutor(), receiver);
         mMetricsHelper.reportGetCredentialMetrics(
                 CredManGetRequestEnum.SENT_REQUEST, mConditionalUiState);
         return AuthenticatorStatus.SUCCESS;
     }
 
-    public void cancelConditionalGetAssertion(RenderFrameHost frameHost) {
+    public void cancelConditionalGetAssertion() {
         switch (mConditionalUiState) {
             case WAITING_FOR_CREDENTIAL_LIST:
                 mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
                 mBarrier.onCredManCancelled();
                 break;
             case WAITING_FOR_SELECTION:
-                mBridgeProvider.getBridge().cleanupCredManRequest(frameHost);
+                mBridgeProvider
+                        .getBridge()
+                        .cleanupCredManRequest(mAuthenticationContextProvider.getRenderFrameHost());
                 mConditionalUiState = ConditionalUiState.NONE;
                 mBarrier.onCredManCancelled();
                 break;
@@ -561,7 +558,9 @@ public class CredManHelper {
 
     private void notifyBrowserOnCredManClosed(boolean success) {
         if (mBridgeProvider.getBridge() == null) return;
-        mBridgeProvider.getBridge().onCredManUiClosed(mFrameHost, success);
+        mBridgeProvider
+                .getBridge()
+                .onCredManUiClosed(mAuthenticationContextProvider.getRenderFrameHost(), success);
     }
 
     /**
@@ -613,7 +612,7 @@ public class CredManHelper {
                         .setOrigin(originString)
                         .setPlayServicesAvailable(mPlayServicesAvailable)
                         .setIgnoreGpm(ignoreGpm)
-                        .setRenderFrameHost(mFrameHost)
+                        .setRenderFrameHost(mAuthenticationContextProvider.getRenderFrameHost())
                         .build();
         return helper.getGetCredentialRequest(mCredManRequestDecorator);
     }
