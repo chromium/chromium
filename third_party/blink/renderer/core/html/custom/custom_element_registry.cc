@@ -336,8 +336,8 @@ CustomElementRegistry::whenDefined(ScriptState* script_state,
   if (ThrowIfInvalidName(name, false, exception_state))
     return ScriptPromiseTyped<V8CustomElementConstructor>();
   if (CustomElementDefinition* definition = DefinitionForName(name)) {
-    return ScriptPromiseTyped<V8CustomElementConstructor>::Cast(
-        script_state, definition->GetConstructorForScript());
+    return ToResolvedPromise<V8CustomElementConstructor>(
+        script_state, definition->GetV8CustomElementConstructor());
   }
   const auto it = when_defined_promise_map_.find(name);
   if (it != when_defined_promise_map_.end())

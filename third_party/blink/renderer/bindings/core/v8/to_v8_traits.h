@@ -964,6 +964,16 @@ struct ToV8Traits<IDLOptional<T>> {
   }
 };
 
+template <typename IDLType, typename BlinkType>
+ScriptPromiseTyped<IDLType> ToResolvedPromise(ScriptState* script_state,
+                                              BlinkType value) {
+  typename ScriptPromiseTyped<IDLType>::InternalResolverTyped resolver(
+      script_state);
+  auto promise = resolver.Promise();
+  resolver.Resolve(ToV8Traits<IDLType>::ToV8(script_state, value));
+  return promise;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_

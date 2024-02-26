@@ -1001,8 +1001,7 @@ ScriptPromiseTyped<IDLBoolean> PaymentRequest::canMakePayment(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
-    return ScriptPromiseTyped<IDLBoolean>::Cast(
-        script_state, v8::Boolean::New(script_state->GetIsolate(), false));
+    return ToResolvedPromise<IDLBoolean>(script_state, false);
   }
 
   if (!payment_provider_.is_bound() || GetPendingAcceptPromiseResolver() ||
@@ -1027,8 +1026,7 @@ ScriptPromiseTyped<IDLBoolean> PaymentRequest::hasEnrolledInstrument(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
-    return ScriptPromiseTyped<IDLBoolean>::Cast(
-        script_state, v8::Boolean::New(script_state->GetIsolate(), false));
+    return ToResolvedPromise<IDLBoolean>(script_state, false);
   }
 
   if (!payment_provider_.is_bound() || GetPendingAcceptPromiseResolver() ||

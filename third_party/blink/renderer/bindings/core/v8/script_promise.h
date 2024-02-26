@@ -197,26 +197,6 @@ class ScriptPromiseTyped : public ScriptPromise {
     }
   };
 
-  static ScriptPromiseTyped<IDLResolvedType> Cast(ScriptState* script_state,
-                                                  v8::Local<v8::Value> value) {
-    if (value.IsEmpty()) {
-      return ScriptPromiseTyped<IDLResolvedType>();
-    }
-    if (value->IsPromise()) {
-      return ScriptPromiseTyped<IDLResolvedType>(script_state, value);
-    }
-    InternalResolverTyped resolver(script_state);
-    ScriptPromiseTyped<IDLResolvedType> promise = resolver.Promise();
-    resolver.Resolve(value);
-    return promise;
-  }
-
-  static ScriptPromiseTyped<IDLResolvedType> Cast(ScriptState* script_state,
-                                                  const ScriptValue& value) {
-    return ScriptPromiseTyped<IDLResolvedType>::Cast(script_state,
-                                                     value.V8Value());
-  }
-
   static ScriptPromiseTyped<IDLResolvedType> RejectWithDOMException(
       ScriptState* script_state,
       DOMException* exception) {
@@ -240,6 +220,10 @@ class ScriptPromiseTyped : public ScriptPromise {
     return promise;
   }
 };
+
+// Defined in to_v8_traits.h due to circular dependency.
+template <typename IDLType, typename BlinkType>
+ScriptPromiseTyped<IDLType> ToResolvedPromise(ScriptState*, BlinkType value);
 
 }  // namespace blink
 

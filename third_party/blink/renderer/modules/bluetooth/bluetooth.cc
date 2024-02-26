@@ -335,8 +335,7 @@ ScriptPromiseTyped<IDLBoolean> Bluetooth::getAvailability(
   // If Bluetooth is disallowed by Permissions Policy, getAvailability should
   // return false.
   if (!IsFeatureEnabled(window)) {
-    return ScriptPromiseTyped<IDLBoolean>::Cast(
-        script_state, v8::Boolean::New(script_state->GetIsolate(), false));
+    return ToResolvedPromise<IDLBoolean>(script_state, false);
   }
 
   CHECK(window->IsSecureContext());
