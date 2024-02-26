@@ -24,18 +24,6 @@
 
 namespace pdf {
 
-// static
-std::unique_ptr<content::NavigationThrottle>
-PdfNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle,
-    std::unique_ptr<PdfStreamDelegate> stream_delegate) {
-  if (navigation_handle->IsInMainFrame())
-    return nullptr;
-
-  return std::make_unique<PdfNavigationThrottle>(navigation_handle,
-                                                 std::move(stream_delegate));
-}
-
 PdfNavigationThrottle::PdfNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     std::unique_ptr<PdfStreamDelegate> stream_delegate)
@@ -52,7 +40,16 @@ const char* PdfNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PdfNavigationThrottle::WillStartRequest() {
-  // Ignore unless navigating to the stream URL.
+  // Intercepts navigations to a PDF stream URL in a PDF content frame and
+  // re-navigates to the original PDF URL.
+
+  // Skip main frame navigations, as the main frame should never be navigating
+  // to the stream URL.
+  if (navigation_handle()->IsInMainFrame()) {
+    return PROCEED;
+  }
+
+  // Skip unless navigating to the stream URL.
   const std::optional<GURL> original_url =
       stream_delegate_->MapToOriginalUrl(*navigation_handle());
   if (!original_url.has_value())
@@ -70,7 +67,7 @@ PdfNavigationThrottle::WillStartRequest() {
   params.is_pdf = true;
 
   // The parent frame should always exist after main frame navigations are
-  // filtered out in `MaybeCreateThrottleFor()`, and it has the expected
+  // filtered out at the beginning of this method, and it has the expected
   // embedder URL based on the checks in
   // `PdfStreamDelegate::MapToOriginalUrl()`. For the PDF viewer, the parent
   // frame is the PDF extension frame. For Print Preview, the parent frame is

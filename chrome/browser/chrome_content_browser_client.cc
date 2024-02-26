@@ -5055,9 +5055,8 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   MaybeAddThrottle(PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle),
                    &throttles);
 #if BUILDFLAG(ENABLE_PDF)
-  MaybeAddThrottle(pdf::PdfNavigationThrottle::MaybeCreateThrottleFor(
-                       handle, std::make_unique<ChromePdfStreamDelegate>()),
-                   &throttles);
+  throttles.push_back(std::make_unique<pdf::PdfNavigationThrottle>(
+      handle, std::make_unique<ChromePdfStreamDelegate>()));
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   MaybeAddThrottle(TabUnderNavigationThrottle::MaybeCreate(handle), &throttles);
