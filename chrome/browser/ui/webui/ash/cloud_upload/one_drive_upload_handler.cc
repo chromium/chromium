@@ -120,16 +120,6 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
 }
 
 void OneDriveUploadHandler::GetODFSMetadataAndStartIOTask() {
-  FileSystemURL destination_folder_url = GetDestinationFolderUrl();
-  if (!destination_folder_url.is_valid()) {
-    LOG(ERROR) << "Unable to generate destination folder ODFS URL";
-    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
-    base::debug::DumpWithoutCrashing(FROM_HERE);
-    OnFailedUpload(OfficeFilesUploadResult::kDestinationUrlError);
-    return;
-  }
-
-  // First check that ODFS is not in the "ReauthenticationRequired" state.
   file_system_provider::ProvidedFileSystemInterface* file_system =
       GetODFS(profile_);
   if (!file_system) {
@@ -139,6 +129,18 @@ void OneDriveUploadHandler::GetODFSMetadataAndStartIOTask() {
     OnFailedUpload(OfficeFilesUploadResult::kFileSystemNotFound);
     return;
   }
+
+  FileSystemURL destination_folder_url =
+      GetDestinationFolderUrl(file_system->GetFileSystemInfo());
+  if (!destination_folder_url.is_valid()) {
+    LOG(ERROR) << "Unable to generate destination folder ODFS URL";
+    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
+    base::debug::DumpWithoutCrashing(FROM_HERE);
+    OnFailedUpload(OfficeFilesUploadResult::kDestinationUrlError);
+    return;
+  }
+
+  // First check that ODFS is not in the "ReauthenticationRequired" state.
   GetODFSMetadata(
       file_system,
       base::BindOnce(
@@ -227,17 +229,9 @@ void OneDriveUploadHandler::OnMountResponse(base::File::Error result) {
   GetODFSMetadataAndStartIOTask();
 }
 
-FileSystemURL OneDriveUploadHandler::GetDestinationFolderUrl() {
-  auto odfs_info = GetODFSInfo(profile_);
-  if (!odfs_info) {
-    LOG(ERROR) << "ODFS not found";
-    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
-    base::debug::DumpWithoutCrashing(FROM_HERE);
-    OnFailedUpload(OfficeFilesUploadResult::kFileSystemNotFound);
-    return FileSystemURL();
-  }
-
-  destination_folder_path_ = odfs_info->mount_path();
+FileSystemURL OneDriveUploadHandler::GetDestinationFolderUrl(
+    file_system_provider::ProvidedFileSystemInfo odfs_info) {
+  destination_folder_path_ = odfs_info.mount_path();
   return FilePathToFileSystemURL(profile_, file_system_context_,
                                  destination_folder_path_);
 }

@@ -70,7 +70,8 @@ class OneDriveUploadHandler
   // Called when we have attempted to remount ODFS due to needing to reauth.
   void OnMountResponse(base::File::Error result);
 
-  FileSystemURL GetDestinationFolderUrl();
+  FileSystemURL GetDestinationFolderUrl(
+      file_system_provider::ProvidedFileSystemInfo odfs_info);
 
   // Ends upload in a successful state, shows a complete notification and runs
   // the upload callback.
