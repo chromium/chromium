@@ -9,20 +9,55 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
+#include "pdf/pdf_features.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace pdf {
+
+content::NavigationThrottle::ThrottleCheckResult
+PdfNavigationThrottle::WillProcessResponse() {
+  // OOPIF PDF viewer only.
+  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    return PROCEED;
+  }
+
+  const net::HttpResponseHeaders* response_headers =
+      navigation_handle()->GetResponseHeaders();
+  if (!response_headers) {
+    return PROCEED;
+  }
+
+  std::string mime_type;
+  response_headers->GetMimeType(&mime_type);
+  if (mime_type != kPDFMimeType) {
+    return PROCEED;
+  }
+
+  // Fenced frames should not be able to load PDFs.
+  bool is_sandboxed_pdf = (navigation_handle()->SandboxFlagsToCommit() &
+                           network::mojom::WebSandboxFlags::kPlugins) !=
+                          network::mojom::WebSandboxFlags::kNone;
+  if (!is_sandboxed_pdf) {
+    return PROCEED;
+  }
+
+  return ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_CLIENT);
+}
 
 PdfNavigationThrottle::PdfNavigationThrottle(
     content::NavigationHandle* navigation_handle,

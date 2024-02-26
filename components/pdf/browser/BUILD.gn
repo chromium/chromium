@@ -55,9 +55,11 @@ source_set("interceptors") {
 
   deps = [
     "//base",
+    "//components/pdf/common:constants",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
+    "//pdf:features",
     "//services/network/public/cpp:cpp_base",
     "//services/network/public/mojom",
     "//ui/base",
