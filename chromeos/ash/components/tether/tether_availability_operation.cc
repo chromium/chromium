@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/tether/host_scanner_operation.h"
+#include "chromeos/ash/components/tether/tether_availability_operation.h"
 
 #include <memory>
 
@@ -83,11 +83,11 @@ bool AreGmsCoreNotificationsDisabled(
 }  // namespace
 
 // static
-HostScannerOperation::Factory*
-    HostScannerOperation::Factory::factory_instance_ = nullptr;
+TetherAvailabilityOperation::Factory*
+    TetherAvailabilityOperation::Factory::factory_instance_ = nullptr;
 
 // static
-std::unique_ptr<HostScannerOperation> HostScannerOperation::Factory::Create(
+std::unique_ptr<TetherAvailabilityOperation> TetherAvailabilityOperation::Factory::Create(
     const multidevice::RemoteDeviceRefList& devices_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
@@ -101,20 +101,20 @@ std::unique_ptr<HostScannerOperation> HostScannerOperation::Factory::Create(
         connection_preserver);
   }
 
-  return base::WrapUnique(new HostScannerOperation(
+  return base::WrapUnique(new TetherAvailabilityOperation(
       devices_to_connect, device_sync_client, secure_channel_client,
       host_scan_device_prioritizer, tether_host_response_recorder,
       connection_preserver));
 }
 
 // static
-void HostScannerOperation::Factory::SetFactoryForTesting(Factory* factory) {
+void TetherAvailabilityOperation::Factory::SetFactoryForTesting(Factory* factory) {
   factory_instance_ = factory;
 }
 
-HostScannerOperation::Factory::~Factory() = default;
+TetherAvailabilityOperation::Factory::~Factory() = default;
 
-HostScannerOperation::ScannedDeviceInfo::ScannedDeviceInfo(
+TetherAvailabilityOperation::ScannedDeviceInfo::ScannedDeviceInfo(
     multidevice::RemoteDeviceRef remote_device,
     const DeviceStatus& device_status,
     bool setup_required)
@@ -122,17 +122,17 @@ HostScannerOperation::ScannedDeviceInfo::ScannedDeviceInfo(
       device_status(device_status),
       setup_required(setup_required) {}
 
-HostScannerOperation::ScannedDeviceInfo::~ScannedDeviceInfo() = default;
+TetherAvailabilityOperation::ScannedDeviceInfo::~ScannedDeviceInfo() = default;
 
-bool operator==(const HostScannerOperation::ScannedDeviceInfo& first,
-                const HostScannerOperation::ScannedDeviceInfo& second) {
+bool operator==(const TetherAvailabilityOperation::ScannedDeviceInfo& first,
+                const TetherAvailabilityOperation::ScannedDeviceInfo& second) {
   return first.remote_device == second.remote_device &&
          first.device_status.SerializeAsString() ==
              second.device_status.SerializeAsString() &&
          first.setup_required == second.setup_required;
 }
 
-HostScannerOperation::HostScannerOperation(
+TetherAvailabilityOperation::TetherAvailabilityOperation(
     const multidevice::RemoteDeviceRefList& devices_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
@@ -149,17 +149,17 @@ HostScannerOperation::HostScannerOperation(
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
-HostScannerOperation::~HostScannerOperation() = default;
+TetherAvailabilityOperation::~TetherAvailabilityOperation() = default;
 
-void HostScannerOperation::AddObserver(Observer* observer) {
+void TetherAvailabilityOperation::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void HostScannerOperation::RemoveObserver(Observer* observer) {
+void TetherAvailabilityOperation::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void HostScannerOperation::NotifyObserversOfScannedDeviceList(
+void TetherAvailabilityOperation::NotifyObserversOfScannedDeviceList(
     bool is_final_scan_result) {
   for (auto& observer : observer_list_) {
     observer.OnTetherAvailabilityResponse(
@@ -168,7 +168,7 @@ void HostScannerOperation::NotifyObserversOfScannedDeviceList(
   }
 }
 
-void HostScannerOperation::OnDeviceAuthenticated(
+void TetherAvailabilityOperation::OnDeviceAuthenticated(
     multidevice::RemoteDeviceRef remote_device) {
   DCHECK(
       !base::Contains(device_id_to_tether_availability_request_start_time_map_,
@@ -180,7 +180,7 @@ void HostScannerOperation::OnDeviceAuthenticated(
                                          TetherAvailabilityRequest()));
 }
 
-void HostScannerOperation::OnMessageReceived(
+void TetherAvailabilityOperation::OnMessageReceived(
     std::unique_ptr<MessageWrapper> message_wrapper,
     multidevice::RemoteDeviceRef remote_device) {
   if (message_wrapper->GetMessageType() !=
@@ -238,11 +238,11 @@ void HostScannerOperation::OnMessageReceived(
   // Delay this in order to let |connection_preserver_| fully preserve the
   // connection, if necessary, before attempting to tear down the connection.
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&HostScannerOperation::UnregisterDevice,
+      FROM_HERE, base::BindOnce(&TetherAvailabilityOperation::UnregisterDevice,
                                 weak_ptr_factory_.GetWeakPtr(), remote_device));
 }
 
-void HostScannerOperation::OnOperationStarted() {
+void TetherAvailabilityOperation::OnOperationStarted() {
   DCHECK(scanned_device_list_so_far_.empty());
 
   // Send out an empty device list scan to let observers know that the operation
@@ -250,22 +250,22 @@ void HostScannerOperation::OnOperationStarted() {
   NotifyObserversOfScannedDeviceList(false /* is_final_scan_result */);
 }
 
-void HostScannerOperation::OnOperationFinished() {
+void TetherAvailabilityOperation::OnOperationFinished() {
   NotifyObserversOfScannedDeviceList(true /* is_final_scan_result */);
 }
 
-MessageType HostScannerOperation::GetMessageTypeForConnection() {
+MessageType TetherAvailabilityOperation::GetMessageTypeForConnection() {
   return MessageType::TETHER_AVAILABILITY_REQUEST;
 }
 
-void HostScannerOperation::SetTestDoubles(
+void TetherAvailabilityOperation::SetTestDoubles(
     base::Clock* clock_for_test,
     scoped_refptr<base::TaskRunner> test_task_runner) {
   clock_ = clock_for_test;
   task_runner_ = test_task_runner;
 }
 
-void HostScannerOperation::RecordTetherAvailabilityResponseDuration(
+void TetherAvailabilityOperation::RecordTetherAvailabilityResponseDuration(
     const std::string device_id) {
   if (!base::Contains(device_id_to_tether_availability_request_start_time_map_,
                       device_id) ||

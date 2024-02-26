@@ -103,7 +103,7 @@ class MessageTransferOperation {
  private:
   friend class ConnectTetheringOperationTest;
   friend class DisconnectTetheringOperationTest;
-  friend class HostScannerOperationTest;
+  friend class TetherAvailabilityOperationTest;
   friend class KeepAliveOperationTest;
   friend class MessageTransferOperationTest;
 

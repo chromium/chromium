@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_TETHER_HOST_SCANNER_OPERATION_H_
-#define CHROMEOS_ASH_COMPONENTS_TETHER_HOST_SCANNER_OPERATION_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_AVAILABILITY_OPERATION_H_
+#define CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_AVAILABILITY_OPERATION_H_
 
 #include <map>
 #include <vector>
@@ -34,13 +34,13 @@ class TetherHostResponseRecorder;
 // Operation used to perform a host scan. Attempts to connect to each of the
 // devices passed and sends a TetherAvailabilityRequest to each connected device
 // once an authenticated channel has been established; once a response has been
-// received, HostScannerOperation alerts observers of devices which can provide
+// received, TetherAvailabilityOperation alerts observers of devices which can provide
 // a tethering connection.
-class HostScannerOperation : public MessageTransferOperation {
+class TetherAvailabilityOperation : public MessageTransferOperation {
  public:
   class Factory {
    public:
-    static std::unique_ptr<HostScannerOperation> Create(
+    static std::unique_ptr<TetherAvailabilityOperation> Create(
         const multidevice::RemoteDeviceRefList& devices_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
@@ -52,7 +52,7 @@ class HostScannerOperation : public MessageTransferOperation {
 
    protected:
     virtual ~Factory();
-    virtual std::unique_ptr<HostScannerOperation> CreateInstance(
+    virtual std::unique_ptr<TetherAvailabilityOperation> CreateInstance(
         const multidevice::RemoteDeviceRefList& devices_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
@@ -91,16 +91,16 @@ class HostScannerOperation : public MessageTransferOperation {
         bool is_final_scan_result) = 0;
   };
 
-  HostScannerOperation(const HostScannerOperation&) = delete;
-  HostScannerOperation& operator=(const HostScannerOperation&) = delete;
+  TetherAvailabilityOperation(const TetherAvailabilityOperation&) = delete;
+  TetherAvailabilityOperation& operator=(const TetherAvailabilityOperation&) = delete;
 
-  ~HostScannerOperation() override;
+  ~TetherAvailabilityOperation() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  protected:
-  HostScannerOperation(
+  TetherAvailabilityOperation(
       const multidevice::RemoteDeviceRefList& devices_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
@@ -122,16 +122,16 @@ class HostScannerOperation : public MessageTransferOperation {
   std::vector<ScannedDeviceInfo> scanned_device_list_so_far_;
 
  private:
-  friend class HostScannerOperationTest;
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest,
+  friend class TetherAvailabilityOperationTest;
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
                            DevicesArePrioritizedDuringConstruction);
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest, RecordsResponseDuration);
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest, ErrorResponses);
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest, NotificationsDisabled);
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest, TetherAvailable);
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest, LastProvisioningFailed);
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest, SetupRequired);
-  FRIEND_TEST_ALL_PREFIXES(HostScannerOperationTest, TestMultipleDevices);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, RecordsResponseDuration);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, ErrorResponses);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, NotificationsDisabled);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, TetherAvailable);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, LastProvisioningFailed);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, SetupRequired);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, TestMultipleDevices);
 
   using MessageTransferOperation::UnregisterDevice;
 
@@ -150,9 +150,9 @@ class HostScannerOperation : public MessageTransferOperation {
   std::map<std::string, base::Time>
       device_id_to_tether_availability_request_start_time_map_;
 
-  base::WeakPtrFactory<HostScannerOperation> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TetherAvailabilityOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::tether
 
-#endif  // CHROMEOS_ASH_COMPONENTS_TETHER_HOST_SCANNER_OPERATION_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_AVAILABILITY_OPERATION_H_

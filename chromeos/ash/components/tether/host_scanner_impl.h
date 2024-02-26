@@ -17,8 +17,8 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/tether/host_scanner.h"
-#include "chromeos/ash/components/tether/host_scanner_operation.h"
 #include "chromeos/ash/components/tether/notification_presenter.h"
+#include "chromeos/ash/components/tether/tether_availability_operation.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace ash::device_sync {
@@ -44,12 +44,12 @@ class TetherHostFetcher;
 class TetherHostResponseRecorder;
 
 // Scans for nearby tether hosts. When StartScan() is called, this class creates
-// a new HostScannerOperation and uses it to contact nearby devices to query
-// whether they can provide tether capabilities. Once the scan results are
+// a new TetherAvailabilityOperation and uses it to contact nearby devices to
+// query whether they can provide tether capabilities. Once the scan results are
 // received, they are stored in the HostScanCache passed to the constructor,
 // and observers are notified via HostScanner::Observer::ScanFinished().
 class HostScannerImpl : public HostScanner,
-                        public HostScannerOperation::Observer,
+                        public TetherAvailabilityOperation::Observer,
                         public session_manager::SessionManagerObserver {
  public:
   class Observer {
@@ -84,9 +84,9 @@ class HostScannerImpl : public HostScanner,
   void StopScan() override;
 
  protected:
-  // HostScannerOperation::Observer:
+  // TetherAvailabilityOperation::Observer:
   void OnTetherAvailabilityResponse(
-      const std::vector<HostScannerOperation::ScannedDeviceInfo>&
+      const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
           scanned_device_list_so_far,
       const multidevice::RemoteDeviceRefList&
           gms_core_notifications_disabled_devices,
@@ -109,10 +109,10 @@ class HostScannerImpl : public HostScanner,
 
   void OnTetherHostsFetched(
       const multidevice::RemoteDeviceRefList& tether_hosts);
-  void SetCacheEntry(
-      const HostScannerOperation::ScannedDeviceInfo& scanned_device_info);
+  void SetCacheEntry(const TetherAvailabilityOperation::ScannedDeviceInfo&
+                         scanned_device_info);
   void OnFinalScanResultReceived(
-      const std::vector<HostScannerOperation::ScannedDeviceInfo>&
+      const std::vector<TetherAvailabilityOperation::ScannedDeviceInfo>&
           final_scan_results);
   void RecordHostScanResult(HostScanResultEventType event_type);
   bool IsPotentialHotspotNotificationShowing();
@@ -137,7 +137,7 @@ class HostScannerImpl : public HostScanner,
   bool was_notification_showing_when_current_scan_started_ = false;
   bool was_notification_shown_in_current_scan_ = false;
   bool has_notification_been_shown_in_previous_scan_ = false;
-  std::unique_ptr<HostScannerOperation> host_scanner_operation_;
+  std::unique_ptr<TetherAvailabilityOperation> tether_availability_operation_;
   std::unordered_set<std::string> tether_guids_in_cache_before_scan_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
