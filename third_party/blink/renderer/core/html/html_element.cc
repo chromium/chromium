@@ -27,6 +27,7 @@
 
 #include "base/containers/enum_set.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
@@ -119,6 +120,7 @@ namespace blink {
 
 using AttributeChangedFunction =
     void (HTMLElement::*)(const Element::AttributeModificationParams& params);
+using mojom::blink::FormControlType;
 
 struct AttributeTriggers {
   const QualifiedName& attribute;
@@ -227,10 +229,23 @@ bool HTMLElement::ShouldSerializeEndTag() const {
 }
 
 static inline CSSValueID UnicodeBidiAttributeForDirAuto(HTMLElement* element) {
-  CHECK(!element->HasTagName(html_names::kBdoTag));
-  if (element->HasTagName(html_names::kPreTag) ||
-      element->HasTagName(html_names::kTextareaTag)) {
-    return CSSValueID::kPlaintext;
+  DCHECK(!element->HasTagName(html_names::kBdoTag));
+  DCHECK(!element->HasTagName(html_names::kTextareaTag));
+  DCHECK(!element->HasTagName(html_names::kPreTag));
+  if (auto* input_element = DynamicTo<HTMLInputElement>(element)) {
+    // https://html.spec.whatwg.org/multipage/rendering.html#bidi-rendering has
+    // prescribed UA stylesheet rules for type=search|tel|url|email with
+    // dir=auto, setting unicode-bidi: plaintext. However, those rules need
+    // `:is()`, so this is implemented here, rather than in html.css.
+    switch (input_element->FormControlType()) {
+      case FormControlType::kInputSearch:
+      case FormControlType::kInputTelephone:
+      case FormControlType::kInputUrl:
+      case FormControlType::kInputEmail:
+        return CSSValueID::kPlaintext;
+      default:
+        return CSSValueID::kIsolate;
+    }
   }
   return CSSValueID::kIsolate;
 }
@@ -346,7 +361,10 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     // with `rendering.html#bidi-rendering`. Make sure any changes here are
     // congruent with changes made there.
     if (EqualIgnoringASCIICase(value, "auto")) {
-      if (!HasTagName(html_names::kBdoTag)) {
+      // These three are handled by the UA stylesheet.
+      if (!HasTagName(html_names::kBdoTag) &&
+          !HasTagName(html_names::kTextareaTag) &&
+          !HasTagName(html_names::kPreTag)) {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kUnicodeBidi,
             UnicodeBidiAttributeForDirAuto(this));
