@@ -91,15 +91,15 @@ void SharedStorageDocumentServiceImpl::Bind(
     return;
   }
 
-  if (!IsSecureFrame(&render_frame_host())) {
+  bool is_secure_frame = IsSecureFrame(&render_frame_host());
+
+  base::UmaHistogramBoolean(
+      "Storage.SharedStorage.DocumentServiceBind.IsSecureFrame",
+      is_secure_frame);
+
+  if (!is_secure_frame) {
     // TODO(https://crbug.com/1470628): Invoke mojo::ReportBadMessage here when
     // we can be sure honest renderers won't hit this path.
-    SCOPED_CRASH_KEY_STRING1024("", "top_frame_url",
-                                render_frame_host()
-                                    .GetOutermostMainFrame()
-                                    ->GetLastCommittedURL()
-                                    .spec());
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
