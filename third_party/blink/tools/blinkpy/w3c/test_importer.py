@@ -698,7 +698,6 @@ class TestImporter:
                       self.new_test_expectations,
                       issue,
                       patchset,
-                      sheriff_email=self.sheriff_email(),
                       dry_run=not auto_file_bugs,
                       service_account_key_json=monorail_auth_json)
         return True

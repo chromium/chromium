@@ -16,7 +16,6 @@ import typing
 from typing import NamedTuple, Optional
 
 from blinkpy.common import path_finder
-from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.web_tests.models.testharness_results import (
     LineType,
@@ -25,7 +24,7 @@ from blinkpy.web_tests.models.testharness_results import (
 )
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
-from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
+from blinkpy.w3c.monorail import MonorailIssue
 from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_results_processor import TestType
@@ -35,18 +34,21 @@ _log = logging.getLogger(__name__)
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 
-USE_BUGANIZER = True
 BUGANIZER_WPT_COMPONENT = '1456176'
 
 
 class ImportNotifier:
-    def __init__(self, host, chromium_git, local_wpt):
+
+    def __init__(self,
+                 host,
+                 chromium_git,
+                 local_wpt,
+                 buganizer_client: Optional[BuganizerClient] = None):
         self.host = host
         self.git = chromium_git
         self.local_wpt = local_wpt
+        self._buganizer_client = buganizer_client or BuganizerClient()
 
-        self._monorail_api = MonorailAPI
-        self._buganizer_api = BuganizerClient
         self.default_port = host.port_factory.get()
         self.default_port.set_option_default('test_types',
                                              typing.get_args(TestType))
@@ -62,8 +64,7 @@ class ImportNotifier:
              issue,
              patchset,
              dry_run=True,
-             service_account_key_json=None,
-             sheriff_email=None):
+             service_account_key_json=None):
         """Files bug reports for new failures.
 
         Args:
@@ -85,8 +86,6 @@ class ImportNotifier:
         """
         gerrit_url = SHORT_GERRIT_PREFIX + issue
         gerrit_url_with_ps = gerrit_url + '/' + patchset + '/'
-
-        self.sheriff_email = sheriff_email
 
         changed_test_baselines = self.find_changed_baselines_of_tests(
             rebaselined_tests)
@@ -334,7 +333,10 @@ class ImportNotifier:
             owned_directory, self.finder.web_tests_dir())
         return short_directory
 
-    def file_bugs(self, bugs, dry_run, service_account_key_json=None):
+    def file_bugs(self,
+                  bugs,
+                  dry_run: bool = False,
+                  service_account_key_json=None):
         """Files a list of bugs to Monorail.
 
         Args:
@@ -349,60 +351,37 @@ class ImportNotifier:
                 len(bugs))
             return
 
-        _log.info('Filing %d bugs in the pending list to Monorail', len(bugs))
-        api = self._get_monorail_api(service_account_key_json)
-        buganizer_api = None
-        try:
-            buganizer_api = self._get_buganizer_api()
-        except Exception as e:
-            _log.warning('buganizer instantiation failed')
-            _log.warning(e)
-
+        _log.info('Filing %d bugs in the pending list to Buganizer', len(bugs))
         for index, bug in enumerate(bugs, start=1):
             issue_link = None
-            if buganizer_api and USE_BUGANIZER:
-                if 'summary' not in bug.body:
-                    _log.warning('failed to file bug')
-                    _log.warning('summary missing from bug:')
-                    _log.warning(bug)
-                    continue
-                if 'description' not in bug.body:
-                    _log.warning('failed to file bug')
-                    _log.warning('description missing from bug:')
-                    _log.warning(bug)
-                    continue
-                title = bug.body['summary']
-                description = bug.body['description']
-                cc = bug.body.get('cc', []) + [self.sheriff_email]
-                component_ids = bug.body['components']
-                component_id = (component_ids[0]
-                                if component_ids else BUGANIZER_WPT_COMPONENT)
-                try:
-                    buganizer_res = buganizer_api.NewIssue(
-                        title=title,
-                        description=description,
-                        cc=cc,
-                        status="New",
-                        componentId=component_id)
-                    issue_link = f'b/{buganizer_res["issue_id"]}'
-                except Exception as e:
-                    _log.warning('buganizer api call to new issue failed')
-                    _log.warning(e)
-            else:
-                # using monorail
-                response = api.insert_issue(bug)
-                issue_link = MonorailIssue.crbug_link(response['id'])
+            if 'summary' not in bug.body:
+                _log.warning('failed to file bug')
+                _log.warning('summary missing from bug:')
+                _log.warning(bug)
+                continue
+            if 'description' not in bug.body:
+                _log.warning('failed to file bug')
+                _log.warning('description missing from bug:')
+                _log.warning(bug)
+                continue
+            title = bug.body['summary']
+            description = bug.body['description']
+            cc = bug.body.get('cc', [])
+            component_ids = bug.body['components']
+            component_id = (component_ids[0]
+                            if component_ids else BUGANIZER_WPT_COMPONENT)
+            try:
+                buganizer_res = self._buganizer_client.NewIssue(
+                    title=title,
+                    description=description,
+                    cc=cc,
+                    status="New",
+                    componentId=component_id)
+                issue_link = f'crbug.com/{buganizer_res["issue_id"]}'
+            except Exception as e:
+                _log.warning('buganizer api call to new issue failed')
+                _log.warning(e)
             _log.info('[%d] Filed bug: %s', index, issue_link)
-
-    def _get_buganizer_api(self):
-        return self._buganizer_api()
-
-    def _get_monorail_api(self, service_account_key_json):
-        if service_account_key_json:
-            return self._monorail_api(
-                service_account_key_json=service_account_key_json)
-        token = LuciAuth(self.host).get_access_token()
-        return self._monorail_api(access_token=token)
 
 
 class TestFailure(NamedTuple):

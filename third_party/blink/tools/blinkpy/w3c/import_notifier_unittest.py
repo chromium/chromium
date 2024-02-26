@@ -20,7 +20,6 @@ from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import ImportNotifier, TestFailure
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
-from blinkpy.w3c.buganizer_mock import BuganizerClientMock
 
 UMBRELLA_BUG = WPTExpectationsUpdater.UMBRELLA_BUG
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
@@ -60,8 +59,9 @@ class ImportNotifierTest(unittest.TestCase):
             }))
         self.git = self.host.git()
         self.local_wpt = MockLocalWPT()
-        self.notifier = ImportNotifier(self.host, self.git, self.local_wpt)
-        self._buganizer_api = BuganizerClientMock
+        self.buganizer_client = mock.Mock()
+        self.notifier = ImportNotifier(self.host, self.git, self.local_wpt,
+                                       self.buganizer_client)
 
     def test_find_changed_baselines_of_tests(self):
         changed_files = [
@@ -365,6 +365,9 @@ class ImportNotifierTest(unittest.TestCase):
             'these reports, please add "wpt { notify: NO }"  to the relevant '
             'DIR_METADATA file.', bugs[0].body['description'].splitlines())
 
+        self.notifier.file_bugs(bugs)
+        self.buganizer_client.NewIssue.assert_called_once()
+
     def test_file_bug_without_owners(self):
         """A bug should be filed, even without OWNERS next to DIR_METADATA."""
         self.notifier.new_failures_by_directory = {
@@ -390,25 +393,22 @@ class ImportNotifierTest(unittest.TestCase):
                 'by import https://crrev.com/c/12345')
 
     def test_no_bugs_filed_in_dry_run(self):
-        def unreachable(_):
-            self.fail('MonorailAPI should not be instantiated in dry_run.')
-
-        self.notifier._get_monorail_api = unreachable  # pylint: disable=protected-access
-        self.notifier.file_bugs([], True)
-
-    def test_file_bugs_calls_luci_auth(self):
-        test = self
-
-        class FakeAPI(object):
-            def __init__(self,
-                         service_account_key_json=None,
-                         access_token=None):
-                test.assertIsNone(service_account_key_json)
-                test.assertEqual(access_token, 'MOCK output of child process')
-
-        self.notifier._monorail_api = FakeAPI  # pylint: disable=protected-access
-        self.notifier.file_bugs([], False)
-        self.assertEqual(self.host.executive.calls, [['luci-auth', 'token']])
+        self.notifier.new_failures_by_directory = {
+            'external/wpt/foo': [
+                TestFailure.from_expectation_line(
+                    'external/wpt/foo/baz.html',
+                    'crbug.com/12345 external/wpt/foo/baz.html [ Fail ]'),
+            ],
+        }
+        dir_metadata = WPTDirMetadata(buganizer_public_component='123',
+                                      should_notify=True)
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata',
+                               return_value=dir_metadata):
+            bugs = self.notifier.create_bugs_from_new_failures(
+                'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
+        self.notifier.file_bugs(bugs, dry_run=True)
+        self.buganizer_client.NewIssue.assert_not_called()
 
 
 class TestFailureTest(unittest.TestCase):
