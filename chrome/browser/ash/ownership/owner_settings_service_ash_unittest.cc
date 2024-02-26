@@ -338,6 +338,34 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
             device_policy_->payload().user_whitelist().user_whitelist().size());
 }
 
+TEST_F(OwnerSettingsServiceAshTest, DeviceExtendedAutoUpdateEnabledSetValue) {
+  device_policy_->payload().clear_deviceextendedautoupdateenabled();
+  ASSERT_FALSE(device_policy_->payload().has_deviceextendedautoupdateenabled());
+
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
+      kDeviceExtendedAutoUpdateEnabled, base::Value(true),
+      device_policy_->payload());
+
+  EXPECT_TRUE(
+      device_policy_->payload().deviceextendedautoupdateenabled().value());
+}
+
+TEST_F(OwnerSettingsServiceAshTest,
+       DeviceExtendedAutoUpdateEnabledSetValueWithPreviouslySet) {
+  device_policy_->payload()
+      .mutable_deviceextendedautoupdateenabled()
+      ->set_value(false);
+  ASSERT_FALSE(
+      device_policy_->payload().deviceextendedautoupdateenabled().value());
+
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
+      kDeviceExtendedAutoUpdateEnabled, base::Value(true),
+      device_policy_->payload());
+
+  EXPECT_TRUE(
+      device_policy_->payload().deviceextendedautoupdateenabled().value());
+}
+
 // Test that OwnerSettingsServiceAsh can successfully sign a policy and that the
 // signature is correct.
 TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {

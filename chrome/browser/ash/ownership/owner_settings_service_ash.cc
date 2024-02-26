@@ -626,6 +626,14 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
       hw_data_usage->set_hardware_data_usage_enabled(value.GetBool());
     else
       NOTREACHED();
+  } else if (path == kDeviceExtendedAutoUpdateEnabled) {
+    em::BooleanPolicyProto* container =
+        settings.mutable_deviceextendedautoupdateenabled();
+    if (value.is_bool()) {
+      container->set_value(value.GetBool());
+    } else {
+      NOTREACHED();
+    }
   } else {
     // The remaining settings don't support Set(), since they are not
     // intended to be customizable by the user:
