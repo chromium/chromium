@@ -151,6 +151,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"  // nogncheck
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
@@ -2873,12 +2874,43 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuInspectElement) {
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class WebViewSettingsRevampTest : public WebViewTest,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  WebViewSettingsRevampTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kOsSettingsRevampWayfinding,
+        /*enabled=*/GetParam());
+  }
+  ~WebViewSettingsRevampTest() override = default;
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "OsSettingsRevampWayfindingEnabled"
+                      : "OsSettingsRevampWayfindingDisabled";
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(WebViewTests,
+                         WebViewSettingsRevampTest,
+                         testing::Bool(),
+                         WebViewSettingsRevampTest::DescribeParams);
+#endif
+
 // This test executes the context menu command 'LanguageSettings'.
 // On Ash, this will open the language settings in the OS Settings app.
 // Elsewhere, it will load chrome://settings/languages in a browser window.
 // In either case, this is a browser-initiated operation and so we expect it
 // to succeed if the embedder is allowed to perform the operation.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(WebViewSettingsRevampTest, ContextMenuLanguageSettings) {
+#else
 IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuLanguageSettings) {
+#endif
   LoadAppWithGuest("web_view/context_menus/basic");
   content::WebContents* embedder = GetEmbedderWebContents();
   ASSERT_TRUE(embedder);
@@ -2902,7 +2934,10 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuLanguageSettings) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(
       GURL(chrome::kChromeUIOSSettingsURL)
-          .Resolve(chromeos::settings::mojom::kLanguagesAndInputSectionPath),
+          .Resolve(
+              ash::features::IsOsSettingsRevampWayfindingEnabled()
+                  ? chromeos::settings::mojom::kLanguagesSubpagePath
+                  : chromeos::settings::mojom::kLanguagesAndInputSectionPath),
       new_contents->GetVisibleURL());
 #else
   EXPECT_EQ(GURL(chrome::kChromeUISettingsURL)
