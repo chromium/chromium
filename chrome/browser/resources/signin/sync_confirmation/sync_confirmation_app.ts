@@ -193,8 +193,22 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.screenMode_ = screenMode;
   }
 
-  private getConfirmButtonClass_(screenMode: ScreenMode) {
-    return screenMode === ScreenMode.UNRESTRICTED ? 'action-button' : '';
+  private getConfirmButtonClass_() {
+    // TODO(b/326912202): Replace with observer pattern on screenMode_.
+    switch (this.screenMode_) {
+      case ScreenMode.UNRESTRICTED:
+        return 'action-button';
+      case ScreenMode.RESTRICTED:
+        return '';
+      case ScreenMode.PENDING:
+        return 'visibility-hidden';
+      default:
+        return '';
+    }
+  }
+
+  private getNotNowButtonClass_() {
+    return this.screenMode_ === ScreenMode.PENDING ? 'visibility-hidden' : '';
   }
 
   private isPending_(screenMode: ScreenMode) {

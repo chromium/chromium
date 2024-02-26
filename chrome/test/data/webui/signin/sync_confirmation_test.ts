@@ -48,11 +48,13 @@ suite(`SigninSyncConfirmationTest`, function() {
   test('LoadPage', function() {
     const cancelButton =
         app.shadowRoot!.querySelector<HTMLElement>('#notNowButton');
-    assertTrue(cancelButton!.hidden);
+    assertFalse(cancelButton!.hidden);
+    assertTrue(cancelButton!.classList.contains('visibility-hidden'));
 
     const confirmButton =
         app.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
-    assertTrue(confirmButton!.hidden);
+    assertFalse(confirmButton!.hidden);
+    assertTrue(confirmButton!.classList.contains('visibility-hidden'));
   });
 
   // Tests clicking on confirm button.

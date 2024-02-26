@@ -209,8 +209,8 @@
     animation: 500ms ease-in-out fade-in-animation;
   }
 
-  .action-container {
-    height: calc(2 * var(--action-container-padding)); /* Prevent the container from shrinking when buttons are hidden. */
+  .visibility-hidden {
+    visibility: hidden;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -296,7 +296,6 @@
       [[getMaybeDialogClass_(isModalDialog_)]]">
     <cr-button id="confirmButton"
         class$="[[getConfirmButtonClass_(screenMode_)]]"
-        hidden="[[isPending_(screenMode_)]]"
         on-click="onConfirm_"
         disabled="[[anyButtonClicked_]]" consent-confirmation
         autofocus="[[isModalDialog_]]">
@@ -309,7 +308,7 @@
       </cr-button>
     </if>
     <cr-button id="notNowButton"
-        hidden="[[isPending_(screenMode_)]]"
+        class$="[[getNotNowButtonClass_(screenMode_)]]"
         on-click="onUndo_" disabled="[[anyButtonClicked_]]">
       $i18n{syncConfirmationUndoLabel}
     </cr-button>
