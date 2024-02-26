@@ -596,10 +596,6 @@ bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
 }
 
-bool IsFullScreenPromoOnOmniboxCopyPasteEnabled() {
-  return base::FeatureList::IsEnabled(kFullScreenPromoOnOmniboxCopyPaste);
-}
-
 bool IsDBVideoPromoFullscreenEnabled() {
   return GetVideoPromoVariant().compare(kVideoFullscreenPromo) == 0;
 }
@@ -911,8 +907,7 @@ int GetNonModalDefaultBrowserPromoImpressionLimit() {
   return limit;
 }
 
-bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
-                                         bool is_omnibox_copy_paste) {
+bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
   if (ShouldForceDefaultPromoType()) {
     return YES;
   }
@@ -920,12 +915,6 @@ bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
   // Consider showing the default browser promo if chrome is not likely set as
   // default browser.
   if (IsChromeLikelyDefaultBrowser()) {
-    return NO;
-  }
-
-  // Consider showing full-screen promo on omnibox copy-paste event iff
-  // corresponding experiment is enabled.
-  if (IsFullScreenPromoOnOmniboxCopyPasteEnabled() != is_omnibox_copy_paste) {
     return NO;
   }
 

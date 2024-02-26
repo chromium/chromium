@@ -267,10 +267,6 @@ BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 // Feature flag that enables default browser video in settings experiment.
 BASE_DECLARE_FEATURE(kDefaultBrowserVideoInSettings);
 
-// Feature flag to show default browser full-screen promo on omnbibox copy-paste
-// event.
-BASE_DECLARE_FEATURE(kFullScreenPromoOnOmniboxCopyPaste);
-
 // Feature flag to try using the page theme color in the top toolbar
 BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
 

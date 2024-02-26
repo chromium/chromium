@@ -10,21 +10,13 @@ source_set("default_browser_scene_agent") {
     "default_browser_promo_scene_agent.mm",
   ]
   deps = [
-    "//base",
-    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/shared/coordinator/default_browser_promo",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo/post_default_abandonment:features",
     "//ios/chrome/browser/ui/default_promo/post_restore:features",
-    "//ios/chrome/browser/ui/promos_manager:promos_manager_scene_agent",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -156,7 +148,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
-    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/promos_manager/model:constants",
@@ -189,7 +180,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/default_promo/post_default_abandonment:features",
     "//ios/chrome/browser/ui/default_promo/post_restore:features",
-    "//ios/chrome/browser/ui/promos_manager:promos_manager_scene_agent",
     "//ios/chrome/test:block_cleanup_test",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",

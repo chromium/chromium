@@ -8,12 +8,8 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 
+// TODO(b/326250032): Remove this function and this file.
 void NotifyDefaultBrowserPromoUserPastedInOmnibox(SceneState* sceneState) {
-  if (IsFullScreenPromoOnOmniboxCopyPasteEnabled()) {
-    [[DefaultBrowserPromoSceneAgent agentFromScene:sceneState]
-        logUserPastedInOmnibox];
-  } else {
     [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
         logUserPastedInOmnibox];
-  }
 }

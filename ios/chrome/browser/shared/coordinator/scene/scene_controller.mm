@@ -938,21 +938,20 @@ void InjectNTP(Browser* browser) {
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
   Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
-  CommandDispatcher* mainCommandDispatcher =
-      mainBrowser->GetCommandDispatcher();
 
   PromosManager* promosManager =
       PromosManagerFactory::GetForBrowserState(browserState);
 
-  // Add scene agents that require CommandDispatcher.
   DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
-      [[DefaultBrowserPromoSceneAgent alloc]
-          initWithCommandDispatcher:mainCommandDispatcher];
+      [[DefaultBrowserPromoSceneAgent alloc] init];
   defaultBrowserAgent.promosManager = promosManager;
   [sceneState addAgent:defaultBrowserAgent];
   [sceneState
       addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
 
+  // Add scene agents that require CommandDispatcher.
+  CommandDispatcher* mainCommandDispatcher =
+      mainBrowser->GetCommandDispatcher();
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
   id<PolicyChangeCommands> policyChangeCommandsHandler =

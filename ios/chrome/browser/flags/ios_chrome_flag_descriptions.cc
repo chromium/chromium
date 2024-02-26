@@ -446,12 +446,6 @@ const char kFullscreenImprovementName[] = "Improve fullscreen";
 const char kFullscreenImprovementDescription[] =
     "When enabled, fullscreen should have a better stability.";
 
-const char kFullScreenPromoOnOmniboxCopyPasteName[] =
-    "Trigger Default Browser full-screen promo on omnibox copy-paste";
-const char kFullScreenPromoOnOmniboxCopyPasteDescription[] =
-    "When enabled full-screen promo will be displayed on omnibox copy-paste "
-    "event";
-
 const char kFullscreenPromosManagerSkipInternalLimitsName[] =
     "Fullscreen Promos Manager (Skip internal Impression Limits)";
 const char kFullscreenPromosManagerSkipInternalLimitsDescription[] =

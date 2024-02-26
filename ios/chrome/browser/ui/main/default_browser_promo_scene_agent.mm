@@ -4,22 +4,15 @@
 
 #import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 
-#import "base/feature_list.h"
-#import "base/ios/ios_util.h"
-#import "base/version.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 
 @interface DefaultBrowserPromoSceneAgent ()
 
@@ -33,14 +26,6 @@
 @end
 
 @implementation DefaultBrowserPromoSceneAgent
-
-- (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
-  self = [super init];
-  if (self) {
-    _dispatcher = dispatcher;
-  }
-  return self;
-}
 
 #pragma mark - Private
 
@@ -120,70 +105,27 @@
       signin::ConsentLevel::kSignin);
 }
 
-#pragma mark - BaseDefaultBrowserPromoSchedulerSceneAgent
+#pragma mark - SceneStateObserver
 
-- (bool)promoCanBeDisplayed {
-  return ShouldRegisterPromoWithPromoManager(self.signedIn,
-                                             /*is_omnibox_copy_paste=*/true);
-}
-
-- (void)resetPromoHandler {
-}
-
-- (void)initPromoHandler:(Browser*)browser {
-}
-
-- (void)notifyHandlerShowPromo {
-  PromosManagerSceneAgent* promosManagerSceneAgent =
-      [PromosManagerSceneAgent agentFromScene:self.sceneState];
-  if (!promosManagerSceneAgent) {
-    return;
-  }
-
-  self.promosManager->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::DefaultBrowser);
-
-  [promosManagerSceneAgent maybeForceDisplayPromo];
-}
-
-- (void)notifyHandlerDismissPromo:(BOOL)animated {
-}
-
-- (void)onEnteringBackground:(PromoReason)currentPromoReason
-              promoIsShowing:(bool)promoIsShowing {
-}
-
-- (void)onEnteringForeground {
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
   DCHECK(self.promosManager);
 
-  [self updatePostRestorePromoRegistration];
-  [self updatePostDefaultAbandonmentPromoRegistration];
-  [self updateAllTabsPromoRegistration];
-  [self updateMadeForIOSPromoRegistration];
-  [self updateStaySafePromoRegistration];
+  if (level == SceneActivationLevelForegroundActive) {
+    [self updatePostRestorePromoRegistration];
+    [self updatePostDefaultAbandonmentPromoRegistration];
+    [self updateAllTabsPromoRegistration];
+    [self updateMadeForIOSPromoRegistration];
+    [self updateStaySafePromoRegistration];
 
-  if (ShouldRegisterPromoWithPromoManager(self.signedIn,
-                                          /*is_omnibox_copy_paste=*/false)) {
-    self.promosManager->RegisterPromoForSingleDisplay(
-        promos_manager::Promo::DefaultBrowser);
-  } else {
-    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+    if (ShouldRegisterPromoWithPromoManager(self.signedIn)) {
+      self.promosManager->RegisterPromoForSingleDisplay(
+          promos_manager::Promo::DefaultBrowser);
+    } else {
+      self.promosManager->DeregisterPromo(
+          promos_manager::Promo::DefaultBrowser);
+    }
   }
-}
-
-- (void)logPromoAppear:(PromoReason)currentPromoReason {
-}
-
-- (void)logPromoAction:(PromoReason)currentPromoReason
-        promoShownTime:(base::TimeTicks)promoShownTime {
-}
-
-- (void)logPromoUserDismiss:(PromoReason)currentPromoReason
-             promoShownTime:(base::TimeTicks)promoShownTime {
-}
-
-- (void)logPromoTimeout:(PromoReason)currentPromoReason
-         promoShownTime:(base::TimeTicks)promoShownTime {
 }
 
 @end

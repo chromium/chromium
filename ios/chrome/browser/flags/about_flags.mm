@@ -1161,10 +1161,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserVideoInSettingsName,
      flag_descriptions::kDefaultBrowserVideoInSettingsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserVideoInSettings)},
-    {"fullscreen-promo-on-omnibox-copy-paste",
-     flag_descriptions::kFullScreenPromoOnOmniboxCopyPasteName,
-     flag_descriptions::kFullScreenPromoOnOmniboxCopyPasteDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kFullScreenPromoOnOmniboxCopyPaste)},
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,

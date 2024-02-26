@@ -383,11 +383,6 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kFullscreenImprovementName[];
 extern const char kFullscreenImprovementDescription[];
 
-// Title and description for the flag to enable default browser full-screen
-// promo on omnibox copy-paste.
-extern const char kFullScreenPromoOnOmniboxCopyPasteName[];
-extern const char kFullScreenPromoOnOmniboxCopyPasteDescription[];
-
 // Title and description for the flag to enable skipping the internal impression
 // limits of the Fullscreen Promos Manager.
 extern const char kFullscreenPromosManagerSkipInternalLimitsName[];
