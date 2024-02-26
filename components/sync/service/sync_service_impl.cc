@@ -1442,12 +1442,6 @@ void SyncServiceImpl::OnSelectedTypesPrefChange(
   }
 
   ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
-
-  if (payments_integration_enabled_changed) {
-    for (SyncServiceObserver& observer : *observers_) {
-      observer.OnSyncPaymentsIntegrationEnabledChanged(this);
-    }
-  }
 }
 
 SyncClient* SyncServiceImpl::GetSyncClientForTest() {

@@ -173,8 +173,6 @@ class PersonalDataManager : public KeyedService,
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
-  void OnSyncPaymentsIntegrationEnabledChanged(
-      syncer::SyncService* sync) override;
 
   // AccountInfoGetter:
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
@@ -297,9 +295,6 @@ class PersonalDataManager : public KeyedService,
   virtual void UpdateLocalCvc(const std::string& guid,
                               const std::u16string& cvc);
 
-  // Masks a full server card in the database.
-  virtual void MaskFullServerCreditCard(const std::string& server_id);
-
   // Updates the use stats and billing address id for the server |credit_cards|.
   // Looks up the cards by server_id.
   virtual void UpdateServerCardsMetadata(
@@ -314,12 +309,6 @@ class PersonalDataManager : public KeyedService,
 
   // Method to clear all local CVCs from the local web database.
   virtual void ClearLocalCvcs();
-
-  // Resets the card for |guid| to the masked state.
-  void ResetFullServerCard(const std::string& guid);
-
-  // Resets all unmasked cards to the masked state.
-  void ResetFullServerCards();
 
   // Deletes all server profiles and cards (both masked and unmasked).
   void ClearAllServerDataForTesting();

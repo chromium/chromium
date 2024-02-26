@@ -158,12 +158,6 @@ void TestSyncService::FireStateChanged() {
   }
 }
 
-void TestSyncService::FirePaymentsIntegrationEnabledChanged() {
-  for (SyncServiceObserver& observer : observers_) {
-    observer.OnSyncPaymentsIntegrationEnabledChanged(this);
-  }
-}
-
 void TestSyncService::FireSyncCycleCompleted() {
   for (SyncServiceObserver& observer : observers_) {
     observer.OnSyncCycleCompleted(this);

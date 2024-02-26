@@ -71,8 +71,6 @@ void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
   } else {
     selected_types_ = types;
   }
-
-  service_->FirePaymentsIntegrationEnabledChanged();
 }
 
 void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
@@ -82,8 +80,6 @@ void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
   } else {
     selected_types_.Remove(type);
   }
-
-  service_->FirePaymentsIntegrationEnabledChanged();
 }
 
 void TestSyncUserSettings::KeepAccountSettingsPrefsOnlyForUsers(

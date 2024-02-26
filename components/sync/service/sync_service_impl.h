@@ -219,6 +219,8 @@ class SyncServiceImpl : public SyncService,
   void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) override;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1497734): Remove the unused
+  // `payments_integration_enabled_changed` parameter.
   void OnSelectedTypesPrefChange(
       bool payments_integration_enabled_changed) override;
 

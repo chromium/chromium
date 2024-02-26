@@ -504,7 +504,7 @@ ExtensionFunction::ResponseAction AutofillPrivateMaskCreditCardFunction::Run() {
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  personal_data->ResetFullServerCard(parameters->guid);
+  // TODO(crbug.com/1497734): Remove this method entirely.
 
   return RespondNow(NoArguments());
 }

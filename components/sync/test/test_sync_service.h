@@ -81,7 +81,6 @@ class TestSyncService : public SyncService {
       const base::RepeatingClosure& send_passphrase_to_platform_client_cb);
 
   void FireStateChanged();
-  void FirePaymentsIntegrationEnabledChanged();
   void FireSyncCycleCompleted();
 
   // SyncService implementation.

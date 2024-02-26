@@ -2359,7 +2359,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
 
   // Stop Wallet sync.
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged());
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());

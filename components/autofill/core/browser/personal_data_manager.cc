@@ -317,21 +317,6 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   }
 }
 
-void PersonalDataManager::OnSyncPaymentsIntegrationEnabledChanged(
-    syncer::SyncService* sync_service) {
-  DCHECK_EQ(sync_service_, sync_service);
-
-  if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPayments)) {
-    // Re-mask all server cards when the user turns off wallet card
-    // integration.
-    ResetFullServerCards();
-    for (PersonalDataManagerObserver& observer : observers_) {
-      observer.OnPersonalDataChanged();
-    }
-  }
-}
-
 CoreAccountInfo PersonalDataManager::GetAccountInfoForPaymentsServer() const {
   // Return the account of the active signed-in user irrespective of whether
   // they enabled sync or not.
@@ -666,25 +651,6 @@ void PersonalDataManager::UpdateLocalCvc(const std::string& guid,
   Refresh();
 }
 
-void PersonalDataManager::MaskFullServerCreditCard(
-    const std::string& server_id) {
-  if (!payments_data_manager_->GetServerDatabase()) {
-    return;
-  }
-
-  // Look up by server id, not GUID.
-  for (const auto& server_card : payments_data_manager_->server_credit_cards_) {
-    if (server_id == server_card->server_id()) {
-      DCHECK_EQ(CreditCard::RecordType::kFullServerCard,
-                server_card->record_type());
-      payments_data_manager_->GetServerDatabase()->MaskServerCreditCard(
-          server_id);
-      Refresh();
-      return;
-    }
-  }
-}
-
 void PersonalDataManager::UpdateServerCardsMetadata(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK(payments_data_manager_->GetServerDatabase())
@@ -769,24 +735,6 @@ void PersonalDataManager::ClearLocalCvcs() {
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
-}
-
-void PersonalDataManager::ResetFullServerCard(const std::string& guid) {
-  for (const auto& card : payments_data_manager_->server_credit_cards_) {
-    if (card->guid() == guid) {
-      DCHECK_EQ(card->record_type(), CreditCard::RecordType::kFullServerCard);
-      MaskFullServerCreditCard(card->server_id());
-      break;
-    }
-  }
-}
-
-void PersonalDataManager::ResetFullServerCards() {
-  for (const auto& card : payments_data_manager_->server_credit_cards_) {
-    if (card->record_type() == CreditCard::RecordType::kFullServerCard) {
-      MaskFullServerCreditCard(card->server_id());
-    }
-  }
 }
 
 void PersonalDataManager::ClearAllServerDataForTesting() {
@@ -1602,15 +1550,9 @@ void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
     sync_service_->AddObserver(this);
   }
 
-  // Re-mask all server cards if the upload state is not active.
-  const bool is_upload_not_active =
-      syncer::GetUploadToGoogleState(sync_service_,
-                                     syncer::ModelType::AUTOFILL_WALLET_DATA) ==
-      syncer::UploadState::NOT_ACTIVE;
-  if (is_upload_not_active) {
-    ResetFullServerCards();
-  }
-
+  // TODO(crbug.com/1497734): This call is believed no longer necessary here for
+  // production (as we no longer re-mask cards in this method), but tests may
+  // depend on it still. Investigate and remove if possible.
   OnStateChanged(sync_service_);
 }
 

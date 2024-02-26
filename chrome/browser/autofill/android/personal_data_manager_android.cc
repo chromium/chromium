@@ -452,8 +452,7 @@ void PersonalDataManagerAndroid::ClearUnmaskedCache(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& guid) {
-  personal_data_manager_->ResetFullServerCard(
-      ConvertJavaStringToUTF8(env, guid));
+  // TODO(crbug.com/1497734): Remove this method.
 }
 
 void PersonalDataManagerAndroid::OnPersonalDataChanged() {

@@ -408,13 +408,12 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   void SetServerCreditCards(const std::vector<CreditCard>& credit_cards);
 
   // Cards synced from the server may be "masked" (only last 4 digits
-  // available) or "unmasked" (everything is available). These functions set
+  // available) or "unmasked" (everything is available). This function changes
   // that state.
   //
-  // TODO(crbug.com/1497734): Remove these methods entirely.
+  // TODO(crbug.com/1497734): Remove this method entirely.
   bool UnmaskServerCreditCard(const CreditCard& masked,
                               const std::u16string& full_number);
-  bool MaskServerCreditCard(const std::string& id);
 
   // Methods to add, update, remove, clear and get cvc in the
   // `server_stored_cvc` table. Return value indicates if the operation is
@@ -587,15 +586,8 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Must already be in a transaction.
   void AddMaskedCreditCards(const std::vector<CreditCard>& credit_cards);
 
-  // Adds to |unmasked_credit_cards|.
-  //
-  // TODO(crbug.com/1497734): This method is now a no-op and should be removed.
-  void AddUnmaskedCreditCard(const std::string& id,
-                             const std::u16string& full_number);
-
   // Deletes server credit cards by |id|. Returns true if a row was deleted.
   bool DeleteFromMaskedCreditCards(const std::string& id);
-  bool DeleteFromUnmaskedCreditCards(const std::string& id);
 
   // Get the list of eligible merchant domains for the specific 'benefit_id`.
   base::flat_set<url::Origin> GetMerchantDomainsForBenefitId(

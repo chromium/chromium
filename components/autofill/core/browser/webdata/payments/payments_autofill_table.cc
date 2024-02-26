@@ -780,7 +780,6 @@ bool PaymentsAutofillTable::AddFullServerCreditCard(const CreditCard& credit_car
     return false;
 
   // Make sure there aren't duplicates for this card.
-  DeleteFromUnmaskedCreditCards(credit_card.server_id());
   DeleteFromMaskedCreditCards(credit_card.server_id());
 
   CreditCard masked(credit_card);
@@ -789,8 +788,6 @@ bool PaymentsAutofillTable::AddFullServerCreditCard(const CreditCard& credit_car
   masked.RecordAndLogUse();
   DCHECK(!masked.network().empty());
   AddMaskedCreditCards({masked});
-
-  AddUnmaskedCreditCard(credit_card.server_id(), credit_card.number());
 
   transaction.Commit();
 
@@ -934,11 +931,6 @@ bool PaymentsAutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
   if (!transaction.Begin())
     return false;
 
-  // Make sure there aren't duplicates for this card.
-  DeleteFromUnmaskedCreditCards(masked.server_id());
-
-  AddUnmaskedCreditCard(masked.server_id(), full_number);
-
   CreditCard unmasked = masked;
   unmasked.set_record_type(CreditCard::RecordType::kFullServerCard);
   unmasked.SetNumber(full_number);
@@ -948,10 +940,6 @@ bool PaymentsAutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
   transaction.Commit();
 
   return db_->GetLastChangeCount() > 0;
-}
-
-bool PaymentsAutofillTable::MaskServerCreditCard(const std::string& id) {
-  return DeleteFromUnmaskedCreditCards(id);
 }
 
 bool PaymentsAutofillTable::AddServerCvc(const ServerCvc& server_cvc) {
@@ -2086,19 +2074,9 @@ void PaymentsAutofillTable::AddMaskedCreditCards(
   }
 }
 
-void PaymentsAutofillTable::AddUnmaskedCreditCard(const std::string& id,
-                                          const std::u16string& full_number) {
-  // TODO(crbug.com/1497734): Remove this method entirely.
-}
-
 bool PaymentsAutofillTable::DeleteFromMaskedCreditCards(const std::string& id) {
   DeleteWhereColumnEq(db_, kMaskedCreditCardsTable, kId, id);
   return db_->GetLastChangeCount() > 0;
-}
-
-bool PaymentsAutofillTable::DeleteFromUnmaskedCreditCards(const std::string& id) {
-  // TODO(crbug.com/1497734): Remove this method entirely.
-  return false;
 }
 
 base::flat_set<url::Origin>

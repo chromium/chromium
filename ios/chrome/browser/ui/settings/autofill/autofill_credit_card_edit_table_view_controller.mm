@@ -341,7 +341,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)buttonTapped:(UIButton*)button {
-  _personalDataManager->ResetFullServerCard(_creditCard.guid());
+  // TODO(crbug.com/1497734): Remove this method and button entirely; it should
+  // no longer be possible to have it visible.
 
   // Reset the copy of the card data used for display immediately.
   _creditCard.set_record_type(
