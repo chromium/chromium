@@ -30,6 +30,11 @@ async function openTwoWindows(
     remoteCall.waitForElement(windowIds[0], '#detail-table'),
     remoteCall.waitForElement(windowIds[1], '#detail-table'),
   ]);
+
+  await Promise.all([
+    remoteCall.waitFor('isFileManagerLoaded', windowIds[0], true),
+    remoteCall.waitFor('isFileManagerLoaded', windowIds[1], true),
+  ]);
   return windowIds;
 }
 
@@ -166,7 +171,7 @@ export async function copyBetweenWindowsLocalToUsb() {
   await remoteCall.waitForFiles(window1, [ENTRIES.photos.getExpectedRow()]);
 
   // Mount an empty USB volume in the Drive window.
-  await chrome.test.sendMessage(JSON.stringify({name: 'mountFakeUsbEmpty'}));
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
   const directoryTree = await DirectoryTreePageObject.create(window1);
@@ -203,7 +208,7 @@ export async function copyBetweenWindowsUsbToDrive() {
   await remoteCall.waitForFiles(window1, [ENTRIES.photos.getExpectedRow()]);
 
   // Mount an empty USB volume in the Downloads window.
-  await chrome.test.sendMessage(JSON.stringify({name: 'mountFakeUsbEmpty'}));
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
   const directoryTree = await DirectoryTreePageObject.create(window1);
@@ -239,7 +244,7 @@ export async function copyBetweenWindowsUsbToLocal() {
   await remoteCall.waitForFiles(window1, [ENTRIES.photos.getExpectedRow()]);
 
   // Mount an empty USB volume in the Drive window.
-  await chrome.test.sendMessage(JSON.stringify({name: 'mountFakeUsbEmpty'}));
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount and click to open the USB volume.
   const directoryTree = await DirectoryTreePageObject.create(window1);

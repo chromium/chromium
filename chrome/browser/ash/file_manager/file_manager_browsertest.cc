@@ -1710,17 +1710,18 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CopyBetweenWindows, /* copy_between_windows.js */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("copyBetweenWindowsLocalToDrive").NewDirectoryTree(),
         TestCase("copyBetweenWindowsLocalToUsb").NewDirectoryTree(),
-        // TODO(crbug.com/1523263): Re-enable this flaky test.
-        // TestCase("copyBetweenWindowsUsbToLocal").NewDirectoryTree(),
+        TestCase("copyBetweenWindowsUsbToDrive").NewDirectoryTree(),
+        TestCase("copyBetweenWindowsDriveToLocal").NewDirectoryTree(),
+        TestCase("copyBetweenWindowsDriveToUsb").NewDirectoryTree(),
+        TestCase("copyBetweenWindowsUsbToLocal").NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("copyBetweenWindowsLocalToDrive"),
         TestCase("copyBetweenWindowsLocalToUsb"),
-        // TODO(b/189173190): Enable
-        // TestCase("copyBetweenWindowsUsbToDrive"),
+        TestCase("copyBetweenWindowsUsbToDrive"),
         TestCase("copyBetweenWindowsDriveToLocal"),
-        // TODO(b/189173190): Enable
-        // TestCase("copyBetweenWindowsDriveToUsb"),
+        TestCase("copyBetweenWindowsDriveToUsb"),
         TestCase("copyBetweenWindowsUsbToLocal")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
