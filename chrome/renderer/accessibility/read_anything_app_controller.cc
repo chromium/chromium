@@ -562,9 +562,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     model_.ComputeDisplayNodeIdsForDistilledTree();
   }
 
-  // Draw the selection in the side panel (if one exists in the main panel) and
-  // the content if the selection is not in the distilled content.
-  PostProcessSelection();
+  // Draw the selection in the side panel (if one exists in the main panel).
+  if (!PostProcessSelection()) {
+    // If a draw did not occur, make sure to draw. This will happen if there is
+    // no main content selection when the tree is distilled.
+    Draw();
+  }
 
   if (model_.is_empty()) {
     ExecuteJavaScript("chrome.readingMode.showEmpty();");
@@ -593,8 +596,10 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   }
 }
 
-void ReadAnythingAppController::PostProcessSelection() {
+bool ReadAnythingAppController::PostProcessSelection() {
+  bool did_draw = false;
   if (model_.PostProcessSelection()) {
+    did_draw = true;
     Draw();
   }
   // Skip drawing the selection in the side panel if the selection originally
@@ -603,6 +608,7 @@ void ReadAnythingAppController::PostProcessSelection() {
     DrawSelection();
   }
   model_.set_selection_from_action(false);
+  return did_draw;
 }
 
 void ReadAnythingAppController::Draw() {

@@ -205,7 +205,8 @@ class ReadAnythingAppController
   void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
                          const std::vector<ui::AXNodeID>& content_node_ids);
 
-  void PostProcessSelection();
+  // Returns true if a draw occured.
+  bool PostProcessSelection();
 
   // Signals that the side panel has finished loading and it's safe to show
   // the UI to avoid loading artifacts.

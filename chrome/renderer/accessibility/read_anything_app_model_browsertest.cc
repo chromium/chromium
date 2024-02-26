@@ -1047,6 +1047,23 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelectionFromAction_DoesNotDraw) {
 }
 
 TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelectionFromAction_DoesNotDrawWithNoSelection) {
+  // Initial state.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = ui::kInvalidAXNodeID;
+  update.tree_data.sel_focus_object_id = ui::kInvalidAXNodeID;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({2, 3});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
        StartAndEndNodesHaveDifferentParents_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);

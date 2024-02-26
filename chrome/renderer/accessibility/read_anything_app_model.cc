@@ -127,8 +127,8 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   // redraw either a) the new selected content or b) the original distilled
   // content if the new selection is inside that or if the selection was
   // cleared.
-  bool need_to_draw = !selection_from_action_ && !SelectionInsideDisplayNodes();
-
+  bool need_to_draw = !selection_from_action_ && !NoCurrentSelection() &&
+                      !SelectionInsideDisplayNodes();
   // Save the current selection
   UpdateSelection();
 
@@ -373,6 +373,12 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
       }
     }
   }
+}
+
+bool ReadAnythingAppModel::NoCurrentSelection() {
+  return start_node_id_ == end_node_id_ ||
+         (start_node_id_ == ui::kInvalidAXNodeID &&
+          end_node_id_ == ui::kInvalidAXNodeID);
 }
 
 bool ReadAnythingAppModel::SelectionInsideDisplayNodes() {
