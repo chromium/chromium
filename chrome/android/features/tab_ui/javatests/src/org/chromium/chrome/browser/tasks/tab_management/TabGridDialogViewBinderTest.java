@@ -65,10 +65,10 @@ import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** Tests for {@link TabGridPanelViewBinder}. */
+/** Tests for {@link TabGridDialogViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
+public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private static final int CONTENT_TOP_MARGIN = 56;
 
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -130,19 +130,19 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                     mTabGridDialogView.setupScrimCoordinator(mScrimCoordinator);
 
                     mModel =
-                            new PropertyModel.Builder(TabGridPanelProperties.ALL_KEYS)
+                            new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
                                     .with(
-                                            TabGridPanelProperties.BROWSER_CONTROLS_STATE_PROVIDER,
+                                            TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER,
                                             mBrowserControlsStateProvider)
                                     .build();
-                    mModel.set(TabGridPanelProperties.BINDING_TOKEN, mBindingToken);
+                    mModel.set(TabGridDialogProperties.BINDING_TOKEN, mBindingToken);
 
                     mMCP =
                             PropertyModelChangeProcessor.create(
                                     mModel,
-                                    new TabGridPanelViewBinder.ViewHolder(
+                                    new TabGridDialogViewBinder.ViewHolder(
                                             mToolbarView, mContentView, mTabGridDialogView, null),
-                                    TabGridPanelViewBinder::bind);
+                                    TabGridDialogViewBinder::bind);
                 });
     }
 
@@ -153,15 +153,15 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         Assert.assertEquals(
                 mTabGridDialogView.getBindingToken().intValue(), mBindingToken.intValue());
 
-        mModel.set(TabGridPanelProperties.BINDING_TOKEN, null);
+        mModel.set(TabGridDialogProperties.BINDING_TOKEN, null);
         Assert.assertNull(mTabGridDialogView.getBindingToken());
 
         String title = "1024 tabs";
         Assert.assertNotEquals(title, mTitleTextView.getText());
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, title);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, title);
         Assert.assertNotEquals(title, mTitleTextView.getText());
 
-        mModel.set(TabGridPanelProperties.BINDING_TOKEN, 4);
+        mModel.set(TabGridDialogProperties.BINDING_TOKEN, 4);
         Assert.assertEquals(mTabGridDialogView.getBindingToken().intValue(), 4);
         Assert.assertEquals(title, mTitleTextView.getText().toString());
     }
@@ -176,7 +176,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         Assert.assertFalse(leftButtonClicked.get());
 
         mModel.set(
-                TabGridPanelProperties.COLLAPSE_CLICK_LISTENER,
+                TabGridDialogProperties.COLLAPSE_CLICK_LISTENER,
                 (View view) -> leftButtonClicked.set(true));
 
         mLeftButton.performClick();
@@ -193,7 +193,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         Assert.assertFalse(rightButtonClicked.get());
 
         mModel.set(
-                TabGridPanelProperties.ADD_CLICK_LISTENER,
+                TabGridDialogProperties.ADD_CLICK_LISTENER,
                 (View view) -> rightButtonClicked.set(true));
 
         mRightButton.performClick();
@@ -207,7 +207,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         String title = "1024 tabs";
         Assert.assertNotEquals(title, mTitleTextView.getText());
 
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, title);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, title);
 
         Assert.assertEquals(title, mTitleTextView.getText().toString());
     }
@@ -224,7 +224,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         Assert.assertEquals(
                 0, ((ViewGroup.MarginLayoutParams) mContentView.getLayoutParams()).topMargin);
 
-        mModel.set(TabGridPanelProperties.CONTENT_TOP_MARGIN, CONTENT_TOP_MARGIN);
+        mModel.set(TabGridDialogProperties.CONTENT_TOP_MARGIN, CONTENT_TOP_MARGIN);
 
         Assert.assertEquals(
                 CONTENT_TOP_MARGIN,
@@ -237,7 +237,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetPrimaryColor() {
         int color = ContextCompat.getColor(getActivity(), R.color.modern_blue_300);
 
-        mModel.set(TabGridPanelProperties.PRIMARY_COLOR, color);
+        mModel.set(TabGridDialogProperties.PRIMARY_COLOR, color);
 
         Assert.assertEquals(color, ((ColorDrawable) mMainContent.getBackground()).getColor());
         Assert.assertEquals(color, ((ColorDrawable) mContentView.getBackground()).getColor());
@@ -246,6 +246,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testSetTint() {
         ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(getActivity(), true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -254,7 +255,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         }
         Assert.assertNotEquals(tint, mTitleTextView.getTextColors());
 
-        mModel.set(TabGridPanelProperties.TINT, tint);
+        mModel.set(TabGridDialogProperties.TINT, tint);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(tint, mLeftButton.getImageTintList());
@@ -272,9 +273,9 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         scrimViewClicked.set(false);
         Runnable scrimClickRunnable = () -> scrimViewClicked.set(true);
 
-        mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, scrimClickRunnable);
+        mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, scrimClickRunnable);
         // Open the dialog to show the ScrimView.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
         View scrimView = mScrimCoordinator.getViewForTesting();
         scrimView.performClick();
         Assert.assertTrue(scrimViewClicked.get());
@@ -295,7 +296,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                 });
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true));
+                () -> mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true));
 
         if (areAnimatorsEnabled()) {
             Assert.assertNotNull(mTabGridDialogView.getCurrentDialogAnimatorForTesting());
@@ -308,7 +309,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                                 Matchers.nullValue()));
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false));
+                () -> mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false));
 
         if (areAnimatorsEnabled()) {
             Assert.assertNotNull(mTabGridDialogView.getCurrentDialogAnimatorForTesting());
@@ -324,10 +325,11 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testSetAnimationSourceView() {
         // When set animation source view as null, the show animation is set to be basic fade-in
         // which contains only one animation in animation set.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
         Assert.assertEquals(
                 1,
                 mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
@@ -337,7 +339,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
 
         // When set with a specific animation source view, the show animation contains 6 child
         // animations.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, sourceView);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, sourceView);
         Assert.assertEquals(
                 6,
                 mTabGridDialogView.getShowDialogAnimationForTesting().getChildAnimations().size());
@@ -348,13 +350,13 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void testSetUngroupbarStatus() {
         mModel.set(
-                TabGridPanelProperties.UNGROUP_BAR_STATUS, TabGridDialogView.UngroupBarStatus.SHOW);
+                TabGridDialogProperties.UNGROUP_BAR_STATUS, TabGridDialogView.UngroupBarStatus.SHOW);
         Assert.assertEquals(
                 TabGridDialogView.UngroupBarStatus.SHOW,
                 mTabGridDialogView.getUngroupBarStatusForTesting());
 
         mModel.set(
-                TabGridPanelProperties.UNGROUP_BAR_STATUS,
+                TabGridDialogProperties.UNGROUP_BAR_STATUS,
                 TabGridDialogView.UngroupBarStatus.HOVERED);
         Assert.assertEquals(
                 TabGridDialogView.UngroupBarStatus.HOVERED,
@@ -364,12 +366,13 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testSetDialogBackgroundColor() {
         int incognitoColor =
                 ContextCompat.getColor(
                         getActivity(), R.color.incognito_tab_grid_dialog_background_color);
 
-        mModel.set(TabGridPanelProperties.DIALOG_BACKGROUND_COLOR, incognitoColor);
+        mModel.set(TabGridDialogProperties.DIALOG_BACKGROUND_COLOR, incognitoColor);
 
         Assert.assertEquals(incognitoColor, mTabGridDialogView.getBackgroundColorForTesting());
     }
@@ -382,7 +385,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                 ContextCompat.getColor(
                         getActivity(), R.color.incognito_tab_grid_dialog_background_color);
 
-        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR, incognitoColor);
+        mModel.set(TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR, incognitoColor);
 
         Assert.assertEquals(
                 incognitoColor, mTabGridDialogView.getUngroupBarBackgroundColorForTesting());
@@ -398,7 +401,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                         R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color);
 
         mModel.set(
-                TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR, incognitoColor);
+                TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR, incognitoColor);
 
         Assert.assertEquals(
                 incognitoColor, mTabGridDialogView.getUngroupBarHoveredBackgroundColorForTesting());
@@ -407,12 +410,13 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testSetUngroupbarTextColor() {
         int incognitoColor =
                 ContextCompat.getColor(
                         getActivity(), R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
 
-        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR, incognitoColor);
+        mModel.set(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR, incognitoColor);
 
         Assert.assertEquals(incognitoColor, mTabGridDialogView.getUngroupBarTextColorForTesting());
     }
@@ -426,7 +430,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                         getActivity(),
                         R.color.incognito_tab_grid_dialog_ungroup_bar_text_hovered_color);
 
-        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR, incognitoColor);
+        mModel.set(TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR, incognitoColor);
 
         Assert.assertEquals(
                 incognitoColor, mTabGridDialogView.getUngroupBarHoveredTextColorForTesting());
@@ -439,7 +443,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         mContentView.setVisibility(View.INVISIBLE);
         Assert.assertEquals(View.INVISIBLE, mContentView.getVisibility());
 
-        mModel.set(TabGridPanelProperties.IS_MAIN_CONTENT_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_MAIN_CONTENT_VISIBLE, true);
 
         Assert.assertEquals(View.VISIBLE, mContentView.getVisibility());
     }
@@ -459,7 +463,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                         titleTextUpdated.set(true);
                     }
                 };
-        mModel.set(TabGridPanelProperties.TITLE_TEXT_WATCHER, textWatcher);
+        mModel.set(TabGridDialogProperties.TITLE_TEXT_WATCHER, textWatcher);
 
         mTitleTextView.setText(title);
         Assert.assertTrue(titleTextUpdated.get());
@@ -474,7 +478,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         Assert.assertFalse(mTitleTextView.isFocused());
 
         View.OnFocusChangeListener listener = (view, b) -> textFocusChanged.set(true);
-        mModel.set(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER, listener);
+        mModel.set(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER, listener);
         mTitleTextView.requestFocus();
 
         Assert.assertTrue(mTitleTextView.isFocused());
@@ -487,7 +491,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetCursorVisibility() {
         mTitleTextView.setCursorVisible(false);
 
-        mModel.set(TabGridPanelProperties.TITLE_CURSOR_VISIBILITY, true);
+        mModel.set(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY, true);
 
         Assert.assertTrue(mTitleTextView.isCursorVisible());
     }
@@ -498,11 +502,11 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetIsTitleTextFocused() {
         Assert.assertFalse(mTitleTextView.isFocused());
 
-        mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
 
         Assert.assertTrue(mTitleTextView.isFocused());
 
-        mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
 
         Assert.assertFalse(mTitleTextView.isFocused());
     }
@@ -512,7 +516,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void testSetVisibilityListener() {
         mModel.set(
-                TabGridPanelProperties.VISIBILITY_LISTENER,
+                TabGridDialogProperties.VISIBILITY_LISTENER,
                 new VisibilityListener() {
                     @Override
                     public void finishedHidingDialogView() {}
@@ -527,7 +531,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetInitialScrollIndex() {
         mContentView.layout(0, 0, 100, 500);
 
-        mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 5);
+        mModel.set(TabGridDialogProperties.INITIAL_SCROLL_INDEX, 5);
 
         verify(mLayoutManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .scrollToPositionWithOffset(
@@ -546,7 +550,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
                 });
         mContentView.layout(0, 0, 100, 500);
 
-        mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 5);
+        mModel.set(TabGridDialogProperties.INITIAL_SCROLL_INDEX, 5);
 
         verify(mLinearLayoutManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .scrollToPositionWithOffset(eq(5), eq(0));

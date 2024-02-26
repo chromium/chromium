@@ -85,9 +85,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mTabContentManager = tabContentManager;
 
             mModel =
-                    new PropertyModel.Builder(TabGridPanelProperties.ALL_KEYS)
+                    new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
                             .with(
-                                    TabGridPanelProperties.BROWSER_CONTROLS_STATE_PROVIDER,
+                                    TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER,
                                     mBrowserControlsStateProvider)
                             .build();
             mRootView = rootView;
@@ -177,9 +177,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             mModel,
-                            new TabGridPanelViewBinder.ViewHolder(
+                            new TabGridDialogViewBinder.ViewHolder(
                                     toolbarView, recyclerView, mDialogView, shareBar),
-                            TabGridPanelViewBinder::bind);
+                            TabGridDialogViewBinder::bind);
             mBackPressChangedSupplier.set(isVisible());
             mModel.addObserver((source, key) -> mBackPressChangedSupplier.set(isVisible()));
 

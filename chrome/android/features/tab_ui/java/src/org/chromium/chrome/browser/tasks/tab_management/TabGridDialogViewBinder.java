@@ -4,34 +4,34 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.ADD_CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.ANIMATION_SOURCE_VIEW;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.BINDING_TOKEN;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.BROWSER_CONTROLS_STATE_PROVIDER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.COLLAPSE_CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.CONTENT_TOP_MARGIN;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.HEADER_TITLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.INITIAL_SCROLL_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.IS_DIALOG_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.IS_KEYBOARD_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.IS_MAIN_CONTENT_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.MENU_CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.PRIMARY_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.SHOULD_SHOW_SHARE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TINT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_CURSOR_VISIBILITY;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_TEXT_WATCHER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.UNGROUP_BAR_STATUS;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.VISIBILITY_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ADD_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_SOURCE_VIEW;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLLAPSE_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.CONTENT_TOP_MARGIN;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HEADER_TITLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_DIALOG_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_KEYBOARD_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_MAIN_CONTENT_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.MENU_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PRIMARY_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOULD_SHOW_SHARE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TINT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_CURSOR_VISIBILITY;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_TEXT_WATCHER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.UNGROUP_BAR_STATUS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.VISIBILITY_LISTENER;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +49,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabGridDialog. */
-class TabGridPanelViewBinder {
+class TabGridDialogViewBinder {
     /** ViewHolder class to get access to all {@link View}s inside the TabGridDialog. */
     public static class ViewHolder {
         public final TabGroupUiToolbarView toolbarView;
@@ -93,7 +93,7 @@ class TabGridPanelViewBinder {
             if (bindingToken == null) return;
 
             // Re-bind if the binding token ever changes.
-            for (PropertyKey key : TabGridPanelProperties.ALL_KEYS) {
+            for (PropertyKey key : TabGridDialogProperties.ALL_KEYS) {
                 if (BINDING_TOKEN == key) continue;
 
                 bind(model, viewHolder, key);
@@ -101,7 +101,7 @@ class TabGridPanelViewBinder {
         } else if (bindingToken == null || oldBindingToken == null) {
             return;
         } else if (!bindingToken.equals(oldBindingToken)) {
-            assert false : "Attempting to update a property of TabGridPanel without binding token.";
+            assert false : "Attempting to update a property of TabGridDialog without binding token.";
             return;
         }
 
@@ -121,7 +121,7 @@ class TabGridPanelViewBinder {
             ViewGroup.LayoutParams params = viewHolder.contentView.getLayoutParams();
             if (params instanceof FrameLayout.LayoutParams) {
                 ((FrameLayout.LayoutParams) params).topMargin = model.get(CONTENT_TOP_MARGIN);
-                ViewUtils.requestLayout(viewHolder.contentView, "TabGridPanelViewBinder.bind");
+                ViewUtils.requestLayout(viewHolder.contentView, "TabGridDialogViewBinder.bind");
             }
         } else if (PRIMARY_COLOR == propertyKey) {
             viewHolder.toolbarView.setPrimaryColor(model.get(PRIMARY_COLOR));

@@ -6147,9 +6147,9 @@ Lorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogView$VisibilityLi
 Lorg/chromium/chrome/browser/tasks/tab_management/TabGridItemTouchHelperCallback;
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabGridItemTouchHelperCallback;-><init>(Landroid/content/Context;Lorg/chromium/chrome/browser/tasks/tab_management/TabListModel;Lorg/chromium/chrome/browser/tabmodel/TabModelSelector;Lorg/chromium/chrome/browser/tasks/tab_management/TabListMediator$6;Lorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogMediator$3;Ljava/lang/String;ZILorg/chromium/chrome/browser/tasks/tab_management/TabGridItemTouchHelperCallback$OnLongPressTabItemEventListener;)V
 Lorg/chromium/chrome/browser/tasks/tab_management/TabGridItemTouchHelperCallback$OnLongPressTabItemEventListener;
-Lorg/chromium/chrome/browser/tasks/tab_management/TabGridPanelProperties;
-Lorg/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinder$ViewHolder;
-HSPLorg/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinder$ViewHolder;-><init>(Lorg/chromium/chrome/browser/tasks/tab_management/TabGroupUiToolbarView;Landroidx/recyclerview/widget/RecyclerView;Lorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogView;)V
+Lorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogProperties;
+Lorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogViewBinder$ViewHolder;
+HSPLorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogViewBinder$ViewHolder;-><init>(Lorg/chromium/chrome/browser/tasks/tab_management/TabGroupUiToolbarView;Landroidx/recyclerview/widget/RecyclerView;Lorg/chromium/chrome/browser/tasks/tab_management/TabGridDialogView;)V
 Lorg/chromium/chrome/browser/tasks/tab_management/TabThumbnailView;
 HSPLorg/chromium/chrome/browser/tasks/tab_management/TabThumbnailView;-><init>(Landroid/content/Context;Landroid/util/AttributeSet;)V
 Lorg/chromium/chrome/browser/tasks/tab_management/TabGroupUi;

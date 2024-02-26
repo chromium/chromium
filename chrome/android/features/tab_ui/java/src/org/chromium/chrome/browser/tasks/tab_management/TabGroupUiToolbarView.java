@@ -29,8 +29,8 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
- * Represents a generic toolbar used in the bottom strip/grid component.
- * {@link TabGridPanelToolbarCoordinator}
+ * Represents a generic toolbar used in the bottom strip/grid component. {@link
+ * TabGridDialogToolbarCoordinator}
  */
 public class TabGroupUiToolbarView extends FrameLayout {
     private ChromeImageView mRightButton;

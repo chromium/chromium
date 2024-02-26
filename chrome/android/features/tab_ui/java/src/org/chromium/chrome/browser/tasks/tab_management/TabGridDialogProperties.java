@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** List of properties used by TabGridDialog. */
-class TabGridPanelProperties {
+class TabGridDialogProperties {
     /** The hashCode() of the {@link TabGridDialogMediator} currently updating the view. */
     public static final PropertyModel.WritableObjectPropertyKey<Integer> BINDING_TOKEN =
             new PropertyModel.WritableObjectPropertyKey<>();
