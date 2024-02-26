@@ -153,9 +153,7 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
 }
 
 std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
-  return label()->GetPreferredSize().width() > label()->size().width()
-             ? GetText()
-             : std::u16string();
+  return GetAccessibleNameForButton();
 }
 
 bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
@@ -199,7 +197,7 @@ void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
                         kEmptyChipCornerRadius, flags);
 }
 
-std::u16string SavedTabGroupButton::GetAccessibleNameForButton() {
+std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
   const std::u16string& opened_state =
       local_group_id_.has_value()
           ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_OPENED)
