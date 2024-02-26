@@ -1927,31 +1927,22 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
   ~PDFExtensionInternalLinkClickTest() override = default;
 
  protected:
-  MimeHandlerViewGuest* LoadTestLinkPdfGetMimeHandlerView() {
-    return LoadPdfGetMimeHandlerView(
-        embedded_test_server()->GetURL("/pdf/test-internal-link.pdf"));
-  }
-
-  gfx::Point GetLinkPosition(MimeHandlerViewGuest* guest) {
+  gfx::Point GetLinkPosition(content::RenderFrameHost* extension_host) {
     // The whole first page is a link.
-    return ConvertPageCoordToScreenCoord(guest->GetGuestMainFrame(),
-                                         {100, 100});
+    return ConvertPageCoordToScreenCoord(extension_host, {100, 100});
   }
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, CtrlLeft) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-internal-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(guest, kDefaultKeyModifier,
-                       blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(),
+                       kDefaultKeyModifier, blink::WebMouseEvent::Button::kLeft,
+                       GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
   int tab_count = browser()->tab_strip_model()->count();
@@ -1971,17 +1962,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, CtrlLeft) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, Middle) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-internal-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(guest, 0, blink::WebMouseEvent::Button::kMiddle,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(extension_host, GetEmbedderWebContents(), 0,
+                       blink::WebMouseEvent::Button::kMiddle,
+                       GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
   int tab_count = browser()->tab_strip_model()->count();
@@ -2001,20 +1990,17 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, Middle) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestLinkPdfGetMimeHandlerView();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/test-internal-link.pdf"));
+  ASSERT_TRUE(extension_host);
 
   ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
 
   WebContents* web_contents = GetActiveWebContents();
 
-  SimulateMouseClickAt(guest, blink::WebInputEvent::kShiftKey,
-                       blink::WebMouseEvent::Button::kLeft,
-                       GetLinkPosition(guest));
+  SimulateMouseClickAt(
+      extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
+      blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
   Browser* browser = ui_test_utils::WaitForBrowserToOpen();
   ui_test_utils::WaitForBrowserSetLastActive(browser);
 
