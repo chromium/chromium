@@ -2879,30 +2879,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE" desc="Title of the button opening the About This Page (in page info)">
         About This Page
       </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_BLOCKED_LABEL" desc="Title of the item that displays the number of blocked Cookies in the site information screen.">
-        Blocked Cookies
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_CLEAR_SITE_LABEL" desc="Title of the item that clears Cookies of the current site in the site information screen.">
-        Clear Site Cookies
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_DESCRIPTION" desc="Description of the button opening the third-party cookies information (in page info)">
-        Blocking third-party cookies
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_HEADER" desc="Title of the Cookies section presented in the site information screen.">
-        Cookies
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_IN_USE_LABEL" desc="Title of the item that displays the number of Cookies in Use in the site information screen.">
-        Cookies in Use
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_SETTINGS_LINK_LABEL_ALLOW_ALL" desc="Footer to invite the user to open Cookies settings.">
-        To manage cookies for all sites, see <ph name="BEGIN_LINK">BEGIN_LINK</ph>Cookie Settings<ph name="END_LINK">END_LINK</ph>.
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_SETTINGS_LINK_LABEL_BLOCK" desc="Footer to invite the user to open Cookies settings.">
-        Your current setting may cause some sites to break. To manage cookies for all sites, see <ph name="BEGIN_LINK">BEGIN_LINK</ph>Cookie Settings<ph name="END_LINK">END_LINK</ph>.
-           </message>
-      <message name="IDS_IOS_PAGE_INFO_COOKIES_SWITCH_LABEL" desc="Title of the switch item that can be toggled to enable or disable Third-Party Cookies (in page info)">
-        Block Third-Party Cookies
-      </message>
       <message name="IDS_IOS_PAGE_INFO_OFFLINE_PAGE" desc="Message to display in the page info when the page you are on is an offline page.">
         This page has been saved to your Reading List.
       </message>
