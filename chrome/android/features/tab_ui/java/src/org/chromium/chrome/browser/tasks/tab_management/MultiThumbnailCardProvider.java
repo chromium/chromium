@@ -450,7 +450,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         if (filter.isTabModelRestored()) {
             Tab tab = TabModelUtils.getTabById(filter.getTabModel(), tabId);
             useMultiThumbnail = tab != null && filter.isTabInTabGroup(tab);
-            pseudoTab = PseudoTab.fromTab(tab);
+            pseudoTab = tab != null ? PseudoTab.fromTab(tab) : PseudoTab.fromTabId(tabId);
         } else {
             pseudoTab = PseudoTab.fromTabId(tabId);
             useMultiThumbnail = isPseudoTabInTabGroup(filter, pseudoTab);
