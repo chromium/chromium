@@ -54,6 +54,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -249,6 +250,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void continueButtonClickSkipsSyncConsentPageWhenCannotUseGooglePlayServices() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -258,6 +260,27 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_continue_button);
 
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            continueButtonClickSkipsSyncConsentPageWhenCannotUseGooglePlayServices_historySyncEnabled() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
+        HistogramWatcher historySyncHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.HistorySyncOptIn.Skipped",
+                        org.chromium.components.signin.metrics.SigninAccessPoint.START_PAGE);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+
+        clickButton(R.id.signin_fre_continue_button);
+
+        historySyncHistogram.assertExpected();
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
     }
 

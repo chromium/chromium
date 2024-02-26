@@ -1326,6 +1326,11 @@ public class FirstRunIntegrationTest {
         }
 
         @Override
+        public boolean shouldShowHistorySyncOptIn(boolean isChild) {
+            return mTestCase.showSigninPromo();
+        }
+
+        @Override
         public boolean shouldShowSearchEnginePage() {
             return mTestCase.showSearchPromo();
         }

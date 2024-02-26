@@ -64,23 +64,38 @@ public abstract class FirstRunFlowSequencer {
 
         /** Returns true if the sync consent promo page should be shown. */
         boolean shouldShowSyncConsentPage(boolean isChild) {
+            if (isChild) {
+                // Always show the sync consent page for child account.
+                return true;
+            }
+            assert mProfileSupplier.get() != null;
+            Profile profile = mProfileSupplier.get().getOriginalProfile();
+            final IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(profile);
+            if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
+                // No need to show the sync consent page if users already consented to sync or
+                // if sync is not allowed.
+                return false;
+            }
+            // Show the sync consent page only to the signed-in users.
+            return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+        }
+
+        boolean shouldShowHistorySyncOptIn(boolean isChild) {
             assert mProfileSupplier.get() != null;
             Profile profile = mProfileSupplier.get().getOriginalProfile();
             if (isChild) {
                 return !HistorySyncUtils.isHistorySyncDisabledByCustodian(profile);
             }
-            if (HistorySyncUtils.isHistorySyncDisabledByPolicy(profile)) {
+            if (HistorySyncUtils.isHistorySyncDisabledByPolicy(profile)
+                    || !isSyncAllowed()
+                    || HistorySyncUtils.didAlreadyOptIn(profile)) {
                 return false;
             }
-            if (HistorySyncUtils.didAlreadyOptIn(profile) || !isSyncAllowed()) {
-                // No need to show the sync consent page if users already consented to sync or
-                // if sync is not allowed.
-                return false;
-            }
-            // Show the sync consent page only to signed-in users.
-            final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(profile);
-            return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+            // Show the page only to signed-in users.
+            return IdentityServicesProvider.get()
+                    .getIdentityManager(profile)
+                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
         /** @return true if the Search Engine promo page should be shown. */
@@ -175,6 +190,10 @@ public abstract class FirstRunFlowSequencer {
         return mDelegate.shouldShowSyncConsentPage(mIsChild);
     }
 
+    private boolean shouldShowHistorySyncOptIn() {
+        return mDelegate.shouldShowHistorySyncOptIn(mIsChild);
+    }
+
     private void setChildAccountStatus(boolean isChild) {
         assert mIsChild == null;
         mIsChild = isChild;
@@ -203,12 +222,16 @@ public abstract class FirstRunFlowSequencer {
         boolean isHistorySyncEnabled =
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-        freProperties.putBoolean(
-                FirstRunActivity.SHOW_SYNC_CONSENT_PAGE,
-                !isHistorySyncEnabled && shouldShowSyncConsentPage());
-        freProperties.putBoolean(
-                FirstRunActivity.SHOW_HISTORY_SYNC_PAGE,
-                isHistorySyncEnabled && shouldShowSyncConsentPage());
+        if (isHistorySyncEnabled) {
+            freProperties.putBoolean(FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, false);
+            freProperties.putBoolean(
+                    FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, shouldShowHistorySyncOptIn());
+        } else {
+            freProperties.putBoolean(
+                    FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
+            freProperties.putBoolean(FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, false);
+        }
+
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
     }

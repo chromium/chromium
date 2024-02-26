@@ -34,12 +34,14 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -83,6 +85,8 @@ public class HistorySyncTest {
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
+    private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.UNKNOWN;
+
     @Mock private SyncService mSyncServiceMock;
 
     private HistorySyncCoordinator mHistorySyncCoordinator;
@@ -111,8 +115,13 @@ public class HistorySyncTest {
     @Test
     @MediumTest
     public void testHistorySyncLayout() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.HistorySyncOptIn.Started", SIGNIN_ACCESS_POINT);
+
         buildHistorySyncCoordinator();
 
+        histogramWatcher.assertExpected();
         onView(withId(R.id.sync_consent_title)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_consent_subtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.account_image)).check(matches(isDisplayed()));
@@ -126,9 +135,13 @@ public class HistorySyncTest {
     @MediumTest
     public void testPositiveButton() {
         buildHistorySyncCoordinator();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT);
 
         onView(withId(R.id.positive_button)).perform(click());
 
+        histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
@@ -138,8 +151,13 @@ public class HistorySyncTest {
     @MediumTest
     public void testNegativeButton() {
         buildHistorySyncCoordinator();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT);
 
         onView(withId(R.id.negative_button)).perform(click());
+
+        histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
         Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
     }
@@ -148,11 +166,15 @@ public class HistorySyncTest {
     @MediumTest
     public void testOnSignedOut() {
         buildHistorySyncCoordinator();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.HistorySyncOptIn.Aborted", SIGNIN_ACCESS_POINT);
 
         mSigninTestRule.signOut();
         CriteriaHelper.pollUiThread(
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
 
+        histogramWatcher.assertExpected();
         Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
     }
 
@@ -164,7 +186,8 @@ public class HistorySyncTest {
                             new HistorySyncCoordinator(
                                     LayoutInflater.from(mActivityTestRule.getActivity()),
                                     mDelegate,
-                                    ProfileManager.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    SIGNIN_ACCESS_POINT);
                     mActivityTestRule
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());

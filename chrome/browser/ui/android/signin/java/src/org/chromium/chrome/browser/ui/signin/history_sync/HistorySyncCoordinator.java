@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.ui.signin.history_sync;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 public class HistorySyncCoordinator {
@@ -25,12 +27,15 @@ public class HistorySyncCoordinator {
     public HistorySyncCoordinator(
             LayoutInflater inflater,
             HistorySyncDelegate delegate,
-            Profile profile) {
+            Profile profile,
+            @SigninAccessPoint int accessPoint) {
         mView = (HistorySyncView) inflater.inflate(R.layout.history_sync_view, null, false);
-        mMediator = new HistorySyncMediator(inflater.getContext(), delegate, profile);
+        mMediator = new HistorySyncMediator(inflater.getContext(), delegate, profile, accessPoint);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, HistorySyncViewBinder::bind);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX);
     }
 
     public void destroy() {

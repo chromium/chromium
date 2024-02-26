@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 public class HistorySyncFirstRunFragment extends Fragment
         implements FirstRunFragment, HistorySyncCoordinator.HistorySyncDelegate {
@@ -35,7 +36,9 @@ public class HistorySyncFirstRunFragment extends Fragment
         super.onResume();
         assert getPageDelegate().getProfileProviderSupplier().get() != null;
         Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
-        mHistorySyncCoordinator = new HistorySyncCoordinator(getLayoutInflater(), this, profile);
+        mHistorySyncCoordinator =
+                new HistorySyncCoordinator(
+                        getLayoutInflater(), this, profile, SigninAccessPoint.START_PAGE);
         mFragmentView.removeAllViews();
         mFragmentView.addView(mHistorySyncCoordinator.getView());
     }

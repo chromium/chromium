@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -148,7 +149,8 @@ public class HistorySyncRenderTest {
                             new HistorySyncCoordinator(
                                     LayoutInflater.from(mActivityTestRule.getActivity()),
                                     () -> {},
-                                    Profile.getLastUsedRegularProfile());
+                                    Profile.getLastUsedRegularProfile(),
+                                    SigninAccessPoint.UNKNOWN);
                     mActivityTestRule
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());

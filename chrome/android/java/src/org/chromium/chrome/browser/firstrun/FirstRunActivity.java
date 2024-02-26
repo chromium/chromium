@@ -33,9 +33,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncUtils;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.metrics.LowEntropySource;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -164,6 +166,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             BooleanSupplier showHistorySync =
                     () -> mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
+            if (!showHistorySync.getAsBoolean()) {
+                HistorySyncUtils.recordHistorySyncNotShown(
+                        getProfileProviderSupplier().get().getOriginalProfile(),
+                        SigninAccessPoint.START_PAGE);
+            }
             mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
         } else {
             BooleanSupplier showSyncConsent =
