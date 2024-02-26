@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.TabWidget role_description='tab list'
 ++++android.view.View role_description='tab' clickable name='Item'
 ++++++android.widget.TextView role_description='heading 3' heading name='Item'

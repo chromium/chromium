@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable name='Table example #2'
+android.webkit.WebView focusable focused name='Table example #2'
 ++android.view.View
 ++++android.view.View
 ++++++android.view.View name='1'

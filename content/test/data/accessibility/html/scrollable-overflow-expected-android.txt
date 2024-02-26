@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.TextView name='no overflow'
 ++android.widget.TextView name='clipped large lots of text more text'
 ++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline scrollable name='ab cd' text_change_added_count=5

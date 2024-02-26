@@ -1,4 +1,4 @@
-rootWebArea scrollable=true
+rootWebArea scrollable=false
 ++genericContainer ignored
 ++++genericContainer
 ++++++iframe name='Scrollable iframe'

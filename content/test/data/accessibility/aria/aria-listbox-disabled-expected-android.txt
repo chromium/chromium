@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.TextView role_description='heading 1' heading name='Start of test: striped should have selected state'
 ++android.widget.ListView role_description='list box' clickable collection disabled item_count=4 row_count=4 column_count=1
 ++++android.view.View collection_item disabled focusable name='Orange' row_span=1 column_span=1

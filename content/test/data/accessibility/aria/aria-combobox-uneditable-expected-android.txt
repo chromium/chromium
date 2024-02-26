@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.TextView name='Choose a fruit, with text content'
 ++android.widget.Spinner clickable collapsed focusable name='Apple' hint='Choose a fruit, with text content'
 ++android.widget.ListView role_description='list box' clickable collection item_count=3 row_count=3 column_count=1

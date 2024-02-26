@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='label ignored for radio button' state_description='Not checked. In group, option 1 of 2'
 ++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable name='label ignored for checkbox'

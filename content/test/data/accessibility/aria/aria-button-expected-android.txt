@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.Button role_description='button' clickable focusable name='Button1'
 ++android.widget.ToggleButton role_description='toggle button' checkable checked clickable focusable name='Button2' state_description='On'
 ++android.widget.ToggleButton role_description='toggle button' checkable clickable focusable name='Button3' state_description='Off'

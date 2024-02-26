@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View name='Test label'
 ++android.widget.TextView name='aria label'
 ++android.widget.TextView name='Test label'

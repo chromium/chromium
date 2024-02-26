@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='menu'
 ++++android.view.MenuItem role_description='menu item' clickable focusable name='File'
 ++++android.view.MenuItem role_description='menu item' clickable focusable name='Edit' item_index=1 row_index=1

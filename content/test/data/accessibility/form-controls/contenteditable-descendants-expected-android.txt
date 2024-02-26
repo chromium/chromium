@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.widget.EditText editable_text focusable has_non_empty_value multiline name='A contenteditable with a link and an  and a Button.Always expose editable tables as tables.<newline>1. Editable list item.' text_change_added_count=114
 ++++android.widget.TextView name='A contenteditable with a '
 ++++android.widget.TextView name='link'

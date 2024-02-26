@@ -1,1 +1,1 @@
-android.webkit.WebView focusable focused scrollable name='Title of the document'
+android.webkit.WebView focusable focused name='Title of the document'

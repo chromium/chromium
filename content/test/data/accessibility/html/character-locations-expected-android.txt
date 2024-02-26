@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused has_character_locations scrollable name='Character Locations'
+android.webkit.WebView focusable focused has_character_locations name='Character Locations'
 ++android.widget.TextView role_description='heading 1' has_character_locations heading name='Heading'
 ++android.widget.TextView has_character_locations name='Paragraph'
 ++android.widget.Button role_description='button' clickable focusable has_character_locations name='Button'

@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View role_description='link' clickable focusable link name='Header 1 List element 1 List element 2 List element 3'
 ++++++android.widget.TextView role_description='heading 1' heading name='Header 1'

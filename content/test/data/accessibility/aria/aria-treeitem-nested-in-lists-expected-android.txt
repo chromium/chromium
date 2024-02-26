@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='tree' collection hierarchical item_count=5 row_count=5
 ++++android.view.View role_description='tree item' clickable collection_item name='treeitem 2 of 5, level 1' item_index=1 row_index=1
 ++++android.view.View role_description='tree item' clickable collection_item name='treeitem 3 of 5, level 1' item_index=2 row_index=2

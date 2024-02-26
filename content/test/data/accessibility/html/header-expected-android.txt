@@ -1,2 +1,2 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='banner' name='Chromium Browser'

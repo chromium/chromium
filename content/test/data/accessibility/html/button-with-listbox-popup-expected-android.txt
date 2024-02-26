@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.TextView name='Choose one:'
 ++++android.widget.Button role_description='pop up button' clickable focusable name='Choose one: Foo'
