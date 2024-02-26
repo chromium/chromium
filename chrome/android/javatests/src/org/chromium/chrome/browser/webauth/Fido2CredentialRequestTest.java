@@ -77,12 +77,15 @@ import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnCredentialDetails;
+import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -123,6 +126,7 @@ public class Fido2CredentialRequestTest {
     private MockIntentSender mIntentSender;
     private EmbeddedTestServer mTestServer;
     private MockAuthenticatorRenderFrameHost mFrameHost;
+    private MockWebContents mWebContents;
     private MockBrowserBridge mMockBrowserBridge;
     private MockFido2ApiCallHelper mFido2ApiCallHelper;
     private AuthenticationContextProvider mAuthenticationContextProvider;
@@ -261,6 +265,7 @@ public class Fido2CredentialRequestTest {
 
         @Override
         public void invokeFido2GetCredentials(
+                AuthenticationContextProvider authenticationContextProvider,
                 String relyingPartyId,
                 OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
                 OnFailureListener failureCallback) {
@@ -462,6 +467,8 @@ public class Fido2CredentialRequestTest {
         sActivityTestRule.loadUrl(url);
         mFrameHost = new MockAuthenticatorRenderFrameHost();
         mFrameHost.setLastCommittedURL(gurl);
+        mWebContents = new MockWebContents();
+        mWebContents.renderFrameHost = mFrameHost;
 
         MockitoAnnotations.initMocks(this);
         mTestAuthenticatorImplJni = new TestAuthenticatorImplJni(mCallback);
@@ -469,8 +476,7 @@ public class Fido2CredentialRequestTest {
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
-        WebauthnModeProvider.getInstance()
-                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
+        WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
         mAuthenticationContextProvider =
                 new AuthenticationContextProvider() {
                     @Override
@@ -486,6 +492,11 @@ public class Fido2CredentialRequestTest {
                     @Override
                     public FidoIntentSender getIntentSender() {
                         return mIntentSender;
+                    }
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
                     }
                 };
         mRequest = new Fido2CredentialRequest(mAuthenticationContextProvider);
@@ -717,6 +728,7 @@ public class Fido2CredentialRequestTest {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
                         mContext,
+                        mWebContents,
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
@@ -750,7 +762,12 @@ public class Fido2CredentialRequestTest {
                 };
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
-                        mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
+                        mContext,
+                        mWebContents,
+                        mIntentSender,
+                        createConfirmationUiDelegate,
+                        mFrameHost,
+                        mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -781,7 +798,12 @@ public class Fido2CredentialRequestTest {
                 };
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
-                        mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
+                        mContext,
+                        mWebContents,
+                        mIntentSender,
+                        createConfirmationUiDelegate,
+                        mFrameHost,
+                        mOrigin);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -805,6 +827,7 @@ public class Fido2CredentialRequestTest {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
                         mContext,
+                        mWebContents,
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
@@ -1250,6 +1273,7 @@ public class Fido2CredentialRequestTest {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
                         mContext,
+                        mWebContents,
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
@@ -1278,6 +1302,7 @@ public class Fido2CredentialRequestTest {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
                         mContext,
+                        mWebContents,
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
@@ -1314,6 +1339,7 @@ public class Fido2CredentialRequestTest {
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
                         mContext,
+                        mWebContents,
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,

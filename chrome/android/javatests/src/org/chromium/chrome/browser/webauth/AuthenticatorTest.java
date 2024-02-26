@@ -25,6 +25,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.MockFido2CredentialRequest;
+import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -88,8 +89,7 @@ public class AuthenticatorTest {
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
         TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
-        WebauthnModeProvider.getInstance()
-                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
+        WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
         mMockCredentialRequest = new MockFido2CredentialRequest();
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
     }

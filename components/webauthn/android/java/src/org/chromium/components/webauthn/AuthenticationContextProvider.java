@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 
 public interface AuthenticationContextProvider {
     Context getContext();
@@ -17,4 +18,6 @@ public interface AuthenticationContextProvider {
     RenderFrameHost getRenderFrameHost();
 
     FidoIntentSender getIntentSender();
+
+    WebContents getWebContents();
 }

@@ -141,7 +141,7 @@ public class CredManHelperRobolectricTest {
         when(mCredManGetCredentialRequestHelper.getGetCredentialRequest(any()))
                 .thenReturn(mGetCredentialRequest);
         WebauthnModeProvider.setInstanceForTesting(mWebauthnModeProvider);
-        when(mWebauthnModeProvider.getCredManRequestDecorator()).thenReturn(mRequestDecorator);
+        when(mWebauthnModeProvider.getCredManRequestDecorator(any())).thenReturn(mRequestDecorator);
         when(mAuthenticationContextProviderMock.getIntentSender()).thenReturn(null);
         when(mAuthenticationContextProviderMock.getContext()).thenReturn(mContext);
         when(mAuthenticationContextProviderMock.getRenderFrameHost()).thenReturn(mFrameHost);

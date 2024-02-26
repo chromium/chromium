@@ -4,13 +4,13 @@
 package org.chromium.chrome.browser.webauthn;
 
 import org.chromium.components.webauthn.AuthenticatorFactory;
+import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
-import org.chromium.components.webauthn.WebauthnModeProvider.WebauthnMode;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 public class ChromeAuthenticatorFactory extends AuthenticatorFactory {
     public ChromeAuthenticatorFactory(RenderFrameHost renderFrameHost) {
         super(renderFrameHost, new ChromeAuthenticatorConfirmationFactory());
-        WebauthnModeProvider.getInstance().setWebauthnMode(WebauthnMode.CHROME);
+        WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
     }
 }

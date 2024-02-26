@@ -29,8 +29,10 @@ import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.FidoIntentSender;
+import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -113,8 +115,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
         mTaskRunner = PostTask.createSingleThreadTaskRunner(TaskTraits.UI_USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
-        WebauthnModeProvider.getInstance()
-                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
+        WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
         CableAuthenticatorJni.get().setup(registration, networkContext, secret);
 
         // Wait for |onTransportReady|.
@@ -232,6 +233,11 @@ class CableAuthenticator implements AuthenticationContextProvider {
     @Override
     public FidoIntentSender getIntentSender() {
         return mUi;
+    }
+
+    @Override
+    public WebContents getWebContents() {
+        return null;
     }
 
     /**

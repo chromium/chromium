@@ -4,7 +4,7 @@
 
 package org.chromium.components.webauthn;
 
-import static org.chromium.components.webauthn.AuthenticatorImpl.isChrome;
+import static org.chromium.components.webauthn.WebauthnModeProvider.isChrome;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -39,6 +39,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
+import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.ClientDataJson;
@@ -255,6 +256,7 @@ public class Fido2CredentialRequest
         try {
             Fido2ApiCallHelper.getInstance()
                     .invokeFido2MakeCredential(
+                            mAuthenticationContextProvider,
                             options,
                             Uri.parse(convertOriginToString(origin)),
                             maybeClientDataHash,
@@ -355,7 +357,7 @@ public class Fido2CredentialRequest
         }
 
         final String callerOriginString = convertOriginToString(origin);
-        if (!isChrome()) {
+        if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
             if (options.isConditional) {
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
                 return;
@@ -473,6 +475,7 @@ public class Fido2CredentialRequest
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
             Fido2ApiCallHelper.getInstance()
                     .invokeFido2GetCredentials(
+                            mAuthenticationContextProvider,
                             options.relyingPartyId,
                             (credentials) ->
                                     mBarrier.onFido2ApiSuccessful(
@@ -527,7 +530,8 @@ public class Fido2CredentialRequest
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
             IsUvpaaResponseCallback callback) {
         // Barrier Mode is only relevant for Chrome.
-        if (isChrome() && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+        if (isChrome(mAuthenticationContextProvider.getWebContents())
+                && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(true);
             return;
         }
@@ -541,7 +545,10 @@ public class Fido2CredentialRequest
             return;
         }
 
-        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext());
+        Fido2ApiCallParams params =
+                WebauthnModeProvider.getInstance()
+                        .getFido2ApiCallParams(mAuthenticationContextProvider.getWebContents());
+        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext(), params);
         Fido2ApiCall.BooleanResult result = new Fido2ApiCall.BooleanResult();
         Parcel args = call.start();
         args.writeStrongBinder(result);
@@ -549,7 +556,8 @@ public class Fido2CredentialRequest
         Task<Boolean> task =
                 call.run(
                         WebauthnModeProvider.getInstance()
-                                .getFido2ApiCallParams()
+                                .getFido2ApiCallParams(
+                                        mAuthenticationContextProvider.getWebContents())
                                 .mIsUserVerifyingPlatformAuthenticatorAvailableMethodId,
                         Fido2ApiCall.TRANSACTION_ISUVPAA,
                         args,
@@ -582,6 +590,7 @@ public class Fido2CredentialRequest
 
         Fido2ApiCallHelper.getInstance()
                 .invokeFido2GetCredentials(
+                        mAuthenticationContextProvider,
                         relyingPartyId,
                         (credentials) ->
                                 onGetMatchingCredentialIdsListReceived(
@@ -730,6 +739,7 @@ public class Fido2CredentialRequest
 
         Fido2ApiCallHelper.getInstance()
                 .invokeFido2GetCredentials(
+                        mAuthenticationContextProvider,
                         options.relyingPartyId,
                         (credentials) ->
                                 checkForMatchingCredentialsReceived(
@@ -855,6 +865,7 @@ public class Fido2CredentialRequest
 
         Fido2ApiCallHelper.getInstance()
                 .invokeFido2GetAssertion(
+                        mAuthenticationContextProvider,
                         options,
                         Uri.parse(callerOriginString),
                         clientDataHash,
@@ -877,9 +888,17 @@ public class Fido2CredentialRequest
         }
         mConditionalUiState = ConditionalUiState.REQUEST_SENT_TO_PLATFORM;
 
-        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext());
+        Fido2ApiCallParams params =
+                WebauthnModeProvider.getInstance()
+                        .getFido2ApiCallParams(mAuthenticationContextProvider.getWebContents());
+        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext(), params);
         Parcel args = call.start();
-        Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult();
+        String callbackDescriptor =
+                WebauthnModeProvider.getInstance()
+                        .getFido2ApiCallParams(mAuthenticationContextProvider.getWebContents())
+                        .mCallbackDescriptor;
+        Fido2ApiCall.PendingIntentResult result =
+                new Fido2ApiCall.PendingIntentResult(callbackDescriptor);
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
         Fido2Api.appendBrowserGetAssertionOptionsToParcel(
@@ -926,7 +945,7 @@ public class Fido2CredentialRequest
         //
         // In time, once the GMS Core update has propagated sufficiently, we could consider removing
         // support for anything except the ResultReceiver.
-        if (isChrome()) return null;
+        if (isChrome(mAuthenticationContextProvider.getWebContents())) return null;
         return new ResultReceiver(new Handler(Looper.getMainLooper())) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -1157,7 +1176,7 @@ public class Fido2CredentialRequest
 
     @Override
     public WebauthnBrowserBridge getBridge() {
-        if (!isChrome()) {
+        if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
             return null;
         }
         if (mBrowserBridge == null) {

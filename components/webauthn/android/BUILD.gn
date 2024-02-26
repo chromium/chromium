@@ -11,12 +11,16 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
+    "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManSupportProvider.java",
   ]
 }
 
 java_cpp_enum("java_enums_srcjar") {
-  sources = [ "cred_man_support.h" ]
+  sources = [
+    "cred_man_support.h",
+    "webauthn_mode.h",
+  ]
   visibility = [ ":*" ]
 }
 
@@ -132,6 +136,8 @@ source_set("android") {
     "webauthn_cred_man_delegate.h",
     "webauthn_cred_man_delegate_factory.cc",
     "webauthn_cred_man_delegate_factory.h",
+    "webauthn_mode.h",
+    "webauthn_mode_provider.cc",
   ]
   deps = [
     ":jni_headers",

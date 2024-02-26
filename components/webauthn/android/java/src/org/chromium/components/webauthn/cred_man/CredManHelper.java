@@ -81,7 +81,9 @@ public class CredManHelper {
         mAuthenticationContextProvider = authenticationContextProvider;
         mBridgeProvider = bridgeProvider;
         mPlayServicesAvailable = playServicesAvailable;
-        mCredManRequestDecorator = WebauthnModeProvider.getInstance().getCredManRequestDecorator();
+        mCredManRequestDecorator =
+                WebauthnModeProvider.getInstance()
+                        .getCredManRequestDecorator(authenticationContextProvider.getWebContents());
     }
 
     /** Create a credential using the Android 14 CredMan API. */

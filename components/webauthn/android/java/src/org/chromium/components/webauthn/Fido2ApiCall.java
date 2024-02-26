@@ -249,15 +249,6 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * Construct an instance.
      *
      * @param context the Android {@link Context} for the current process.
-     */
-    public Fido2ApiCall(Context context) {
-        this(context, WebauthnModeProvider.getInstance().getFido2ApiCallParams());
-    }
-
-    /**
-     * Construct an instance for an explicit API.
-     *
-     * @param context the Android {@link Context} for the current process.
      * @param api the service to call. One of the public static Api objects from this class.
      */
     public Fido2ApiCall(Context context, Fido2ApiCallParams apiParams) {
@@ -409,7 +400,12 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
 
     public static final class PendingIntentResult extends Binder
             implements Callback<PendingIntent> {
+        private final String mCallbackDescriptor;
         private TaskCompletionSource<PendingIntent> mCompletionSource;
+
+        public PendingIntentResult(String callbackDescriptor) {
+            mCallbackDescriptor = callbackDescriptor;
+        }
 
         @Override
         public void setCompletionSource(TaskCompletionSource<PendingIntent> cs) {
@@ -420,10 +416,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
-                    data.enforceInterface(
-                            WebauthnModeProvider.getInstance()
-                                    .getFido2ApiCallParams()
-                                    .mCallbackDescriptor);
+                    data.enforceInterface(mCallbackDescriptor);
 
                     Status status = null;
                     if (data.readInt() != 0) {
