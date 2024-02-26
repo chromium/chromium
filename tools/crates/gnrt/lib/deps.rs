@@ -102,7 +102,7 @@ impl DepOfDep {
 pub struct PerKindInfo {
     /// The set of platforms this kind is needed on.
     pub platforms: PlatformSet,
-    /// The resovled feature set for this kind.
+    /// The resolved feature set for this kind.
     pub features: Vec<String>,
 }
 

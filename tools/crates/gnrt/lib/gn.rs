@@ -12,9 +12,11 @@ use crate::group::Group;
 use crate::paths;
 use crate::platforms;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::ops::Deref;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
+use itertools::Itertools;
 use serde::Serialize;
 
 /// Describes a BUILD.gn file for a single crate epoch. Each file may have
@@ -252,6 +254,23 @@ pub fn build_rule_from_std_dep(
         features.dedup();
         features
     };
+
+    let unexpected_features: Vec<&str> = {
+        let banned_features =
+            extra_config.get_combined_set(&*dep.package_name, |cfg| &cfg.ban_features);
+        let mut actual_features = HashSet::new();
+        actual_features.extend(requested_features_for_normal.iter().map(Deref::deref));
+        actual_features.extend(requested_features_for_build.iter().map(Deref::deref));
+        banned_features.intersection(&actual_features).map(|s| *s).sorted_unstable().collect()
+    };
+    if !unexpected_features.is_empty() {
+        bail!(
+            "The following crate features are enabled in crate `{}` \
+             despite being listed in `ban_features`: {}",
+            &*dep.package_name,
+            unexpected_features.iter().map(|f| format!("`{f}`")).join(", "),
+        );
+    }
 
     if !per_crate_config.map(|config| config.remove_build_rs).unwrap_or(false) {
         let build_script_from_src =

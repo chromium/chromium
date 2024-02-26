@@ -101,6 +101,9 @@ pub struct CrateConfig {
     /// These do not affect dependency resolution, so it will not change any
     /// other generated targets.
     pub exclude_deps_in_gn: Vec<String>,
+    /// Features that are disallowed (e.g. because the feature-gated code hasn't
+    /// been audited or because the audit uncovered unsoundness)
+    pub ban_features: Vec<String>,
     /// If true, the build script should not be built or used.
     #[serde(default)]
     pub remove_build_rs: bool,
