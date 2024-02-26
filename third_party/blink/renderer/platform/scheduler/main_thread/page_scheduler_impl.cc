@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_visibility_state.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/policy_updater.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -186,16 +187,24 @@ PageSchedulerImpl::PageSchedulerImpl(
   on_audio_silent_closure_.Reset(base::BindRepeating(
       &PageSchedulerImpl::OnAudioSilent, base::Unretained(this)));
   update_frozen_state_callback_.Reset(base::BindRepeating(
-      &PageSchedulerImpl::UpdateFrozenState, base::Unretained(this),
-      NotificationPolicy::kNotifyFrames));
+      [](PageSchedulerImpl* page_scheduler) {
+        PolicyUpdater policy_updater;
+        page_scheduler->UpdateFrozenState(policy_updater);
+      },
+      base::Unretained(this)));
 }
 
 PageSchedulerImpl::~PageSchedulerImpl() {
   // TODO(alexclarke): Find out why we can't rely on the web view outliving the
   // frame.
-  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
-    frame_scheduler->DetachFromPageScheduler();
+  {
+    PolicyUpdater policy_updater;
+    for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
+      frame_scheduler->OnPageSchedulerDeletion(policy_updater);
+    }
+    agent_group_scheduler_->RemovePageScheduler(this);
   }
+
   main_thread_scheduler_->RemovePageScheduler(this);
 }
 
@@ -205,6 +214,7 @@ PageSchedulerImpl::~PageSchedulerImpl() {
 constexpr base::TimeDelta PageSchedulerImpl::kRecentAudioDelay;
 
 void PageSchedulerImpl::SetPageVisible(bool page_visible) {
+  PolicyUpdater policy_updater;
   PageVisibilityState page_visibility = page_visible
                                             ? PageVisibilityState::kVisible
                                             : PageVisibilityState::kHidden;
@@ -214,13 +224,12 @@ void PageSchedulerImpl::SetPageVisible(bool page_visible) {
   page_visibility_ = page_visibility;
   page_visibility_changed_time_ = main_thread_scheduler_->NowTicks();
 
-  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_)
-    frame_scheduler->SetPageVisibilityForTracing(page_visibility_);
+  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
+    frame_scheduler->OnPageVisibilityChange(page_visibility_, policy_updater);
+  }
 
-  MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate();
-  UpdatePolicyOnVisibilityChange(NotificationPolicy::kDoNotNotifyFrames);
-
-  NotifyFrames();
+  UpdatePolicyOnVisibilityChange(policy_updater);
+  policy_updater.UpdatePagePolicy(this);
 }
 
 void PageSchedulerImpl::SetPageFrozen(bool frozen) {
@@ -239,12 +248,12 @@ void PageSchedulerImpl::SetPageFrozen(bool frozen) {
     DCHECK(false);
     return;
   }
-  SetPageFrozenImpl(frozen, NotificationPolicy::kNotifyFrames);
+  PolicyUpdater policy_updater;
+  SetPageFrozenImpl(frozen, policy_updater);
 }
 
-void PageSchedulerImpl::SetPageFrozenImpl(
-    bool frozen,
-    PageSchedulerImpl::NotificationPolicy notification_policy) {
+void PageSchedulerImpl::SetPageFrozenImpl(bool frozen,
+                                          PolicyUpdater& policy_updater) {
   // Only pages owned by web views can be frozen.
   DCHECK(!frozen || IsOrdinary());
 
@@ -256,9 +265,7 @@ void PageSchedulerImpl::SetPageFrozenImpl(
     frame_scheduler->SetPageFrozenForTracing(frozen);
     frame_scheduler->SetShouldReportPostedTasksWhenDisabled(frozen);
   }
-  if (notification_policy ==
-      PageSchedulerImpl::NotificationPolicy::kNotifyFrames)
-    NotifyFrames();
+  policy_updater.UpdatePagePolicy(this);
   if (frozen) {
     main_thread_scheduler_->OnPageFrozen();
     if (audio_state_ == AudioState::kRecentlyAudible) {
@@ -373,13 +380,13 @@ void PageSchedulerImpl::ReportIntervention(const String& message) {
 
 void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
   if (is_audio_playing) {
+    PolicyUpdater policy_updater;
     on_audio_silent_closure_.Cancel();
     audio_state_ = AudioState::kAudible;
     audio_state_changed_time_ = main_thread_scheduler_->NowTicks();
-    UpdateFrozenState(NotificationPolicy::kDoNotNotifyFrames);
-    NotifyFrames();
+    UpdateFrozenState(policy_updater);
     main_thread_scheduler_->OnAudioStateChanged();
-    MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate();
+    policy_updater.UpdatePagePolicy(this);
   } else {
     if (audio_state_ != AudioState::kAudible)
       return;
@@ -395,7 +402,7 @@ void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
     } else {
       main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
           FROM_HERE, on_audio_silent_closure_.GetCallback(), kRecentAudioDelay);
-      // No need to call NotifyFrames or
+      // No need to call UpdatePagePolicy or
       // MainThreadScheduler::OnAudioStateChanged here, as for outside world
       // kAudible and kRecentlyAudible are the same thing.
     }
@@ -407,11 +414,9 @@ void PageSchedulerImpl::OnAudioSilent() {
   audio_state_ = AudioState::kSilent;
   audio_state_changed_time_ = main_thread_scheduler_->NowTicks();
   main_thread_scheduler_->OnAudioStateChanged();
-  if (IsBackgrounded()) {
-    MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate();
-  }
-  UpdateFrozenState(NotificationPolicy::kDoNotNotifyFrames);
-  NotifyFrames();
+  PolicyUpdater policy_updater;
+  UpdateFrozenState(policy_updater);
+  policy_updater.UpdatePagePolicy(this);
 }
 
 bool PageSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {
@@ -471,7 +476,8 @@ void PageSchedulerImpl::OnThrottlingStatusUpdated() {
 }
 
 void PageSchedulerImpl::OnVirtualTimeEnabled() {
-  UpdatePolicyOnVisibilityChange(NotificationPolicy::kNotifyFrames);
+  PolicyUpdater policy_updater;
+  UpdatePolicyOnVisibilityChange(policy_updater);
 }
 
 void PageSchedulerImpl::OnTraceLogEnabled() {
@@ -575,34 +581,29 @@ void PageSchedulerImpl::RemoveQueueFromWakeUpBudgetPool(
 WakeUpBudgetPool* PageSchedulerImpl::GetWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
-    bool frame_visible,
-    bool is_important) {
-  const bool can_be_intensively_throttled =
-      task_queue->CanBeIntensivelyThrottled();
-  const bool is_same_origin_with_main_frame =
-      frame_origin_type == FrameOriginType::kMainFrame ||
-      frame_origin_type == FrameOriginType::kSameOriginToMainFrame;
-
-  if (IsBackgrounded()) {
-    if (can_be_intensively_throttled) {
-      if (is_same_origin_with_main_frame) {
-        return same_origin_intensive_wake_up_budget_pool_.get();
-      } else {
-        return cross_origin_intensive_wake_up_budget_pool_.get();
-      }
+    ThrottlingType throttling_type) {
+  switch (throttling_type) {
+    case ThrottlingType::kNone: {
+      return nullptr;
     }
-    return hidden_wake_up_budget_pool_.get();
-  }
-
-  if (!is_same_origin_with_main_frame) {
-    if (!frame_visible) {
-      return hidden_wake_up_budget_pool_.get();
-    } else if (!is_important) {
+    case ThrottlingType::kForegroundUnimportant: {
       return unimportant_wake_up_budget_pool_.get();
     }
+    case ThrottlingType::kBackground: {
+      return hidden_wake_up_budget_pool_.get();
+    }
+    case ThrottlingType::kBackgroundIntensive: {
+      if (task_queue->CanBeIntensivelyThrottled()) {
+        if (frame_origin_type == FrameOriginType::kCrossOriginToMainFrame) {
+          return cross_origin_intensive_wake_up_budget_pool_.get();
+        } else {
+          return same_origin_intensive_wake_up_budget_pool_.get();
+        }
+      } else {
+        return hidden_wake_up_budget_pool_.get();
+      }
+    }
   }
-
-  return nullptr;
 }
 
 CPUTimeBudgetPool* PageSchedulerImpl::background_cpu_time_budget_pool() {
@@ -666,7 +667,7 @@ void PageSchedulerImpl::MaybeInitializeWakeUpBudgetPools(
 }
 
 void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
-    NotificationPolicy notification_policy) {
+    PolicyUpdater& policy_updater) {
   base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 
   if (IsPageVisible()) {
@@ -687,10 +688,8 @@ void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
         GetIntensiveWakeUpThrottlingGracePeriod(IsLoading()));
   }
 
-  UpdateFrozenState(NotificationPolicy::kDoNotNotifyFrames);
-
-  if (notification_policy == NotificationPolicy::kNotifyFrames)
-    NotifyFrames();
+  UpdateFrozenState(policy_updater);
+  policy_updater.UpdatePagePolicy(this);
 }
 
 void PageSchedulerImpl::DoThrottleCPUTime() {
@@ -699,7 +698,7 @@ void PageSchedulerImpl::DoThrottleCPUTime() {
 
   base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
   UpdateCPUTimeBudgetPool(&lazy_now);
-  NotifyFrames();
+  UpdatePolicy();
 }
 
 void PageSchedulerImpl::DoIntensivelyThrottleWakeUps() {
@@ -708,7 +707,7 @@ void PageSchedulerImpl::DoIntensivelyThrottleWakeUps() {
 
   base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
   UpdateWakeUpBudgetPools(&lazy_now);
-  NotifyFrames();
+  UpdatePolicy();
 }
 
 void PageSchedulerImpl::UpdateCPUTimeBudgetPool(base::LazyNow* lazy_now) {
@@ -748,7 +747,7 @@ void PageSchedulerImpl::ResetHadRecentTitleOrFaviconUpdate() {
   base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
   UpdateWakeUpBudgetPools(&lazy_now);
 
-  NotifyFrames();
+  UpdatePolicy();
 }
 
 base::TimeDelta PageSchedulerImpl::GetIntensiveWakeUpThrottlingInterval(
@@ -778,10 +777,13 @@ void PageSchedulerImpl::UpdateWakeUpBudgetPools(base::LazyNow* lazy_now) {
       lazy_now->Now(), GetIntensiveWakeUpThrottlingInterval(false));
 }
 
-void PageSchedulerImpl::NotifyFrames() {
+void PageSchedulerImpl::UpdatePolicy() {
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler->UpdatePolicy();
   }
+
+  base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
+  UpdateWakeUpBudgetPools(&lazy_now);
 }
 
 size_t PageSchedulerImpl::FrameCount() const {
@@ -828,18 +830,7 @@ bool PageSchedulerImpl::HasWakeUpBudgetPools() const {
   return !!unimportant_wake_up_budget_pool_;
 }
 
-void PageSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate() {
-  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_)
-    frame_scheduler->MoveTaskQueuesToCorrectWakeUpBudgetPool();
-
-  // Update the WakeUpBudgetPools' interval everytime task queues change their
-  // attached WakeUpBudgetPools
-  base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
-  UpdateWakeUpBudgetPools(&lazy_now);
-}
-
-void PageSchedulerImpl::UpdateFrozenState(
-    NotificationPolicy notification_policy) {
+void PageSchedulerImpl::UpdateFrozenState(PolicyUpdater& policy_updater) {
   // Only ordinary pages can be frozen.
   if (!IsOrdinary()) {
     CHECK(!IsFrozen());
@@ -869,14 +860,14 @@ void PageSchedulerImpl::UpdateFrozenState(
   }
 
   if (freeze_time > now) {
-    SetPageFrozenImpl(/* frozen=*/false, notification_policy);
+    SetPageFrozenImpl(/* frozen=*/false, policy_updater);
     if (!freeze_time.is_max()) {
       main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
           FROM_HERE, update_frozen_state_callback_.GetCallback(),
           freeze_time - now);
     }
   } else {
-    SetPageFrozenImpl(/* frozen=*/true, notification_policy);
+    SetPageFrozenImpl(/* frozen=*/true, policy_updater);
   }
 }
 

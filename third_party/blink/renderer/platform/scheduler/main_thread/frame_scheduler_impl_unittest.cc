@@ -3157,6 +3157,398 @@ TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
   PostTasks_ExpectNoAlignment(task_runner);
 }
 
+class FrameSchedulerImplNoThrottlingVisibleAgentTest
+    : public FrameSchedulerImplTest,
+      // True iff the other frame belongs to a different page.
+      public testing::WithParamInterface<bool> {
+ public:
+  FrameSchedulerImplNoThrottlingVisibleAgentTest()
+      : FrameSchedulerImplTest({features::kNoThrottlingVisibleAgent}, {}) {}
+
+  void SetUp() override {
+    FrameSchedulerImplTest::SetUp();
+
+    if (IsOtherFrameOnDifferentPage()) {
+      other_page_scheduler_ = CreatePageScheduler(nullptr, scheduler_.get(),
+                                                  *agent_group_scheduler_);
+      EXPECT_TRUE(other_page_scheduler_->IsPageVisible());
+    }
+
+    task_runner_ = frame_scheduler_->GetTaskRunner(
+        TaskType::kJavascriptTimerDelayedLowNesting);
+
+    // Initial state: `frame_scheduler_` is a visible frame cross-origin to its
+    // main frame. Its parent page scheduler is visible. It is not throttled.
+    LazyInitThrottleableTaskQueue();
+    EXPECT_TRUE(page_scheduler_->IsPageVisible());
+    EXPECT_TRUE(frame_scheduler_->IsFrameVisible());
+    EXPECT_FALSE(IsThrottled());
+    frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+    EXPECT_FALSE(IsThrottled());
+    frame_scheduler_->SetAgentClusterId(kAgent1);
+    EXPECT_FALSE(IsThrottled());
+  }
+
+  void TearDown() override {
+    other_page_scheduler_.reset();
+    FrameSchedulerImplTest::TearDown();
+  }
+
+  static const char* GetSuffix(const testing::TestParamInfo<bool>& info) {
+    if (info.param) {
+      return "OtherPage";
+    }
+    return "SamePage";
+  }
+
+  bool IsOtherFrameOnDifferentPage() { return GetParam(); }
+
+  PageSchedulerImpl* GetOtherFramePageScheduler() {
+    if (IsOtherFrameOnDifferentPage()) {
+      return other_page_scheduler_.get();
+    }
+    return page_scheduler_.get();
+  }
+
+  std::unique_ptr<FrameSchedulerImpl> CreateOtherFrameScheduler() {
+    return CreateFrameScheduler(GetOtherFramePageScheduler(),
+                                frame_scheduler_delegate_.get(),
+                                /*is_in_embedded_frame_tree=*/false,
+                                FrameScheduler::FrameType::kSubframe);
+  }
+
+  const base::UnguessableToken kAgent1 = base::UnguessableToken::Create();
+  const base::UnguessableToken kAgent2 = base::UnguessableToken::Create();
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  std::unique_ptr<PageSchedulerImpl> other_page_scheduler_;
+};
+
+class FrameSchedulerImplNoThrottlingVisibleAgentAndThrottleUnimportantTest
+    : public FrameSchedulerImplNoThrottlingVisibleAgentTest {
+ public:
+  FrameSchedulerImplNoThrottlingVisibleAgentAndThrottleUnimportantTest() {
+    nested_scoped_feature_list_.InitAndEnableFeature(
+        features::kThrottleUnimportantFrameTimers);
+  }
+
+ private:
+  base::test::ScopedFeatureList nested_scoped_feature_list_;
+};
+
+// Verify the throttled state on frame visibility changes.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest, FrameVisibilityChange) {
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Same-agent frame hidden: expect 1s throttling because there is no visible
+  // same-agent frame.
+  other_frame_scheduler->SetFrameVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  // Same-agent frame visible: expect no throttling because there is a visible
+  // same-agent frame.
+  other_frame_scheduler->SetFrameVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Same-agent frame hidden: expect 1s throttling because there is no visible
+  // same-agent frame.
+  other_frame_scheduler->SetFrameVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  // Frame visible: expect no throttling for a visible frame.
+  frame_scheduler_->SetFrameVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+}
+
+// Verify the throttled state when page visibility changes and there is a
+// visible same-agent frame.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest, PageVisibilityChange) {
+  // This test is only relevant when the other frame is on a different page.
+  if (!IsOtherFrameOnDifferentPage()) {
+    return;
+  }
+
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Visible frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Hidden page: expect no throttling, because there is a visible same-agent
+  // frame.
+  page_scheduler_->SetPageVisible(false);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Visible page: still no throttling.
+  page_scheduler_->SetPageVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+}
+
+// Verify the throttled state when the page visibility of a same-agent frame
+// changes.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest,
+       SameAgentFramePageVisibilityChange) {
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Page of the same-agent frame hidden: expect 1s throttling because there is
+  // no visible same-agent frame.
+  GetOtherFramePageScheduler()->SetPageVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  // Page of the same-agent frame visible: expect no throttling because there is
+  // a visible same-agent frame.
+  GetOtherFramePageScheduler()->SetPageVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Repeat the 2 steps above, but with the same-agent frame is hidden: expect
+  // 1s throttling because there is no visible same-agent frame.
+  other_frame_scheduler->SetFrameVisible(false);
+
+  GetOtherFramePageScheduler()->SetPageVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  GetOtherFramePageScheduler()->SetPageVisible(true);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+}
+
+// Verify the throttled state when a same-agent visible frame is deleted.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest, VisibleFrameDeletion) {
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Visible same-agent frame deleted: expect 1s throttling because there is no
+  // visible same-agent frame.
+  other_frame_scheduler.reset();
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+}
+
+// Verify the throttled state when a same-agent visible frame on a hidden page
+// is deleted. This test exists to confirm that ~FrameSchedulerImpl checks
+// `AreFrameAndPageVisible()`, not just `frame_visible_`, before invoking
+// `DecrementVisibleFramesForAgent()`.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest,
+       VisibleFrameOnHiddenPageDeletion) {
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Hide the other frame's page: expect 1s throttling because there is no
+  // visible same-agent frame.
+  GetOtherFramePageScheduler()->SetPageVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  // Visible same-agent frame on a hidden page deleted: no change.
+  other_frame_scheduler.reset();
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+}
+
+// Verify the throttled state when the page scheduler of a same-agent frame is
+// deleted.
+//
+// Note: Ideally, we would enforce that a page scheduler is deleted after its
+// frame schedulers. But until this enforcement is in place, it is important
+// that throttling deletion of a page scheduler that still has frame schedulers
+// correctly.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest,
+       PageSchedulerWithSameAgentFrameDeleted) {
+  // This test is only relevant when the other frame is on a different page.
+  if (!IsOtherFrameOnDifferentPage()) {
+    return;
+  }
+
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Delete the `other_frame_scheduler_`'s page scheduler: expect 1s throttling
+  // because there is no visible same-agent frame (a frame scheduler with no
+  // parent page scheduler doesn't count).
+  other_page_scheduler_.reset();
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+}
+
+// Verify the throttled state when frame agent changes.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest, AgentChange) {
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Other frame associated with `kAgent2`: expect 1s throttling because there
+  // is no visible same-agent frame (other-frame-switches-to-different-agent).
+  other_frame_scheduler->SetAgentClusterId(kAgent2);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  // Frame associated with `kAgent2`: expect no throttling because there is a
+  // visible same-agent frame (frame-switches-to-same-agent).
+  frame_scheduler_->SetAgentClusterId(kAgent2);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Frame associated with `kAgent1`:  expect 1s throttling because there
+  // is no visible same-agent frame (frame-switches-to-different-agent).
+  frame_scheduler_->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  // Other frame associated with `kAgent1`: expect no throttling because there
+  // is a visible same-agent frame (other-frame-switches-to-same-agent).
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Hide the other frame's page scheduler: frame should remain throttled to 1s
+  // on agent change.
+  GetOtherFramePageScheduler()->SetPageVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  other_frame_scheduler->SetAgentClusterId(kAgent2);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  frame_scheduler_->SetAgentClusterId(kAgent2);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  frame_scheduler_->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+}
+
+// Verify the throttled state for a frame that is same-origin with the nearest
+// main frame.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentTest,
+       SameOriginWithNearestMainFrame) {
+  // Hidden frame with a visible same-agent frame: expect no throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Same-agent frame hidden: expect 1s throttling because there
+  // is no visible same-agent frame.
+  other_frame_scheduler->SetFrameVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+
+  // Frame is same-origin with nearest main frame: never throttled.
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(false);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  other_frame_scheduler->SetAgentClusterId(kAgent2);
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  other_frame_scheduler->SetFrameVisible(false);
+  other_frame_scheduler->SetFrameVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  GetOtherFramePageScheduler()->SetPageVisible(false);
+  GetOtherFramePageScheduler()->SetPageVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+}
+
+// Verify that tasks are throttled to 32ms (not 1 second) in a frame that is
+// hidden but same-agent with a visible frame, when the
+// "ThrottleUnimportantFrameTimers" feature is enabled.
+TEST_P(FrameSchedulerImplNoThrottlingVisibleAgentAndThrottleUnimportantTest,
+       SameAgentWithVisibleFrameIs32msThrottled) {
+  // Hidden frame with a visible same-agent frame: expect 32ms throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  auto other_frame_scheduler = CreateOtherFrameScheduler();
+  other_frame_scheduler->SetAgentClusterId(kAgent1);
+  EXPECT_TRUE(other_frame_scheduler->IsFrameVisible());
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect32msAlignment(task_runner_);
+
+  // Frame visible: expect no throttling.
+  frame_scheduler_->SetFrameVisible(true);
+  EXPECT_FALSE(IsThrottled());
+  PostTasks_ExpectNoAlignment(task_runner_);
+
+  // Frame hidden again: expect 32ms throttling.
+  frame_scheduler_->SetFrameVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect32msAlignment(task_runner_);
+
+  // Same-agent frame hidden: expect 1s throttling.
+  other_frame_scheduler->SetFrameVisible(false);
+  EXPECT_TRUE(IsThrottled());
+  PostTasks_Expect1sAlignment(task_runner_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FrameSchedulerImplNoThrottlingVisibleAgentTest,
+    ::testing::Bool(),
+    &FrameSchedulerImplNoThrottlingVisibleAgentTest::GetSuffix);
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FrameSchedulerImplNoThrottlingVisibleAgentAndThrottleUnimportantTest,
+    ::testing::Bool(),
+    &FrameSchedulerImplNoThrottlingVisibleAgentTest::GetSuffix);
+
 TEST_F(FrameSchedulerImplTest, DeleteSoonUsesBackupTaskRunner) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);

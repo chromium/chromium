@@ -2542,5 +2542,9 @@ BASE_FEATURE(kSimplifyLoadingTransparentPlaceholderImage,
              "SimplifyLoadingTransparentPlaceholderImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNoThrottlingVisibleAgent,
+             "NoThrottlingVisibleAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

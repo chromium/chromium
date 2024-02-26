@@ -8,8 +8,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -25,6 +27,8 @@ namespace blink {
 namespace scheduler {
 class MainThreadSchedulerImpl;
 class MainThreadTaskQueue;
+class PageSchedulerImpl;
+class PolicyUpdater;
 class WebThreadScheduler;
 
 // AgentGroupScheduler implementation which schedules per-AgentSchedulingGroup
@@ -41,7 +45,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
       MainThreadSchedulerImpl& main_thread_scheduler);
   AgentGroupSchedulerImpl(const AgentGroupSchedulerImpl&) = delete;
   AgentGroupSchedulerImpl& operator=(const AgentGroupSchedulerImpl&) = delete;
-  ~AgentGroupSchedulerImpl() override = default;
+  ~AgentGroupSchedulerImpl() override;
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
@@ -62,6 +66,29 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
 
   void Dispose();
 
+  // Associate a page scheduler which was not created by `CreatePageScheduler()`
+  // with this agent group scheduler.
+  void AddPageSchedulerForTesting(PageSchedulerImpl* page_scheduler);
+
+  // Disassociate a page scheduler from this agent group scheduler.
+  void RemovePageScheduler(PageSchedulerImpl* page_scheduler);
+
+  // Increments / decrements the number of visible frames for an agent. May
+  // schedule a policy update via `policy_updater`.
+  void IncrementVisibleFramesForAgent(
+      const base::UnguessableToken& agent_cluster_id,
+      PolicyUpdater& policy_updater);
+  void DecrementVisibleFramesForAgent(
+      const base::UnguessableToken& agent_cluster_id,
+      PolicyUpdater& policy_updater);
+
+  // Returns true iff there is at least one visible frame for
+  // `agent_cluster_id`.
+  bool IsAgentVisible(const base::UnguessableToken& agent_cluster_id) const;
+
+  // Update policy for all frames.
+  void UpdatePolicy();
+
  private:
   scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
@@ -70,6 +97,12 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   const raw_ref<MainThreadSchedulerImpl, DanglingUntriaged>
       main_thread_scheduler_;  // Not owned.
   HeapHashSet<WeakMember<Agent>> agents_;
+  HashSet<PageSchedulerImpl*> page_schedulers_;
+  std::map<base::UnguessableToken, int> num_visible_frames_per_agent_
+      ALLOW_DISCOURAGED_TYPE(
+          "There is no compelling reason to make base::UnguessableToken "
+          "compatible with WTF::HashMap");
+  bool is_updating_policy_ = false;
 
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   BrowserInterfaceBrokerProxy broker_;

@@ -1632,6 +1632,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSimplifyLoadingTransparentPlaceholderImage);
 
+// Don't throttle frames that are same-agent with with a visible frame.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrottlingVisibleAgent);
+
 }  // namespace features
 }  // namespace blink
 

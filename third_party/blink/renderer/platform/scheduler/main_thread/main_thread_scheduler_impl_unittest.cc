@@ -471,6 +471,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
     }
     page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
         scheduler_.get(), *agent_group_scheduler_);
+    agent_group_scheduler_->AddPageSchedulerForTesting(page_scheduler_.get());
     main_frame_scheduler_ =
         CreateFrameScheduler(page_scheduler_.get(), nullptr,
                              /*is_in_embedded_frame_tree=*/false,
