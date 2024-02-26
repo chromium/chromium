@@ -455,11 +455,11 @@ String Notification::permission(ExecutionContext* context) {
   return PermissionString(status);
 }
 
-ScriptPromise Notification::requestPermission(
+ScriptPromiseTyped<V8NotificationPermission> Notification::requestPermission(
     ScriptState* script_state,
     V8NotificationPermissionCallback* deprecated_callback) {
   if (!script_state->ContextIsValid())
-    return ScriptPromise();
+    return ScriptPromiseTyped<V8NotificationPermission>();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
 

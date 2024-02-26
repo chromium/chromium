@@ -578,7 +578,8 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
     UnderlyingSinkBase::Trace(visitor);
   }
 
-  static void Resolve(ScriptPromiseResolver* resolver, std::string result) {
+  static void Resolve(ScriptPromiseResolverTyped<IDLString>* resolver,
+                      std::string result) {
     resolver->Resolve(String::FromUTF8(result));
   }
   static void Reject(ScriptPromiseResolver* resolver) {
@@ -624,7 +625,7 @@ TestWritableStreamSink::Optimizer::PerformInProcessOptimization(
   return sink;
 }
 
-void OnLCPPredicted(ScriptPromiseResolver* resolver,
+void OnLCPPredicted(ScriptPromiseResolverTyped<IDLString>* resolver,
                     const Element* lcp_element) {
   const ElementLocator locator =
       lcp_element ? element_locator::OfElement(*lcp_element) : ElementLocator();
@@ -3978,7 +3979,8 @@ ScriptValue Internals::createWritableStreamAndSink(
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(script_state);
   auto internal_sink = std::make_unique<TestWritableStreamSink::InternalSink>(
       context->GetTaskRunner(TaskType::kInternalDefault),
       CrossThreadBindOnce(&TestWritableStreamSink::Resolve,
@@ -4025,11 +4027,12 @@ Vector<String> Internals::getCreatorScripts(HTMLImageElement* img) {
   return Vector<String>(img->creator_scripts());
 }
 
-ScriptPromise Internals::LCPPrediction(ScriptState* script_state,
-                                       Document* document) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLString> Internals::LCPPrediction(
+    ScriptState* script_state,
+    Document* document) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(script_state);
+  auto promise = resolver->Promise();
 
   LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP();
   CHECK(lcpp);

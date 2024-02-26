@@ -25,6 +25,7 @@ class FileSystemCloudIdentifier;
 class FileSystemHandlePermissionDescriptor;
 class FileSystemRemoveOptions;
 class FileSystemDirectoryHandle;
+class V8PermissionState;
 
 class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -44,11 +45,13 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   }
   const String& name() const { return name_; }
 
-  ScriptPromise queryPermission(ScriptState*,
-                                const FileSystemHandlePermissionDescriptor*);
-  ScriptPromise requestPermission(ScriptState*,
-                                  const FileSystemHandlePermissionDescriptor*,
-                                  ExceptionState&);
+  ScriptPromiseTyped<V8PermissionState> queryPermission(
+      ScriptState*,
+      const FileSystemHandlePermissionDescriptor*);
+  ScriptPromiseTyped<V8PermissionState> requestPermission(
+      ScriptState*,
+      const FileSystemHandlePermissionDescriptor*,
+      ExceptionState&);
 
   ScriptPromise move(ScriptState*,
                      const String& new_entry_name,
@@ -67,7 +70,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   ScriptPromiseTyped<IDLBoolean> isSameEntry(ScriptState*,
                                              FileSystemHandle* other,
                                              ExceptionState&);
-  ScriptPromise getUniqueId(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUSVString> getUniqueId(ScriptState*, ExceptionState&);
   ScriptPromiseTyped<IDLSequence<FileSystemCloudIdentifier>>
   getCloudIdentifiers(ScriptState*, ExceptionState&);
 

@@ -35,14 +35,16 @@ CreateFedAuthRequestAutomation(ScriptState* script_state) {
 }  // namespace
 
 // static
-ScriptPromise InternalsFedCm::getFedCmDialogType(ScriptState* script_state,
-                                                 Internals&) {
+ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmDialogType(
+    ScriptState* script_state,
+    Internals&) {
   mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
       federated_auth_request_automation =
           CreateFedAuthRequestAutomation(script_state);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(script_state);
+  auto promise = resolver->Promise();
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
   test::mojom::blink::FederatedAuthRequestAutomation*
@@ -51,7 +53,7 @@ ScriptPromise InternalsFedCm::getFedCmDialogType(ScriptState* script_state,
   raw_federated_auth_request_automation->GetDialogType(WTF::BindOnce(
       // While we only really need |resolver|, we also take the
       // mojo::Remote<> so that it remains alive after this function exits.
-      [](ScriptPromiseResolver* resolver,
+      [](ScriptPromiseResolverTyped<IDLString>* resolver,
          mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
          const WTF::String& type) {
         if (!type.empty()) {
@@ -65,14 +67,16 @@ ScriptPromise InternalsFedCm::getFedCmDialogType(ScriptState* script_state,
 }
 
 // static
-ScriptPromise InternalsFedCm::getFedCmTitle(ScriptState* script_state,
-                                            Internals&) {
+ScriptPromiseTyped<IDLString> InternalsFedCm::getFedCmTitle(
+    ScriptState* script_state,
+    Internals&) {
   mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
       federated_auth_request_automation =
           CreateFedAuthRequestAutomation(script_state);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(script_state);
+  auto promise = resolver->Promise();
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
   test::mojom::blink::FederatedAuthRequestAutomation*
@@ -81,7 +85,7 @@ ScriptPromise InternalsFedCm::getFedCmTitle(ScriptState* script_state,
   raw_federated_auth_request_automation->GetFedCmDialogTitle(WTF::BindOnce(
       // While we only really need |resolver|, we also take the
       // mojo::Remote<> so that it remains alive after this function exits.
-      [](ScriptPromiseResolver* resolver,
+      [](ScriptPromiseResolverTyped<IDLString>* resolver,
          mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
          const WTF::String& title) {
         if (!title.empty()) {

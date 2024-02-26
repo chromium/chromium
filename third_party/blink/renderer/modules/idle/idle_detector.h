@@ -25,6 +25,7 @@
 namespace blink {
 
 class ExceptionState;
+class V8PermissionState;
 
 class MODULES_EXPORT IdleDetector final
     : public EventTarget,
@@ -55,7 +56,9 @@ class MODULES_EXPORT IdleDetector final
   // IdleDetector IDL interface.
   String userState() const;
   String screenState() const;
-  static ScriptPromise requestPermission(ScriptState*, ExceptionState&);
+  static ScriptPromiseTyped<V8PermissionState> requestPermission(
+      ScriptState*,
+      ExceptionState&);
   ScriptPromise start(ScriptState*, const IdleOptions*, ExceptionState&);
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 

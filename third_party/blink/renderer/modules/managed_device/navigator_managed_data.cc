@@ -149,11 +149,14 @@ NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getDirectoryId(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -163,11 +166,14 @@ ScriptPromise NavigatorManagedData::getDirectoryId(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getHostname(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -177,11 +183,14 @@ ScriptPromise NavigatorManagedData::getHostname(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLNullable<IDLString>>
+NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -191,12 +200,14 @@ ScriptPromise NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getAnnotatedAssetId(
-    ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLNullable<IDLString>>
+NavigatorManagedData::getAnnotatedAssetId(ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -206,12 +217,14 @@ ScriptPromise NavigatorManagedData::getAnnotatedAssetId(
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getAnnotatedLocation(
-    ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLNullable<IDLString>>
+NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -251,17 +264,15 @@ void NavigatorManagedData::OnConfigurationReceived(
 
 void NavigatorManagedData::OnAttributeReceived(
     ScriptState* script_state,
-    ScriptPromiseResolver* scoped_resolver,
+    ScriptPromiseResolverTyped<IDLNullable<IDLString>>* resolver,
     mojom::blink::DeviceAttributeResultPtr result) {
-  pending_promises_.erase(scoped_resolver);
+  pending_promises_.erase(resolver);
 
   if (result->is_error_message()) {
-    scoped_resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, result->get_error_message()));
-  } else if (result->get_attribute().IsNull()) {
-    scoped_resolver->Resolve(v8::Null(script_state->GetIsolate()));
   } else {
-    scoped_resolver->Resolve(result->get_attribute());
+    resolver->Resolve(result->get_attribute());
   }
 }
 

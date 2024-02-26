@@ -39,38 +39,43 @@ FileSystemHandle* FileSystemHandle::CreateFromMojoEntry(
       execution_context, e->name, std::move(e->entry_handle->get_directory()));
 }
 
-ScriptPromise FileSystemHandle::queryPermission(
+ScriptPromiseTyped<V8PermissionState> FileSystemHandle::queryPermission(
     ScriptState* script_state,
     const FileSystemHandlePermissionDescriptor* descriptor) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise result = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<V8PermissionState>>(
+          script_state);
+  auto result = resolver->Promise();
 
   QueryPermissionImpl(
       descriptor->mode() == V8FileSystemPermissionMode::Enum::kReadwrite,
       WTF::BindOnce(
-          [](FileSystemHandle* handle, ScriptPromiseResolver* resolver,
+          [](FileSystemHandle* handle,
+             ScriptPromiseResolverTyped<V8PermissionState>* resolver,
              mojom::blink::PermissionStatus result) {
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.
-            resolver->Resolve(PermissionStatusToString(result));
+            resolver->Resolve(ToV8PermissionState(result));
           },
           WrapPersistent(this), WrapPersistent(resolver)));
 
   return result;
 }
 
-ScriptPromise FileSystemHandle::requestPermission(
+ScriptPromiseTyped<V8PermissionState> FileSystemHandle::requestPermission(
     ScriptState* script_state,
     const FileSystemHandlePermissionDescriptor* descriptor,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<V8PermissionState>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   RequestPermissionImpl(
       descriptor->mode() == V8FileSystemPermissionMode::Enum::kReadwrite,
       WTF::BindOnce(
-          [](FileSystemHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemHandle*,
+             ScriptPromiseResolverTyped<V8PermissionState>* resolver,
              FileSystemAccessErrorPtr result,
              mojom::blink::PermissionStatus status) {
             // Keep `this` alive so the handle will not be garbage-collected
@@ -79,7 +84,7 @@ ScriptPromise FileSystemHandle::requestPermission(
               file_system_access_error::Reject(resolver, *result);
               return;
             }
-            resolver->Resolve(PermissionStatusToString(status));
+            resolver->Resolve(ToV8PermissionState(status));
           },
           WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -199,14 +204,16 @@ ScriptPromiseTyped<IDLBoolean> FileSystemHandle::isSameEntry(
   return result;
 }
 
-ScriptPromise FileSystemHandle::getUniqueId(ScriptState* script_state,
-                                            ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+ScriptPromiseTyped<IDLUSVString> FileSystemHandle::getUniqueId(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUSVString>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   GetUniqueIdImpl(WTF::BindOnce(
-      [](FileSystemHandle*, ScriptPromiseResolver* resolver,
+      [](FileSystemHandle*, ScriptPromiseResolverTyped<IDLUSVString>* resolver,
          FileSystemAccessErrorPtr result, const WTF::String& id) {
         // Keep `this` alive so the handle will not be garbage-collected
         // before the promise is resolved.

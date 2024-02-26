@@ -60,7 +60,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
   EXPECT_CALL(*request, OnUpdatePaymentDetails(testing::_));
   EXPECT_CALL(*request, OnUpdatePaymentDetailsFailure(testing::_)).Times(0);
 
-  payment_details->Resolve("foo");
+  payment_details->Resolve();
 }
 
 TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
@@ -256,7 +256,7 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
       error_message);
 
-  payment_details->Resolve("foo");
+  payment_details->Resolve();
 }
 
 TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
@@ -294,7 +294,7 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
       error_message);
 
-  payment_details->Resolve("foo");
+  payment_details->Resolve();
 }
 
 TEST(PaymentRequestUpdateEventTest, NotAllowUntrustedEvent) {

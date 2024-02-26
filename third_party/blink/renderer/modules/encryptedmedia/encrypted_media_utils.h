@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_status.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -51,6 +52,7 @@ constexpr const char* kEncryptedMediaPermissionsPolicyConsoleWarning =
     "details.";
 
 class LocalDOMWindow;
+class V8MediaKeyStatus;
 class WebEncryptedMediaClient;
 
 class EncryptedMediaUtils {
@@ -66,6 +68,8 @@ class EncryptedMediaUtils {
   static String ConvertFromSessionType(WebEncryptedMediaSessionType);
 
   static String ConvertKeyStatusToString(
+      const WebEncryptedMediaKeyInformation::KeyStatus);
+  static V8MediaKeyStatus ConvertKeyStatusToEnum(
       const WebEncryptedMediaKeyInformation::KeyStatus);
 
   static WebMediaKeySystemConfiguration::Requirement

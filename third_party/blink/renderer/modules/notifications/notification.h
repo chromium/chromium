@@ -54,8 +54,9 @@ class ExecutionContext;
 class NotificationOptions;
 class NotificationResourcesLoader;
 class ScriptState;
-class V8NotificationPermissionCallback;
 class TimestampTrigger;
+class V8NotificationPermission;
+class V8NotificationPermissionCallback;
 
 class MODULES_EXPORT Notification final
     : public EventTarget,
@@ -122,7 +123,7 @@ class MODULES_EXPORT Notification final
 
   static String PermissionString(mojom::blink::PermissionStatus permission);
   static String permission(ExecutionContext* context);
-  static ScriptPromise requestPermission(
+  static ScriptPromiseTyped<V8NotificationPermission> requestPermission(
       ScriptState* script_state,
       V8NotificationPermissionCallback* deprecated_callback = nullptr);
 

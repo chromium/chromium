@@ -98,10 +98,10 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
   void DidFinishLoading(FileReaderData contents) override {
     if (read_type_ == FileReadType::kReadAsText) {
       String result = std::move(contents).AsText("UTF-8");
-      resolver_->Resolve(result);
+      resolver_->DowncastTo<IDLUSVString>()->Resolve(result);
     } else if (read_type_ == FileReadType::kReadAsArrayBuffer) {
       DOMArrayBuffer* result = std::move(contents).AsDOMArrayBuffer();
-      resolver_->Resolve(result);
+      resolver_->DowncastTo<DOMArrayBuffer>()->Resolve(result);
     } else {
       NOTREACHED() << "Unknown ReadType supplied to BlobFileReaderClient";
     }
@@ -241,33 +241,31 @@ ReadableStream* Blob::stream(ScriptState* script_state) const {
   return body_buffer->Stream();
 }
 
-// Helper called by Blob::text() and arrayBuffer(). The operations only differ
-// by 1 line, depending on the read_type.
-static ScriptPromise ReadBlobHelper(
-    const scoped_refptr<BlobDataHandle>& blob_data_handle,
-    ScriptState* script_state,
-    FileReadType read_type) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromiseTyped<IDLUSVString> Blob::text(ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUSVString>>(
+          script_state);
   auto promise = resolver->Promise();
-
   MakeGarbageCollected<BlobFileReaderClient>(
-      blob_data_handle,
+      blob_data_handle_,
       ExecutionContext::From(script_state)
           ->GetTaskRunner(TaskType::kFileReading),
-      read_type, resolver);
-
+      FileReadType::kReadAsText, resolver);
   return promise;
 }
 
-blink::ScriptPromise Blob::text(ScriptState* script_state) {
-  auto read_type = FileReadType::kReadAsText;
-  return ReadBlobHelper(blob_data_handle_, script_state, read_type);
-}
-
-blink::ScriptPromise Blob::arrayBuffer(ScriptState* script_state) {
-  auto read_type = FileReadType::kReadAsArrayBuffer;
-  return ReadBlobHelper(blob_data_handle_, script_state, read_type);
+ScriptPromiseTyped<DOMArrayBuffer> Blob::arrayBuffer(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMArrayBuffer>>(
+          script_state);
+  auto promise = resolver->Promise();
+  MakeGarbageCollected<BlobFileReaderClient>(
+      blob_data_handle_,
+      ExecutionContext::From(script_state)
+          ->GetTaskRunner(TaskType::kFileReading),
+      FileReadType::kReadAsArrayBuffer, resolver);
+  return promise;
 }
 
 void Blob::AppendTo(BlobData& blob_data) const {

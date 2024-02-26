@@ -55,17 +55,18 @@ ScriptPromiseTyped<IDLSequence<IDLString>> LockScreenData::getKeys(
   return promise;
 }
 
-ScriptPromise LockScreenData::getData(ScriptState* script_state,
-                                      const String& key) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLAny> LockScreenData::getData(ScriptState* script_state,
+                                                   const String& key) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
+  auto promise = resolver->Promise();
 
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.
   auto it = fake_data_store_.find(key);
   if (it == fake_data_store_.end()) {
     resolver->Resolve();
   } else {
-    resolver->Resolve(it->value);
+    resolver->Resolve(V8String(script_state->GetIsolate(), it->value));
   }
   return promise;
 }

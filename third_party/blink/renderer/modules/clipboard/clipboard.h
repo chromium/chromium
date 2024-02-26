@@ -36,7 +36,7 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
       ExceptionState& exception_state) {
     return read(script_state, nullptr, exception_state);
   }
-  ScriptPromise readText(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLString> readText(ScriptState*, ExceptionState&);
 
   ScriptPromise write(ScriptState*,
                       const HeapVector<Member<ClipboardItem>>&,

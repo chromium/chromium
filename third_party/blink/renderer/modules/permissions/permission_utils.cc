@@ -66,8 +66,12 @@ void ConnectToPermissionService(
       std::move(receiver));
 }
 
+V8PermissionState ToV8PermissionState(mojom::blink::PermissionStatus status) {
+  return V8PermissionState(ToPermissionStateEnum(status));
+}
+
 String PermissionStatusToString(mojom::blink::PermissionStatus status) {
-  return V8PermissionState(ToPermissionStateEnum(status)).AsString();
+  return ToV8PermissionState(status).AsString();
 }
 
 String PermissionNameToString(PermissionName name) {

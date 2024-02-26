@@ -541,20 +541,22 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SharedStorage::get(ScriptState* script_state,
-                                 const String& key,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLString> SharedStorage::get(
+    ScriptState* script_state,
+    const String& key,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLString>();
   }
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  ScriptPromiseResolverTyped<IDLString>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   CHECK(CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                             *resolver));
@@ -570,8 +572,8 @@ ScriptPromise SharedStorage::get(ScriptState* script_state,
       ->SharedStorageGet(
           key,
           WTF::BindOnce(
-              [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
-                 base::TimeTicks start_time,
+              [](ScriptPromiseResolverTyped<IDLString>* resolver,
+                 SharedStorage* shared_storage, base::TimeTicks start_time,
                  mojom::blink::SharedStorageGetStatus status,
                  const String& error_message, const String& value) {
                 DCHECK(resolver);

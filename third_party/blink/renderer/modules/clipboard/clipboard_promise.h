@@ -51,9 +51,10 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
 
   // Creates a promise for reading plain text from the clipboard.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-readtext
-  static ScriptPromise CreateForReadText(ExecutionContext* execution_context,
-                                         ScriptState* script_state,
-                                         ExceptionState& exception_state);
+  static ScriptPromiseTyped<IDLString> CreateForReadText(
+      ExecutionContext* execution_context,
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
   // Creates a promise for writing supported MIME types to the clipboard.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboard-write

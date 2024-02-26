@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_bridge.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_options_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
@@ -49,7 +49,7 @@ PushMessagingBridge::~PushMessagingBridge() = default;
 
 const char PushMessagingBridge::kSupplementName[] = "PushMessagingBridge";
 
-ScriptPromise PushMessagingBridge::GetPermissionState(
+ScriptPromiseTyped<V8PermissionState> PushMessagingBridge::GetPermissionState(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -59,8 +59,10 @@ ScriptPromise PushMessagingBridge::GetPermissionState(
                      context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<V8PermissionState>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   // The `userVisibleOnly` flag on |options| must be set, as it's intended to be
   // a contract with the developer that they will show a notification upon
@@ -87,9 +89,9 @@ void PushMessagingBridge::Trace(Visitor* visitor) const {
 }
 
 void PushMessagingBridge::DidGetPermissionState(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<V8PermissionState>* resolver,
     mojom::blink::PermissionStatus status) {
-  resolver->Resolve(PermissionStatusToString(status));
+  resolver->Resolve(ToV8PermissionState(status));
 }
 
 }  // namespace blink

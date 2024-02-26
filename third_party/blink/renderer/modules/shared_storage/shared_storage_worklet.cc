@@ -210,7 +210,7 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
 // sharedStorage.selectURL('foo', [{url: "bar.com"}]);
 //
 // It returns a JavaScript promise that resolves to an urn::uuid.
-ScriptPromise SharedStorageWorklet::selectURL(
+ScriptPromiseTyped<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     ScriptState* script_state,
     const String& name,
     HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
@@ -232,7 +232,7 @@ ScriptPromise SharedStorageWorklet::selectURL(
 //
 // This function implements the other overload, with `resolveToConfig`
 // defaulting to false.
-ScriptPromise SharedStorageWorklet::selectURL(
+ScriptPromiseTyped<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     ScriptState* script_state,
     const String& name,
     HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
@@ -246,15 +246,16 @@ ScriptPromise SharedStorageWorklet::selectURL(
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
-    return ScriptPromise();
+    return ScriptPromiseTyped<V8SharedStorageResponse>();
   }
 
   LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
   DCHECK(frame);
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<V8SharedStorageResponse>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   // For `selectURL()` to succeed, it is currently enforced in the browser side
   // that `addModule()` must be called beforehand that passed the early
@@ -447,7 +448,7 @@ ScriptPromise SharedStorageWorklet::selectURL(
       name, std::move(converted_urls), std::move(*serialized_data), keep_alive,
       std::move(context_id), aggregation_coordinator_origin,
       WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver,
+          [](ScriptPromiseResolverTyped<V8SharedStorageResponse>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
              base::TimeTicks start_time, bool resolve_to_config, bool success,
              const String& error_message,

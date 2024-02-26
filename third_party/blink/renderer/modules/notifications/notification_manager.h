@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_permission_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -18,8 +19,8 @@
 
 namespace blink {
 class Notification;
-class ScriptPromise;
 class ScriptState;
+class V8NotificationPermission;
 
 // The notification manager, unique to the execution context, is responsible for
 // connecting and communicating with the Mojo notification service.
@@ -43,7 +44,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   // method is synchronous to support the Notification.permission getter.
   mojom::blink::PermissionStatus GetPermissionStatus();
 
-  ScriptPromise RequestPermission(
+  ScriptPromiseTyped<V8NotificationPermission> RequestPermission(
       ScriptState* script_state,
       V8NotificationPermissionCallback* deprecated_callback);
 
@@ -99,7 +100,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   mojom::blink::NotificationService* GetNotificationService();
 
   void OnPermissionRequestComplete(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<V8NotificationPermission>* resolver,
       V8NotificationPermissionCallback* deprecated_callback,
       mojom::blink::PermissionStatus status);
 

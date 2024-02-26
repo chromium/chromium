@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_storage_bucket_durability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -97,9 +98,11 @@ ScriptPromise StorageBucket::estimate(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise StorageBucket::durability(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<V8StorageBucketDurability> StorageBucket::durability(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverTyped<V8StorageBucketDurability>>(script_state);
+  auto promise = resolver->Promise();
 
   // The context may be destroyed and the mojo connection unbound. However the
   // object may live on, reject any requests after the context is destroyed.
@@ -280,9 +283,10 @@ void StorageBucket::DidGetEstimate(ScriptPromiseResolver* resolver,
   resolver->Resolve(estimate);
 }
 
-void StorageBucket::DidGetDurability(ScriptPromiseResolver* resolver,
-                                     mojom::blink::BucketDurability durability,
-                                     bool success) {
+void StorageBucket::DidGetDurability(
+    ScriptPromiseResolverTyped<V8StorageBucketDurability>* resolver,
+    mojom::blink::BucketDurability durability,
+    bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -296,9 +300,13 @@ void StorageBucket::DidGetDurability(ScriptPromiseResolver* resolver,
 
   ScriptState::Scope scope(script_state);
 
-  if (durability == mojom::blink::BucketDurability::kRelaxed)
-    resolver->Resolve("relaxed");
-  resolver->Resolve("strict");
+  if (durability == mojom::blink::BucketDurability::kRelaxed) {
+    resolver->Resolve(
+        V8StorageBucketDurability(V8StorageBucketDurability::Enum::kRelaxed));
+  } else {
+    resolver->Resolve(
+        V8StorageBucketDurability(V8StorageBucketDurability::Enum::kStrict));
+  }
 }
 
 void StorageBucket::DidSetExpires(ScriptPromiseResolver* resolver,

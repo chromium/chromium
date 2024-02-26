@@ -7,6 +7,8 @@
 
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -35,15 +37,17 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                           const String& module_url,
                           const WorkletOptions* options,
                           ExceptionState&);
-  ScriptPromise selectURL(ScriptState*,
-                          const String& name,
-                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
-                          ExceptionState&);
-  ScriptPromise selectURL(ScriptState*,
-                          const String& name,
-                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
-                          const SharedStorageRunOperationMethodOptions* options,
-                          ExceptionState&);
+  ScriptPromiseTyped<V8SharedStorageResponse> selectURL(
+      ScriptState*,
+      const String& name,
+      HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+      ExceptionState&);
+  ScriptPromiseTyped<V8SharedStorageResponse> selectURL(
+      ScriptState*,
+      const String& name,
+      HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+      const SharedStorageRunOperationMethodOptions* options,
+      ExceptionState&);
   ScriptPromise run(ScriptState*, const String& name, ExceptionState&);
   ScriptPromise run(ScriptState*,
                     const String& name,

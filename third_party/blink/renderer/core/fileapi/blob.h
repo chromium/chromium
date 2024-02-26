@@ -33,6 +33,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
@@ -95,8 +96,8 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   }
 
   ReadableStream* stream(ScriptState* script_state) const;
-  ScriptPromise text(ScriptState* script_state);
-  ScriptPromise arrayBuffer(ScriptState* script_state);
+  ScriptPromiseTyped<IDLUSVString> text(ScriptState* script_state);
+  ScriptPromiseTyped<DOMArrayBuffer> arrayBuffer(ScriptState* script_state);
   String type() const { return blob_data_handle_->GetType(); }
   String Uuid() const { return blob_data_handle_->Uuid(); }
   scoped_refptr<BlobDataHandle> GetBlobDataHandle() const {

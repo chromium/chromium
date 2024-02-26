@@ -106,10 +106,11 @@ String IdleDetector::screenState() const {
 }
 
 // static
-ScriptPromise IdleDetector::requestPermission(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
+ScriptPromiseTyped<V8PermissionState> IdleDetector::requestPermission(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid())
-    return ScriptPromise();
+    return ScriptPromiseTyped<V8PermissionState>();
 
   auto* context = ExecutionContext::From(script_state);
   return IdleManager::From(context)->RequestPermission(script_state,

@@ -7,6 +7,8 @@
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -16,8 +18,8 @@
 namespace blink {
 
 class PushSubscriptionOptionsInit;
-class ScriptPromiseResolver;
 class ScriptState;
+class V8PermissionState;
 
 // The bridge is responsible for establishing and maintaining the Mojo
 // connection to the permission service. It's keyed on an active Service Worker
@@ -39,16 +41,18 @@ class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
   virtual ~PushMessagingBridge();
 
   // Asynchronously determines the permission state for the current origin.
-  ScriptPromise GetPermissionState(ScriptState* script_state,
-                                   const PushSubscriptionOptionsInit* options);
+  ScriptPromiseTyped<V8PermissionState> GetPermissionState(
+      ScriptState* script_state,
+      const PushSubscriptionOptionsInit* options);
 
   void Trace(Visitor*) const override;
 
  private:
   // Method to be invoked when the permission status has been retrieved from the
   // permission service. Will settle the given |resolver|.
-  void DidGetPermissionState(ScriptPromiseResolver* resolver,
-                             mojom::blink::PermissionStatus status);
+  void DidGetPermissionState(
+      ScriptPromiseResolverTyped<V8PermissionState>* resolver,
+      mojom::blink::PermissionStatus status);
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };

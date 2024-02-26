@@ -106,6 +106,27 @@ String EncryptedMediaUtils::ConvertKeyStatusToString(
 }
 
 // static
+V8MediaKeyStatus EncryptedMediaUtils::ConvertKeyStatusToEnum(
+    const WebEncryptedMediaKeyInformation::KeyStatus status) {
+  switch (status) {
+    case WebEncryptedMediaKeyInformation::KeyStatus::kUsable:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kUsable);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kExpired:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kExpired);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kReleased:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kReleased);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kOutputRestricted:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kOutputRestricted);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kOutputDownscaled:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kOutputDownscaled);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kStatusPending:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kStatusPending);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kInternalError:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kInternalError);
+  }
+}
+
+// static
 WebMediaKeySystemConfiguration::Requirement
 EncryptedMediaUtils::ConvertToMediaKeysRequirement(const String& requirement) {
   if (requirement == "required")

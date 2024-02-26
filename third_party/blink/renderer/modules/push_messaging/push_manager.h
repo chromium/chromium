@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_MANAGER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -14,9 +15,9 @@ namespace blink {
 
 class ExceptionState;
 class PushSubscriptionOptionsInit;
-class ScriptPromise;
 class ScriptState;
 class ServiceWorkerRegistration;
+class V8PermissionState;
 
 class MODULES_EXPORT PushManager final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -32,9 +33,10 @@ class MODULES_EXPORT PushManager final : public ScriptWrappable {
                           const PushSubscriptionOptionsInit* options_init,
                           ExceptionState& exception_state);
   ScriptPromise getSubscription(ScriptState* script_state);
-  ScriptPromise permissionState(ScriptState* script_state,
-                                const PushSubscriptionOptionsInit* options,
-                                ExceptionState& exception_state);
+  ScriptPromiseTyped<V8PermissionState> permissionState(
+      ScriptState* script_state,
+      const PushSubscriptionOptionsInit* options,
+      ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 

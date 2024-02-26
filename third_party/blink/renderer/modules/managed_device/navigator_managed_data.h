@@ -63,11 +63,11 @@ class MODULES_EXPORT NavigatorManagedData final
                                   kManagedconfigurationchange)
 
   // Device Attributes API:
-  ScriptPromise getDirectoryId(ScriptState* script_state);
-  ScriptPromise getHostname(ScriptState* script_state);
-  ScriptPromise getSerialNumber(ScriptState* script_state);
-  ScriptPromise getAnnotatedAssetId(ScriptState* script_state);
-  ScriptPromise getAnnotatedLocation(ScriptState* script_state);
+  ScriptPromiseTyped<IDLNullable<IDLString>> getDirectoryId(ScriptState*);
+  ScriptPromiseTyped<IDLNullable<IDLString>> getHostname(ScriptState*);
+  ScriptPromiseTyped<IDLNullable<IDLString>> getSerialNumber(ScriptState*);
+  ScriptPromiseTyped<IDLNullable<IDLString>> getAnnotatedAssetId(ScriptState*);
+  ScriptPromiseTyped<IDLNullable<IDLString>> getAnnotatedLocation(ScriptState*);
 
  private:
   // ManagedConfigurationObserver:
@@ -77,9 +77,10 @@ class MODULES_EXPORT NavigatorManagedData final
       ScriptPromiseResolverTyped<IDLRecord<IDLString, IDLAny>>* scoped_resolver,
       const std::optional<HashMap<String, String>>& configurations);
 
-  void OnAttributeReceived(ScriptState* script_state,
-                           ScriptPromiseResolver* scoped_resolver,
-                           mojom::blink::DeviceAttributeResultPtr result);
+  void OnAttributeReceived(
+      ScriptState* script_state,
+      ScriptPromiseResolverTyped<IDLNullable<IDLString>>* resolver,
+      mojom::blink::DeviceAttributeResultPtr result);
 
   // Lazily binds mojo interface.
   mojom::blink::DeviceAPIService* GetService();

@@ -16,6 +16,8 @@
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/ad_auction/join_leave_queue.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -35,7 +37,6 @@ class Ads;
 class AuctionAdInterestGroup;
 class AuctionAdInterestGroupKey;
 class AuctionAdConfig;
-class ScriptPromiseResolver;
 class ProtectedAudience;
 class V8UnionFencedFrameConfigOrUSVString;
 
@@ -98,20 +99,21 @@ class MODULES_EXPORT NavigatorAuction final
   void updateAdInterestGroups();
   static void updateAdInterestGroups(ScriptState*, Navigator&, ExceptionState&);
   // TODO(crbug.com/1441988): Make `const AuctionAdConfig*` after rename.
-  ScriptPromise runAdAuction(
-      ScriptState*,
-      AuctionAdConfig*,
-      ExceptionState&,
-      base::TimeTicks start_time = base::TimeTicks::Now());
+  ScriptPromiseTyped<IDLNullable<V8UnionFencedFrameConfigOrUSVString>>
+  runAdAuction(ScriptState*,
+               AuctionAdConfig*,
+               ExceptionState&,
+               base::TimeTicks start_time = base::TimeTicks::Now());
   static ScriptPromise runAdAuction(ScriptState*,
                                     Navigator&,
                                     AuctionAdConfig*,
                                     ExceptionState&);
 
-  ScriptPromise createAuctionNonce(ScriptState*, ExceptionState&);
-  static ScriptPromise createAuctionNonce(ScriptState*,
-                                          Navigator&,
-                                          ExceptionState&);
+  ScriptPromiseTyped<IDLString> createAuctionNonce(ScriptState*,
+                                                   ExceptionState&);
+  static ScriptPromiseTyped<IDLString> createAuctionNonce(ScriptState*,
+                                                          Navigator&,
+                                                          ExceptionState&);
 
   // If called from a FencedFrame that was navigated to the URN resulting from
   // an interest group ad auction, returns a Vector of ad component URNs
@@ -131,12 +133,13 @@ class MODULES_EXPORT NavigatorAuction final
                                             uint16_t num_ad_components,
                                             ExceptionState& exception_state);
 
-  ScriptPromise deprecatedURNToURL(ScriptState* script_state,
-                                   const String& urn_uuid,
-                                   bool send_reports,
-                                   ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUSVString> deprecatedURNToURL(
+      ScriptState* script_state,
+      const String& urn_uuid,
+      bool send_reports,
+      ExceptionState& exception_state);
 
-  static ScriptPromise deprecatedURNToURL(
+  static ScriptPromiseTyped<IDLUSVString> deprecatedURNToURL(
       ScriptState* script_state,
       Navigator& navigator,
       const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
@@ -174,15 +177,15 @@ class MODULES_EXPORT NavigatorAuction final
                                        Navigator&,
                                        const AdRequestConfig*,
                                        ExceptionState&);
-  ScriptPromise finalizeAd(ScriptState*,
-                           const Ads*,
-                           const AuctionAdConfig*,
-                           ExceptionState&);
-  static ScriptPromise finalizeAd(ScriptState*,
-                                  Navigator&,
-                                  const Ads*,
-                                  const AuctionAdConfig*,
-                                  ExceptionState&);
+  ScriptPromiseTyped<IDLString> finalizeAd(ScriptState*,
+                                           const Ads*,
+                                           const AuctionAdConfig*,
+                                           ExceptionState&);
+  static ScriptPromiseTyped<IDLString> finalizeAd(ScriptState*,
+                                                  Navigator&,
+                                                  const Ads*,
+                                                  const AuctionAdConfig*,
+                                                  ExceptionState&);
 
   // Web-exposed API that returns whether an opaque-ads fenced frame would be
   // allowed to be created in the current active document of this node after
@@ -258,16 +261,16 @@ class MODULES_EXPORT NavigatorAuction final
                      bool failed_well_known_check);
 
   // Completion callback for createAuctionNonce() Mojo call.
-  void CreateAuctionNonceComplete(ScriptPromiseResolver* resolver,
+  void CreateAuctionNonceComplete(ScriptPromiseResolverTyped<IDLString>*,
                                   const base::Uuid& nonce);
   // Completion callback for createAdRequest() Mojo call.
   void AdsRequested(ScriptPromiseResolver* resolver,
                     const WTF::String& ads_guid);
   // Completion callback for finalizeAd() Mojo call.
-  void FinalizeAdComplete(ScriptPromiseResolver* resolver,
+  void FinalizeAdComplete(ScriptPromiseResolverTyped<IDLString>* resolver,
                           const std::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by deprecatedURNToURL().
-  void GetURLFromURNComplete(ScriptPromiseResolver*,
+  void GetURLFromURNComplete(ScriptPromiseResolverTyped<IDLUSVString>*,
                              const std::optional<KURL>&);
   // Completion callback for Mojo call made by deprecatedReplaceInURNComplete().
   void ReplaceInURNComplete(ScriptPromiseResolver* resolver);

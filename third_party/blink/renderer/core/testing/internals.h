@@ -632,7 +632,7 @@ class Internals final : public ScriptWrappable {
   // the LCPScriptObserver Probe.
   Vector<String> getCreatorScripts(HTMLImageElement* img);
 
-  ScriptPromise LCPPrediction(ScriptState*, Document* document);
+  ScriptPromiseTyped<IDLString> LCPPrediction(ScriptState*, Document* document);
 
  private:
   Document* ContextDocument() const;

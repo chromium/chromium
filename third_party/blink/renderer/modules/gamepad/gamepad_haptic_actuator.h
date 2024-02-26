@@ -7,6 +7,8 @@
 
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -21,8 +23,7 @@ class GamepadDispatcher;
 class GamepadEffectParameters;
 enum class GamepadHapticActuatorType;
 class ScriptState;
-class ScriptPromise;
-class ScriptPromiseResolver;
+class V8GamepadHapticsResult;
 
 class GamepadHapticActuator final : public ScriptWrappable,
                                     public ExecutionContextClient {
@@ -37,20 +38,20 @@ class GamepadHapticActuator final : public ScriptWrappable,
   const String& type() const { return type_; }
   void SetType(device::GamepadHapticActuatorType);
 
-  ScriptPromise playEffect(ScriptState*,
-                           const String&,
-                           const GamepadEffectParameters*);
+  ScriptPromiseTyped<V8GamepadHapticsResult>
+  playEffect(ScriptState*, const String&, const GamepadEffectParameters*);
 
-  ScriptPromise reset(ScriptState*);
+  ScriptPromiseTyped<V8GamepadHapticsResult> reset(ScriptState*);
 
   bool canPlay(const String& type);
 
   void Trace(Visitor*) const override;
 
  private:
-  void OnPlayEffectCompleted(ScriptPromiseResolver*,
-                             device::mojom::GamepadHapticsResult);
-  void OnResetCompleted(ScriptPromiseResolver*,
+  void OnPlayEffectCompleted(
+      ScriptPromiseResolverTyped<V8GamepadHapticsResult>*,
+      device::mojom::GamepadHapticsResult);
+  void OnResetCompleted(ScriptPromiseResolverTyped<V8GamepadHapticsResult>*,
                         device::mojom::GamepadHapticsResult);
   void ResetVibrationIfNotPreempted();
 

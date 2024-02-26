@@ -31,7 +31,7 @@ class LockScreenData final : public ScriptWrappable,
 
   // IDL Interface:
   ScriptPromiseTyped<IDLSequence<IDLString>> getKeys(ScriptState*);
-  ScriptPromise getData(ScriptState*, const String& key);
+  ScriptPromiseTyped<IDLAny> getData(ScriptState*, const String& key);
   ScriptPromise setData(ScriptState*, const String& key, const String& data);
   ScriptPromise deleteData(ScriptState*, const String& key);
 

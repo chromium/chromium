@@ -132,14 +132,14 @@ ScriptPromise PushManager::getSubscription(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise PushManager::permissionState(
+ScriptPromiseTyped<V8PermissionState> PushManager::permissionState(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<V8PermissionState>();
   }
 
   return PushMessagingBridge::From(registration_)

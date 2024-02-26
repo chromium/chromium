@@ -15,13 +15,13 @@
 
   // Device Attributes API.
   [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
-  Promise<DOMString> getDirectoryId();
+  Promise<DOMString?> getDirectoryId();
   [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
-  Promise<DOMString> getHostname();
+  Promise<DOMString?> getHostname();
   [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
-  Promise<DOMString> getSerialNumber();
+  Promise<DOMString?> getSerialNumber();
   [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
-  Promise<DOMString> getAnnotatedAssetId();
+  Promise<DOMString?> getAnnotatedAssetId();
   [CallWith=ScriptState, RuntimeEnabled=DeviceAttributes, Measure]
-  Promise<DOMString> getAnnotatedLocation();
+  Promise<DOMString?> getAnnotatedLocation();
 };

@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -30,9 +31,9 @@ class ModelGenericSession final : public ScriptWrappable {
   GetModelSessionReceiver();
 
   // model_generic_session.idl implementation.
-  ScriptPromise execute(ScriptState* script_state,
-                        const WTF::String& input,
-                        ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLString> execute(ScriptState* script_state,
+                                        const WTF::String& input,
+                                        ExceptionState& exception_state);
   ReadableStream* executeStreaming(ScriptState* script_state,
                                    const WTF::String& input,
                                    ExceptionState& exception_state);

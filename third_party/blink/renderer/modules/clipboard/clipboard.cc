@@ -38,8 +38,9 @@ ScriptPromiseTyped<IDLSequence<ClipboardItem>> Clipboard::read(
                                          formats, exception_state);
 }
 
-ScriptPromise Clipboard::readText(ScriptState* script_state,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLString> Clipboard::readText(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForReadText(GetExecutionContext(),
                                              script_state, exception_state);
 }

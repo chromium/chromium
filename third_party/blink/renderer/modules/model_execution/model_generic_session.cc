@@ -69,12 +69,13 @@ class ModelGenericSession::Responder final
       public blink::mojom::blink::ModelStreamingResponder {
  public:
   explicit Responder(ScriptState* script_state)
-      : resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {}
+      : resolver_(MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
+            script_state)) {}
   ~Responder() override = default;
 
   void Trace(Visitor* visitor) const { visitor->Trace(resolver_); }
 
-  ScriptPromise GetPromise() { return resolver_->Promise(); }
+  ScriptPromiseTyped<IDLString> GetPromise() { return resolver_->Promise(); }
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
   void OnResponse(mojom::blink::ModelStreamingResponseStatus status,
@@ -111,7 +112,7 @@ class ModelGenericSession::Responder final
   }
 
  private:
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLString>> resolver_;
   WTF::String response_;
   int response_callback_count_;
 };
@@ -205,13 +206,14 @@ ModelGenericSession::GetModelSessionReceiver() {
   return model_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
-ScriptPromise ModelGenericSession::execute(ScriptState* script_state,
-                                           const WTF::String& input,
-                                           ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLString> ModelGenericSession::execute(
+    ScriptState* script_state,
+    const WTF::String& input,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLString>();
   }
 
   base::UmaHistogramEnumeration(

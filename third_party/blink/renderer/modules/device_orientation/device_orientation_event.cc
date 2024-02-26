@@ -74,17 +74,13 @@ bool DeviceOrientationEvent::absolute() const {
 }
 
 // static
-ScriptPromise DeviceOrientationEvent::requestPermission(
-    ScriptState* script_state) {
+ScriptPromiseTyped<V8DeviceOrientationPermissionState>
+DeviceOrientationEvent::requestPermission(ScriptState* script_state) {
   if (!script_state->ContextIsValid())
-    return ScriptPromise();
+    return ScriptPromiseTyped<V8DeviceOrientationPermissionState>();
 
   auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
-  if (!window) {
-    NOTREACHED();
-    return ScriptPromise();
-  }
-
+  CHECK(window);
   return DeviceOrientationController::From(*window).RequestPermission(
       script_state);
 }

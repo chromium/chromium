@@ -51,7 +51,9 @@ class MODULES_EXPORT SharedStorage final
                        ExceptionState&);
   ScriptPromise Delete(ScriptState*, const String& key, ExceptionState&);
   ScriptPromise clear(ScriptState*, ExceptionState&);
-  ScriptPromise get(ScriptState*, const String& key, ExceptionState&);
+  ScriptPromiseTyped<IDLString> get(ScriptState*,
+                                    const String& key,
+                                    ExceptionState&);
   ScriptPromiseTyped<IDLUnsignedLong> length(ScriptState*, ExceptionState&);
   ScriptPromiseTyped<IDLDouble> remainingBudget(ScriptState*, ExceptionState&);
   ScriptValue context(ScriptState*, ExceptionState&) const;

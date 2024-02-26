@@ -328,19 +328,6 @@ class CORE_EXPORT ScriptPromiseResolver
         ScriptState::From(creation_context->GetCreationContextChecked()));
   }
 
-  // Primitives
-  static v8::Local<v8::Value> ToV8(const String& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return V8String(isolate, value);
-  }
-
-  static v8::Local<v8::Value> ToV8(const char* value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return V8String(isolate, value);
-  }
-
   static v8::Local<v8::Value> ToV8(bool value,
                                    v8::Local<v8::Object> creation_context,
                                    v8::Isolate* isolate) = delete;
@@ -402,6 +389,16 @@ class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
   template <typename BlinkType>
   void Resolve(BlinkType value) {
     ResolveOrReject<IDLResolvedType, BlinkType>(value, kResolving);
+  }
+
+  // This Resolve() method allows a Promise expecting to be resolved with a
+  // union type to be resolved with any type of that union without the caller
+  // needing to explicitly construct a union object.
+  template <typename BlinkType>
+    requires std::derived_from<IDLResolvedType, bindings::UnionBase>
+  void Resolve(BlinkType value) {
+    ResolveOrReject<IDLResolvedType, IDLResolvedType*>(
+        MakeGarbageCollected<IDLResolvedType>(value), kResolving);
   }
 
   void Resolve() { ScriptPromiseResolver::Resolve(); }

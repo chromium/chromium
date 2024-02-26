@@ -214,14 +214,14 @@ class SetCertificateResultPromise
 class GetStatusForPolicyResultPromise
     : public ContentDecryptionModuleResultPromise {
  public:
-  GetStatusForPolicyResultPromise(ScriptState* script_state,
-                                  const MediaKeysConfig& config,
-                                  WebString min_hdcp_version,
-                                  MediaKeys* media_keys)
-      : ContentDecryptionModuleResultPromise(
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state),
-            config,
-            EmeApiType::kGetStatusForPolicy),
+  GetStatusForPolicyResultPromise(
+      ScriptPromiseResolverTyped<V8MediaKeyStatus>* resolver,
+      const MediaKeysConfig& config,
+      WebString min_hdcp_version,
+      MediaKeys* media_keys)
+      : ContentDecryptionModuleResultPromise(resolver,
+                                             config,
+                                             EmeApiType::kGetStatusForPolicy),
         media_keys_(media_keys),
         min_hdcp_version_(min_hdcp_version) {}
 
@@ -254,7 +254,8 @@ class GetStatusForPolicyResultPromise
       }
     }
 
-    Resolve(EncryptedMediaUtils::ConvertKeyStatusToString(key_status));
+    Resolve<V8MediaKeyStatus>(
+        EncryptedMediaUtils::ConvertKeyStatusToString(key_status));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -413,7 +414,7 @@ void MediaKeys::SetServerCertificateTask(
   // (These are handled by Chromium and the CDM.)
 }
 
-ScriptPromise MediaKeys::getStatusForPolicy(
+ScriptPromiseTyped<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
     ScriptState* script_state,
     const MediaKeysPolicy* media_keys_policy,
     ExceptionState& exception_state) {
@@ -421,7 +422,7 @@ ScriptPromise MediaKeys::getStatusForPolicy(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The context provided is invalid.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<V8MediaKeyStatus>();
   }
 
   // TODO(xhwang): Pass MediaKeysPolicy classes all the way to Chromium when
@@ -429,10 +430,13 @@ ScriptPromise MediaKeys::getStatusForPolicy(
   String min_hdcp_version = media_keys_policy->minHdcpVersion();
 
   // Let promise be a new promise.
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<V8MediaKeyStatus>>(
+          script_state);
   GetStatusForPolicyResultPromise* result =
       MakeGarbageCollected<GetStatusForPolicyResultPromise>(
-          script_state, config_, min_hdcp_version, this);
-  ScriptPromise promise = result->Promise();
+          resolver, config_, min_hdcp_version, this);
+  auto promise = resolver->Promise();
 
   // Run the following steps asynchronously. See GetStatusForPolicyTask().
   pending_actions_.push_back(
