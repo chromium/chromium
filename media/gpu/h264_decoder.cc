@@ -777,13 +777,6 @@ H264Decoder::H264Accelerator::Status H264Decoder::StartNewFrame(
       return H264Accelerator::Status::kFail;
   }
 
-  if (recovery_frame_cnt_ && *recovery_frame_cnt_ >= max_frame_num_) {
-    DVLOG(1) << "Invalid recovery_frame_cnt=" << *recovery_frame_cnt_
-             << " (it must be less or equal to max_frame_num-1=" << max_frame_num_ - 1
-             << ")";
-    return H264Accelerator::Status::kFail;
-  }
-
   if (!InitCurrPicture(slice_hdr))
     return H264Accelerator::Status::kFail;
 
@@ -1007,11 +1000,19 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
   DVLOG(4) << "Finishing picture frame_num: " << pic->frame_num
            << ", entries in DPB: " << dpb_.size();
   if (recovery_frame_cnt_) {
-    // This is the first picture after the recovery point SEI message. Computes
-    // the frame_num of the frame that should be output from (Spec D.2.8).
+    // This is the first picture after the recovery point SEI message. Validate
+    // `recovery_frame_cnt_` now that we are certain to have max_frame_num_.
+    if (*recovery_frame_cnt_ >= max_frame_num_) {
+      DVLOG(1) << "Invalid recovery_frame_cnt=" << *recovery_frame_cnt_
+               << " (must be less than or equal to max_frame_num-1="
+               << (max_frame_num_ - 1) << ")";
+      return false;
+    }
+
+    // Compute the frame_num of the first frame that should be output (D.2.8).
     recovery_frame_num_ =
         (*recovery_frame_cnt_ + pic->frame_num) % max_frame_num_;
-    DVLOG(3) << "recovery_frame_num_" << *recovery_frame_num_;
+    DVLOG(3) << "recovery_frame_num_=" << *recovery_frame_num_;
     recovery_frame_cnt_.reset();
   }
 
