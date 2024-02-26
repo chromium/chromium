@@ -113,6 +113,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "content/public/common/content_features.h"
 #include "net/http/http_content_disposition.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/android/window_android.h"
@@ -879,6 +880,14 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
           "Download.Blocked.ContentType.Automotive",
           download::DownloadContentFromMimeType(mime_type, false),
           download::DownloadContent::MAX);
+      return true;
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
+      mime_type == pdf::kPDFMimeType) {
+    // If this is already a file, there is no need to download.
+    if (url.SchemeIsFile() || url.SchemeIs("content")) {
       return true;
     }
   }
