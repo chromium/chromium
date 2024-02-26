@@ -298,8 +298,7 @@ void RenderViewHostTestHarness::TearDown() {
   // queue. This is preferable to immediate deletion because it will behave
   // properly if the |rph_factory_| reset above enqueued any tasks which
   // depend on |browser_context_|.
-  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                 browser_context_.release());
+  GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, browser_context_.release());
 
   // Although this isn't required by many, some subclasses members require that
   // the task environment is gone by the time that they are destroyed (akin to

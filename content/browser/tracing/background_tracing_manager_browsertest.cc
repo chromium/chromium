@@ -287,7 +287,7 @@ class TestBackgroundTracingHelper
         perfetto::trace_processor::json::LabelFilterPredicate());
     ASSERT_TRUE(export_status.ok()) << export_status.message();
 
-    content::GetUIThreadTaskRunner({})->PostTask(
+    GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, wait_for_trace_received_.QuitWhenIdleClosure());
   }
 

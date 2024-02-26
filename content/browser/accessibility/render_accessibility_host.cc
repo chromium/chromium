@@ -29,7 +29,7 @@ void RenderAccessibilityHost::HandleAXEvents(
   // Post the HandleAXEvents task onto the UI thread, and then when that
   // finishes, post back the response callback onto this runner (to satisfy
   // the mojo contract).
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+  GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&RenderFrameHostImpl::HandleAXEvents,
                      render_frame_host_impl_, tree_id_,
@@ -40,7 +40,7 @@ void RenderAccessibilityHost::HandleAXEvents(
 void RenderAccessibilityHost::HandleAXLocationChanges(
     std::vector<blink::mojom::LocationChangesPtr> changes,
     uint32_t reset_token) {
-  content::GetUIThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&RenderFrameHostImpl::HandleAXLocationChanges,
                                 render_frame_host_impl_, tree_id_,
                                 std::move(changes), reset_token));

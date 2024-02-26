@@ -225,7 +225,7 @@ void FileSystemManagerTestcase::RunAction(const ProtoAction& action,
 
     case ProtoAction::kRunThread:
       if (action.run_thread().id() == ThreadId_UI) {
-        content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+        GetUIThreadTaskRunner({})->PostTaskAndReply(
             FROM_HERE, base::DoNothing(), std::move(run_closure));
       } else if (action.run_thread().id() == ThreadId_IO) {
         content::GetIOThreadTaskRunner({})->PostTaskAndReply(

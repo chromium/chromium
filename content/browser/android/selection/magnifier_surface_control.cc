@@ -246,7 +246,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   CompositorDependenciesAndroid::Get().TryEstablishVizConnectionIfNeeded();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
+      GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
 
   auto root_params = viz::mojom::RootCompositorFrameSinkParams::New();
 

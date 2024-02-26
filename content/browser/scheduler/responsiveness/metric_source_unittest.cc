@@ -155,7 +155,7 @@ TEST_F(ResponsivenessMetricSourceTest, RunTasks) {
   task_environment_.RunIOThreadUntilIdle();
   task_environment_.RunUntilIdle();
 
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_GT(delegate->will_run_task_on_ui_thread(), 0);
   EXPECT_GT(delegate->did_run_task_on_ui_thread(), 0);

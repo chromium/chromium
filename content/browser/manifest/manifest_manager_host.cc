@@ -35,7 +35,7 @@ ManifestManagerHost::~ManifestManagerHost() {
     return;
   // PostTask the pending callbacks so they run outside of this destruction
   // stack frame.
-  content::GetUIThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(DispatchManifestNotFound, std::move(callbacks)));
 }

@@ -49,7 +49,7 @@ TextSuggestionHostAndroid::TextSuggestionHostAndroid(JNIEnv* env,
           base::BindRepeating(
               &TextSuggestionHostAndroid::OnSuggestionMenuTimeout,
               base::Unretained(this)),
-          content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})) {}
+          GetUIThreadTaskRunner({BrowserTaskType::kUserInput})) {}
 
 TextSuggestionHostAndroid::~TextSuggestionHostAndroid() {
   JNIEnv* env = AttachCurrentThread();

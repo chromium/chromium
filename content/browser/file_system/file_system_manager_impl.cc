@@ -214,7 +214,7 @@ void FileSystemManagerImpl::Open(const url::Origin& origin,
                                  OpenCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin,
@@ -260,7 +260,7 @@ void FileSystemManagerImpl::ResolveURL(const GURL& filesystem_url,
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
@@ -302,7 +302,7 @@ void FileSystemManagerImpl::Move(const GURL& src_path,
     std::move(callback).Run(opt_error.value());
     return;
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanMoveFileSystemFile,
@@ -355,7 +355,7 @@ void FileSystemManagerImpl::Copy(const GURL& src_path,
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanCopyFileSystemFile,
@@ -403,7 +403,7 @@ void FileSystemManagerImpl::Remove(const GURL& path,
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanDeleteFileSystemFile,
@@ -447,7 +447,7 @@ void FileSystemManagerImpl::ReadMetadata(const GURL& path,
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
@@ -499,7 +499,7 @@ void FileSystemManagerImpl::Create(const GURL& path,
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanCreateFileSystemFile,
@@ -553,7 +553,7 @@ void FileSystemManagerImpl::Exists(const GURL& path,
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
@@ -607,7 +607,7 @@ void FileSystemManagerImpl::ReadDirectory(
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
@@ -653,7 +653,7 @@ void FileSystemManagerImpl::ReadDirectorySync(
                             opt_error.value());
     return;
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
@@ -707,7 +707,7 @@ void FileSystemManagerImpl::Write(
     listener->ErrorOccurred(opt_error.value());
     return;
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
@@ -780,7 +780,7 @@ void FileSystemManagerImpl::WriteSync(
     std::move(callback).Run(0, opt_error.value());
     return;
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
@@ -833,7 +833,7 @@ void FileSystemManagerImpl::Truncate(
     std::move(callback).Run(opt_error.value());
     return;
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
@@ -886,7 +886,7 @@ void FileSystemManagerImpl::TruncateSync(const GURL& file_path,
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile,
@@ -939,7 +939,7 @@ void FileSystemManagerImpl::CreateSnapshotFile(
                             opt_error.value(), mojo::NullRemote());
     return;
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
@@ -1006,7 +1006,7 @@ void FileSystemManagerImpl::RegisterBlob(
   storage::FileSystemURL crack_url =
       context_->CrackURL(url, receivers_.current_context());
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanReadFileSystemFile,
@@ -1214,7 +1214,7 @@ void FileSystemManagerImpl::DidCreateSnapshot(
   // Post a task to use ChildProcessSecurityPolicy to check and grant file read
   // permission on the UI thread, since access to these functions on the IO
   // thread should be avoided.
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](ChildProcessSecurityPolicyImpl* security_policy, int process_id,

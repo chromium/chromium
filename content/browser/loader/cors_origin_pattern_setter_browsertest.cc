@@ -272,8 +272,8 @@ class NewContextCorsOriginPatternSetterBrowserTest
   }
 
   void TearDown() override {
-    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                   browser_context_.release());
+    GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                          browser_context_.release());
     CorsOriginPatternSetterBrowserTest::TearDown();
   }
 

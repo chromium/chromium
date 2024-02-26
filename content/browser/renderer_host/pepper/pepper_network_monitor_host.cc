@@ -41,7 +41,7 @@ void OnGetNetworkList(
     base::OnceCallback<void(const net::NetworkInterfaceList&)> callback,
     const std::optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetUIThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), networks.has_value()
                                               ? *networks

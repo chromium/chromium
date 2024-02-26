@@ -427,7 +427,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
     new_content_rendering_timeout_ = std::make_unique<TimeoutMonitor>(
         base::BindRepeating(&RenderWidgetHostImpl::ClearDisplayedGraphics,
                             weak_factory_.GetWeakPtr()),
-        content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
+        GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   }
   input_event_ack_timeout_.SetTaskRunner(
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
@@ -3699,7 +3699,7 @@ RenderInputRouter* RenderWidgetHostImpl::GetRenderInputRouter() {
 void RenderWidgetHostImpl::SetupRenderInputRouter() {
   render_input_router_ = std::make_unique<RenderInputRouter>(
       this, this, MakeFlingScheduler(),
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
+      GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   SetupInputRouter();
 }
 

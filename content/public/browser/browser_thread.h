@@ -93,7 +93,7 @@ class CONTENT_EXPORT BrowserThread {
   // BrowserThread you should use its SequencedTaskRunner::DeleteSoon() member
   // method.
   // TODO(1026641): Get rid of the last few callers to these in favor of an
-  // explicit call to content::GetUIThreadTaskRunner({})->DeleteSoon(...).
+  // explicit call to GetUIThreadTaskRunner({})->DeleteSoon(...).
 
   template <class T>
   static bool DeleteSoon(ID identifier,

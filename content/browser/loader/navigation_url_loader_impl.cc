@@ -509,8 +509,8 @@ void NavigationURLLoaderImpl::Start() {
                   url::Origin(), ukm::SourceIdObj::FromInt64(ukm_source_id_),
                   /*bypass_redirect_checks=*/nullptr,
                   frame_tree_node->navigation_request()->GetNavigationId(),
-                  content::GetUIThreadTaskRunner(
-                      {content::BrowserTaskType::kNavigationNetworkResponse}))),
+                  GetUIThreadTaskRunner(
+                      {BrowserTaskType::kNavigationNetworkResponse}))),
           /*additional_throttles=*/{});
       return;
     }
@@ -576,8 +576,8 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
           GetContentClient()->browser()->WillCreateURLLoaderRequestInterceptors(
               navigation_ui_data_.get(), frame_tree_node_id_,
               request_info_->navigation_id,
-              content::GetUIThreadTaskRunner(
-                  {content::BrowserTaskType::kNavigationNetworkResponse}));
+              GetUIThreadTaskRunner(
+                  {BrowserTaskType::kNavigationNetworkResponse}));
   if (!browser_interceptors.empty()) {
     for (auto& browser_interceptor : browser_interceptors) {
       interceptors_.push_back(
@@ -809,8 +809,8 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
                 frame->GetProcess()->GetID(), url::Origin(), ukm_id,
                 /*bypass_redirect_checks=*/nullptr,
                 frame_tree_node->navigation_request()->GetNavigationId(),
-                content::GetUIThreadTaskRunner(
-                    {content::BrowserTaskType::kNavigationNetworkResponse})),
+                GetUIThreadTaskRunner(
+                    {BrowserTaskType::kNavigationNetworkResponse})),
             devtools_params));
   }
 
@@ -1568,8 +1568,7 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
       factory_builder, &header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
-      content::GetUIThreadTaskRunner(
-          {content::BrowserTaskType::kNavigationNetworkResponse}));
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
   devtools_instrumentation::WillCreateURLLoaderFactoryParams::ForFrame(
       frame_tree_node->current_frame_host())
       .Run(/*is_navigation=*/true,

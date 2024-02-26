@@ -343,8 +343,7 @@ CreateNetworkFactoryForNavigationPreload(FrameTreeNode& frame_tree_node,
           frame_tree_node.navigation_request()->GetNextPageUkmSourceId()),
       factory_builder, &header_client, &bypass_redirect_checks_unused,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
-      content::GetUIThreadTaskRunner(
-          {content::BrowserTaskType::kNavigationNetworkResponse}));
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 
   // Make the network factory.
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(

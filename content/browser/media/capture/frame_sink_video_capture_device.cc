@@ -102,7 +102,7 @@ class ContextProviderObserver : viz::ContextLostObserver {
             base::BindPostTaskToCurrentDefault(on_gpu_capabilities_fetched)) {
     DETACH_FROM_SEQUENCE(main_sequence_checker_);
 
-    content::GetUIThreadTaskRunner({})->PostTask(
+    GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ContextProviderObserver::GetContextProviderOnMainSequence,

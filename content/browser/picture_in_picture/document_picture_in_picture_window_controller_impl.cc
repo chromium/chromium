@@ -238,8 +238,7 @@ void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
 
   // Don't run `force_close_cb` from within the observer, since closing
   // `web_contents` is not allowed during an observer callback.
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               std::move(force_close_cb_));
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(force_close_cb_));
 }
 
 void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
