@@ -71,7 +71,10 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
     @Override
     public boolean isEligible() {
-        Profile profile = mProfileSupplier.get();
-        return TabResumptionModuleUtils.shouldShowTabResumptionModule(profile);
+        // This function may be called by MainSettings when a profile hasn't been initialized yet.
+        // See b/324138242.
+        if (!mProfileSupplier.hasValue()) return false;
+
+        return TabResumptionModuleUtils.shouldShowTabResumptionModule(mProfileSupplier.get());
     }
 }

@@ -100,6 +100,13 @@ public class PriceChangeModuleBuilderUnitTest {
 
     @Test
     @SmallTest
+    public void testBuildModule_NotEligibleWithoutProfileInitialized() {
+        mProfile = null;
+        assertFalse(mModuleBuilder.isEligible());
+    }
+
+    @Test
+    @SmallTest
     public void testBuildModule_Eligible() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
