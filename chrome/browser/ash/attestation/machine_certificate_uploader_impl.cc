@@ -251,6 +251,9 @@ void MachineCertificateUploaderImpl::OnUploadComplete(
     AttestationClient::Get()->GetKeyInfo(
         request, base::BindOnce(&MachineCertificateUploaderImpl::MarkAsUploaded,
                                 weak_factory_.GetWeakPtr()));
+  } else if (result.IsClientNotRegisteredError()) {
+    LOG(WARNING) << "Attempted to upload a certificate but cloud policy client "
+                    "is not registered.";
   }
   certificate_uploaded_ = result.IsSuccess();
   RunCallbacks(certificate_uploaded_.value());

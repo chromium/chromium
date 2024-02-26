@@ -1175,6 +1175,10 @@ void CloudPolicyClient::UploadCertificate(
     const std::string& certificate_data,
     em::DeviceCertUploadRequest::CertificateType certificate_type,
     CloudPolicyClient::ResultCallback callback) {
+  if (!is_registered()) {
+    std::move(callback).Run(CloudPolicyClient::Result(NotRegistered()));
+    return;
+  }
   std::unique_ptr<DMServerJobConfiguration> config =
       CreateCertUploadJobConfiguration(std::move(callback));
   PrepareCertUploadRequest(config.get(), certificate_data, certificate_type);
