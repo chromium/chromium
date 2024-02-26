@@ -304,7 +304,7 @@ TEST_F(WebAppDataRetrieverTest,
 
   {
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), webapps::NO_MANIFEST, GURL(),
+        web_contents(), webapps::InstallableStatusCode::NO_MANIFEST, GURL(),
         blink::mojom::Manifest::New());
   }
 
@@ -406,7 +406,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
     manifest->theme_color = manifest_theme_color;
 
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), webapps::NO_ERROR_DETECTED,
+        web_contents(), webapps::InstallableStatusCode::NO_ERROR_DETECTED,
         GURL("https://example.com/manifest"), std::move(manifest));
   }
 
@@ -445,7 +445,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
 
   {
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
-        web_contents(), webapps::NO_MANIFEST, GURL(),
+        web_contents(), webapps::InstallableStatusCode::NO_MANIFEST, GURL(),
         blink::mojom::Manifest::New());
   }
 

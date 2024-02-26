@@ -132,7 +132,7 @@ void InstallableTask::IncrementStateAndWorkOnNextTask() {
 }
 
 void InstallableTask::OnFetchedData(InstallableStatusCode error) {
-  if (error != NO_ERROR_DETECTED) {
+  if (error != InstallableStatusCode::NO_ERROR_DETECTED) {
     errors_.push_back(error);
   }
   IncrementStateAndWorkOnNextTask();

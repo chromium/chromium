@@ -198,13 +198,14 @@ class TestInstallableManager : public InstallableManager {
     // installable fetcher won't try to fetch the real data.
     if (!page_data_->manifest_fetched()) {
       page_data_->OnManifestFetched(blink::mojom::Manifest::New(), GURL(),
-                                    MANIFEST_EMPTY);
+                                    InstallableStatusCode::MANIFEST_EMPTY);
     }
     if (!page_data_->web_page_metadata_fetched()) {
       page_data_->OnPageMetadataFetched(BuildDefaultMetadata());
     }
     if (!page_data_->primary_icon_fetched()) {
-      page_data_->OnPrimaryIconFetchedError(NO_ACCEPTABLE_ICON);
+      page_data_->OnPrimaryIconFetchedError(
+          InstallableStatusCode::NO_ACCEPTABLE_ICON);
     }
     if (!page_data_->is_screenshots_fetch_complete()) {
       page_data_->OnScreenshotsDownloaded(std::vector<Screenshot>());

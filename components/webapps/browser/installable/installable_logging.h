@@ -21,7 +21,7 @@ namespace webapps {
 // NO_ERROR_DETECTED) in its result. Clients may also add their own error codes,
 // and utilise LogToConsole to write a message to the devtools console. This
 // enum backs an UMA histogram, so it must be treated as append-only.
-enum InstallableStatusCode {
+enum class InstallableStatusCode {
   NO_ERROR_DETECTED = 0,
   RENDERER_EXITING = 1,
   RENDERER_CANCELLED = 2,
@@ -68,7 +68,8 @@ enum InstallableStatusCode {
   WEBAPK_INSTALL_FAILED = 43,
   // MANIFEST_URL_SCHEME_NOT_SUPPORTED_FOR_WEBAPK = 44 (DEPRECATED),
   // SERVICE_WORKER_NOT_REQUIRED = 45 (DEPRECATED),
-  MAX_ERROR_CODE,
+  MAX_ERROR_CODE = WEBAPK_INSTALL_FAILED,
+  kMaxValue = MAX_ERROR_CODE,
 };
 
 // Returns a user-readable description for |code|, or an empty string if |code|

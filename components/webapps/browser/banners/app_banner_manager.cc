@@ -54,7 +54,7 @@ bool IsManifestUrlChange(const InstallableData& result) {
   if (result.errors.empty()) {
     return false;
   }
-  if (result.errors[0] != MANIFEST_URL_CHANGED) {
+  if (result.errors[0] != InstallableStatusCode::MANIFEST_URL_CHANGED) {
     return false;
   }
   return true;
@@ -120,8 +120,9 @@ class TrackingStatusReporter : public AppBannerManager::StatusReporter {
   void ReportStatus(InstallableStatusCode code) override {
     // We only increment the histogram once per page load (and only if the
     // banner pipeline is triggered).
-    if (!done_ && code != NO_ERROR_DETECTED)
+    if (!done_ && code != InstallableStatusCode::NO_ERROR_DETECTED) {
       TrackInstallableStatusCode(code);
+    }
 
     done_ = true;
   }
@@ -143,7 +144,8 @@ class NullStatusReporter : public AppBannerManager::StatusReporter {
     // preceding call to RequestAppBanner e.g. because the WebContents is being
     // destroyed or web app uninstalled. In that case, code should always be
     // NO_ERROR_DETECTED or PIPELINE_RESTARTED.
-    DCHECK(code == NO_ERROR_DETECTED || code == PIPELINE_RESTARTED);
+    DCHECK(code == InstallableStatusCode::NO_ERROR_DETECTED ||
+           code == InstallableStatusCode::PIPELINE_RESTARTED);
   }
 
   WebappInstallSource GetInstallSource(content::WebContents* web_contents,
@@ -304,7 +306,7 @@ bool AppBannerManager::CheckIfShouldShowBanner() {
     return true;
   }
   if (GetAppIdentifier().empty()) {
-    Stop(PACKAGE_NAME_OR_START_URL_EMPTY);
+    Stop(InstallableStatusCode::PACKAGE_NAME_OR_START_URL_EMPTY);
     return false;
   }
   return true;
@@ -394,11 +396,11 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
       TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
       SetInstallableWebAppCheckResult(
           InstallableWebAppCheckResult::kNo_AlreadyInstalled);
-      Stop(ALREADY_INSTALLED);
+      Stop(InstallableStatusCode::ALREADY_INSTALLED);
     } else {
       SetInstallableWebAppCheckResult(
           InstallableWebAppCheckResult::kYes_Promotable);
-      Stop(NO_ERROR_DETECTED);
+      Stop(InstallableStatusCode::NO_ERROR_DETECTED);
     }
     return;
   }
@@ -462,14 +464,14 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kNo_AlreadyInstalled);
-    Stop(ALREADY_INSTALLED);
+    Stop(InstallableStatusCode::ALREADY_INSTALLED);
     return;
   }
 
   if (ShouldDeferToRelatedNonWebApp()) {
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kYes_ByUserRequest);
-    Stop(PREFER_RELATED_APPLICATIONS);
+    Stop(InstallableStatusCode::PREFER_RELATED_APPLICATIONS);
     return;
   }
 
@@ -558,16 +560,17 @@ InstallableStatusCode AppBannerManager::TerminationCode() const {
   switch (state_) {
     case State::PENDING_PROMPT_CANCELED:
     case State::PENDING_PROMPT_NOT_CANCELED:
-      return RENDERER_CANCELLED;
+      return InstallableStatusCode::RENDERER_CANCELLED;
     case State::PENDING_ENGAGEMENT:
-      return has_sufficient_engagement_ ? NO_ERROR_DETECTED
-                                        : INSUFFICIENT_ENGAGEMENT;
+      return has_sufficient_engagement_
+                 ? InstallableStatusCode::NO_ERROR_DETECTED
+                 : InstallableStatusCode::INSUFFICIENT_ENGAGEMENT;
     case State::FETCHING_MANIFEST:
-      return WAITING_FOR_MANIFEST;
+      return InstallableStatusCode::WAITING_FOR_MANIFEST;
     case State::FETCHING_NATIVE_DATA:
-      return WAITING_FOR_NATIVE_DATA;
+      return InstallableStatusCode::WAITING_FOR_NATIVE_DATA;
     case State::PENDING_INSTALLABLE_CHECK:
-      return WAITING_FOR_INSTALLABLE_CHECK;
+      return InstallableStatusCode::WAITING_FOR_INSTALLABLE_CHECK;
     case State::ACTIVE:
     case State::SENDING_EVENT:
     case State::SENDING_EVENT_GOT_EARLY_PROMPT:
@@ -575,7 +578,7 @@ InstallableStatusCode AppBannerManager::TerminationCode() const {
     case State::COMPLETE:
       break;
   }
-  return NO_ERROR_DETECTED;
+  return InstallableStatusCode::NO_ERROR_DETECTED;
 }
 
 void AppBannerManager::SetInstallableWebAppCheckResult(

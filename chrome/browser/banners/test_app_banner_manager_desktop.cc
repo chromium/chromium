@@ -96,7 +96,8 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   // The manifest URL changing in the middle of a pipeline doesn't always mean
   // the page data will be reset. To ensure that installable_ isn't accidentally
   // set twice, reset it here.
-  if (base::Contains(result.errors, MANIFEST_URL_CHANGED)) {
+  if (base::Contains(result.errors,
+                     InstallableStatusCode::MANIFEST_URL_CHANGED)) {
     installable_.reset();
   } else if (!result.errors.empty()) {
     // AppBannerManagerDesktop does not call

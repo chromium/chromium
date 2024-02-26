@@ -52,17 +52,17 @@ InstallableStatusCode HasManifestOrAtRootScope(
     const GURL& site_url) {
   if (criteria == InstallableCriteria::kNoManifestAtRootScope &&
       site_url.GetWithoutFilename().path().length() <= 1) {
-    return NO_ERROR_DETECTED;
+    return InstallableStatusCode::NO_ERROR_DETECTED;
   }
 
   if (manifest_url.is_empty()) {
-    return NO_MANIFEST;
+    return InstallableStatusCode::NO_MANIFEST;
   }
 
   if (blink::IsEmptyManifest(manifest)) {
-    return MANIFEST_EMPTY;
+    return InstallableStatusCode::MANIFEST_EMPTY;
   }
-  return NO_ERROR_DETECTED;
+  return InstallableStatusCode::NO_ERROR_DETECTED;
 }
 
 bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
@@ -191,7 +191,8 @@ bool IsInstallableDisplayMode(blink::mojom::DisplayMode display_mode) {
 InstallableStatusCode GetDisplayError(const blink::mojom::Manifest& manifest,
                                       InstallableCriteria criteria) {
   blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display;
-  InstallableStatusCode error_type_if_invalid = MANIFEST_DISPLAY_NOT_SUPPORTED;
+  InstallableStatusCode error_type_if_invalid =
+      InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;
 
   // Unsupported values are ignored when we parse the manifest, and
   // consequently aren't in the manifest.display_override array.
@@ -199,7 +200,8 @@ InstallableStatusCode GetDisplayError(const blink::mojom::Manifest& manifest,
   // this value is installable.
   if (!manifest.display_override.empty()) {
     display_mode_to_evaluate = manifest.display_override[0];
-    error_type_if_invalid = MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
+    error_type_if_invalid =
+        InstallableStatusCode::MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
   }
 
   switch (criteria) {
@@ -220,7 +222,7 @@ InstallableStatusCode GetDisplayError(const blink::mojom::Manifest& manifest,
       NOTREACHED();
       break;
   }
-  return NO_ERROR_DETECTED;
+  return InstallableStatusCode::NO_ERROR_DETECTED;
 }
 
 }  // namespace
@@ -250,7 +252,7 @@ InstallableEvaluator::CheckInstallability() const {
   InstallableStatusCode error = HasManifestOrAtRootScope(
       criteria_, page_data_->GetManifest(), page_data_->manifest_url(),
       web_contents_->GetLastCommittedURL());
-  if (error != NO_ERROR_DETECTED) {
+  if (error != InstallableStatusCode::NO_ERROR_DETECTED) {
     errors.push_back(error);
     return errors;
   }
@@ -258,23 +260,24 @@ InstallableEvaluator::CheckInstallability() const {
   if (!HasValidStartUrl(page_data_->GetManifest(),
                         page_data_->WebPageMetadata(),
                         web_contents_->GetLastCommittedURL(), criteria_)) {
-    errors.push_back(START_URL_NOT_VALID);
+    errors.push_back(InstallableStatusCode::START_URL_NOT_VALID);
   }
 
   if (!HasValidName(page_data_->GetManifest(), page_data_->WebPageMetadata(),
                     criteria_)) {
-    errors.push_back(MANIFEST_MISSING_NAME_OR_SHORT_NAME);
+    errors.push_back(
+        InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME);
   }
 
   InstallableStatusCode display_error =
       GetDisplayError(page_data_->GetManifest(), criteria_);
-  if (display_error != NO_ERROR_DETECTED) {
+  if (display_error != InstallableStatusCode::NO_ERROR_DETECTED) {
     errors.push_back(display_error);
   }
 
   if (!HasValidIcon(web_contents_.get(), page_data_->GetManifest(),
                     criteria_)) {
-    errors.push_back(MANIFEST_MISSING_SUITABLE_ICON);
+    errors.push_back(InstallableStatusCode::MANIFEST_MISSING_SUITABLE_ICON);
   }
 
   return errors;
@@ -284,10 +287,10 @@ std::vector<InstallableStatusCode> InstallableEvaluator::CheckEligibility(
     content::WebContents* web_contents) const {
   std::vector<InstallableStatusCode> errors;
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
-    errors.push_back(IN_INCOGNITO);
+    errors.push_back(InstallableStatusCode::IN_INCOGNITO);
   }
   if (!IsContentSecure(web_contents)) {
-    errors.push_back(NOT_FROM_SECURE_ORIGIN);
+    errors.push_back(InstallableStatusCode::NOT_FROM_SECURE_ORIGIN);
   }
   return errors;
 }

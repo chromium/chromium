@@ -62,7 +62,7 @@ void InstallablePageData::OnPageMetadataFetched(
 }
 
 void InstallablePageData::OnCheckWorkerResult(InstallableStatusCode result) {
-  worker_->has_worker = (result == NO_ERROR_DETECTED);
+  worker_->has_worker = (result == InstallableStatusCode::NO_ERROR_DETECTED);
   worker_->error = result;
   worker_->fetched = true;
 }
@@ -74,7 +74,7 @@ void InstallablePageData::OnPrimaryIconFetched(const GURL& icon_url,
   primary_icon_->url = icon_url;
   primary_icon_->icon = std::make_unique<SkBitmap>(bitmap);
   primary_icon_->purpose = purpose;
-  primary_icon_->error = NO_ERROR_DETECTED;
+  primary_icon_->error = InstallableStatusCode::NO_ERROR_DETECTED;
 }
 
 void InstallablePageData::OnPrimaryIconFetchedError(
@@ -101,7 +101,8 @@ const mojom::WebPageMetadata& InstallablePageData::WebPageMetadata() const {
 }
 
 bool InstallablePageData::HasWorkerResult() const {
-  return worker_->fetched && worker_->error != NO_MATCHING_SERVICE_WORKER;
+  return worker_->fetched &&
+         worker_->error != InstallableStatusCode::NO_MATCHING_SERVICE_WORKER;
 }
 
 }  // namespace webapps

@@ -151,7 +151,7 @@ content::WebContents* InstallableManager::GetWebContents() {
 }
 
 void InstallableManager::Reset(InstallableStatusCode error) {
-  DCHECK(error != NO_ERROR_DETECTED);
+  DCHECK(error != InstallableStatusCode::NO_ERROR_DETECTED);
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
 
@@ -216,19 +216,19 @@ void InstallableManager::OnDestruct(content::ServiceWorkerContext* context) {
 }
 
 void InstallableManager::PrimaryPageChanged(content::Page& page) {
-  Reset(USER_NAVIGATED);
+  Reset(InstallableStatusCode::USER_NAVIGATED);
 }
 
 void InstallableManager::DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
                                                  const GURL& manifest_url) {
   // A change in the manifest URL invalidates our entire internal state.
-  Reset(MANIFEST_URL_CHANGED);
+  Reset(InstallableStatusCode::MANIFEST_URL_CHANGED);
 }
 
 void InstallableManager::WebContentsDestroyed() {
   // This ensures that we do not just hang callbacks on web_contents being
   // destroyed.
-  Reset(RENDERER_EXITING);
+  Reset(InstallableStatusCode::RENDERER_EXITING);
   Observe(nullptr);
 }
 

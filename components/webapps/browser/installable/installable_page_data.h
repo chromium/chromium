@@ -28,9 +28,10 @@ class InstallablePageData {
 
   void Reset();
 
-  void OnManifestFetched(blink::mojom::ManifestPtr manifest,
-                         GURL manifest_url,
-                         InstallableStatusCode error = NO_ERROR_DETECTED);
+  void OnManifestFetched(
+      blink::mojom::ManifestPtr manifest,
+      GURL manifest_url,
+      InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED);
   void OnPageMetadataFetched(mojom::WebPageMetadataPtr web_page_metadata);
   void OnCheckWorkerResult(InstallableStatusCode result);
   void OnPrimaryIconFetched(const GURL& icon_url,
@@ -70,7 +71,7 @@ class InstallablePageData {
     ManifestProperty();
     ~ManifestProperty();
 
-    InstallableStatusCode error = NO_ERROR_DETECTED;
+    InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
     GURL url;
     blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     bool fetched = false;
@@ -85,7 +86,7 @@ class InstallablePageData {
   };
 
   struct ServiceWorkerProperty {
-    InstallableStatusCode error = NO_ERROR_DETECTED;
+    InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
     bool has_worker = false;
     bool fetched = false;
   };
@@ -101,7 +102,7 @@ class InstallablePageData {
 
     ~IconProperty();
 
-    InstallableStatusCode error = NO_ERROR_DETECTED;
+    InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
     IconPurpose purpose = IconPurpose::ANY;
     GURL url;
     std::unique_ptr<SkBitmap> icon;

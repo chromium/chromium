@@ -57,13 +57,13 @@ void InstallableDataFetcher::OnDidGetManifest(
     FetcherCallback finish_callback,
     const GURL& manifest_url,
     blink::mojom::ManifestPtr manifest) {
-  InstallableStatusCode error = NO_ERROR_DETECTED;
+  InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
   if (!base::FeatureList::IsEnabled(
           features::kUniversalInstallRootScopeNoManifest)) {
     if (manifest_url.is_empty()) {
-      error = NO_MANIFEST;
+      error = InstallableStatusCode::NO_MANIFEST;
     } else if (blink::IsEmptyManifest(manifest)) {
-      error = MANIFEST_EMPTY;
+      error = InstallableStatusCode::MANIFEST_EMPTY;
     }
   }
 
@@ -75,7 +75,7 @@ void InstallableDataFetcher::FetchWebPageMetadata(
     FetcherCallback finish_callback) {
   if (page_data_->web_page_metadata_fetched()) {
     // Stop and run the callback if metadata is already fetched.
-    std::move(finish_callback).Run(NO_ERROR_DETECTED);
+    std::move(finish_callback).Run(InstallableStatusCode::NO_ERROR_DETECTED);
     return;
   }
 
@@ -99,7 +99,7 @@ void InstallableDataFetcher::OnDidGetWebPageMetadata(
     FetcherCallback finish_callback,
     mojom::WebPageMetadataPtr web_page_metadata) {
   page_data_->OnPageMetadataFetched(std::move(web_page_metadata));
-  std::move(finish_callback).Run(NO_ERROR_DETECTED);
+  std::move(finish_callback).Run(InstallableStatusCode::NO_ERROR_DETECTED);
 }
 
 void InstallableDataFetcher::CheckServiceWorker(
@@ -114,7 +114,7 @@ void InstallableDataFetcher::CheckServiceWorker(
 
   if (blink::IsEmptyManifest(page_data_->GetManifest())) {
     // Skip fetching service worker and return if manifest is empty.
-    std::move(finish_callback).Run(NO_ERROR_DETECTED);
+    std::move(finish_callback).Run(InstallableStatusCode::NO_ERROR_DETECTED);
     return;
   }
 
@@ -141,17 +141,19 @@ void InstallableDataFetcher::OnDidCheckHasServiceWorker(
     content::ServiceWorkerCapability capability) {
   switch (capability) {
     case content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
-      page_data_->OnCheckWorkerResult(NO_ERROR_DETECTED);
+      page_data_->OnCheckWorkerResult(InstallableStatusCode::NO_ERROR_DETECTED);
       break;
     case content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
-      page_data_->OnCheckWorkerResult(NOT_OFFLINE_CAPABLE);
+      page_data_->OnCheckWorkerResult(
+          InstallableStatusCode::NOT_OFFLINE_CAPABLE);
       break;
     case content::ServiceWorkerCapability::NO_SERVICE_WORKER:
       if (wait_for_worker) {
         std::move(pause_callback).Run();
         return;
       } else {
-        page_data_->OnCheckWorkerResult(NO_MATCHING_SERVICE_WORKER);
+        page_data_->OnCheckWorkerResult(
+            InstallableStatusCode::NO_MATCHING_SERVICE_WORKER);
       }
       break;
   }
@@ -171,7 +173,7 @@ void InstallableDataFetcher::CheckAndFetchBestPrimaryIcon(
     bool prefer_maskable,
     bool fetch_favicon) {
   if (blink::IsEmptyManifest(page_data_->GetManifest()) && !fetch_favicon) {
-    std::move(finish_callback).Run(NO_ERROR_DETECTED);
+    std::move(finish_callback).Run(InstallableStatusCode::NO_ERROR_DETECTED);
     return;
   }
   if (page_data_->primary_icon_fetched()) {
@@ -188,7 +190,7 @@ void InstallableDataFetcher::CheckAndFetchScreenshots(
     FetcherCallback finish_callback) {
   if (page_data_->is_screenshots_fetch_complete()) {
     // Stop and run the callback if screenshots was already fetched.
-    std::move(finish_callback).Run(NO_ERROR_DETECTED);
+    std::move(finish_callback).Run(InstallableStatusCode::NO_ERROR_DETECTED);
     return;
   }
 
@@ -240,7 +242,8 @@ void InstallableDataFetcher::CheckAndFetchScreenshots(
 
   if (!screenshots_downloading_) {
     page_data_->OnScreenshotsDownloaded(std::vector<Screenshot>());
-    std::move(screenshot_complete_).Run(NO_ERROR_DETECTED);
+    std::move(screenshot_complete_)
+        .Run(InstallableStatusCode::NO_ERROR_DETECTED);
   }
 }
 
@@ -298,7 +301,8 @@ void InstallableDataFetcher::OnScreenshotFetched(GURL screenshot_url,
 
     page_data_->OnScreenshotsDownloaded(std::move(screenshots));
     downloaded_screenshots_.clear();
-    std::move(screenshot_complete_).Run(NO_ERROR_DETECTED);
+    std::move(screenshot_complete_)
+        .Run(InstallableStatusCode::NO_ERROR_DETECTED);
   }
 }
 

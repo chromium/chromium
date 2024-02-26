@@ -44,7 +44,7 @@ InstallableData::~InstallableData() = default;
 
 InstallableStatusCode InstallableData::GetFirstError() const {
   if (errors.empty()) {
-    return NO_ERROR_DETECTED;
+    return InstallableStatusCode::NO_ERROR_DETECTED;
   }
   return errors[0];
 }

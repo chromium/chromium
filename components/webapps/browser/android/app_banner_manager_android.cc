@@ -251,7 +251,7 @@ void AppBannerManagerAndroid::PerformInstallableChecks() {
 
 void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
   if (!webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest())) {
-    Stop(URL_NOT_SUPPORTED_FOR_WEBAPK);
+    Stop(InstallableStatusCode::URL_NOT_SUPPORTED_FOR_WEBAPK);
     return;
   }
   AppBannerManager::PerformInstallableWebAppCheck();
@@ -300,12 +300,12 @@ void AppBannerManagerAndroid::ShowBannerUi(WebappInstallSource install_source) {
 
   if (was_shown) {
     if (native_java_app_data_.is_null()) {
-      ReportStatus(SHOWING_WEB_APP_BANNER);
+      ReportStatus(InstallableStatusCode::SHOWING_WEB_APP_BANNER);
     } else {
-      ReportStatus(SHOWING_NATIVE_APP_BANNER);
+      ReportStatus(InstallableStatusCode::SHOWING_NATIVE_APP_BANNER);
     }
   } else {
-    ReportStatus(FAILED_TO_CREATE_BANNER);
+    ReportStatus(InstallableStatusCode::FAILED_TO_CREATE_BANNER);
   }
 }
 
@@ -453,14 +453,15 @@ bool AppBannerManagerAndroid::ShouldPerformInstallableNativeAppCheck() {
 
 void AppBannerManagerAndroid::PerformInstallableNativeAppCheck() {
   DCHECK(ShouldPerformInstallableNativeAppCheck());
-  InstallableStatusCode code = NO_ERROR_DETECTED;
+  InstallableStatusCode code = InstallableStatusCode::NO_ERROR_DETECTED;
   for (const auto& application : manifest().related_applications) {
     std::string id =
         base::UTF16ToUTF8(application.id.value_or(std::u16string()));
     code = QueryNativeApp(application.platform.value_or(std::u16string()),
                           application.url, id);
-    if (code == NO_ERROR_DETECTED)
+    if (code == InstallableStatusCode::NO_ERROR_DETECTED) {
       return;
+    }
   }
 
   // We must have some error in |code| if we reached this point, so report it.
@@ -472,10 +473,10 @@ InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
     const GURL& url,
     const std::string& id) {
   if (!base::EqualsASCII(platform, kPlatformPlay))
-    return PLATFORM_NOT_SUPPORTED_ON_ANDROID;
+    return InstallableStatusCode::PLATFORM_NOT_SUPPORTED_ON_ANDROID;
 
   if (id.empty())
-    return NO_ID_SPECIFIED;
+    return InstallableStatusCode::NO_ID_SPECIFIED;
 
   // AppBannerManager#fetchAppDetails() only works on Beta and Stable because
   // the called Google Play API uses an old way of checking whether the Chrome
@@ -491,14 +492,15 @@ InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
   if (!(local_build || gIgnoreChromeChannelForTesting ||
         channel == version_info::Channel::BETA ||
         channel == version_info::Channel::STABLE)) {
-    return PREFER_RELATED_APPLICATIONS_SUPPORTED_ONLY_BETA_STABLE;
+    return InstallableStatusCode::
+        PREFER_RELATED_APPLICATIONS_SUPPORTED_ONLY_BETA_STABLE;
   }
 
   TrackDisplayEvent(DISPLAY_EVENT_NATIVE_APP_BANNER_REQUESTED);
 
   std::string id_from_app_url = ExtractQueryValueForName(url, "id");
   if (id_from_app_url.size() && id != id_from_app_url)
-    return IDS_DO_NOT_MATCH;
+    return InstallableStatusCode::IDS_DO_NOT_MATCH;
 
   // Attach the chrome_inline referrer value, prefixed with "&" if the
   // referrer is non empty.
@@ -521,12 +523,12 @@ InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
   Java_AppBannerManager_fetchAppDetails(
       env, java_banner_manager_, jurl, jpackage, jreferrer,
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx());
-  return NO_ERROR_DETECTED;
+  return InstallableStatusCode::NO_ERROR_DETECTED;
 }
 
 void AppBannerManagerAndroid::OnNativeAppIconFetched(const SkBitmap& bitmap) {
   if (bitmap.drawsNothing()) {
-    Stop(NO_ICON_AVAILABLE);
+    Stop(InstallableStatusCode::NO_ICON_AVAILABLE);
     return;
   }
 

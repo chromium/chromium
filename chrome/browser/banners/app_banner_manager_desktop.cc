@@ -184,7 +184,7 @@ bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
 void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
   RecordDidShowBanner();
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
-  ReportStatus(SHOWING_APP_INSTALLATION_DIALOG);
+  ReportStatus(InstallableStatusCode::SHOWING_APP_INSTALLATION_DIALOG);
   CreateWebApp(install_source,
                base::BindOnce(&AppBannerManagerDesktop::DidFinishCreatingWebApp,
                               weak_factory_.GetWeakPtr()));
