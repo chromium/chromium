@@ -109,16 +109,6 @@ void NativeThemeFluent::PaintScrollbarThumb(
     ColorScheme color_scheme) const {
   DCHECK_NE(state, NativeTheme::kDisabled);
 
-  cc::PaintCanvasAutoRestore auto_restore(canvas, true);
-  SkRRect rrect =
-      SkRRect::MakeRectXY(gfx::RectToSkRect(rect), kFluentScrollbarPartsRadius,
-                          kFluentScrollbarPartsRadius);
-
-  // Clip the canvas to match the round rect and create round corners.
-  SkPath path;
-  path.addRRect(rrect);
-  canvas->clipPath(path, true);
-
   auto get_color = [color_provider, state, extra_params]() {
     ColorId thumb_color_id = kColorWebNativeControlScrollbarThumb;
     if (state == NativeTheme::kPressed) {
@@ -132,11 +122,14 @@ void NativeThemeFluent::PaintScrollbarThumb(
   };
   // TODO(crbug.com/891944): Adjust extra param `thumb_color` based on `state`.
   const SkColor thumb_color = extra_params.thumb_color.value_or(get_color());
+  const SkRRect rrect =
+      SkRRect::MakeRectXY(gfx::RectToSkRect(rect), kFluentScrollbarPartsRadius,
+                          kFluentScrollbarPartsRadius);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(thumb_color);
-  canvas->drawRect(gfx::RectToSkRect(rect), flags);
+  canvas->drawRRect(rrect, flags);
 }
 
 void NativeThemeFluent::PaintScrollbarCorner(
