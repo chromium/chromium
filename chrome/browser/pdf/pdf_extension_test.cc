@@ -2017,11 +2017,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
 
 class PDFExtensionComboBoxTest : public PDFExtensionTest {
  public:
-  MimeHandlerViewGuest* LoadTestComboBoxPdfGetMimeHandlerView() {
-    return LoadPdfGetMimeHandlerView(
-        embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
-  }
-
   // Returns a point near the left edge of the editable combo box in
   // combobox_form.pdf, inside the combo box rect. The point is in Blink screen
   // coordinates.
@@ -2156,11 +2151,6 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
 
 // Flaky, https://crbug.com/1269103, https://crbug.com/1520715
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, DISABLED_Save) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("edited.pdf");
@@ -2172,8 +2162,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, DISABLED_Save) {
   auto auto_reset_options =
       FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   ClickLeftSideOfEditableComboBox(extension_host);
   TypeHello(extension_host);
@@ -2231,11 +2222,6 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
 // Flaky, https://crbug.com/1269103, https://crbug.com/1520715
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
                        DISABLED_SaveWithPolicy) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("combobox_form.pdf");
@@ -2245,8 +2231,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   ClickLeftSideOfEditableComboBox(extension_host);
   TypeHello(extension_host);
@@ -2257,11 +2244,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
 // Flaky, https://crbug.com/1269103, https://crbug.com/1520715
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
                        DISABLED_SaveWithPolicyUniqueNumberSuffix) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   CreateConflictingFilenames(GetDownloadDir().AppendASCII("combobox_form.pdf"),
@@ -2276,8 +2258,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   ClickLeftSideOfEditableComboBox(extension_host);
   TypeHello(extension_host);
@@ -2288,11 +2271,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
 // TODO(crbug.com/1269103): Make this test non-flaky.
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
                        DISABLED_SaveWithPolicyUniqueTimeSuffix) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   CreateConflictingFilenames(GetDownloadDir().AppendASCII("combobox_form.pdf"),
@@ -2303,8 +2281,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
   DownloadPrefs::FromBrowserContext(profile())
       ->SkipSanitizeDownloadTargetPathForTesting();
 
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   ClickLeftSideOfEditableComboBox(extension_host);
   TypeHello(extension_host);
@@ -2392,13 +2371,9 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
 // TODO(crbug.com/1520715): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        DISABLED_IndividualShiftRightArrowPresses) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   // Give the editable combo box focus.
   ClickLeftSideOfEditableComboBox(extension_host);
@@ -2420,13 +2395,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 // TODO(crbug.com/897801): test is flaky.
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        DISABLED_IndividualShiftLeftArrowPresses) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   // Give the editable combo box focus.
   ClickLeftSideOfEditableComboBox(extension_host);
@@ -2455,13 +2426,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 // Flaky, https://crbug.com/1121446, https://crbug.com/1520715
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        DISABLED_CombinedShiftRightArrowPresses) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   // Give the editable combo box focus.
   ClickLeftSideOfEditableComboBox(extension_host);
@@ -2489,13 +2456,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 // Flaky on multiple platforms (https://crbug.com/1121446)
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        DISABLED_CombinedShiftArrowPresses) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadTestComboBoxPdfGetMimeHandlerView();
-  content::RenderFrameHost* extension_host = guest->GetGuestMainFrame();
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
+  ASSERT_TRUE(extension_host);
 
   // Give the editable combo box focus.
   ClickLeftSideOfEditableComboBox(extension_host);
