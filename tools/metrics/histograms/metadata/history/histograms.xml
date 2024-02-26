@@ -127,7 +127,10 @@ chromium-metrics-reviews@google.com.
     <variant name="CdmLicenses" summary="CdmLicenses"/>
     <variant name="CompromisedCredentials" summary="CompromisedCredentials"/>
     <variant name="Cookies" summary="Cookies"/>
-    <variant name="DisableAutoSignin" summary="DisableAutoSignin"/>
+    <variant name="DisableAutoSigninForAccountPasswords"
+        summary="DisableAutoSigninForAccountPasswords"/>
+    <variant name="DisableAutoSigninForProfilePasswords"
+        summary="DisableAutoSigninForProfilePasswords"/>
     <variant name="DomainReliability" summary="DomainReliability"/>
     <variant name="ExploreSites" summary="ExploreSites"/>
     <variant name="FaviconCacheExpiration" summary="FaviconCacheExpiration"/>

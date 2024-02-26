@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="kCookies"/>
   <int value="15" label="kPasswords"/>
   <int value="16" label="kHttpAuthCache"/>
-  <int value="17" label="kDisableAutoSignin"/>
+  <int value="17" label="kDisableAutoSigninForProfilePasswords"/>
   <int value="18" label="kPasswordsStatistics"/>
   <int value="19" label="kKeywordsModel"/>
   <int value="20" label="kReportingCache"/>
@@ -105,6 +105,7 @@ chromium-metrics-reviews@google.com.
   <int value="43" label="kWebAuthnCredentials"/>
   <int value="44" label="kWebrtcVideoPerfHistory"/>
   <int value="45" label="kMediaDeviceSalts"/>
+  <int value="46" label="kDisableAutoSigninForAccountPasswords"/>
 </enum>
 
 <enum name="ClearBrowsingDataTab">

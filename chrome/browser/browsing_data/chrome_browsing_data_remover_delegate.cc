@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -968,18 +969,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
   }
 
-  if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) {
-    password_manager::PasswordStoreInterface* password_store =
-        ProfilePasswordStoreFactory::GetForProfile(
-            profile_, ServiceAccessType::EXPLICIT_ACCESS)
-            .get();
-
-    if (password_store &&
-        !filter_builder->IsCrossSiteClearSiteDataForCookies()) {
-      password_store->DisableAutoSignInForOrigins(
-          filter,
-          CreateTaskCompletionClosure(TracingDataType::kDisableAutoSignin));
-    }
+  CHECK(deferred_disable_passwords_auto_signin_cb_.is_null(),
+        base::NotFatalUntil::M125);
+  if ((remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) &&
+      !filter_builder->IsCrossSiteClearSiteDataForCookies()) {
+    // Unretained() is safe, this is only executed in OnTasksComplete() if the
+    // object is still alive. Also, see the field docs for motivation.
+    deferred_disable_passwords_auto_signin_cb_ = base::BindOnce(
+        &ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin,
+        base::Unretained(this), filter);
   }
 
   if (remove_mask & constants::DATA_TYPE_HISTORY) {
@@ -1413,6 +1411,15 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   if (!pending_sub_tasks_.empty())
     return;
 
+  if (deferred_disable_passwords_auto_signin_cb_) {
+    std::move(deferred_disable_passwords_auto_signin_cb_).Run();
+
+    // Might have added new tasks.
+    if (!pending_sub_tasks_.empty()) {
+      return;
+    }
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   // Explicitly clear any per account sync settings when cookies are being
   // cleared. This needs to happen after the corresponding data has been
@@ -1472,8 +1479,10 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "Passwords";
     case TracingDataType::kHttpAuthCache:
       return "HttpAuthCache";
-    case TracingDataType::kDisableAutoSignin:
-      return "DisableAutoSignin";
+    case TracingDataType::kDisableAutoSigninForProfilePasswords:
+      return "DisableAutoSigninForProfilePasswords";
+    case TracingDataType::kDisableAutoSigninForAccountPasswords:
+      return "DisableAutoSigninForAccountPasswords";
     case TracingDataType::kPasswordsStatistics:
       return "PasswordsStatistics";
     case TracingDataType::kKeywordsModel:
@@ -1540,9 +1549,11 @@ void ChromeBrowsingDataRemoverDelegate::OnDoneRemoving() {
 base::OnceClosure
 ChromeBrowsingDataRemoverDelegate::CreateTaskCompletionClosure(
     TracingDataType data_type) {
-  return base::BindOnce(
-      CreateTaskCompletionCallback(data_type, /*data_type_mask=*/0),
-      /*success=*/true);
+  OnTaskStarted(data_type);
+  return base::BindOnce(&ChromeBrowsingDataRemoverDelegate::OnTaskComplete,
+                        weak_ptr_factory_.GetWeakPtr(), data_type,
+                        /*data_type_mask=*/0, base::TimeTicks::Now(),
+                        /*success=*/true);
 }
 
 base::OnceCallback<void(bool)>
@@ -1616,4 +1627,30 @@ ChromeBrowsingDataRemoverDelegate::MakeCredentialStore() {
 #else
       nullptr;
 #endif
+}
+
+void ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin(
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter) {
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface> account_store =
+      AccountPasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (profile_store) {
+    profile_store->DisableAutoSignInForOrigins(
+        url_filter,
+        CreateTaskCompletionClosure(
+            TracingDataType::kDisableAutoSigninForProfilePasswords));
+  }
+  if (account_store &&
+      password_manager::features_util::IsOptedInForAccountStorage(
+          profile_->GetPrefs(), sync_service)) {
+    account_store->DisableAutoSignInForOrigins(
+        url_filter,
+        CreateTaskCompletionClosure(
+            TracingDataType::kDisableAutoSigninForAccountPasswords));
+  }
 }
