@@ -28,6 +28,10 @@ namespace {
 // watcher.
 constexpr base::TimeDelta kFileManagerWatcherInterval = base::Seconds(15);
 
+// TODO(b/317137739): Remove this once a proper API call is introduced.
+// Temp custom action to request ODFS sync with the cloud.
+constexpr char kODFSSyncWithCloudAction[] = "HIDDEN_SYNC_WITH_CLOUD";
+
 const GURL GetContentCacheURL() {
   return GURL("chrome://content-cache/");
 }
@@ -366,7 +370,12 @@ const std::string CloudFileSystem::GetFileSystemId() const {
 
 void CloudFileSystem::OnTimer() {
   VLOG(2) << "OnTimer";
-  // TODO(b/317137739): Sync with the cloud.
+  // TODO(b/317137739): Replace this with a proper API call once one is
+  // introduced.
+  // Request that the file system syncs with the Cloud. The entry path is
+  // insignficant, just pass it root.
+  ExecuteAction({base::FilePath("/")}, kODFSSyncWithCloudAction,
+                base::DoNothing());
 }
 
 }  // namespace ash::file_system_provider
