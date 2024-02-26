@@ -48,10 +48,6 @@
 
 namespace blink {
 
-bool DecodingEnabled() {
-  return base::FeatureList::IsEnabled(features::kDecodeScriptSourceOffThread);
-}
-
 // ScriptDecoder decodes and hashes the script source on a worker thread, and
 // then forwards the data to the client on the loader thread.
 class ResourceScriptStreamer::ScriptDecoder {
@@ -59,14 +55,11 @@ class ResourceScriptStreamer::ScriptDecoder {
   ScriptDecoder(ResponseBodyLoaderClient* response_body_loader_client,
                 std::unique_ptr<TextResourceDecoder> decoder,
                 scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner)
-      : decoding_enabled_(DecodingEnabled()),
-        decoder_(std::move(decoder)),
+      : decoder_(std::move(decoder)),
         response_body_loader_client_(response_body_loader_client),
         loading_task_runner_(std::move(loading_task_runner)),
-        decoding_task_runner_(decoding_enabled_
-                                  ? worker_pool::CreateSequencedTaskRunner(
-                                        {base::TaskPriority::USER_BLOCKING})
-                                  : nullptr) {}
+        decoding_task_runner_(worker_pool::CreateSequencedTaskRunner(
+            {base::TaskPriority::USER_BLOCKING})) {}
 
   void DidReceiveData(std::unique_ptr<char[]> data,
                       size_t data_size,
@@ -80,8 +73,7 @@ class ResourceScriptStreamer::ScriptDecoder {
       return;
     }
 
-    if (decoding_enabled_)
-      AppendData(decoder_->Decode(data.get(), data_size));
+    AppendData(decoder_->Decode(data.get(), data_size));
 
     if (send_to_client) {
       RunOrPostToLoadingThread(FROM_HERE,
@@ -101,22 +93,18 @@ class ResourceScriptStreamer::ScriptDecoder {
       return;
     }
 
-    if (decoding_enabled_) {
-      AppendData(decoder_->Flush());
+    AppendData(decoder_->Flush());
 
-      DigestValue digest_value;
-      digestor_.Finish(digest_value);
+    DigestValue digest_value;
+    digestor_.Finish(digest_value);
 
-      RunOrPostToLoadingThread(
-          FROM_HERE,
-          CrossThreadBindOnce(
-              NotifyClientDidFinishLoading, response_body_loader_client_,
-              builder_.ReleaseString(),
-              std::make_unique<ParkableStringImpl::SecureDigest>(digest_value),
-              std::move(main_thread_continuation)));
-    } else {
-      RunOrPostToLoadingThread(FROM_HERE, std::move(main_thread_continuation));
-    }
+    RunOrPostToLoadingThread(
+        FROM_HERE,
+        CrossThreadBindOnce(
+            NotifyClientDidFinishLoading, response_body_loader_client_,
+            builder_.ReleaseString(),
+            std::make_unique<ParkableStringImpl::SecureDigest>(digest_value),
+            std::move(main_thread_continuation)));
   }
 
   void Delete() const {
@@ -174,7 +162,6 @@ class ResourceScriptStreamer::ScriptDecoder {
     std::move(main_thread_continuation).Run();
   }
 
-  const bool decoding_enabled_;
   StringBuilder builder_;
   std::unique_ptr<TextResourceDecoder> decoder_;
   Digestor digestor_{kHashAlgorithmSha256};
@@ -1000,12 +987,11 @@ void ResourceScriptStreamer::OnDataPipeReadable(
 
   response_body_loader_client_->DidReceiveData(
       base::make_span(static_cast<const char*>(data), data_size));
-  if (DecodingEnabled()) {
-    auto copy_for_decoding = std::make_unique<char[]>(data_size);
-    memcpy(copy_for_decoding.get(), data, data_size);
-    script_decoder_->DidReceiveData(std::move(copy_for_decoding), data_size,
-                                    false);
-  }
+
+  auto copy_for_decoding = std::make_unique<char[]>(data_size);
+  memcpy(copy_for_decoding.get(), data, data_size);
+  script_decoder_->DidReceiveData(std::move(copy_for_decoding), data_size,
+                                  false);
 
   MojoResult end_read_result = data_pipe_->EndReadData(data_size);
 

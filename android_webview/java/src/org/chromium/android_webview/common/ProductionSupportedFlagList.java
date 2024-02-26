@@ -427,10 +427,6 @@ public final class ProductionSupportedFlagList {
                 "Enables establishing the GPU channel asnchronously when requesting a new "
                         + "layer tree frame sink."),
         Flag.baseFeature(
-                BlinkFeatures.DECODE_SCRIPT_SOURCE_OFF_THREAD,
-                "If enabled, script source text will be decoded and hashed off the main"
-                        + "thread."),
-        Flag.baseFeature(
                 BaseFeatures.OPTIMIZE_DATA_URLS, "Optimizes parsing and loading of data: URLs."),
         Flag.baseFeature(
                 BlinkFeatures.PREFETCH_FONT_LOOKUP_TABLES,

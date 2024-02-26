@@ -306,10 +306,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCreateImageBitmapOrientationNone);
 // executed.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDOMContentLoadedWaitForAsyncScript);
 
-// If enabled, script source text will be decoded and hashed off the main
-// thread.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDecodeScriptSourceOffThread);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDefaultViewportIsDeviceWidth);
 
 // If enabled, async script execution will be delayed than usual.

@@ -433,8 +433,6 @@ void ScriptResource::NotifyFinished() {
   CheckStreamingState();
 
   if (!source_text_.IsNull() && Data()) {
-    DCHECK(
-        base::FeatureList::IsEnabled(features::kDecodeScriptSourceOffThread));
     // Wait to call ClearData() here instead of in DidReceiveDecodedData() since
     // the integrity check requires Data() to not be null.
     ClearData();
