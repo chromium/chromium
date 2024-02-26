@@ -330,20 +330,20 @@ The test verifies functionality of querying style information for view-transitio
                                         value : matrix(1, 0, 0, 1, 0, 0)
                                     }
                                     [3] : {
+                                        name : color-scheme
+                                        value : normal
+                                    }
+                                    [4] : {
                                         name : text-orientation
                                         value : mixed
                                     }
-                                    [4] : {
+                                    [5] : {
                                         name : writing-mode
                                         value : horizontal-tb
                                     }
-                                    [5] : {
+                                    [6] : {
                                         name : backdrop-filter
                                         value : none
-                                    }
-                                    [6] : {
-                                        name : color-scheme
-                                        value : normal
                                     }
                                     [7] : {
                                         name : mix-blend-mode
@@ -564,20 +564,20 @@ The test verifies functionality of querying style information for view-transitio
                                         value : matrix(1, 0, 0, 1, 8, 8)
                                     }
                                     [3] : {
+                                        name : color-scheme
+                                        value : normal
+                                    }
+                                    [4] : {
                                         name : text-orientation
                                         value : mixed
                                     }
-                                    [4] : {
+                                    [5] : {
                                         name : writing-mode
                                         value : horizontal-tb
                                     }
-                                    [5] : {
+                                    [6] : {
                                         name : backdrop-filter
                                         value : none
-                                    }
-                                    [6] : {
-                                        name : color-scheme
-                                        value : normal
                                     }
                                     [7] : {
                                         name : mix-blend-mode
@@ -2241,20 +2241,20 @@ Dumping styles for : ::view-transition-group with id root{
                                 value : matrix(1, 0, 0, 1, 0, 0)
                             }
                             [3] : {
+                                name : color-scheme
+                                value : normal
+                            }
+                            [4] : {
                                 name : text-orientation
                                 value : mixed
                             }
-                            [4] : {
+                            [5] : {
                                 name : writing-mode
                                 value : horizontal-tb
                             }
-                            [5] : {
+                            [6] : {
                                 name : backdrop-filter
                                 value : none
-                            }
-                            [6] : {
-                                name : color-scheme
-                                value : normal
                             }
                             [7] : {
                                 name : mix-blend-mode
@@ -3296,20 +3296,20 @@ Dumping styles for : ::view-transition-group with id shared{
                                 value : matrix(1, 0, 0, 1, 8, 8)
                             }
                             [3] : {
+                                name : color-scheme
+                                value : normal
+                            }
+                            [4] : {
                                 name : text-orientation
                                 value : mixed
                             }
-                            [4] : {
+                            [5] : {
                                 name : writing-mode
                                 value : horizontal-tb
                             }
-                            [5] : {
+                            [6] : {
                                 name : backdrop-filter
                                 value : none
-                            }
-                            [6] : {
-                                name : color-scheme
-                                value : normal
                             }
                             [7] : {
                                 name : mix-blend-mode

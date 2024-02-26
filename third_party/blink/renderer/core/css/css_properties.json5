@@ -1529,7 +1529,9 @@
       inherited: true,
       runtime_flag: "ForcedColors",
       field_template: "keyword",
-      priority: 1,
+      // Affects the computed value of color when it is inherited and
+      // forced-color- adjust is set to preserve-parent-color.
+      priority: 2,
       keywords: ["auto", "none", "preserve-parent-color"],
       typedom_types: ["Keyword"],
       default_value: "auto",
@@ -1564,6 +1566,9 @@
       style_builder_custom_functions: ["value"],
       type_name: "short",
       typedom_types: ["Number"],
+      // Affects the computed value of 'font-size', hence needs to happen before
+      // high-priority properties.
+      priority: 2,
     },
     {
       name: "text-orientation",
@@ -2576,6 +2581,9 @@
       field_template: "external",
       valid_for_highlight_legacy: true,
       computable: false,
+      // Affects the computed value of 'color', hence needs to happen before
+      // high-priority properties.
+      priority: 2,
     },
     {
       name: "column-fill",
@@ -5916,6 +5924,9 @@
         fill_type_getter: "GetImage"
       },
       runtime_flag: "CSSMaskingInterop",
+      // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
+      // otherwise {-webkit-}mask-composite has no effect.
+      priority: 2,
     },
     {
       name: "-webkit-alternative-mask-image",
@@ -5932,6 +5943,9 @@
         fill_type: "Image",
         fill_type_getter: "GetImage"
       },
+      // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
+      // otherwise {-webkit-}mask-composite has no effect.
+      priority: 2,
     },
     {
       name: "mask-origin",

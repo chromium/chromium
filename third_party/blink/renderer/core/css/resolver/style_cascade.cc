@@ -202,37 +202,8 @@ void StyleCascade::Apply(CascadeFilter filter) {
 
   ApplyCascadeAffecting(resolver);
 
-  if (map_.NativeBitset().Has(CSSPropertyID::kColorScheme)) {
-    // Affects the computed value of 'color', hence needs to happen before
-    // high-priority properties.
-    LookupAndApply(GetCSSPropertyColorScheme(), resolver);
-  }
-
-  if (map_.NativeBitset().Has(CSSPropertyID::kMathDepth)) {
-    // Affects the computed value of 'font-size', hence needs to happen before
-    // high-priority properties.
-    LookupAndApply(GetCSSPropertyMathDepth(), resolver);
-  }
-
-  if (map_.NativeBitset().Has(CSSPropertyID::kMaskImage)) {
-    // mask-image needs to be applied before {-webkit-}mask-composite,
-    // otherwise {-webkit-}mask-composite has no effect.
-    LookupAndApply(GetCSSPropertyMaskImage(), resolver);
-  }
-
-  if (map_.NativeBitset().Has(CSSPropertyID::kWebkitMaskImage)) {
-    // -webkit-mask-image needs to be applied before -webkit-mask-composite,
-    // otherwise -webkit-mask-composite has no effect.
-    LookupAndApply(GetCSSPropertyWebkitMaskImage(), resolver);
-  }
-
-  if (map_.NativeBitset().Has(CSSPropertyID::kForcedColorAdjust)) {
-    // Affects the computed value of color when it is inherited and
-    // forced-color- adjust is set to preserve-parent-color.
-    LookupAndApply(GetCSSPropertyForcedColorAdjust(), resolver);
-  }
-
   ApplyHighPriority(resolver);
+  state_.UpdateFont();
 
   if (map_.NativeBitset().Has(CSSPropertyID::kLineHeight)) {
     LookupAndApply(GetCSSPropertyLineHeight(), resolver);
@@ -524,8 +495,6 @@ void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
     bits &= bits - 1;  // Clear the lowest bit.
     LookupAndApply(CSSProperty::Get(ConvertToCSSPropertyID(i)), resolver);
   }
-
-  state_.UpdateFont();
 }
 
 void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {

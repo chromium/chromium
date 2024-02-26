@@ -67,12 +67,12 @@ static_assert((static_cast<size_t>(1) << kCSSPropertyIDBitLength) >
                   static_cast<size_t>(kLastUnresolvedCSSProperty),
               "kCSSPropertyIDBitLength has enough bits");
 
-static_assert(CSSPropertyID::kColor == kFirstHighPriorityCSSProperty,
-              "CSSPropertyID::kColor is the first high-priority property");
-static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty,
-              "CSSPropertyID::kZoom is the last high-priority property");
+// These are basically just change-detector tests, so that we do not
+// accidentally add new high-priority properties or break the code generator.
+static_assert(CSSPropertyID::kColorScheme == kFirstHighPriorityCSSProperty);
+static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty);
 static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
-               static_cast<int>(kFirstHighPriorityCSSProperty)) == 33,
+               static_cast<int>(kFirstHighPriorityCSSProperty)) == 37,
               "There should a low number of high-priority properties");
 
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {
