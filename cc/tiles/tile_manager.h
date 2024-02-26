@@ -159,6 +159,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
               base::SequencedTaskRunner* origin_task_runner,
               scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
               size_t scheduled_raster_task_limit,
+              bool running_on_renderer_process,
               const TileManagerSettings& tile_manager_settings);
 
   TileManager(const TileManager&) = delete;
@@ -477,6 +478,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   raw_ptr<RasterBufferProvider, DanglingUntriaged> raster_buffer_provider_;
   GlobalStateThatImpactsTilePriority global_state_;
   size_t scheduled_raster_task_limit_;
+  const bool running_on_renderer_process_;
 
   const TileManagerSettings tile_manager_settings_;
   bool use_gpu_rasterization_;

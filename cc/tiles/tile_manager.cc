@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -407,12 +408,14 @@ TileManager::TileManager(
     base::SequencedTaskRunner* origin_task_runner,
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
     size_t scheduled_raster_task_limit,
+    bool running_on_renderer_process,
     const TileManagerSettings& tile_manager_settings)
     : client_(client),
       task_runner_(origin_task_runner),
       resource_pool_(nullptr),
       tile_task_manager_(nullptr),
       scheduled_raster_task_limit_(scheduled_raster_task_limit),
+      running_on_renderer_process_(running_on_renderer_process),
       tile_manager_settings_(tile_manager_settings),
       use_gpu_rasterization_(false),
       all_tiles_that_need_to_be_rasterized_are_scheduled_(true),
@@ -1060,11 +1063,15 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
   // Since this is recorded once per frame, subsample these metrics.
   if (metrics_sub_sampler_.ShouldSample(0.01)) {
-    UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory",
-                          had_enough_memory_to_schedule_tiles_needed_now);
+    std::string process_type =
+        running_on_renderer_process_ ? "Renderer" : "Browser";
+    UMA_HISTOGRAM_BOOLEAN(
+        base::StrCat({"Compositing.TileManager.EnoughMemory.", process_type}),
+        had_enough_memory_to_schedule_tiles_needed_now);
     if (did_oom_on_last_assign_) {
       UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
-          "Compositing.TileManager.LimitWhenNotEnoughMemory",
+          base::StrCat({"Compositing.TileManager.LimitWhenNotEnoughMemory.",
+                        process_type}),
           hard_memory_limit.memory_bytes() / (1024 * 1024));
     }
   }

@@ -421,6 +421,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                     is_synchronous_single_threaded_
                         ? std::numeric_limits<size_t>::max()
                         : settings.scheduled_raster_task_limit,
+                    RunningOnRendererProcess(),
                     settings.ToTileManagerSettings()),
       memory_history_(MemoryHistory::Create()),
       debug_rect_history_(DebugRectHistory::Create()),
@@ -1564,7 +1565,7 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   if (!downsample_metrics_ ||
       metrics_subsampler_.ShouldSample(kSamplingFrequency)) {
     // These metrics are only for the renderer process.
-    if (!settings().single_thread_proxy_scheduler) {
+    if (RunningOnRendererProcess()) {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Compositing.Renderer.NumActiveLayers",
           base::saturated_cast<int>(active_tree_->NumLayers()), 1, 1000, 20);
@@ -5297,6 +5298,13 @@ void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
   // to the given `frame_token`.
   presentation_time_callbacks_.RegisterCompositorThreadSuccessfulCallbacks(
       frame_token, std::move(callbacks));
+}
+
+bool LayerTreeHostImpl::RunningOnRendererProcess() const {
+  // The browser process uses |SingleThreadProxy| whereas the renderers use
+  // |ProxyMain|. This is more of an implementation detail, but we can use
+  // that here to determine the process type.
+  return !settings().single_thread_proxy_scheduler;
 }
 
 }  // namespace cc

@@ -1057,6 +1057,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Flush pending work if we are currently not visible.
   void MaybeFlushPendingWork();
 
+  // Returns whether the LayerTreeHostImpl is running on a renderer process.
+  bool RunningOnRendererProcess() const;
+
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;

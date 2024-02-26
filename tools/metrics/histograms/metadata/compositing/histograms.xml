@@ -61,6 +61,11 @@ chromium-metrics-reviews@google.com.
   <variant name="MainThread."/>
 </variants>
 
+<variants name="TileManagerProcessType">
+  <variant name="Browser"/>
+  <variant name="Renderer"/>
+</variants>
+
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2024-06-30">
   <owner>pdr@chromium.org</owner>
@@ -858,24 +863,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.TileManager.EnoughMemory" enum="Boolean"
-    expires_after="2024-06-30">
+<histogram name="Compositing.TileManager.EnoughMemory.{ProcessType}"
+    enum="Boolean" expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>
     When memory is assigned to tiles, whether there was enough memory for all
     required tiles.
   </summary>
+  <token key="ProcessType" variants="TileManagerProcessType"/>
 </histogram>
 
-<histogram name="Compositing.TileManager.LimitWhenNotEnoughMemory" units="MB"
-    expires_after="2024-06-30">
+<histogram
+    name="Compositing.TileManager.LimitWhenNotEnoughMemory.{ProcessType}"
+    units="MB" expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>
     When memory is assigned to tiles and there is not enough memory, the memory
-    limit that the tile assignment was breaching..
+    limit that the tile assignment was breaching.
   </summary>
+  <token key="ProcessType" variants="TileManagerProcessType"/>
 </histogram>
 
 <histogram
