@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_SERVICE_H_
 #define COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_SERVICE_H_
 
-#include <memory>
-
 #include "base/files/file_path.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -26,12 +24,9 @@ class HistoryEmbeddingsService : public KeyedService {
   void Shutdown() override;
 
  private:
-  // All storage tasks are posted to this to avoid blocking the main thread.
-  scoped_refptr<base::SequencedTaskRunner> storage_task_runner_;
-
-  // Created on this main thread, but afterwards lives and is destroyed on the
-  // `storage_task_runner_` sequence.
-  std::unique_ptr<SqlDatabase> database_;
+  // The underlying SQL database, bound to a separate storage sequence.
+  // This will be null if the feature flag is disabled.
+  base::SequenceBound<SqlDatabase> database_;
 };
 
 }  // namespace history_embeddings
