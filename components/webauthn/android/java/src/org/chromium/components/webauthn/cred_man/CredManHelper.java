@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn.cred_man;
 
+import static org.chromium.components.webauthn.WebauthnModeProvider.isChrome;
+
 import android.content.Context;
 import android.credentials.CreateCredentialException;
 import android.credentials.CreateCredentialRequest;
@@ -481,7 +483,7 @@ public class CredManHelper {
                         originString,
                         maybeClientDataHash,
                         mRequestPasswords,
-                        /* preferImmediatelyAvailable= */ !options.isConditional,
+                        shouldPreferImmediatelyAvailable(options),
                         ignoreGpm);
         if (getCredentialRequest == null) {
             mMetricsHelper.reportGetCredentialMetrics(
@@ -526,6 +528,16 @@ public class CredManHelper {
 
     void setRequestPasswords(boolean requestPasswords) {
         mRequestPasswords = requestPasswords;
+    }
+
+    boolean shouldPreferImmediatelyAvailable(PublicKeyCredentialRequestOptions options) {
+        // Chrome renders its own UI when there are no credentials when using CredMan. However, this
+        // is not true for WebView - there are no other UIs. Thus WebView never asks CredMan to skip
+        // its UI.
+        if (isChrome(mAuthenticationContextProvider.getWebContents())) {
+            return !options.isConditional;
+        }
+        return false;
     }
 
     private byte[] buildClientDataJsonAndComputeHash(

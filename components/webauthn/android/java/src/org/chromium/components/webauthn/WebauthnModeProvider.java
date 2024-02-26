@@ -73,7 +73,7 @@ public class WebauthnModeProvider {
         WebauthnModeProviderJni.get().setWebauthnModeForWebContents(webContents, mode);
     }
 
-    static boolean isChrome(WebContents webContents) {
+    public static boolean isChrome(WebContents webContents) {
         return getInstance().getWebauthnMode(webContents) == WebauthnMode.CHROME;
     }
 
