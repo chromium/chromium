@@ -934,9 +934,43 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return view_is_frame_sink_id_owner_;
   }
 
-  base::TimeTicks create_frame_sink_timestamp() const {
-    return create_frame_sink_timestamp_;
+  // Helper class to log navigation-related compositor metrics. Keeps track of
+  // the timestamp when navigation commit/RFH swap/frame sink request happened
+  // for the first navigation that uses this RenderWidgetHost.
+  class CompositorMetricRecorder {
+   public:
+    CompositorMetricRecorder(RenderWidgetHostImpl* owner);
+    ~CompositorMetricRecorder() = default;
+
+    // The functions below are called when the first navigation that uses this
+    // RenderWidgetHost commits/swaps in the RenderFrameHost/requested frame
+    // sink creation respectively.
+    void DidStartNavigationCommit();
+    void DidSwap();
+    void DidRequestFrameSink();
+
+   private:
+    void TryToRecordMetrics();
+
+    // The timestamp of the last call to
+    // `MaybeDispatchBufferedFrameSinkRequest()` where we run
+    // `create_frame_sink_callback_`.
+    base::TimeTicks create_frame_sink_timestamp_;
+    // The timestamp of when the navigation that created this RenderWidgetHost
+    // committed/swapped in the RenderFrameHost.
+    base::TimeTicks commit_nav_timestamp_;
+    base::TimeTicks swap_rfh_timestamp_;
+
+    const raw_ptr<RenderWidgetHostImpl> owner_;
+  };
+
+  CompositorMetricRecorder* compositor_metric_recorder() const {
+    return compositor_metric_recorder_.get();
   }
+
+  // Disables recording metrics through CompositorMetricRecorder by resetting
+  // the owned `compositor_metric_recorder_`.
+  void DisableCompositorMetricRecording();
 
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
@@ -1543,9 +1577,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // FrameSinkId.
   bool view_is_frame_sink_id_owner_{false};
 
-  // The timestamp of the last call to `MaybeDispatchBufferedFrameSinkRequest()`
-  // where we run `create_frame_sink_callback_`.
-  base::TimeTicks create_frame_sink_timestamp_;
+  std::unique_ptr<CompositorMetricRecorder> compositor_metric_recorder_;
 
   // The View associated with the RenderWidgetHost. The lifetime of this object
   // is associated with the lifetime of the Render process. If the Renderer
