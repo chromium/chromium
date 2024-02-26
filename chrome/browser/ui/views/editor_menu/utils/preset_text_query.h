@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,8 @@
 #include <string>
 #include <vector>
 
-namespace gfx {
-struct VectorIcon;
-}
-
 namespace chromeos::editor_menu {
 
-// Categories of preset text prompts to be shown on editor menu chips.
 enum class PresetQueryCategory {
   kUnknown = 0,
   kShorten,
@@ -35,9 +30,6 @@ struct PresetTextQuery {
 };
 
 using PresetTextQueries = std::vector<PresetTextQuery>;
-
-const gfx::VectorIcon& GetIconForPresetQueryCategory(
-    PresetQueryCategory category);
 
 }  // namespace chromeos::editor_menu
 
