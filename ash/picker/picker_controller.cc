@@ -18,6 +18,7 @@
 #include "ash/picker/picker_asset_fetcher_impl.h"
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
+#include "ash/picker/picker_rich_media.h"
 #include "ash/picker/picker_search_controller.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_view.h"
@@ -113,30 +114,28 @@ gfx::Rect GetFocusedWindowBounds() {
              : gfx::Rect();
 }
 
-std::optional<PickerInsertMediaRequest::MediaData> ResultToInsertMediaData(
+std::optional<PickerRichMedia> ResultToInsertMediaData(
     const PickerSearchResult& result) {
-  using ReturnType = std::optional<PickerInsertMediaRequest::MediaData>;
+  using ReturnType = std::optional<PickerRichMedia>;
   return std::visit(
       base::Overloaded{
           [](const PickerSearchResult::TextData& data) -> ReturnType {
-            return PickerInsertMediaRequest::MediaData::Text(data.text);
+            return PickerTextMedia(data.text);
           },
           [](const PickerSearchResult::EmojiData& data) -> ReturnType {
-            return PickerInsertMediaRequest::MediaData::Text(data.emoji);
+            return PickerTextMedia(data.emoji);
           },
           [](const PickerSearchResult::SymbolData& data) -> ReturnType {
-            return PickerInsertMediaRequest::MediaData::Text(data.symbol);
+            return PickerTextMedia(data.symbol);
           },
           [](const PickerSearchResult::EmoticonData& data) -> ReturnType {
-            return PickerInsertMediaRequest::MediaData::Text(data.emoticon);
+            return PickerTextMedia(data.emoticon);
           },
           [](const PickerSearchResult::GifData& data) -> ReturnType {
-            return PickerInsertMediaRequest::MediaData::Image(data.url);
+            return PickerImageMedia(data.url);
           },
           [](const PickerSearchResult::BrowsingHistoryData& data)
-              -> ReturnType {
-            return PickerInsertMediaRequest::MediaData::Link(data.url);
-          },
+              -> ReturnType { return PickerLinkMedia(data.url); },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
             return std::nullopt;
           },
@@ -269,7 +268,7 @@ void PickerController::InsertResultOnNextFocus(
     return;
   }
 
-  std::optional<PickerInsertMediaRequest::MediaData> media_to_insert =
+  std::optional<PickerRichMedia> media_to_insert =
       ResultToInsertMediaData(result);
   CHECK(media_to_insert.has_value());
 
