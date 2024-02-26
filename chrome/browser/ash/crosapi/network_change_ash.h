@@ -25,6 +25,7 @@ class NetworkChangeAsh : public mojom::NetworkChange {
   // crosapi::mojom::NetworkChange:
   void AddObserver(mojo::PendingRemote<crosapi::mojom::NetworkChangeObserver>
                        observer) override;
+  void RequestPortalDetection() override;
 
  private:
   // This class supports any number of connections.
