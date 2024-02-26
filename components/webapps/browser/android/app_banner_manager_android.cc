@@ -141,6 +141,11 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
     const JavaParamRef<jstring>& japp_title,
     const JavaParamRef<jstring>& japp_package,
     const JavaParamRef<jstring>& jicon_url) {
+  // If the state isn't fetching native data, that means the page must have
+  // navigated or reset in some way.
+  if (state_ != State::FETCHING_NATIVE_DATA) {
+    return false;
+  }
   UpdateState(State::ACTIVE);
   native_java_app_data_.Reset(japp_data);
   native_app_title_ = ConvertJavaStringToUTF16(env, japp_title);
