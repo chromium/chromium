@@ -1238,17 +1238,14 @@ class MetaBuildWrapper:
     def _list(root, prefix, res):
       for k, v in root.items():
         if v == {}:
-          res.append('%s%s' % (prefix, k))
+          res.append('%s/%s' % (prefix, k))
           continue
-        _list(v, '%s%s' % (prefix, k), res)
+        _list(v, '%s/%s' % (prefix, k), res)
       return res
 
     root = {}
     for d in deps:
-      parts = [di + '/' for di in d.split('/') if di]
-      if not d.endswith('/'):
-        parts[-1] = parts[-1].rstrip('/')
-      q = collections.deque(parts)
+      q = collections.deque(d.rstrip('/').split('/'))
       _add(root, q)
     return [p.lstrip('/') for p in _list(root, '', [])]
 
@@ -1386,7 +1383,6 @@ class MetaBuildWrapper:
       # FIXME: Can remove this check if/when use_goma is removed.
       if 'The gn arg use_goma=true will be deprecated by EOY 2023' not in l:
         runtime_deps.append(l)
-    runtime_deps = self._DedupDependencies(runtime_deps)
 
     ret = self.WriteIsolateFiles(build_dir, command, target, runtime_deps, vals,
                                  extra_files)
@@ -1447,7 +1443,6 @@ class MetaBuildWrapper:
               'chromevox_test_data/',
               'gen/ui/file_manager/file_manager/',
               'lacros_clang_x64/resources/accessibility/',
-              'resources/accessibility/',
               'resources/chromeos/',
               'resources/chromeos/accessibility/accessibility_common/',
               'resources/chromeos/accessibility/chromevox/',
