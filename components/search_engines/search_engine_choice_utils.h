@@ -60,8 +60,10 @@ enum class SearchEngineChoiceScreenConditions {
   // The user has an unknown (which we assume is because it has been removed)
   // prepopulated search engine set as default.
   kHasRemovedPrepopulatedSearchEngine = 13,
+  // The user does not have Google as the default search engine.
+  kHasNonGoogleSearchEngine = 14,
 
-  kMaxValue = kHasRemovedPrepopulatedSearchEngine,
+  kMaxValue = kHasNonGoogleSearchEngine,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

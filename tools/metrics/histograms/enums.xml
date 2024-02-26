@@ -31145,6 +31145,7 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="Browser window is too small to fit the dialog"/>
   <int value="12" label="Has a distribution custom search engine as default"/>
   <int value="13" label="Has a removed prepopulated search engine as default"/>
+  <int value="14" label="Does not have Google as the default search engine"/>
 </enum>
 
 <enum name="SearchEngineChoiceScreenEvents">

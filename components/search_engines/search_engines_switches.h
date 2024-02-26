@@ -42,6 +42,10 @@ extern const base::FeatureParam<bool>
 // version 2.
 extern const base::FeatureParam<std::string>
     kSearchEngineChoiceTriggerRepromptParams;
+
+// Whether the search engine choice screen should be suppressed when the
+// default search engine is not Google.
+extern const base::FeatureParam<bool> kSearchEngineChoiceTriggerSkipFor3p;
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_

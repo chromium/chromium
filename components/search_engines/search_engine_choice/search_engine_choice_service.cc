@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -247,6 +248,13 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
   CHECK(default_search_engine);
+
+  if (switches::kSearchEngineChoiceTriggerSkipFor3p.Get()) {
+    if (default_search_engine->GetEngineType(
+            template_url_service.search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
+      return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
+    }
+  }
 
   if (!template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
           default_search_engine)) {
