@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "cc/base/synced_property.h"
 #include "cc/input/browser_controls_offset_manager.h"
@@ -899,7 +900,9 @@ class CC_EXPORT LayerTreeImpl {
   base::flat_set<viz::SurfaceRange> surface_layer_ranges_;
 
   // List of render surfaces for the most recently prepared frame.
-  RenderSurfaceList render_surface_list_;
+  //
+  // RAW_PTR_EXCLUSION: visible in stack samples when Renderer BRP is enabled.
+  RAW_PTR_EXCLUSION RenderSurfaceList render_surface_list_;
   // After drawing the |render_surface_list_| the areas in this region
   // would not be fully covered by opaque content.
   Region unoccluded_screen_space_region_;

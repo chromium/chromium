@@ -223,7 +223,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
     // stacks.
     RAW_PTR_EXCLUSION const RenderSurfaceList* render_surface_list = nullptr;
-    LayerImplList will_draw_layers;
+    RAW_PTR_EXCLUSION LayerImplList will_draw_layers;
     bool has_no_damage = false;
     bool may_contain_video = false;
     viz::BeginFrameAck begin_frame_ack;

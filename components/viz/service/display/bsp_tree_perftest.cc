@@ -10,6 +10,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
@@ -129,7 +130,8 @@ class BspTreePerfTest : public cc::LayerTreeTest {
   base::LapTimer timer_;
   std::string story_;
   std::string json_;
-  cc::LayerImplList base_list_;
+  // RAW_PTR_EXCLUSION: visible in stack samples when Renderer BRP is enabled.
+  RAW_PTR_EXCLUSION cc::LayerImplList base_list_;
   int num_duplicates_ = 1;
 };
 
