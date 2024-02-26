@@ -305,10 +305,7 @@ class PageInfo : private content_settings::CookieControlsObserver {
                            ShowInfoBarWhenBlockingThirdPartyCookies);
 
   // CookieControlsObserver:
-  // TODO(b/317975095): Remove `status` in favor of `control_visible` and
-  // `protections_on`.
-  void OnStatusChanged(CookieControlsStatus status,
-                       bool controls_visible,
+  void OnStatusChanged(bool controls_visible,
                        bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,

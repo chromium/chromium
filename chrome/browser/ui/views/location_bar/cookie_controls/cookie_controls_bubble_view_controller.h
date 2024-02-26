@@ -14,7 +14,6 @@
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/favicon_base/favicon_types.h"
 #include "url/gurl.h"
 
@@ -33,10 +32,7 @@ class CookieControlsBubbleViewController
       content_settings::CookieControlsController* controller);
 
   // CookieControlsObserver:
-  // TODO(b/317975095): Remove `status` in favor of `controls_visible` and
-  // `protections_on`.
-  void OnStatusChanged(CookieControlsStatus status,
-                       bool controls_visible,
+  void OnStatusChanged(bool controls_visible,
                        bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,

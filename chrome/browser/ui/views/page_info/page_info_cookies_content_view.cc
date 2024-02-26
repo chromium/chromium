@@ -11,7 +11,6 @@
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"

@@ -325,8 +325,7 @@ PageInfo::~PageInfo() {
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
 
-void PageInfo::OnStatusChanged(CookieControlsStatus status,
-                               bool controls_visible,
+void PageInfo::OnStatusChanged(bool controls_visible,
                                bool protections_on,
                                CookieControlsEnforcement enforcement,
                                CookieBlocking3pcdStatus blocking_status,

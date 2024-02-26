@@ -13,7 +13,6 @@
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // View for the cookie control icon in the Omnibox.  This is the new version of

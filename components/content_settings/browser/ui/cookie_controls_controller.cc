@@ -24,7 +24,6 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
@@ -140,9 +139,9 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
   int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
   for (auto& observer : observers_) {
-    observer.OnStatusChanged(status.status, status.controls_visible,
-                             status.protections_on, status.enforcement,
-                             status.blocking_status, status.expiration);
+    observer.OnStatusChanged(status.controls_visible, status.protections_on,
+                             status.enforcement, status.blocking_status,
+                             status.expiration);
     observer.OnSitesCountChanged(third_party_allowed_sites,
                                  third_party_blocked_sites);
     observer.OnCookieControlsIconStatusChanged(
@@ -157,22 +156,16 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
 CookieControlsController::Status CookieControlsController::GetStatus(
     content::WebContents* web_contents) {
   if (!cookie_settings_->ShouldBlockThirdPartyCookies()) {
-    return {CookieControlsStatus::kDisabled,
-            /*controls_visible=*/false,
-            /*protections_on=*/false,
-            CookieControlsEnforcement::kNoEnforcement,
-            CookieBlocking3pcdStatus::kNotIn3pcd,
-            base::Time()};
+    return {/*controls_visible=*/false,
+            /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+            CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
   }
   const GURL& url = web_contents->GetLastCommittedURL();
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(kExtensionScheme)) {
-    return {CookieControlsStatus::kDisabled,
-            /*controls_visible=*/false,
-            /*protections_on=*/false,
-            CookieControlsEnforcement::kNoEnforcement,
-            CookieBlocking3pcdStatus::kNotIn3pcd,
-            base::Time()};
+    return {/*controls_visible=*/false,
+            /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
+            CookieBlocking3pcdStatus::kNotIn3pcd, base::Time()};
   }
 
   SettingInfo info;
@@ -200,9 +193,6 @@ CookieControlsController::Status CookieControlsController::GetStatus(
         original_info.secondary_pattern != ContentSettingsPattern::Wildcard();
   }
 
-  CookieControlsStatus status = is_allowed
-                                    ? CookieControlsStatus::kDisabledForSite
-                                    : CookieControlsStatus::kEnabled;
   CookieBlocking3pcdStatus blocking_status =
       CookieBlocking3pcdStatus::kNotIn3pcd;
   if (tracking_protection_settings_ &&
@@ -213,10 +203,8 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             : CookieBlocking3pcdStatus::kLimited;
   }
   CookieControlsEnforcement enforcement;
-  bool controls_visible = true;
   if (info.source == SETTING_SOURCE_TPCD_GRANT &&
       blocking_status == CookieBlocking3pcdStatus::kLimited) {
-    controls_visible = false;
     enforcement = CookieControlsEnforcement::kEnforcedByTpcdGrant;
   } else if (info.source == SETTING_SOURCE_POLICY) {
     enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
@@ -230,11 +218,10 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   } else {
     enforcement = CookieControlsEnforcement::kNoEnforcement;
   }
-  return {status,
-          /*controls_visible=*/controls_visible,
-          /*protections_on=*/!is_allowed,
-          enforcement,
-          blocking_status,
+  return {// Hide controls if the exception is from a metadata grant.
+          /*controls_visible=*/enforcement !=
+              CookieControlsEnforcement::kEnforcedByTpcdGrant,
+          /*protections_on=*/!is_allowed, enforcement, blocking_status,
           info.metadata.expiration()};
 }
 
@@ -381,7 +368,7 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
   // exception, update the last visited time, otherwise clear it.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
   auto status = GetStatus(GetWebContents());
-  if (status.status == CookieControlsStatus::kDisabledForSite) {
+  if (status.controls_visible && !status.protections_on) {
     metadata.Set(kLastVisitedActiveException,
                  base::TimeToValue(base::Time::Now()));
   } else {

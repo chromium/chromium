@@ -17,7 +17,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -76,9 +75,6 @@ class CookieControlsController final
 
  private:
   struct Status {
-    // TODO(b/317975095): Remove `status` in favor of `control_visible` and
-    // `protections_on`.
-    CookieControlsStatus status;
     bool controls_visible;
     bool protections_on;
     CookieControlsEnforcement enforcement;
@@ -132,7 +128,6 @@ class CookieControlsController final
       bool block_third_party_cookies) override;
   void OnCookieSettingChanged() override;
 
-  // Determine the CookieControlsStatus based on |web_contents|.
   Status GetStatus(content::WebContents* web_contents);
 
   bool HasOriginSandboxedTopLevelDocument() const;

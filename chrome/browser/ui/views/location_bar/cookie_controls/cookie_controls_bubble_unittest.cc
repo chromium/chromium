@@ -195,9 +195,9 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
     auto expiration = days_to_expiration
                           ? base::Time::Now() + base::Days(days_to_expiration)
                           : base::Time();
-    view_controller()->OnStatusChanged(
-        CookieControlsStatus::kUninitialized, controls_visible_,
-        protections_on_, enforcement_, blocking_status_, expiration);
+    view_controller()->OnStatusChanged(controls_visible_, protections_on_,
+                                       enforcement_, blocking_status_,
+                                       expiration);
   }
 
  protected:

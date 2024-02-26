@@ -19,7 +19,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"

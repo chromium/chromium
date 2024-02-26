@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 
 namespace content_settings {
 
@@ -50,8 +49,7 @@ class CookieControlsBridge : public CookieControlsObserver {
   void OnEntryPointAnimated(JNIEnv* env);
 
   // CookieControlsObserver:
-  void OnStatusChanged(CookieControlsStatus status,
-                       bool controls_visible,
+  void OnStatusChanged(bool controls_visible,
                        bool protections_on,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,

@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 
 namespace content_settings {
 
@@ -20,10 +19,6 @@ class CookieControlsObserver : public base::CheckedObserver {
   // cookie  setting was changed. Also called as part of UI initialization to
   // trigger the update. Replaces previous `OnStatusChanged()` for the new UIs.
   virtual void OnStatusChanged(
-      // 3PC blocking status: whether 3PC allowed by default, blocked by default
-      // or allowed for the site only.
-      // TODO(b/317975095): Remove usage of `status`.
-      CookieControlsStatus status,
       // Whether Tracking Protection controls should be shown.
       bool controls_visible,
       // Whether protections (3PC blocking and ACT features) are on for the

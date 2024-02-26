@@ -30,7 +30,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"

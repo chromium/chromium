@@ -1563,7 +1563,6 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
   page_info()->OnStatusChanged(
-      CookieControlsStatus::kEnabled,
       /*controls_visible=*/true, /*protections_on=*/true,
       CookieControlsEnforcement::kNoEnforcement,
       CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
@@ -1587,7 +1586,6 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
 
   page_info()->OnStatusChanged(
-      CookieControlsStatus::kDisabledForSite,
       /*controls_visible=*/true, /*protections_on=*/false,
       CookieControlsEnforcement::kNoEnforcement,
       CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());

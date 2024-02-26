@@ -80,7 +80,6 @@ public class CookieControlsBridge {
 
     @CalledByNative
     private void onStatusChanged(
-            @CookieControlsStatus int status,
             boolean controlsVisible,
             boolean protectionsOn,
             @CookieControlsEnforcement int enforcement,

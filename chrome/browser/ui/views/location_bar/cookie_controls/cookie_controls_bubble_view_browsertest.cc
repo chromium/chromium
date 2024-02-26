@@ -154,7 +154,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   ShowBubble();
   views::test::WidgetDestroyedWaiter waiter(bubble_view()->GetWidget());
   view_controller()->OnStatusChanged(
-      CookieControlsStatus::kDisabled,
       /*controls_visible=*/false,
       /*protections_on=*/false, CookieControlsEnforcement::kNoEnforcement,
       CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());

@@ -56,7 +56,6 @@ void CookieControlsBridge::UpdateWebContents(
 }
 
 void CookieControlsBridge::OnStatusChanged(
-    CookieControlsStatus status,
     bool controls_visible,
     bool protections_on,
     CookieControlsEnforcement enforcement,
@@ -74,9 +73,9 @@ void CookieControlsBridge::OnStatusChanged(
   expiration_ = expiration;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CookieControlsBridge_onStatusChanged(
-      env, jobject_, static_cast<int>(status),
-      static_cast<bool>(controls_visible), static_cast<bool>(protections_on),
-      static_cast<int>(enforcement_), static_cast<int>(blocking_status),
+      env, jobject_, static_cast<bool>(controls_visible),
+      static_cast<bool>(protections_on), static_cast<int>(enforcement_),
+      static_cast<int>(blocking_status),
       expiration.InMillisecondsSinceUnixEpoch());
 }
 
