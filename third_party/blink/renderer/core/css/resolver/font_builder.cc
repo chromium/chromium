@@ -311,12 +311,6 @@ void FontBuilder::CheckForGenericFamilyChange(
     return;
   }
 
-  // For now, lump all families but monospace together.
-  if (new_description.GenericFamily() != FontDescription::kMonospaceFamily &&
-      parent_description.GenericFamily() != FontDescription::kMonospaceFamily) {
-    return;
-  }
-
   // We know the parent is monospace or the child is monospace, and that font
   // size was unspecified. We want to scale our font size as appropriate.
   // If the font uses a keyword size, then we refetch from the table rather than

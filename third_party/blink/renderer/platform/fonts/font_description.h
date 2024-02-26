@@ -244,8 +244,8 @@ class PLATFORM_EXPORT FontDescription {
   // only use fixed default size when there is only one font family, and that
   // family is "monospace"
   bool IsMonospace() const {
-    return GenericFamily() == kMonospaceFamily && !Family().Next() &&
-           Family().FamilyName() == font_family_names::kMonospace;
+    return Family().FamilyName() == font_family_names::kMonospace &&
+           Family().FamilyIsGeneric() && !Family().Next();
   }
   Kerning GetKerning() const { return static_cast<Kerning>(fields_.kerning_); }
   TextSpacingTrim GetTextSpacingTrim() const {
