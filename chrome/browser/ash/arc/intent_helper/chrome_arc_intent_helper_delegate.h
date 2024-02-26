@@ -27,6 +27,7 @@ class ChromeArcIntentHelperDelegate : public ArcIntentHelperBridge::Delegate {
 
  private:
   void UpdateLocationSettings(bool is_enabled);
+  void UpdateLocationAccuracySettings(bool is_enabled);
   bool IsInitialLocationSettingsSyncRequired();
 
   raw_ptr<Profile> profile_;

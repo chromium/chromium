@@ -291,6 +291,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncTimeZoneByGeolocation() const;
   void SyncUse24HourClock() const;
   void SyncUserGeolocation() const;
+  void SyncUserGeolocationAccuracy() const;
 
   // Resets Android's font scale to the default value.
   void ResetFontScaleToDefault() const;
@@ -416,6 +417,8 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
     SyncAccessibilityVirtualKeyboardEnabled();
   } else if (pref_name == ash::prefs::kUserGeolocationAccessLevel) {
     SyncUserGeolocation();
+  } else if (pref_name == ash::prefs::kUserGeolocationAccuracyEnabled) {
+    SyncUserGeolocationAccuracy();
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
              pref_name == ::language::prefs::kPreferredLanguages) {
     SyncLocale();
@@ -537,6 +540,7 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   AddPrefToObserve(ash::prefs::kAccessibilityVirtualKeyboardEnabled);
   AddPrefToObserve(ash::prefs::kDockedMagnifierEnabled);
   AddPrefToObserve(ash::prefs::kUserGeolocationAccessLevel);
+  AddPrefToObserve(ash::prefs::kUserGeolocationAccuracyEnabled);
   AddPrefToObserve(onc::prefs::kDeviceOpenNetworkConfiguration);
   AddPrefToObserve(onc::prefs::kOpenNetworkConfiguration);
   AddPrefToObserve(proxy_config::prefs::kProxy);
@@ -894,6 +898,12 @@ void ArcSettingsServiceImpl::SyncUserGeolocation() const {
   SendBoolValueSettingsBroadcast(
       enabled_for_arc, !pref->IsUserModifiable(),
       "org.chromium.arc.intent_helper.SET_USER_GEOLOCATION");
+}
+
+void ArcSettingsServiceImpl::SyncUserGeolocationAccuracy() const {
+  SendBoolPrefSettingsBroadcast(
+      ash::prefs::kUserGeolocationAccuracyEnabled,
+      "org.chromium.arc.intent_helper.SET_USER_GEOLOCATION_ACCURACY_ENABLED");
 }
 
 void ArcSettingsServiceImpl::SyncConsumerAutoUpdateToggle() const {

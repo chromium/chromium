@@ -147,6 +147,8 @@ void ArcOptInPreferenceHandler::SendLocationServicesMode() {
     enabled = ash::PrivacyHubController::CrosToArcGeolocationPermissionMapping(
         static_cast<ash::GeolocationAccessLevel>(pref_service_->GetInteger(
             ash::prefs::kUserGeolocationAccessLevel)));
+    pref_service_->SetBoolean(ash::prefs::kUserGeolocationAccuracyEnabled,
+                              enabled);
     managed = pref_service_->IsManagedPreference(
         ash::prefs::kUserGeolocationAccessLevel);
   } else {
@@ -189,6 +191,10 @@ void ArcOptInPreferenceHandler::EnableLocationService(bool is_enabled) {
     if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
       controller->SetAccessLevelAsBoolean(is_enabled);
     }
+    // We cal also set the value of GeoLocation Accuracy as currently they are
+    // in sync with Geo location.
+    pref_service_->SetBoolean(ash::prefs::kUserGeolocationAccuracyEnabled,
+                              is_enabled);
   }
 }
 

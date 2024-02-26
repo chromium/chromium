@@ -44,6 +44,7 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
         // ChromeOS.
         VLOG(1) << "Syncing initial location settings from Android.";
         UpdateLocationSettings(is_enabled);
+        UpdateLocationAccuracySettings(is_enabled);
         profile_->GetPrefs()->SetBoolean(
             prefs::kArcInitialLocationSettingSyncRequired, false);
       }
@@ -51,6 +52,9 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
     case mojom::AndroidSetting::kGeoLocation:
     case mojom::AndroidSetting::kGeoLocationUserTriggered:
         UpdateLocationSettings(is_enabled);
+      return;
+    case mojom::AndroidSetting::kGeoLocationAccuracyUserTriggered:
+      UpdateLocationAccuracySettings(is_enabled);
       return;
     case mojom::AndroidSetting::kUnknown:
       break;
@@ -60,7 +64,7 @@ void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
 
 void ChromeArcIntentHelperDelegate::UpdateLocationSettings(bool is_enabled) {
   CHECK(profile_);
-  VLOG(1) << "UpdateLocation toggle called with value: " << is_enabled;
+  VLOG(1) << "Update Location toggle called with value: " << is_enabled;
 
   if (auto* controller = ash::GeolocationPrivacySwitchController::Get()) {
     controller->SetAccessLevelAsBoolean(is_enabled);
@@ -73,6 +77,15 @@ bool ChromeArcIntentHelperDelegate::IsInitialLocationSettingsSyncRequired() {
   CHECK(profile_);
   return profile_->GetPrefs()->GetBoolean(
       prefs::kArcInitialLocationSettingSyncRequired);
+}
+
+void ChromeArcIntentHelperDelegate::UpdateLocationAccuracySettings(
+    bool is_enabled) {
+  CHECK(profile_);
+  VLOG(1) << "Update Location Accuracy toggle called with value: "
+          << is_enabled;
+  profile_->GetPrefs()->SetBoolean(ash::prefs::kUserGeolocationAccuracyEnabled,
+                                   is_enabled);
 }
 
 }  // namespace arc
