@@ -45,10 +45,12 @@ class WebStateID;
 // Tells the consumer to update the selected item ID to be `selectedItemID`.
 - (void)selectItemWithID:(web::WebStateID)selectedItemID;
 
-// Tells the consumer to replace the item with ID `itemID` with `item`.
-// It's an error if `item`'s ID duplicates any other item's ID besides `itemID`.
-// The consumer should ignore this call if `itemID` has not yet been inserted.
-- (void)replaceItemID:(web::WebStateID)itemID withItem:(TabSwitcherItem*)item;
+// Tells the consumer to replace the GridItemIdentifier `item` with
+// `replacementItem`. The consumer should ignore this call if `item`'s ID has
+// not yet been inserted. Note that the type of item should be either `Tab` or
+// `Group`.
+- (void)replaceItem:(GridItemIdentifier*)item
+    withReplacementItem:(GridItemIdentifier*)replacementItem;
 
 // Tells the consumer to move the item with id `itemID` to `toIndex`. Note that
 // the ID of the selected item isn't changed by this method, although the index

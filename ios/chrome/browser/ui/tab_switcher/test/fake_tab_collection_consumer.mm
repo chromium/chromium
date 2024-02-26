@@ -50,9 +50,11 @@
   _selectedItemID = selectedItemID;
 }
 
-- (void)replaceItemID:(web::WebStateID)itemID withItem:(TabSwitcherItem*)item {
-  auto it = std::find(_items.begin(), _items.end(), itemID);
-  *it = item.identifier;
+- (void)replaceItem:(GridItemIdentifier*)item
+    withReplacementItem:(GridItemIdentifier*)replacementItem {
+  auto it =
+      std::find(_items.begin(), _items.end(), item.tabSwitcherItem.identifier);
+  *it = replacementItem.tabSwitcherItem.identifier;
 }
 
 - (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {

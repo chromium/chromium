@@ -1182,33 +1182,33 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
-- (void)replaceItemID:(web::WebStateID)existingItemID
-             withItem:(TabSwitcherItem*)newItem {
-  NSIndexPath* existingItemIndexPath = [self indexPathForID:existingItemID];
+- (void)replaceItem:(GridItemIdentifier*)item
+    withReplacementItem:(GridItemIdentifier*)replacementItem {
+  CHECK((item.type != GridItemType::SuggestedActions) &&
+        (replacementItem.type != GridItemType::SuggestedActions));
+
+  NSIndexPath* existingItemIndexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:item];
 
   if (!existingItemIndexPath) {
     return;
   }
 
-  GridItemIdentifier* newItemIdentifier =
-      [GridItemIdentifier tabIdentifier:newItem];
-  GridItemIdentifier* existingItemIdentifier = [self.diffableDataSource
-      itemIdentifierForIndexPath:existingItemIndexPath];
+  BOOL replacementItemIsEqualToItem = [replacementItem isEqual:item];
 
-  // Consistency check: `newItem`'s ID is either `existingItemID` or not in
-  // the collection view.
-  CHECK(
-      newItem.identifier == existingItemID ||
-      ![self.diffableDataSource indexPathForItemIdentifier:newItemIdentifier]);
+  // Consistency check: `replacementItem` is either equal to item or not in the
+  // collection view.
+  CHECK(replacementItemIsEqualToItem ||
+        ![self.diffableDataSource indexPathForItemIdentifier:replacementItem]);
 
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-  if (existingItemID == newItem.identifier) {
-    [snapshot reconfigureItemsWithIdentifiers:@[ existingItemIdentifier ]];
+  if (replacementItemIsEqualToItem) {
+    [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
   } else {
     // Add the new item before the existing item.
-    [snapshot insertItemsWithIdentifiers:@[ newItemIdentifier ]
-                beforeItemWithIdentifier:existingItemIdentifier];
-    [snapshot deleteItemsWithIdentifiers:@[ existingItemIdentifier ]];
+    [snapshot insertItemsWithIdentifiers:@[ replacementItem ]
+                beforeItemWithIdentifier:item];
+    [snapshot deleteItemsWithIdentifiers:@[ item ]];
   }
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }

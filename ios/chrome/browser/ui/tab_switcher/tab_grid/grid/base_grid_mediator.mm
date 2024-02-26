@@ -352,10 +352,12 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
       }
       web::WebState* replacedWebState = replaceChange.replaced_web_state();
       web::WebState* insertedWebState = replaceChange.inserted_web_state();
+      TabSwitcherItem* oldItem =
+          [[WebStateTabSwitcherItem alloc] initWithWebState:replacedWebState];
       TabSwitcherItem* newItem =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
-      [self.consumer replaceItemID:replacedWebState->GetUniqueIdentifier()
-                          withItem:newItem];
+      [self.consumer replaceItem:[GridItemIdentifier tabIdentifier:oldItem]
+             withReplacementItem:[GridItemIdentifier tabIdentifier:newItem]];
 
       _scopedWebStateObservation->RemoveObservation(replacedWebState);
       _scopedWebStateObservation->AddObservation(insertedWebState);
@@ -423,9 +425,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
+  GridItemIdentifier* item =
+      [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                                            initWithWebState:webState]];
+  [self.consumer replaceItem:item withReplacementItem:item];
 }
 
 #pragma mark - SnapshotStorageObserver
@@ -446,9 +449,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
-    TabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    [self.consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
+    GridItemIdentifier* item =
+        [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                                              initWithWebState:webState]];
+    [self.consumer replaceItem:item withReplacementItem:item];
   }
 }
 

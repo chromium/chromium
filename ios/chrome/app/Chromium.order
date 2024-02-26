@@ -5591,7 +5591,7 @@ __ZNK3web12WebStateImpl16RealizedWebState18GetLoadingProgressEv
 -[AdaptiveToolbarViewController isNTP]
 -[BaseGridMediator webStateDidStartLoading:]
 -[BaseGridMediator updateConsumerItemForWebState:]
--[BaseGridViewController replaceItemID:withItem:]
+-[BaseGridViewController replaceItem:withReplacementItem:]
 -[GridLayout prepareForCollectionViewUpdates:]
 -[GridLayout finalizeCollectionViewUpdates]
 -[WebStateTabSwitcherItem .cxx_destruct]

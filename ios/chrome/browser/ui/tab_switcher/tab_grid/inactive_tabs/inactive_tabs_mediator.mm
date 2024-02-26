@@ -208,9 +208,10 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [_consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
+  GridItemIdentifier* item =
+      [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                                            initWithWebState:webState]];
+  [_consumer replaceItem:item withReplacementItem:item];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -240,9 +241,10 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
-    TabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    [_consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
+    GridItemIdentifier* item =
+        [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                                              initWithWebState:webState]];
+    [_consumer replaceItem:item withReplacementItem:item];
   }
 }
 

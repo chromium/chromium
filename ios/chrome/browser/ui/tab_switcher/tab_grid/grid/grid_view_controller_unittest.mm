@@ -212,9 +212,13 @@ TEST_P(BaseGridViewControllerTest, ReplaceItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   web::WebStateID newItemID = web::WebStateID::NewUnique();
+
+  TabSwitcherItem* item_a =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
-  [view_controller_ replaceItemID:identifier_a_ withItem:item];
+  [view_controller_ replaceItem:[GridItemIdentifier tabIdentifier:item_a]
+            withReplacementItem:[GridItemIdentifier tabIdentifier:item]];
   EXPECT_EQ(newItemID, IdentifierForIndex(0));
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -234,7 +238,9 @@ TEST_P(BaseGridViewControllerTest, ReplaceItemSameIdentifier) {
   OCMStub([mock_item title]).andReturn(@"NEW-ITEM-TITLE");
   TabSwitcherItem* itemForReplace =
       [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
-  [view_controller_ replaceItemID:identifier_a_ withItem:itemForReplace];
+  [view_controller_
+              replaceItem:[GridItemIdentifier tabIdentifier:itemForReplace]
+      withReplacementItem:[GridItemIdentifier tabIdentifier:itemForReplace]];
   NSString* identifier_cell_a =
       [NSString stringWithFormat:@"%@0", kGridCellIdentifierPrefix];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -257,7 +263,8 @@ TEST_P(BaseGridViewControllerTest, ReplaceItemNotFound) {
   web::WebStateID notFoundItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:notFoundItemID];
-  [view_controller_ replaceItemID:notFoundItemID withItem:item];
+  [view_controller_ replaceItem:[GridItemIdentifier tabIdentifier:item]
+            withReplacementItem:[GridItemIdentifier tabIdentifier:item]];
   EXPECT_NE(notFoundItemID, IdentifierForIndex(0));
   EXPECT_NE(notFoundItemID, IdentifierForIndex(1));
   EXPECT_EQ(2U, delegate_.itemCount);
@@ -283,8 +290,8 @@ TEST_P(BaseGridViewControllerTest, MoveUnselectedItem) {
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
-// Tests that `-replaceItemID:withItem:` does not crash when updating an item
-// that is scrolled offscreen.
+// Tests that `replaceItem:withReplacementItem:` does not crash when updating an
+// item that is scrolled offscreen.
 TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
   // This test requires that the collection view be placed on the screen.
   SetRootViewController(view_controller_);
@@ -310,11 +317,14 @@ TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
     base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
     visibleCellsCount = view_controller_.collectionView.visibleCells.count;
   }
+  TabSwitcherItem* item_b =
+      [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
   // The last item ("B") is scrolled off screen.
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:web::WebStateID::NewUnique()];
   // Do not crash due to cell being nil.
-  [view_controller_ replaceItemID:identifier_b_ withItem:item];
+  [view_controller_ replaceItem:[GridItemIdentifier tabIdentifier:item_b]
+            withReplacementItem:[GridItemIdentifier tabIdentifier:item]];
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BaseGridViewControllerTest);
