@@ -74,6 +74,13 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(
   // TODO(b/210759684): we probably will need to do this for Linux as well.
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
 
+  // This is added because libdrm calls access() from drmGetMinorType() that is
+  // called from drmGetNodeTypeFromFd(). libva calls drmGetNodeTypeFromFd()
+  // during initialization.
+  //
+  // TODO(b/210759684): we probably will need to do this for Linux as well.
+  command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
+
   AllowAccessToRenderNodes(permissions, /*include_sys_dev_char=*/true,
                            /*read_write=*/false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -91,6 +98,15 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnAMD(
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
   command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This is added because libdrm calls access() from drmGetMinorType() that is
+  // called from drmGetNodeTypeFromFd(). libva calls drmGetNodeTypeFromFd()
+  // during initialization.
+  //
+  // TODO(b/210759684): we probably will need to do this for Linux as well.
+  command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   AllowAccessToRenderNodes(permissions, /*include_sys_dev_char=*/true,
                            /*read_write=*/true);
