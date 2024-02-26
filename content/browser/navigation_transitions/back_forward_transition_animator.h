@@ -52,6 +52,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
         NavigationControllerImpl* controller,
         const ui::BackGestureEvent& gesture,
         BackForwardTransitionAnimationManager::NavigationType nav_type,
+        int destination_entry_id,
         BackForwardTransitionAnimationManagerAndroid* animation_manager);
   };
 
@@ -75,6 +76,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationType nav_type,
+      int destination_entry_id,
       BackForwardTransitionAnimationManagerAndroid* animation_manager);
 
   // `RenderFrameMetadataProvider::Observer`:
@@ -108,9 +110,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // Identifies the different stages of the animation that this manager is in.
   enum class State {
-    // Set when `OnGestureStarted` is called. Indicates that the user has
-    // started swiping from the edge of the screen. The manager remains in
-    // this state until the user has lifted the finger from the screen, to
+    // Set immediately when `OnGestureStarted` is called. Indicates that the
+    // user has started swiping from the edge of the screen. The manager remains
+    // in this state until the user has lifted the finger from the screen, to
     // either start the history navigation or not start it.
     kStarted = 0,
 
@@ -211,6 +213,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void UnregisterNewFrameActivationObserver();
 
   const BackForwardTransitionAnimationManager::NavigationType nav_type_;
+
+  // The ID of the destination `NavigationEntry`. Constant through out the
+  // lifetime of a gesture so we are guaranteed to target the correct entry.
+  // This is also guaranteed to be equal to `screenshot_->navigation_entry_id()`
+  // once `screenshot_` is set.
+  const int destination_entry_id_;
 
   // The manager back-pointer. Guaranteed to outlive the impl.
   const raw_ptr<BackForwardTransitionAnimationManagerAndroid>

@@ -68,10 +68,11 @@ BackForwardTransitionAnimator::Factory::Create(
     NavigationControllerImpl* controller,
     const ui::BackGestureEvent& gesture,
     HistoryNavType nav_type,
+    int destination_entry_id,
     BackForwardTransitionAnimationManagerAndroid* animation_manager) {
-  return base::WrapUnique(
-      new BackForwardTransitionAnimator(web_contents_view_android, controller,
-                                        gesture, nav_type, animation_manager));
+  return base::WrapUnique(new BackForwardTransitionAnimator(
+      web_contents_view_android, controller, gesture, nav_type,
+      destination_entry_id, animation_manager));
 }
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
@@ -115,8 +116,10 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     NavigationControllerImpl* controller,
     const ui::BackGestureEvent& gesture,
     HistoryNavType nav_type,
+    int destination_entry_id,
     BackForwardTransitionAnimationManagerAndroid* animation_manager)
     : nav_type_(nav_type),
+      destination_entry_id_(destination_entry_id),
       animation_manager_(animation_manager),
       physics_model_(web_contents_view_android->GetNativeView()
                          ->GetPhysicalBackingSize()
@@ -532,12 +535,12 @@ void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
 void BackForwardTransitionAnimator::ProcessState() {
   switch (state_) {
     case State::kStarted: {
-      int offset = nav_type_ == HistoryNavType::kBackward ? -1 : 1;
+      NavigationControllerImpl* nav_controller =
+          animation_manager_->navigation_controller();
       auto* destination_entry =
-          animation_manager_->navigation_controller()->GetEntryAtOffset(offset);
+          nav_controller->GetEntryWithUniqueID(destination_entry_id_);
       CHECK(destination_entry);
-      auto* cache = animation_manager_->navigation_controller()
-                        ->GetNavigationEntryScreenshotCache();
+      auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
       SetupForScreenshotPreview(cache->RemoveScreenshot(destination_entry));
       // Become a WCO as soon as this class is created, because we want to
       // observe all navigations while this class is controlling the UI. This
@@ -620,6 +623,7 @@ void BackForwardTransitionAnimator::ProcessState() {
 void BackForwardTransitionAnimator::SetupForScreenshotPreview(
     std::unique_ptr<NavigationEntryScreenshot> screenshot) {
   CHECK(screenshot);
+  CHECK_EQ(screenshot->navigation_entry_id(), destination_entry_id_);
   screenshot_ = std::move(screenshot);
 
   // The layers can be reused. We need to make sure there is no ongoing
@@ -671,18 +675,19 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   CHECK(screenshot_);
   CHECK(!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value());
 
-  int index =
-      animation_manager_->navigation_controller()->GetEntryIndexWithUniqueID(
-          screenshot_->navigation_entry_id());
+  NavigationControllerImpl* nav_controller =
+      animation_manager_->navigation_controller();
+
+  int index = nav_controller->GetEntryIndexWithUniqueID(destination_entry_id_);
   if (index == -1) {
     return false;
   }
 
   // TODO(https://crbug.com/325331788): `GoToIndex()` can return a bool to
   // signal the creation of the navigation request.
-  animation_manager_->navigation_controller()->GoToIndex(index);
+  nav_controller->GoToIndex(index);
 
-  auto& frame_tree = animation_manager_->navigation_controller()->frame_tree();
+  auto& frame_tree = nav_controller->frame_tree();
   // TODO(https://crbug.com/325331788): This request might not be the one we
   // started.
   if (auto* request = frame_tree.root()->navigation_request()) {
@@ -696,13 +701,12 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
     if (!request->GetNavigationEntry()) {
       return false;
     }
-    int screenshot_entry_id = screenshot_->navigation_entry_id();
     int request_entry_id = request->GetNavigationEntry()->GetUniqueID();
     // If the request's navigation entry ID does not match the entry ID of the
-    // screenshot, we shouldn't start the navigation.
+    // screenshot of the destination, we shouldn't start the navigation.
     //
     // TODO(crbug.com/325331788): Turn this early return into a CHECK.
-    if (screenshot_entry_id != request_entry_id) {
+    if (destination_entry_id_ != request_entry_id) {
       return false;
     }
 

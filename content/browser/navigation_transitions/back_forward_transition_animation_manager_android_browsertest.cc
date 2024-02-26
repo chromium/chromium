@@ -219,11 +219,13 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationType nav_type,
+      int destination_entry_id,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       : BackForwardTransitionAnimator(web_contents_view_android,
                                       controller,
                                       gesture,
                                       nav_type,
+                                      destination_entry_id,
                                       animation_manager),
         wcva_(web_contents_view_android) {}
 
@@ -396,11 +398,12 @@ class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationType nav_type,
+      int destination_entry_id,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       override {
-    return std::make_unique<AnimatorForTesting>(web_contents_view_android,
-                                                controller, gesture, nav_type,
-                                                animation_manager);
+    return std::make_unique<AnimatorForTesting>(
+        web_contents_view_android, controller, gesture, nav_type,
+        destination_entry_id, animation_manager);
   }
 };
 }  // namespace
@@ -444,8 +447,7 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
     // Manually load a "red" document because we are still at the initial
     // entry.
-    ASSERT_TRUE(NavigateToURL(web_contents(),
-                              embedded_test_server()->GetURL("/red.html")));
+    ASSERT_TRUE(NavigateToURL(web_contents(), RedURL()));
     WaitForCopyableViewInWebContents(web_contents());
 
     auto* manager =
@@ -463,8 +465,7 @@ class BackForwardTransitionAnimationManagerBrowserTest
     // Set up for a backward navigation: [red&, green*].
     ScreenshotCacheObserver cache_obs(cache);
     const int expected_id = controller.GetVisibleEntry()->GetUniqueID();
-    ASSERT_TRUE(NavigateToURL(web_contents(),
-                              embedded_test_server()->GetURL("/green.html")));
+    ASSERT_TRUE(NavigateToURL(web_contents(), GreenURL()));
     ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
     WaitForCopyableViewInWebContents(web_contents());
 
@@ -1318,6 +1319,48 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
   ASSERT_FALSE(web_contents()->GetController().GetActiveEntry()->GetUserData(
       NavigationEntryScreenshot::kUserDataKey));
+}
+
+// Regression test for https://crbug.com/326516254: If the destination page is
+// skipped for a back/forward navigation due to the lack of user activation, the
+// animator should also skip that entry.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       SkipPageWithNoUserActivation) {
+  auto& nav_controller = web_contents()->GetController();
+
+  // [red&, green&, blue*]
+  {
+    ScreenshotCacheObserver cache_obs(
+        nav_controller.GetNavigationEntryScreenshotCache());
+    const int expected_id = nav_controller.GetVisibleEntry()->GetUniqueID();
+    ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+    ASSERT_TRUE(cache_obs.WaitForScreenshotCachedForEntry(expected_id));
+    WaitForCopyableViewInWebContents(web_contents());
+    ASSERT_EQ(nav_controller.GetEntryCount(), 3);
+    ASSERT_EQ(nav_controller.GetCurrentEntryIndex(), 2);
+  }
+
+  // Mark green as skipped.
+  nav_controller.GetEntryAtIndex(1)->set_should_skip_on_back_forward_ui(true);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k30ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  TestFrameNavigationObserver back_to_red(web_contents());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  destroyed.Run();
+  back_to_red.Wait();
+
+  // TODO(https://crbug.com/325329998): We should also test that the transition
+  // is from blue to red via pixel comparison.
+
+  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
+  ASSERT_EQ(nav_controller.GetEntryCount(), 3);
+  ASSERT_EQ(nav_controller.GetCurrentEntryIndex(), 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
