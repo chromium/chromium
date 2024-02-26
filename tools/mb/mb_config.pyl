@@ -62,7 +62,6 @@
       'android-arm32-pgo': 'official_android_arm32_pgo',
       'android-arm64-pgo': 'official_android_arm64_pgo',
       'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
-      'lacros-arm-generic-pgo': 'official_lacros_arm_pgo',
       'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
       'linux-pgo': 'official_linux_pgo',
       'mac-arm-pgo': 'official_mac_arm_pgo',
@@ -292,7 +291,6 @@
       'android-arm32-pgo': 'official_android_arm32_pgo',
       'android-arm64-pgo': 'official_android_arm64_pgo',
       'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
-      'lacros-arm-generic-pgo': 'official_lacros_arm_pgo',
       'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
       'linux-pgo': 'official_linux_pgo',
       'mac-arm-pgo': 'official_mac_arm_pgo',
@@ -781,10 +779,6 @@
 
     'official_lacros_arm64_pgo': [
       'official', 'release', 'lacros', 'arm64-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'pgo_phase_1',
-    ],
-
-    'official_lacros_arm_pgo': [
-      'official', 'release', 'lacros', 'arm-generic-crostoolchain', 'chromeos_device_reclient', 'no_symbols', 'pgo_phase_1',
     ],
 
     'official_linux_perf': [
