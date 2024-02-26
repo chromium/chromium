@@ -1381,6 +1381,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("NEW_DIRECTORY_TREE", base::FeatureList::IsEnabled(
                                       ash::features::kFilesNewDirectoryTree));
 
+  dict->Set("MATERIALIZED_VIEWS", base::FeatureList::IsEnabled(
+                                      ash::features::kFilesMaterializedViews));
+
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {

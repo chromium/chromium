@@ -6546,6 +6546,10 @@ const char kFilesLocalImageSearchName[] = "Search local images by query.";
 const char kFilesLocalImageSearchDescription[] =
     "Enable searching local images by query.";
 
+const char kFilesMaterializedViewsName[] = "Files app materialized views";
+const char kFilesMaterializedViewsDescription[] =
+    "Enable materialized views in Files App.";
+
 const char kFilesSinglePartitionFormatName[] =
     "Enable Partitioning of Removable Disks.";
 const char kFilesSinglePartitionFormatDescription[] =

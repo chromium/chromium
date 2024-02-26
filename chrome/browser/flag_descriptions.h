@@ -3783,6 +3783,9 @@ extern const char kFilesNewDirectoryTreeDescription[];
 extern const char kFilesLocalImageSearchName[];
 extern const char kFilesLocalImageSearchDescription[];
 
+extern const char kFilesMaterializedViewsName[];
+extern const char kFilesMaterializedViewsDescription[];
+
 extern const char kFilesSinglePartitionFormatName[];
 extern const char kFilesSinglePartitionFormatDescription[];
 

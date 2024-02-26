@@ -4370,6 +4370,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "files-materialized-views",
+    "owners": [ "lucmult@chromium.org", "simmonsjosh@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "files-new-directory-tree",
     "owners": [ "wenbojie@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 128

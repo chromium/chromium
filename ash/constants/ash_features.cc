@@ -1171,6 +1171,11 @@ BASE_FEATURE(kFilesLocalImageSearch,
              "FilesLocalImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables materialized views in Files App.
+BASE_FEATURE(kFilesMaterializedViews,
+             "FilesMaterializedViews",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables partitioning of removable disks in file manager.
 BASE_FEATURE(kFilesSinglePartitionFormat,
              "FilesSinglePartitionFormat",
