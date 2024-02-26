@@ -5316,8 +5316,6 @@ crbug.com/1505807 external/wpt/web-bundle/subresource-loading/element-removal.ht
 # Temporarily disable test to merge 'reveal' button change to adorner
 crbug.com/1066772 http/tests/devtools/elements/shadow/shadow-slot-assignment.js [ Crash Failure Pass Timeout ]
 
-# Flaky on multiple platforms
-crbug.com/1338536 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
 # Sheriff 2022-06-24
 crbug.com/1339293 [ Linux ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
 crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Pass ]

@@ -13,15 +13,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   ElementsTestRunner.ignoreSidebarUpdates();
 
   await TestRunner.navigatePromise('resources/page.html');
+  await ElementsTestRunner.expandAndDump();
 
-  TestRunner.runTestSuite([
-    function testSetUp(next) {
-      ElementsTestRunner.expandElementsTree(next);
-    },
-
-    function testRemove(next) {
-      ElementsTestRunner.dumpElementsTree();
-      TestRunner.completeTest();
-    },
-  ]);
+  TestRunner.completeTest();
 })();
