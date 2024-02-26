@@ -63,7 +63,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog.DefaultSearchEnginePromoDialogObserver;
@@ -152,7 +152,7 @@ public class SearchActivityTest {
                                                         getSearchEnginesForPromoDialog(
                                                                 int promoType) {
                                                     return TemplateUrlServiceFactory.getForProfile(
-                                                                    Profile
+                                                                    ProfileManager
                                                                             .getLastUsedRegularProfile())
                                                             .getTemplateUrls();
                                                 }

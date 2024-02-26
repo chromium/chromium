@@ -19,6 +19,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -48,7 +49,7 @@ public class ShoppingPersistedTabDataNativeTest {
                 });
         Profile profile =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        Profile::getLastUsedRegularProfile);
+                        ProfileManager::getLastUsedRegularProfile);
         final Tab tab0 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, profile);
         final Tab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(1, profile);
         final Tab tab2 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(2, profile);

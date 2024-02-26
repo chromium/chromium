@@ -33,19 +33,6 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
-     * Returns the regular (i.e., not off-the-record) profile.
-     *
-     * <p>Note: The function name uses the "last used" terminology for consistency with
-     * profile_manager.cc which supports multiple regular profiles.
-     *
-     * @deprecated Use {@link ProfileManager#getLastUsedRegularProfile()} instead.
-     */
-    @Deprecated
-    public static Profile getLastUsedRegularProfile() {
-        return ProfileManager.getLastUsedRegularProfile();
-    }
-
-    /**
      * @param webContents {@link WebContents} object.
      * @return {@link Profile} object associated with the given WebContents.
      */
@@ -203,16 +190,6 @@ public class Profile implements BrowserContextHandle {
     @CalledByNative
     private long getNativePointer() {
         return mNativeProfileAndroid;
-    }
-
-    /**
-     * Sets for testing the profile to be returned by {@link #getLastUsedRegularProfile()}.
-     *
-     * @deprecated Use {@link ProfileManager#setLastUsedProfileForTesting(Profile)} instead.
-     */
-    @Deprecated
-    public static void setLastUsedProfileForTesting(Profile profile) {
-        ProfileManager.setLastUsedProfileForTesting(profile);
     }
 
     @NativeMethods

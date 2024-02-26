@@ -34,7 +34,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -149,7 +149,7 @@ public class HistorySyncRenderTest {
                             new HistorySyncCoordinator(
                                     LayoutInflater.from(mActivityTestRule.getActivity()),
                                     () -> {},
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     SigninAccessPoint.UNKNOWN);
                     mActivityTestRule
                             .getActivity()

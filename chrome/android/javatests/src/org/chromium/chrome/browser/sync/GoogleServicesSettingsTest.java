@@ -97,7 +97,7 @@ public class GoogleServicesSettingsTest {
         mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        Profile::getLastUsedRegularProfile);
+                        ProfileManager::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
