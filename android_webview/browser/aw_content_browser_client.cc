@@ -918,6 +918,12 @@ bool AwContentBrowserClient::ShouldLockProcessToSite(
   return false;
 }
 
+bool AwContentBrowserClient::ShouldEnforceNewCanCommitUrlChecks() {
+  // TODO(https://crbug.com/326250356): Diagnose and fix Android WebView crashes
+  // from these new checks and then remove this function.
+  return false;
+}
+
 void AwContentBrowserClient::WillCreateURLLoaderFactory(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* frame,

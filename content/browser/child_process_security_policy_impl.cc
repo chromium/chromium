@@ -1618,7 +1618,12 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   if (base::FeatureList::IsEnabled(
           features::kAdditionalNavigationCommitChecks) &&
       !CanCommitURL(child_id, url_info.url)) {
-    return CanCommitStatus::CANNOT_COMMIT_URL;
+    // This enforcement is currently skipped on Android WebView due to crashes.
+    // TODO(https://crbug.com/326250356): Diagnose and enable for Android
+    // WebView as well.
+    if (GetContentClient()->browser()->ShouldEnforceNewCanCommitUrlChecks()) {
+      return CanCommitStatus::CANNOT_COMMIT_URL;
+    }
   }
 
   // Next check whether the origin resolved from the URL is allowed to commit.
