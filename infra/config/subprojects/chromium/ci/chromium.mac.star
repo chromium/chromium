@@ -383,7 +383,7 @@ ci.thin_tester(
         build_gs_bucket = "chromium-mac-archive",
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release",
+        category = "mac",
         short_name = "15",
     ),
     cq_mirrors_console_view = "mirrors",
