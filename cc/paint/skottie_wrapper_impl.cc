@@ -22,6 +22,7 @@
 #include "cc/paint/skottie_mru_resource_provider.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
 #include "third_party/skia/modules/skottie/include/SkottieProperty.h"
