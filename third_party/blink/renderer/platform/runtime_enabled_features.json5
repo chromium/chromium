@@ -592,10 +592,6 @@
       status: "experimental",
     },
     {
-      name: "ClipboardSupportedTypes",
-      status: "stable",
-    },
-    {
       name: "ClipboardSvg",
       status: "experimental",
     },
