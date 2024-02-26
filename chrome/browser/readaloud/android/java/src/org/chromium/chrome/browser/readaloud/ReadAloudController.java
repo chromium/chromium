@@ -810,7 +810,9 @@ public class ReadAloudController
     }
 
     private String getLanguageForNewPlayback(Tab tab) {
-        String language = TranslateBridge.getCurrentLanguage(tab);
+        WebContents webContents = tab.getWebContents();
+        String language =
+                webContents == null ? null : TranslateBridge.getCurrentLanguage(webContents);
         if (language == null || language.isEmpty() || language.equals("und")) {
             language = AppLocaleUtils.getAppLanguagePref();
         }

@@ -628,6 +628,7 @@ public class ReadAloudControllerUnitTest {
         // test that previous playback is released when another playback is called
         MockTab newTab = mTabModelSelector.addMockTab();
         newTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
+        newTab.setWebContentsOverrideForTesting(mWebContents);
         mController.playTab(newTab);
         resolvePromises();
         verify(mPlayback, times(1)).release();
