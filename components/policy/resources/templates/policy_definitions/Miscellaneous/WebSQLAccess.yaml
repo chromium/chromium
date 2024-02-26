@@ -1,7 +1,9 @@
 caption: Force WebSQL to be enabled.
 default: false
+deprecated: true
 desc: |-
   As of M119, if this policy is set to false or unset, WebSQL is disabled, but can be enabled via Chrome flag "web-sql-access". If the policy is set to true, WebSQL access is enabled.
+  This policy is deprecated as of M124.
 example_value: true
 features:
   dynamic_refresh: false
