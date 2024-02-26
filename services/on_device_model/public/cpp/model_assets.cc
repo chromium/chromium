@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "base/files/file.h"
+#include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 
 namespace on_device_model {
@@ -25,6 +27,24 @@ constexpr uint32_t kWeightsFlags =
     base::File::FLAG_OPEN | base::File::FLAG_READ;
 #endif
 
+// Attempts to make sure `file` will be read from disk quickly when needed.
+void PrefetchFile(const base::FilePath& path) {
+  auto pre_read_file = base::BindOnce(
+      [](const base::FilePath& path) {
+        base::PreReadFile(path, /*is_executable=*/false);
+      },
+      path);
+#if BUILDFLAG(IS_WIN)
+  // On Windows PreReadFile() can take on the order of hundreds of milliseconds,
+  // so run on a separate thread.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      std::move(pre_read_file));
+#else
+  std::move(pre_read_file).Run();
+#endif
+}
+
 }  // namespace
 
 ModelAssetPaths::ModelAssetPaths() = default;
@@ -37,6 +57,8 @@ ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
 ModelAssets::~ModelAssets() = default;
 
 ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
+  PrefetchFile(paths.weights);
+
   ModelAssets assets;
   assets.sp_model =
       base::File(paths.sp_model, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -70,6 +92,8 @@ AdaptationAssets& AdaptationAssets::operator=(AdaptationAssets&&) = default;
 AdaptationAssets::~AdaptationAssets() = default;
 
 AdaptationAssets LoadAdaptationAssets(const AdaptationAssetPaths& paths) {
+  PrefetchFile(paths.weights);
+
   AdaptationAssets assets;
   assets.model =
       base::File(paths.model, base::File::FLAG_OPEN | base::File::FLAG_READ);
