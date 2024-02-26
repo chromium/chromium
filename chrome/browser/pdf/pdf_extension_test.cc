@@ -2684,26 +2684,26 @@ using PDFExtensionHitTestTest = PDFExtensionTest;
 
 // Flaky in nearly all configurations; see https://crbug.com/856169.
 IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Load page with embedded PDF and make sure it succeeds.
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  WebContents* embedder_contents = GetActiveWebContents();
 
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-  content::WaitForHitTestData(guest_mainframe);
+  ASSERT_TRUE(
+      EnsurePDFHasLoadedInFirstChildWithValidFrameTree(embedder_contents));
+
+  content::RenderFrameHost* extension_host =
+      GetOnlyPdfExtensionHostEnsureValid();
+  ASSERT_TRUE(extension_host);
+
+  content::WaitForHitTestData(extension_host);
 
   gfx::Point point_in_parent(250, 25);
   gfx::Point point_in_pdf(250, 250);
 
   // Inject script to count MouseLeaves in the PDF.
   ASSERT_TRUE(
-      content::ExecJs(guest_mainframe,
+      content::ExecJs(extension_host,
                       "var enter_count = 0;\n"
                       "var leave_count = 0;\n"
                       "document.addEventListener('mouseenter', function (){\n"
@@ -2714,7 +2714,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
                       "});"));
 
   // Inject some MouseMoves to invoke a MouseLeave in the PDF.
-  WebContents* embedder_contents = GetActiveWebContents();
   content::SimulateMouseEvent(embedder_contents,
                               blink::WebInputEvent::Type::kMouseMove,
                               point_in_parent);
@@ -2727,36 +2726,36 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   // Verify MouseEnter, MouseLeave received.
   int leave_count = 0;
   do {
-    leave_count = EvalJs(guest_mainframe, "leave_count;").ExtractInt();
+    leave_count = EvalJs(extension_host, "leave_count;").ExtractInt();
   } while (!leave_count);
-  EXPECT_EQ(1, EvalJs(guest_mainframe, "enter_count;"));
+  EXPECT_EQ(1, EvalJs(extension_host, "enter_count;"));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, ContextMenuCoordinates) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   // Load page with embedded PDF and make sure it succeeds.
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  WebContents* embedder_contents = GetActiveWebContents();
 
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-  content::WaitForHitTestData(guest_mainframe);
+  ASSERT_TRUE(
+      EnsurePDFHasLoadedInFirstChildWithValidFrameTree(embedder_contents));
+
+  content::RenderFrameHost* extension_host =
+      GetOnlyPdfExtensionHostEnsureValid();
+  ASSERT_TRUE(extension_host);
+
+  content::WaitForHitTestData(extension_host);
 
   // Observe context menu IPC.
   content::RenderFrameHost* plugin_frame =
-      pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
+      pdf_frame_util::FindPdfChildFrame(extension_host);
   content::ContextMenuInterceptor context_menu_interceptor(plugin_frame);
 
   ContextMenuWaiter menu_observer;
 
   // Send mouse right-click to activate context menu.
   gfx::Point context_menu_position(80, 130);
-  content::SimulateMouseClickAt(GetActiveWebContents(), kDefaultKeyModifier,
+  content::SimulateMouseClickAt(embedder_contents, kDefaultKeyModifier,
                                 blink::WebMouseEvent::Button::kRight,
                                 context_menu_position);
 
