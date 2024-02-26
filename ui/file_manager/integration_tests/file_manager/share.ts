@@ -32,7 +32,8 @@ export async function checkEncryptedSharesheetOptions() {
 
   for (const target of shareTargetsList) {
     chrome.test.assertTrue(
-        target === 'Share with others' || target === 'Nearby Share',
+        target === 'Share with others' || target === 'Quick Share' ||
+            target === 'Nearby Share',
         'unexpected share target: ' + target);
   }
 }

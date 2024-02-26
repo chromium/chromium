@@ -15,6 +15,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -115,8 +117,13 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
   DCHECK(intent);
   DCHECK(intent->IsShareIntent());
 
-  ShareAction* share_action = share_action_cache_->GetActionFromName(
-      l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME));
+  const std::u16string action_name =
+      features::IsNameEnabled()
+          ? NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+                IDS_NEARBY_SHARE_FEATURE_NAME_PH)
+          : l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
+  ShareAction* share_action =
+      share_action_cache_->GetActionFromName(action_name);
   if (!share_action || !share_action->ShouldShowAction(
                            intent, false /*contains_google_document=*/)) {
     std::move(delivered_callback).Run(SharesheetResult::kCancel);
@@ -434,7 +441,12 @@ SharesheetServiceDelegator* SharesheetService::GetDelegator(
 void SharesheetService::RecordUserActionMetrics(
     const std::u16string& target_name) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (target_name == l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME)) {
+  const std::u16string quick_share_name =
+      features::IsNameEnabled()
+          ? NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+                IDS_NEARBY_SHARE_FEATURE_NAME_PH)
+          : l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
+  if (target_name == quick_share_name) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kNearbyAction);
   } else if (target_name ==

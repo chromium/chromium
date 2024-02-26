@@ -345,8 +345,8 @@ suite('DiscoveryPageTest', function() {
     await startDiscovery();
     flush();
 
-    const expectedMessage = 'To use Nearby Share, turn on Bluetooth' +
-        ' and Wi-Fi';
+    const expectedMessage = discoveryPageElement.i18n(
+        'nearbyShareErrorNoConnectionMediumDescription');
     assertEquals(
         expectedMessage,
         discoveryPageElement.shadowRoot.querySelector('#errorDescription')
