@@ -6,49 +6,60 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 
+import java.util.List;
+
 /**
  * {@link StripLayoutView} is used to keep track of the strip position and rendering information for
  * a particular item on the tab strip (e.g. tab, group indicator, etc.) so it can draw itself onto
  * the GL canvas.
  */
-public interface StripLayoutView extends VirtualView {
+public abstract class StripLayoutView implements VirtualView {
     /**
      * @return The horizontal position of the view.
      */
-    float getDrawX();
+    public abstract float getDrawX();
 
     /**
      * @param x The horizontal position of the view.
      */
-    void setDrawX(float x);
+    public abstract void setDrawX(float x);
 
     /**
      * @return The vertical position of the view.
      */
-    float getDrawY();
+    public abstract float getDrawY();
 
     /**
      * @param y The vertical position of the view.
      */
-    void setDrawY(float y);
+    public abstract void setDrawY(float y);
 
     /**
      * @return The width of the view.
      */
-    float getWidth();
+    public abstract float getWidth();
 
     /**
      * @param width The width of the view.
      */
-    void setWidth(float width);
+    public abstract void setWidth(float width);
 
     /**
      * @return The height of the view.
      */
-    float getHeight();
+    public abstract float getHeight();
 
     /**
      * @param height The height of the view.
      */
-    void setHeight(float height);
+    public abstract void setHeight(float height);
+
+    /**
+     * Get a list of virtual views for accessibility events.
+     *
+     * @param views A List to populate with virtual views.
+     */
+    public void getVirtualViews(List<VirtualView> views) {
+        views.add(this);
+    }
 }

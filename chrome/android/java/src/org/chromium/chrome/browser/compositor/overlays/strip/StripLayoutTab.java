@@ -40,7 +40,7 @@ import java.util.List;
  * {@link StripLayoutTab} is used to keep track of the strip position and rendering information for
  * a particular tab so it can draw itself onto the GL canvas.
  */
-public class StripLayoutTab implements StripLayoutView {
+public class StripLayoutTab extends StripLayoutView {
     /** An observer interface for StripLayoutTab. */
     public interface Observer {
         /** @param visible Whether the StripLayoutTab is visible. */
@@ -327,14 +327,10 @@ public class StripLayoutTab implements StripLayoutView {
         mObservers.removeObserver(observer);
     }
 
-    /**
-     * Get a list of virtual views for accessibility events.
-     *
-     * @param views     A List to populate with virtual views.
-     */
+    @Override
     public void getVirtualViews(List<VirtualView> views) {
-        views.add(this);
-        if (mShowingCloseButton) views.add(mCloseButton);
+        super.getVirtualViews(views);
+        if (mShowingCloseButton) mCloseButton.getVirtualViews(views);
     }
 
     /**

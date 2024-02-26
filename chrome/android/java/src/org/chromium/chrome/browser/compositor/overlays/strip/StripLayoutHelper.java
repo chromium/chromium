@@ -182,6 +182,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private StripStacker mStripStacker = new ScrollingStripStacker();
 
     // Internal State
+    private StripLayoutView[] mStripViews = new StripLayoutView[0];
     private StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
     private StripLayoutTab[] mStripTabsVisuallyOrdered = new StripLayoutTab[0];
     private StripLayoutTab[] mStripTabsToRender = new StripLayoutTab[0];
@@ -474,11 +475,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param views A List to populate with virtual views.
      */
     public void getVirtualViews(List<VirtualView> views) {
-        for (int i = 0; i < mStripTabs.length; i++) {
-            StripLayoutTab tab = mStripTabs[i];
-            tab.getVirtualViews(views);
+        for (int i = 0; i < mStripViews.length; i++) {
+            final StripLayoutView view = mStripViews[i];
+            view.getVirtualViews(views);
         }
-        if (mNewTabButton.isVisible()) views.add(mNewTabButton);
+        if (mNewTabButton.isVisible()) mNewTabButton.getVirtualViews(views);
     }
 
     /**
@@ -649,14 +650,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mWidth = width;
         mHeight = height;
 
-        for (int i = 0; i < mStripTabs.length; i++) {
-            mStripTabs[i].setHeight(mHeight);
+        for (int i = 0; i < mStripViews.length; i++) {
+            final StripLayoutView view = mStripViews[i];
+            view.setHeight(mHeight);
         }
 
         if (widthChanged) {
             computeAndUpdateTabWidth(false, false);
         }
-        if (mStripTabs.length > 0) mUpdateHost.requestUpdate();
+        if (mStripViews.length > 0) mUpdateHost.requestUpdate();
 
         // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
         mTabMenu.dismiss();
@@ -780,6 +782,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         return doneAnimating;
+    }
+
+    void setIsFirstLayoutPassForTesting(boolean isFirstLayoutPass) {
+        mIsFirstLayoutPass = isFirstLayoutPass;
     }
 
     /**
@@ -975,6 +981,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * initialized.
      */
     private void prepareEmptyPlaceholderStripLayout() {
+        // TODO(crbug.com/1524166): Investigate if we can update for tab group indicators.
         if (mPlaceholderStripReady || mTabStateInitialized) return;
 
         // 1. Fill with placeholder tabs.
@@ -982,6 +989,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 0; i < mStripTabs.length; i++) {
             mStripTabs[i] = createPlaceholderStripTab();
         }
+        rebuildNonTabViews();
 
         // 2. Initialize the draw parameters.
         computeAndUpdateTabWidth(false, false);
@@ -1185,6 +1193,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mStripTabs[0].setEndDividerVisible(endDividerVisible);
 
         for (int i = 1; i < mStripTabs.length; i++) {
+            // TODO(crbug.com/1524186): Update so tabs are "aware" of adjacent non-tab objects.
             final StripLayoutTab prevTab = mStripTabs[i - 1];
             final StripLayoutTab currTab = mStripTabs[i];
             boolean currTabSelected = selectedIndex == i;
@@ -2024,8 +2033,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 1. Compute the width of the available space for all tabs.
         float stripWidth = mWidth - mLeftMargin - mRightMargin;
 
-        // 2. Compute the effective width of every tab.
-        float tabsWidth = getNumLiveTabs() * (mCachedTabWidth - mTabOverlapWidth);
+        // 2. Compute the effective width of every strip view (i.e. tabs, title indicators).
+        float tabsWidth = 0.f;
+        for (int i = 0; i < mStripViews.length; i++) {
+            final StripLayoutView view = mStripViews[i];
+            if (view instanceof final StripLayoutTab tab) {
+                if (!tab.isDying() && !tab.isDraggedOffStrip()) {
+                    tabsWidth += mCachedTabWidth - mTabOverlapWidth;
+                }
+            } else {
+                tabsWidth += view.getWidth();
+            }
+        }
 
         if (mInReorderMode || mTabGroupMarginAnimRunning) {
             tabsWidth += mStripStartMarginForReorder;
@@ -2058,17 +2077,30 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             setAccessibilityDescription(tabs[i], tab);
         }
 
-        int oldStripLength = mStripTabs.length;
+        int oldTabsLength = mStripTabs.length;
         mStripTabs = tabs;
+        rebuildNonTabViews();
 
         List<Animator> animationList = null;
         // If multi-step animation is running, the resize will be handled elsewhere.
-        if (mStripTabs.length != oldStripLength && !mMultiStepTabCloseAnimRunning) {
+        if (mStripTabs.length != oldTabsLength && !mMultiStepTabCloseAnimRunning) {
+            computeTabInitialPositions();
             animationList = resizeTabStrip(true, delayResize, deferAnimations);
         }
 
         updateVisualTabOrdering();
         return animationList;
+    }
+
+    private void rebuildNonTabViews() {
+        // TODO(crbug.com/1524186): Rebuild the title indicators if necessary here.
+        int numViews = mStripTabs.length;
+        if (numViews != mStripViews.length) {
+            mStripViews = new StripLayoutView[numViews];
+        }
+        for (int i = 0; i < mStripViews.length; i++) {
+            mStripViews[i] = mStripTabs[i];
+        }
     }
 
     private List<Animator> resizeTabStrip(boolean animate, boolean delay, boolean deferAnimations) {
@@ -2189,6 +2221,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 1. Compute the width of the available space for all tabs.
         float stripWidth = mWidth - mLeftMargin - mRightMargin;
+        for (int i = 0; i < mStripViews.length; i++) {
+            final StripLayoutView view = mStripViews[i];
+            if (!(view instanceof StripLayoutTab)) {
+                stripWidth -= view.getWidth();
+            }
+        }
 
         // 2. Compute additional width we gain from overlapping the tabs.
         float overlapWidth = mTabOverlapWidth * (numTabs - 1);
@@ -2230,8 +2268,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private void updateStrip() {
-        if (mModel == null) return;
-
         // TODO(dtrainor): Remove this once tabCreated() is refactored to be called even from
         // restore.
         if (mTabStateInitialized
@@ -2286,17 +2322,25 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                             - mStripStartMarginForReorder;
         }
 
-        for (int i = 0; i < mStripTabs.length; i++) {
-            StripLayoutTab tab = mStripTabs[i];
-            tab.setIdealX(tabPosition);
-            // idealX represents where a tab should be placed in the tab strip. mCachedTabWidth may
-            // be different than tab.getWidth() when a tab is closing because for the improved tab
-            // strip animations the tab width expansion animations will not have run yet.
-            float tabWidth = mMultiStepTabCloseAnimRunning ? mCachedTabWidth : tab.getWidth();
-            float delta = (tabWidth - mTabOverlapWidth) * tab.getWidthWeight();
-            if (mInReorderMode || mTabGroupMarginAnimRunning) {
-                delta += tab.getTrailingMargin();
+        for (int i = 0; i < mStripViews.length; i++) {
+            final StripLayoutView view = mStripViews[i];
+            float delta;
+            if (view instanceof StripLayoutTab tab) {
+                // idealX represents where a tab should be placed in the tab strip. mCachedTabWidth
+                // may be different than tab.getWidth() when a tab is closing because for the
+                // improved tab strip animations the tab width expansion animations will not have
+                // run yet.
+                tab.setIdealX(tabPosition);
+                float tabWidth = mMultiStepTabCloseAnimRunning ? mCachedTabWidth : tab.getWidth();
+                delta = (tabWidth - mTabOverlapWidth) * tab.getWidthWeight();
+                if (mInReorderMode || mTabGroupMarginAnimRunning) {
+                    delta += tab.getTrailingMargin();
+                }
+            } else {
+                view.setDrawX(tabPosition);
+                delta = view.getWidth();
             }
+
             delta = MathUtils.flipSignIf(delta, LocalizationUtils.isLayoutRtl());
             tabPosition += delta;
         }
@@ -2330,6 +2374,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (isEmpty) return null;
 
         // 2. Get offset from strip stacker.
+        // Note: This method anchors the NTB to either a static position at the end of the strip OR
+        // right next to the final tab in the strip. This only WAI if the final view in the strip is
+        // guaranteed to be a tab. If this changes (e.g. we allow empty tab groups), then this will
+        // need to be updated.
         float offset =
                 mStripStacker.computeNewTabButtonOffset(
                         mStripTabs,
@@ -2380,24 +2428,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private float calculateDeltaToMakeTabVisible(StripLayoutTab tab) {
         if (tab == null) return 0.f;
 
-        return calculateDeltaToMakeIndexVisible(findIndexForTab(tab.getId()));
-    }
-
-    /**
-     * @param index The index of the tab to make fully visible.
-     * @return Scroll delta to make the tab at the given index fully visible.
-     */
-    private float calculateDeltaToMakeIndexVisible(int index) {
-        if (index == TabModel.INVALID_TAB_INDEX) return 0.f;
-
         // 1. Calculate offsets to fully show the tab at the start and end of the strip.
         final boolean isRtl = LocalizationUtils.isLayoutRtl();
         final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
         final float startOffset = (isRtl ? mRightFadeWidth : mLeftFadeWidth);
         final float endOffset = (isRtl ? mLeftFadeWidth : mRightFadeWidth);
+        final float tabPosition = tab.getIdealX() - mScrollOffset + mLeftMargin;
 
-        final float optimalStart = startOffset + (-index * tabWidth);
-        final float optimalEnd = mWidth - endOffset - ((index + 1) * tabWidth) - mTabOverlapWidth;
+        final float optimalStart = startOffset - tabPosition;
+        final float optimalEnd = mWidth - endOffset - tabWidth - tabPosition - mTabOverlapWidth;
 
         // 2. Return the scroll delta to make the given tab fully visible with the least scrolling.
         // This will result in the tab being at either the start or end of the strip.
@@ -2411,6 +2450,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return Math.abs(deltaToOptimalStart) < Math.abs(deltaToOptimalEnd)
                 ? deltaToOptimalStart
                 : deltaToOptimalEnd;
+    }
+
+    /**
+     * @param index The index of the tab to make fully visible.
+     * @return Scroll delta to make the tab at the given index fully visible.
+     */
+    private float calculateDeltaToMakeIndexVisible(int index) {
+        if (index == TabModel.INVALID_TAB_INDEX) return 0.f;
+
+        return calculateDeltaToMakeTabVisible(mStripTabs[index]);
     }
 
     void setTabAtPositionForTesting(StripLayoutTab tab) {
@@ -3126,6 +3175,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
+            // TODO(crbug.com/1524185): Account for non-tab views when setting the new offset.
             if (isDraggingInteractWithGroup) {
                 offset -= (mInteractingTab.getIdealX() - oldIdealX);
                 // When the strip is scrolling, deltaX is already accounted for by idealX. This is
@@ -3280,6 +3330,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. Swap the tabs.
         moveElement(mStripTabs, index, newIndex);
+        rebuildNonTabViews();
     }
 
     private void handleReorderAutoScrolling(long time) {

@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 /**
  * {@link CompositorButton} keeps track of state for buttons that are rendered in the compositor.
  */
-public class CompositorButton implements StripLayoutView {
+public class CompositorButton extends StripLayoutView {
     /**
      * A property that can be used with a {@link
      * org.chromium.chrome.browser.layouts.animation.CompositorAnimator}.
