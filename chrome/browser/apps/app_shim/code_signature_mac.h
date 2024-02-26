@@ -12,10 +12,23 @@
 
 namespace apps {
 
+enum class SignatureValidationType {
+  // Verify that the running application has a valid code signature and
+  // that it is unchanged from the copy on disk.
+  DynamicAndStatic,
+
+  // Verify that the running application has a valid code signature.
+  // Do not verify that the application matches the copy on disk.
+  DynamicOnly,
+};
+
 // Returns whether `process` has a valid code signature that fulfills
 // `requirement`.
-OSStatus ProcessIsSignedAndFulfillsRequirement(pid_t process,
-                                               SecRequirementRef requirement);
+OSStatus ProcessIsSignedAndFulfillsRequirement(
+    pid_t process,
+    SecRequirementRef requirement,
+    SignatureValidationType validation_type =
+        SignatureValidationType::DynamicAndStatic);
 
 // Reason why no requirement could be returned.
 enum class MissingRequirementReason {

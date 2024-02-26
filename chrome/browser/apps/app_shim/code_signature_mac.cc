@@ -146,17 +146,92 @@ base::apple::ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
   return requirement;
 }
 
-// Verify the code signature of |pid| against |requirement|.
-OSStatus ProcessIsSignedAndFulfillsRequirement(pid_t pid,
-                                               SecRequirementRef requirement) {
+namespace {
+
+// Return a dictionary of attributes suitable for looking up `pid` with
+// `SecCodeCopyGuestWithAttributes`.
+base::apple::ScopedCFTypeRef<CFDictionaryRef> AttributesForGuestValidation(
+    pid_t pid,
+    SignatureValidationType validation_type);
+
+// Retrieve the Info.plist from the given process's dynamic code signature.
+base::apple::ScopedCFTypeRef<CFDataRef> InfoPlistForProcess(pid_t pid) {
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes =
+      AttributesForGuestValidation(pid,
+                                   SignatureValidationType::DynamicAndStatic);
+
+  base::apple::ScopedCFTypeRef<SecCodeRef> code;
+  if (OSStatus status = SecCodeCopyGuestWithAttributes(
+          nullptr, attributes.get(), kSecCSDefaultFlags,
+          code.InitializeInto())) {
+    DumpOSStatusError(status, "SecCodeCopyGuestWithAttributes");
+    return base::apple::ScopedCFTypeRef<CFDataRef>();
+  }
+
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> signing_information;
+  if (OSStatus status =
+          SecCodeCopySigningInformation(code.get(), kSecCSDynamicInformation,
+                                        signing_information.InitializeInto())) {
+    DumpOSStatusError(status, "SecCodeCopySigningInformation");
+    return base::apple::ScopedCFTypeRef<CFDataRef>();
+  }
+
+  CFDictionaryRef info_plist =
+      base::apple::GetValueFromDictionary<CFDictionaryRef>(
+          signing_information.get(), kSecCodeInfoPList);
+  if (!info_plist) {
+    DumpError("Code signing information was missing Info.plist");
+    return base::apple::ScopedCFTypeRef<CFDataRef>();
+  }
+
+  base::apple::ScopedCFTypeRef<CFDataRef> info_plist_data(
+      CFPropertyListCreateData(nullptr, info_plist,
+                               kCFPropertyListXMLFormat_v1_0, 0, nullptr));
+  if (!info_plist_data) {
+    DumpError("Failed to serialize Info.plist to XML");
+    return base::apple::ScopedCFTypeRef<CFDataRef>();
+  }
+  return info_plist_data;
+}
+
+// Return a dictionary of attributes suitable for looking up `pid` with
+// `SecCodeCopyGuestWithAttributes`.
+base::apple::ScopedCFTypeRef<CFDictionaryRef> AttributesForGuestValidation(
+    pid_t pid,
+    SignatureValidationType validation_type) {
   base::apple::ScopedCFTypeRef<CFNumberRef> pid_cf(
       CFNumberCreate(nullptr, kCFNumberIntType, &pid));
-  const void* attribute_keys[] = {kSecGuestAttributePid};
-  const void* attribute_values[] = {pid_cf.get()};
+  size_t attribute_count = 1;
+  const void* attribute_keys[3] = {kSecGuestAttributePid};
+  const void* attribute_values[3] = {pid_cf.get()};
+
+  base::apple::ScopedCFTypeRef<CFDataRef> info_plist;
+  if (validation_type == SignatureValidationType::DynamicOnly) {
+    info_plist = InfoPlistForProcess(pid);
+    attribute_keys[1] = kSecGuestAttributeDynamicCode;
+    attribute_values[1] = kCFBooleanTrue;
+    attribute_keys[2] = kSecGuestAttributeDynamicCodeInfoPlist;
+    attribute_values[2] = info_plist.get();
+    attribute_count = 3;
+  }
+
   base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes(CFDictionaryCreate(
-      nullptr, attribute_keys, attribute_values, std::size(attribute_keys),
+      nullptr, attribute_keys, attribute_values, attribute_count,
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+  return attributes;
+}
+
+}  // namespace
+
+// Verify the code signature of |pid| against |requirement|.
+OSStatus ProcessIsSignedAndFulfillsRequirement(
+    pid_t pid,
+    SecRequirementRef requirement,
+    SignatureValidationType validation_type) {
   base::apple::ScopedCFTypeRef<SecCodeRef> code;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes =
+      AttributesForGuestValidation(pid, validation_type);
+
   OSStatus status = SecCodeCopyGuestWithAttributes(
       nullptr, attributes.get(), kSecCSDefaultFlags, code.InitializeInto());
   if (status != errSecSuccess) {

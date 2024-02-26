@@ -109,8 +109,11 @@ bool ValidateParentProcess() {
     }
   }
 
+  // Perform dynamic validation only as Chrome.app's dynamic signature may not
+  // match its on-disk signature if there is an update pending.
   OSStatus status = apps::ProcessIsSignedAndFulfillsRequirement(
-      getppid(), parent_app_requirement.value().get());
+      getppid(), parent_app_requirement.value().get(),
+      apps::SignatureValidationType::DynamicOnly);
   return status == errSecSuccess;
 }
 
