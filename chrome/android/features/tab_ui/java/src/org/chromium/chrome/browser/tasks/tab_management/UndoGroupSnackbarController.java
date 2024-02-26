@@ -185,6 +185,8 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     public void onDismissNoAction(Object actionData) {
         // Delete the original tab group titles of the merging tabs once the merge is committed.
         for (TabUndoInfo info : (List<TabUndoInfo>) actionData) {
+            if (info.tab.getRootId() == info.tabOriginalRootId) continue;
+
             TabGroupTitleUtils.deleteTabGroupTitle(info.tabOriginalRootId);
         }
     }

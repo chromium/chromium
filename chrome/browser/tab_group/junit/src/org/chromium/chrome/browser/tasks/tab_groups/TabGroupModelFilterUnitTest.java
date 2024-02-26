@@ -930,7 +930,7 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab6, TAB1_ROOT_ID);
         verify(mTabModel).moveTab(mTab5.getId(), ++startIndex);
         verify(mTabModel).moveTab(mTab6.getId(), ++startIndex);
-        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab6, mTab1.getId());
+        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab6, TAB1_ROOT_ID);
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab5.getId()).toArray(),
                 expectedGroup.toArray());
@@ -1540,6 +1540,13 @@ public class TabGroupModelFilterUnitTest {
         List<Integer> originalRootIds = new ArrayList<>();
         List<Token> originalTabGroupIds = new ArrayList<>();
 
+        List<Tab> expectedNotifiedTabs = new ArrayList();
+        expectedNotifiedTabs.add(mTab5);
+        expectedNotifiedTabs.addAll(expectedSourceTabs);
+        originalIndexes.add(
+                TabModelUtils.getTabIndexById(mTabGroupModelFilter.getTabModel(), mTab5.getId()));
+        originalRootIds.add(mTab5.getRootId());
+        originalTabGroupIds.add(mTab5.getTabGroupId());
         for (Tab tab : expectedSourceTabs) {
             // Use tab2 initial index for both related tabs index as the logic moves tab2 after
             // saving its index but before retrieving index for related tab3.
@@ -1553,7 +1560,7 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), false);
         verify(mTabGroupModelFilterObserver)
                 .didCreateGroup(
-                        expectedSourceTabs,
+                        expectedNotifiedTabs,
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,
@@ -1576,6 +1583,13 @@ public class TabGroupModelFilterUnitTest {
         List<Integer> originalRootIds = new ArrayList<>();
         List<Token> originalTabGroupIds = new ArrayList<>();
 
+        List<Tab> expectedNotifiedTabs = new ArrayList();
+        expectedNotifiedTabs.add(mTab4);
+        expectedNotifiedTabs.addAll(expectedSourceTabs);
+        originalIndexes.add(
+                TabModelUtils.getTabIndexById(mTabGroupModelFilter.getTabModel(), mTab4.getId()));
+        originalRootIds.add(mTab4.getRootId());
+        originalTabGroupIds.add(mTab4.getTabGroupId());
         for (Tab tab : expectedSourceTabs) {
             originalIndexes.add(
                     TabModelUtils.getTabIndexById(
@@ -1587,7 +1601,7 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab3.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver)
                 .didCreateGroup(
-                        expectedSourceTabs,
+                        expectedNotifiedTabs,
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,
@@ -1604,12 +1618,11 @@ public class TabGroupModelFilterUnitTest {
     @Test
     public void mergeTabToTab_notifyFilterObserver() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab1));
-        List<Tab> expectedSourceTabs = mTabGroupModelFilter.getRelatedTabList(mTab1.getId());
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
         List<Token> originalTabGroupIds = new ArrayList<>();
 
-        for (Tab tab : expectedSourceTabs) {
+        for (Tab tab : expectedGroup) {
             originalIndexes.add(
                     TabModelUtils.getTabIndexById(mTabGroupModelFilter.getTabModel(), tab.getId()));
             originalRootIds.add(tab.getRootId());
@@ -1622,7 +1635,7 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver)
                 .didCreateGroup(
-                        expectedSourceTabs,
+                        expectedGroup,
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,
@@ -1637,29 +1650,12 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void mergeTabToTab_doNotNotifyFilterObserver() {
-        List<Tab> expectedSourceTabs = mTabGroupModelFilter.getRelatedTabList(mTab1.getId());
-        List<Integer> originalIndexes = new ArrayList<>();
-        List<Integer> originalRootIds = new ArrayList<>();
-        List<Token> originalTabGroupIds = new ArrayList<>();
-
-        for (Tab tab : expectedSourceTabs) {
-            originalIndexes.add(
-                    TabModelUtils.getTabIndexById(mTabGroupModelFilter.getTabModel(), tab.getId()));
-            originalRootIds.add(tab.getRootId());
-            originalTabGroupIds.add(tab.getTabGroupId());
-        }
-
         Token tabGroupId = new Token(33L, 28L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), true);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(
-                        expectedSourceTabs,
-                        originalIndexes,
-                        originalRootIds,
-                        originalTabGroupIds,
-                        TAB_TITLE);
+                .didCreateGroup(any(), any(), any(), any(), any());
 
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab4.getTabGroupId(), tabGroupId);

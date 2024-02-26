@@ -173,18 +173,30 @@ public class TabGroupModelFilter extends TabModelFilter {
                         && sourceTab.isIncognito() == destinationTab.isIncognito()
                 : "Attempting to merge groups from different model";
 
-        int destinationRootId = destinationTab.getRootId();
         List<Tab> tabsToMerge = getRelatedTabList(sourceTabId);
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
-        List<Integer> originalIndexes = new ArrayList<>();
-        List<Integer> originalRootIds = new ArrayList<>();
-        List<Token> originalTabGroupIds = new ArrayList<>();
-        String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
 
-        Token destinationTabGroupId =
-                getOrCreateTabGroupIdWithDefault(destinationTab, sourceTab.getTabGroupId());
+        if (!skipUpdateTabModel && needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
+            mergeListOfTabsToGroup(tabsToMerge, destinationTab, true, !skipUpdateTabModel);
+        } else {
+            int destinationRootId = destinationTab.getRootId();
+            List<Tab> tabsIncludingDestination = new ArrayList<>();
+            List<Integer> originalIndexes = new ArrayList<>();
+            List<Integer> originalRootIds = new ArrayList<>();
+            List<Token> originalTabGroupIds = new ArrayList<>();
+            String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
 
-        if (skipUpdateTabModel || !needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
+            if (!skipUpdateTabModel) {
+                tabsIncludingDestination.add(destinationTab);
+                originalIndexes.add(
+                        TabModelUtils.getTabIndexById(getTabModel(), destinationTab.getId()));
+                originalRootIds.add(destinationRootId);
+                originalTabGroupIds.add(destinationTab.getTabGroupId());
+            }
+
+            Token destinationTabGroupId =
+                    getOrCreateTabGroupIdWithDefault(destinationTab, sourceTab.getTabGroupId());
+
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.willMergeTabToGroup(
                         tabsToMerge.get(tabsToMerge.size() - 1), destinationRootId);
@@ -196,6 +208,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                 if (!skipUpdateTabModel) {
                     int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
                     assert index != TabModel.INVALID_TAB_INDEX;
+                    tabsIncludingDestination.add(tab);
                     originalIndexes.add(index);
                     originalRootIds.add(tab.getRootId());
                     originalTabGroupIds.add(tab.getTabGroupId());
@@ -215,16 +228,13 @@ public class TabGroupModelFilter extends TabModelFilter {
                 // skip notifying the UndoGroupSnackbarController observer which shows the snackbar.
                 if (!skipUpdateTabModel) {
                     observer.didCreateGroup(
-                            tabsToMerge,
+                            tabsIncludingDestination,
                             originalIndexes,
                             originalRootIds,
                             originalTabGroupIds,
                             destinationGroupTitle);
                 }
             }
-        } else {
-            // For non adjacent tabs, the same logic as above applies regarding the tab strip skip.
-            mergeListOfTabsToGroup(tabsToMerge, destinationTab, true, !skipUpdateTabModel);
         }
     }
 
@@ -242,15 +252,38 @@ public class TabGroupModelFilter extends TabModelFilter {
      */
     public void mergeListOfTabsToGroup(
             List<Tab> tabs, Tab destinationTab, boolean isSameGroup, boolean notify) {
-        int destinationRootId = destinationTab.getRootId();
         // Check whether the destination tab is in a tab group before getOrCreateTabGroupId so we
         // send the correct signal for whether a tab group was newly created.
         boolean didCreateGroup = isTabInTabGroup(destinationTab);
-        Token destinationTabGroupId = getOrCreateTabGroupId(destinationTab);
-        int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
+        List<Tab> mergedTabs = new ArrayList<>();
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
         List<Token> originalTabGroupIds = new ArrayList<>();
+
+        // Include the destination tab in the undo list so that it gets back a null tab group ID
+        // upon undo if it didn't have one.
+        int destinationRootId = destinationTab.getRootId();
+        int destinationTabIndex =
+                TabModelUtils.getTabIndexById(getTabModel(), destinationTab.getId());
+        assert destinationTabIndex != TabModel.INVALID_TAB_INDEX;
+        mergedTabs.add(destinationTab);
+        originalIndexes.add(destinationTabIndex);
+        originalRootIds.add(destinationRootId);
+        originalTabGroupIds.add(destinationTab.getTabGroupId());
+
+        Token destinationTabGroupId;
+        if (isTabInTabGroup(destinationTab)) {
+            destinationTabGroupId = destinationTab.getTabGroupId();
+        } else {
+            Token mergedTabGroupId = null;
+            for (Tab tab : tabs) {
+                mergedTabGroupId = tab.getTabGroupId();
+                if (mergedTabGroupId != null) break;
+            }
+            destinationTabGroupId =
+                    getOrCreateTabGroupIdWithDefault(destinationTab, mergedTabGroupId);
+        }
+        int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
 
         for (int i = 0; i < tabs.size(); i++) {
@@ -261,13 +294,16 @@ public class TabGroupModelFilter extends TabModelFilter {
                     observer.willMergeTabToGroup(tab, destinationRootId);
                 }
             }
+
+            if (tab.getId() == destinationTab.getId()) continue;
+
             int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
             assert index != TabModel.INVALID_TAB_INDEX;
+
+            mergedTabs.add(tab);
             originalIndexes.add(index);
             originalRootIds.add(tab.getRootId());
             originalTabGroupIds.add(tab.getTabGroupId());
-
-            if (tab.getId() == destinationTab.getId()) continue;
 
             boolean isMergingBackward = index < destinationIndexInTabModel;
 
@@ -310,7 +346,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         if (notify) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didCreateGroup(
-                        tabs,
+                        mergedTabs,
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,

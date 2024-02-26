@@ -2020,10 +2020,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
+        int[] ungroupedRootId = new int[1];
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabGroupTitleUtils.storeTabGroupTitle(
                             normalTabModel.getTabAt(0).getRootId(), "Foo");
+                    ungroupedRootId[0] = normalTabModel.getTabAt(2).getRootId();
+                    TabGroupTitleUtils.storeTabGroupTitle(ungroupedRootId[0], "Bar");
                 });
         verifyTabSwitcherCardCount(cta, 2);
         assertTrue(
@@ -2037,13 +2040,16 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoGroupSnackbarController);
 
-        // Check that the old group title was deleted when the group merge is committed.
+        // Check that the old group title was handed over when the group merge is committed
+        // and no longer exists.
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertNull(
+                    assertNull(TabGroupTitleUtils.getTabGroupTitle(ungroupedRootId[0]));
+                    assertEquals(
+                            "Foo",
                             TabGroupTitleUtils.getTabGroupTitle(
-                                    normalTabModel.getTabAt(1).getRootId()));
+                                    normalTabModel.getTabAt(0).getRootId()));
                 });
     }
 

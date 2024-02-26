@@ -590,9 +590,11 @@ class TabListMediator {
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                     if (!mVisible) return;
                     assert !(mActionsOnAllRelatedTabs && mTabGridDialogHandler != null);
-                    TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-                    Tab groupTab = filter.getTabAt(prevFilterIndex);
-                    boolean isUngroupingLastTabInGroup = groupTab.getId() == movedTab.getId();
+                    TabGroupModelFilter filter =
+                            (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                    Tab previousGroupTab = filter.getTabAt(prevFilterIndex);
+                    boolean isUngroupingLastTabInGroup =
+                            previousGroupTab.getId() == movedTab.getId();
                     if (mActionsOnAllRelatedTabs) {
                         // When ungrouping the last tab in a group no update was needed. However,
                         // with tab groups of size 1 an update is still needed to ensure the
@@ -608,17 +610,18 @@ class TabListMediator {
                         // singular tab). However, always update the previous group to clean up old
                         // state. The addition of the new tab to an existing group is handled in
                         // didMergeTabToGroup().
-                        if (!filter.isTabInTabGroup(movedTab) && groupTab != movedTab) {
+                        if (filter.getRelatedTabCountForRootId(movedTab.getRootId()) == 1
+                                && movedTab != previousGroupTab) {
                             int filterIndex = filter.indexOf(movedTab);
                             addTabInfoToModel(
                                     PseudoTab.fromTab(movedTab),
                                     mModel.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
                         }
-                        boolean isSelected = currentSelectedTabId == groupTab.getId();
+                        boolean isSelected = currentSelectedTabId == previousGroupTab.getId();
                         updateTab(
                                 mModel.indexOfNthTabCard(prevFilterIndex),
-                                PseudoTab.fromTab(groupTab),
+                                PseudoTab.fromTab(previousGroupTab),
                                 isSelected,
                                 true,
                                 false);
