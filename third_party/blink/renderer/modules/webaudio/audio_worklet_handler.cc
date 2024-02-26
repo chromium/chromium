@@ -128,7 +128,7 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
     inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
   }
   for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
-    if (Output(i).RenderingFanOutCount() == 0) {
+    if (!Output(i).IsConnectedDuringRendering()) {
       // If the output does not have an active outgoing connection, the handler
       // needs to provide an AudioBus for the AudioWorkletProcessor.
       if (!unconnected_outputs_[i] ||
