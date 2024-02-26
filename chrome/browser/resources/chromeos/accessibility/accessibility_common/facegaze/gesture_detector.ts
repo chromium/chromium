@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
-
-import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 /**
  * The facial gestures that are supported by FaceGaze. New values should also

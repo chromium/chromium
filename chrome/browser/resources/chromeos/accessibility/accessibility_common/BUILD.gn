@@ -13,10 +13,6 @@ import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
-declare_args() {
-  include_mediapipe_task_vision_files_for_facegaze = false
-}
-
 group("build") {
   deps = [ ":copied_files" ]
 }
@@ -27,16 +23,14 @@ accessibility_common_dir =
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
 
-# Directories for generated third_party libraries.
-third_party_stage_dir = "$ts_build_staging_dir/third_party"
-mediapipe_task_vision_dir = "mediapipe/task_vision"
-mediapipe_availability_dir = "mediapipe/availability"
-
 tsc_out_dir = "$target_gen_dir/tsc"
 
 # Location of common typescript output.
 common_tsc_dir =
     "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
+
+# Location of third party mediapipe files.
+mediapipe_dir = "//third_party/node/node_modules/@mediapipe/tasks-vision/"
 
 misc_sources = [
   "background.html",
@@ -68,6 +62,7 @@ ts_modules = [
   "dictation/parse/parse_strategy.ts",
   "dictation/parse/pumpkin/pumpkin_constants.ts",
   "dictation/parse/speech_parser.ts",
+  "facegaze/camera_stream.ts",
   "facegaze/facegaze.ts",
   "facegaze/gesture_detector.ts",
   "facegaze/gesture_handler.ts",
@@ -76,11 +71,8 @@ ts_modules = [
   "magnifier/magnifier.ts",
 ]
 
-if (include_mediapipe_task_vision_files_for_facegaze) {
-  ts_modules += [ "facegaze/camera_stream.ts" ]
-}
-
 ts_definitions = [
+  "$mediapipe_dir/vision.d.ts",
   "dictation/parse/pumpkin/pumpkin_tagger_externs.d.ts",
   "../definitions/accessibility_features_mv2.d.ts",
   "../definitions/accessibility_private_mv2.d.ts",
@@ -103,16 +95,6 @@ ts_definitions = [
   "//tools/typescript/definitions/i18n.d.ts",
 ]
 
-# Generated files required for ts_build.
-generated_ts_definitions =
-    [ "$third_party_stage_dir/$mediapipe_task_vision_dir/vision.d.ts" ]
-generated_ts_modules =
-    [ "third_party/$mediapipe_availability_dir/mediapipe_availability.ts" ]
-if (include_mediapipe_task_vision_files_for_facegaze) {
-  generated_ts_modules +=
-      [ "third_party/$mediapipe_task_vision_dir/task_vision.js" ]
-}
-
 ts_library("ts_build") {
   root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
@@ -123,20 +105,25 @@ ts_library("ts_build") {
 
   # Targets that need to run before running the TS build.
   extra_deps = [
-    # Mediapipe deps.
-    ":extract_mediapipe_task_vision_files",
-    ":mediapipe_availability",
-
     #copied files
     ":stage_ts_build",
   ]
 
-  path_mappings =
-      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+  path_mappings = [
+    "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir),
+    "/third_party/mediapipe/vision.js|" +
+        rebase_path("$mediapipe_dir/vision.d.ts", target_gen_dir),
 
-  definitions = ts_definitions + generated_ts_definitions
+    # For type-checking purposes, map vision_bundle.mjs to the definition file
+    # in third_party/.
+    "chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs|" + rebase_path(
+            "$mediapipe_dir/vision.d.ts",
+            target_gen_dir),
+  ]
 
-  in_files = generated_ts_modules + js_modules + ts_modules
+  definitions = ts_definitions
+
+  in_files = js_modules + ts_modules
 
   tsconfig_base = "../tsconfig.base.json"
 }
@@ -152,6 +139,7 @@ run_jsbundler("copied_files") {
     "magnifier",
   ]
   deps = [
+    ":copy_mediapipe_files",
     ":ts_build",
     "../common:copied_files",
   ]
@@ -164,20 +152,16 @@ run_jsbundler("copied_files") {
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
+}
 
-  if (include_mediapipe_task_vision_files_for_facegaze) {
-    # Include generated mediapipe files that are required for facegaze.
-    sources += [
-      "$third_party_stage_dir/$mediapipe_task_vision_dir/face_landmarker.task",
-      "$third_party_stage_dir/$mediapipe_task_vision_dir/vision_wasm_internal.js",
-      "$third_party_stage_dir/$mediapipe_task_vision_dir/vision_wasm_internal.wasm",
-    ]
-
-    deps += [ ":extract_mediapipe_task_vision_files" ]
-    rewrite_rules +=
-        [ rebase_path("$third_party_stage_dir/$mediapipe_task_vision_dir",
-                      root_build_dir) + ":" ]
-  }
+# Copies required mediapipe files into the accessibility_common extension
+# directory so that they are available at runtime.
+copy("copy_mediapipe_files") {
+  sources = [
+    "$mediapipe_dir/vision_bundle.mjs",
+    "$mediapipe_dir/wasm/vision_wasm_internal.js",
+  ]
+  outputs = [ "$accessibility_common_dir/third_party/mediapipe_task_vision/{{source_file_part}}" ]
 }
 
 # Copy all JS and TS sources to a staging folder. All generated TS/JS files
@@ -194,15 +178,9 @@ source_set("browser_tests") {
 
   deps = [
     ":accessibility_common_extjs_tests",
+    ":extract_mediapipe_task_vision_files_for_test",
     ":pumpkin_test_files",
   ]
-
-  if (include_mediapipe_task_vision_files_for_facegaze) {
-    deps += [
-      ":extract_mediapipe_task_vision_files",
-      ":extract_mediapipe_task_vision_files_for_test",
-    ]
-  }
 
   data = [
     "$root_out_dir/chrome_100_percent.pak",
@@ -233,13 +211,11 @@ js2gtest("accessibility_common_extjs_tests") {
     "dictation/macros/dictation_macros_test.js",
     "dictation/parse/dictation_parse_test.js",
     "dictation/parse/dictation_pumpkin_parse_test.js",
+    "facegaze/facegaze_mediapipe_test.js",
     "facegaze/facegaze_test.js",
     "facegaze/facegaze_test_base.js",
     "magnifier/magnifier_test.js",
   ]
-  if (include_mediapipe_task_vision_files_for_facegaze) {
-    sources += [ "facegaze/facegaze_mediapipe_test.js" ]
-  }
 
   gen_include_files = [
     "../common/testing/accessibility_test_base.js",
@@ -296,40 +272,6 @@ action("pumpkin_test_files") {
   outputs = files_to_extract
 }
 
-# This rule extracts all mediapipe files for production.
-# TODO(b/309121742): Remove this rule and check-in the mediapipe JS sources.
-action("extract_mediapipe_task_vision_files") {
-  script = "third_party/mediapipe_task_vision/unpack.py"
-  sources = [ "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
-  out_dir = "$third_party_stage_dir/$mediapipe_task_vision_dir"
-
-  # Always extract vision.d.ts, as it's always needed for type-checking.
-  files_to_extract = [ "$out_dir/vision.d.ts" ]
-  if (include_mediapipe_task_vision_files_for_facegaze) {
-    # Only extract the remaining files if we're actually allowed to use
-    # mediapipe.
-    files_to_extract += [
-      "$out_dir/face_landmarker.task",
-      "$out_dir/task_vision.js",
-      "$out_dir/vision_wasm_internal.js",
-      "$out_dir/vision_wasm_internal.wasm",
-    ]
-  }
-
-  mediapipe_task_vision_dir_rebased =
-      rebase_path("$third_party_stage_dir/$mediapipe_task_vision_dir",
-                  root_build_dir)
-
-  args = [
-    "--dest-dir=$mediapipe_task_vision_dir_rebased",
-    rebase_path(
-        "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
-        root_build_dir),
-    string_join(",", files_to_extract),
-  ]
-  outputs = files_to_extract
-}
-
 # Extracts the FaceLandmarker model and WASM for testing purposes.
 action("extract_mediapipe_task_vision_files_for_test") {
   testonly = true
@@ -350,14 +292,4 @@ action("extract_mediapipe_task_vision_files_for_test") {
     string_join(",", files_to_extract),
   ]
   outputs = files_to_extract
-}
-
-copy("mediapipe_availability") {
-  if (include_mediapipe_task_vision_files_for_facegaze) {
-    sources = [ "facegaze/include_mediapipe.ts" ]
-  } else {
-    sources = [ "facegaze/exclude_mediapipe.ts" ]
-  }
-
-  outputs = [ "$third_party_stage_dir/$mediapipe_availability_dir/mediapipe_availability.ts" ]
 }

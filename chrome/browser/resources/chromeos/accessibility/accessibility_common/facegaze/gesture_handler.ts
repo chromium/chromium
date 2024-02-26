@@ -6,8 +6,7 @@ import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
-
-import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {FacialGesture, GestureDetector} from './gesture_detector.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';

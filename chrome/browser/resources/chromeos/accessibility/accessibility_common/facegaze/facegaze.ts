@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
-
-import {MediapipeAvailability} from '../third_party/mediapipe/availability/mediapipe_availability.js';
-import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {GestureHandler} from './gesture_handler.js';
 import {MouseController} from './mouse_controller.js';
@@ -40,12 +38,6 @@ export class FaceGaze {
   }
 
   private connectToWebCam_(): void {
-    if (!MediapipeAvailability.isAvailable()) {
-      // Mediapipe is required to interpret camera data, so only connect to
-      // the webcam if mediapipe is available.
-      return;
-    }
-
     // Open camera_stream.html, which will connect to the webcam and pass
     // FaceLandmarker results back to the background page. Use chrome.windows
     // API to ensure page is opened in Ash-chrome.

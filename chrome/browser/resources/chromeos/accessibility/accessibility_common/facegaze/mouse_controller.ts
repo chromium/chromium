@@ -5,11 +5,11 @@
 import {AsyncUtil} from '/common/async_util.js';
 import {EventHandler} from '/common/event_handler.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
-
-import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;
+
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
 // A ScreenPoint represents an integer screen coordinate, whereas

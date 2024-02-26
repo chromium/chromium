@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DrawingUtils, FaceLandmarker} from '../third_party/mediapipe/task_vision/task_vision.js';
-import {FaceLandmarkerOptions, FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
+import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
+import {DrawingUtils, FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
 import {MouseController} from './mouse_controller.js';
 
@@ -43,9 +43,8 @@ export class WebCamFaceLandmarker {
       const blob = new Blob([assets.wasm]);
       const customFileset = {
         // The wasm loader JS is checked in, so specify the path.
-        // TODO(b/309121742): The current path is incorrect, ensure this file
-        // gets placed into ../third_party/mediapipe_task_vision/.
-        wasmLoaderPath: '../vision_wasm_internal.js',
+        wasmLoaderPath:
+            '../third_party/mediapipe_task_vision/vision_wasm_internal.js',
         // The wasm is stored in a blob, so pass a URL to the blob.
         wasmBinaryPath: URL.createObjectURL(blob),
       };
