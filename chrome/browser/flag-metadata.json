@@ -6905,11 +6905,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "quick-commands",
-    "owners": [ "lgrey@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "quick-delete-android-followup",
     "owners": [
       "zalmashni@google.com",
