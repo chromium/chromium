@@ -85,6 +85,11 @@ void ReadAnythingIconView::UpdateImpl() {
       label_shown_count_);
 }
 
+std::u16string ReadAnythingIconView::GetTextForTooltipAndAccessibleName()
+    const {
+  return l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE);
+}
+
 void ReadAnythingIconView::Activate(bool active) {
   if (active) {
     should_be_visible_ = false;

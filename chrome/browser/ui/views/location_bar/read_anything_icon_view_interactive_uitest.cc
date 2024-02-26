@@ -123,4 +123,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, ShowLabel3Times) {
   EXPECT_EQ(3, GetLabelShownCountFromPref());
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, GetAccessibleName) {
+  PageActionIconView* icon = GetReadAnythingOmniboxIcon();
+  SetActivePageDistillable();
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
+            icon->GetAccessibleName());
+}
+
 }  // namespace

@@ -33,6 +33,7 @@ class ReadAnythingIconView : public PageActionIconView,
   void ExecuteCommand(ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
   // ReadAnythingCoordinator::Observer:
   void Activate(bool active) override;
