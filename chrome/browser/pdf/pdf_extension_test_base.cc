@@ -104,7 +104,7 @@ bool PDFExtensionTestBase::PdfIsExpectedToLoad(const std::string& pdf_file) {
 // there, since the PdfScriptingApi relies on doing this as well.
 testing::AssertionResult PDFExtensionTestBase::LoadPdf(const GURL& url) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  return EnsurePDFHasLoadedWithValidFrameTree();
+  return EnsureFullPagePDFHasLoadedWithValidFrameTree(GetActiveWebContents());
 }
 
 // Same as LoadPDF(), but loads into a new tab.
@@ -113,7 +113,7 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdfInNewTab(
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  return EnsurePDFHasLoadedWithValidFrameTree();
+  return EnsureFullPagePDFHasLoadedWithValidFrameTree(GetActiveWebContents());
 }
 
 // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
@@ -228,6 +228,32 @@ int PDFExtensionTestBase::CountPDFProcesses() {
   return pdf_extension_test_util::CountPdfPluginProcesses(browser());
 }
 
+testing::AssertionResult
+PDFExtensionTestBase::EnsureFullPagePDFHasLoadedWithValidFrameTree(
+    content::WebContents* contents) {
+  testing::AssertionResult result =
+      UseOopif() ? GetTestPdfViewerStreamManager(contents)->WaitUntilPdfLoaded(
+                       contents->GetPrimaryMainFrame())
+                 : pdf_extension_test_util::EnsurePDFHasLoaded(contents);
+
+  ValidateFrameTree(contents);
+
+  return result;
+}
+
+testing::AssertionResult
+PDFExtensionTestBase::EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
+    content::WebContents* contents) {
+  testing::AssertionResult result =
+      UseOopif() ? GetTestPdfViewerStreamManager(contents)
+                       ->WaitUntilPdfLoadedInFirstChild()
+                 : pdf_extension_test_util::EnsurePDFHasLoaded(contents);
+
+  ValidateFrameTree(contents);
+
+  return result;
+}
+
 void PDFExtensionTestBase::SimulateMouseClickAt(
     extensions::MimeHandlerViewGuest* guest,
     int modifiers,
@@ -275,14 +301,7 @@ std::vector<base::test::FeatureRef> PDFExtensionTestBase::GetDisabledFeatures()
   return disabled;
 }
 
-testing::AssertionResult
-PDFExtensionTestBase::EnsurePDFHasLoadedWithValidFrameTree() {
-  content::WebContents* contents = GetActiveWebContents();
-  testing::AssertionResult result =
-      UseOopif() ? GetTestPdfViewerStreamManager(contents)->WaitUntilPdfLoaded(
-                       contents->GetPrimaryMainFrame())
-                 : pdf_extension_test_util::EnsurePDFHasLoaded(contents);
-
+void PDFExtensionTestBase::ValidateFrameTree(content::WebContents* contents) {
   // Ensure the frame tree contains a PDF extension host and a PDF plugin frame.
   EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(contents));
   EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfPluginFrame(contents));
@@ -292,6 +311,4 @@ PDFExtensionTestBase::EnsurePDFHasLoadedWithValidFrameTree() {
   if (!UseOopif()) {
     EXPECT_TRUE(GetOnlyMimeHandlerView(contents));
   }
-
-  return result;
 }

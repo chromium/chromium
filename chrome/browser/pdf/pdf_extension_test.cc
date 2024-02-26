@@ -580,13 +580,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, NewTab) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   WebContents* new_tab_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  if (UseOopif()) {
-    EXPECT_TRUE(
-        GetTestPdfViewerStreamManager(new_tab_contents)
-            ->WaitUntilPdfLoaded(new_tab_contents->GetPrimaryMainFrame()));
-  } else {
-    EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(new_tab_contents));
-  }
+  EXPECT_TRUE(EnsureFullPagePDFHasLoadedWithValidFrameTree(new_tab_contents));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, SameTab) {
@@ -594,13 +588,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, SameTab) {
       browser(),
       embedded_test_server()->GetURL("/pdf/blob_navigation_same_tab.html"),
       /*number_of_navigations=*/2));
-  auto* contents = GetActiveWebContents();
-  if (UseOopif()) {
-    EXPECT_TRUE(GetTestPdfViewerStreamManager(contents)->WaitUntilPdfLoaded(
-        contents->GetPrimaryMainFrame()));
-  } else {
-    EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents));
-  }
+  EXPECT_TRUE(
+      EnsureFullPagePDFHasLoadedWithValidFrameTree(GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadInPlatformApp) {
@@ -1136,15 +1125,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
       browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
   WebContents* web_contents = GetActiveWebContents();
 
-  if (UseOopif()) {
-    // Verify the pdf has loaded. The test will timeout if the PDF fails to
-    // load.
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
-                    ->WaitUntilPdfLoadedInFirstChild());
-  } else {
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-        web_contents->GetPrimaryMainFrame()));
-  }
+  ASSERT_TRUE(EnsurePDFHasLoadedInFirstChildWithValidFrameTree(web_contents));
 
   EXPECT_EQ(u"TabWithEmbeddedPdf", web_contents->GetTitle());
 }
@@ -3623,18 +3604,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoFullPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
 
-  auto* incognito_contents = GetIncognitoActiveWebContents();
-  auto* incognito_primary_main_frame =
-      incognito_contents->GetPrimaryMainFrame();
-  if (UseOopif()) {
-    // Verify the pdf has loaded. The test will timeout if the PDF fails to
-    // load.
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
-                    ->WaitUntilPdfLoaded(incognito_primary_main_frame));
-  } else {
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-        incognito_primary_main_frame));
-  }
+  EXPECT_TRUE(EnsureFullPagePDFHasLoadedWithValidFrameTree(
+      GetIncognitoActiveWebContents()));
 }
 
 // Test that an embed-embedded PDF viewer successfully loads in incognito.
@@ -3644,16 +3615,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoEmbed) {
       incognito_browser(),
       embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
 
-  auto* incognito_contents = GetIncognitoActiveWebContents();
-  if (UseOopif()) {
-    // Verify the pdf has loaded. The test will timeout if the PDF fails to
-    // load.
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
-                    ->WaitUntilPdfLoadedInFirstChild());
-  } else {
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-        incognito_contents->GetPrimaryMainFrame()));
-  }
+  EXPECT_TRUE(EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
+      GetIncognitoActiveWebContents()));
 }
 
 // Test that an iframe-embedded PDF viewer successfully loads in incognito.
@@ -3669,8 +3632,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
 
   // Verify the pdf has loaded. The test will timeout if the PDF fails to
   // load.
-  auto* incognito_contents = GetIncognitoActiveWebContents();
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(GetIncognitoActiveWebContents())
                   ->WaitUntilPdfLoadedInFirstChild());
 }
 

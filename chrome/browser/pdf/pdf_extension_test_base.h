@@ -88,6 +88,16 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   int CountPDFProcesses();
 
+  // Checks if the full page PDF loaded. The test will fail if it does not meet
+  // the requirements of `ValidateFrameTree()`.
+  testing::AssertionResult EnsureFullPagePDFHasLoadedWithValidFrameTree(
+      content::WebContents* contents);
+
+  // Check if the PDF loaded in the first child frame of `contents`. The test
+  // will fail if it does not meet the requirements of `ValidateFrameTree()`.
+  testing::AssertionResult EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
+      content::WebContents* contents);
+
   // TODO(crbug.com/1445746): Remove this once there are no more existing use
   // cases.
   void SimulateMouseClickAt(extensions::MimeHandlerViewGuest* guest,
@@ -111,10 +121,10 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const;
 
  private:
-  // Check if the PDF loaded. The test will fail if the frame tree does not have
-  // exactly one PDF extension host and one PDF content host. For GuestView PDF
-  // viewer, the test will also fail if there is not exactly one GuestView.
-  testing::AssertionResult EnsurePDFHasLoadedWithValidFrameTree();
+  // The test will fail if the frame tree does not have exactly one PDF
+  // extension host and one PDF content host. For GuestView PDF viewer, the test
+  // will also fail if there is not exactly one GuestView.
+  void ValidateFrameTree(content::WebContents* contents);
 
   base::test::ScopedFeatureList feature_list_;
   absl::variant<absl::monostate,
