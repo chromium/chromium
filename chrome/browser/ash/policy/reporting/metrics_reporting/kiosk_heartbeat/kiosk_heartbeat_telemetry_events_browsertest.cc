@@ -66,18 +66,13 @@ bool IsKioskHeartbeatTelemetryEvent(const Record& record) {
 // `KioskHeartbeatTelemetrySampler`. Inheriting from
 // `DevicePolicyCrosBrowserTest` enables use of `AffiliationMixin` for setting
 // up profile/device affiliation. Only available in Ash.
-class KioskHeartbeatEventsBrowsertest
+class KioskHeartbeatEventsBrowserTest
     : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
-  KioskHeartbeatEventsBrowsertest() {
+  KioskHeartbeatEventsBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kKioskHeartbeatsViaERP);
   }
-  KioskHeartbeatEventsBrowsertest(const KioskHeartbeatEventsBrowsertest&) =
-      delete;
-  KioskHeartbeatEventsBrowsertest& operator=(
-      const KioskHeartbeatEventsBrowsertest&) = delete;
-  ~KioskHeartbeatEventsBrowsertest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ::policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
@@ -118,13 +113,13 @@ class KioskHeartbeatEventsBrowsertest
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowsertest,
+IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowserTest,
                        PRE_ReportKioskHeartbeats) {
   // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
-IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowsertest, ReportKioskHeartbeats) {
+IN_PROC_BROWSER_TEST_F(KioskHeartbeatEventsBrowserTest, ReportKioskHeartbeats) {
   SetKioskHeartbeatEnabled();
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsKioskHeartbeatTelemetryEvent));
