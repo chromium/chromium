@@ -2744,8 +2744,14 @@ INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
                                            FrameType::kIFrame));
 
 // TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
+// TODO(crbug.com/41495558): Flaky on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SimpleCrossSiteFill DISABLED_SimpleCrossSiteFill
+#else
+#define MAYBE_SimpleCrossSiteFill SimpleCrossSiteFill
+#endif
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
-                       SimpleCrossSiteFill) {
+                       MAYBE_SimpleCrossSiteFill) {
   test_delegate()->SetIgnoreBackToBackMessages(
       ObservedUiEvents::kPreviewFormData, true);
   CreateTestProfile();
@@ -2802,8 +2808,14 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
 // Tests that deleting the subframe that has opened the Autofill popup closes
 // the popup.
 // TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
+// TODO(crbug.com/41495632): Flaky on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_DeletingFrameClosesPopup DISABLED_DeletingFrameClosesPopup
+#else
+#define MAYBE_DeletingFrameClosesPopup DeletingFrameClosesPopup
+#endif
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
-                       DeletingFrameClosesPopup) {
+                       MAYBE_DeletingFrameClosesPopup) {
   CreateTestProfile();
 
   // Main frame is on a.com, fenced frame is on b.com.
