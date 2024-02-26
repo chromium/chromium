@@ -1120,15 +1120,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossNone) {
 
 // Test that an "a.test" iframe in a "b.test" frame cannot set
 // `sameSiteCookies: 'all'` option when starting a shared worker.
-// TODO(b/325207698): Disabled on Mac due to flakiness.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SameSiteCookiesSharedWorkerCrossAll \
-  DISABLED_SameSiteCookiesSharedWorkerCrossAl
-#else
-#define MAYBE_SameSiteCookiesSharedWorkerCrossAll \
-  SameSiteCookiesSharedWorkerCrossAl
-#endif
-IN_PROC_BROWSER_TEST_P(WorkerTest, MAYBE_SameSiteCookiesSharedWorkerCrossAll) {
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
   if (!SupportsSharedWorker()) {
     return;
   }
@@ -1142,7 +1134,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, MAYBE_SameSiteCookiesSharedWorkerCrossAll) {
       shell()->web_contents()->GetPrimaryMainFrame(),
       JsReplace(
           "createFrame($1, $2)",
-          ssl_server()->GetURL("a.test", "/workers/empty.html").spec().c_str(),
+          ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
           kSubframeName));
   ASSERT_TRUE(result_frame.error.empty());
   navigation_observer.Wait();
