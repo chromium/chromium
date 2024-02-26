@@ -300,7 +300,7 @@ int ParseOSProductVersion(const std::string_view& version) {
   // When a Rapid Security Response is applied to a system, the UI will display
   // an additional letter (e.g. "13.4.1 (a)"). That extra letter should not be
   // present in `version_string`; in fact, the version string should not contain
-  // any spaces. However, take the first string-delimited "word" for parsing.
+  // any spaces. However, take the first space-delimited "word" for parsing.
   std::vector<std::string_view> words = base::SplitStringPiece(
       version, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   CHECK_GE(words.size(), 1u);
