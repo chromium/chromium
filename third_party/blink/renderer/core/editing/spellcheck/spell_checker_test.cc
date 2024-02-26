@@ -70,10 +70,10 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
 
   Element* div = GetDocument().QuerySelector(AtomicString("div"));
   div->Focus();
-  Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder()
-          .Collapse(Position::LastPositionInNode(*div))
-          .Build());
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .Collapse(Position::LastPositionInNode(*div))
+                               .Build(),
+                           SetSelectionOptions());
   UpdateAllLifecyclePhasesForTest();
 
   GetSpellChecker().AdvanceToNextMisspelling(false);
@@ -88,8 +88,9 @@ TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   Position new_position(input->InnerEditorElement()->firstChild(), 3);
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder().Collapse(new_position).Build());
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(new_position).Build(),
+      SetSelectionOptions());
   ASSERT_EQ(3u, input->selectionStart());
 
   EXPECT_TRUE(GetSpellChecker().IsSpellCheckingEnabled());
@@ -140,10 +141,11 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_FirstCharSelected) {
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 1))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -167,10 +169,11 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_LastCharSelected) {
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 7), Position(text, 8))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -195,10 +198,11 @@ TEST_F(SpellCheckerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 1)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 1))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -223,10 +227,11 @@ TEST_F(SpellCheckerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 1)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -251,10 +256,11 @@ TEST_F(SpellCheckerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 1)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 1), Position(text, 1))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -279,10 +285,11 @@ TEST_F(SpellCheckerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -307,10 +314,11 @@ TEST_F(SpellCheckerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 8), Position(text, 8))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -334,10 +342,11 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_CaretMiddleOfWord) {
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 4), Position(text, 4))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -362,10 +371,11 @@ TEST_F(SpellCheckerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 2), Position(text, 10)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 1), Position(text, 1))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -386,10 +396,11 @@ TEST_F(SpellCheckerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 9), Position(text, 9))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()
@@ -411,10 +422,11 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(first_text, 0), Position(third_text, 3)));
 
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(second_text, 1), Position(second_text, 1))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   DocumentMarkerGroup* result = GetDocument()
                                     .GetFrame()

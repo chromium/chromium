@@ -3356,10 +3356,10 @@ TEST_P(DisplayLockContextTest, ConnectedElementDefersSubtreeChecks) {
   range->setEnd(GetDocument().getElementById(AtomicString("s2"))->firstChild(),
                 5);
 
-  Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(EphemeralRange(range))
-          .Build());
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .SetBaseAndExtent(EphemeralRange(range))
+                               .Build(),
+                           SetSelectionOptions());
 
   UpdateAllLifecyclePhasesForTest();
 

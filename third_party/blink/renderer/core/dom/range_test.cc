@@ -315,10 +315,10 @@ TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
   const gfx::RectF rect_before = range->BoundingRect();
   EXPECT_GT(rect_before.width(), 0);
   EXPECT_GT(rect_before.height(), 0);
-  Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(EphemeralRange(range))
-          .Build());
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .SetBaseAndExtent(EphemeralRange(range))
+                               .Build(),
+                           SetSelectionOptions());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(Selection().SelectedText(), "x x");
   const gfx::RectF rect_after = range->BoundingRect();

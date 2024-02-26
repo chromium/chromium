@@ -989,10 +989,11 @@ TEST_F(EventHandlerTest, sendContextMenuEventWithHover) {
       "event.preventDefault());");
   GetDocument().body()->AppendChild(script);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .Collapse(Position(GetDocument().body(), 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   WebMouseEvent mouse_down_event(
       WebMouseEvent::Type::kMouseDown, gfx::PointF(0, 0), gfx::PointF(100, 200),
       WebPointerProperties::Button::kRight, 1,

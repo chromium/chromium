@@ -485,8 +485,9 @@ TEST_F(InputMethodControllerTest, FinishComposingTextKeepingStyle) {
 }
 
 TEST_F(InputMethodControllerTest, FinishComposingTextKeepingBackwardSelection) {
-  GetFrame().Selection().SetSelectionAndEndTyping(
-      SetSelectionTextToBody("<div contenteditable>|abc^</div>"));
+  GetFrame().Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>|abc^</div>"),
+      SetSelectionOptions());
 
   Controller().FinishComposingText(InputMethodController::kKeepSelection);
 
@@ -2721,10 +2722,11 @@ TEST_F(InputMethodControllerTest, TextInputTypeAtBeforeEditable) {
   GetDocument().body()->Focus();
 
   // Set selection before BODY(editable).
-  GetFrame().Selection().SetSelectionAndEndTyping(
+  GetFrame().Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .Collapse(Position(GetDocument().documentElement(), 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   EXPECT_EQ(kWebTextInputTypeContentEditable, Controller().TextInputType());
 }
@@ -2787,10 +2789,11 @@ TEST_F(InputMethodControllerTest, SetCompositionDeletesMarkupBeforeText) {
   Element* div = InsertHTMLElement(
       "<div id='div' contenteditable='true'><img />test</div>", "div");
   // Select the contents of the div element.
-  GetFrame().Selection().SetSelectionAndEndTyping(
+  GetFrame().Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(EphemeralRange::RangeOfContents(*div))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   Controller().SetComposition("t", Vector<ImeTextSpan>(), 0, 1);
 
@@ -2803,10 +2806,11 @@ TEST_F(InputMethodControllerTest, SetCompositionDeletesMarkupAfterText) {
   Element* div = InsertHTMLElement(
       "<div id='div' contenteditable='true'>test<img /></div>", "div");
   // Select the contents of the div element.
-  GetFrame().Selection().SetSelectionAndEndTyping(
+  GetFrame().Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(EphemeralRange::RangeOfContents(*div))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   Controller().SetComposition("t", Vector<ImeTextSpan>(), 0, 1);
 
@@ -2820,10 +2824,11 @@ TEST_F(InputMethodControllerTest,
   Element* div = InsertHTMLElement(
       "<div id='div' contenteditable='true'><img />test<img /></div>", "div");
   // Select the contents of the div element.
-  GetFrame().Selection().SetSelectionAndEndTyping(
+  GetFrame().Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(EphemeralRange::RangeOfContents(*div))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   Controller().SetComposition("t", Vector<ImeTextSpan>(), 0, 1);
 
@@ -2947,11 +2952,12 @@ TEST_F(InputMethodControllerTest,
   UpdateAllLifecyclePhasesForTest();
 
   // Select "hello".
-  GetFrame().Selection().SetSelectionAndEndTyping(
+  GetFrame().Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(EphemeralRange(Position(div->firstChild(), 0),
                                            Position(div->firstChild(), 5)))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   // Commit text, leaving the cursor at the end of the newly-inserted text.
   // JavaScript will move the cursor back to the beginning of the
@@ -3119,11 +3125,12 @@ TEST_F(InputMethodControllerTest,
   UpdateAllLifecyclePhasesForTest();
 
   // Select "world".
-  GetFrame().Selection().SetSelectionAndEndTyping(
+  GetFrame().Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(EphemeralRange(Position(div->firstChild(), 6),
                                            Position(div->firstChild(), 11)))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   // Call SetComposition() passing the empty string to delete the selection
   // (so we end up with "hello ") and move the cursor to before "hello".
@@ -3568,9 +3575,10 @@ TEST_F(InputMethodControllerTest, ExecCommandDuringComposition) {
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionAfterNonEditableElement) {
-  GetFrame().Selection().SetSelectionAndEndTyping(
+  GetFrame().Selection().SetSelection(
       SetSelectionTextToBody("<div id='sample' contenteditable='true'>"
-                             "<span contenteditable='false'>a</span>|b</div>"));
+                             "<span contenteditable='false'>a</span>|b</div>"),
+      SetSelectionOptions());
   Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 
@@ -3651,8 +3659,9 @@ TEST_F(InputMethodControllerTest, VirtualKeyboardPolicyOfFocusedElement) {
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionInTibetan) {
-  GetFrame().Selection().SetSelectionAndEndTyping(
-      SetSelectionTextToBody("<div id='sample' contenteditable>|</div>"));
+  GetFrame().Selection().SetSelection(
+      SetSelectionTextToBody("<div id='sample' contenteditable>|</div>"),
+      SetSelectionOptions());
   Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 
@@ -3683,8 +3692,9 @@ TEST_F(InputMethodControllerTest, SetCompositionInTibetan) {
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionInDevanagari) {
-  GetFrame().Selection().SetSelectionAndEndTyping(
-      SetSelectionTextToBody("<div id='sample' contenteditable>\u0958|</div>"));
+  GetFrame().Selection().SetSelection(
+      SetSelectionTextToBody("<div id='sample' contenteditable>\u0958|</div>"),
+      SetSelectionOptions());
   Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 
@@ -3701,8 +3711,9 @@ TEST_F(InputMethodControllerTest, SetCompositionInDevanagari) {
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionTamil) {
-  GetFrame().Selection().SetSelectionAndEndTyping(
-      SetSelectionTextToBody("<div id='sample' contenteditable>|</div>"));
+  GetFrame().Selection().SetSelection(
+      SetSelectionTextToBody("<div id='sample' contenteditable>|</div>"),
+      SetSelectionOptions());
   Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 

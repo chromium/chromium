@@ -63,10 +63,11 @@ TEST_F(TextSuggestionControllerTest, ApplySpellCheckSuggestion) {
       ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
       Color::kBlack, Color::kBlack);
   // Select immediately before misspelling
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -224,10 +225,11 @@ TEST_F(TextSuggestionControllerTest,
           ->Tag();
 
   // Select immediately before "mispelled".
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   // Replace "mispelled" with "misspelled".
   GetDocument().GetFrame()->GetTextSuggestionController().ApplyTextSuggestion(
@@ -251,10 +253,11 @@ TEST_F(TextSuggestionControllerTest, DeleteActiveSuggestionRange_DeleteAtEnd) {
       Color::kTransparent, ImeTextSpanThickness::kThin,
       ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 6), Position(text, 6))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -278,10 +281,11 @@ TEST_F(TextSuggestionControllerTest,
       Color::kTransparent, ImeTextSpanThickness::kThin,
       ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 6), Position(text, 6))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -306,10 +310,11 @@ TEST_F(TextSuggestionControllerTest,
       ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
       Color::kBlack, Color::kBlack);
   // Select immediately before word1
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -335,10 +340,11 @@ TEST_F(TextSuggestionControllerTest,
       ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
       Color::kBlack, Color::kBlack);
   // Select immediately before word1
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -367,10 +373,11 @@ TEST_F(TextSuggestionControllerTest,
       Color::kTransparent, ImeTextSpanThickness::kThin,
       ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 5), Position(text, 5))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -394,10 +401,11 @@ TEST_F(TextSuggestionControllerTest,
       Color::kTransparent, ImeTextSpanThickness::kThin,
       ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 6), Position(text, 6))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -421,10 +429,11 @@ TEST_F(TextSuggestionControllerTest,
       ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
       Color::kBlack, Color::kBlack);
   // Select immediately before word1
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 0), Position(text, 0))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
   GetDocument()
       .GetFrame()
       ->GetTextSuggestionController()
@@ -446,10 +455,11 @@ TEST_F(TextSuggestionControllerTest,
   GetDocument().Markers().AddSpellingMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)));
   // Select inside before "embiggen"
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 1), Position(text, 1))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   // Add some other word to the dictionary
   GetDocument()
@@ -498,10 +508,11 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithEmptySuggestion) {
           .Build());
 
   // Set the caret inside the word.
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 3), Position(text, 3))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   // Handle potential suggestion tap on the caret position.
   GetDocument()
@@ -547,10 +558,11 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithSuggestion) {
           .Build());
 
   // Set the caret inside the word.
-  GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
+  GetDocument().GetFrame()->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(Position(text, 3), Position(text, 3))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   // Handle potential suggestion tap on the caret position.
   GetDocument()

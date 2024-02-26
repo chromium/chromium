@@ -76,8 +76,9 @@ void PasteAndVerifySanitization(const char* html_to_paste,
   body->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   body->Focus();
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  frame.Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder().SelectAllChildren(*body).Build());
+  frame.Selection().SetSelection(
+      SelectionInDOMTree::Builder().SelectAllChildren(*body).Build(),
+      SetSelectionOptions());
   EXPECT_TRUE(frame.Selection().ComputeVisibleSelectionInDOMTree().IsCaret());
   EXPECT_TRUE(
       frame.Selection().ComputeVisibleSelectionInDOMTree().IsContentEditable())

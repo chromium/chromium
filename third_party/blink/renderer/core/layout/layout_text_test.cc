@@ -50,7 +50,7 @@ class LayoutTextTest : public RenderingTest {
     const SelectionInDOMTree selection =
         SelectionSample::SetSelectionText(GetDocument().body(), selection_text);
     UpdateAllLifecyclePhasesForTest();
-    Selection().SetSelectionAndEndTyping(selection);
+    Selection().SetSelection(selection, SetSelectionOptions());
     Selection().CommitAppearanceIfNeeded();
   }
 
