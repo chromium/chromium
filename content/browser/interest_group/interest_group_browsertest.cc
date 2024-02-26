@@ -134,21 +134,26 @@ constexpr char kLegitimateAdAuctionSignals[] =
 // throwing an exception.
 const char kSuccess[] = "success";
 
-// Helpers for delivering an argument as either promise or value depending on
-// which is used.
-const char kFeedDirect[] = R"(
-  function maybePromise(val) {
-    return val;
+// Returns a string that declares a "maybePromise()" Javascript function, which
+// takes an argument and either returns it (if `use_promise` is false) or
+// returns a promise that will be resolved with that value in a millisecond (if
+// `use_promise` is true).
+std::string MaybePromiseFunction(bool use_promise) {
+  if (use_promise) {
+    return R"(
+      function maybePromise(val) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => { resolve(val); }, 1);
+        });
+      }
+    )";
   }
-)";
-
-const char kFeedPromise[] = R"(
-  function maybePromise(val) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => { resolve(val); }, 1);
-    });
-  }
-)";
+  return R"(
+    function maybePromise(val) {
+      return val;
+    }
+  )";
+}
 
 const blink::InterestGroup::AdditionalBidKey kPublicKey1 = {
     0xc7, 0xd1, 0x8d, 0x16, 0x57, 0x5c, 0xe7, 0x3a, 0x2c, 0x60, 0x22,
@@ -6886,32 +6891,27 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     RenderFrameHost* const iframe_host =
         ChildFrameAt(web_contents()->GetPrimaryMainFrame(), /*index=*/0);
 
-    TestFencedFrameURLMappingResultObserver observer;
-    ConvertFencedFrameURNToURL(
-        GURL(EvalJs(
-                 iframe_host,
-                 JsReplace(
-                     std::string(use_promise ? kFeedPromise : kFeedDirect) + R"(
-(async function() {
-  return await navigator.runAdAuction({
-      seller: $1,
-      decisionLogicURL: $2,
-      interestGroupBuyers: [$3],
-      directFromSellerSignals: maybePromise($4)
-  });
-})())",
-                     seller_origin,
-                     embedded_https_test_server().GetURL(
-                         kSellerHost,
-                         "/interest_group/"
-                         "decision_simple_direct_from_"
-                         "seller_signals_validator.js"),
-                     bidder_origin,
-                     embedded_https_test_server().GetURL(
-                         kSellerHost, "/direct_from_seller_signals")))
-                 .ExtractString()),
-        &observer);
-    EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+    ASSERT_TRUE(ExecJs(iframe_host, MaybePromiseFunction(use_promise)));
+
+    EXPECT_EQ("https://example.com/render",
+              RunAuctionAndWaitForUrl(
+                  JsReplace(R"(
+{
+  seller: $1,
+  decisionLogicURL: $2,
+  interestGroupBuyers: [$3],
+  directFromSellerSignals: maybePromise($4)
+})",
+                            seller_origin,
+                            embedded_https_test_server().GetURL(
+                                kSellerHost,
+                                "/interest_group/"
+                                "decision_simple_direct_from_"
+                                "seller_signals_validator.js"),
+                            bidder_origin,
+                            embedded_https_test_server().GetURL(
+                                kSellerHost, "/direct_from_seller_signals")),
+                  iframe_host));
   }
 }
 
@@ -9030,15 +9030,15 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsDisabledTest,
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    deprecatedRenderURLReplacements: maybePromise({$3: "render_cars", "%%echo%%": "echo"})
-      })",
+          seller: $1,
+          decisionLogicURL: $2,
+          interestGroupBuyers: [$1],
+          deprecatedRenderURLReplacements:
+              maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
@@ -9105,21 +9105,20 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    deprecatedRenderURLReplacements: maybePromise({$3: "render_cars", "%%echo%%": "echo"})
-      })",
+          seller: $1,
+          decisionLogicURL: $2,
+          interestGroupBuyers: [$1],
+          deprecatedRenderURLReplacements:
+              maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
         "${DIFFERENT_INTEREST_GROUP_NAME}");
-    auto result = RunAuctionAndWait(auction_config,
-                                    /*execution_target=*/std::nullopt);
+    auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
@@ -9154,21 +9153,20 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    deprecatedRenderURLReplacements: maybePromise({$3: "render_cars", "%%echo%%": "echo"})
-      })",
+          seller: $1,
+          decisionLogicURL: $2,
+          interestGroupBuyers: [$1],
+          deprecatedRenderURLReplacements:
+              maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
         "${INTEREST_GROUP_NAME}");
-    auto result = RunAuctionAndWait(auction_config,
-                                    /*execution_target=*/std::nullopt);
+    auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
@@ -9201,21 +9199,20 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    deprecatedRenderURLReplacements: maybePromise({$3: "render_cars", "%%echo%%": "echo"})
-      })",
+          seller: $1,
+          decisionLogicURL: $2,
+          interestGroupBuyers: [$1],
+          deprecatedRenderURLReplacements:
+              maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
         "${BAD_REPLACEMENT_NO_END_BRACKET");
-    auto result = RunAuctionAndWait(auction_config,
-                                    /*execution_target=*/std::nullopt);
+    auto result = RunAuctionAndWait(auction_config);
     std::string expected_error_message =
         "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
         "argument rejected or resolved to invalid value.";
@@ -9252,32 +9249,31 @@ IN_PROC_BROWSER_TEST_F(
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        // Signal to the top-level seller to allow participation in a component
-        // auction.
-        auctionSignals: "sellerAllowsComponentAuction",
-        componentAuctions: [{
           seller: $1,
           decisionLogicURL: $2,
-          interestGroupBuyers: [$1],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-          deprecatedRenderURLReplacements:  maybePromise({$3: "render_cars", "NO_STARTING_PERCENTS%%": "echo"})
-        }]
-      })",
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements: maybePromise(
+                {$3: "render_cars", "NO_STARTING_PERCENTS%%": "echo"})
+          }]
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
         "${INTEREST_GROUP_NAME}");
-    auto result = RunAuctionAndWait(auction_config,
-                                    /*execution_target=*/std::nullopt);
+    auto result = RunAuctionAndWait(auction_config);
     std::string expected_error_message =
         "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
         "argument rejected or resolved to invalid value.";
@@ -9314,32 +9310,31 @@ IN_PROC_BROWSER_TEST_F(
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        // Signal to the top-level seller to allow participation in a component
-        // auction.
-        auctionSignals: "sellerAllowsComponentAuction",
-        componentAuctions: [{
           seller: $1,
           decisionLogicURL: $2,
-          interestGroupBuyers: [$1],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-          deprecatedRenderURLReplacements:  maybePromise({$3: "render_cars", "%%echo%%": "echo"})
-        }]
-      })",
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:
+                maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+          }]
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
         "${INTEREST_GROUP_NAME}");
-    auto result = RunAuctionAndWait(auction_config,
-                                    /*execution_target=*/std::nullopt);
+    auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
@@ -9377,27 +9372,26 @@ IN_PROC_BROWSER_TEST_F(
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        // Signal to the top-level seller to allow participation in a component
-        // auction.
-        auctionSignals: "sellerAllowsComponentAuction",
-        componentAuctions: [{
           seller: $1,
           decisionLogicURL: $2,
-          interestGroupBuyers: [$1],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-          deprecatedRenderURLReplacements:  maybePromise({$3: "render_cars", "%%echo2%%": "echo"})
-        }]
-      }
-      )",
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:
+                maybePromise({$3: "render_cars", "%%echo2%%": "echo"})
+          }]
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
@@ -9452,27 +9446,26 @@ IN_PROC_BROWSER_TEST_F(
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        // Signal to the top-level seller to allow participation in a component
-        // auction.
-        auctionSignals: "sellerAllowsComponentAuction",
-        componentAuctions: [{
           seller: $1,
           decisionLogicURL: $2,
-          interestGroupBuyers: [$1],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-          deprecatedRenderURLReplacements:  maybePromise({$3: "render_cars", "%%echo2%%": "echo"})
-        }]
-      }
-      )",
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:
+                maybePromise({$3: "render_cars", "%%echo2%%": "echo"})
+          }]
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
@@ -9528,37 +9521,37 @@ IN_PROC_BROWSER_TEST_F(
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        // Signal to the top-level seller to allow participation in a component
-        // auction.
-        auctionSignals: "sellerAllowsComponentAuction",
-        componentAuctions: [{
           seller: $1,
           decisionLogicURL: $2,
-          interestGroupBuyers: [$1],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-        },
-        {
-          // This seller loses because the bidding logic used for it, throws an error.
-          // So the replacements will have no effect.
-          seller: $3,
-          decisionLogicURL: $4,
-          interestGroupBuyers: [$3],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-          deprecatedRenderURLReplacements:  maybePromise({$5: "render_boats", "%%echo%%": "echo"})
-        }]
-      })",
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+          },
+          {
+            // This seller loses because the bidding logic used for it, throws
+            // an error. So the replacements will have no effect.
+            seller: $3,
+            decisionLogicURL: $4,
+            interestGroupBuyers: [$3],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:
+                maybePromise({$5: "render_boats", "%%echo%%": "echo"})
+          }]
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
@@ -9618,36 +9611,37 @@ IN_PROC_BROWSER_TEST_F(
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        // Signal to the top-level seller to allow participation in a component
-        // auction.
-        auctionSignals: "sellerAllowsComponentAuction",
-        componentAuctions: [{
           seller: $1,
           decisionLogicURL: $2,
-          interestGroupBuyers: [$1],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-                    deprecatedRenderURLReplacements:  maybePromise({$5: "render_boats", "%%echo%%": "echo"})
-        },
-        {
-          seller: $3,
-          decisionLogicURL: $4,
-          interestGroupBuyers: [$3],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-          deprecatedRenderURLReplacements:  maybePromise({$5: "render_boats", "%NO_STARTING_PERCENT%%": "echo"})
-        }]
-      })",
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:
+                maybePromise({$5: "render_boats", "%%echo%%": "echo"})
+          },
+          {
+            seller: $3,
+            decisionLogicURL: $4,
+            interestGroupBuyers: [$3],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements: maybePromise(
+                {$5: "render_boats", "%NO_STARTING_PERCENT%%": "echo"})
+          }]
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
@@ -9655,8 +9649,7 @@ IN_PROC_BROWSER_TEST_F(
         embedded_https_test_server().GetURL(
             "b.test", "/interest_group/decision_logic.js"),
         "${INTEREST_GROUP_NAME}");
-    auto result = RunAuctionAndWait(auction_config,
-                                    /*execution_target=*/std::nullopt);
+    auto result = RunAuctionAndWait(auction_config);
     std::string expected_error_message =
         "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
         "argument rejected or resolved to invalid value.";
@@ -9694,34 +9687,34 @@ IN_PROC_BROWSER_TEST_F(
 
   for (bool use_promise : {false, true}) {
     SCOPED_TRACE(use_promise);
-    ASSERT_TRUE(
-        ExecJs(shell(), std::string(use_promise ? kFeedPromise : kFeedDirect)));
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
     std::string auction_config = JsReplace(
         R"({
-        seller: $1,
-        decisionLogicURL: $2,
-        // Signal to the top-level seller to allow participation in a component
-        // auction.
-        auctionSignals: "sellerAllowsComponentAuction",
-        deprecatedRenderURLReplacements:  maybePromise({$3: "render_cars", "%%echo%%": "echo"}),
-        componentAuctions: [{
           seller: $1,
           decisionLogicURL: $2,
-          interestGroupBuyers: [$1],
-          // Signal to the bidder and component seller to allow participation in
-          // a component auction.
-          auctionSignals: "bidderAllowsComponentAuction,"+
-                          "sellerAllowsComponentAuction",
-          deprecatedRenderURLReplacements:  maybePromise({$3: "render_cars", "%%echo%%": "echo"})
-        }]
-      })",
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          deprecatedRenderURLReplacements:
+              maybePromise({$3: "render_cars", "%%echo%%": "echo"}),
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:
+                maybePromise({$3: "render_cars", "%%echo%%": "echo"})
+          }]
+        })",
         test_origin,
         embedded_https_test_server().GetURL(
             "a.test", "/interest_group/decision_logic.js"),
         "${INTEREST_GROUP_NAME}");
 
-    auto result = RunAuctionAndWait(auction_config,
-                                    /*execution_target=*/std::nullopt);
+    auto result = RunAuctionAndWait(auction_config);
     std::string expected_error_message =
         "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Auctions "
         "may only specify 'deprecatedRenderURLReplacements' if they do not "
@@ -13633,93 +13626,80 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
                                               kComponentSellerHost,
                                               kComponentHeaderSignalsPath))));
 
-    // TODO(caraitto): Instead of StringPrintf(), we can pass a single large
-    // base::Value to JsReplace().
+    // In addition to defining maybePromise(), set `componentSeller` and
+    // `componentBuyer` to avoid hitting JsReplace's limit of 10 substitutions
+    // below.
+    ASSERT_TRUE(
+        ExecJs(shell(),
+               MaybePromiseFunction(use_promise) +
+                   JsReplace("componentSeller = $1;",
+                             url::Origin::Create(component_seller_script_url)) +
+                   JsReplace("componentBuyer = $1;", bidder_origin)));
+
     TestFencedFrameURLMappingResultObserver observer;
     ConvertFencedFrameURNToURL(
-        GURL(
-            EvalJs(
-                shell(),
-                std::string(use_promise ? kFeedPromise : kFeedDirect) +
-                    base::StringPrintf(
-                        R"(
-(async function() {
-  const componentSeller = "%s";
-  const componentBuyer = "%s";
-  return await navigator.runAdAuction({
-    seller: "%s",
-    decisionLogicURL: "%s",
-    trustedScoringSignalsURL: "%s",
-    auctionSignals: maybePromise(["top-level auction signals"]),
-    sellerSignals: maybePromise(["top-level seller signals"]),
-    %s: maybePromise("%s"),
-    sellerTimeout: 300,
+        GURL(RunAuctionAndWait(
+                 JsReplace(R"(
+{
+  seller: $1,
+  decisionLogicURL: $2,
+  trustedScoringSignalsURL: $3,
+  auctionSignals: maybePromise(["top-level auction signals"]),
+  sellerSignals: maybePromise(["top-level seller signals"]),
+  $4: maybePromise($5),
+  sellerTimeout: 300,
+  perBuyerSignals: maybePromise(
+      {[componentBuyer]: ["top-level buyer signals"]}),
+  perBuyerTimeouts: maybePromise({[componentBuyer]: 110, '*': 150}),
+  perBuyerCumulativeTimeouts: maybePromise(
+      {[componentBuyer]: 11100, '*': 15100}),
+  perBuyerPrioritySignals: {'*': {foo: 3}},
+  perBuyerCurrencies: {'*': 'MXN', [componentSeller]: 'CAD'},
+  componentAuctions: [{
+    seller: componentSeller,
+    decisionLogicURL: $6,
+    trustedScoringSignalsURL: $7,
+    interestGroupBuyers: [componentBuyer],
+    auctionSignals: maybePromise(["component auction signals"]),
+    sellerSignals: maybePromise(["component seller signals"]),
+    $8: maybePromise($9),
+    sellerTimeout: 200,
     perBuyerSignals: maybePromise(
-        {[componentBuyer]: ["top-level buyer signals"]}),
-    perBuyerTimeouts: maybePromise({[componentBuyer]: 110, '*': 150}),
-    perBuyerCumulativeTimeouts: maybePromise(
-        {[componentBuyer]: 11100, '*': 15100}),
-    perBuyerPrioritySignals: {'*': {foo: 3}},
-    perBuyerCurrencies: {'*': 'MXN', [componentSeller]: 'CAD'},
-    componentAuctions: [{
-      seller: componentSeller,
-      decisionLogicURL: "%s",
-      trustedScoringSignalsURL: "%s",
-      interestGroupBuyers: [componentBuyer],
-      auctionSignals: maybePromise(["component auction signals"]),
-      sellerSignals: maybePromise(["component seller signals"]),
-      %s: maybePromise("%s"),
-      sellerTimeout: 200,
-      perBuyerSignals: maybePromise(
-          {[componentBuyer]: ["component buyer signals"]}),
-      perBuyerTimeouts: maybePromise({[componentBuyer]: 200}),
-      perBuyerCumulativeTimeouts: maybePromise({[componentBuyer]: 20100}),
-      perBuyerPrioritySignals: {[componentBuyer]: {bar: 1}, '*': {BaZ: -2}},
-      perBuyerCurrencies: maybePromise({[componentBuyer]: 'USD'}),
-      sellerCurrency: 'CAD',
-    }],
-  });
-})())",
-                        url::Origin::Create(component_seller_script_url)
-                            .Serialize()
-                            .c_str(),
-                        bidder_origin.Serialize().c_str(),
-                        top_level_seller_origin.Serialize().c_str(),
-                        top_level_seller_script_url.spec().c_str(),
-                        embedded_https_test_server()
-                            .GetURL(
-                                kTopLevelSellerHost,
-                                "/interest_group/trusted_scoring_signals.json")
-                            .spec()
-                            .c_str(),
-                        TopLevelUseHeaderDirectFromSellerSignals()
-                            ? "directFromSellerSignalsHeaderAdSlot"
-                            : "directFromSellerSignals",
-                        TopLevelUseHeaderDirectFromSellerSignals()
-                            ? "adSlot1"
-                            : embedded_https_test_server()
-                                  .GetURL(kTopLevelSellerHost,
-                                          "/direct_from_seller_signals")
-                                  .spec()
-                                  .c_str(),
-                        component_seller_script_url.spec().c_str(),
-                        embedded_https_test_server()
-                            .GetURL(
-                                kComponentSellerHost,
-                                "/interest_group/trusted_scoring_signals2.json")
-                            .spec()
-                            .c_str(),
-                        ComponentUseHeaderDirectFromSellerSignals()
-                            ? "directFromSellerSignalsHeaderAdSlot"
-                            : "directFromSellerSignals",
-                        ComponentUseHeaderDirectFromSellerSignals()
-                            ? "adSlot1"
-                            : embedded_https_test_server()
-                                  .GetURL(kComponentSellerHost,
-                                          "/direct_from_seller_signals")
-                                  .spec()
-                                  .c_str()))
-                .ExtractString()),
+        {[componentBuyer]: ["component buyer signals"]}),
+    perBuyerTimeouts: maybePromise({[componentBuyer]: 200}),
+    perBuyerCumulativeTimeouts: maybePromise({[componentBuyer]: 20100}),
+    perBuyerPrioritySignals: {[componentBuyer]: {bar: 1}, '*': {BaZ: -2}},
+    perBuyerCurrencies: maybePromise({[componentBuyer]: 'USD'}),
+    sellerCurrency: 'CAD',
+  }],
+})",
+                           top_level_seller_origin, top_level_seller_script_url,
+                           embedded_https_test_server().GetURL(
+                               kTopLevelSellerHost,
+                               "/interest_group/trusted_scoring_signals.json"),
+                           TopLevelUseHeaderDirectFromSellerSignals()
+                               ? "directFromSellerSignalsHeaderAdSlot"
+                               : "directFromSellerSignals",
+                           TopLevelUseHeaderDirectFromSellerSignals()
+                               ? "adSlot1"
+                               : embedded_https_test_server()
+                                     .GetURL(kTopLevelSellerHost,
+                                             "/direct_from_seller_signals")
+                                     .spec(),
+                           component_seller_script_url,
+                           embedded_https_test_server().GetURL(
+                               kComponentSellerHost,
+                               "/interest_group/trusted_scoring_signals2.json"),
+                           ComponentUseHeaderDirectFromSellerSignals()
+                               ? "directFromSellerSignalsHeaderAdSlot"
+                               : "directFromSellerSignals",
+                           ComponentUseHeaderDirectFromSellerSignals()
+                               ? "adSlot1"
+                               : embedded_https_test_server()
+                                     .GetURL(kComponentSellerHost,
+                                             "/direct_from_seller_signals")
+                                     .spec()))
+                 .ExtractString()),
         &observer);
     EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
 
@@ -13890,44 +13870,43 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(NavigateToURL(shell(), embedded_https_test_server().GetURL(
                                            kTopFrameHost, kPagePath)));
 
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
+
     TestFencedFrameURLMappingResultObserver observer;
     ConvertFencedFrameURNToURL(
-        GURL(EvalJs(
-                 shell(),
+        GURL(RunAuctionAndWait(
                  JsReplace(
-                     std::string(use_promise ? kFeedPromise : kFeedDirect) + R"(
-(async function() {
-  return await navigator.runAdAuction({
-    seller: $1,
-    decisionLogicUrl: $2,
-    trustedScoringSignalsUrl: $3,
-    auctionSignals: maybePromise(["top-level auction signals"]),
-    sellerSignals: maybePromise(["top-level seller signals"]),
-    directFromSellerSignals: maybePromise($4),
-    sellerTimeout: 300,
-    perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
-    perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
-    perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
-    perBuyerPrioritySignals: {'*': {foo: 3}},
-    perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
-    componentAuctions: [{
-      seller: $5,
-      decisionLogicUrl: $6,
-      trustedScoringSignalsUrl: $7,
-      interestGroupBuyers: [$8],
-      auctionSignals: maybePromise(["component auction signals"]),
-      sellerSignals: maybePromise(["component seller signals"]),
-      directFromSellerSignals: maybePromise($9),
-      sellerTimeout: 200,
-      perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
-      perBuyerTimeouts: maybePromise({$8: 200}),
-      perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
-      perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
-      perBuyerCurrencies: maybePromise({$8: 'USD'}),
-      sellerCurrency: 'CAD',
-    }],
-  });
-})())",
+                     R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  trustedScoringSignalsUrl: $3,
+  auctionSignals: maybePromise(["top-level auction signals"]),
+  sellerSignals: maybePromise(["top-level seller signals"]),
+  directFromSellerSignals: maybePromise($4),
+  sellerTimeout: 300,
+  perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
+  perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
+  perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
+  perBuyerPrioritySignals: {'*': {foo: 3}},
+  perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
+  componentAuctions: [{
+    seller: $5,
+    decisionLogicUrl: $6,
+    trustedScoringSignalsUrl: $7,
+    interestGroupBuyers: [$8],
+    auctionSignals: maybePromise(["component auction signals"]),
+    sellerSignals: maybePromise(["component seller signals"]),
+    directFromSellerSignals: maybePromise($9),
+    sellerTimeout: 200,
+    perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
+    perBuyerTimeouts: maybePromise({$8: 200}),
+    perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
+    perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
+    perBuyerCurrencies: maybePromise({$8: 'USD'}),
+    sellerCurrency: 'CAD',
+  }],
+})",
                      top_level_seller_origin, top_level_seller_script_url,
                      embedded_https_test_server().GetURL(
                          kTopLevelSellerHost,
@@ -14087,48 +14066,47 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(NavigateToURL(shell(), embedded_https_test_server().GetURL(
                                            kTopFrameHost, kPagePath)));
 
+    ASSERT_TRUE(ExecJs(shell(), MaybePromiseFunction(use_promise)));
+
     TestFencedFrameURLMappingResultObserver observer;
     ConvertFencedFrameURNToURL(
-        GURL(EvalJs(
-                 shell(),
+        GURL(RunAuctionAndWait(
                  JsReplace(
-                     std::string(use_promise ? kFeedPromise : kFeedDirect) + R"(
-(async function() {
-  return await navigator.runAdAuction({
-    seller: $1,
-    decisionLogicURL: $2,
-    decisionLogicUrl: $2,
-    trustedScoringSignalsURL: $3,
-    trustedScoringSignalsUrl: $3,
-    auctionSignals: maybePromise(["top-level auction signals"]),
-    sellerSignals: maybePromise(["top-level seller signals"]),
-    directFromSellerSignals: maybePromise($4),
-    sellerTimeout: 300,
-    perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
-    perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
-    perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
-    perBuyerPrioritySignals: {'*': {foo: 3}},
-    perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
-    componentAuctions: [{
-      seller: $5,
-      decisionLogicURL: $6,
-      decisionLogicUrl: $6,
-      trustedScoringSignalsURL: $7,
-      trustedScoringSignalsUrl: $7,
-      interestGroupBuyers: [$8],
-      auctionSignals: maybePromise(["component auction signals"]),
-      sellerSignals: maybePromise(["component seller signals"]),
-      directFromSellerSignals: maybePromise($9),
-      sellerTimeout: 200,
-      perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
-      perBuyerTimeouts: maybePromise({$8: 200}),
-      perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
-      perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
-      perBuyerCurrencies: maybePromise({$8: 'USD'}),
-      sellerCurrency: 'CAD',
-    }],
-  });
-})())",
+                     R"(
+{
+  seller: $1,
+  decisionLogicURL: $2,
+  decisionLogicUrl: $2,
+  trustedScoringSignalsURL: $3,
+  trustedScoringSignalsUrl: $3,
+  auctionSignals: maybePromise(["top-level auction signals"]),
+  sellerSignals: maybePromise(["top-level seller signals"]),
+  directFromSellerSignals: maybePromise($4),
+  sellerTimeout: 300,
+  perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
+  perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
+  perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
+  perBuyerPrioritySignals: {'*': {foo: 3}},
+  perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
+  componentAuctions: [{
+    seller: $5,
+    decisionLogicURL: $6,
+    decisionLogicUrl: $6,
+    trustedScoringSignalsURL: $7,
+    trustedScoringSignalsUrl: $7,
+    interestGroupBuyers: [$8],
+    auctionSignals: maybePromise(["component auction signals"]),
+    sellerSignals: maybePromise(["component seller signals"]),
+    directFromSellerSignals: maybePromise($9),
+    sellerTimeout: 200,
+    perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
+    perBuyerTimeouts: maybePromise({$8: 200}),
+    perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
+    perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
+    perBuyerCurrencies: maybePromise({$8: 'USD'}),
+    sellerCurrency: 'CAD',
+  }],
+})",
                      top_level_seller_origin, top_level_seller_script_url,
                      embedded_https_test_server().GetURL(
                          kTopLevelSellerHost,
