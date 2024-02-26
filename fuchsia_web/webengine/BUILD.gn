@@ -250,8 +250,8 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views:fuchsia.ui.views_cpp_hlcpp_conversion",
     "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
+    "//third_party/fuchsia-sdk/sdk/pkg/inspect_component_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
     "//third_party/widevine/cdm:buildflags",
     "//ui/accessibility",
     "//ui/aura",
@@ -397,8 +397,8 @@ source_set("context_provider") {
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
     "//fuchsia_web/webinstance_host:webinstance_host",
+    "//third_party/fuchsia-sdk/sdk/pkg/inspect_component_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 }
 

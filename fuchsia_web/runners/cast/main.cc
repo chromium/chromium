@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <lib/async/default.h>
+#include <lib/inspect/component/cpp/component.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/sys/inspect/cpp/component.h>
 #include <lib/trace-provider/provider.h>
 
 #include <utility>
@@ -129,8 +129,8 @@ int main(int argc, char** argv) {
   }
 
   // Publish version information for this component to Inspect.
-  sys::ComponentInspector inspect(base::ComponentContextForProcess());
-  fuchsia_component_support::PublishVersionInfoToInspect(&inspect);
+  inspect::ComponentInspector inspect(async_get_default_dispatcher(), {});
+  fuchsia_component_support::PublishVersionInfoToInspect(&inspect.root());
 
   outgoing_directory->ServeFromStartupInfo();
 

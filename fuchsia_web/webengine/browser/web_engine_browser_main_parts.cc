@@ -5,12 +5,13 @@
 #include "fuchsia_web/webengine/browser/web_engine_browser_main_parts.h"
 
 #include <fuchsia/web/cpp/fidl.h>
+#include <lib/inspect/component/cpp/component.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/outgoing_directory.h>
-#include <lib/sys/inspect/cpp/component.h>
 #include <utility>
 #include <vector>
 
+#include <lib/async/default.h>
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer_cleaner.h"
@@ -184,10 +185,10 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK_EQ(context_bindings_.size(), 0u);
 
   // Initialize the |component_inspector_| to allow diagnostics to be published.
-  component_inspector_ = std::make_unique<sys::ComponentInspector>(
-      base::ComponentContextForProcess());
+  component_inspector_ = std::make_unique<inspect::ComponentInspector>(
+      async_get_default_dispatcher(), inspect::PublishOptions{});
   fuchsia_component_support::PublishVersionInfoToInspect(
-      component_inspector_.get());
+      &component_inspector_->root());
 
   // Add a node providing memory details for this whole web instance.
   memory_inspector_ =

@@ -107,7 +107,7 @@ executable("cast_runner_exe") {
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
     "//fuchsia_web/webinstance_host",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/inspect_component_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/trace-engine",
     "//third_party/fuchsia-sdk/sdk/pkg/trace-provider-so",
   ]

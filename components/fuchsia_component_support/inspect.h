@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_FUCHSIA_COMPONENT_SUPPORT_INSPECT_H_
 #define COMPONENTS_FUCHSIA_COMPONENT_SUPPORT_INSPECT_H_
 
-namespace sys {
-class ComponentInspector;
-}  // namespace sys
+namespace inspect {
+class Node;
+}  // namespace inspect
 
 namespace fuchsia_component_support {
 
 // Publish the Chromium version via the Inspect API. The lifetime of
-// |inspector| has to be the same as the component it belongs to.
-void PublishVersionInfoToInspect(sys::ComponentInspector* inspector);
+// |parent| has to be the same as the component it belongs to.
+void PublishVersionInfoToInspect(inspect::Node* parent);
 
 }  // namespace fuchsia_component_support
 

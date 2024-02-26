@@ -4,7 +4,7 @@
 
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 
-#include <lib/sys/inspect/cpp/component.h>
+#include <lib/inspect/component/cpp/component.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"

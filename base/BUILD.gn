@@ -1485,7 +1485,7 @@ component("base") {
       "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/async-loop-default",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/inspect_component_cpp",
       "//third_party/icu",
     ]
 
