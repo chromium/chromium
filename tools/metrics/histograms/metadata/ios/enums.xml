@@ -52,6 +52,23 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="SecondImpression"/>
 </enum>
 
+<enum name="DocumentDownloadConflictResolution">
+  <int value="0" label="No Conflict"/>
+  <int value="1" label="Previous Download Complete"/>
+  <int value="2" label="Previous Download Cancelled"/>
+  <int value="3" label="Previous Download Not Finished"/>
+</enum>
+
+<enum name="DocumentDownloadState">
+  <int value="0" label="Complete"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Failed Not Resumable"/>
+  <int value="3" label="Not Started"/>
+  <int value="4" label="In Progress"/>
+  <int value="5"
+      label="Cancelled (includes termination of tab and application)"/>
+</enum>
+
 <enum name="ExperienceKitCalendarTypes">
   <summary>
     This list corresponds to the calendar providers supported by Experience Kit
