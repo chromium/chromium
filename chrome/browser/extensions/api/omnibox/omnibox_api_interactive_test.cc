@@ -151,7 +151,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
+// TODO(crbug.com/326903502): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_SendSuggestions DISABLED_SendSuggestions
+#else
+#define MAYBE_SendSuggestions SendSuggestions
+#endif
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
@@ -895,7 +901,13 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
 
 // Tests an extension passing empty suggestions. Regression test for
 // https://crbug.com/1330137.
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, PassEmptySuggestions) {
+// TODO(crbug.com/326903502): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_PassEmptySuggestions DISABLED_PassEmptySuggestions
+#else
+#define MAYBE_PassEmptySuggestions PassEmptySuggestions
+#endif
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
   static constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
