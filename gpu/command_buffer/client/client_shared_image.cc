@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_types.h"
 
@@ -146,6 +147,11 @@ uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
 }
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage) {
+  // See the comment on this function in the header file.
+  if (!(this->usage() & SHARED_IMAGE_USAGE_SCANOUT)) {
+    return GL_TEXTURE_2D;
+  }
+
   return GetTextureTarget(
       usage, viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format));
 }
