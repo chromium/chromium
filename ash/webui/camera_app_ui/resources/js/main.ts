@@ -548,10 +548,15 @@ async function main() {
   await cameraResourceInitialized.wait();
   const cameraStartSuccessful = await cameraManager.requestResume();
 
-  if (cameraStartSuccessful) {
+  // To align window behavior with other apps, defaultWindowSize is only applied
+  // when the camera app is first opened. Later, the window will be opened in
+  // the size that a user prefers.
+  if (cameraStartSuccessful &&
+      localStorage.getBool(LocalStorageKey.FIRST_OPENING, true)) {
     const {aspectRatio} = cameraManager.getPreviewResolution();
     const {width, height} = getDefaultWindowSize(aspectRatio);
     window.resizeTo(width, height);
+    localStorage.set(LocalStorageKey.FIRST_OPENING, false);
   }
 
   // Waits for the intent to finish before switching to main camera view.
