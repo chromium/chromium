@@ -67,8 +67,7 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
 constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
 
 // Time from when a start starts to when the first set of results are published.
-// TODO: b/325195938 - Lower this to 200ms without affecting results.
-constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
+constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
