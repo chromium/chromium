@@ -50,14 +50,7 @@ const base::FeatureParam<bool> kPreferTextureWeights{
 
 const base::FeatureParam<bool> kEnableHostMappedPointer{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_enable_host_mapped_pointer",
-#if BUILDFLAG(IS_WIN)
-    // TODO(cduvall): Figure out why host mapped pointer is slower on Win.
-    false
-#else
-    true
-#endif
-};
+    "on_device_model_enable_host_mapped_pointer", true};
 
 const base::FeatureParam<bool> kUseLowPower{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
