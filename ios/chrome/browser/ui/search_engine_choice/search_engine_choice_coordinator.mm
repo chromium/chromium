@@ -154,6 +154,7 @@
   _whyAmISeeingThisCoordinator = [[WhyAmISeeingThisCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser];
+  _whyAmISeeingThisCoordinator.presentationFormSheet = _firstRun;
   _whyAmISeeingThisCoordinator.delegate = self;
   [_whyAmISeeingThisCoordinator start];
   if (_firstRun) {

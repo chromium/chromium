@@ -27,8 +27,13 @@
   // Creates the navigation controller and presents.
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
+  // Need to set `modalPresentationStyle` otherwise, UIKit ignores the value.
+  if (self.presentationFormSheet) {
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  } else {
+    navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+  }
   navigationController.presentationController.delegate = self;
-  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   UISheetPresentationController* presentationController =
       navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;

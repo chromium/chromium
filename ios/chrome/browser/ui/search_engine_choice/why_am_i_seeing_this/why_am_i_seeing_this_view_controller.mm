@@ -61,23 +61,14 @@ NSAttributedString* PutBoldPartInText(NSString* string) {
 
 }  // namespace
 
-@implementation WhyAmISeeingThisViewController {
-}
+@implementation WhyAmISeeingThisViewController
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  // Create a label for the navigation bar title to allow multitline.
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.text =
+  self.navigationItem.title =
       l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE_IOS);
-  titleLabel.numberOfLines = 0;
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  [titleLabel setTextAlignment:NSTextAlignmentCenter];
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  self.navigationItem.titleView = titleLabel;
-
   UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self

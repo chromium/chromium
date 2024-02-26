@@ -23,6 +23,11 @@
 // Delegate for all the user actions.
 @property(nonatomic, weak) id<LearnMoreCoordinatorDelegate> delegate;
 
+// If `YES`, the view controller is presented with UIModalPresentationFormSheet,
+// otherwise teh view controller is presented with UIModalPresentationPageSheet.
+// The value has to be set before `start` is called.
+@property(nonatomic, assign) BOOL presentationFormSheet;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_WHY_AM_I_SEEING_THIS_WHY_AM_I_SEEING_THIS_COORDINATOR_H_
