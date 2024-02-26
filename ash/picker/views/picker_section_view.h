@@ -31,6 +31,7 @@ class PickerListItemContainerView;
 class PickerListItemView;
 class PickerSmallItemGridView;
 class PickerSymbolItemView;
+class PickerTraversableItemContainer;
 
 // View for a Picker section with a title and related items.
 class ASH_EXPORT PickerSectionView : public views::View {
@@ -48,17 +49,46 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Adds a list item. These are displayed in a vertical list, each item
   // spanning the width of the section.
-  void AddListItem(std::unique_ptr<PickerListItemView> list_item);
+  PickerListItemView* AddListItem(
+      std::unique_ptr<PickerListItemView> list_item);
 
   // Adds a emoji, symbol or emoticon. These are treated collectively as small
   // grid items and are displayed in rows.
-  void AddEmojiItem(std::unique_ptr<PickerEmojiItemView> emoji_item);
-  void AddSymbolItem(std::unique_ptr<PickerSymbolItemView> symbol_item);
-  void AddEmoticonItem(std::unique_ptr<PickerEmoticonItemView> emoticon_item);
+  PickerEmojiItemView* AddEmojiItem(
+      std::unique_ptr<PickerEmojiItemView> emoji_item);
+  PickerSymbolItemView* AddSymbolItem(
+      std::unique_ptr<PickerSymbolItemView> symbol_item);
+  PickerEmoticonItemView* AddEmoticonItem(
+      std::unique_ptr<PickerEmoticonItemView> emoticon_item);
 
   // Adds an image item to the section. These are displayed in a grid with two
   // columns.
-  void AddImageItem(std::unique_ptr<PickerImageItemView> image_item);
+  PickerImageItemView* AddImageItem(
+      std::unique_ptr<PickerImageItemView> image_item);
+
+  // Returns the item to highlight to when navigating to this section from the
+  // top, or nullptr if the section is empty.
+  PickerItemView* GetTopItem();
+
+  // Returns the item to highlight to when navigating to this section from the
+  // bottom, or nullptr if the section is empty.
+  PickerItemView* GetBottomItem();
+
+  // Returns the item directly above `item`, or nullptr if there is no such item
+  // in the section.
+  PickerItemView* GetItemAbove(PickerItemView* item);
+
+  // Returns the item directly below `item`, or nullptr if there is no such item
+  // in the section.
+  PickerItemView* GetItemBelow(PickerItemView* item);
+
+  // Returns the item directly to the left of `item`, or nullptr if there is no
+  // such item in the section.
+  PickerItemView* GetItemLeftOf(PickerItemView* item);
+
+  // Returns the item directly to the right of `item`, or nullptr if there is no
+  // such item in the section.
+  PickerItemView* GetItemRightOf(PickerItemView* item);
 
   const views::Label* title_label_for_testing() const { return title_label_; }
 
@@ -74,6 +104,14 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
  private:
   void CreateSmallItemGridIfNeeded();
+
+  // Returns a non-null item container if the section has one, otherwise returns
+  // nullptr.
+  // TODO: b/322900302 - Determine whether sections can have multiple item
+  // containers. If so, `GetItemContainer` will need to get the right item
+  // container. If not, just track a single PickerTraversableItemContainer and
+  // then we won't need this method anymore.
+  PickerTraversableItemContainer* GetItemContainer();
 
   // Width available for laying out section items. This is needed to determine
   // row and column widths for grid items in the section.
