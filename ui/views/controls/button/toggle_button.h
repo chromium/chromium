@@ -104,8 +104,6 @@ class VIEWS_EXPORT ToggleButton : public Button {
   bool CanAcceptEvent(const ui::Event& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnFocus() override;
-  void OnBlur() override;
 
   // Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
