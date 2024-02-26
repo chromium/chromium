@@ -246,7 +246,8 @@ class SingleTestRunner(object):
 
         fs.maybe_make_directory(output_dir)
         output_basename = fs.basename(
-            fs.splitext(self._test_name)[0] + '-expected' + extension)
+            port.output_filename(self._test_name, port.BASELINE_SUFFIX,
+                                 extension))
         output_path = fs.join(output_dir, output_basename)
 
         # Remove |output_path| if it exists and is not the generic expectation to
