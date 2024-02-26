@@ -38,23 +38,25 @@
       ]
     },
     "e2e:headful": {
-      "command": "pipenv run python -m pytest --verbose --ignore=tests/input",
-      "dependencies": [
-        "server:headful"
-      ],
+      "command": "tools/run-e2e.mjs --headless=false",
       "files": [
+        "tools/run-e2e.mjs ",
         "pytest.ini",
         "tests/**/*.py"
+      ],
+      "dependencies": [
+        "build"
       ]
     },
     "e2e:headless": {
-      "command": "pipenv run python -m pytest --verbose",
-      "dependencies": [
-        "server:headless"
-      ],
+      "command": "tools/run-e2e.mjs",
       "files": [
+        "tools/run-e2e.mjs ",
         "pytest.ini",
         "tests/**/*.py"
+      ],
+      "dependencies": [
+        "build"
       ]
     },
     "prepare": {
