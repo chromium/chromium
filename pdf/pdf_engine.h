@@ -556,6 +556,11 @@ class PDFEngineExports {
                              int* page_count,
                              float* max_page_width) = 0;
 
+  // Gets the PDF document metadata (see section 14.3.3 "Document Information
+  // Dictionary" of the ISO 32000-1:2008 spec).
+  virtual std::optional<DocumentMetadata> GetPDFDocMetadata(
+      base::span<const uint8_t> pdf_buffer) = 0;
+
   // Whether the PDF is Tagged (see ISO 32000-1:2008 14.8 "Tagged PDF").
   // Returns true if it's a tagged (accessible) PDF, false if it's a valid
   // PDF but untagged, and nullopt if the PDF can't be parsed.

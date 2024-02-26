@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "pdf/document_metadata.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "pdf/flatten_pdf_result.h"
@@ -104,6 +105,11 @@ void SetPDFUsePrintMode(int mode);
 bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                    int* page_count,
                    float* max_page_width);
+
+// Gets the PDF document metadata (see section 14.3.3 "Document Information
+// Dictionary" of the ISO 32000-1:2008 spec).
+std::optional<DocumentMetadata> GetPDFDocMetadata(
+    base::span<const uint8_t> pdf_buffer);
 
 // Whether the PDF is Tagged (see ISO 32000-1:2008 14.8 "Tagged PDF").
 // Returns true if it's a tagged (accessible) PDF, false if it's a valid

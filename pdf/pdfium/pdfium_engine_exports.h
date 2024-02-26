@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
+#include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
 
 namespace chrome_pdf {
@@ -49,6 +50,8 @@ class PDFiumEngineExports : public PDFEngineExports {
   bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                      int* page_count,
                      float* max_page_width) override;
+  std::optional<DocumentMetadata> GetPDFDocMetadata(
+      base::span<const uint8_t> pdf_buffer) override;
   std::optional<bool> IsPDFDocTagged(
       base::span<const uint8_t> pdf_buffer) override;
   base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,

@@ -432,6 +432,29 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfAsStream) {
   EXPECT_EQ(GetPixelRGB(bitmap_width() / 2, bitmap_height() / 2), 0xff0000u);
 }
 
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, Title) {
+  NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
+
+  Attach();
+
+  base::Value::Dict params;
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 0);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
+  params.Set("transferMode", "ReturnAsStream");
+
+  PrintToPdfAsStream(std::move(params));
+
+  std::optional<chrome_pdf::DocumentMetadata> metadata =
+      chrome_pdf::GetPDFDocMetadata(pdf_span_);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->title, "PrintToPdf Basic Test");
+}
+
 IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfOOPIF) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/oopif.html");
 

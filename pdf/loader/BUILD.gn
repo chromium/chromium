@@ -38,6 +38,7 @@ source_set("loader") {
     "document_loader_impl.h",
     "result_codes.h",
     "url_loader.h",
+    "url_loader_wrapper.h",
     "url_loader_wrapper_impl.h",
   ]
 
