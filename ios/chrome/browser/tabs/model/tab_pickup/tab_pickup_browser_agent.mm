@@ -197,8 +197,8 @@ void TabPickupBrowserAgent::ShowInfoBar() {
                                          /*replace_existing=*/true);
   infobar_web_state_ = active_web_state_;
   infobar_displayed = true;
-  GetApplicationContext()->GetLocalState()->SetTime(
-      prefs::kTabPickupLastDisplayedTime, base::Time::Now());
+  PrefService* prefs = browser_->GetBrowserState()->GetPrefs();
+  prefs->SetTime(prefs::kTabPickupLastDisplayedTime, base::Time::Now());
 }
 
 bool TabPickupBrowserAgent::CanShowTabPickupBanner() {
@@ -209,15 +209,14 @@ bool TabPickupBrowserAgent::CanShowTabPickupBanner() {
   if (!IsTabPickupMinimumDelayEnabled()) {
     return true;
   }
-
+  PrefService* prefs = browser_->GetBrowserState()->GetPrefs();
   const base::TimeDelta time_since_last_display =
-      base::Time::Now() - GetApplicationContext()->GetLocalState()->GetTime(
-                              prefs::kTabPickupLastDisplayedTime);
+      base::Time::Now() - prefs->GetTime(prefs::kTabPickupLastDisplayedTime);
   return kDelayBetweenTwoBanners < time_since_last_display;
 }
 
 bool TabPickupBrowserAgent::UpdateNewDistantTab(GURL distant_tab_url) {
-  PrefService* prefs = GetApplicationContext()->GetLocalState();
+  PrefService* prefs = browser_->GetBrowserState()->GetPrefs();
 
   std::string distant_tab_without_ref =
       GURL(distant_tab_url).GetWithoutRef().spec();

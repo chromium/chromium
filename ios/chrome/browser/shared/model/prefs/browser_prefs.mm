@@ -307,6 +307,22 @@ void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
   }
 }
 
+// Helper function migrating the `time` preference from LocalState prefs to
+// BrowserState prefs.
+void MigrateTimePrefFromLocalStatePrefsToProfilePrefs(
+    std::string_view pref_name,
+    PrefService* pref_service) {
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* legacy_pref =
+      local_pref_service->FindPreference(pref_name.data());
+  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
+    pref_service->SetTime(pref_name.data(),
+                          local_pref_service->GetTime(pref_name.data()));
+    local_pref_service->ClearPref(pref_name.data());
+  }
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -434,11 +450,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Default to 0 which is the unassigned value.
   registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
 
-  // Preferences related to the tab pickup feature.
+  // Preference related to the tab pickup feature.
   registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
-  registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
-  registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
-                               std::string());
 
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
@@ -752,6 +765,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(kLastCookieDeletionDate, base::Time());
 
   registry->RegisterDictionaryPref(prefs::kWebAnnotationsPolicy);
+
+  // Preferences related to the tab pickup feature.
+  registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
+  registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
+                               std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -947,6 +965,14 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // BrowserState pref needs to be updated.
   MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
       tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, prefs);
+
+  // Added 02/2024.
+  MigrateTimePrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kTabPickupLastDisplayedTime, prefs);
+
+  // Added 02/2024.
+  MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kTabPickupLastDisplayedURL, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

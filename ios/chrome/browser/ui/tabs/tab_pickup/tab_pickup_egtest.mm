@@ -34,14 +34,12 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Resets the prefs::kTabPickupLastDisplayedTime pref.
 void ResetTabPickupLastDisplayedTimePref() {
-  [ChromeEarlGrey setTimeValue:base::Time()
-             forLocalStatePref:prefs::kTabPickupLastDisplayedTime];
+  [ChromeEarlGrey clearUserPrefWithName:prefs::kTabPickupLastDisplayedTime];
 }
 
 // Resets the prefs::kTabPickupLastDisplayedURL pref.
 void ResetTabPickupLastDisplayedURLPref() {
-  [ChromeEarlGrey setStringValue:std::string()
-               forLocalStatePref:prefs::kTabPickupLastDisplayedURL];
+  [ChromeEarlGrey clearUserPrefWithName:prefs::kTabPickupLastDisplayedURL];
 }
 
 // Sign in and sync using a fake identity.
