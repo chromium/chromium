@@ -246,6 +246,7 @@ if (current_toolchain == default_toolchain) {
       "//components/javascript_dialogs/android:java_resources",
       "//components/media_router/browser/android:java_resources",
       "//components/messages/android:java_resources",
+      "//components/messages/android/internal:java_resources",
       "//components/omnibox/browser:java_resources",
       "//components/page_info/android:java_resources",
       "//components/payments/content/android:java_resources",
