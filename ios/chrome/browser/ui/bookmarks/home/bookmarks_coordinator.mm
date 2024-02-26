@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -308,8 +309,11 @@ enum class PresentedState {
   DCHECK_EQ(node->type(), BookmarkNode::URL);
   [self dismissSnackbar];
   self.currentPresentedState = PresentedState::BOOKMARK_EDITOR;
+  UIViewController* baseViewController =
+      top_view_controller::TopPresentedViewControllerFrom(
+          self.baseViewController);
   self.bookmarkEditorCoordinator = [[BookmarksEditorCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
+      initWithBaseViewController:baseViewController
                          browser:self.browser
                             node:node
          snackbarCommandsHandler:self.snackbarCommandsHandler];
