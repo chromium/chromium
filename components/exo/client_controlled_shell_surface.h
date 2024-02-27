@@ -251,6 +251,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
                            OverlayShadowBounds);
   class ScopedSetBoundsLocally;
   class ScopedLockedToRoot;
+  class ScopedDeferWindowStateUpdate;
 
   // ShellSurfaceBase:
   void SetWidgetBounds(const gfx::Rect& bounds,
@@ -261,6 +262,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   std::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
   bool OnPreWidgetCommit() override;
+  void ShowWidget(bool activate) override;
   void OnPostWidgetCommit() override;
   void OnSurfaceDestroying(Surface* surface) override;
 
@@ -358,6 +360,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   ash::ArcResizeLockType pending_resize_lock_type_ =
       ash::ArcResizeLockType::NONE;
+
+  std::unique_ptr<ScopedDeferWindowStateUpdate>
+      scoped_defer_window_state_update_;
 
   // True if the window supports the floated state.
   bool supports_floated_state_;

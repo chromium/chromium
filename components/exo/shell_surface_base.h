@@ -455,6 +455,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
       views::Widget* widget);
 
   virtual void OnPostWidgetCommit();
+  virtual void ShowWidget(bool active);
 
   void SetParentInternal(aura::Window* window);
   void SetContainerInternal(int container);
