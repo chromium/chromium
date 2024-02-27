@@ -152,18 +152,6 @@ class AutofillSuggestionGenerator {
   // `candidate_card`.
   bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
 
- protected:
-  // Creates a suggestion for the given `credit_card`. `virtual_card_option`
-  // suggests whether the suggestion is a virtual card option.
-  // `card_linked_offer_available` indicates whether a card-linked offer is
-  // attached to the `credit_card`. `origin` is the webpage that the suggestion
-  // will be displayed on.
-  Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
-                                        FieldType trigger_field_type,
-                                        bool virtual_card_option,
-                                        bool card_linked_offer_available,
-                                        const url::Origin& origin) const;
-
  private:
   friend class AutofillSuggestionGeneratorTestApi;
 
@@ -183,6 +171,17 @@ class AutofillSuggestionGenerator {
       FieldType trigger_field_type,
       uint64_t trigger_field_max_length,
       const std::set<std::string>& previously_hidden_profiles_guid = {});
+
+  // Creates a suggestion for the given `credit_card`. `virtual_card_option`
+  // suggests whether the suggestion is a virtual card option.
+  // `card_linked_offer_available` indicates whether a card-linked offer is
+  // attached to the `credit_card`. `origin` is the webpage that the suggestion
+  // will be displayed on.
+  Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
+                                        FieldType trigger_field_type,
+                                        bool virtual_card_option,
+                                        bool card_linked_offer_available,
+                                        const url::Origin& origin) const;
 
   // Dedupes the given profiles based on if one is a subset of the other for
   // suggestions represented by `field_types`. The function returns at most

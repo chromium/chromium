@@ -29,6 +29,17 @@ class AutofillSuggestionGeneratorTestApi {
         trigger_field_max_length, previously_hidden_profiles_guid);
   }
 
+  Suggestion CreateCreditCardSuggestion(
+      const CreditCard& credit_card,
+      FieldType trigger_field_type,
+      bool virtual_card_option,
+      bool card_linked_offer_available,
+      url::Origin origin = url::Origin()) const {
+    return suggestion_generator_->CreateCreditCardSuggestion(
+        credit_card, trigger_field_type, virtual_card_option,
+        card_linked_offer_available, origin);
+  }
+
  private:
   raw_ref<AutofillSuggestionGenerator> suggestion_generator_;
 };
