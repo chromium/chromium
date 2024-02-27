@@ -7,9 +7,13 @@ Windows.
 
 Run from the root directory of the checkout - builds a .inc file that
 will be included into delayloads_unittest.cc.
+
+To export Chrome's view of the data for other build systems, run with the --json
+flag and specify the --apisets-file.
 """
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -22,6 +26,8 @@ RE_NEWMOD = re.compile(
 # e.g. '       1020    0 00088A30 CertAddCRLContextToStore'
 #                        ^ can be blank
 RE_EXPORT = re.compile('^\s+\d+\s+[0-9A-F]+\s+[0-9A-F ]{8}\s+(?P<export>\w+)')
+# apiset line in apisets.inc (see generate_supported_apisets.py)
+RE_APISET = re.compile('^{"(?P<apiset>[^"]+)",\s*(?P<version>\d+)},')
 
 def parse_file(f):
   """Naive parser for dumpbin output.
@@ -37,7 +43,7 @@ def parse_file(f):
       if curmod:
         mods[curmod] = imports
         imports = []
-      curmod = m.group('dll')
+      curmod = m.group('dll').lower()
       continue
     if curmod is None:
       continue
@@ -62,8 +68,7 @@ def generate_inc(input_file):
   module_entries = [];
   for module, functions in mods.items():
     joined_functions = ',\n'.join([f'  "{fn}"' for fn in functions])
-    lower_module = module.lower()
-    module_line = f' {{"{lower_module}", {{{joined_functions}}}}}'
+    module_line = f' {{"{module}", {{{joined_functions}}}}}'
     module_entries.append(module_line)
   all_modules = (',\n').join(module_entries)
   return all_modules
@@ -87,8 +92,31 @@ def write_imports_inc(input, output):
   if existing_content == new_content:
     return
   os.makedirs(os.path.dirname(output), exist_ok=True)
-  with open(output, 'w', encoding='utf-8') as f:
+  with open(output, 'w', encoding='utf-8', newline='') as f:
     f.write(new_content)
+
+
+def parse_apisets(f):
+  # Parses output of generate_supported_apisets.py
+  apisets = dict()
+  for line in f.readlines():
+    m = re.search(RE_APISET, line)
+    if m:
+      apisets[m.group("apiset").lower()] = m.group("version")
+  return apisets
+
+
+def write_json(exports_file, apisets_file, output):
+  # This generates a pbtext used in google3 for a similar check.
+  exports = parse_file(open(exports_file, 'r', encoding='utf-8'))
+  apisets = parse_apisets(open(apisets_file, 'r', encoding='utf-8'))
+
+  result = {
+    "exports": exports,
+    "apisets": apisets,
+  }
+  with open(output, 'w', encoding='utf-8', newline='') as f:
+      json.dump(result, f, indent=2)
 
 
 def main():
@@ -98,12 +126,23 @@ def main():
                       default="chrome/test/delayload/supported_imports.txt",
                       metavar='FILE_NAME',
                       help='output of dumpbin /exports *.dll')
+  parser.add_argument('--apisets-file',
+                      default="chrome/test/delayload/apisets.inc",
+                      metavar='FILE_NAME',
+                      help='[optional] output of generate_supported_apisets.py')
   parser.add_argument('--out-file',
                       default='gen/chrome/test/delayload/supported_imports.inc',
                       metavar='FILE_NAME',
-                      help='path to write .inc file to, within out-dir')
+                      help='path to write .inc or .json file, within out-dir')
+  parser.add_argument('--json', action='store_true',
+                      help='output json instead of .inc')
   args, _extras = parser.parse_known_args()
-  write_imports_inc(args.exports_file, args.out_file)
+  if args.json:
+    # Used to export Chrome's data for other build systems.
+    write_json(args.exports_file, args.apisets_file, args.out_file)
+  else:
+    # Used in Chrome build.
+    write_imports_inc(args.exports_file, args.out_file)
 
 
 if __name__ == '__main__':
