@@ -87,7 +87,6 @@ if (current_toolchain == default_toolchain) {
     chrome_public_apk_or_module_tmpl(_base_module_target_name) {
       forward_variables_from(invoker,
                              [
-                               "assert_no_deps",
                                "add_view_trace_events",
                                "expected_android_manifest",
                                "is_64_bit_browser",
@@ -2537,12 +2536,6 @@ if (current_toolchain == default_toolchain) {
     target_type = "android_apk"
     apk_name = "ChromePublic"
     art_profile_path = "//chrome/android/baseline_profiles/profile.txt"
-    if (android_64bit_target_cpu) {
-      # Ensure 64-bit chrome does not depend on 32-bit things.
-      assert_no_deps =
-          [ "//build/config:toolchain_marker_" +
-            get_label_info(android_secondary_abi_toolchain, "name") ]
-    }
   }
 
   chrome_public_bundle("chrome_public_bundle") {
@@ -3870,11 +3863,6 @@ libchrome_impl("libchrome") {
   }
 
   module_descs = chrome_module_descs
-
-  # Java and native targets form two independent compile graphs. Deps from java targets
-  # onto native ones (or vice versa) are unnecessary and reduce parallelism.
-  # This prevents deps from native -> java.
-  assert_no_deps = [ "//build/android:build_java" ]
 }
 
 chrome_common_shared_library("libchromefortest") {

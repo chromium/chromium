@@ -8,7 +8,6 @@ import("//base/android/resource_exclusions.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/locales.gni")
-import("//build/toolchain/gcc_toolchain.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/trichrome.gni")
@@ -381,24 +380,10 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    # shared_resources_allowlist_target causes a native dep to appear via resources.
-    if (!_is_monochrome) {
-      # Java and native targets form two independent compile graphs. Deps from java targets
-      # onto native ones (or vice versa) are unnecessary and reduce parallelism.
-      # This prevents most deps from java->native.
-      # One common violation is generate_jni() targets, which generate
-      # .srcjars, but also .h files, and so export their native deps.
-      # Tip: If the dep is due to loadable_modules or android_assets, use "asset_deps" rather than
-      #      "deps".
-      assert_no_native_deps = [
-        "//base",
-        "//build/config/compiler:compiler_buildflags",
-        "//build/rust:cxx_cppdeps",
-        "//third_party/abseil-cpp:absl",
-      ]
-    }
-
-    deps = [ "//chrome/android:chrome_base_module_resources" ]
+    deps = [
+      "//chrome/android:chrome_base_module_resources",
+      "//chrome/android:chrome_public_non_pak_assets",
+    ]
 
     # TODO(agrieve): Make unconditional when moving to trampoline.
     if (_is_monochrome || _is_trichrome) {
@@ -461,23 +446,17 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    asset_deps = [ "//chrome/android:chrome_public_non_pak_assets" ]
-    if (defined(invoker.asset_deps)) {
-      asset_deps += invoker.asset_deps
-    }
-
     if (_is_bundle && _is_monochrome) {
-      asset_deps += [ "//chrome/android:monochrome_bundle_module_pak_assets" ]
+      deps += [ "//chrome/android:monochrome_bundle_module_pak_assets" ]
     } else if (_is_bundle && _is_trichrome) {
-      asset_deps +=
-          [ "//chrome/android:trichrome_chrome_bundle_module_pak_assets" ]
+      deps += [ "//chrome/android:trichrome_chrome_bundle_module_pak_assets" ]
     } else if (_is_bundle) {
-      asset_deps += [ "//chrome/android:chrome_bundle_module_pak_assets" ]
+      deps += [ "//chrome/android:chrome_bundle_module_pak_assets" ]
     } else if (_is_monochrome) {
-      asset_deps += [ "//chrome/android:monochrome_apk_pak_assets" ]
+      deps += [ "//chrome/android:monochrome_apk_pak_assets" ]
     } else {
       assert(!_is_trichrome)
-      asset_deps += [ "//chrome/android:chrome_apk_pak_assets" ]
+      deps += [ "//chrome/android:chrome_apk_pak_assets" ]
     }
 
     if (defined(invoker.add_upstream_only_deps) &&
@@ -487,9 +466,9 @@ template("chrome_common_apk_or_module_tmpl") {
       } else if (!_is_trichrome) {
         deps += [
           "//chrome/android:chrome_public_apk_base_module_resources",
+          "//chrome/android:chrome_public_non_pak_assets",
           "//components/browser_ui/styles/android:chrome_public_apk_resources",
         ]
-        asset_deps += [ "//chrome/android:chrome_public_non_pak_assets" ]
       }
       if (_is_bundle) {
         deps += [
@@ -536,12 +515,11 @@ template("chrome_common_apk_or_module_tmpl") {
         (target_cpu == "arm" ||
          (target_cpu == "arm64" && !_is_64_bit_browser))) {
       if (_is_test) {
-        asset_deps +=
-            [ "//chrome/android:libchromefortest_unwind_table_assets" ]
+        deps += [ "//chrome/android:libchromefortest_unwind_table_assets" ]
       } else if (_is_monochrome || _is_trichrome) {
-        asset_deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
+        deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
       } else {
-        asset_deps += [ "//chrome/android:libchrome_unwind_table_assets" ]
+        deps += [ "//chrome/android:libchrome_unwind_table_assets" ]
       }
     }
 
