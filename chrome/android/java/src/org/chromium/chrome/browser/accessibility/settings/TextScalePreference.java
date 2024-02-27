@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.accessibility;
+package org.chromium.chrome.browser.accessibility.settings;
 
 import android.content.Context;
 import android.os.Build;
@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import org.chromium.chrome.R;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;

@@ -189,7 +189,7 @@ public class FontSizePrefs {
 
     private void recordUserFontPrefHistogram(String histogramName) {
         // User font size prefs range from 0.5 to 2.0 (50% to 200%) and can be updated in increments
-        // of 5% (see org.chromium.components.browser_ui.accessibility.TextScalePreference).
+        // of 5% (see org.chromium.chrome.browser.accessibility.settings.TextScalePreference).
         int sample = (int) (getUserFontScaleFactor() * 100);
         assert sample >= 50 && sample <= 200 : "Unexpected font size pref";
         RecordHistogram.recordSparseHistogram(histogramName, sample);

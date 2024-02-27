@@ -37,7 +37,6 @@ android_library("constants_java") {
 android_library("lib_java") {
   srcjar_deps = [ ":accessibility_jni_headers" ]
   sources = [
-    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/DeviceAccessibilitySettingsHandler.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
@@ -48,7 +47,6 @@ android_library("lib_java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/TextScalePreference.java",
   ]
 
   deps = [
