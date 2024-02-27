@@ -25,7 +25,7 @@ BASE_FEATURE(kEnableUpdatingExecutionModeToFrozenContext,
 // Enable updating userBiddingSignals when updating a user's interests groups.
 BASE_FEATURE(kEnableUpdatingUserBiddingSignals,
              "EnableUpdatingUserBiddingSignals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable write ahead logging for interest group storage.
 BASE_FEATURE(kFledgeEnableWALForInterestGroupStorage,
