@@ -208,7 +208,8 @@ void SavedDeskRegularIconView::CreateChildViews(
 
   icon_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
   if (!app_title.empty())
-    icon_view_->GetViewAccessibility().OverrideName(app_title);
+    icon_view_->GetViewAccessibility().SetName(app_title,
+                                               ax::mojom::NameFrom::kAttribute);
 
   // PWAs (e.g. Messages) should use icon identifier as they share the same app
   // id as Chrome and would return short name for app id as "Chromium" (see

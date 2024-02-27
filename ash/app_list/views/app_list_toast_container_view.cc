@@ -306,8 +306,8 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
     toast_view_->SetTitle(toast_text);
     toast_view_->SetIcon(
         ui::ImageModel::FromVectorIcon(*toast_icon, toast_icon_color_id));
-    toast_view_->toast_button()->GetViewAccessibility().OverrideName(
-        a11y_text_on_undo_button);
+    toast_view_->toast_button()->GetViewAccessibility().SetName(
+        a11y_text_on_undo_button, ax::mojom::NameFrom::kAttribute);
     return;
   }
 
@@ -328,8 +328,8 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
                          base::Unretained(this)))
           .SetViewDelegate(view_delegate_)
           .Build());
-  toast_view_->toast_button()->GetViewAccessibility().OverrideName(
-      a11y_text_on_undo_button);
+  toast_view_->toast_button()->GetViewAccessibility().SetName(
+      a11y_text_on_undo_button, ax::mojom::NameFrom::kAttribute);
 
   toast_view_->UpdateInteriorMargins(kReorderUndoInteriorMargin);
   if (available_width_) {

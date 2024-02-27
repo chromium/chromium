@@ -265,7 +265,7 @@ void ContinueTaskView::UpdateResult() {
   if (!result()) {
     title_->SetText(std::u16string());
     subtitle_->SetText(std::u16string());
-    GetViewAccessibility().OverrideName(
+    GetViewAccessibility().SetName(
         std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     return;
   }
@@ -274,8 +274,8 @@ void ContinueTaskView::UpdateResult() {
   subtitle_->SetText(result()->details());
   subtitle_->SetVisible(!result()->details().empty());
 
-  GetViewAccessibility().OverrideName(result()->title() + u" " +
-                                      result()->details());
+  GetViewAccessibility().SetName(result()->title() + u" " + result()->details(),
+                                 ax::mojom::NameFrom::kAttribute);
 }
 
 void ContinueTaskView::OnResultDestroying() {

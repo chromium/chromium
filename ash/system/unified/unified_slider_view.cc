@@ -95,8 +95,9 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
   // Typically the first update of the slider value is conducted by the
   // caller function to reflect the current value.
   slider_->SetEnableAccessibilityEvents(false);
-  slider_->GetViewAccessibility().OverrideName(
-      l10n_util::GetStringUTF16(accessible_name_id));
+  slider_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(accessible_name_id),
+      ax::mojom::NameFrom::kAttribute);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kQsSliderRowPadding,

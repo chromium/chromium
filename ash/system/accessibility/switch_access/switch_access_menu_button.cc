@@ -80,7 +80,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
                         bottom_padding_dip, right_padding_dip));
   SetLayoutManager(std::move(layout));
 
-  GetViewAccessibility().OverrideName(label_text);
+  GetViewAccessibility().SetName(label_text, ax::mojom::NameFrom::kAttribute);
   GetViewAccessibility().OverrideIsLeaf(true);
 }
 

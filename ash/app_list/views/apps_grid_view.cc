@@ -359,8 +359,9 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
 
   // Override the a11y name of top level apps grid.
   if (!folder_delegate) {
-    GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APPS_GRID_A11Y_NAME));
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APPS_GRID_A11Y_NAME),
+        ax::mojom::NameFrom::kAttribute);
   }
 
   if (!IsTabletMode()) {

@@ -144,8 +144,9 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   SetNotifyEnterExitOnChild(true);
 
   // Accessibility.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
-  GetViewAccessibility().OverrideName(item->GetAccessibleName());
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetName(item->GetAccessibleName(),
+                                 ax::mojom::NameFrom::kAttribute);
 
   // When the description is not specified, tooltip text will be used.
   // That text is redundant to the name, but different enough that it is
@@ -294,7 +295,8 @@ void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
 
   // Accessibility.
   if (updated_fields.previous_accessible_name) {
-    GetViewAccessibility().OverrideName(item_->GetAccessibleName());
+    GetViewAccessibility().SetName(item_->GetAccessibleName(),
+                                   ax::mojom::NameFrom::kAttribute);
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   }
 
