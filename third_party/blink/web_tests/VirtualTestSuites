@@ -172,6 +172,16 @@
     "expires": "Apr 1, 2024"
   },
   {
+    "prefix": "raster-inducing-scroll",
+    "platforms": ["Linux", "Mac"],
+    "bases": ["compositing",
+              "paint",
+              "scrollbars"],
+    "args": ["--enable-features=RasterInducingScroll"],
+    "owners": ["wangxianzhu@chromium.org"],
+    "expires": "Sep 30, 2024"
+  },
+  {
     "prefix": "attribution-reporting-in-browser-migration",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting"],

@@ -3023,6 +3023,9 @@
       name: "QuotaChange",
       status: "experimental",
     },
+    {
+      name: "RasterInducingScroll",
+    },
     // If enabled, the Accept-Language header will be reduced.
     {
       name: "ReduceAcceptLanguage",

@@ -2909,7 +2909,9 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollbarIfNeeded(
     if (may_be_composited != previously_might_be_composited) {
       needs_paint_invalidation = true;
       previously_might_be_composited = may_be_composited;
-    } else if (may_be_composited && UsesCompositedScrolling()) {
+    } else if (may_be_composited &&
+               (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
+                UsesCompositedScrolling())) {
       // Don't invalidate composited scrollbar if the change is only inside of
       // the scrollbar. ScrollbarDisplayItem will handle such change.
       // TODO(crbug.com/1505560): Avoid paint invalidation for non-composited

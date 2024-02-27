@@ -12,6 +12,9 @@ crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-
 crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]
 
+# Don't bother for now
+crbug.com/40517276 virtual/raster-inducing-scroll/* [ Skip ]
+
 # ==== Timeouts =======
 crbug.com/1517847 virtual/scalefactor200/css3/filters/effect-reference-composite-hw.html [ Pass Timeout ]
 crbug.com/1517847 compositing/reflections/animation-inside-reflection.html [ Pass Timeout ]

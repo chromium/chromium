@@ -260,7 +260,8 @@ PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(
     }
     if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
       if (const auto* scroll_translation = scrollbar->ScrollTranslation()) {
-        if (NeedsCompositedScrolling(*scroll_translation)) {
+        if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
+            NeedsCompositedScrolling(*scroll_translation)) {
           return PendingLayer::kScrollbarLayer;
         }
       }
