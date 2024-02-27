@@ -10,6 +10,9 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFOwnershipCast;
+
 namespace {
 
 enum KeychainAction {
@@ -17,13 +20,10 @@ enum KeychainAction {
   kKeychainActionUpdate
 };
 
-base::apple::ScopedCFTypeRef<CFStringRef> StringWithBytesAndLength(
-    const char* bytes,
-    UInt32 length) {
-  return base::apple::ScopedCFTypeRef<CFStringRef>(
-      CFStringCreateWithBytes(nullptr, reinterpret_cast<const UInt8*>(bytes),
-                              length, kCFStringEncodingUTF8,
-                              /*isExternalRepresentation=*/false));
+NSString* StringWithBytesAndLength(const char* bytes, UInt32 length) {
+  return [[NSString alloc] initWithBytes:bytes
+                                  length:length
+                                encoding:NSUTF8StringEncoding];
 }
 
 // Creates a dictionary that can be used to query the keystore.
@@ -32,27 +32,24 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeGenericPasswordQuery(
     const char* serviceName,
     UInt32 accountNameLength,
     const char* accountName) {
-  CFMutableDictionaryRef query =
-      CFDictionaryCreateMutable(nullptr, 5, &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks);
-  // Type of element is generic password.
-  CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
+  NSDictionary* query = @{
+    // Type of element is generic password.
+    CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
 
-  // Set the service name.
-  CFDictionarySetValue(
-      query, kSecAttrService,
-      StringWithBytesAndLength(serviceName, serviceNameLength).get());
+    // Set the service name.
+    CFToNSPtrCast(kSecAttrService) :
+        StringWithBytesAndLength(serviceName, serviceNameLength),
 
-  // Set the account name.
-  CFDictionarySetValue(
-      query, kSecAttrAccount,
-      StringWithBytesAndLength(accountName, accountNameLength).get());
+    // Set the account name.
+    CFToNSPtrCast(kSecAttrAccount) :
+        StringWithBytesAndLength(accountName, accountNameLength),
 
-  // Use the proper search constants, return only the data of the first match.
-  CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitOne);
-  CFDictionarySetValue(query, kSecReturnData, kCFBooleanTrue);
-
-  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(query);
+    // Use the proper search constants, return only the data of the first match.
+    CFToNSPtrCast(kSecMatchLimit) : CFToNSPtrCast(kSecMatchLimitOne),
+    CFToNSPtrCast(kSecReturnData) : @YES,
+  };
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
+      NSToCFOwnershipCast(query));
 }
 
 // Creates a dictionary containing the data to save into the keychain.
@@ -64,39 +61,41 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeKeychainData(
     UInt32 passwordLength,
     const void* passwordData,
     KeychainAction action) {
-  CFMutableDictionaryRef keychain_data =
-      CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks);
-
-  // Set the password.
   NSData* password = [NSData dataWithBytes:passwordData length:passwordLength];
-  CFDictionarySetValue(keychain_data, kSecValueData,
-                       base::apple::NSToCFPtrCast(password));
 
-  // If this is not a creation, no structural information is needed.
+  NSDictionary* keychain_data;
+
   if (action != kKeychainActionCreate) {
-    return base::apple::ScopedCFTypeRef<CFDictionaryRef>(keychain_data);
+    // If this is not a creation, no structural information is needed, only the
+    // password.
+    keychain_data = @{
+      // Set the password.
+      CFToNSPtrCast(kSecValueData) : password,
+    };
+  } else {
+    keychain_data = @{
+      // Set the password.
+      CFToNSPtrCast(kSecValueData) : password,
+
+      // Set the type of the data.
+      CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
+
+      // Only allow access when the device has been unlocked.
+      CFToNSPtrCast(kSecAttrAccessible) :
+          CFToNSPtrCast(kSecAttrAccessibleWhenUnlocked),
+
+      // Set the service name.
+      CFToNSPtrCast(kSecAttrService) :
+          StringWithBytesAndLength(serviceName, serviceNameLength),
+
+      // Set the account name.
+      CFToNSPtrCast(kSecAttrAccount) :
+          StringWithBytesAndLength(accountName, accountNameLength),
+    };
   }
 
-  // Set the type of the data.
-  CFDictionarySetValue(keychain_data, kSecClass, kSecClassGenericPassword);
-
-  // Only allow access when the device has been unlocked.
-  CFDictionarySetValue(keychain_data,
-                       kSecAttrAccessible,
-                       kSecAttrAccessibleWhenUnlocked);
-
-  // Set the service name.
-  CFDictionarySetValue(
-      keychain_data, kSecAttrService,
-      StringWithBytesAndLength(serviceName, serviceNameLength).get());
-
-  // Set the account name.
-  CFDictionarySetValue(
-      keychain_data, kSecAttrAccount,
-      StringWithBytesAndLength(accountName, accountNameLength).get());
-
-  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(keychain_data);
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
+      NSToCFOwnershipCast(keychain_data));
 }
 
 }  // namespace
