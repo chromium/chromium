@@ -122,6 +122,9 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver,
   void OnSurfaceDestroying(Surface* surface) override {
     if (surface_ == surface) {
       surface_->RemoveSurfaceObserver(this);
+      if (surface_->window()->HasObserver(this)) {
+        surface_->window()->RemoveObserver(this);
+      }
       surface_ = nullptr;
     }
   }

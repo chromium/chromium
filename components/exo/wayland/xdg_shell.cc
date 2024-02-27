@@ -202,6 +202,7 @@ class WaylandToplevel : public aura::WindowObserver {
 
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
+    window->RemoveObserver(this);
     shell_surface_data_ = nullptr;
   }
 
@@ -565,6 +566,7 @@ class WaylandPopup : aura::WindowObserver {
 
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
+    window->RemoveObserver(this);
     shell_surface_data_ = nullptr;
   }
 
