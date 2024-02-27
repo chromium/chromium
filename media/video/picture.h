@@ -51,7 +51,7 @@ class MEDIA_EXPORT PictureBuffer {
  private:
   int32_t id_;
   gfx::Size size_;
-  uint32_t service_texture_id_;
+  uint32_t service_texture_id_ = 0;
   uint32_t texture_target_ = 0;
   VideoPixelFormat pixel_format_ = PIXEL_FORMAT_UNKNOWN;
 };
