@@ -12,24 +12,6 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */
 public class ChromeAccessibilitySettingsDelegate implements AccessibilitySettingsDelegate {
-    private static class ReaderForAccessibilityDelegate implements BooleanPreferenceDelegate {
-        private final Profile mProfile;
-
-        ReaderForAccessibilityDelegate(Profile profile) {
-            mProfile = profile;
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return UserPrefs.get(mProfile).getBoolean(Pref.READER_FOR_ACCESSIBILITY);
-        }
-
-        @Override
-        public void setEnabled(boolean value) {
-            UserPrefs.get(mProfile).setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) value);
-        }
-    }
-
     private static class TextSizeContrastAccessibilityDelegate
             implements IntegerPreferenceDelegate {
         private final BrowserContextHandle mBrowserContextHandle;
@@ -64,11 +46,6 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public BrowserContextHandle getBrowserContextHandle() {
         return mProfile;
-    }
-
-    @Override
-    public BooleanPreferenceDelegate getReaderForAccessibilityDelegate() {
-        return new ReaderForAccessibilityDelegate(mProfile);
     }
 
     @Override

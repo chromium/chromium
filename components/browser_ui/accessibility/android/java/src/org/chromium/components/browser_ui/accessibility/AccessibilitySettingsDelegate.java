@@ -11,15 +11,6 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * embedder-specific logic.
  */
 public interface AccessibilitySettingsDelegate {
-    /** An interface to control a single boolean preference. */
-    interface BooleanPreferenceDelegate {
-        /** @return whether the preference is enabled. */
-        boolean isEnabled();
-
-        /** Called when the preference value is changed. */
-        void setEnabled(boolean value);
-    }
-
     /** An interface to control a single integer preference. */
     interface IntegerPreferenceDelegate {
         /** @return int - Current value of the preference of this instance. */
@@ -34,12 +25,6 @@ public interface AccessibilitySettingsDelegate {
 
     /** @return The BrowserContextHandle that should be used to read and update settings. */
     BrowserContextHandle getBrowserContextHandle();
-
-    /**
-     * @return the BooleanPreferenceDelegate instance that should be used when rendering the reader
-     * for accessibility preference. Return null to omit the preference.
-     */
-    BooleanPreferenceDelegate getReaderForAccessibilityDelegate();
 
     /**
      * @return the InterPreferenceDelegate instance that should be used for reading and setting the

@@ -14,9 +14,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
-import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
@@ -28,6 +28,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
@@ -52,8 +53,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mForceEnableZoomPref;
     private boolean mRecordFontSizeChangeOnStop;
     private AccessibilitySettingsDelegate mDelegate;
-    private BooleanPreferenceDelegate mReaderForAccessibilityDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
+    private PrefService mPrefService;
 
     private FontSizePrefs mFontSizePrefs;
     private FontSizePrefsObserver mFontSizePrefsObserver =
@@ -70,6 +71,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     mForceEnableZoomPref.setChecked(enabled);
                 }
             };
+
+    public void setPrefService(PrefService prefService) {
+        mPrefService = prefService;
+    }
 
     public void setDelegate(AccessibilitySettingsDelegate delegate) {
         mDelegate = delegate;
@@ -134,13 +139,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
         ChromeSwitchPreference readerForAccessibilityPref =
                 (ChromeSwitchPreference) findPreference(PREF_READER_FOR_ACCESSIBILITY);
-        mReaderForAccessibilityDelegate = mDelegate.getReaderForAccessibilityDelegate();
-        if (mReaderForAccessibilityDelegate != null) {
-            readerForAccessibilityPref.setChecked(mReaderForAccessibilityDelegate.isEnabled());
-            readerForAccessibilityPref.setOnPreferenceChangeListener(this);
-        } else {
-            getPreferenceScreen().removePreference(readerForAccessibilityPref);
-        }
+        readerForAccessibilityPref.setChecked(
+                mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY));
+        readerForAccessibilityPref.setOnPreferenceChangeListener(this);
 
         Preference captions = findPreference(PREF_CAPTIONS);
         captions.setOnPreferenceClickListener(
@@ -214,9 +215,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         } else if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
             mFontSizePrefs.setForceEnableZoomFromUser((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
-            if (mReaderForAccessibilityDelegate != null) {
-                mReaderForAccessibilityDelegate.setEnabled((Boolean) newValue);
-            }
+            mPrefService.setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) newValue);
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
             mPageZoomLatestDefaultZoomPrefValue =
                     PageZoomUtils.convertSeekBarValueToZoomLevel((Integer) newValue);

@@ -606,6 +606,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
                     .setDelegate(new ChromeAccessibilitySettingsDelegate(mProfile));
+            ((AccessibilitySettings) fragment).setPrefService(UserPrefs.get(mProfile));
         }
         if (fragment instanceof PasswordSettings) {
             ((PasswordSettings) fragment).setBottomSheetController(mBottomSheetController);
