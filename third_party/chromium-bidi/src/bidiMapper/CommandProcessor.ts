@@ -156,7 +156,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#browserProcessor.getUserContexts();
       case 'browser.removeUserContext':
         return await this.#browserProcessor.removeUserContext(
-          command.params.userContext
+          this.#parser.parseRemoveUserContextParams(command.params)
         );
       // keep-sorted end
 

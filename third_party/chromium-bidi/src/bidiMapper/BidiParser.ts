@@ -16,6 +16,7 @@
  */
 
 import type {
+  Browser,
   BrowsingContext,
   Cdp,
   Input,
@@ -27,6 +28,13 @@ import type {
 } from '../protocol/protocol.js';
 
 export interface BidiCommandParameterParser {
+  // Browser domain
+  // keep-sorted start block=yes
+  parseRemoveUserContextParams(
+    params: unknown
+  ): Browser.RemoveUserContextParameters;
+  // keep-sorted end
+
   // Browsing Context domain
   // keep-sorted start block=yes
   parseActivateParams(params: unknown): BrowsingContext.ActivateParameters;

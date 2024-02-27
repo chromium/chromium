@@ -16,6 +16,7 @@
  */
 import type {BidiCommandParameterParser} from '../bidiMapper/BidiMapper.js';
 import type {
+  Browser,
   BrowsingContext,
   Cdp,
   Input,
@@ -28,6 +29,15 @@ import type {
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
 export class BidiParser implements BidiCommandParameterParser {
+  // Browser domain
+  // keep-sorted start block=yes
+  parseRemoveUserContextParams(
+    params: unknown
+  ): Browser.RemoveUserContextParameters {
+    return Parser.Browser.parseRemoveUserContextParams(params);
+  }
+  // keep-sorted end
+
   // Browsing Context domain
   // keep-sorted start block=yes
   parseActivateParams(params: unknown): BrowsingContext.ActivateParameters {

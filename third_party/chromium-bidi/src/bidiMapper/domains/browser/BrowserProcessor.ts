@@ -61,8 +61,9 @@ export class BrowserProcessor {
   }
 
   async removeUserContext(
-    userContext: Browser.UserContext
+    params: Browser.RemoveUserContextParameters
   ): Promise<EmptyResult> {
+    const userContext = params.userContext;
     if (userContext === 'default') {
       throw new InvalidArgumentException(
         '`default` user context cannot be removed'

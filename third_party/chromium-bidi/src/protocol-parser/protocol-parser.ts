@@ -46,6 +46,18 @@ export function parseObject<T extends ZodType>(
   throw new InvalidArgumentException(errorMessage);
 }
 
+/** @see https://w3c.github.io/webdriver-bidi/#module-browser */
+export namespace Browser {
+  export function parseRemoveUserContextParams(
+    params: unknown
+  ): Protocol.Browser.RemoveUserContextParameters {
+    return parseObject(
+      params,
+      WebDriverBidi.Browser.RemoveUserContextParametersSchema
+    );
+  }
+}
+
 /** @see https://w3c.github.io/webdriver-bidi/#module-network */
 export namespace Network {
   export function parseAddInterceptParameters(params: unknown) {
