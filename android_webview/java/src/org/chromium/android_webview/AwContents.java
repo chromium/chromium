@@ -1150,6 +1150,7 @@ public class AwContents implements SmartClipProvider {
         }
 
         public void onWebContentsScrollStateUpdate(boolean isScrolling, long scrollId) {
+            if (!mAttached) return;
             // scrollIds are unique across multiple webviews in a window.
             Window window = mWindow.get();
             if (window == null) return;
