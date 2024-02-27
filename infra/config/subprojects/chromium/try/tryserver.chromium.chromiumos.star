@@ -442,41 +442,13 @@ try_.builder(
 try_.builder(
     name = "chromeos-jacuzzi-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = """
+This builder builds chromium and tests it on the public CrOS image on skylab DUTs.
+""",
     mirrors = [
         "ci/chromeos-jacuzzi-rel",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/chromeos-jacuzzi-rel",
-            "dcheck_always_on",
-        ],
-    ),
-    main_list_view = "try",
-)
-
-try_.builder(
-    name = "chromeos-jacuzzi-rel-skylab",
-    branch_selector = branches.selector.MAIN,
-    description_html = "This is a builder that runs HW test on Skylab." +
-                       " This builder also build Lacros with alternative toolchain.",
-    mirrors = [
-        "ci/chromeos-jacuzzi-rel-skylab",
-    ],
-    gn_args = "ci/chromeos-jacuzzi-rel-skylab",
-    contact_team_email = "chromeos-velocity@google.com",
-    execution_timeout = 8 * time.hour,
-    main_list_view = "try",
-)
-
-try_.builder(
-    name = "chromeos-octopus-rel-skylab",
-    branch_selector = branches.selector.MAIN,
-    description_html = "This builder builds public image and runs tests on octopus DUTs in the lab.<br/>" +
-                       "This is experimental.",
-    mirrors = [
-        "ci/chromeos-octopus-rel-skylab",
-    ],
-    gn_args = "ci/chromeos-octopus-rel-skylab",
+    gn_args = "ci/chromeos-jacuzzi-rel",
     contact_team_email = "chromeos-velocity@google.com",
     execution_timeout = 8 * time.hour,
     main_list_view = "try",
@@ -485,10 +457,15 @@ try_.builder(
 try_.builder(
     name = "chromeos-octopus-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = """
+This builder builds chromium and tests it on the public CrOS image on skylab DUTs.
+""",
     mirrors = [
         "ci/chromeos-octopus-rel",
     ],
     gn_args = "ci/chromeos-octopus-rel",
+    contact_team_email = "chromeos-velocity@google.com",
+    execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
 

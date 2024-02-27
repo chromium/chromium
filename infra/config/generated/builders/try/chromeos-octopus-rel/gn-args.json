@@ -1,8 +1,11 @@
 {
   "args_file": "//build/args/chromeos/octopus.gni",
   "gn_args": {
-    "dcheck_always_on": true,
+    "also_build_lacros_chrome_for_architecture": "amd64",
+    "dcheck_always_on": false,
+    "exclude_unwind_tables": false,
     "is_chromeos_device": true,
+    "is_skylab": true,
     "ozone_platform_headless": true,
     "use_remoteexec": true
   }
