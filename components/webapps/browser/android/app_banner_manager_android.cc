@@ -137,6 +137,7 @@ int AppBannerManagerAndroid::GetBadgeStatusForTesting(JNIEnv* env) {
 bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    int request_id,
     const JavaParamRef<jobject>& japp_data,
     const JavaParamRef<jstring>& japp_title,
     const JavaParamRef<jstring>& japp_package,
@@ -146,6 +147,10 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
   if (state_ != State::FETCHING_NATIVE_DATA) {
     return false;
   }
+  if (request_id != current_native_request_id_) {
+    return false;
+  }
+  current_native_request_id_ = std::nullopt;
   UpdateState(State::ACTIVE);
   native_java_app_data_.Reset(japp_data);
   native_app_title_ = ConvertJavaStringToUTF16(env, japp_title);
@@ -265,6 +270,7 @@ void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge(
 void AppBannerManagerAndroid::ResetCurrentPageData() {
   // Reset |ambient_badge_manager_| to stop any running ambient badge pipeline
   // before clearing installable data.
+  current_native_request_id_ = std::nullopt;
   ambient_badge_manager_.reset();
   AppBannerManager::ResetCurrentPageData();
   install_path_tracker_.Reset();
@@ -520,9 +526,11 @@ InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
 
   // This async call will run OnAppDetailsRetrieved() when completed.
   UpdateState(State::FETCHING_NATIVE_DATA);
+  current_native_request_id_ = next_native_request_id_;
+  ++next_native_request_id_;
   Java_AppBannerManager_fetchAppDetails(
-      env, java_banner_manager_, jurl, jpackage, jreferrer,
-      WebappsIconUtils::GetIdealHomescreenIconSizeInPx());
+      env, java_banner_manager_, current_native_request_id_.value(), jurl,
+      jpackage, jreferrer, WebappsIconUtils::GetIdealHomescreenIconSizeInPx());
   return InstallableStatusCode::NO_ERROR_DETECTED;
 }
 
