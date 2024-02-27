@@ -12,7 +12,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace gfx {
-class Point;
 class Rect;
 }  // namespace gfx
 
@@ -29,24 +28,20 @@ class ASH_EXPORT PickerWidget : public views::Widget {
   PickerWidget& operator=(const PickerWidget&) = delete;
   ~PickerWidget() override;
 
+  // `delegate` must remain valid for the lifetime of the created Widget.
+  // `anchor_bounds` is in screen coordinates.
   // `trigger_event_timestamp` is the timestamp of the event that triggered the
   // Widget to be created. For example, if the feature was triggered by a mouse
   // click, then it should be the timestamp of the click. By default, the
   // timestamp is the time this function is called.
-  // `delegate` must remain valid for the lifetime of the created Widget.
-  // `caret_bounds` and `cursor_point` should be in screen coordinates.
   static views::UniqueWidgetPtr Create(
-      const gfx::Rect& caret_bounds,
-      const gfx::Point& cursor_point,
-      const gfx::Rect& focused_window_bounds,
       PickerViewDelegate* delegate,
+      const gfx::Rect& anchor_bounds,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
  private:
-  explicit PickerWidget(const gfx::Rect& caret_bounds,
-                        const gfx::Point& cursor_point,
-                        const gfx::Rect& focused_window_bounds,
-                        PickerViewDelegate* delegate,
+  explicit PickerWidget(PickerViewDelegate* delegate,
+                        const gfx::Rect& anchor_bounds,
                         base::TimeTicks trigger_event_timestamp);
 
   void OnClickOutsideWidget(const ui::LocatedEvent& event);

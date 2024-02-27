@@ -11,7 +11,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view_utils.h"
@@ -22,26 +21,6 @@ namespace ash {
 namespace {
 
 constexpr gfx::Size kPickerSize(320, 340);
-
-// Padding to separate the Picker window from the caret.
-constexpr gfx::Outsets kPaddingAroundCaret(4);
-
-// Gets the anchor bounds to use for positioning the Picker. We prefer to anchor
-// at `caret_bounds`, but may use `cursor_point` as a fallback. `caret_bounds`,
-// `cursor_point`, `focused_window_bounds` and returned anchor bounds should be
-// in screen coordinates.
-gfx::Rect GetPickerAnchorBounds(const gfx::Rect& caret_bounds,
-                                const gfx::Point& cursor_point,
-                                const gfx::Rect& focused_window_bounds) {
-  if (caret_bounds != gfx::Rect() &&
-      focused_window_bounds.Contains(caret_bounds)) {
-    gfx::Rect anchor_rect = caret_bounds;
-    anchor_rect.Outset(kPaddingAroundCaret);
-    return anchor_rect;
-  } else {
-    return gfx::Rect(cursor_point, gfx::Size());
-  }
-}
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
 PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
@@ -55,19 +34,12 @@ PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
 }
 
 views::Widget::InitParams CreateInitParams(
-    const gfx::Rect& caret_bounds,
-    const gfx::Point& cursor_point,
-    const gfx::Rect& focused_window_bounds,
     PickerViewDelegate* delegate,
+    const gfx::Rect& anchor_bounds,
     const base::TimeTicks trigger_event_timestamp) {
-  // Create the Picker view and set its size. This will trigger a layout, so
-  // that the position of the Picker view's search field can be used when
-  // setting the Picker widget bounds below.
-  const gfx::Rect anchor_bounds =
-      GetPickerAnchorBounds(caret_bounds, cursor_point, focused_window_bounds);
   const PickerView::PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
-  auto picker_view = std::make_unique<PickerView>(
-      delegate, trigger_event_timestamp, layout_type);
+  auto picker_view = std::make_unique<PickerView>(delegate, layout_type,
+                                                  trigger_event_timestamp);
   picker_view->SetSize(kPickerSize);
 
   views::Widget::InitParams params;
@@ -86,26 +58,18 @@ views::Widget::InitParams CreateInitParams(
 }  // namespace
 
 views::UniqueWidgetPtr PickerWidget::Create(
-    const gfx::Rect& caret_bounds,
-    const gfx::Point& cursor_point,
-    const gfx::Rect& focused_window_bounds,
     PickerViewDelegate* delegate,
+    const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
-  return base::WrapUnique(new PickerWidget(caret_bounds, cursor_point,
-                                           focused_window_bounds, delegate,
-                                           trigger_event_timestamp));
+  return base::WrapUnique(
+      new PickerWidget(delegate, anchor_bounds, trigger_event_timestamp));
 }
 
-PickerWidget::PickerWidget(const gfx::Rect& caret_bounds,
-                           const gfx::Point& cursor_point,
-                           const gfx::Rect& focused_window_bounds,
-                           PickerViewDelegate* delegate,
+PickerWidget::PickerWidget(PickerViewDelegate* delegate,
+                           const gfx::Rect& anchor_bounds,
                            base::TimeTicks trigger_event_timestamp)
-    : views::Widget(CreateInitParams(caret_bounds,
-                                     cursor_point,
-                                     focused_window_bounds,
-                                     delegate,
-                                     trigger_event_timestamp)),
+    : views::Widget(
+          CreateInitParams(delegate, anchor_bounds, trigger_event_timestamp)),
       bubble_event_filter_(
           /*widget=*/this,
           /*button=*/nullptr,

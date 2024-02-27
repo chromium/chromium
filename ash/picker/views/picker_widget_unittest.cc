@@ -23,9 +23,7 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::Truly;
 
-constexpr gfx::Rect kDefaultCaretBounds(200, 100, 0, 10);
-constexpr gfx::Point kDefaultCursorPoint(300, 400);
-constexpr gfx::Rect kDefaultFocusedWindowBounds(300, 400);
+constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 0, 10);
 
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
@@ -47,8 +45,7 @@ using PickerWidgetTest = AshTestBase;
 
 TEST_F(PickerWidgetTest, CreateWidgetHasCorrectHierarchy) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
-                                     kDefaultFocusedWindowBounds, &delegate);
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
 
   // Widget should contain a NonClientView, which has a NonClientFrameView for
   // borders and shadows, and a ClientView with a sole child of the PickerView.
@@ -62,16 +59,14 @@ TEST_F(PickerWidgetTest, CreateWidgetHasCorrectHierarchy) {
 
 TEST_F(PickerWidgetTest, CreateWidgetHasCorrectBorder) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
-                                     kDefaultFocusedWindowBounds, &delegate);
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
 
   EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
 }
 
 TEST_F(PickerWidgetTest, ClickingOutsideClosesPickerWidget) {
   FakePickerViewDelegate delegate;
-  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
-                                     kDefaultFocusedWindowBounds, &delegate);
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
 
   gfx::Point point_outside_widget = widget->GetWindowBoundsInScreen().origin();

@@ -49,8 +49,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
 
   // `delegate` must remain valid for the lifetime of this class.
   explicit PickerView(PickerViewDelegate* delegate,
-                      base::TimeTicks trigger_event_timestamp,
-                      PickerLayoutType layout_type);
+                      PickerLayoutType layout_type,
+                      base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
   ~PickerView() override;

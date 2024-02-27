@@ -125,8 +125,8 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
 }  // namespace
 
 PickerView::PickerView(PickerViewDelegate* delegate,
-                       const base::TimeTicks trigger_event_timestamp,
-                       PickerLayoutType layout_type)
+                       PickerLayoutType layout_type,
+                       const base::TimeTicks trigger_event_timestamp)
     : session_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
   SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColor,
