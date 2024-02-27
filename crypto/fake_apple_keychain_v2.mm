@@ -14,6 +14,7 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
@@ -236,8 +237,7 @@ OSStatus FakeAppleKeychainV2::ItemUpdate(CFDictionaryRef query,
       base::apple::GetValueFromDictionary<CFDataRef>(query,
                                                      kSecAttrApplicationLabel);
   DCHECK(query_credential_id);
-  for (auto it = items_.begin(); it != items_.end(); ++it) {
-    const base::apple::ScopedCFTypeRef<CFDictionaryRef>& item = *it;
+  for (base::apple::ScopedCFTypeRef<CFDictionaryRef>& item : items_) {
     CFDataRef item_credential_id =
         base::apple::GetValueFromDictionary<CFDataRef>(
             item.get(), kSecAttrApplicationLabel);
@@ -248,16 +248,10 @@ OSStatus FakeAppleKeychainV2::ItemUpdate(CFDictionaryRef query,
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> item_copy(
         CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
                                       item.get()));
-    size_t size = CFDictionaryGetCount(attributes_to_update);
-    std::vector<CFStringRef> keys(size, nullptr);
-    std::vector<CFDictionaryRef> values(size, nullptr);
-    CFDictionaryGetKeysAndValues(attributes_to_update,
-                                 reinterpret_cast<const void**>(keys.data()),
-                                 reinterpret_cast<const void**>(values.data()));
-    for (size_t i = 0; i < size; ++i) {
-      CFDictionarySetValue(item_copy.get(), keys[i], values[i]);
-    }
-    *it = base::apple::ScopedCFTypeRef<CFDictionaryRef>(item_copy.release());
+    [base::apple::CFToNSPtrCast(item_copy.get())
+        addEntriesFromDictionary:base::apple::CFToNSPtrCast(
+                                     attributes_to_update)];
+    item = item_copy;
     return errSecSuccess;
   }
   return errSecItemNotFound;
