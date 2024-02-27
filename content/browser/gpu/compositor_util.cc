@@ -70,9 +70,9 @@ struct DisableInfo {
 struct GpuFeatureData {
   std::string name;
   gpu::GpuFeatureStatus status;
-  bool disabled;
-  DisableInfo disabled_info;
-  bool fallback_to_software;
+  bool disabled = false;
+  DisableInfo disabled_info = DisableInfo::NotProblem();
+  bool fallback_to_software = false;
 };
 
 gpu::GpuFeatureStatus SafeGetFeatureStatus(
@@ -183,11 +183,8 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
           "about:flags or the command line."),
       true);
   features.emplace_back(
-      "opengl",
-      SafeGetFeatureStatus(gpu_feature_info,
-                           gpu::GPU_FEATURE_TYPE_ACCELERATED_GL),
-      false /* disabled */, DisableInfo::NotProblem(),
-      false /* fallback_to_software */);
+      "opengl", SafeGetFeatureStatus(gpu_feature_info,
+                                     gpu::GPU_FEATURE_TYPE_ACCELERATED_GL));
 
 #if BUILDFLAG(ENABLE_VULKAN)
   features.emplace_back(
@@ -223,9 +220,9 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
   features.emplace_back("raw_draw", gpu::kGpuFeatureStatusEnabled,
                         !::features::IsUsingRawDraw(),
                         DisableInfo::NotProblem(), false);
-  features.emplace_back(
-      "direct_rendering_display_compositor", gpu::kGpuFeatureStatusEnabled,
-      !::features::IsDrDcEnabled(), DisableInfo::NotProblem(), false);
+  features.emplace_back("direct_rendering_display_compositor",
+                        gpu::kGpuFeatureStatusEnabled,
+                        !::features::IsDrDcEnabled());
   features.emplace_back(
       "webgpu",
       SafeGetFeatureStatus(gpu_feature_info,
@@ -238,10 +235,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
   features.emplace_back(
       "skia_graphite",
       SafeGetFeatureStatus(gpu_feature_info,
-                           gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE),
-      !base::FeatureList::IsEnabled(features::kSkiaGraphite) &&
-          !command_line.HasSwitch(switches::kEnableSkiaGraphite),
-      DisableInfo::NotProblem(), false);
+                           gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE));
   return features;
 }
 
