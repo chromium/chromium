@@ -928,9 +928,17 @@ TEST_F(UnitTestLauncherDelegateTester, GetCommandLine) {
   base::FilePath result_file;
   CreateNewTempDirectory(FilePath::StringType(), &temp_dir);
 
+  // Make sure that `--gtest_filter` from the original command line is dropped
+  // from a command line passed to the child process, since `--gtest_filter` is
+  // also specified in the flagfile.
+  CommandLine::ForCurrentProcess()->AppendSwitchASCII("gtest_filter", "*");
+  // But other random flags should be preserved.
+  CommandLine::ForCurrentProcess()->AppendSwitch("mochi-are-delicious");
   CommandLine cmd_line =
       delegate_ptr->GetCommandLine(test_names, temp_dir, &result_file);
   EXPECT_TRUE(cmd_line.HasSwitch("single-process-tests"));
+  EXPECT_FALSE(cmd_line.HasSwitch("gtest_filter"));
+  EXPECT_TRUE(cmd_line.HasSwitch("mochi-are-delicious"));
   EXPECT_EQ(cmd_line.GetSwitchValuePath("test-launcher-output"), result_file);
 
   const int size = 2048;
