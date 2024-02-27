@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
@@ -56,17 +57,20 @@ constexpr int kMaxCalendars = 250;
 // response.
 constexpr int kMaxResults = 2500;
 
-// Requested fields to be returned in the Event list result.
-constexpr char kCalendarEventListFields[] =
-    "timeZone,etag,kind,items(id,kind,summary,colorId,"
-    "status,start(date),end(date),start(dateTime),end(dateTime),htmlLink,"
-    "attendees(responseStatus,self),attendeesOmitted,"
-    "conferenceData(conferenceId,entryPoints(entryPointType,uri)),"
-    "creator(self))";
-
 // Requested fields to be returned in the CalendarList result.
 constexpr char kCalendarListFields[] =
     "etag,kind,items(id,colorId,selected,primary)";
+
+// Requested fields to be returned in the Event list result.
+std::string GetCalendarEventListFields(bool include_attachments) {
+  return base::StrCat(
+      {"timeZone,etag,kind,items(id,kind,summary,colorId,"
+       "status,start(date),end(date),start(dateTime),end(dateTime),htmlLink,"
+       "attendees(responseStatus,self),attendeesOmitted,"
+       "conferenceData(conferenceId,entryPoints(entryPointType,uri)),"
+       "creator(self)",
+       include_attachments ? ",attachments(title,fileUrl,iconLink)" : "", ")"});
+}
 
 }  // namespace
 
@@ -172,7 +176,9 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
     const base::Time& end_time,
     const std::string& calendar_id,
     const std::string& calendar_color_id)
-    : CalendarApiGetRequest(sender, kCalendarEventListFields),
+    : CalendarApiGetRequest(
+          sender,
+          GetCalendarEventListFields(/*include_attachments=*/false)),
       callback_(std::move(callback)),
       url_generator_(url_generator),
       start_time_(start_time),
@@ -187,8 +193,10 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
     const CalendarApiUrlGenerator& url_generator,
     CalendarEventListCallback callback,
     const base::Time& start_time,
-    const base::Time& end_time)
-    : CalendarApiGetRequest(sender, kCalendarEventListFields),
+    const base::Time& end_time,
+    bool include_attachments)
+    : CalendarApiGetRequest(sender,
+                            GetCalendarEventListFields(include_attachments)),
       callback_(std::move(callback)),
       url_generator_(url_generator),
       start_time_(start_time),

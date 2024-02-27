@@ -126,7 +126,7 @@ void BirchCalendarFetcher::StartRequest() {
   sender_->StartRequestWithAuthRetry(
       std::make_unique<google_apis::calendar::CalendarApiEventsRequest>(
           sender_.get(), url_generator_, std::move(callback_), start_time_,
-          end_time_));
+          end_time_, /*include_attachments=*/true));
 }
 
 void BirchCalendarFetcher::SetSenderForTest(
