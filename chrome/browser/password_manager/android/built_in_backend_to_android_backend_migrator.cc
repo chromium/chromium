@@ -186,18 +186,6 @@ BuiltInBackendToAndroidBackendMigrator::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (!HasMigratedToTheAndroidBackend(prefs_) &&
-      IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
-    // TODO(crbug.com/1302299): Drop the sync metadata and only then update
-    // pref.
-  }
-  prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                     kRequiredMigrationVersion);
-}
-
 BuiltInBackendToAndroidBackendMigrator::MigrationType
 BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
     bool should_attempt_upm_reenrollement) const {
@@ -306,12 +294,6 @@ void BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData(
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::MigrationFinished,
                      weak_ptr_factory_.GetWeakPtr(), /*is_success=*/true);
 
-  callbacks_chain =
-      base::BindOnce(
-          &BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref,
-          weak_ptr_factory_.GetWeakPtr())
-          .Then(std::move(callbacks_chain));
-
   // All credentials are processed, because it's not possible to filter
   // only those that have non-syncable data.
   for (const auto& login : absl::get<LoginsResult>(logins_or_error)) {
@@ -412,12 +394,6 @@ void BuiltInBackendToAndroidBackendMigrator::
   base::OnceClosure callbacks_chain =
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::MigrationFinished,
                      weak_ptr_factory_.GetWeakPtr(), /*is_success=*/true);
-
-  callbacks_chain =
-      base::BindOnce(
-          &BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref,
-          weak_ptr_factory_.GetWeakPtr())
-          .Then(std::move(callbacks_chain));
 
   for (auto* const login : built_in_backend_logins) {
     auto android_login_iter = android_logins.find(login);
@@ -606,22 +582,29 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
   metrics_reporter_->ReportMetrics(is_success);
   metrics_reporter_.reset();
 
-  // Reenroll previously evicted user into the experiment if the migration has
-  // succeeded.
-  if (migration_in_progress_type_ == MigrationType::kReenrollmentAttempt &&
-      is_success) {
-    prefs_->ClearPref(password_manager::prefs::
-                          kUnenrolledFromGoogleMobileServicesDueToErrors);
-    prefs_->ClearPref(password_manager::prefs::
-                          kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
-    prefs_->SetInteger(
-        prefs::kTimesReenrolledToGoogleMobileServices,
-        prefs_->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) + 1);
-    prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
-                       0);
+  if (is_success) {
+    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                       kRequiredMigrationVersion);
+    // Reenroll previously evicted user into the experiment if the migration has
+    // succeeded.
+    if (migration_in_progress_type_ == MigrationType::kReenrollmentAttempt) {
+      prefs_->ClearPref(password_manager::prefs::
+                            kUnenrolledFromGoogleMobileServicesDueToErrors);
+      prefs_->ClearPref(
+          password_manager::prefs::
+              kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
+      prefs_->SetInteger(
+          prefs::kTimesReenrolledToGoogleMobileServices,
+          prefs_->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) +
+              1);
+      prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
+                         0);
+    }
   }
 
   migration_in_progress_type_ = MigrationType::kNone;
+  // TODO: b/325423333 - reconsider always setting pref to false without
+  // checking `is_success`.
   prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
   TRACE_EVENT_NESTABLE_ASYNC_END0("passwords",
                                   "UnifiedPasswordManagerMigration", this);

@@ -83,9 +83,6 @@ class BuiltInBackendToAndroidBackendMigrator {
   using PasswordFormPtrFlatSet =
       base::flat_set<const PasswordForm*, IsPasswordLess>;
 
-  // Saves current migration version in |prefs_|.
-  void UpdateMigrationVersionInPref();
-
   // Returns the type of migration that should happen next.
   MigrationType GetMigrationType(bool should_attempt_upm_reenrollment) const;
 
