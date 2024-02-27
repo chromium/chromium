@@ -27,8 +27,6 @@ namespace feature_engagement {
 class Tracker;
 }
 
-class PromosManagerEventExporter;
-
 // Centralized promos manager for coordinating and scheduling the display of
 // app-wide promos. Feature teams should not use this directly, use
 // promo_manager.h instead.
@@ -42,8 +40,7 @@ class PromosManagerImpl : public PromosManager {
 
   PromosManagerImpl(PrefService* local_state,
                     base::Clock* clock,
-                    feature_engagement::Tracker* tracker,
-                    PromosManagerEventExporter* event_exporter);
+                    feature_engagement::Tracker* tracker);
   ~PromosManagerImpl() override;
 
   // Sorts the active promos in the order that they will be displayed.
@@ -74,7 +71,7 @@ class PromosManagerImpl : public PromosManager {
   // PromosManager implementation.
   void Init() override;
   void InitializePromoConfigs(PromoConfigsSet promo_configs) override;
-  void RecordImpression(promos_manager::Promo promo) override;
+  void DeregisterAfterDisplay(promos_manager::Promo promo) override;
   std::optional<promos_manager::Promo> NextPromoForDisplay() override;
   void RegisterPromoForContinuousDisplay(promos_manager::Promo promo) override;
   void RegisterPromoForSingleDisplay(promos_manager::Promo promo) override;
@@ -104,9 +101,6 @@ class PromosManagerImpl : public PromosManager {
 
   // Promo-specific configuration.
   PromoConfigsSet promo_configs_;
-
-  // The class to handle migrating events to the Feature Engagement Tracker.
-  raw_ptr<PromosManagerEventExporter> event_exporter_;
 
   base::WeakPtrFactory<PromosManagerImpl> weak_ptr_factory_{this};
 };

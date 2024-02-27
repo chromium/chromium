@@ -32,8 +32,8 @@
   _promosManager->DeregisterPromo(promo);
 }
 
-- (void)recordImpression:(promos_manager::Promo)promo {
-  _promosManager->RecordImpression(promo);
+- (void)deregisterAfterDisplay:(promos_manager::Promo)promo {
+  _promosManager->DeregisterAfterDisplay(promo);
 }
 
 - (std::optional<PromoDisplayData>)nextPromoForDisplay:(BOOL)isFirstShownPromo {

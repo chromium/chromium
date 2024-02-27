@@ -242,7 +242,7 @@
 
     [handler handleDisplay];
 
-    [self.mediator recordImpression:handler.config.identifier];
+    [self.mediator deregisterAfterDisplay:handler.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo.Type",
@@ -268,7 +268,7 @@
                                           animated:YES
                                         completion:nil];
 
-    [self.mediator recordImpression:provider.config.identifier];
+    [self.mediator deregisterAfterDisplay:provider.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration(
@@ -295,7 +295,7 @@
                                           animated:YES
                                         completion:nil];
 
-    [self.mediator recordImpression:banneredProvider.config.identifier];
+    [self.mediator deregisterAfterDisplay:banneredProvider.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration(
@@ -363,7 +363,7 @@
                                           animated:YES
                                         completion:nil];
 
-    [self.mediator recordImpression:alertProvider.config.identifier];
+    [self.mediator deregisterAfterDisplay:alertProvider.config.identifier];
 
     base::UmaHistogramEnumeration("IOS.PromosManager.Promo", promo);
     base::UmaHistogramEnumeration(

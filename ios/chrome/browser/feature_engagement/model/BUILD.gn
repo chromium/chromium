@@ -22,7 +22,6 @@ source_set("model") {
     "//components/leveldb_proto",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/promos_manager/model",
-    "//ios/chrome/browser/promos_manager/model:event_exporter_factory",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",

@@ -191,6 +191,9 @@ const char kAppStoreRatingActiveDaysInPastWeekKey[] =
 const char kAppStoreRatingLastShownPromoDayKey[] =
     "AppStoreRatingLastShownPromoDay";
 
+// Deprecated 02/24.
+const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -375,7 +378,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kIosPreRestoreAccountInfo);
 
   registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
-  registry->RegisterListPref(prefs::kIosPromosManagerImpressions);
+  registry->RegisterListPref(kIosPromosManagerImpressions);
   registry->RegisterListPref(prefs::kIosPromosManagerSingleDisplayActivePromos);
   registry->RegisterDictionaryPref(
       prefs::kIosPromosManagerSingleDisplayPendingPromos);
@@ -820,6 +823,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 01/2024.
   prefs->ClearPref(kAppStoreRatingLastShownPromoDayKey);
   [defaults removeObjectForKey:@(kAppStoreRatingLastShownPromoDayKey)];
+
+  // Added 02/2024.
+  prefs->ClearPref(kIosPromosManagerImpressions);
 }
 
 // This method should be periodically pruned of year+ old migrations.

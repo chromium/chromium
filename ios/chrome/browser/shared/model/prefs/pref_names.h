@@ -279,10 +279,6 @@ inline constexpr char kIosPromosManagerActivePromos[] =
 inline constexpr char kIosPromosManagerSingleDisplayPendingPromos[] =
     "ios.promos_manager.pending_promos";
 
-// List preference containing the promo impression history.
-inline constexpr char kIosPromosManagerImpressions[] =
-    "ios.promos_manager.impressions";
-
 // List preference maintaining the list of single-display, active promo
 // campaigns.
 inline constexpr char kIosPromosManagerSingleDisplayActivePromos[] =

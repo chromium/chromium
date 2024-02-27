@@ -111,7 +111,7 @@ Promo* PromosManagerImplTest::TestPromoWithImpressionLimits() {
 void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
   promos_manager_ = std::make_unique<PromosManagerImpl>(
-      local_state_.get(), &test_clock_, &mock_tracker_, nullptr);
+      local_state_.get(), &test_clock_, &mock_tracker_);
   promos_manager_->Init();
 }
 
@@ -119,8 +119,6 @@ void PromosManagerImplTest::CreatePromosManager() {
 void PromosManagerImplTest::CreatePrefs() {
   local_state_ = std::make_unique<TestingPrefServiceSimple>();
 
-  local_state_->registry()->RegisterListPref(
-      prefs::kIosPromosManagerImpressions);
   local_state_->registry()->RegisterListPref(
       prefs::kIosPromosManagerActivePromos);
   local_state_->registry()->RegisterListPref(
@@ -134,14 +132,11 @@ void PromosManagerImplTest::CreatePrefs() {
 TEST_F(PromosManagerImplTest, InitWithPrefService) {
   CreatePromosManager();
 
-  EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerImpressions),
-            nullptr);
   EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerActivePromos),
             nullptr);
   EXPECT_NE(local_state_->FindPreference(
                 prefs::kIosPromosManagerSingleDisplayActivePromos),
             nullptr);
-  EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerImpressions));
   EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerActivePromos));
   EXPECT_FALSE(local_state_->HasPrefPath(
       prefs::kIosPromosManagerSingleDisplayActivePromos));
@@ -1080,10 +1075,8 @@ TEST_F(PromosManagerImplTest, DeregistersNonExistentPromo) {
       (size_t)0);
 }
 
-// Tests a given single-display promo is automatically deregistered after its
-// impression is recorded.
-TEST_F(PromosManagerImplTest,
-       DeregistersSingleDisplayPromoAfterRecordedImpression) {
+// Tests a given single-display promo is automatically deregistered correctly.
+TEST_F(PromosManagerImplTest, DeregistersSingleDisplayPromoAfterDisplay) {
   CreatePromosManager();
 
   EXPECT_TRUE(
@@ -1099,7 +1092,7 @@ TEST_F(PromosManagerImplTest,
           .size(),
       (size_t)1);
 
-  promos_manager_->RecordImpression(
+  promos_manager_->DeregisterAfterDisplay(
       promos_manager::Promo::CredentialProviderExtension);
 
   EXPECT_TRUE(
@@ -1108,7 +1101,7 @@ TEST_F(PromosManagerImplTest,
 }
 
 // Tests a given single-display pending promo is automatically deregistered
-// after its impression is recorded.
+// correctly.
 TEST_F(PromosManagerImplTest,
        DeregistersSingleDisplayPendingPromoAfterRecordedImpression) {
   CreatePromosManager();
@@ -1126,7 +1119,7 @@ TEST_F(PromosManagerImplTest,
           .size(),
       (size_t)1);
 
-  promos_manager_->RecordImpression(
+  promos_manager_->DeregisterAfterDisplay(
       promos_manager::Promo::CredentialProviderExtension);
 
   EXPECT_TRUE(
