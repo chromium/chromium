@@ -8990,6 +8990,24 @@
             ]
         }
     ],
+    "IOSHideFeedWithSearchChoice": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "IOSHideFeedWithSearchChoiceTargeted": "true"
+                    },
+                    "enable_features": [
+                        "IOSHideFeedWithSearchChoice"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSIPHForSafariSwitcher": [
         {
             "platforms": [
@@ -20172,31 +20190,26 @@
                 {
                     "name": "EnabledAllUsers",
                     "params": {
-                        "IOSHideFeedWithSearchChoiceTargeted": "true",
                         "for_tagged_profiles_only": "false",
                         "reprompt": "{\"*\": \"122.0.0.0\"}"
                     },
                     "enable_features": [
-                        "IOSHideFeedWithSearchChoice",
                         "SearchEngineChoiceTrigger"
                     ]
                 },
                 {
                     "name": "EnabledNewUsers",
                     "params": {
-                        "IOSHideFeedWithSearchChoiceTargeted": "true",
                         "for_tagged_profiles_only": "true",
                         "reprompt": "{\"*\": \"122.0.0.0\"}"
                     },
                     "enable_features": [
-                        "IOSHideFeedWithSearchChoice",
                         "SearchEngineChoiceTrigger"
                     ]
                 },
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "IOSHideFeedWithSearchChoice",
                         "SearchEngineChoiceTrigger"
                     ]
                 }
