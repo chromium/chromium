@@ -202,12 +202,14 @@ void OverviewItemView::RefreshItemVisuals() {
                                         /*upper_right=*/corner_radius,
                                         /*lower_right=*/corner_radius,
                                         /*lower_left=*/0));
+      // `SetRoundedCornersRadius()` will trigger rounded corners update for
+      // header view, preview view and focus ring automatically. Early return to
+      // avoid duplicate updates.
+      return;
     }
   }
 
-  RefreshHeaderViewRoundedCorners();
-  RefreshPreviewRoundedCorners(/*show=*/true);
-  RefreshFocusRingVisuals();
+  ResetRoundedCorners();
 }
 
 views::View* OverviewItemView::GetView() {

@@ -147,7 +147,7 @@ bool WindowCycleItemView::HandleAccessibleAction(
 void WindowCycleItemView::RefreshItemVisuals() {
   header_view()->UpdateIconView(source_window());
   RefreshHeaderViewRoundedCorners();
-  RefreshPreviewRoundedCorners(/*show=*/true);
+  RefreshPreviewRoundedCorners();
   RefreshFocusRingVisuals();
 }
 

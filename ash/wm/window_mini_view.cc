@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "ash/shell.h"
-#include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
@@ -30,6 +28,7 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
 namespace {
 
 constexpr int kFocusRingCornerRadius = 14;
@@ -37,20 +36,15 @@ constexpr int kFocusRingCornerRadiusOld = 20;
 constexpr float kFocusRingThickness = 4.f;
 
 // Returns the rounded corners of the preview view scaled by the given value of
-// `scale` for the preview view with given source `window` if allowed to `show`.
-// If the preview view is completely inside the rounded bounds of `backdrop`, no
-// need to round its corners.
+// `scale` for the preview view with given source `window`. If the preview view
+// is completely inside the rounded bounds of `backdrop`, no need to round its
+// corners.
 gfx::RoundedCornersF GetRoundedCornersForPreviewView(
     aura::Window* window,
     views::View* backdrop,
     const gfx::Rect& preview_bounds_in_screen,
     float scale,
-    bool show,
     std::optional<gfx::RoundedCornersF> preview_view_rounded_corners) {
-  if (!show) {
-    return gfx::RoundedCornersF();
-  }
-
   if (!window_util::ShouldRoundThumbnailWindow(
           backdrop, gfx::RectF(preview_bounds_in_screen))) {
     return gfx::RoundedCornersF();
@@ -74,20 +68,6 @@ gfx::RoundedCornersF GetRoundedCornersForPreviewView(
 
 WindowMiniViewBase::~WindowMiniViewBase() = default;
 
-void WindowMiniViewBase::SetRoundedCornersRadius(
-    const gfx::RoundedCornersF& exposed_rounded_corners) {
-  exposed_rounded_corners_ = exposed_rounded_corners;
-  header_view_rounded_corners_ =
-      gfx::RoundedCornersF(exposed_rounded_corners.upper_left(),
-                           exposed_rounded_corners.upper_right(),
-                           /*lower_right=*/0,
-                           /*lower_left=*/0);
-  preview_view_rounded_corners_ =
-      gfx::RoundedCornersF(/*upper_left=*/0, /*upper_right=*/0,
-                           exposed_rounded_corners.upper_right(),
-                           exposed_rounded_corners.lower_left());
-}
-
 void WindowMiniViewBase::UpdateFocusState(bool focus) {
   if (is_focused_ == focus) {
     return;
@@ -103,6 +83,29 @@ BEGIN_METADATA(WindowMiniViewBase)
 END_METADATA
 
 WindowMiniView::~WindowMiniView() = default;
+
+void WindowMiniView::SetRoundedCornersRadius(
+    const gfx::RoundedCornersF& exposed_rounded_corners) {
+  if (exposed_rounded_corners_ == exposed_rounded_corners) {
+    return;
+  }
+
+  exposed_rounded_corners_ = exposed_rounded_corners;
+  if (header_view_) {
+    gfx::RoundedCornersF header_rounded_corners =
+        gfx::RoundedCornersF(exposed_rounded_corners.upper_left(),
+                             exposed_rounded_corners.upper_right(),
+                             /*lower_right=*/0,
+                             /*lower_left=*/0);
+    header_view_->SetHeaderViewRoundedCornerRadius(header_rounded_corners);
+  }
+
+  preview_view_rounded_corners_ =
+      gfx::RoundedCornersF(/*upper_left=*/0, /*upper_right=*/0,
+                           exposed_rounded_corners.upper_right(),
+                           exposed_rounded_corners.lower_left());
+  OnRoundedCornersSet();
+}
 
 void WindowMiniView::SetSelectedWindowForFocus(aura::Window* window) {
   CHECK_EQ(window, source_window_);
@@ -139,7 +142,7 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
   backdrop_view_->SetVisible(visible);
 }
 
-void WindowMiniView::RefreshPreviewRoundedCorners(bool show) {
+void WindowMiniView::RefreshPreviewRoundedCorners() {
   if (!preview_view_) {
     return;
   }
@@ -149,31 +152,16 @@ void WindowMiniView::RefreshPreviewRoundedCorners(bool show) {
 
   layer->SetRoundedCornerRadius(GetRoundedCornersForPreviewView(
       source_window_, backdrop_view_, preview_view_->GetBoundsInScreen(),
-      layer->transform().To2dScale().x(), show, preview_view_rounded_corners_));
+      layer->transform().To2dScale().x(), preview_view_rounded_corners_));
   if (!chromeos::features::IsRoundedWindowsEnabled()) {
     layer->SetIsFastRoundedCorner(true);
   }
 }
 
 void WindowMiniView::RefreshHeaderViewRoundedCorners() {
-  if (!header_view_) {
-    return;
+  if (header_view_) {
+    header_view_->RefreshHeaderViewRoundedCorners();
   }
-
-  const int default_corner_radius =
-      window_util::GetMiniWindowRoundedCornerRadius();
-  const gfx::RoundedCornersF& header_rounded_corners =
-      header_view_rounded_corners_.value_or(gfx::RoundedCornersF(
-          default_corner_radius, default_corner_radius, 0, 0));
-
-  if (header_rounded_corners ==
-      header_view_->GetHeaderRoundedCorners(source_window_)) {
-    return;
-  }
-
-  header_view_->SetHeaderViewRoundedCornerRadius(
-      header_view_rounded_corners_.value());
-  header_view_->RefreshHeaderViewRoundedCorners();
 }
 
 void WindowMiniView::RefreshFocusRingVisuals() {
@@ -181,12 +169,13 @@ void WindowMiniView::RefreshFocusRingVisuals() {
 }
 
 void WindowMiniView::ResetRoundedCorners() {
-  if (header_view_rounded_corners_.has_value()) {
+  if (header_view_) {
     header_view_->ResetRoundedCorners();
   }
 
-  header_view_rounded_corners_.reset();
   preview_view_rounded_corners_.reset();
+  exposed_rounded_corners_.reset();
+  OnRoundedCornersSet();
 }
 
 bool WindowMiniView::Contains(aura::Window* window) const {
@@ -332,6 +321,12 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
 
 void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
   header_view_->UpdateTitleLabel(window);
+}
+
+void WindowMiniView::OnRoundedCornersSet() {
+  RefreshHeaderViewRoundedCorners();
+  RefreshPreviewRoundedCorners();
+  RefreshFocusRingVisuals();
 }
 
 void WindowMiniView::InstallFocusRing() {

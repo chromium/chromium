@@ -385,14 +385,14 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
     return;
   }
 
-  overview_grid_->PositionWindows(/*animate=*/false);
   for (const auto& item : overview_items_) {
     if (item && item.get() != overview_item) {
       OverviewItemView* item_view = item->overview_item_view();
       item_view->ResetRoundedCorners();
-      item_view->RefreshItemVisuals();
     }
   }
+
+  overview_grid_->PositionWindows(/*animate=*/false);
 }
 
 void OverviewGroupItem::HandleDragEvent(const gfx::PointF& location_in_screen) {

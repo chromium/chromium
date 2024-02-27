@@ -18,7 +18,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::WindowStateType;
+using chromeos::WindowStateType;
 
 }  // namespace
 

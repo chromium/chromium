@@ -4,10 +4,7 @@
 
 #include "ash/wm/window_mini_view_header_view.h"
 
-#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
@@ -15,7 +12,6 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -24,9 +20,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/wm/core/window_util.h"
 
 namespace ash {
+
 namespace {
 
 // The font delta of the window title.
