@@ -1535,9 +1535,14 @@ const FeatureEntry::FeatureVariation kOmniboxDriveSuggestionsVariations[] = {
 const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionPreProdUrl[] = {
     {"StarterPackGeminiUrlOverride",
      "https://gemini.google.com/corp/app?q={searchTerms}"}};
+const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionStagingUrl[] = {
+    {"StarterPackGeminiUrlOverride",
+     "https://gemini.google.com/staging/app?q={searchTerms}"}};
 const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
     {{"pre-prod url", kOmniboxStarterPackExpansionPreProdUrl,
-      std::size(kOmniboxStarterPackExpansionPreProdUrl), nullptr}};
+      std::size(kOmniboxStarterPackExpansionPreProdUrl), nullptr},
+     {"staging url", kOmniboxStarterPackExpansionStagingUrl,
+      std::size(kOmniboxStarterPackExpansionStagingUrl), nullptr}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
