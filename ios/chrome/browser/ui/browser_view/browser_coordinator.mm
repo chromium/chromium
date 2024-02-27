@@ -78,7 +78,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
@@ -866,7 +866,7 @@ enum class ToolbarKind {
   // handlers.
   NSArray<Protocol*>* protocols = @[
     @protocol(ActivityServiceCommands),
-    @protocol(AutofillBottomSheetCommands),
+    @protocol(AutofillCommands),
     @protocol(BrowserCoordinatorCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
@@ -1618,7 +1618,7 @@ enum class ToolbarKind {
   [self.sharingCoordinator start];
 }
 
-#pragma mark - AutofillBottomSheetCommands
+#pragma mark - AutofillCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
   self.passwordSuggestionBottomSheetCoordinator =

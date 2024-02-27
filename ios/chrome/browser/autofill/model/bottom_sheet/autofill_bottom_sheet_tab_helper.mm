@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -82,7 +82,7 @@ void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(
 }
 
 void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
-    id<AutofillBottomSheetCommands> commands_handler) {
+    id<AutofillCommands> commands_handler) {
   commands_handler_ = commands_handler;
 }
 
@@ -126,8 +126,7 @@ void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
     return;
   }
 
-  __weak id<AutofillBottomSheetCommands> weak_commands_handler =
-      commands_handler_;
+  __weak id<AutofillCommands> weak_commands_handler = commands_handler_;
   [password_account_storage_notice_handler_ showAccountStorageNotice:^{
     [weak_commands_handler showPasswordBottomSheet:params];
   }];

@@ -27,7 +27,7 @@ namespace web {
 class ScriptMessage;
 }  // namespace web
 
-@protocol AutofillBottomSheetCommands;
+@protocol AutofillCommands;
 @class CommandDispatcher;
 @protocol PasswordsAccountStorageNoticeHandler;
 
@@ -76,8 +76,7 @@ class AutofillBottomSheetTabHelper
   void OnFormMessageReceived(const web::ScriptMessage& message);
 
   // Sets the bottom sheet CommandDispatcher.
-  void SetAutofillBottomSheetHandler(
-      id<AutofillBottomSheetCommands> commands_handler);
+  void SetAutofillBottomSheetHandler(id<AutofillCommands> commands_handler);
 
   // Prepare bottom sheet using data from the password form prediction.
   void AttachPasswordListeners(
@@ -154,7 +153,7 @@ class AutofillBottomSheetTabHelper
   void ShowPaymentsBottomSheet(const autofill::FormActivityParams params);
 
   // Handler used to request showing the password bottom sheet.
-  __weak id<AutofillBottomSheetCommands> commands_handler_;
+  __weak id<AutofillCommands> commands_handler_;
 
   // Handler used for the passwords account storage notice.
   // TODO(crbug.com/1434606): Remove this when the move to account storage

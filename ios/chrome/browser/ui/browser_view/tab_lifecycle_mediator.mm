@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -94,7 +94,7 @@
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(webState);
   bottomSheetTabHelper->SetAutofillBottomSheetHandler(
-      HandlerForProtocol(_commandDispatcher, AutofillBottomSheetCommands));
+      HandlerForProtocol(_commandDispatcher, AutofillCommands));
 
   if (ios::provider::IsLensSupported()) {
     LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
@@ -126,8 +126,8 @@
   AutofillTabHelper* autofillTabHelper =
       AutofillTabHelper::FromWebState(webState);
   autofillTabHelper->SetBaseViewController(_baseViewController);
-  id<AutofillBottomSheetCommands> autofillHandler =
-      HandlerForProtocol(_commandDispatcher, AutofillBottomSheetCommands);
+  id<AutofillCommands> autofillHandler =
+      HandlerForProtocol(_commandDispatcher, AutofillCommands);
   autofillTabHelper->SetCommandsHandler(autofillHandler);
 
   DCHECK(_printCoordinator);

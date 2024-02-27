@@ -7,7 +7,7 @@ source_set("commands") {
     "account_picker_commands.h",
     "activity_service_commands.h",
     "application_commands.h",
-    "autofill_bottom_sheet_commands.h",
+    "autofill_commands.h",
     "bookmarks_commands.h",
     "bring_android_tabs_commands.h",
     "browser_commands.h",

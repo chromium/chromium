@@ -8,7 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
-#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 

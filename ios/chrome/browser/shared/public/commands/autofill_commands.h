@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_BOTTOM_SHEET_COMMANDS_H_
-#define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_BOTTOM_SHEET_COMMANDS_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
+#define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
 
 #import "components/plus_addresses/plus_address_types.h"
 
@@ -13,10 +13,8 @@ struct FormActivityParams;
 struct VirtualCardEnrollUiModel;
 }  // namespace autofill
 
-// TODO(b/303715684): Update the class name to a general name like
-// AutofillCommands. Commands related to the Autofill flows (passwords,
-// addresses, payments etc).
-@protocol AutofillBottomSheetCommands
+// Commands related to the Autofill flows (passwords, addresses, payments etc).
+@protocol AutofillCommands
 
 // Shows the password suggestion view controller.
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params;
@@ -38,4 +36,4 @@ struct VirtualCardEnrollUiModel;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_BOTTOM_SHEET_COMMANDS_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_

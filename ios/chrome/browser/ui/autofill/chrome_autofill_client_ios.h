@@ -34,7 +34,7 @@
 #include "components/sync/service/sync_service.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
-@protocol AutofillBottomSheetCommands;
+@protocol AutofillCommands;
 @class UIViewController;
 
 namespace web {
@@ -65,12 +65,10 @@ class ChromeAutofillClientIOS : public AutofillClient {
   // Sets a weak reference to the view controller used to present UI.
   void SetBaseViewController(UIViewController* base_view_controller);
 
-  void set_commands_handler(id<AutofillBottomSheetCommands> commands_handler) {
+  void set_commands_handler(id<AutofillCommands> commands_handler) {
     commands_handler_ = commands_handler;
   }
-  id<AutofillBottomSheetCommands> commands_handler() const {
-    return commands_handler_;
-  }
+  id<AutofillCommands> commands_handler() const { return commands_handler_; }
 
   // AutofillClient:
   version_info::Channel GetChannel() const override;
@@ -212,7 +210,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   // A weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;
 
-  __weak id<AutofillBottomSheetCommands> commands_handler_;
+  __weak id<AutofillCommands> commands_handler_;
 };
 
 }  // namespace autofill

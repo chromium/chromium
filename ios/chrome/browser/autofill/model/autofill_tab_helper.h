@@ -12,7 +12,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @class AutofillAgent;
-@protocol AutofillBottomSheetCommands;
+@protocol AutofillCommands;
 class ChromeBrowserState;
 @protocol FormSuggestionProvider;
 @class UIViewController;
@@ -33,7 +33,7 @@ class AutofillTabHelper : public web::WebStateObserver,
   // Sets a weak reference to the view controller used to present UI.
   void SetBaseViewController(UIViewController* base_view_controller);
 
-  void SetCommandsHandler(id<AutofillBottomSheetCommands> commands_handler);
+  void SetCommandsHandler(id<AutofillCommands> commands_handler);
 
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();
