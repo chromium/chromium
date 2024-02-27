@@ -1231,6 +1231,7 @@ policies:
   1230: DefaultDirectSocketsSetting
   1231: DirectSocketsAllowedForUrls
   1232: DirectSocketsBlockedForUrls
+  1233: ProductSpecificationsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

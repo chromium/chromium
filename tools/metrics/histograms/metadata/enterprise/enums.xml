@@ -2064,6 +2064,7 @@ chromium-metrics-reviews@google.com.
   <int value="1230" label="DefaultDirectSocketsSetting"/>
   <int value="1231" label="DirectSocketsAllowedForUrls"/>
   <int value="1232" label="DirectSocketsBlockedForUrls"/>
+  <int value="1233" label="ProductSpecificationsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

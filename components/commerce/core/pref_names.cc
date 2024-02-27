@@ -17,6 +17,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kCommerceDailyMetricsLastUpdateTime, base::Time());
   registry->RegisterTimePref(kShoppingListBookmarkLastUpdateTime, base::Time());
 
+  registry->RegisterBooleanPref(kProductSpecificationsEnabledPrefName, true);
   registry->RegisterBooleanPref(kShoppingListEnabledPrefName, true);
 }
 
