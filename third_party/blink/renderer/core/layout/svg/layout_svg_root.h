@@ -116,6 +116,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   void AddSvgTextDescendant(LayoutSVGText& svg_text);
   void RemoveSvgTextDescendant(LayoutSVGText& svg_text);
 
+  void IntersectChildren(HitTestResult&, const HitTestLocation&) const;
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutSVGRoot";

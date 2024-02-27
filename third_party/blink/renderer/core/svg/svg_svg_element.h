@@ -85,8 +85,9 @@ class SVGSVGElement final : public SVGGraphicsElement,
   void unsuspendRedrawAll() {}
   void forceRedraw() {}
 
-  StaticNodeList* getIntersectionList(SVGRectTearOff*,
-                                      SVGElement* reference_element) const;
+  StaticNodeTypeList<Element>* getIntersectionList(
+      SVGRectTearOff*,
+      SVGElement* reference_element) const;
   StaticNodeList* getEnclosureList(SVGRectTearOff*,
                                    SVGElement* reference_element) const;
   bool checkIntersection(SVGElement*, SVGRectTearOff*) const;
@@ -143,15 +144,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   void FinishParsingChildren() override;
 
-  enum GeometryMatchingMode { kCheckIntersection, kCheckEnclosure };
-
-  bool CheckIntersectionOrEnclosure(const SVGElement&,
-                                    const gfx::RectF&,
-                                    GeometryMatchingMode) const;
-  StaticNodeList* CollectIntersectionOrEnclosureList(
-      const gfx::RectF&,
-      SVGElement*,
-      GeometryMatchingMode) const;
+  bool CheckEnclosure(const SVGElement&, const gfx::RectF&) const;
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;

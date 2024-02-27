@@ -55,6 +55,8 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
   }
   gfx::RectF ViewBoxRect() const;
 
+  void IntersectChildren(HitTestResult&, const HitTestLocation&) const;
+
  private:
   bool IsSVGViewportContainer() const final {
     NOT_DESTROYED();

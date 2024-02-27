@@ -95,6 +95,10 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     NOT_DESTROYED();
     return content_;
   }
+  const SVGContentContainer& Content() const {
+    NOT_DESTROYED();
+    return content_;
+  }
 
   bool IsSVGContainer() const final {
     NOT_DESTROYED();

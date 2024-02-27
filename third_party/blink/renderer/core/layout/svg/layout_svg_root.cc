@@ -502,6 +502,11 @@ bool LayoutSVGRoot::IsInSelfHitTestingPhase(HitTestPhase phase) const {
   return phase == HitTestPhase::kSelfBlockBackground;
 }
 
+void LayoutSVGRoot::IntersectChildren(HitTestResult& result,
+                                      const HitTestLocation& location) const {
+  content_.HitTest(result, location, HitTestPhase::kForeground);
+}
+
 void LayoutSVGRoot::AddSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
   DCHECK(!text_set_.Contains(&svg_text));

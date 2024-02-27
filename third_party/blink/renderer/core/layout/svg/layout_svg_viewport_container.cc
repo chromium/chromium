@@ -88,6 +88,12 @@ bool LayoutSVGViewportContainer::NodeAtPoint(
                                          accumulated_offset, phase);
 }
 
+void LayoutSVGViewportContainer::IntersectChildren(
+    HitTestResult& result,
+    const HitTestLocation& location) const {
+  Content().HitTest(result, location, HitTestPhase::kForeground);
+}
+
 void LayoutSVGViewportContainer::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style) {
