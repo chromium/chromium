@@ -73,8 +73,17 @@
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
 using testing::_;
+using testing::MockFunction;
+using testing::Sequence;
+using testing::UnorderedElementsAre;
+using testing::UnorderedElementsAreArray;
 
 namespace autofill {
+namespace {
+
+ACTION_P(InvokeClosure, closure) {
+  closure.Run();
+}
 
 // Default JavaScript code used to submit the forms.
 const char kDocumentClickHandlerSubmitJS[] =
@@ -413,9 +422,9 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
         profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, "en-US"));
   }
   // Two valid phone numbers are imported, two invalid ones are removed.
-  EXPECT_THAT(actual_phone_numbers,
-              testing::UnorderedElementsAreArray(
-                  {u"4088714567", u"+4940808179000", u"", u""}));
+  EXPECT_THAT(
+      actual_phone_numbers,
+      UnorderedElementsAreArray({u"4088714567", u"+4940808179000", u"", u""}));
 }
 
 // Prepend country codes when formatting phone numbers if:
@@ -452,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
           : u"08450 777777"};
 
   EXPECT_THAT(actual_phone_numbers,
-              testing::UnorderedElementsAreArray(expected_phone_numbers));
+              UnorderedElementsAreArray(expected_phone_numbers));
 }
 
 // Test that Autofill uses '+' sign for international numbers.
@@ -841,14 +850,7 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
 // activation and that it does alert the browser after activation. Also ensures
 // that programmatic input on the prerendered page does not result in unexpected
 // messages prior to activation and that things work correctly post-activation.
-//
-// Flaky on Mac. See https://crbug.com/1484862
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DeferWhilePrerendering DISABLED_DeferWhilePrerendering
-#else
-#define MAYBE_DeferWhilePrerendering DeferWhilePrerendering
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, MAYBE_DeferWhilePrerendering) {
+IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, DeferWhilePrerendering) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/autofill/prerendered.html");
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
@@ -856,28 +858,46 @@ IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, MAYBE_DeferWhilePrerendering) {
 
   int host_id = prerender_helper().AddPrerender(prerender_url);
   auto* rfh = prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  MockAutofillManager* mock = autofill_manager(rfh);
+
+  struct {
+    Sequence seq;
+    MockFunction<void()> check_point;
+    base::RunLoop run_loop;
+  } on_forms_seen;
+  EXPECT_CALL(*mock, OnFormsSeen).Times(0).InSequence(on_forms_seen.seq);
+  EXPECT_CALL(on_forms_seen.check_point, Call).InSequence(on_forms_seen.seq);
+  EXPECT_CALL(*mock, OnFormsSeen)
+      .InSequence(on_forms_seen.seq)
+      .WillOnce(InvokeClosure(on_forms_seen.run_loop.QuitClosure()));
+
+  struct {
+    Sequence seq;
+    MockFunction<void()> check_point;
+    base::RunLoop run_loop;
+  } on_focus_on_form_field_impl;
+  EXPECT_CALL(*mock, OnFocusOnFormFieldImpl)
+      .Times(0)
+      .InSequence(on_focus_on_form_field_impl.seq);
+  EXPECT_CALL(on_focus_on_form_field_impl.check_point, Call)
+      .InSequence(on_focus_on_form_field_impl.seq);
+  EXPECT_CALL(*mock, OnFocusOnFormFieldImpl)
+      .InSequence(on_focus_on_form_field_impl.seq)
+      .WillOnce(
+          InvokeClosure(on_focus_on_form_field_impl.run_loop.QuitClosure()));
+
+  // During prerendering, no events should be fired by AutofillAgent.
   ASSERT_TRUE(content::ExecJs(rfh,
                               "document.querySelector('#NAME_FIRST').focus();",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // Since the initial prerender page load has finished at this point and we
-  // have issued our programmatic focus, we need to check that the expectations
-  // we set up during render frame creation have been met (i.e., that we did not
-  // issue a calls to the driver for either the forms being seen nor the focus
-  // update).
-  MockAutofillManager* mock = autofill_manager(rfh);
-  testing::Mock::VerifyAndClearExpectations(mock);
-  // Next, we ensure that once we activate, we issue the deferred calls.
-  base::RunLoop run_loop;
-  EXPECT_CALL(*mock, OnFocusOnFormFieldImpl(_, _, _)).Times(1);
-  EXPECT_CALL(*mock, OnFormsSeen(_, _))
-      .Times(1)
-      .WillRepeatedly(
-          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-
+  on_forms_seen.check_point.Call();
+  on_focus_on_form_field_impl.check_point.Call();
+  // Once the prerendered frame becomes active, the enqueued events should be
+  // fired by AutofillAgent.
   prerender_helper().NavigatePrimaryPage(prerender_url);
   EXPECT_EQ(prerender_helper().GetRequestCount(prerender_url), 1);
-  run_loop.Run();
+  on_forms_seen.run_loop.Run();
+  on_focus_on_form_field_impl.run_loop.Run();
 }
 
 // Test fixture for testing that that appropriate form submission events are
@@ -987,9 +1007,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTestFormSubmission, Submission) {
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(_, _, mojom::SubmissionSource::FORM_SUBMISSION))
-      .Times(1)
-      .WillRepeatedly(
-          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
   ExecuteScript(
       "document.getElementById('name').value = 'Sarah';"
       "document.getElementById('name').select();"
@@ -1004,9 +1022,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTestFormSubmission, ProbableSubmission) {
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(
                   _, _, mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
-      .Times(1)
-      .WillRepeatedly(
-          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
   // Add a delay before navigating away to avoid race conditions. This is
   // appropriate since we're faking user interaction here.
   ExecuteScript(
@@ -1021,4 +1037,5 @@ IN_PROC_BROWSER_TEST_F(AutofillTestFormSubmission, ProbableSubmission) {
   run_loop.Run();
 }
 
+}  // namespace
 }  // namespace autofill
