@@ -231,8 +231,8 @@ static_library("test_support") {
       "win/test/scoped_screen_win.h",
       "win/test/screen_util_win.cc",
       "win/test/screen_util_win.h",
-      "win/test/virtual_display_win_util.cc",
-      "win/test/virtual_display_win_util.h",
+      "win/test/virtual_display_util_win.cc",
+      "win/test/virtual_display_util_win.h",
     ]
     deps += [
       "//third_party/win_virtual_display/controller",
@@ -244,8 +244,8 @@ static_library("test_support") {
     sources += [
       "mac/test/test_screen_mac.h",
       "mac/test/test_screen_mac.mm",
-      "mac/test/virtual_display_mac_util.h",
-      "mac/test/virtual_display_mac_util.mm",
+      "mac/test/virtual_display_util_mac.h",
+      "mac/test/virtual_display_util_mac.mm",
     ]
   }
 
@@ -373,23 +373,19 @@ test("display_unittests") {
   }
 }
 
-# This target is added as a dependency of browser interactive_ui_tests.It must
+# This target is added as a dependency of browser interactive_ui_tests. It must
 # be source_set, otherwise the linker will drop the tests as dead code.
 source_set("display_interactive_ui_tests") {
   testonly = true
   if (is_mac) {
-    sources = [ "mac/test/virtual_display_mac_util_interactive_uitest.mm" ]
-
-    deps = [
-      ":display",
-      ":test_support",
-      "//base/test:test_support",
-      "//testing/gtest",
-    ]
+    sources = [ "mac/test/virtual_display_util_mac_interactive_uitest.mm" ]
   }
-  if (is_win) {
-    sources = [ "win/test/virtual_display_win_util_interactive_uitest.cc" ]
 
+  if (is_win) {
+    sources = [ "win/test/virtual_display_util_win_interactive_uitest.cc" ]
+  }
+
+  if (is_win || is_mac) {
     deps = [
       ":display",
       ":test_support",

@@ -5,7 +5,7 @@
 #include <memory>
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/mac/test/virtual_display_mac_util.h"
+#include "ui/display/mac/test/virtual_display_util_mac.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/virtual_display_util.h"
 #include "ui/display/types/display_constants.h"

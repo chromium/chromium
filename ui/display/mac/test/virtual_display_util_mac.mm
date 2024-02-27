@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/display/mac/test/virtual_display_mac_util.h"
+#include "ui/display/mac/test/virtual_display_util_mac.h"
 
 #include <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>

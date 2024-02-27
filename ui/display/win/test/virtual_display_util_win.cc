@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/display/win/test/virtual_display_win_util.h"
+#include "ui/display/win/test/virtual_display_util_win.h"
 
 #include "base/containers/flat_tree.h"
 #include "base/logging.h"

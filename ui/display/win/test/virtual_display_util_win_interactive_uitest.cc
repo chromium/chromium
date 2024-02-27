@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/win/screen_win.h"
-#include "ui/display/win/test/virtual_display_win_util.h"
+#include "ui/display/win/test/virtual_display_util_win.h"
 
 // Flag passed to use the custom display driver to make virtual displays.
 static constexpr char kSwitchWindowsVirtualDisplayDriver[] =

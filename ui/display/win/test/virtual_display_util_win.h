@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_WIN_UTIL_H_
-#define UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_WIN_UTIL_H_
+#ifndef UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_UTIL_WIN_H_
+#define UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_UTIL_WIN_H_
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -65,4 +65,4 @@ class VirtualDisplayUtilWin : public display::DisplayObserver,
 }  // namespace test
 }  // namespace display
 
-#endif  // UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_WIN_UTIL_H_
+#endif  // UI_DISPLAY_WIN_TEST_VIRTUAL_DISPLAY_UTIL_WIN_H_

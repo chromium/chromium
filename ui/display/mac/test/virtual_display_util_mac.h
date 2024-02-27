@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_DISPLAY_MAC_TEST_VIRTUAL_DISPLAY_MAC_UTIL_H_
-#define UI_DISPLAY_MAC_TEST_VIRTUAL_DISPLAY_MAC_UTIL_H_
+#ifndef UI_DISPLAY_MAC_TEST_VIRTUAL_DISPLAY_UTIL_MAC_H_
+#define UI_DISPLAY_MAC_TEST_VIRTUAL_DISPLAY_UTIL_MAC_H_
 
 #import <IOKit/pwr_mgt/IOPMLib.h>
 #include <stdint.h>
@@ -108,4 +108,4 @@ class VirtualDisplayUtilMac : public VirtualDisplayUtil,
 }  // namespace test
 }  // namespace display
 
-#endif  // UI_DISPLAY_MAC_TEST_VIRTUAL_DISPLAY_MAC_UTIL_H_
+#endif  // UI_DISPLAY_MAC_TEST_VIRTUAL_DISPLAY_UTIL_MAC_H_
