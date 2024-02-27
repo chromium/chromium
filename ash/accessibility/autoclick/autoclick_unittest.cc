@@ -36,7 +36,6 @@ namespace ash {
 
 namespace {
 const int kScrollToMenuBoundsBuffer = 18;
-}
 
 class MouseEventCapturer : public ui::EventHandler {
  public:
@@ -101,6 +100,8 @@ class MouseEventCapturer : public ui::EventHandler {
   std::vector<ui::MouseEvent> events_;
   std::vector<ui::MouseWheelEvent> wheel_events_;
 };
+
+}  // namespace
 
 class AutoclickTest : public AshTestBase {
  public:
