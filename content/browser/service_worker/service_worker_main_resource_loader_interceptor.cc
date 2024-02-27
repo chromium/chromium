@@ -184,6 +184,14 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
           std::move(host_receiver), process_id_, std::move(client_remote),
           client_info);
 
+      // TODO(crbug.com/324939068): remove this UMA after the launch.
+      if (request_destination_ ==
+          network::mojom::RequestDestination::kSharedWorker) {
+        base::UmaHistogramBoolean(
+            "ServiceWorker.SharedWorkerScript.IsBlob",
+            tentative_resource_request.url.SchemeIsBlob());
+      }
+
       if (base::FeatureList::IsEnabled(kSharedWorkerBlobURLFix) ||
           request_destination_ == network::mojom::RequestDestination::kWorker) {
         // For the blob worker case, inherit the controller from the worker's

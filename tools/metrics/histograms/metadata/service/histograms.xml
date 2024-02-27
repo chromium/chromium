@@ -1279,6 +1279,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SharedWorkerScript.IsBlob" enum="Boolean"
+    expires_after="2024-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Whether a SharedWorker script got via a ServiceWorker is a blob URL or not.
+    This metrics is recorded in the main resource loader intereceptor during the
+    script loading.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SkipCallingFindRegistrationForClientUrl"
     enum="BooleanSkipped" expires_after="2024-06-30">
   <owner>chikamune@chromium.org</owner>
