@@ -387,6 +387,43 @@
       </g>
     </svg>
 
+- name: 2d.layer.ctm.shadow-in-transformed-layer
+  desc: Check shadows inside of a transformed layer.
+  size: [200, 200]
+  code: |
+    ctx.translate(80, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+
+    ctx.beginLayer();
+    ctx.shadowOffsetX = 10;
+    ctx.shadowOffsetY = 10;
+    ctx.shadowColor = 'grey';
+    ctx.fillRect(-30, -5, 60, 10);
+
+    const canvas2 = new OffscreenCanvas(100, 100);
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(0, 0, 40, 10);
+    ctx.drawImage(canvas2, -30, -30);
+
+    ctx.endLayer();
+  reference: |
+    ctx.translate(80, 90);
+    ctx.scale(2, 2);
+    ctx.rotate(Math.PI / 2);
+
+    ctx.shadowOffsetX = 10;
+    ctx.shadowOffsetY = 10;
+    ctx.shadowColor = 'grey';
+    ctx.fillRect(-30, -5, 60, 10);
+
+    const canvas2 = new OffscreenCanvas(100, 100);
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.fillStyle = 'blue';
+    ctx2.fillRect(0, 0, 40, 10);
+    ctx.drawImage(canvas2, -30, -30);
+
 - name: 2d.layer.ctm.getTransform
   desc: Tests getTransform inside layers.
   code: |

@@ -26,6 +26,8 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
   explicit MemoryManagedPaintCanvas(const cc::RecordPaintCanvas&) = delete;
   ~MemoryManagedPaintCanvas() override;
 
+  std::unique_ptr<MemoryManagedPaintCanvas> CreateChildCanvas();
+
   cc::PaintRecord ReleaseAsRecord() override;
 
   void drawImage(const cc::PaintImage& image,
@@ -44,6 +46,12 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
   size_t ImageBytesUsed() const { return image_bytes_used_; }
 
  private:
+  // Creates a child canvas that has the same transform matrix and size as
+  // `parent`. `CreateChildCanvasTag` is used to differentiate this from a copy
+  // constructor.
+  MemoryManagedPaintCanvas(CreateChildCanvasTag,
+                           const MemoryManagedPaintCanvas& parent);
+
   void UpdateMemoryUsage(const cc::PaintImage& image);
 
   HashSet<cc::PaintImage::ContentId,

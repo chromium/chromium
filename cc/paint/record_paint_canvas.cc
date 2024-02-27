@@ -367,6 +367,13 @@ InspectableRecordPaintCanvas::InspectableRecordPaintCanvas(
     const gfx::Size& size)
     : canvas_(size.width(), size.height()) {}
 
+InspectableRecordPaintCanvas::InspectableRecordPaintCanvas(
+    CreateChildCanvasTag,
+    const InspectableRecordPaintCanvas& parent)
+    : canvas_(SkIRect::MakeSize(parent.imageInfo().dimensions())) {
+  canvas_.setMatrix(parent.canvas_.getLocalToDevice());
+}
+
 InspectableRecordPaintCanvas::~InspectableRecordPaintCanvas() = default;
 
 int InspectableRecordPaintCanvas::save() {

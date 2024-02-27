@@ -237,6 +237,14 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   // Don't shadow non-virtual helper functions.
   using RecordPaintCanvas::clipRect;
 
+ protected:
+  // Creates a child canvas that has the same transform matrix and size as
+  // `parent`. `CreateChildCanvasTag` is used to differentiate this from a copy
+  // constructor.
+  struct CreateChildCanvasTag {};
+  InspectableRecordPaintCanvas(CreateChildCanvasTag,
+                               const InspectableRecordPaintCanvas& parent);
+
  private:
   void clipRRectInternal(const SkRRect& rrect,
                          SkClipOp op,
