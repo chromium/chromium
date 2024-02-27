@@ -319,7 +319,7 @@
       <part file="policy_strings.grdp" />
       <part file="print_media_strings.grdp" />
       <part file="printing_component_strings.grdp" />
-      <part file="privacy_sandbox_strings.grdp" />
+      <part file="privacy_sandbox_chrome_strings.grdp" />
       <part file="protocol_handler_strings.grdp" />
       <part file="reset_password_strings.grdp" />
       <part file="search_engine_choice_strings.grdp" />
