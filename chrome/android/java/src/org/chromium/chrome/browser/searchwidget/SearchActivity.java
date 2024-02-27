@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -316,18 +315,12 @@ public class SearchActivity extends AsyncInitializationActivity
                                                 ManagePasswordsReferrer.CHROME_SETTINGS,
                                                 () -> getModalDialogManager(),
                                                 /* managePasskeys= */ false),
-                                // Open History Clusters UI for Query:
-                                query -> {},
                                 // Open Quick Delete Dialog callback:
                                 null),
                         null,
                         ChromePureJavaExceptionReporter::reportJavaException,
                         backPressManager,
                         /* OmniboxSuggestionsDropdownScrollListener= */ this,
-                        new OpenHistoryClustersDelegate() {
-                            @Override
-                            public void openHistoryClustersUi(String query) {}
-                        },
                         /* tabModelSelectorSupplier= */ null,
                         /* forcePhoneStyleOmnibox= */ true);
         mLocationBarCoordinator.setUrlBarFocusable(true);

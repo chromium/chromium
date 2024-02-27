@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -31,7 +30,6 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final @NonNull Consumer<String> mOpenUrlInExistingTabElseNewTabCb;
     private final @NonNull Runnable mOpenIncognitoTabCb;
     private final @NonNull Runnable mOpenPasswordSettingsCb;
-    private final @NonNull OpenHistoryClustersDelegate mOpenHistoryClustersForQueryCb;
     private final @NonNull Supplier<Tab> mTabSupplier;
     private final @Nullable Runnable mOpenQuickDeleteCb;
 
@@ -42,7 +40,6 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
             @NonNull Consumer<String> openUrlInExistingTabElseNewTabCb,
             @NonNull Runnable openIncognitoTabCb,
             @NonNull Runnable openPasswordSettingsCb,
-            @NonNull OpenHistoryClustersDelegate openHistoryClustersForQueryCb,
             @Nullable Runnable openQuickDeleteCb) {
         mContext = context;
         mTabSupplier = tabSupplier;
@@ -50,13 +47,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
         mOpenUrlInExistingTabElseNewTabCb = openUrlInExistingTabElseNewTabCb;
         mOpenIncognitoTabCb = openIncognitoTabCb;
         mOpenPasswordSettingsCb = openPasswordSettingsCb;
-        mOpenHistoryClustersForQueryCb = openHistoryClustersForQueryCb;
         mOpenQuickDeleteCb = openQuickDeleteCb;
-    }
-
-    @Override
-    public void openHistoryClustersPage(String query) {
-        mOpenHistoryClustersForQueryCb.openHistoryClustersUi(query);
     }
 
     @Override

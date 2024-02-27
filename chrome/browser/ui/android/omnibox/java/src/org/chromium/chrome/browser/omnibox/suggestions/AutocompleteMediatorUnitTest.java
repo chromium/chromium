@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -124,7 +123,6 @@ public class AutocompleteMediatorUnitTest {
     private @Mock WindowAndroid mMockWindowAndroid;
     private @Mock OmniboxActionDelegate mOmniboxActionDelegate;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeJniMock;
-    private @Mock HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
     private @Mock OmniboxActionFactoryJni mActionFactoryJni;
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock NavigationHandle mNavigationHandle;
@@ -178,8 +176,7 @@ public class AutocompleteMediatorUnitTest {
                         tab -> {},
                         mTabWindowManagerSupplier,
                         url -> false,
-                        mOmniboxActionDelegate,
-                        mOpenHistoryClustersDelegate);
+                        mOmniboxActionDelegate);
 
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()

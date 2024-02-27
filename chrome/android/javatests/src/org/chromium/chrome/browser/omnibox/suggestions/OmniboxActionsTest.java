@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,7 +32,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -135,11 +132,6 @@ public class OmniboxActionsTest {
                 .setDisplayText("Suggestion")
                 .setActions(actions)
                 .build();
-    }
-
-    private AutocompleteMatch createDummyHistoryClustersAction(String name) {
-        return createDummySuggestion(
-                List.of(new HistoryClustersAction(0, "hint", "accessibility", name)));
     }
 
     private AutocompleteMatch createDummyActionInSuggest(ActionInfo.ActionType... types) {

@@ -54,20 +54,6 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
           static_cast<int32_t>(pedal_id)));
 }
 
-base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
-    JNIEnv* env,
-    intptr_t instance,
-    const std::u16string& hint,
-    const std::u16string& accessibility_hint,
-    const std::string& query) {
-  return base::android::ScopedJavaGlobalRef<jobject>(
-      Java_OmniboxActionFactory_buildHistoryClustersAction(
-          env, g_java_factory.Get(), instance,
-          base::android::ConvertUTF16ToJavaString(env, hint),
-          base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
-          base::android::ConvertUTF8ToJavaString(env, query)));
-}
-
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,
     intptr_t instance,

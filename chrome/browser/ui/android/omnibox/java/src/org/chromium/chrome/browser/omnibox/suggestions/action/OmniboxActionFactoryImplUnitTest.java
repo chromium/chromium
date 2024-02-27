@@ -69,16 +69,6 @@ public class OmniboxActionFactoryImplUnitTest {
     }
 
     @Test
-    public void historyClustersDowncasting() {
-        // The underlying code will throw if instance is not valid.
-        // Checking for null in case that changes.
-        assertNotNull(
-                HistoryClustersAction.from(
-                        OmniboxActionFactoryImpl.get()
-                                .buildHistoryClustersAction(0, "hint", "accessibility", "query")));
-    }
-
-    @Test
     public void omniboxPedalsDowncasting() {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.

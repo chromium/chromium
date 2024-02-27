@@ -73,13 +73,4 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
         return new OmniboxActionInSuggest(
                 nativeInstance, hint, accessibilityHint, actionType, actionUri);
     }
-
-    @Override
-    public @Nullable OmniboxAction buildHistoryClustersAction(
-            long nativeInstance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            @NonNull String query) {
-        return new HistoryClustersAction(nativeInstance, hint, accessibilityHint, query);
-    }
 }

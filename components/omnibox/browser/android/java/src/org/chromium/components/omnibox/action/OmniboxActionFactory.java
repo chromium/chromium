@@ -46,22 +46,6 @@ public interface OmniboxActionFactory {
             /* EntityInfoProto.ActionInfo.ActionType */ int actionType,
             @NonNull String actionUri);
 
-    /**
-     * Create a new HistoryClustersAction.
-     *
-     * @param hint the title displayed on the chip
-     * @param accessibilityHint the text to be announced to the accessibility-enabled users
-     * @param query the user-specific query associated with History Clusters
-     * @return new instance of an HistoryClustersAction
-     */
-    @CalledByNative
-    @NonNull
-    OmniboxAction buildHistoryClustersAction(
-            long instance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            @NonNull String query);
-
     @NativeMethods
     public interface Natives {
         /** Pass the OmniboxActionFactory instance to C++. */

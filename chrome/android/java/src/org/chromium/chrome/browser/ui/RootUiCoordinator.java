@@ -91,7 +91,6 @@ import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
@@ -1349,8 +1348,6 @@ public class RootUiCoordinator
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 
-            OpenHistoryClustersDelegate openHistoryClustersDelegate = query -> {};
-
             var omniboxActionDelegate =
                     new OmniboxActionDelegateImpl(
                             mActivity,
@@ -1382,8 +1379,6 @@ public class RootUiCoordinator
                                         mModalDialogManagerSupplier,
                                         /* managePasskeys= */ false);
                             },
-                            // Open History Clusters UI for Query:
-                            openHistoryClustersDelegate,
                             // Open Quick Delete Dialog callback:
                             () -> {
                                 new QuickDeleteController(
@@ -1441,7 +1436,6 @@ public class RootUiCoordinator
                             mEphemeralTabCoordinatorSupplier,
                             mInitializeUiWithIncognitoColors,
                             mBackPressManager,
-                            openHistoryClustersDelegate,
                             mOverviewIncognitoSupplier);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();

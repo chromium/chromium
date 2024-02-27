@@ -24,8 +24,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestion
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
@@ -54,17 +52,13 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable OmniboxImageSupplier mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
     @Px private int mDropdownHeight;
-    private OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
 
     DropdownItemViewInfoListBuilder(
-            @NonNull Supplier<Tab> tabSupplier,
-            BookmarkState bookmarkState,
-            OpenHistoryClustersDelegate openHistoryClustersDelegate) {
+            @NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
         mBookmarkState = bookmarkState;
-        mOpenHistoryClustersDelegate = openHistoryClustersDelegate;
     }
 
     /**
@@ -94,14 +88,6 @@ class DropdownItemViewInfoListBuilder {
                 new AnswerSuggestionProcessor(context, host, textProvider, mImageSupplier));
         registerSuggestionProcessor(
                 new ClipboardSuggestionProcessor(context, host, mImageSupplier));
-        registerSuggestionProcessor(
-                new HistoryClustersProcessor(
-                        mOpenHistoryClustersDelegate,
-                        context,
-                        host,
-                        textProvider,
-                        mImageSupplier,
-                        mBookmarkState));
         registerSuggestionProcessor(
                 new EntitySuggestionProcessor(
                         context, host, textProvider, mImageSupplier, mBookmarkState));

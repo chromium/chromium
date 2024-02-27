@@ -34,7 +34,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -50,7 +49,6 @@ public class OmniboxActionDelegateImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     private @Mock Consumer<String> mMockOpenUrl;
-    private @Mock OpenHistoryClustersDelegate mMockOpenHistoryClustersUi;
     private @Mock Runnable mMockOpenIncognitoPage;
     private @Mock Runnable mMockOpenPasswordSettings;
     private @Mock SettingsLauncher mMockSettingsLauncher;
@@ -72,7 +70,6 @@ public class OmniboxActionDelegateImplUnitTest {
                         mMockOpenUrl,
                         mMockOpenIncognitoPage,
                         mMockOpenPasswordSettings,
-                        mMockOpenHistoryClustersUi,
                         mMockOpenQuickDeleteDialog);
     }
 
@@ -80,15 +77,8 @@ public class OmniboxActionDelegateImplUnitTest {
     public void cleanUp() {
         verifyNoMoreInteractions(mMockOpenIncognitoPage);
         verifyNoMoreInteractions(mMockOpenPasswordSettings);
-        verifyNoMoreInteractions(mMockOpenHistoryClustersUi);
         verifyNoMoreInteractions(mMockOpenUrl);
         verifyNoMoreInteractions(mMockOpenQuickDeleteDialog);
-    }
-
-    @Test
-    public void openHistoryClustersPage() {
-        mDelegate.openHistoryClustersPage("query");
-        verify(mMockOpenHistoryClustersUi, times(1)).openHistoryClustersUi("query");
     }
 
     @Test

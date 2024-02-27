@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionVi
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -99,7 +98,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
             @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
-            @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate,
             boolean forcePhoneStyleOmnibox) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -130,8 +128,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                         bringToForegroundCallback,
                         tabWindowManagerSupplier,
                         bookmarkState,
-                        omniboxActionDelegate,
-                        openHistoryClustersDelegate);
+                        omniboxActionDelegate);
         mMediator.initDefaultProcessors();
 
         mScrollListenerList.addObserver(scrollListener);

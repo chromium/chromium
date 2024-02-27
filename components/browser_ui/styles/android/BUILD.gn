@@ -185,7 +185,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_history_24dp.xml",
     "java/res/drawable/ic_info_outline_grey_16dp.xml",
     "java/res/drawable/ic_info_outline_grey_24dp.xml",
-    "java/res/drawable/ic_journeys.xml",
     "java/res/drawable/ic_language.xml",
     "java/res/drawable/ic_language_24.xml",
     "java/res/drawable/ic_lightbulb_24dp.xml",

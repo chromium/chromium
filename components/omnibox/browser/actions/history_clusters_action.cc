@@ -28,13 +28,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
-#include "url/android/gurl_android.h"
-#endif
-
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
@@ -146,18 +139,6 @@ OmniboxActionId HistoryClustersAction::ActionId() const {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& HistoryClustersAction::GetVectorIcon() const {
   return omnibox::kJourneysIcon;
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
-HistoryClustersAction::GetOrCreateJavaObject(JNIEnv* env) const {
-  if (!j_omnibox_action_) {
-    j_omnibox_action_.Reset(BuildHistoryClustersAction(
-        env, reinterpret_cast<intptr_t>(this), strings_.hint,
-        strings_.accessibility_hint, query_));
-  }
-  return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }
 #endif
 

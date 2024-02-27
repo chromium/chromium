@@ -91,7 +91,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -510,7 +509,6 @@ public class ToolbarManager
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
-     * @param openHistoryClustersDelegate
      * @param overviewIncognitoSupplier Incognito supplier specifically for the overview. During
      *     animations especially this might diverge from the tab model version.
      */
@@ -560,7 +558,6 @@ public class ToolbarManager
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
-            @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate,
             @Nullable BooleanSupplier overviewIncognitoSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
@@ -852,7 +849,6 @@ public class ToolbarManager
                             ChromePureJavaExceptionReporter::reportJavaException,
                             BackPressManager.isEnabled() ? backPressManager : null,
                             scrollListener,
-                            openHistoryClustersDelegate,
                             tabModelSelectorSupplier,
                             /* forcePhoneStyleOmnibox= */ false);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
