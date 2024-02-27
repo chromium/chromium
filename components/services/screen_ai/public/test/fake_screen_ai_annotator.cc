@@ -22,6 +22,10 @@ void FakeScreenAIAnnotator::PerformOcrAndReturnAXTreeUpdate(
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
   ui::AXTreeUpdate update;
   if (!create_empty_result_) {
+    update.has_tree_data = true;
+    // TODO(nektar): Add a tree ID as well and update tests.
+    // update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    update.tree_data.title = "Screen AI";
     update.root_id = next_node_id_;
     ui::AXNodeData node;
     node.id = next_node_id_;

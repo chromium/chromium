@@ -41,6 +41,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "url/gurl.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -155,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
 
   ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
   // Make sure the OCR service went through all the pages provided in the
-  // earlier call to PageMetadataUpdated(), since on first load all pages are
+  // earlier call to `PageMetadataUpdated()`, since on first load all pages are
   // dirty.
   EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
   EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
@@ -201,9 +205,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
   fake_metadata[0]->rect =
       gfx::RectF(/*x=*/-3, /*y=*/0,
                  /*width=*/kTestPageWidth, /*height=*/kTestPageHeight);
-  fake_metadata[1]->rect =
-      gfx::RectF(/*x=*/-3, /*y=*/10,
-                 /*width=*/kTestPageHeight, /*height=*/kTestPageWidth);
+  fake_metadata[1]->rect = gfx::RectF(
+      /*x=*/-3, /*y=*/10, /*width=*/kTestPageHeight, /*height=*/kTestPageWidth);
   fake_metadata[2]->rect =
       gfx::RectF(/*x=*/-3, /*y=*/15,
                  /*width=*/kTestPageWidth, /*height=*/kTestPageHeight);
@@ -388,6 +391,110 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
       canvas->GetFirstUnignoredChildCrossingTreeBoundary();
   ASSERT_NE(nullptr, pdf_root);
   EXPECT_EQ(ax::mojom::Role::kPdfRoot, pdf_root->GetRole());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       SendAXTreeToAccessibilityService) {
+  handler_->EnablePendingSerializedUpdatesForTesting();
+  constexpr size_t kTestNumPages = 3u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // All pages must have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
+  EXPECT_EQ("PageC", fake_media_app_.PageIdsWithBitmap()[2]);
+
+  const std::vector<const ui::AXTreeUpdate>& pending_serialized_updates =
+      handler_->GetPendingSerializedUpdatesForTesting();
+  // Three updates, one for each page, plus one update for the document that
+  // contains them.
+  ASSERT_EQ(kTestNumPages + 1u, pending_serialized_updates.size());
+  EXPECT_EQ(
+      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate: root id -2\n"
+      "id=-2 staticText name=Testing (0, 0)-(3, 8)\n",
+      pending_serialized_updates[0].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate: root id -3\n"
+      "id=-3 staticText name=Testing (0, 10)-(3, 8)\n",
+      pending_serialized_updates[1].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate: root id -4\n"
+      "id=-4 staticText name=Testing (0, 20)-(3, 8)\n",
+      pending_serialized_updates[2].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate tree data:\nAXTreeUpdate: root id 1\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly child_tree_id= is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly child_tree_id= "
+      "is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "20)-(3, 8) restriction=readonly child_tree_id= "
+      "is_page_breaking_object=true\n",
+      pending_serialized_updates[3].ToString());
+
+  // Rotate the second page. It should update the location of all pages.
+  fake_metadata[1]->rect =
+      gfx::RectF(/*x=*/0.0f, kTestPageHeight + kTestPageGap, kTestPageHeight,
+                 kTestPageWidth);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  handler_->PageContentsUpdated("PageB");
+  WaitForOcringPages(1u);
+
+  // Only the second page must have gone through OCR, but all the pages must
+  // have had their location updated.
+  ASSERT_EQ(kTestNumPages + 1u, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap().back());
+
+  // For the location changes: Three updates for changing the location of three
+  // pages, plus one for the document that contains them.
+  //
+  // For the rotated page: One update for deleting the rotated page, plus one
+  // update for the document.
+  ASSERT_EQ(kTestNumPages * 2u + 4u, pending_serialized_updates.size());
+  EXPECT_EQ(
+      "AXTreeUpdate: root id -2\n"
+      "id=-2 staticText name=Testing (0, 0)-(3, 8)\n",
+      pending_serialized_updates[4].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate: root id -3\n"
+      "id=-3 staticText name=Testing (0, 10)-(8, 3)\n",
+      pending_serialized_updates[5].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate: root id -4\n"
+      "id=-4 staticText name=Testing (0, 20)-(3, 8)\n",
+      pending_serialized_updates[6].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate: root id 1\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(8, 28) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n",
+      pending_serialized_updates[7].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate tree data:\n"
+      "AXTreeUpdate: clear node -3\n"
+      "AXTreeUpdate: root id -5\n"
+      "id=-5 staticText name=Testing (0, 10)-(8, 3)\n",
+      pending_serialized_updates[8].ToString());
+  EXPECT_EQ(
+      "AXTreeUpdate: root id 1\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(8, 28) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n",
+      pending_serialized_updates[9].ToString());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

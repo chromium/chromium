@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/to_address.h"
@@ -28,9 +29,15 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
-#include "ui/accessibility/ax_tree_id.h"
+#include "ui/gfx/geometry/rect_f.h"
+
+#if defined(USE_AURA)
+#include "extensions/browser/api/automation_internal/automation_event_router.h"
+#include "ui/accessibility/ax_event.h"
+#include "ui/aura/env.h"
+#include "ui/gfx/geometry/point.h"
+#endif  // defined(USE_AURA)
 
 namespace ash {
 
@@ -207,17 +214,18 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     }
     page_metadata_[page_id].page_num = i + 1;  // 1-indexed.
     page_metadata_[page_id].rect = page_metadata[i]->rect;
-
     // Page location can only be set after the corresponding |pages_|
-    // AXTreeManager entry has been created, so don't update it for first load.
+    // `AXTreeManager` entry has been created, so don't update it for first
+    // load.
     if (!is_first_load) {
       page_id_updated.insert(page_id);
       UpdatePageLocation(page_id, page_metadata[i]->rect);
+      SendAXTreeToAccessibilityService(*pages_[page_id],
+                                       *page_serializers_[page_id]);
     }
   }
-  UpdateDocumentTree();
 
-  // Skip all further processing that applies to only updates (not first load).
+  // If this is the "first load", there could be no deleted pages.
   if (is_first_load) {
     return;
   }
@@ -227,11 +235,13 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   for (auto const& [page_id, _] : page_metadata_) {
     if (!page_id_updated.contains(page_id)) {
       // Since `pages_` and `page_metadata_` are both populated from untrusted
-      // code, mitigate potential issues by never mutating the size of these two
-      // containers. So when a page is 'deleted' by the user, keep it in memory.
+      // code, mitigate potential security issues by never mutating the size of
+      // these twocontainers. So when a page is 'deleted' by the user, keep it
+      // in memory.
       page_metadata_[page_id].page_num = 0;
     }
   }
+  UpdateDocumentTree();
 }
 
 void AXMediaAppUntrustedHandler::PageContentsUpdated(
@@ -284,6 +294,34 @@ ui::AXNodeID AXMediaAppUntrustedHandler::GetMediaAppRootNodeID() const {
   return ui::kInvalidAXNodeID;
 }
 
+void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
+    const ui::AXTreeManager& manager,
+    TreeSerializer& serializer) {
+  CHECK(manager.GetRoot());
+  ui::AXTreeUpdate update;
+  if (!serializer.SerializeChanges(manager.GetRoot(), &update)) {
+    NOTREACHED_NORETURN() << "Failure to serialize should have already caused "
+                             "the process to crash due to the `crash_on_error` "
+                             "in `AXTreeSerializer` constructor call.";
+  }
+  if (pending_serialized_updates_for_testing_) {
+    ui::AXTreeUpdate simplified_update = update;
+    simplified_update.tree_data = ui::AXTreeData();
+    pending_serialized_updates_for_testing_->push_back(
+        std::move(simplified_update));
+  }
+#if defined(USE_AURA)
+  auto* event_router = extensions::AutomationEventRouter::GetInstance();
+  CHECK(event_router);
+  const gfx::Point& mouse_location =
+      aura::Env::GetInstance()->last_mouse_location();
+  event_router->DispatchAccessibilityEvents(
+      update.tree_data.tree_id, {update}, mouse_location,
+      {ui::AXEvent(update.root_id, ax::mojom::Event::kLayoutComplete,
+                   ax::mojom::EventFrom::kNone)});
+#endif  // defined(USE_AURA)
+}
+
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
     const std::string& page_id,
     const gfx::RectF& page_location) {
@@ -295,9 +333,7 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(
     return;
   }
   ui::AXTree* tree = pages_[page_id]->ax_tree();
-  if (!tree->root()) {
-    return;
-  }
+  CHECK(tree->root());
   ui::AXNodeData root_data = tree->root()->data();
   root_data.relative_bounds.bounds = page_location;
   ui::AXTreeUpdate location_update;
@@ -323,7 +359,7 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   // Text direction is set individually by each page element via the OCR
   // Service, so no need to set it here.
-  //
+
   // Text alignment cannot be set in PDFs, so use left as the default alignment.
   document_root_data.SetTextAlign(ax::mojom::TextAlign::kLeft);
   // The PDF document cannot itself be modified.
@@ -338,8 +374,10 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
   document_root_data.child_ids = child_ids;
 
   gfx::RectF document_location;
-  for (auto const& [_, metadata] : page_metadata_) {
-    document_location.Union(metadata.rect);
+  for (const auto& [_, page] : page_metadata_) {
+    if (page.page_num != 0u) {  // Not deleted page.
+      document_location.Union(page.rect);
+    }
   }
   document_root_data.relative_bounds.bounds = document_location;
   document_root_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin,
@@ -396,9 +434,16 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
     document_update.tree_data.tree_id = document_tree_id_;
     // TODO(b/319543924): Add a localized version of an accessible name.
     document_update.tree_data.title = "PDF document";
-    document_.SetTree(std::make_unique<ui::AXTree>(document_update));
+    auto document_tree =
+        std::make_unique<ui::AXSerializableTree>(document_update);
+    document_source_ =
+        base::WrapUnique<TreeSource>(document_tree->CreateTreeSource());
+    document_serializer_ = std::make_unique<TreeSerializer>(
+        document_source_.get(), /* crash_on_error */ true);
+    document_.SetTree(std::move(document_tree));
     StitchDocumentTree();
   }
+  SendAXTreeToAccessibilityService(document_, *document_serializer_);
 }
 
 void AXMediaAppUntrustedHandler::StitchDocumentTree() {
@@ -436,7 +481,6 @@ std::string AXMediaAppUntrustedHandler::PopDirtyPage() {
   if (dirty_page_ids_.empty()) {
     mojo::ReportBadMessage("`PopDirtyPage()` found no more dirty pages.");
   }
-
   auto dirty_page_id = dirty_page_ids_.front();
   dirty_page_ids_.pop_front();
   return dirty_page_id;
@@ -455,39 +499,41 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   auto dirty_page_id = PopDirtyPage();
   // TODO(b/289012145): Refactor this code to support things happening
   // asynchronously - e.g. RequestBitmap will be async.
-  SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
-  screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
-      page_bitmap,
-      base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
-                     weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
+  if (media_app_) {
+    SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
+    screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
+        page_bitmap,
+        base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
+                       weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
+  }
 }
 
 void AXMediaAppUntrustedHandler::OnPageOcred(
     const std::string& dirty_page_id,
     const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The tree update that comes from the OCR Service is only a list of nodes,
-  // and it's missing valid tree data.
-  //
-  // TODO(b/289012145): Investigate if we can fix this in the OCR Service.
-  if (tree_update.has_tree_data ||
+  if (!tree_update.has_tree_data ||
+      // TODO(b/319536234): Validate tree ID.
+      // ui::AXTreeIDUnknown() == tree_update.tree_data.tree_id ||
       ui::kInvalidAXNodeID == tree_update.root_id) {
     mojo::ReportBadMessage("OnPageOcred() bad tree update from Screen AI.");
     return;
   }
-  ui::AXTreeUpdate complete_tree_update;
-  complete_tree_update.has_tree_data = true;
+  ui::AXTreeUpdate complete_tree_update = tree_update;
   complete_tree_update.tree_data.parent_tree_id = document_tree_id_;
-  complete_tree_update.tree_data.title = "OCR results";
-  complete_tree_update.root_id = tree_update.root_id;
-  complete_tree_update.nodes = tree_update.nodes;
   if (ReportIfNonExistentPageId("OnPageOcred()", dirty_page_id,
                                 page_metadata_)) {
     return;
   }
   if (!pages_.contains(dirty_page_id)) {
-    pages_[dirty_page_id] = std::make_unique<ui::AXTreeManager>(
-        std::make_unique<ui::AXTree>(complete_tree_update));
+    auto page_tree =
+        std::make_unique<ui::AXSerializableTree>(complete_tree_update);
+    page_sources_[dirty_page_id] =
+        base::WrapUnique<TreeSource>(page_tree->CreateTreeSource());
+    page_serializers_[dirty_page_id] = std::make_unique<TreeSerializer>(
+        page_sources_[dirty_page_id].get(), /* crash_on_error */ true);
+    pages_[dirty_page_id] =
+        std::make_unique<ui::AXTreeManager>(std::move(page_tree));
     UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
   } else {
     complete_tree_update.tree_data.tree_id = pages_[dirty_page_id]->GetTreeID();
@@ -498,11 +544,11 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
     }
   }
   // Update the page location again - running the page through OCR overwrites
-  // the previous AXTree it was given and thus the page location it was already
-  // given in DocumentUpdated(). Restore it here.
+  // the previous `AXTree` it was given and thus the page location it was
+  // already given in `PageMetadataUpdated ()`. Restore it here.
   UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
-  // TODO(b/289012145): Attach the page to the tree for the main PDF document.
-  LOG(ERROR) << "WHAT onocr done?";
+  SendAXTreeToAccessibilityService(*pages_[dirty_page_id],
+                                   *page_serializers_[dirty_page_id]);
   OcrNextDirtyPageIfAny();
 }
 

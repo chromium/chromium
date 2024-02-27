@@ -158,7 +158,10 @@ TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataNoDuplicatePageIds) {
   EXPECT_TRUE(bad_message_observer.got_bad_message());
 }
 
-TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataWithDeleteAndUndoDelete) {
+// TODO(b/319536234): Move this test to browser_tests and implement the "undo
+// delete" action part.
+TEST_F(AXMediaAppUntrustedHandlerTest,
+       DISABLED_PageMetadataWithDeleteAndUndoDelete) {
   const std::vector<std::string> kPageIds{"pageX", "pageY", "pageZ"};
   const size_t kTestNumPages = kPageIds.size();
   std::vector<PageMetadataPtr> fakeMetadata;

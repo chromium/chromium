@@ -29,10 +29,14 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
+#include "ui/accessibility/ax_tree_serializer.h"
+#include "ui/accessibility/ax_tree_source.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace content {
 
@@ -44,6 +48,8 @@ class WebContents;
 namespace ui {
 
 struct AXActionData;
+class AXNode;
+class RectF;
 
 }  // namespace ui
 
@@ -60,6 +66,10 @@ class AXMediaAppUntrustedHandler
       private ui::AXActionHandlerBase,
       private ui::AXModeObserver {
  public:
+  using TreeSource = ui::AXTreeSource<const ui::AXNode*>;
+  using TreeSerializer =
+      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
+
   AXMediaAppUntrustedHandler(
       content::BrowserContext& context,
       mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page);
@@ -93,14 +103,22 @@ class AXMediaAppUntrustedHandler
   virtual void OcrNextDirtyPageIfAny();
 
   // `AXMediaApp` should outlive this handler.
-  // TODO(b/309860428): Delete once AXMediaApp is deleted.
   raw_ptr<AXMediaApp> media_app_;
   ui::AXTreeManager document_;
+  std::unique_ptr<TreeSource> document_source_;
+  std::unique_ptr<TreeSerializer> document_serializer_;
   std::map<const std::string, AXMediaAppPageMetadata> page_metadata_;
   std::map<const std::string, std::unique_ptr<ui::AXTreeManager>> pages_;
+  std::map<const std::string, std::unique_ptr<TreeSource>> page_sources_;
+  std::map<const std::string, std::unique_ptr<TreeSerializer>>
+      page_serializers_;
+  std::unique_ptr<std::vector<const ui::AXTreeUpdate>>
+      pending_serialized_updates_for_testing_;
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
 
  private:
+  void SendAXTreeToAccessibilityService(const ui::AXTreeManager& manager,
+                                        TreeSerializer& serializer);
   void UpdateDocumentTree();
   void UpdatePageLocation(const std::string& page_id,
                           const gfx::RectF& page_location);
@@ -113,11 +131,9 @@ class AXMediaAppUntrustedHandler
 
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
-
   // This `BrowserContext` will always outlive the WebUI, so this is safe.
   raw_ref<content::BrowserContext> browser_context_;
   mojo::Remote<media_app_ui::mojom::OcrUntrustedPage> media_app_page_;
-
   base::circular_deque<std::string> dirty_page_ids_;
   ui::AXTreeID document_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
   SEQUENCE_CHECKER(sequence_checker_);

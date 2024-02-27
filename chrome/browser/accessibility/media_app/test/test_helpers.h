@@ -42,6 +42,16 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
     return pages_;
   }
 
+  void EnablePendingSerializedUpdatesForTesting() {
+    pending_serialized_updates_for_testing_ =
+        std::make_unique<std::vector<const ui::AXTreeUpdate>>();
+  }
+
+  const std::vector<const ui::AXTreeUpdate>&
+  GetPendingSerializedUpdatesForTesting() const {
+    return *pending_serialized_updates_for_testing_;
+  }
+
   void SetIsOcrServiceEnabledForTesting() {
     is_ocr_service_enabled_for_testing_ = true;
   }
