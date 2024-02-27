@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.matches;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
@@ -127,6 +128,19 @@ public class AccountBookmarkTest {
         onView(withText("test")).perform(click());
         Espresso.pressBack();
         onView(withText("test")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testDefaultFolders() {
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
+        runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            mBookmarkModel.getAccountMobileFolderId(),
+                            mBookmarkModel.getDefaultBookmarkFolder());
+                });
     }
 
     private void checkTopLevelAccountFoldersDisplayed() {

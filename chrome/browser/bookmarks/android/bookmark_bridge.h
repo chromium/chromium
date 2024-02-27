@@ -35,6 +35,7 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/android/gurl_android.h"
 
 class BookmarkBridgeTest;
@@ -49,6 +50,7 @@ class BookmarkBridge : public ProfileObserver,
                        public PartnerBookmarksShim::Observer,
                        public ReadingListManager::Observer,
                        public ReadingListModelObserver,
+                       public signin::IdentityManager::Observer,
                        public base::SupportsUserData::Data {
  public:
   // All of the injected pointers must be non-null and must outlive `this`.
@@ -57,7 +59,8 @@ class BookmarkBridge : public ProfileObserver,
                  bookmarks::ManagedBookmarkService* managed_bookmark_service,
                  page_image_service::ImageService* image_service,
                  reading_list::DualReadingListModel* dual_reading_list_model,
-                 PartnerBookmarksShim* partner_bookmarks_shim);
+                 PartnerBookmarksShim* partner_bookmarks_shim,
+                 signin::IdentityManager* identity_manager);
 
   BookmarkBridge(const BookmarkBridge&) = delete;
   BookmarkBridge& operator=(const BookmarkBridge&) = delete;
@@ -127,6 +130,8 @@ class BookmarkBridge : public ProfileObserver,
   base::android::ScopedJavaLocalRef<jobject> GetAccountReadingListFolder(
       JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetDefaultReadingListFolder(
+      JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetDefaultBookmarkFolder(
       JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jstring> GetBookmarkGuidByIdForTesting(
@@ -364,6 +369,10 @@ class BookmarkBridge : public ProfileObserver,
   void ReadingListModelCompletedBatchUpdates(
       const ReadingListModel* model) override;
 
+  // signin::IdentityManager::Observer implementation:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
   void DestroyJavaObject();
   void CreateOrDestroyAccountReadingListManagerIfNeeded();
 
@@ -395,6 +404,8 @@ class BookmarkBridge : public ProfileObserver,
 
   raw_ptr<ReadingListModel> account_reading_list_model_;  // weak
 
+  raw_ptr<signin::IdentityManager> identity_manager_;  // weak
+
   // Observes the profile destruction and creation.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::ScopedObservation<bookmarks::BookmarkModel,
@@ -408,6 +419,9 @@ class BookmarkBridge : public ProfileObserver,
   base::ScopedObservation<reading_list::DualReadingListModel,
                           ReadingListModelObserver>
       dual_reading_list_model_observation_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   bool suppress_observer_notifications_ = false;
 

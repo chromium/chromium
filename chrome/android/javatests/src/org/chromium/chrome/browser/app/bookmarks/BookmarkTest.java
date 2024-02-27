@@ -253,7 +253,7 @@ public class BookmarkTest {
                             "The test page is not added as bookmark: ",
                             mBookmarkModel.doesBookmarkExist(id));
                     BookmarkItem item = mBookmarkModel.getBookmarkById(id);
-                    assertEquals(mBookmarkModel.getDefaultFolder(), item.getParentId());
+                    assertEquals(mBookmarkModel.getDefaultBookmarkFolder(), item.getParentId());
                     assertEquals(mTestPage, item.getUrl());
                     assertEquals(TEST_PAGE_TITLE_GOOGLE, item.getTitle());
                 });
@@ -954,7 +954,7 @@ public class BookmarkTest {
                             "Bookmarks were not added in the expected order.",
                             initial,
                             mBookmarkModel
-                                    .getChildIds(mBookmarkModel.getDefaultFolder())
+                                    .getChildIds(mBookmarkModel.getDefaultBookmarkFolder())
                                     .subList(0, 3));
                 });
 
@@ -996,7 +996,7 @@ public class BookmarkTest {
         runOnUiThreadBlocking(
                 () -> {
                     List<BookmarkId> observed =
-                            mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder());
+                            mBookmarkModel.getChildIds(mBookmarkModel.getDefaultBookmarkFolder());
                     // Exclude partner bookmarks folder
                     assertEquals(expected, observed.subList(0, 3));
                     assertTrue("The selected item should stay selected", foo.isItemSelected());
@@ -1033,7 +1033,7 @@ public class BookmarkTest {
                             "Bookmarks were not added in the expected order.",
                             initial,
                             mBookmarkModel
-                                    .getChildIds(mBookmarkModel.getDefaultFolder())
+                                    .getChildIds(mBookmarkModel.getDefaultBookmarkFolder())
                                     .subList(0, 4));
                 });
 
@@ -1077,7 +1077,7 @@ public class BookmarkTest {
         runOnUiThreadBlocking(
                 () -> {
                     List<BookmarkId> observed =
-                            mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder());
+                            mBookmarkModel.getChildIds(mBookmarkModel.getDefaultBookmarkFolder());
                     // Exclude partner bookmarks folder
                     assertEquals(expected, observed.subList(0, 4));
                     assertTrue("The selected item should stay selected", test.isItemSelected());
@@ -1103,7 +1103,7 @@ public class BookmarkTest {
                             "Bookmarks were not added in the expected order.",
                             initial,
                             mBookmarkModel
-                                    .getChildIds(mBookmarkModel.getDefaultFolder())
+                                    .getChildIds(mBookmarkModel.getDefaultBookmarkFolder())
                                     .subList(0, 3));
                 });
 
@@ -1145,7 +1145,7 @@ public class BookmarkTest {
         runOnUiThreadBlocking(
                 () -> {
                     List<BookmarkId> observed =
-                            mBookmarkModel.getChildIds(mBookmarkModel.getDefaultFolder());
+                            mBookmarkModel.getChildIds(mBookmarkModel.getDefaultBookmarkFolder());
                     // Exclude partner bookmarks folder
                     assertEquals(expected, observed.subList(0, 3));
                     assertTrue("The selected item should stay selected", test.isItemSelected());
@@ -2081,7 +2081,9 @@ public class BookmarkTest {
     private BookmarkId addBookmarkWithPartner(String title, GURL url) throws ExecutionException {
         BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
         return runOnUiThreadBlocking(
-                () -> mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(), 0, title, url));
+                () ->
+                        mBookmarkModel.addBookmark(
+                                mBookmarkModel.getDefaultBookmarkFolder(), 0, title, url));
     }
 
     /**
@@ -2094,7 +2096,9 @@ public class BookmarkTest {
     private BookmarkId addFolderWithPartner(String title) throws ExecutionException {
         BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
         return runOnUiThreadBlocking(
-                () -> mBookmarkModel.addFolder(mBookmarkModel.getDefaultFolder(), 0, title));
+                () ->
+                        mBookmarkModel.addFolder(
+                                mBookmarkModel.getDefaultBookmarkFolder(), 0, title));
     }
 
     private void simulateDragForTestsOnUiThread(int start, int end) {
@@ -2213,13 +2217,17 @@ public class BookmarkTest {
     private BookmarkId addBookmark(final String title, final GURL url) throws ExecutionException {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         return runOnUiThreadBlocking(
-                () -> mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(), 0, title, url));
+                () ->
+                        mBookmarkModel.addBookmark(
+                                mBookmarkModel.getDefaultBookmarkFolder(), 0, title, url));
     }
 
     private BookmarkId addFolder(final String title) throws ExecutionException {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         return runOnUiThreadBlocking(
-                () -> mBookmarkModel.addFolder(mBookmarkModel.getDefaultFolder(), 0, title));
+                () ->
+                        mBookmarkModel.addFolder(
+                                mBookmarkModel.getDefaultBookmarkFolder(), 0, title));
     }
 
     private BookmarkId addFolder(final String title, BookmarkId parent) throws ExecutionException {

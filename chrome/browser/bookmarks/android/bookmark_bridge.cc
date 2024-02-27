@@ -159,7 +159,8 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
         page_image_service::ImageServiceFactory::GetForBrowserContext(profile),
         ReadingListModelFactory::GetAsDualReadingListForBrowserContext(profile),
         PartnerBookmarksShim::BuildForBrowserContext(
-            chrome::GetBrowserContextRedirectedInIncognito(profile)));
+            chrome::GetBrowserContextRedirectedInIncognito(profile)),
+        IdentityManagerFactory::GetForProfile(profile));
     model->SetUserData(kBookmarkBridgeUserDataKey,
                        base::WrapUnique(bookmark_bridge));
   }
@@ -173,7 +174,8 @@ BookmarkBridge::BookmarkBridge(
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
     page_image_service::ImageService* image_service,
     reading_list::DualReadingListModel* dual_reading_list_model,
-    PartnerBookmarksShim* partner_bookmarks_shim)
+    PartnerBookmarksShim* partner_bookmarks_shim,
+    signin::IdentityManager* identity_manager)
     : profile_(profile),
       bookmark_model_(model),
       managed_bookmark_service_(managed_bookmark_service),
@@ -187,6 +189,7 @@ BookmarkBridge::BookmarkBridge(
               dual_reading_list_model->GetLocalOrSyncableModel(),
               id_gen_func_)),
       partner_bookmarks_shim_(partner_bookmarks_shim),
+      identity_manager_(identity_manager),
       weak_ptr_factory_(this) {
   CHECK(profile);
   CHECK(model);
@@ -194,6 +197,7 @@ BookmarkBridge::BookmarkBridge(
   CHECK(partner_bookmarks_shim);
   // TODO(crbug.com/1503231): CHECK image_service once a mock is available.
   CHECK(dual_reading_list_model);
+  CHECK(identity_manager);
 
   profile_observation_.Observe(profile_);
   bookmark_model_observation_.Observe(bookmark_model_);
@@ -201,6 +205,7 @@ BookmarkBridge::BookmarkBridge(
   reading_list_manager_observations_.AddObservation(
       local_or_syncable_reading_list_manager_.get());
   dual_reading_list_model_observation_.Observe(dual_reading_list_model_);
+  identity_manager_observation_.Observe(identity_manager_);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -644,11 +649,31 @@ BookmarkBridge::GetAccountReadingListFolder(JNIEnv* env) {
   return folder_id_obj;
 }
 
-// TODO(crbug.com/1501998): Add logic to determine when to use account/local.
 base::android::ScopedJavaLocalRef<jobject>
 BookmarkBridge::GetDefaultReadingListFolder(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // If the account reading list is available, then it should be used as the
+  // default folder. Otherwise these would be saved into an empty local
+  // reading list.
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->GetRoot()) {
+    return GetAccountReadingListFolder(env);
+  }
+
   return GetLocalOrSyncableReadingListFolder(env);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+BookmarkBridge::GetDefaultBookmarkFolder(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // If the account reading list is available, then it should be used as the
+  // default folder. Otherwise these would be saved into an empty local
+  // mobile folder.
+  if (bookmark_model_->account_mobile_node()) {
+    return GetAccountMobileFolderId(env);
+  }
+
+  return GetMobileFolderId(env);
 }
 
 base::android::ScopedJavaLocalRef<jstring>
@@ -1727,6 +1752,17 @@ void BookmarkBridge::ReadingListModelLoaded(const ReadingListModel* model) {
 void BookmarkBridge::ReadingListModelCompletedBatchUpdates(
     const ReadingListModel* model) {
   CreateOrDestroyAccountReadingListManagerIfNeeded();
+}
+
+void BookmarkBridge::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_BookmarkBridge_clearLastUsedParent(env);
 }
 
 void BookmarkBridge::CreateOrDestroyAccountReadingListManagerIfNeeded() {

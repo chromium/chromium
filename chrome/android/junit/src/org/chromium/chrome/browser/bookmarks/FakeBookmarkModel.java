@@ -336,6 +336,13 @@ public class FakeBookmarkModel extends BookmarkModel {
         }
 
         @Override
+        public BookmarkId getDefaultBookmarkFolder(long nativeBookmarkBridge) {
+            return areAccountBookmarkFoldersActive(nativeBookmarkBridge)
+                    ? mAccountMobileFolderId
+                    : mMobileFolderId;
+        }
+
+        @Override
         public void getAllFoldersWithDepths(
                 long nativeBookmarkBridge, List<BookmarkId> folderList, List<Integer> depthList) {
             assert false : "Not implemented!";

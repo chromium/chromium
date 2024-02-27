@@ -277,11 +277,20 @@ class BookmarkBridge {
         return BookmarkBridgeJni.get().getAccountReadingListFolder(mNativeBookmarkBridge);
     }
 
+    /** Returns the default reading list location. */
     public BookmarkId getDefaultReadingListFolder() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().getDefaultReadingListFolder(mNativeBookmarkBridge);
+    }
+
+    /** Returns the default bookmark location. */
+    public BookmarkId getDefaultBookmarkFolder() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return null;
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getDefaultBookmarkFolder(mNativeBookmarkBridge);
     }
 
     /**
@@ -1045,6 +1054,11 @@ class BookmarkBridge {
         depthList.add(depth);
     }
 
+    @CalledByNative
+    private static void clearLastUsedParent() {
+        BookmarkUtils.clearLastUsedPrefs();
+    }
+
     private static List<Pair<Integer, Integer>> createPairsList(int[] left, int[] right) {
         List<Pair<Integer, Integer>> pairList = new ArrayList<>();
         for (int i = 0; i < left.length; i++) {
@@ -1080,6 +1094,8 @@ class BookmarkBridge {
         BookmarkId getAccountReadingListFolder(long nativeBookmarkBridge);
 
         BookmarkId getDefaultReadingListFolder(long nativeBookmarkBridge);
+
+        BookmarkId getDefaultBookmarkFolder(long nativeBookmarkBridge);
 
         // TODO(crbug.com/1515332): Remove this method.
         void getAllFoldersWithDepths(

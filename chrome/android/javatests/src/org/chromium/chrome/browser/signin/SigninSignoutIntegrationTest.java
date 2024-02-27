@@ -261,7 +261,9 @@ public class SigninSignoutIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            0, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                            0,
+                            mBookmarkModel.getChildCount(
+                                    mBookmarkModel.getDefaultBookmarkFolder()));
                 });
     }
 
@@ -277,7 +279,9 @@ public class SigninSignoutIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            1, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                            1,
+                            mBookmarkModel.getChildCount(
+                                    mBookmarkModel.getDefaultBookmarkFolder()));
                 });
     }
 
@@ -339,14 +343,18 @@ public class SigninSignoutIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            0, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                            0,
+                            mBookmarkModel.getChildCount(
+                                    mBookmarkModel.getDefaultBookmarkFolder()));
                     mBookmarkModel.addBookmark(
-                            mBookmarkModel.getDefaultFolder(),
+                            mBookmarkModel.getDefaultBookmarkFolder(),
                             0,
                             "Test Bookmark",
                             new GURL("http://google.com"));
                     Assert.assertEquals(
-                            1, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                            1,
+                            mBookmarkModel.getChildCount(
+                                    mBookmarkModel.getDefaultBookmarkFolder()));
                 });
     }
 

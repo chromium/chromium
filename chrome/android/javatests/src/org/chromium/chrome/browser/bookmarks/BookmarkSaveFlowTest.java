@@ -13,8 +13,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 
 import android.widget.CompoundButton;
 
@@ -58,6 +60,7 @@ import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.util.ClickUtils;
@@ -98,14 +101,17 @@ public class BookmarkSaveFlowTest {
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
     private BookmarkModel mBookmarkModel;
+    private CoreAccountInfo mAccountInfo =
+            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
 
     @Before
     public void setUp() throws ExecutionException {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mActivity = mSyncTestRule.getActivity();
 
-        // Setup price-tracking.
+        // Setup mocks.
         mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
+        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -420,6 +426,8 @@ public class BookmarkSaveFlowTest {
 
     private BookmarkId addBookmark(final String title, final GURL url) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
-                () -> mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(), 0, title, url));
+                () ->
+                        mBookmarkModel.addBookmark(
+                                mBookmarkModel.getDefaultBookmarkFolder(), 0, title, url));
     }
 }

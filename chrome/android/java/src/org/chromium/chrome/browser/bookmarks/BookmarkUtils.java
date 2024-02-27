@@ -360,7 +360,7 @@ public class BookmarkUtils {
                         R.string.tab_selection_editor_add_bookmarks_folder_name,
                         dateFormat.format(new Date(System.currentTimeMillis())));
         BookmarkId newFolder =
-                bookmarkModel.addFolder(bookmarkModel.getDefaultFolder(), 0, fileName);
+                bookmarkModel.addFolder(bookmarkModel.getDefaultBookmarkFolder(), 0, fileName);
         int tabsBookmarkedCount = 0;
 
         for (Tab tab : tabList) {
@@ -428,7 +428,7 @@ public class BookmarkUtils {
             parent =
                     bookmarkType == BookmarkType.READING_LIST
                             ? bookmarkModel.getDefaultReadingListFolder()
-                            : bookmarkModel.getDefaultFolder();
+                            : bookmarkModel.getDefaultBookmarkFolder();
         }
 
         // Reading list items will be added when either one of the 2 conditions is met:
@@ -451,7 +451,7 @@ public class BookmarkUtils {
 
         if (bookmarkId != null) {
             BookmarkMetrics.recordBookmarkAdded(profile, bookmarkId);
-            setLastUsedParent(bookmarkModel.getDefaultFolder());
+            setLastUsedParent(parent);
         }
         return bookmarkId;
     }
@@ -611,6 +611,12 @@ public class BookmarkUtils {
         return ChromeSharedPreferences.getInstance()
                 .readString(
                         ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, UrlConstants.BOOKMARKS_URL);
+    }
+
+    static void clearLastUsedPrefs() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT);
+        prefsManager.removeKey(ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
     }
 
     /** Save the last used {@link BookmarkId} as a folder to put new bookmarks to. */

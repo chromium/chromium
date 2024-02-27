@@ -200,7 +200,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                         Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderId));
             }
             if (mFolder.folder == null) {
-                folderId = mBookmarkModel.getDefaultFolder();
+                folderId = mBookmarkModel.getDefaultBookmarkFolder();
                 mFolder.folder =
                         Bookmark.fromBookmarkItem(mBookmarkModel.getBookmarkById(folderId));
             }

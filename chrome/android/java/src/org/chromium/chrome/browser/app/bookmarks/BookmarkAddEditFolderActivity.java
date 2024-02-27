@@ -65,7 +65,7 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
                         if (mModel.doesBookmarkExist(mParentId)) {
                             updateParent(mParentId);
                         } else {
-                            updateParent(mModel.getDefaultFolder());
+                            updateParent(mModel.getDefaultBookmarkFolder());
                         }
                     } else {
                         // Partner bookmark deletion is notified via bookmarkModelChanged().
@@ -161,7 +161,7 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
 
         if (mIsAddMode) {
             getSupportActionBar().setTitle(R.string.add_folder);
-            updateParent(mModel.getDefaultFolder());
+            updateParent(mModel.getDefaultBookmarkFolder());
         } else {
             // Edit mode
             getSupportActionBar().setTitle(R.string.edit_folder);

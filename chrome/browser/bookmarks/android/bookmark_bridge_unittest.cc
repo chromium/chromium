@@ -31,6 +31,7 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -162,7 +163,8 @@ class BookmarkBridgeTest : public testing::Test {
     bookmark_bridge_ = std::make_unique<BookmarkBridge>(
         profile_, bookmark_model_.get(), managed_bookmark_service_,
         /*image_service=*/nullptr, dual_reading_list_model_.get(),
-        partner_bookmarks_shim_);
+        partner_bookmarks_shim_,
+        identity_test_environment_->identity_manager());
 
     bookmark_bridge_->LoadEmptyPartnerBookmarkShimForTesting(
         AttachCurrentThread());
@@ -190,6 +192,8 @@ class BookmarkBridgeTest : public testing::Test {
     partner_bookmarks_shim_ =
         PartnerBookmarksShim::BuildForBrowserContext(profile_);
 
+    identity_test_environment_ =
+        std::make_unique<signin::IdentityTestEnvironment>();
     CreateBookmarkBridge(/*enable_account_bookmarks=*/false);
   }
 
@@ -227,6 +231,7 @@ class BookmarkBridgeTest : public testing::Test {
   std::unique_ptr<BookmarkBridge> bookmark_bridge_;
 
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
 };
 
 TEST_F(BookmarkBridgeTest,

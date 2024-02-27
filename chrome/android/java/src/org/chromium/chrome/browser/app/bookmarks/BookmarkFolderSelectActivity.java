@@ -161,7 +161,7 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
 
         mIsCreatingFolder = getIntent().getBooleanExtra(INTENT_IS_CREATING_FOLDER, false);
         if (mIsCreatingFolder) {
-            mParentId = mModel.getDefaultFolder();
+            mParentId = mModel.getDefaultBookmarkFolder();
         } else {
             mParentId = mModel.getBookmarkById(mBookmarksToMove.get(0)).getParentId();
         }
