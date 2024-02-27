@@ -951,6 +951,10 @@ void ShellSurface::OnLayerRecreated(ui::Layer* old_layer) {
   // anything.
   if (old_layer->GetSurfaceId()) {
     old_layer_ = old_layer->AsWeakPtr();
+    // TODO(b/319939913): Remove this log when the issue is fixed.
+    old_layer_->SetName(old_layer_->name() + "-old-has-surface");
+  } else {
+    old_layer->SetName(old_layer->name() + "-old-no-surface");
   }
 }
 

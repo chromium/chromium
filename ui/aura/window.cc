@@ -610,6 +610,33 @@ void Window::ConvertPointToTarget(const Window* source,
     if (target_client)
       target_client->ConvertPointFromScreen(target, point);
   } else {
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(b/319939913): Remove this log when the issue is fixed.
+    auto get_root = [](const ui::Layer* layer) {
+      const ui::Layer* root = layer;
+      while (root->parent()) {
+        root = root->parent();
+      }
+      return root;
+    };
+    auto chain_name = [](const aura::Window* window) {
+      std::ostringstream out;
+      out << "[";
+      out << window->GetName();
+      while (window->parent()) {
+        out << "]-[" << window->GetName();
+        window = window->parent();
+      }
+      out << "]";
+      return out.str();
+    };
+    if (get_root(source->layer()) != get_root(target->layer())) {
+      LOG(ERROR) << "Root layer in source and target window are different. "
+                    "source chain="
+                 << chain_name(source)
+                 << ", target chain=" << chain_name(target);
+    }
+#endif
     ui::Layer::ConvertPointToLayer(source->layer(), target->layer(),
                                    /*use_target_transform=*/true, point);
   }

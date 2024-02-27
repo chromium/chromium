@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -870,11 +871,19 @@ void Layer::ConvertPointToLayer(const Layer* source,
   const Layer* target_root_layer = GetRoot(target);
   // TODO(b/319939913): Remove this log when the issue is fixed.
   if (source_root_layer != target_root_layer) {
-    LOG(ERROR) << "Source has different root than tareget: source="
-               << source->name()
-               << ", soruce root=" << source_root_layer->name()
-               << ", target=" << target->name()
-               << ", target root=" << target_root_layer->name();
+    auto chain_name = [](const Layer* layer) {
+      std::ostringstream out;
+      out << "[";
+      out << layer->name();
+      while (layer->parent()) {
+        out << "]-[" << layer->name();
+        layer = layer->parent();
+      }
+      out << "]";
+      return out.str();
+    };
+    LOG(ERROR) << "Source has different root than tareget: source chain="
+               << chain_name(source) << ", target chain=" << chain_name(target);
   }
   CHECK_EQ(source_root_layer, target_root_layer);
 

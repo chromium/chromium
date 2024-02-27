@@ -629,7 +629,10 @@ const ui::Layer* SurfaceTreeHost::GetCommitTargetLayer() const {
   return host_window_->layer();
 }
 
-void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {}
+void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {
+  // TODO(b/319939913): Remove this log when the issue is fixed.
+  old_layer->SetName(old_layer->name() + "-host");
+}
 
 viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   DCHECK(root_surface_);
