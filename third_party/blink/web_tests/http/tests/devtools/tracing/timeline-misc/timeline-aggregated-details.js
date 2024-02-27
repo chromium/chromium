@@ -570,10 +570,10 @@ import * as TimelineModel from 'devtools/models/timeline_model/timeline_model.js
 
   var groupByEnum = Timeline.TimelineTreeView.AggregatedTimelineTreeView.GroupBy;
   for (var grouping of Object.values(groupByEnum)) {
-    testEventTree('CallTree', grouping);
-    testEventTree('BottomUp', grouping);
+    testEventTree('call-tree', grouping);
+    testEventTree('bottom-up', grouping);
   }
-  testEventTree('EventLog');
+  testEventTree('event-log');
   TestRunner.completeTest();
 
   function getTreeView(type) {
