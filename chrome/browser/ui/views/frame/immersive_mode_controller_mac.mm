@@ -96,9 +96,8 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
                                 browser_view_->frame()->GetFrameView())
                                 ->GetTopInset(false);
 
-      browser_view_->tab_overlay_widget()->SetBounds(
-          gfx::Rect(0, 0, browser_view_->top_container()->size().width(),
-                    tab_widget_height_));
+      browser_view_->tab_overlay_widget()->SetSize(gfx::Size(
+          browser_view_->top_container()->size().width(), tab_widget_height_));
       browser_view_->tab_overlay_widget()->Show();
 
       // Move the tab strip to the `tab_overlay_widget`, the host of the
@@ -345,7 +344,7 @@ void ImmersiveModeControllerMac::OnViewBoundsChanged(
         new_size.width(), browser_view_->tab_strip_region_view()->height()));
     overlay_height_ += tab_widget_height_;
   }
-  browser_view_->overlay_widget()->SetBounds(bounds);
+  browser_view_->overlay_widget()->SetSize(bounds.size());
   if (auto* window = GetNSWindowMojo()) {
     window->OnTopContainerViewBoundsChanged(bounds);
   }
