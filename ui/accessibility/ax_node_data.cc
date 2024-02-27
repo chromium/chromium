@@ -1695,11 +1695,11 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kAriaBrailleRoleDescription:
         result += " aria_braille_role_description=" + value;
         break;
+      case ax::mojom::StringAttribute::kAriaNotificationAnnouncement:
+        result += " aria_notification_announcement=" + value;
+        break;
       case ax::mojom::StringAttribute::kAriaNotificationId:
         result += " aria_notification_id=" + value;
-        break;
-      case ax::mojom::StringAttribute::kAriaNotificationMessage:
-        result += " aria_notification_message=" + value;
         break;
       case ax::mojom::StringAttribute::kCheckedStateDescription:
         result += " checked_state_description=" + value;

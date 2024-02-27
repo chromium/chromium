@@ -10,7 +10,7 @@ namespace blink {
 
 namespace {
 
-ax::mojom::blink::AriaNotificationInterrupt ToEnum(
+ax::mojom::blink::AriaNotificationInterrupt AsEnum(
     const V8AriaNotifyInterrupt& interrupt) {
   switch (interrupt.AsEnum()) {
     case V8AriaNotifyInterrupt::Enum::kNone:
@@ -23,7 +23,7 @@ ax::mojom::blink::AriaNotificationInterrupt ToEnum(
   NOTREACHED_NORETURN();
 }
 
-ax::mojom::blink::AriaNotificationPriority ToEnum(
+ax::mojom::blink::AriaNotificationPriority AsEnum(
     const V8AriaNotifyPriority& priority) {
   switch (priority.AsEnum()) {
     case V8AriaNotifyPriority::Enum::kNone:
@@ -40,7 +40,7 @@ AriaNotification::AriaNotification(const String& announcement,
                                    const AriaNotificationOptions* options)
     : announcement_(announcement),
       notification_id_(options->notificationId()),
-      interrupt_(ToEnum(options->interrupt())),
-      priority_(ToEnum(options->priority())) {}
+      interrupt_(AsEnum(options->interrupt())),
+      priority_(AsEnum(options->priority())) {}
 
 }  // namespace blink

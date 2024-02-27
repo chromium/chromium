@@ -15,14 +15,22 @@ class AriaNotification {
   USING_FAST_MALLOC(AriaNotification);
 
  public:
+  using AriaNotificationInterrupt = ax::mojom::blink::AriaNotificationInterrupt;
+  using AriaNotificationPriority = ax::mojom::blink::AriaNotificationPriority;
+
   AriaNotification(const String& announcement,
                    const AriaNotificationOptions* options);
+
+  const String& Announcement() const { return announcement_; }
+  const String& NotificationId() const { return notification_id_; }
+  AriaNotificationInterrupt Interrupt() const { return interrupt_; }
+  AriaNotificationPriority Priority() const { return priority_; }
 
  private:
   String announcement_;
   String notification_id_;
-  ax::mojom::blink::AriaNotificationInterrupt interrupt_;
-  ax::mojom::blink::AriaNotificationPriority priority_;
+  AriaNotificationInterrupt interrupt_;
+  AriaNotificationPriority priority_;
 };
 
 }  // namespace blink
