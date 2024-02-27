@@ -354,8 +354,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // except the errors vectors are passed by value. They're callbacks that
     // must be invoked on the main sequence, and passed to the V8State.
     using GenerateBidCallbackInternal = base::OnceCallback<void(
-        mojom::BidderWorkletBidPtr bid,
-        mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+        std::vector<mojom::BidderWorkletBidPtr> bids,
         std::optional<uint32_t> bidding_signals_data_version,
         std::optional<GURL> debug_loss_report_url,
         std::optional<GURL> debug_win_report_url,
@@ -381,7 +380,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       SingleGenerateBidResult();
       SingleGenerateBidResult(
           std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
-          mojom::BidderWorkletBidPtr bid,
+          std::vector<mojom::BidderWorkletBidPtr> bids,
           std::optional<uint32_t> bidding_signals_data_version,
           std::optional<GURL> debug_loss_report_url,
           std::optional<GURL> debug_win_report_url,
@@ -404,7 +403,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       // it's returned here to be available for any re-run for k-anonymity.
       std::unique_ptr<ContextRecycler> context_recycler_for_rerun;
 
-      mojom::BidderWorkletBidPtr bid;
+      std::vector<mojom::BidderWorkletBidPtr> bids;
       std::optional<uint32_t> bidding_signals_data_version;
       std::optional<GURL> debug_loss_report_url;
       std::optional<GURL> debug_win_report_url;
@@ -491,7 +490,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     // Returns nullopt on error.
     // `context_recycler_for_rerun` is permitted to be null, and should only be
     // set if `restrict_to_kanon_ads` is true.
-    std::optional<SingleGenerateBidResult> GenerateSingleBid(
+    std::optional<SingleGenerateBidResult> RunGenerateBidOnce(
         const mojom::BidderWorkletNonSharedParams&
             bidder_worklet_non_shared_params,
         const url::Origin& interest_group_join_origin,
@@ -646,8 +645,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // `task` from `generate_bid_tasks_`.
   void DeliverBidCallbackOnUserThread(
       GenerateBidTaskList::iterator task,
-      mojom::BidderWorkletBidPtr bid,
-      mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+      std::vector<mojom::BidderWorkletBidPtr> bids,
       std::optional<uint32_t> bidding_signals_data_version,
       std::optional<GURL> debug_loss_report_url,
       std::optional<GURL> debug_win_report_url,

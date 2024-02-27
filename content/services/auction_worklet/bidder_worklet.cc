@@ -597,7 +597,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult() =
     default;
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
-    mojom::BidderWorkletBidPtr bid,
+    std::vector<mojom::BidderWorkletBidPtr> bids,
     std::optional<uint32_t> bidding_signals_data_version,
     std::optional<GURL> debug_loss_report_url,
     std::optional<GURL> debug_win_report_url,
@@ -608,7 +608,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     mojom::RejectReason reject_reason,
     std::vector<std::string> error_msgs)
     : context_recycler_for_rerun(std::move(context_recycler_for_rerun)),
-      bid(std::move(bid)),
+      bids(std::move(bids)),
       bidding_signals_data_version(std::move(bidding_signals_data_version)),
       debug_loss_report_url(std::move(debug_loss_report_url)),
       debug_win_report_url(std::move(debug_win_report_url)),
@@ -921,7 +921,7 @@ void BidderWorklet::V8State::GenerateBid(
   cleanup_generate_bid_task.ReplaceClosure(base::OnceClosure());
 
   base::TimeTicks bidding_start = base::TimeTicks::Now();
-  std::optional<SingleGenerateBidResult> result = GenerateSingleBid(
+  std::optional<SingleGenerateBidResult> result = RunGenerateBidOnce(
       *bidder_worklet_non_shared_params, interest_group_join_origin,
       base::OptionalToPtr(auction_signals_json),
       base::OptionalToPtr(per_buyer_signals_json),
@@ -943,24 +943,26 @@ void BidderWorklet::V8State::GenerateBid(
     return;
   }
 
-  mojom::BidderWorkletBidPtr bid = std::move(result->bid);
-  mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid;
+  std::vector<mojom::BidderWorkletBidPtr> bids = std::move(result->bids);
 
-  // No need for `kanon_bid` if not doing anything with k-anon, or if bidding
-  // fails w/o the restriction.  This assumes it follows it won't succeed with
-  // k-anon restriction, but if we don't we will have to re-run every rejected
-  // bid, which is unreasonable.
-  if (kanon_mode != mojom::KAnonymityBidMode::kNone && bid) {
-    if (IsKAnon(bidder_worklet_non_shared_params.get(), script_source_url_,
-                bid)) {
-      // Result is already k-anon so it's the same for both runs.
-      kanon_bid =
-          mojom::BidderWorkletKAnonEnforcedBid::NewSameAsNonEnforced(nullptr);
-    } else {
+  if (kanon_mode != mojom::KAnonymityBidMode::kNone) {
+    // Go through and see which bids are actually k-anon appropriate.
+    bool found_kanon = false;
+    for (const auto& bid : bids) {
+      if (IsKAnon(bidder_worklet_non_shared_params.get(), script_source_url_,
+                  bid)) {
+        found_kanon = true;
+        bid->bid_role = auction_worklet::mojom::BidRole::kBothKAnonModes;
+      }
+    }
+
+    // If bids were returned, and none were k-anon, we re-run the script with
+    // only k-anon ads available to it.
+    if (!bids.empty() && !found_kanon) {
       // Main run got a non-k-anon result, and we care about k-anonymity. Re-run
-      // the bidder with non-k-anon ads hidden.
+      // the bidder with non-k-anon ads hidden, limiting it to a single bid.
       std::optional<SingleGenerateBidResult> restricted_result =
-          GenerateSingleBid(
+          RunGenerateBidOnce(
               *bidder_worklet_non_shared_params.get(),
               interest_group_join_origin,
               base::OptionalToPtr(auction_signals_json),
@@ -973,15 +975,23 @@ void BidderWorklet::V8State::GenerateBid(
               browser_signal_seller_origin,
               base::OptionalToPtr(browser_signal_top_level_seller_origin),
               browser_signal_recency, bidding_browser_signals,
-              auction_start_time, requested_ad_size, multi_bid_limit,
+              auction_start_time, requested_ad_size, /* multi_bid_limit=*/1,
               trusted_bidding_signals_result, trace_id,
               std::move(result->context_recycler_for_rerun),
               /*restrict_to_kanon_ads=*/true);
-      if (restricted_result.has_value() && restricted_result->bid) {
-        kanon_bid = mojom::BidderWorkletKAnonEnforcedBid::NewBid(
-            std::move(restricted_result->bid));
+      if (restricted_result.has_value()) {
+        // All the bids from the re-run will be k-anon enforced.
+        for (const auto& bid : restricted_result->bids) {
+          bid->bid_role = auction_worklet::mojom::BidRole::kEnforcedKAnon;
+        }
+
+        bids.insert(bids.end(),
+                    std::make_move_iterator(restricted_result->bids.begin()),
+                    std::make_move_iterator(restricted_result->bids.end()));
       }
 
+      // Figure out which of `restricted_result` or `result` we actually want
+      // to use.
       if (kanon_mode == mojom::KAnonymityBidMode::kEnforce) {
         PrivateAggregationRequests non_kanon_pa_requests =
             std::move(result->pa_requests);
@@ -1011,7 +1021,7 @@ void BidderWorklet::V8State::GenerateBid(
 
   user_thread_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(bid), std::move(kanon_bid),
+      base::BindOnce(std::move(callback), std::move(bids),
                      std::move(result->bidding_signals_data_version),
                      std::move(result->debug_loss_report_url),
                      std::move(result->debug_win_report_url),
@@ -1024,7 +1034,7 @@ void BidderWorklet::V8State::GenerateBid(
 }
 
 std::optional<BidderWorklet::V8State::SingleGenerateBidResult>
-BidderWorklet::V8State::GenerateSingleBid(
+BidderWorklet::V8State::RunGenerateBidOnce(
     const mojom::BidderWorkletNonSharedParams& bidder_worklet_non_shared_params,
     const url::Origin& interest_group_join_origin,
     const std::string* auction_signals_json,
@@ -1121,7 +1131,8 @@ BidderWorklet::V8State::GenerateSingleBid(
 
     if (!fresh_context_recycler) {
       return std::make_optional(SingleGenerateBidResult(
-          std::unique_ptr<ContextRecycler>(), mojom::BidderWorkletBidPtr(),
+          std::unique_ptr<ContextRecycler>(),
+          std::vector<mojom::BidderWorkletBidPtr>(),
           /*bidding_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt,
@@ -1352,7 +1363,7 @@ BidderWorklet::V8State::GenerateSingleBid(
     }
   }
 
-  if (!context_recycler->set_bid_bindings()->has_bid()) {
+  if (!context_recycler->set_bid_bindings()->has_bids()) {
     // If no bid was returned (due to an error or just not choosing to bid), or
     // the method timed out and no intermediate result was given through
     // `setBid()`, return an error. Keep debug loss reports and Private
@@ -1362,7 +1373,8 @@ BidderWorklet::V8State::GenerateSingleBid(
     // bidding. No need to return a ContextRecycler since this will not be
     // re-run.
     return std::make_optional(SingleGenerateBidResult(
-        std::unique_ptr<ContextRecycler>(), mojom::BidderWorkletBidPtr(),
+        std::unique_ptr<ContextRecycler>(),
+        std::vector<mojom::BidderWorkletBidPtr>(),
         /*bidding_signals_data_version=*/std::nullopt,
         context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
         /*debug_win_report_url=*/std::nullopt,
@@ -1380,7 +1392,7 @@ BidderWorklet::V8State::GenerateSingleBid(
   // caller for potential re-use for k-anon re-run.
   return std::make_optional(SingleGenerateBidResult(
       std::move(fresh_context_recycler),
-      context_recycler->set_bid_bindings()->TakeBid(),
+      context_recycler->set_bid_bindings()->TakeBids(),
       bidding_signals_data_version,
       context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
       context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
@@ -1511,8 +1523,7 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
   user_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          std::move(callback), mojom::BidderWorkletBidPtr(),
-          mojom::BidderWorkletKAnonEnforcedBidPtr(),
+          std::move(callback), std::vector<mojom::BidderWorkletBidPtr>(),
           /*bidding_signals_data_version=*/std::nullopt,
           /*debug_loss_report_url=*/std::nullopt,
           /*debug_win_report_url=*/std::nullopt,
@@ -1976,8 +1987,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
 
 void BidderWorklet::DeliverBidCallbackOnUserThread(
     GenerateBidTaskList::iterator task,
-    mojom::BidderWorkletBidPtr bid,
-    mojom::BidderWorkletKAnonEnforcedBidPtr kanon_bid,
+    std::vector<mojom::BidderWorkletBidPtr> bids,
     std::optional<uint32_t> bidding_signals_data_version,
     std::optional<GURL> debug_loss_report_url,
     std::optional<GURL> debug_win_report_url,
@@ -1998,8 +2008,8 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
         std::move(task->trusted_bidding_signals_error_msg).value());
   }
   task->generate_bid_client->OnGenerateBidComplete(
-      std::move(bid), std::move(kanon_bid), bidding_signals_data_version,
-      debug_loss_report_url, debug_win_report_url, set_priority,
+      std::move(bids), bidding_signals_data_version, debug_loss_report_url,
+      debug_win_report_url, set_priority,
       std::move(update_priority_signals_overrides), std::move(pa_requests),
       std::move(non_kanon_pa_requests), bidding_latency,
       mojom::GenerateBidDependencyLatencies::New(

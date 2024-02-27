@@ -147,8 +147,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       std::optional<double> bid,
       const std::optional<blink::AdCurrency>& bid_currency = std::nullopt,
       const blink::AdDescriptor& ad_descriptor = blink::AdDescriptor(),
-      auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid =
-          auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr(),
+      auction_worklet::mojom::BidRole bid_role =
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+      std::vector<auction_worklet::mojom::BidderWorkletBidPtr> further_bids =
+          std::vector<auction_worklet::mojom::BidderWorkletBidPtr>(),
       std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors =
           std::nullopt,
       base::TimeDelta duration = base::TimeDelta(),

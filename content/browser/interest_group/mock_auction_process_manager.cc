@@ -211,7 +211,8 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
     std::optional<double> bid,
     const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AdDescriptor& ad_descriptor,
-    auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid,
+    auction_worklet::mojom::BidRole bid_role,
+    std::vector<auction_worklet::mojom::BidderWorkletBidPtr> further_bids,
     std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors,
     base::TimeDelta duration,
     const std::optional<uint32_t>& bidding_signals_data_version,
@@ -240,10 +241,11 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
             /*trusted_bidding_signals_latency=*/std::nullopt);
   }
 
+  std::vector<auction_worklet::mojom::BidderWorkletBidPtr> bids;
   if (!bid.has_value()) {
+    DCHECK(further_bids.empty());
     generate_bid_client_->OnGenerateBidComplete(
-        /*bid=*/nullptr,
-        /*kanon_bid=*/std::move(mojo_kanon_bid),
+        /*bids=*/std::move(bids),
         /*bidding_signals_data_version=*/std::nullopt, debug_loss_report_url,
         /*debug_win_report_url=*/std::nullopt,
         /*set_priority=*/std::nullopt,
@@ -259,13 +261,16 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
     return;
   }
 
+  bids.push_back(auction_worklet::mojom::BidderWorkletBid::New(
+      bid_role, "ad", *bid, bid_currency, /*ad_cost=*/std::nullopt,
+      std::move(ad_descriptor), ad_component_descriptors,
+      /*modeling_signals=*/std::nullopt, duration));
+  bids.insert(bids.end(), std::make_move_iterator(further_bids.begin()),
+              std::make_move_iterator(further_bids.end()));
+
   generate_bid_client_->OnGenerateBidComplete(
-      auction_worklet::mojom::BidderWorkletBid::New(
-          "ad", *bid, bid_currency, /*ad_cost=*/std::nullopt,
-          std::move(ad_descriptor), ad_component_descriptors,
-          /*modeling_signals=*/std::nullopt, duration),
-      /*kanon_bid=*/std::move(mojo_kanon_bid), bidding_signals_data_version,
-      debug_loss_report_url, debug_win_report_url,
+      std::move(bids), bidding_signals_data_version, debug_loss_report_url,
+      debug_win_report_url,
       /*set_priority=*/std::nullopt,
       /*update_priority_signals_overrides=*/
       base::flat_map<std::string,

@@ -49,11 +49,10 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
-  // TODO(https://crbug.com/323856489): These are temporary until bidder_worklet
-  // supports multibid.
-  bool has_bid() const { return bids_.size() == 1u; }
-  mojom::BidderWorkletBidPtr TakeBid();
+  bool has_bids() const { return !bids_.empty(); }
 
+  // Note that returned bids do not have their role filled in correctly,
+  // it's always kUnenforcedKAnon.
   std::vector<mojom::BidderWorkletBidPtr> TakeBids();
 
   mojom::RejectReason reject_reason() const { return reject_reason_; }

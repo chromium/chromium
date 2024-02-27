@@ -157,17 +157,13 @@ bool TryToParseUrlWithSize(AuctionV8Helper* v8_helper,
 
 }  // namespace
 
-mojom::BidderWorkletBidPtr SetBidBindings::TakeBid() {
-  DCHECK(has_bid());
+std::vector<mojom::BidderWorkletBidPtr> SetBidBindings::TakeBids() {
   // Set `bid_duration` here instead of in SetBid(), so it can include the
   // entire script execution time.
-  auto bid = std::move(bids_[0]);
-  bids_.clear();
-  bid->bid_duration = base::TimeTicks::Now() - start_;
-  return bid;
-}
-
-std::vector<mojom::BidderWorkletBidPtr> SetBidBindings::TakeBids() {
+  base::TimeDelta time_duration = base::TimeTicks::Now() - start_;
+  for (auto& bid : bids_) {
+    bid->bid_duration = time_duration;
+  }
   return std::move(bids_);
 }
 
@@ -500,11 +496,14 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
   // including the time from the last setBid() call to when the bidder worklet
   // timed out, if the worklet did time out. So `bid_duration` is calculated
   // when ownership of the bid is taken by the caller, instead of here.
+  //
+  // Similarly it's easier for BidderWorklet to compute the proper role.
   return std::make_pair(
       IdlConvert::Status::MakeSuccess(),
       mojom::BidderWorkletBid::New(
-          std::move(ad_json), *idl.bid, std::move(bid_currency),
-          std::move(idl.ad_cost), blink::AdDescriptor(render_url, render_size),
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, std::move(ad_json),
+          *idl.bid, std::move(bid_currency), std::move(idl.ad_cost),
+          blink::AdDescriptor(render_url, render_size),
           std::move(ad_component_descriptors),
           static_cast<std::optional<uint16_t>>(modeling_signals),
           /*bid_duration=*/base::TimeDelta()));

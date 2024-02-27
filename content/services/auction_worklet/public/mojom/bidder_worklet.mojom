@@ -104,6 +104,11 @@ struct BiddingBrowserSignals {
 
 // The results of running a FLEDGE generateBid() script.
 struct BidderWorkletBid {
+  // In order to update k-anonymity information, the auction keeps track of
+  // leaders both with and without enforcement. This field denotes which of
+  // these this bid is suitable for.
+  BidRole bid_role;
+
   // JSON string to be passed to the scoring function.
   string ad;
 
@@ -147,18 +152,6 @@ enum BidRole {
 
   // Bid valid regardless of whether the auction does k-anon enforcement.
   kBothKAnonModes
-};
-
-struct BidderWorklerKAnonBidSameAsNonEnforced {};
-
-// Represents result of applying k-anonymity enforcement to a bidder worklet.
-// The resulting bid can be the same as without enforcement, or a different one.
-//
-// You must use BidderWorklerKAnonBidSameAsNonEnforced when the bids match,
-// to make it easier to sanity-check the result at IPC boundary.
-union BidderWorkletKAnonEnforcedBid {
-  BidderWorklerKAnonBidSameAsNonEnforced? same_as_non_enforced; // value unused.
-  BidderWorkletBid bid;
 };
 
 // An optional double value. GenerateBid() returns them as values its
@@ -233,24 +226,23 @@ interface GenerateBidClient {
       map<string, double> priority_vector,
       mojo_base.mojom.TimeDelta trusted_signals_fetch_latency) => ();
 
-  // Invoked once GenerateBid completes, either having successfully generated a
-  // bid, or having failed to generate one for any reason.
+  // Invoked once GenerateBid completes, either having successfully generated
+  // bids, or having failed to generate one for any reason.
   //
   // Arguments:
   //
-  // `bid` If the worklet is successfully loaded and chooses to bid in the
-  //  auction, contains information about the bid with no k-anonymity
-  //  restriction. Null otherwise.
+  // `bids` List of bids generated. This is either:
+  //  - At most `multi_bid_limit` items with `bid_role` of either
+  //    kBothKAnonModes or kUnenforcedKAnon (if no k-anon re-run was done)
+  //  - At most `multi_bid_limit` kUnenforcedKAnon bids and at most one
+  //    kEnforcedKAnon bid (if k-anon re-run was done).
+  //  (If no k-anon enforcement is happening, all bids are expected to be
+  //   kUnenforcedKAnon).
   //
-  // `kanon_bid` If `kanon_mode` is not kNone, `kanon_bid` is the bid made
-  // under requirement of k-anonymous results. This can be the same as `bid`, a
-  // different bid, or null if the bidder will not bid under this restriction.
-  //
-  // If `kanon_mode` is kNone, this is always null.
-  //
-  // The following all arguments correspond to the execution (among those that
-  // produced `bid` and `kanon_bid`) that will end up shown to the user if it
-  // wins per `kanon_mode` passed to GenerateBid.
+  // The following arguments all correspond to the execution that will end up
+  // shown to the user if it wins per `kanon_mode` passed to GenerateBid.
+  // (This distinction exists only if generateBid() was run twice to deal with
+  //  k-anonymity).
   //
   // `bidding_signals_data_version` The value of the Data-Version header served
   //  with the trusted bidding signals, if the header was present.
@@ -295,8 +287,7 @@ interface GenerateBidClient {
   //  is offered, and there may be no errors when there's no bid. Includes
   //  errors from failing to load the worklet script.
   OnGenerateBidComplete(
-      BidderWorkletBid? bid,
-      BidderWorkletKAnonEnforcedBid? kanon_bid,
+      array<BidderWorkletBid> bids,
       uint32? bidding_signals_data_version,
       url.mojom.Url? debug_loss_report_url,
       url.mojom.Url? debug_win_report_url,
@@ -436,8 +427,10 @@ interface BidderWorklet {
   //
   // `multi_bid_limit` Limit on how many bids can be returned at once from
   //  generateBid().  This is always at least 1.  It has no effect if the
-  //  support for returning more than one bid at once is disabled; and if it's
-  //  1, 2 bids can still be produced because of k-anon re-run.
+  //  support for returning more than one bid at once is disabled.
+  //  OnGenerateBidComplete() may get `multi_bid_limit + 1` bids in case
+  //  generateBid() got re-run after returning exactly one bid that's
+  //  non-k-anon.
   //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
