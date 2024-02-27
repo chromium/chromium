@@ -206,6 +206,10 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // also |ReadAndWrite()| has CHECK to guarantee that the actual written sizes
   // to data pips are exactly same.
   void ReadAndWrite(MojoResult result, const mojo::HandleSignalsState& state);
+
+  void Write(base::span<const char> read_buffer);
+  void TwoPhaseWrite(base::span<const char> read_buffer);
+
   // Begins a two-phase read from |body_|, the data pipe consumer. If succeed,
   // the read buffer is returned. If there are no data to read from the data
   // pipe, this internally calls |OnDataTransferComplete()| and return nothing.

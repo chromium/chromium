@@ -409,8 +409,23 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
   if (!read_buffer.has_value()) {
     return;
   }
-  uint32_t num_bytes_to_consume = 0;
+  TwoPhaseWrite(read_buffer.value());
+}
 
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  std::optional<base::span<const char>> read_buffer = StartReadData(result);
+  if (!read_buffer.has_value()) {
+    return;
+  }
+  Write(read_buffer.value());
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::TwoPhaseWrite(
+    base::span<const char> read_buffer) {
+  MojoResult result;
+  uint32_t num_bytes_to_consume = 0;
   if (write_buffer_manager_for_race_network_request_.IsWatching() &&
       write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If both data pipes are watched, write data to both pipes. Cancel writing
@@ -467,11 +482,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
     // Copy data and call EndWriteData.
     uint32_t bytes_for_race_network_request =
         write_buffer_manager_for_race_network_request_
-            .CopyAndCompleteWriteDataWithSize(read_buffer.value(),
+            .CopyAndCompleteWriteDataWithSize(read_buffer,
                                               max_num_bytes_to_consume);
     uint32_t bytes_for_fetch_handler =
         write_buffer_manager_for_fetch_handler_
-            .CopyAndCompleteWriteDataWithSize(read_buffer.value(),
+            .CopyAndCompleteWriteDataWithSize(read_buffer,
                                               max_num_bytes_to_consume);
     CHECK_EQ(bytes_for_race_network_request, bytes_for_fetch_handler);
     num_bytes_to_consume = bytes_for_race_network_request;
@@ -496,7 +511,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
     }
     num_bytes_to_consume =
         write_buffer_manager_for_race_network_request_.CopyAndCompleteWriteData(
-            read_buffer.value());
+            read_buffer);
   } else if (write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
@@ -518,27 +533,21 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
     }
     num_bytes_to_consume =
         write_buffer_manager_for_fetch_handler_.CopyAndCompleteWriteData(
-            read_buffer.value());
+            read_buffer);
   }
   CompleteReadData(num_bytes_to_consume);
 }
 
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
-    MojoResult result,
-    const mojo::HandleSignalsState& state) {
-  std::optional<base::span<const char>> read_buffer = StartReadData(result);
-  if (!read_buffer.has_value()) {
-    return;
-  }
-
-  size_t num_bytes_to_consume = read_buffer->size();
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::Write(
+    base::span<const char> read_buffer) {
+  MojoResult result;
+  size_t num_bytes_to_consume = read_buffer.size();
   if (write_buffer_manager_for_race_network_request_.IsWatching() &&
       write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If both data pipes are watched, write data to both pipes.
     std::pair<size_t, size_t> written_bytes;
     std::tie(result, written_bytes.first) =
-        write_buffer_manager_for_race_network_request_.WriteData(
-            read_buffer.value());
+        write_buffer_manager_for_race_network_request_.WriteData(read_buffer);
     RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
@@ -558,7 +567,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         return;
     }
     std::tie(result, written_bytes.second) =
-        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
+        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer);
     RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
@@ -574,7 +583,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         // not consumed yet but the buffer is full. Stop processing the data
         // pipe for the fetch handler side, not to make the data transfer
         // process for the race network request side being stuck.
-        body_->EndReadData(read_buffer.value().size());
+        body_->EndReadData(read_buffer.size());
         write_buffer_manager_for_fetch_handler_.CancelWatching();
         write_buffer_manager_for_race_network_request_.ArmOrNotify();
         return;
@@ -587,8 +596,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     // If the data pipe for RaceNetworkRequest is the only watcher, don't write
     // data to the data pipe for the fetch handler.
     std::tie(result, num_bytes_to_consume) =
-        write_buffer_manager_for_race_network_request_.WriteData(
-            read_buffer.value());
+        write_buffer_manager_for_race_network_request_.WriteData(read_buffer);
     RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
@@ -608,7 +616,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
     std::tie(result, num_bytes_to_consume) =
-        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
+        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer);
     RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
