@@ -4,9 +4,6 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import androidx.annotation.NonNull;
-import androidx.preference.PreferenceFragmentCompat;
-
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
@@ -49,11 +46,4 @@ public interface AccessibilitySettingsDelegate {
      * text size contrast value for accessibility settings. Return null to omit the preference.
      */
     IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate();
-
-    /**
-     * Allows the embedder to add more preferences to the preference screen.
-     *
-     * @param fragment the fragment to add the preferences to.
-     */
-    void addExtraPreferences(@NonNull PreferenceFragmentCompat fragment);
 }

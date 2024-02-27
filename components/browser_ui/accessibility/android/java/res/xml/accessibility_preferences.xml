@@ -44,4 +44,9 @@ found in the LICENSE file.
         android:key="captions"
         android:title="@string/accessibility_captions_title"/>
 
+    <Preference
+        android:fragment="org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings"
+        android:key="image_descriptions"
+        android:title="@string/image_descriptions_settings_title" />
+
 </PreferenceScreen>

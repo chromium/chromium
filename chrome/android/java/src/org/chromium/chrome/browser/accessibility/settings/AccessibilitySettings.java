@@ -13,6 +13,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
@@ -42,6 +43,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
     public static final String PREF_CAPTIONS = "captions";
     public static final String PREF_ZOOM_INFO = "zoom_info";
+    public static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
 
     private TextScalePreference mTextScalePref;
     private PageZoomPreference mPageZoomDefaultZoomPref;
@@ -175,7 +177,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             zoomInfo.setVisible(false);
         }
 
-        mDelegate.addExtraPreferences(this);
+        Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
+        imageDescriptionsPreference.setVisible(
+                ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem());
     }
 
     @Override

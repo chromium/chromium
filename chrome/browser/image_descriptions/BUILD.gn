@@ -50,7 +50,6 @@ android_resources("java_resources") {
     "android/java/res/layout/image_descriptions_dialog.xml",
     "android/java/res/layout/radio_button_group_accessibility_preference.xml",
     "android/java/res/xml/image_descriptions_preference.xml",
-    "android/java/res/xml/image_descriptions_settings_preference.xml",
   ]
 
   deps = [

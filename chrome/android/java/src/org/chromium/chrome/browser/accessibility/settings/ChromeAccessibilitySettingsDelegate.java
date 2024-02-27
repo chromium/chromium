@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
-import androidx.preference.PreferenceFragmentCompat;
-
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
@@ -78,12 +74,5 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate() {
         return new TextSizeContrastAccessibilityDelegate(getBrowserContextHandle());
-    }
-
-    @Override
-    public void addExtraPreferences(PreferenceFragmentCompat fragment) {
-        if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
-            fragment.addPreferencesFromResource(R.xml.image_descriptions_settings_preference);
-        }
     }
 }

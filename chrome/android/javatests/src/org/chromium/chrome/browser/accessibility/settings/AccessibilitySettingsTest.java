@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS;
+
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -71,7 +73,6 @@ import java.text.NumberFormat;
 })
 @Features.EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM})
 public class AccessibilitySettingsTest {
-    private static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
     private AccessibilitySettings mAccessibilitySettings;
     private PageZoomPreference mPageZoomPref;
 
