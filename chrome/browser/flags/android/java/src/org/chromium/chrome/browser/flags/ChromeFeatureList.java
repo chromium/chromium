@@ -409,6 +409,7 @@ public abstract class ChromeFeatureList {
     public static final String RENAME_JOURNEYS = "RenameJourneys";
     public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
             "ReplaceSyncPromosWithSignInPromos";
+    public static final String SAFETY_HUB = "SafetyHub";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP =
             "SafeBrowsingCallNewGmsApiOnStartup";
@@ -803,6 +804,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
+    public static final MutableFlagWithSafeDefault sSafetyHub =
+            newMutableFlagWithSafeDefault(SAFETY_HUB, false);
     public static final MutableFlagWithSafeDefault sSearchInCCT =
             newMutableFlagWithSafeDefault(SEARCH_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =

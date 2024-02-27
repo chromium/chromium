@@ -280,6 +280,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kTotallyEdgeToEdge,
+    &kSafetyHub,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
@@ -878,6 +879,8 @@ BASE_FEATURE(kTestDefaultDisabled,
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafetyHub, "SafetyHub", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature updates the triggering logic for the default search engine
 // choice promo. See crbug.com/1471643 for more details.
