@@ -4,10 +4,20 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+# All targets in this file are meant as compile tests only to make sure the
+# generated code compiles for all edgecases.
+
 generate_jni("test_jni") {
   sources = [
     "java/src/org/jni_zero/SampleForAnnotationProcessor.java",
     "java/src/org/jni_zero/SampleForTests.java",
+  ]
+}
+
+android_library("dummy_java") {
+  sources = [
+    "java/src/org/dummy/MyClass.java",
+    "java/src/org/dummy/MyInterface.java",
   ]
 }
 
@@ -18,7 +28,10 @@ android_library("test_java") {
     "java/src/org/jni_zero/SampleForTests.java",
   ]
 
-  deps = [ "//third_party/jni_zero:jni_zero_java" ]
+  deps = [
+    ":dummy_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
 }
 
 source_set("test_native_side") {
@@ -39,11 +52,15 @@ shared_library_with_jni("test_lib") {
     ":test_native_side",
     "//third_party/jni_zero",
   ]
-  java_targets = [ ":test_jni_apk" ]
+  java_targets = [ ":compile_only_test_jni_apk" ]
   remove_uncalled_jni = true
 }
 
-android_apk("test_jni_apk") {
+# This apk is meant to be a compile only test to make sure the generated code,
+# both java and native, compiles for all the edgecases. APK itself is not meant
+# to be run or installed on a device since a lot of internal implementations are
+# empty stubs and are just meant for the compiler or linker to see.
+android_apk("compile_only_test_jni_apk") {
   apk_name = "TestJni"
   android_manifest = "../sample/AndroidManifest.xml"
   deps = [ ":test_java" ]

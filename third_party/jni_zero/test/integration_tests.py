@@ -121,7 +121,24 @@ class BaseTest(unittest.TestCase):
         contents = srcjar.read(name).decode('utf-8')
         self.AssertGoldenTextEquals(contents, name_to_goldens[name])
 
-  def _TestEndToEndGeneration(self, input_file, *, srcjar=False, **kwargs):
+  def _CheckPlaceholderSrcjarGolden(self, srcjar_path, golden_path):
+    expected_contents = [
+        'This is the concatenated contents of all files '
+        'inside the placeholder srcjar.\n\n'
+    ]
+    with zipfile.ZipFile(srcjar_path, 'r') as srcjar:
+      for name in srcjar.namelist():
+        file_contents = srcjar.read(name).decode('utf-8')
+        expected_contents += [f'## Contents of {name}:', file_contents, '\n']
+
+    self.AssertGoldenTextEquals('\n'.join(expected_contents), golden_path)
+
+  def _TestEndToEndGeneration(self,
+                              input_file,
+                              *,
+                              srcjar=False,
+                              generate_placeholders=False,
+                              **kwargs):
     is_javap = input_file.endswith('.class')
     golden_name = self._testMethodName
     options = CliOptions(is_javap=is_javap, **kwargs)
@@ -152,6 +169,9 @@ class BaseTest(unittest.TestCase):
       if srcjar:
         srcjar_path = os.path.join(tdir, 'srcjar.jar')
         cmd += ['--srcjar-path', srcjar_path]
+      if generate_placeholders:
+        placeholder_srcjar_path = os.path.join(tdir, 'placeholders.srcjar')
+        cmd += ['--placeholder-srcjar-path', placeholder_srcjar_path]
 
       logging.info('Running: %s', shlex.join(cmd))
       subprocess.check_call(cmd)
@@ -163,6 +183,10 @@ class BaseTest(unittest.TestCase):
 
       if srcjar:
         self._CheckSrcjarGoldens(srcjar_path, name_to_goldens)
+      if generate_placeholders:
+        placeholder_srcjar_golden = f'{golden_name}-placeholder.srcjar.golden'
+        self._CheckPlaceholderSrcjarGolden(placeholder_srcjar_path,
+                                           placeholder_srcjar_golden)
 
   def _TestEndToEndRegistration(self,
                                 input_files,
@@ -310,7 +334,8 @@ class Tests(BaseTest):
     self._TestEndToEndGeneration('SampleUniqueAnnotations.java', srcjar=True)
 
   def testEndToEndProxyHashed(self):
-    self._TestEndToEndGeneration('SampleForAnnotationProcessor.java')
+    self._TestEndToEndGeneration('SampleForAnnotationProcessor.java',
+                                 generate_placeholders=True)
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
                                    use_proxy_hash=True)
 

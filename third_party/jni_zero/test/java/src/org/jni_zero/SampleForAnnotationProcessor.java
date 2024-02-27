@@ -1,9 +1,15 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.jni_zero;
 
+import android.content.Context;
+import android.view.View;
+
+import org.dummy.MyClass;
+import org.dummy.MyInterface;
+
+import java.util.ArrayList;
 
 /**
  * Sample class that uses the JNI annotation processor for static methods.
@@ -87,6 +93,13 @@ class SampleForAnnotationProcessor {
     }
 
     public static void test() {
+        // Using the imports so they are not removed.
+        View view = null;
+        Context context = null;
+        MyClass myclass = null;
+        MyInterface myinterface = null;
+        ArrayList myList = new ArrayList<String>();
+
         int[] x = new int[] {1, 2, 3, 4, 5};
         String[] strs = new String[] {"the", "quick", "brown", "fox"};
         strs = SampleForAnnotationProcessorJni.get().sendToNative(strs);

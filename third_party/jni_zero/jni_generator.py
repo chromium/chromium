@@ -26,6 +26,7 @@ _BUILD_ANDROID_GYP = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp')
 sys.path.insert(1, _BUILD_ANDROID_GYP)
 
 from codegen import placeholder_gen_jni_java
+from codegen import placeholder_java_type
 from codegen import proxy_impl_java
 import common
 import java_types
@@ -1141,11 +1142,42 @@ def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
         zip_path = f'{jni_obj.java_class.class_without_prefix.full_name_with_slashes}Jni.java'
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
+      if gen_jni_class is not None:
+        content = placeholder_gen_jni_java.Generate(jni_objs,
+                                                    gen_jni_class=gen_jni_class,
+                                                    script_name=script_name)
+        zip_path = f'{gen_jni_class.full_name_with_slashes}.java'
+        common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+
+
+def _CreatePlaceholderSrcJar(srcjar_path, gen_jni_class, jni_objs, *,
+                             script_name):
+  with common.atomic_output(srcjar_path) as f:
+    with zipfile.ZipFile(f, 'w') as srcjar:
       content = placeholder_gen_jni_java.Generate(jni_objs,
                                                   gen_jni_class=gen_jni_class,
                                                   script_name=script_name)
       zip_path = f'{gen_jni_class.full_name_with_slashes}.java'
       common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+      for jni_obj in jni_objs:
+        if not jni_obj.proxy_natives:
+          continue
+        main_class = jni_obj.type_resolver.java_class
+        zip_path = main_class.class_without_prefix.full_name_with_slashes + '.java'
+        content = placeholder_java_type.Generate(
+            main_class,
+            jni_obj.type_resolver.nested_classes,
+            script_name=script_name)
+        common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+        for java_class in jni_obj.type_resolver.imports:
+          # java.** are not separate deps and can be assumed to be available in
+          # any compile and thus we do not need to create placeholders for them.
+          if java_class.full_name_with_slashes.startswith('java/'):
+            continue
+          zip_path = java_class.class_without_prefix.full_name_with_slashes + '.java'
+          content = placeholder_java_type.Generate(java_class, [],
+                                                   script_name=script_name)
+          common.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
 
 def _WriteHeaders(jni_objs, output_names, output_dir):
@@ -1180,22 +1212,32 @@ def GenerateFromSource(parser, args):
 
   _WriteHeaders(jni_objs, args.output_names, args.output_dir)
 
+  jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
+  if jni_objs_with_proxy_natives:
+    # module_name is set only for proxy_natives.
+    gen_jni_class = proxy.get_gen_jni_class(
+        short=False,
+        name_prefix=jni_objs_with_proxy_natives[0].module_name,
+        package_prefix=args.package_prefix)
   # Write .srcjar
   if args.srcjar_path:
-    # module_name is set only for proxy_natives.
-    jni_objs = [x for x in jni_objs if x.proxy_natives]
-    if jni_objs:
-      gen_jni_class = proxy.get_gen_jni_class(
-          short=False,
-          name_prefix=jni_objs[0].module_name,
-          package_prefix=args.package_prefix)
+    if jni_objs_with_proxy_natives:
       _CreateSrcJar(args.srcjar_path,
-                    gen_jni_class,
-                    jni_objs,
+                    (None if args.placeholder_srcjar_path else gen_jni_class),
+                    jni_objs_with_proxy_natives,
                     script_name=GetScriptName())
     else:
       # Only @CalledByNatives.
       zipfile.ZipFile(args.srcjar_path, 'w').close()
+
+  if args.placeholder_srcjar_path:
+    if jni_objs_with_proxy_natives:
+      _CreatePlaceholderSrcJar(args.placeholder_srcjar_path,
+                               gen_jni_class,
+                               jni_objs_with_proxy_natives,
+                               script_name=GetScriptName())
+    else:
+      zipfile.ZipFile(args.placeholder_srcjar_path, 'w').close()
 
 
 def GenerateFromJar(parser, args):

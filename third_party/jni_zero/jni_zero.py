@@ -53,6 +53,9 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
                        help='Output directory. '
                        'Existing .h files in this directory will be assumed '
                        'stale and removed.')
+    group.add_argument('--placeholder-srcjar-path',
+                       help='Path to output srcjar with placeholders for '
+                       'all referenced classes in |input_files|')
 
   group.add_argument('--header-path', help='Path to output header file.')
 

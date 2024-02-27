@@ -135,7 +135,7 @@ def _parse_java_classes(contents):
   nested_classes = []
   for m in _CLASSES_REGEX.finditer(contents):
     preamble, class_name = m.groups()
-    # Ignore annoations like @Foo("contains the words class Bar")
+    # Ignore annotations like @Foo("contains the words class Bar")
     if preamble.count('"') % 2 != 0:
       continue
     if outer_class is None:
