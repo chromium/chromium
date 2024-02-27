@@ -72,9 +72,6 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 - (void)copyImage:(const base::FilePath&)oldPath
         toNewPath:(const base::FilePath&)newPath;
 
-// Converts a color image into a grey image and saves it to disk.
-- (void)convertAndSaveGreyImage:(SnapshotID)snapshotID;
-
 // Returns the file path of the image for `snapshotID`.
 - (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID;
 
@@ -82,9 +79,6 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 // TODO(crbug.com/1501850): Remove this when the storage for all users has been
 // migrated.
 - (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID;
-
-// Returns the file path of the grey image for `snapshotID`.
-- (base::FilePath)greyImagePathForSnapshotID:(SnapshotID)snapshotID;
 
 // Must be invoked before the instance is deallocated. It is needed to release
 // all references to C++ objects. The receiver will likely soon be deallocated.

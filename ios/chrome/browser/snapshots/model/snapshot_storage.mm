@@ -69,21 +69,6 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 
   // File manager to read/write images from/to disk.
   __strong LegacyImageFileManager* _fileManager;
-
-  // Temporary dictionary to hold grey snapshots for tablet side swipe. This
-  // will be nil before -createGreyCache is called and after -removeGreyCache
-  // is called.
-  std::map<SnapshotID, UIImage*> _greyImageDictionary;
-
-  // Snapshot ID of most recent pending grey snapshot request.
-  SnapshotID _mostRecentGreySnapshotID;
-  // Block used by pending request for a grey snapshot.
-  void (^_mostRecentGreyBlock)(UIImage*);
-
-  // Snapshot ID and corresponding UIImage for the snapshot that will likely
-  // be requested to be saved to disk when the application is backgrounded.
-  SnapshotID _backgroundingSnapshotID;
-  UIImage* _backgroundingColorImage;
 }
 
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
@@ -159,52 +144,24 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
   DCHECK(snapshotID.valid());
   DCHECK(callback);
 
-  auto iterator = _greyImageDictionary.find(snapshotID);
-  if (iterator != _greyImageDictionary.end()) {
-    CHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
-    callback(iterator->second);
+  // There are no grey images stored in disk, so generate it from a colored
+  // snapshot if exists.
+  UIImage* colorImage = [_lruCache objectForKey:snapshotID];
+  if (colorImage) {
+    callback(GreyImage(colorImage));
     return;
   }
 
-  if (IsGreySnapshotOptimizationEnabled()) {
-    // There are no grey images stored in disk, so use color snapshots instead.
-    UIImage* colorImage = [_lruCache objectForKey:snapshotID];
-    if (colorImage) {
-      callback(GreyImage(colorImage));
-      return;
-    }
-
-    // Fallback to reading a color image from disk when there is no color image
-    // in LRU cache.
-    [_fileManager readImageWithSnapshotID:snapshotID
-                               completion:base::BindOnce(^(UIImage* image) {
-                                 if (image) {
-                                   callback(GreyImage(image));
-                                   return;
-                                 }
-                                 callback(nil);
-                               })];
-  } else {
-    __weak SnapshotStorage* weakSelf = self;
-    [_fileManager
-        readGreyImageWithSnapshotID:snapshotID
-                         completion:base::BindOnce(^(UIImage* image) {
-                           if (image) {
-                             callback(image);
-                             return;
-                           }
-                           [weakSelf
-                               retrieveImageForSnapshotID:snapshotID
-                                                 callback:^(
-                                                     UIImage* snapshotImage) {
-                                                   if (snapshotImage) {
-                                                     snapshotImage = GreyImage(
-                                                         snapshotImage);
-                                                   }
-                                                   callback(snapshotImage);
-                                                 }];
-                         })];
-  }
+  // Fallback to reading a color image from disk when there is no color image in
+  // LRU cache.
+  [_fileManager readImageWithSnapshotID:snapshotID
+                             completion:base::BindOnce(^(UIImage* image) {
+                               if (image) {
+                                 callback(GreyImage(image));
+                                 return;
+                               }
+                               callback(nil);
+                             })];
 }
 
 - (void)setImage:(UIImage*)image withSnapshotID:(SnapshotID)snapshotID {
@@ -256,33 +213,15 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
   if (UIImage* image = [_lruCache objectForKey:snapshotID]) {
     // Copy both on-disk and in-memory versions.
     [destinationStorage setImage:image withSnapshotID:snapshotID];
-    // Copy the grey scale version, if available.
-    auto iterator = _greyImageDictionary.find(snapshotID);
-    if (iterator != _greyImageDictionary.end()) {
-      DCHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
-      destinationStorage->_greyImageDictionary.insert(
-          std::make_pair(snapshotID, iterator->second));
-    }
   } else {
     // Only copy on-disk.
     [_fileManager
         copyImage:[self imagePathForSnapshotID:snapshotID]
         toNewPath:[destinationStorage imagePathForSnapshotID:snapshotID]];
-    [_fileManager
-        copyImage:[self greyImagePathForSnapshotID:snapshotID]
-        toNewPath:[destinationStorage greyImagePathForSnapshotID:snapshotID]];
   }
 
   // Remove the snapshot from this storage.
   [self removeImageWithSnapshotID:snapshotID];
-}
-
-- (void)willBeSavedGreyWhenBackgrounding:(SnapshotID)snapshotID {
-  if (!snapshotID.valid()) {
-    return;
-  }
-  _backgroundingSnapshotID = snapshotID;
-  _backgroundingColorImage = [_lruCache objectForKey:snapshotID];
 }
 
 // Remove all UIImages from `lruCache_`.
@@ -293,85 +232,6 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 // Remove all UIImages from `lruCache_`.
 - (void)handleEnterBackground {
   [_lruCache removeAllObjects];
-}
-
-// Save grey image to `greyImageDictionary_` and call into most recent
-// `_mostRecentGreyBlock` if `_mostRecentGreySnapshotID` matches `snapshotID`.
-- (void)saveGreyImage:(UIImage*)greyImage forSnapshotID:(SnapshotID)snapshotID {
-  CHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
-  if (greyImage) {
-    _greyImageDictionary.insert(std::make_pair(snapshotID, greyImage));
-  }
-  if (snapshotID == _mostRecentGreySnapshotID) {
-    _mostRecentGreyBlock(greyImage);
-    [self clearGreySnapshotInfo];
-  }
-}
-
-// Load uncached snapshot image and convert image to grey.
-- (void)loadGreyImageAsync:(SnapshotID)snapshotID {
-  CHECK(!IsGreySnapshotOptimizationNoCacheEnabled());
-  // Use a color image in LRU cache if it exists.
-  UIImage* cached_image = [_lruCache objectForKey:snapshotID];
-  if (cached_image) {
-    [self saveGreyImage:GreyImage(cached_image) forSnapshotID:snapshotID];
-    return;
-  }
-
-  // Load a color image from disk and convert it into a grey image.
-  __weak SnapshotStorage* weakSelf = self;
-  [_fileManager readImageWithSnapshotID:snapshotID
-                             completion:base::BindOnce(^(UIImage* image) {
-                               if (image) {
-                                 [weakSelf saveGreyImage:GreyImage(image)
-                                           forSnapshotID:snapshotID];
-                               }
-                             })];
-}
-
-- (void)createGreyCache:(const std::vector<SnapshotID>&)snapshotIDs {
-  if (IsGreySnapshotOptimizationNoCacheEnabled()) {
-    // Do not create cache for grey images. A grey image will be generated
-    // in-flight from a color image when it's retrieved.
-    return;
-  }
-
-  _greyImageDictionary.clear();
-  for (SnapshotID snapshotID : snapshotIDs) {
-    [self loadGreyImageAsync:snapshotID];
-  }
-}
-
-- (void)removeGreyCache {
-  _greyImageDictionary.clear();
-  [self clearGreySnapshotInfo];
-}
-
-// Clear most recent caller information.
-- (void)clearGreySnapshotInfo {
-  _mostRecentGreySnapshotID = SnapshotID();
-  _mostRecentGreyBlock = nil;
-}
-
-- (void)saveGreyInBackgroundForSnapshotID:(SnapshotID)snapshotID {
-  if (!snapshotID.valid()) {
-    return;
-  }
-
-  // The color image may still be in memory.  Verify the snapshotID matches.
-  if (_backgroundingColorImage) {
-    if (snapshotID != _backgroundingSnapshotID) {
-      _backgroundingSnapshotID = SnapshotID();
-      _backgroundingColorImage = nil;
-    }
-  }
-
-  if (IsGreySnapshotOptimizationEnabled()) {
-    // Do not save grey images into disk when the feature is enabled.
-    return;
-  }
-
-  [_fileManager convertAndSaveGreyImage:snapshotID];
 }
 
 - (void)addObserver:(id<SnapshotStorageObserver>)observer {
@@ -390,29 +250,6 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 
 - (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID {
   return [_fileManager imagePathForSnapshotID:snapshotID];
-}
-
-- (base::FilePath)greyImagePathForSnapshotID:(SnapshotID)snapshotID {
-  return [_fileManager greyImagePathForSnapshotID:snapshotID];
-}
-
-- (void)greyImageForSnapshotID:(SnapshotID)snapshotID
-                      callback:(void (^)(UIImage*))callback {
-  DCHECK(snapshotID.valid());
-  DCHECK(callback);
-
-  auto iterator = _greyImageDictionary.find(snapshotID);
-  if (iterator != _greyImageDictionary.end()) {
-    callback(iterator->second);
-    [self clearGreySnapshotInfo];
-  } else {
-    _mostRecentGreySnapshotID = snapshotID;
-    _mostRecentGreyBlock = [callback copy];
-  }
-}
-
-- (BOOL)hasGreyImageInMemory:(SnapshotID)snapshotID {
-  return base::Contains(_greyImageDictionary, snapshotID);
 }
 
 - (NSUInteger)lruCacheMaxSize {

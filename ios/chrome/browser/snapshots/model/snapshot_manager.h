@@ -50,15 +50,6 @@ class SnapshotID;
 // This does not update the snapshot storage.
 - (UIImage*)generateUIViewSnapshot;
 
-// Hints that the snapshot will likely be saved to disk when the application is
-// backgrounded.  The snapshot is then saved in memory, so it does not need to
-// be read off disk.
-- (void)willBeSavedGreyWhenBackgrounding;
-
-// Writes a grey copy of the snapshot to disk, but if and only if a color
-// version of the snapshot already exists in memory or on disk.
-- (void)saveGreyInBackground;
-
 // Requests deletion of the current page snapshot from disk and memory.
 - (void)removeSnapshot;
 

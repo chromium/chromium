@@ -10,7 +10,6 @@
 class FullscreenController;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
-class SnapshotBrowserAgent;
 @protocol TabStripHighlighting;
 class WebStateList;
 
@@ -70,7 +69,6 @@ extern NSString* const kSideSwipeDidStopNotification;
 // Initializer.
 - (instancetype)
     initWithFullscreenController:(FullscreenController*)fullscreenController
-            snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
                     webStateList:(WebStateList*)webStateList;
 
 // Disconnects the mediator.

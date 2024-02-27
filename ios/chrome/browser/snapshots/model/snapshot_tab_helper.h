@@ -69,15 +69,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // Instructs the helper not to snapshot content for the next page load event.
   void IgnoreNextLoad();
 
-  // Hint that the snapshot will likely be saved to disk when the application is
-  // backgrounded.  The snapshot is then saved in memory, so it does not need to
-  // be read off disk.
-  void WillBeSavedGreyWhenBackgrounding();
-
-  // Write a grey copy of the snapshot to disk, but if and only if a color
-  // version of the snapshot already exists in memory or on disk.
-  void SaveGreyInBackground();
-
   // Returns the ID to use for the snapshot.
   SnapshotID GetSnapshotID() const;
 

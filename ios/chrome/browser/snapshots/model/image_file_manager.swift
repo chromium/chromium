@@ -44,9 +44,9 @@ let kJPEGImageQuality: CGFloat = 1.0
     super.init()
 
     createStorageDirectory(directory: storageDirectoryUrl, legacyDirectory: legacyDirectoryUrl)
-    if IsGreySnapshotOptimizationEnabled() {
-      deleteAllGreyImages(directory: storageDirectoryUrl)
-    }
+
+    // TODO(crbug.com/40279302): Delete this logic after a few milestones.
+    deleteAllGreyImages(directory: storageDirectoryUrl)
   }
 
   // Waits until all tasks are completed. This is used for tests.
@@ -121,8 +121,6 @@ let kJPEGImageQuality: CGFloat = 1.0
   // Removes an image specified by `snapshotID` from disk.
   func removeImage(snapshotID: SnapshotIDWrapper) {
     guard
-      let greyImagePath = imagePath(
-        snapshotID: snapshotID, imageType: ImageType.kImageTypeGrey),
       let imagePath = imagePath(
         snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
     else {
@@ -134,9 +132,6 @@ let kJPEGImageQuality: CGFloat = 1.0
       do {
         if FileManager.default.fileExists(atPath: imagePath.path) {
           try FileManager.default.removeItem(at: imagePath)
-        }
-        if FileManager.default.fileExists(atPath: greyImagePath.path) {
-          try FileManager.default.removeItem(at: greyImagePath)
         }
       } catch {
         print("Failed to delete an image: \(error)")
@@ -168,9 +163,6 @@ let kJPEGImageQuality: CGFloat = 1.0
     var filesToKeep: Set<URL> = []
     for snapshotID in liveSnapshotIDs {
       if let path = imagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor) {
-        filesToKeep.insert(path)
-      }
-      if let path = imagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeGrey) {
         filesToKeep.insert(path)
       }
     }
@@ -221,7 +213,6 @@ let kJPEGImageQuality: CGFloat = 1.0
 
     for (oldID, newID) in zip(oldIDs, newIDs) {
       renameSnapshot(oldID: oldID, newID: newID, imageType: ImageType.kImageTypeColor)
-      renameSnapshot(oldID: oldID, newID: newID, imageType: ImageType.kImageTypeGrey)
     }
   }
 
@@ -246,59 +237,6 @@ let kJPEGImageQuality: CGFloat = 1.0
     }
   }
 
-  // Converts a color image into a grey image and saves it to disk.
-  func convertAndSaveGreyImage(snapshotID: SnapshotIDWrapper) {
-    guard
-      let greyImagePath = imagePath(
-        snapshotID: snapshotID, imageType: ImageType.kImageTypeGrey),
-      let imagePath = imagePath(
-        snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
-    else {
-      return
-    }
-
-    taskGroup.enter()
-    taskQueue.async(group: taskGroup) { [self] in
-      guard let image = UIImage(contentsOfFile: imagePath.path) else {
-        taskGroup.leave()
-        return
-      }
-
-      // Grey images are always non-retina to improve memory performance.
-      let format = UIGraphicsImageRendererFormat.default()
-      format.scale = 1
-      format.opaque = true
-
-      let greyImageRect = CGRect.init(
-        x: 0, y: 0, width: image.size.width, height: image.size.height)
-      let renderer = UIGraphicsImageRenderer(size: greyImageRect.size, format: format)
-      let greyImage = renderer.image { (context) in
-        let background = UIBezierPath(rect: greyImageRect)
-        UIColor.black.set()
-        background.fill()
-
-        image.draw(in: greyImageRect, blendMode: CGBlendMode.luminosity, alpha: 1.0)
-      }
-
-      guard let data = greyImage.jpegData(compressionQuality: kJPEGImageQuality) else {
-        taskGroup.leave()
-        return
-      }
-      do {
-        try data.write(to: URL(string: greyImagePath.path)!)
-
-        // Encrypt the snapshot file (mostly for Incognito, but can't hurt to always do it).
-        try FileManager.default.setAttributes(
-          [
-            .protectionKey: FileProtectionType.completeUntilFirstUserAuthentication
-          ], ofItemAtPath: imagePath.path)
-      } catch {
-        print("Failed to store an image: \(error)")
-      }
-      taskGroup.leave()
-    }
-  }
-
   // Returns the file path of the image for `snapshotID`.
   func imagePath(snapshotID: SnapshotIDWrapper) -> URL? {
     imagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
@@ -309,11 +247,6 @@ let kJPEGImageQuality: CGFloat = 1.0
   // migrated.
   func legacyImagePath(snapshotID: String) -> URL? {
     legacyImagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
-  }
-
-  // Returns the file path of the grey image for `snapshotID`.
-  func greyImagePath(snapshotID: SnapshotIDWrapper) -> URL? {
-    imagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeGrey)
   }
 
   // Creates a directory that stores images and moves images from `legacyDirectory` to
@@ -356,7 +289,7 @@ let kJPEGImageQuality: CGFloat = 1.0
 
   // Frees up disk by deleting all grey snapshots if they exist in `directory` because grey
   // snapshots are not stored anymore when `kGreySnapshotOptimization` feature is enabled.
-  // TODO(crbug.com/1474387): This function should be removed in a few milestones
+  // TODO(crbug.com/40279302): This function should be removed in a few milestones
   // after `kGreySnapshotOptimization` feature is enabled by default.
   private func deleteAllGreyImages(directory: URL) {
     taskGroup.enter()

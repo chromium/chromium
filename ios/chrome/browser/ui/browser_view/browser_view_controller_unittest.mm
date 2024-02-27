@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -243,11 +242,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
 
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
-    SnapshotBrowserAgent* snapshot_browser_agent =
-        SnapshotBrowserAgent::FromBrowser(browser_.get());
     side_swipe_mediator_ = [[SideSwipeMediator alloc]
         initWithFullscreenController:fullscreen_controller_
-                snapshotBrowserAgent:snapshot_browser_agent
                         webStateList:browser_->GetWebStateList()];
 
     bookmarks_coordinator_ =

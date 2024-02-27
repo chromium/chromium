@@ -307,31 +307,10 @@ void CopyImageFile(const base::FilePath& old_image_path,
   }
 }
 
-// Helper function to convert a color image into a grey image and save it to
-// disk.
-void ConvertAndSaveGreyImage(SnapshotID snapshot_id,
-                             ImageScale image_scale,
-                             const base::FilePath& directory) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  UIImage* color_image = ReadImageForSnapshotIDFromDisk(
-      snapshot_id, IMAGE_TYPE_COLOR, image_scale, directory);
-  if (!color_image) {
-    return;
-  }
-
-  UIImage* grey_image = GreyImage(color_image);
-  base::FilePath image_path =
-      ImagePath(snapshot_id, IMAGE_TYPE_GREYSCALE, image_scale, directory);
-  WriteImageToDisk(grey_image, image_path);
-  base::apple::SetBackupExclusion(image_path);
-}
-
 // Frees up disk by deleting all grey snapshots if they exist in `directory`
 // because grey snapshots are not stored anymore when
 // `kGreySnapshotOptimization` feature is enabled.
-// TODO(crbug.com/1474387): This function should be removed in a few milestones
+// TODO(crbug.com/40279302): This function should be removed in a few milestones
 // after `kGreySnapshotOptimization` feature is enabled by default.
 void DeleteAllGreyImages(const base::FilePath& directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -384,10 +363,10 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
     _taskRunner->PostTask(
         FROM_HERE,
         base::BindOnce(CreateStorageDirectory, _storageDirectory, legacyPath));
-    if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
-      _taskRunner->PostTask(
-          FROM_HERE, base::BindOnce(DeleteAllGreyImages, _storageDirectory));
-    }
+
+    // TODO(crbug.com/40279302): Delete this logic after a few milestones.
+    _taskRunner->PostTask(
+        FROM_HERE, base::BindOnce(DeleteAllGreyImages, _storageDirectory));
   }
   return self;
 }
@@ -487,16 +466,6 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
                         base::BindOnce(&CopyImageFile, oldPath, newPath));
 }
 
-- (void)convertAndSaveGreyImage:(SnapshotID)snapshotID {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner) {
-    return;
-  }
-  _taskRunner->PostTask(FROM_HERE,
-                        base::BindOnce(&ConvertAndSaveGreyImage, snapshotID,
-                                       _snapshotsScale, _storageDirectory));
-}
-
 - (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID {
   return ImagePath(snapshotID, IMAGE_TYPE_COLOR, _snapshotsScale,
                    _storageDirectory);
@@ -505,11 +474,6 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
 - (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID {
   return LegacyImagePath(snapshotID, IMAGE_TYPE_COLOR, _snapshotsScale,
                          _storageDirectory);
-}
-
-- (base::FilePath)greyImagePathForSnapshotID:(SnapshotID)snapshotID {
-  return ImagePath(snapshotID, IMAGE_TYPE_GREYSCALE, _snapshotsScale,
-                   _storageDirectory);
 }
 
 - (void)shutdown {

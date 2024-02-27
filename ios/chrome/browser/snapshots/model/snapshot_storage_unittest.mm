@@ -127,11 +127,6 @@ class SnapshotStorageTest : public PlatformTest {
 
     FlushRunLoops(snapshot_storage_);
 
-    // The above calls to -removeImageWithSnapshotID remove both the color
-    // and grey snapshots for each snapshotID, if they are on disk.  However,
-    // ensure we also get rid of the grey snapshots in memory.
-    [snapshot_storage_ removeGreyCache];
-
     __block BOOL foundImage = NO;
     __block NSUInteger numCallbacks = 0;
     for (auto [snapshot_id, _] : test_images_) {

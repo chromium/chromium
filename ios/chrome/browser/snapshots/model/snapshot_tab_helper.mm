@@ -79,14 +79,6 @@ void SnapshotTabHelper::IgnoreNextLoad() {
   ignore_next_load_ = true;
 }
 
-void SnapshotTabHelper::WillBeSavedGreyWhenBackgrounding() {
-  [snapshot_manager_ willBeSavedGreyWhenBackgrounding];
-}
-
-void SnapshotTabHelper::SaveGreyInBackground() {
-  [snapshot_manager_ saveGreyInBackground];
-}
-
 SnapshotID SnapshotTabHelper::GetSnapshotID() const {
   return snapshot_manager_.snapshotID;
 }

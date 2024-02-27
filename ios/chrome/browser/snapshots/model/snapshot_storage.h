@@ -76,25 +76,9 @@ class Time;
                          toIDs:(const std::vector<SnapshotID>&)newIDs;
 
 // Moves the on-disk tab snapshot from the receiver storage to the destination
-// on-disk storage. If the snapshot was also in-memory, it is moved as well. The
-// grey image is handled as well if present.
+// on-disk storage. If the snapshot was also in-memory, it is moved as well.
 - (void)migrateImageWithSnapshotID:(SnapshotID)snapshotID
                  toSnapshotStorage:(SnapshotStorage*)destinationCache;
-
-// Hints that the snapshot for `snapshotID` will likely be saved to disk when
-// the application is backgrounded.  The snapshot is then saved in memory, so it
-// does not need to be read off disk.
-- (void)willBeSavedGreyWhenBackgrounding:(SnapshotID)snapshotID;
-
-// Creates temporary storage of grey images for tablet side-swipe.
-- (void)createGreyCache:(const std::vector<SnapshotID>&)snapshotIDs;
-
-// Releases alls images in grey cache.
-- (void)removeGreyCache;
-
-// Writes a grey copy of the snapshot for `snapshotID` to disk, but if and only
-// if a color version of the snapshot already exists in memory or on disk.
-- (void)saveGreyInBackgroundForSnapshotID:(SnapshotID)snapshotID;
 
 // Adds an observer to this snapshot storage.
 - (void)addObserver:(id<SnapshotStorageObserver>)observer;

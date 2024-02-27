@@ -80,14 +80,6 @@
   return [_snapshotGenerator generateUIViewSnapshot];
 }
 
-- (void)willBeSavedGreyWhenBackgrounding {
-  [_snapshotStorage willBeSavedGreyWhenBackgrounding:_snapshotID];
-}
-
-- (void)saveGreyInBackground {
-  [_snapshotStorage saveGreyInBackgroundForSnapshotID:_snapshotID];
-}
-
 - (void)removeSnapshot {
   [_snapshotStorage removeImageWithSnapshotID:_snapshotID];
 }
