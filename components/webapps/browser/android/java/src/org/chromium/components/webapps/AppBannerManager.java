@@ -112,14 +112,14 @@ public class AppBannerManager {
      */
     @CalledByNative
     private void fetchAppDetails(
-            String url, String packageName, String referrer, int iconSizeInDp) {
+            int requestId, String url, String packageName, String referrer, int iconSizeInDp) {
         if (sAppDetailsDelegate == null) return;
 
         Context context = ContextUtils.getApplicationContext();
         int iconSizeInPx =
                 Math.round(context.getResources().getDisplayMetrics().density * iconSizeInDp);
         sAppDetailsDelegate.getAppDetailsAsynchronously(
-                createAppDetailsObserver(), url, packageName, referrer, iconSizeInPx);
+                createAppDetailsObserver(requestId), url, packageName, referrer, iconSizeInPx);
     }
 
     @CalledByNative
@@ -127,7 +127,7 @@ public class AppBannerManager {
         return PackageUtils.isPackageInstalled(packageName);
     }
 
-    private AppDetailsDelegate.Observer createAppDetailsObserver() {
+    private AppDetailsDelegate.Observer createAppDetailsObserver(int requestId) {
         return new AppDetailsDelegate.Observer() {
             /**
              * Called when data about the package has been retrieved, which includes the url for the
@@ -146,6 +146,7 @@ public class AppBannerManager {
                         .onAppDetailsRetrieved(
                                 mNativePointer,
                                 AppBannerManager.this,
+                                requestId,
                                 data,
                                 data.title(),
                                 data.packageName(),
@@ -241,6 +242,7 @@ public class AppBannerManager {
         boolean onAppDetailsRetrieved(
                 long nativeAppBannerManagerAndroid,
                 AppBannerManager caller,
+                int requestId,
                 AppData data,
                 String title,
                 String packageName,
