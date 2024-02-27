@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -31,9 +32,20 @@ namespace {
 class ContaminationDelayBrowserTest : public ContentBrowserTest {
  protected:
   ContaminationDelayBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPrefetchStateContaminationMitigation,
-         features::kPrefetchRedirects},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchStateContaminationMitigation, {}},
+         {features::kPrefetchRedirects, {}},
+         // This is needed specifically for CrOS MSAN, where we apply a 10x
+         // multiplier to all test timeouts, which happens to be enough to push
+         // the response delay in this test (which is scaled in that way to
+         // match the slowdown of everything else) over the default prefetch
+         // timeout. To be resilient also to changes in that value, it is
+         // expressly overridden here to be a timeout that is much longer and
+         // scales with the timeout multiplier.
+         {features::kPrefetchUseContentRefactor,
+          {{"prefetch_timeout_ms",
+            base::NumberToString(
+                TestTimeouts::action_max_timeout().InMilliseconds())}}}},
         {});
   }
 
@@ -70,7 +82,10 @@ class ContaminationDelayBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(base::test::RunUntil([&] {
       return prefetch_document_manager->GetReferringPageMetrics()
                  .prefetch_successful_count >= 1;
-    })) << "timed out waiting for prefetch to complete";
+    })) << "timed out waiting for prefetch to complete ("
+        << prefetch_document_manager->GetReferringPageMetrics()
+               .prefetch_attempted_count
+        << " attempted)";
   }
 
  private:
@@ -113,13 +128,7 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, CrossSite) {
   EXPECT_GE(timer.Elapsed(), response_delay());
 }
 
-// TODO(crbug.com/325359478): Fix and re-enable for MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_IgnoresSameOrigin DISABLED_IgnoresSameOrigin
-#else
-#define MAYBE_IgnoresSameOrigin IgnoresSameOrigin
-#endif
-IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresSameOrigin) {
+IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresSameOrigin) {
   GURL referrer_url =
       embedded_test_server()->GetURL("referrer.localhost", "/title1.html");
   GURL prefetch_url =
@@ -132,13 +141,7 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresSameOrigin) {
   EXPECT_LT(timer.Elapsed(), response_delay());
 }
 
-// TODO(crbug.com/325359478): Fix and re-enable for MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_IgnoresSameSite DISABLED_IgnoresSameSite
-#else
-#define MAYBE_IgnoresSameSite IgnoresSameSite
-#endif
-IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresSameSite) {
+IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresSameSite) {
   GURL referrer_url =
       embedded_test_server()->GetURL("referrer.localhost", "/title1.html");
   GURL prefetch_url =
@@ -151,13 +154,7 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresSameSite) {
   EXPECT_LT(timer.Elapsed(), response_delay());
 }
 
-// TODO(crbug.com/325359478): Fix and re-enable for MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_IgnoresIfExempt DISABLED_IgnoresIfExempt
-#else
-#define MAYBE_IgnoresIfExempt IgnoresIfExempt
-#endif
-IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, MAYBE_IgnoresIfExempt) {
+IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresIfExempt) {
   GURL referrer_url =
       embedded_test_server()->GetURL("referrer.localhost", "/title1.html");
   GURL prefetch_url =
