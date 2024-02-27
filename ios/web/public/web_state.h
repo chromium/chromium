@@ -315,9 +315,11 @@ class WebState : public base::SupportsUserData {
   // Stops any pending navigation.
   virtual void Stop() = 0;
 
-  // Gets the NavigationManager associated with this WebState. Can never return
-  // null.
+  // Gets the NavigationManager associated with this WebState. Will return null
+  // iff the WebState is unrealized. It doesn't force the realization.
   virtual const NavigationManager* GetNavigationManager() const = 0;
+  // Gets the NavigationManager associated with this WebState. Can never return
+  // null. It forces the realization if needed.
   virtual NavigationManager* GetNavigationManager() = 0;
 
   // Gets the WebFramesManager associated with this WebState. Can never return
