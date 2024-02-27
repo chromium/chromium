@@ -132,6 +132,10 @@ class PdfViewerStreamManager
   void SetPluginCanSave(content::RenderFrameHost* embedder_host,
                         bool plugin_can_save);
 
+  // Deletes the unclaimed stream info associated with `frame_tree_node_id`, and
+  // deletes `this` if there are no remaining stream infos.
+  void DeleteUnclaimedStreamInfo(int frame_tree_node_id);
+
   // WebContentsObserver overrides.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
@@ -247,10 +251,6 @@ class PdfViewerStreamManager
   // Deletes the claimed stream info associated with `embedder_host`, and
   // deletes `this` if there are no remaining stream infos.
   void DeleteClaimedStreamInfo(content::RenderFrameHost* embedder_host);
-
-  // Deletes the unclaimed stream info associated with `frame_tree_node_id`, and
-  // deletes `this` if there are no remaining stream infos.
-  void DeleteUnclaimedStreamInfo(int frame_tree_node_id);
 
   // Intended to be called during the PDF content frame's
   // `ReadyToCommitNavigation()` event. Registers navigations occurring in a PDF

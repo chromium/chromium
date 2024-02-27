@@ -56,6 +56,8 @@ PdfNavigationThrottle::WillProcessResponse() {
     return PROCEED;
   }
 
+  stream_delegate_->OnPdfEmbedderSandboxed(
+      navigation_handle()->GetFrameTreeNodeId());
   return ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_CLIENT);
 }
 

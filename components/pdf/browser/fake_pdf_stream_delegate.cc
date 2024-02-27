@@ -45,4 +45,6 @@ FakePdfStreamDelegate::GetStreamInfo(content::RenderFrameHost* embedder_frame) {
   return stream_info_;
 }
 
+void FakePdfStreamDelegate::OnPdfEmbedderSandboxed(int frame_tree_node_id) {}
+
 }  // namespace pdf

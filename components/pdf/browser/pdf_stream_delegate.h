@@ -60,6 +60,11 @@ class PdfStreamDelegate {
   // `nullptr`.
   virtual std::optional<StreamInfo> GetStreamInfo(
       content::RenderFrameHost* embedder_frame) = 0;
+
+  // Called after calculating sandbox flags for the PDF embedder frame and it's
+  // determined that the frame is sandboxed. This signals that the PDF
+  // navigation will fail and gives `PdfStreamDelegate` a chance to clean up.
+  virtual void OnPdfEmbedderSandboxed(int frame_tree_node_id) = 0;
 };
 
 }  // namespace pdf

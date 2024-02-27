@@ -217,6 +217,24 @@ TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
   EXPECT_TRUE(pdf_viewer_stream_manager());
 }
 
+// Verify that unclaimed stream infos can be deleted.
+TEST_F(PdfViewerStreamManagerTest, DeleteUnclaimedStreamInfo) {
+  content::RenderFrameHost* unclaimed_embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  int frame_tree_node_id = unclaimed_embedder_host->GetFrameTreeNodeId();
+
+  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  manager->AddStreamContainer(frame_tree_node_id, "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1));
+  EXPECT_FALSE(manager->GetStreamContainer(unclaimed_embedder_host));
+
+  manager->DeleteUnclaimedStreamInfo(frame_tree_node_id);
+
+  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // itself.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
+}
+
 // If the embedder render frame is deleted, the stream should be deleted.
 TEST_F(PdfViewerStreamManagerTest, RenderFrameDeletedWithClaimedStream) {
   auto* actual_host = CreateChildRenderFrameHost(main_rfh(), "actual host");

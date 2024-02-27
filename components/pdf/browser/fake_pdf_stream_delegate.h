@@ -27,6 +27,7 @@ class FakePdfStreamDelegate : public PdfStreamDelegate {
       content::NavigationHandle& navigation_handle) override;
   std::optional<StreamInfo> GetStreamInfo(
       content::RenderFrameHost* embedder_frame) override;
+  void OnPdfEmbedderSandboxed(int frame_tree_node_id) override;
 
   void clear_stream_info() { stream_info_.reset(); }
 

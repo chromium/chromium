@@ -194,6 +194,15 @@ void PdfViewerStreamManager::SetPluginCanSave(
   stream_info->set_plugin_can_save(plugin_can_save);
 }
 
+void PdfViewerStreamManager::DeleteUnclaimedStreamInfo(int frame_tree_node_id) {
+  CHECK(stream_infos_.erase(GetUnclaimedEmbedderHostInfo(frame_tree_node_id)));
+
+  if (stream_infos_.empty()) {
+    web_contents()->RemoveUserData(UserDataKey());
+    // DO NOT add code past this point. RemoveUserData() deleted `this`.
+  }
+}
+
 void PdfViewerStreamManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   // When the PDF embeder frame is deleted, delete its stream.
@@ -409,15 +418,6 @@ void PdfViewerStreamManager::DeleteClaimedStreamInfo(
   }
 
   stream_infos_.erase(iter);
-
-  if (stream_infos_.empty()) {
-    web_contents()->RemoveUserData(UserDataKey());
-    // DO NOT add code past this point. RemoveUserData() deleted `this`.
-  }
-}
-
-void PdfViewerStreamManager::DeleteUnclaimedStreamInfo(int frame_tree_node_id) {
-  CHECK(stream_infos_.erase(GetUnclaimedEmbedderHostInfo(frame_tree_node_id)));
 
   if (stream_infos_.empty()) {
     web_contents()->RemoveUserData(UserDataKey());

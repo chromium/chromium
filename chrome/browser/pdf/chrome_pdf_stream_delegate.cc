@@ -189,3 +189,25 @@ ChromePdfStreamDelegate::GetStreamInfo(
   // `StreamInfo`; subsequent calls should just get nothing.
   return helper->TakeStreamInfo();
 }
+
+void ChromePdfStreamDelegate::OnPdfEmbedderSandboxed(int frame_tree_node_id) {
+  // Clean up the stream for a sandboxed embedder frame, as sandboxed frames
+  // should be unable to instantiate the PDF viewer.
+  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  if (!web_contents) {
+    return;
+  }
+
+  auto* pdf_viewer_stream_manager =
+      pdf::PdfViewerStreamManager::FromWebContents(web_contents);
+  if (!pdf_viewer_stream_manager) {
+    return;
+  }
+
+  // The stream should always be unclaimed, since the navigation hasn't
+  // committed.
+  pdf_viewer_stream_manager->DeleteUnclaimedStreamInfo(frame_tree_node_id);
+}
