@@ -17,6 +17,7 @@
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
+#include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
@@ -36,6 +37,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/check.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -60,6 +62,32 @@ const std::u16string& hidden_label = u"Hidden";
 const std::u16string& visible_label = u"Visible";
 
 enum class Movement { kTouch, kMouse };
+
+// Verifies histogram values related to toggling main menu. `histograms_values`
+// is related to enum `GameDashboardMainMenuToggleMethod` with the same order.
+void VerifyToggleMainMenuHistogram(const base::HistogramTester& histograms,
+                                   const std::string& histogram_name,
+                                   const std::vector<int>& histograms_values) {
+  DCHECK_EQ(6u, histograms_values.size());
+  histograms.ExpectBucketCount(
+      histogram_name, GameDashboardMainMenuToggleMethod::kGameDashboardButton,
+      histograms_values[0]);
+  histograms.ExpectBucketCount(histogram_name,
+                               GameDashboardMainMenuToggleMethod::kSearchPlusG,
+                               histograms_values[1]);
+  histograms.ExpectBucketCount(histogram_name,
+                               GameDashboardMainMenuToggleMethod::kEsc,
+                               histograms_values[2]);
+  histograms.ExpectBucketCount(
+      histogram_name, GameDashboardMainMenuToggleMethod::kActivateNewFeature,
+      histograms_values[3]);
+  histograms.ExpectBucketCount(histogram_name,
+                               GameDashboardMainMenuToggleMethod::kOverview,
+                               histograms_values[4]);
+  histograms.ExpectBucketCount(histogram_name,
+                               GameDashboardMainMenuToggleMethod::kOthers,
+                               histograms_values[5]);
+}
 
 // Records the last mouse event for testing.
 class EventCapturer : public ui::EventHandler {
@@ -1618,6 +1646,97 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   ASSERT_EQ(toolbar_widget, test_api_->GetToolbarWidget());
   EXPECT_TRUE(toolbar_widget->IsVisible());
   EXPECT_FALSE(test_api_->GetMainMenuWidget());
+}
+
+TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
+  base::HistogramTester histograms;
+  const std::string histogram_name_on = BuildGameDashboardHistogramName(
+      GameDashboardHistogramCategory::kToggleMainMenu, /*toggled_on=*/true);
+  const std::string histogram_name_off = BuildGameDashboardHistogramName(
+      GameDashboardHistogramCategory::kToggleMainMenu, /*toggled_on=*/false);
+
+  // Toggle on/off main menu by pressing GD button.
+  test_api_->OpenTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0});
+  test_api_->CloseTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_off,
+      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0});
+
+  // Toggle on/off main menu by Search+G.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0});
+  event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_off,
+      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0});
+
+  // Toggle off main menu by key Esc.
+  test_api_->OpenTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{/*kGameDashboardButton=*/2, 1, 0, 0, 0, 0});
+  event_generator->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  // Main menu is closed asynchronously. Run until idle to ensure that this
+  // posted task runs synchronously and completes before proceeding.
+  base::RunLoop().RunUntilIdle();
+  VerifyToggleMainMenuHistogram(histograms, histogram_name_off,
+                                std::vector<int>{1, 1, /*kEsc=*/1, 0, 0, 0});
+
+  // Toggle off main menu by activating a new feature.
+  test_api_->OpenTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{/*kGameDashboardButton=*/3, 1, 0, 0, 0, 0});
+  LeftClickOn(test_api_->GetMainMenuScreenshotTile());
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_off,
+      std::vector<int>{1, 1, 1, /*kActivateNewFeature=*/1, 0, 0});
+
+  // Toggle off main menu by entering overview mode.
+  test_api_->OpenTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{/*kGameDashboardButton=*/4, 1, 0, 0, 0, 0});
+  EnterOverview();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_off,
+      std::vector<int>{1, 1, 1, 1, /*kOverview=*/1, 0});
+  OnOverviewModeEndedWaiter waiter;
+  ExitOverview();
+  waiter.Wait();
+
+  // Toggle off main menu by clicking outside of the main menu.
+  test_api_->OpenTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{/*kGameDashboardButton=*/5, 1, 0, 0, 0, 0});
+  const gfx::Point bottom_center =
+      test_api_->GetMainMenuView()->GetBoundsInScreen().bottom_center();
+  event_generator->MoveMouseTo(
+      gfx::Point(bottom_center.x(), bottom_center.y() + 10));
+  event_generator->ClickLeftButton();
+  // Main menu is closed asynchronously. Run until idle to ensure that this
+  // posted task runs synchronously and completes before proceeding.
+  base::RunLoop().RunUntilIdle();
+  VerifyToggleMainMenuHistogram(histograms, histogram_name_off,
+                                std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/1});
+
+  test_api_->OpenTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{/*kGameDashboardButton=*/6, 1, 0, 0, 0, 0});
+  CloseGameWindow();
+  // Main menu is closed asynchronously. Run until idle to ensure that this
+  // posted task runs synchronously and completes before proceeding.
+  base::RunLoop().RunUntilIdle();
+  VerifyToggleMainMenuHistogram(histograms, histogram_name_off,
+                                std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/2});
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

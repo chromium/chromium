@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -76,10 +77,11 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   void UpdateForGameControlsFlags();
 
   // Toggles the creation/deletion of the main menu within the game window.
-  void ToggleMainMenu();
+  void ToggleMainMenuByAccelerator();
+  void ToggleMainMenu(GameDashboardMainMenuToggleMethod toggle_method);
 
   // Closes the main menu. Clears `main_menu_widget_` and `main_menu_view_`.
-  void CloseMainMenu();
+  void CloseMainMenu(GameDashboardMainMenuToggleMethod toggle_method);
 
   // Toggles the creation/deletion of the toolbar within the game window.
   // Returns the toolbar visibility state.

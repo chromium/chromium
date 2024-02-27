@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
+#include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
@@ -184,7 +185,7 @@ void GameDashboardController::OnOverviewModeWillStart() {
   for (auto const& [_, context] : game_window_contexts_) {
     context->game_dashboard_button_widget()->Hide();
     if (context->main_menu_view()) {
-      context->CloseMainMenu();
+      context->CloseMainMenu(GameDashboardMainMenuToggleMethod::kOverview);
     }
   }
 }

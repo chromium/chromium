@@ -3499,6 +3499,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.GameDashboard.ToggleMainMenu.{OnOrOff}"
+    enum="GameDashboardMainMenuToggleMethod" expires_after="2025-02-22">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <summary>
+    Records the ways of the game dashboard main menu is toggled {OnOrOff}.
+  </summary>
+  <token key="OnOrOff">
+    <variant name="Off" summary="close main menu"/>
+    <variant name="On" summary="open main menu"/>
+  </token>
+</histogram>
+
 <histogram
     name="Ash.Glanceables.Api.Classroom.CourseWorkItemsPerStudentCourseCount"
     units="course work items" expires_after="2024-12-31">

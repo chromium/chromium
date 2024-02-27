@@ -474,7 +474,8 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
   }
 
   void EnableEditMode() {
-    main_menu_->context_->CloseMainMenu();
+    main_menu_->context_->CloseMainMenu(
+        GameDashboardMainMenuToggleMethod::kActivateNewFeature);
 
     auto* game_window = GetGameWindow();
     game_window->SetProperty(
@@ -563,7 +564,8 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kGameDashboardStopRecordingButton);
   } else {
-    context_->CloseMainMenu();
+    context_->CloseMainMenu(
+        GameDashboardMainMenuToggleMethod::kActivateNewFeature);
     // Post a task to start a capture session, after the main menu widget
     // closes. When the main menu opens, `GameDashboardContext` registers
     // `GameDashboardMainMenuCursorHandler` as a pretarget handler to always
@@ -587,7 +589,8 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {
-  context_->CloseMainMenu();
+  context_->CloseMainMenu(
+      GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
       context_->game_window());
 }
@@ -616,7 +619,8 @@ void GameDashboardMainMenuView::UpdateGameControlsTile() {
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
-  context_->CloseMainMenu();
+  context_->CloseMainMenu(
+      GameDashboardMainMenuToggleMethod::kActivateNewFeature);
   GameDashboardController::Get()->ShowResizeToggleMenu(context_->game_window());
 }
 

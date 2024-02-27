@@ -1437,7 +1437,7 @@ void ToggleGameDashboard() {
   DCHECK(window);
   if (auto* context =
           GameDashboardController::Get()->GetGameDashboardContext(window)) {
-    context->ToggleMainMenu();
+    context->ToggleMainMenuByAccelerator();
   }
 }
 

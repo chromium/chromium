@@ -20,6 +20,7 @@
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
@@ -144,7 +145,12 @@ void GameDashboardContext::UpdateForGameControlsFlags() {
   }
 }
 
-void GameDashboardContext::ToggleMainMenu() {
+void GameDashboardContext::ToggleMainMenuByAccelerator() {
+  ToggleMainMenu(GameDashboardMainMenuToggleMethod::kSearchPlusG);
+}
+
+void GameDashboardContext::ToggleMainMenu(
+    GameDashboardMainMenuToggleMethod toggle_method) {
   if (!main_menu_widget_) {
     auto widget_delegate = std::make_unique<GameDashboardMainMenuView>(this);
     DCHECK(!main_menu_view_);
@@ -156,14 +162,16 @@ void GameDashboardContext::ToggleMainMenu() {
     main_menu_widget_->Show();
     game_dashboard_button_->SetToggled(true);
     AddCursorHandler();
+    RecordGameDashboardToggleMainMenu(toggle_method, /*toggled_on=*/true);
   } else {
     DCHECK(main_menu_view_);
     DCHECK(main_menu_widget_);
-    CloseMainMenu();
+    CloseMainMenu(toggle_method);
   }
 }
 
-void GameDashboardContext::CloseMainMenu() {
+void GameDashboardContext::CloseMainMenu(
+    GameDashboardMainMenuToggleMethod toggle_method) {
   DCHECK(main_menu_widget_);
   main_menu_widget_->RemoveObserver(this);
   // Since the `WidgetObserver` has been removed, `OnWidgetDestroyed` will not
@@ -172,6 +180,7 @@ void GameDashboardContext::CloseMainMenu() {
   // `game_dashboard_button_` UI.
   UpdateOnMainMenuClosed();
   main_menu_widget_.reset();
+  RecordGameDashboardToggleMainMenu(toggle_method, /*toggled_on=*/false);
 }
 
 bool GameDashboardContext::ToggleToolbar() {
@@ -269,6 +278,33 @@ void GameDashboardContext::OnWidgetDestroyed(views::Widget* widget) {
   DCHECK(main_menu_view_);
   DCHECK_EQ(widget, main_menu_view_->GetWidget());
   UpdateOnMainMenuClosed();
+
+  // Record main menu toggle off metrics.
+  switch (widget->closed_reason()) {
+    case views::Widget::ClosedReason::kLostFocus:
+      // The main menu is closed explicitly in the overview mode and the
+      // observer is removed before this event.
+      DCHECK(!OverviewController::Get()->InOverviewSession());
+      // Close reason for clicking outside or closing game window by clicking
+      // close button on the caption.
+      RecordGameDashboardToggleMainMenu(
+          GameDashboardMainMenuToggleMethod::kOthers,
+          /*toggled_on=*/false);
+      break;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      // Close reason for key Esc pressed.
+      RecordGameDashboardToggleMainMenu(GameDashboardMainMenuToggleMethod::kEsc,
+                                        /*toggled_on=*/false);
+      break;
+    case views::Widget::ClosedReason::kUnspecified:
+      // Close reason when the game window is closed unspecified.
+      RecordGameDashboardToggleMainMenu(
+          GameDashboardMainMenuToggleMethod::kOthers,
+          /*toggled_on=*/false);
+      break;
+    default:
+      break;
+  }
 }
 
 void GameDashboardContext::AddCursorHandler() {
@@ -329,7 +365,7 @@ void GameDashboardContext::OnGameDashboardButtonPressed() {
   // physically pressed.
   // Close the welcome dialog if it's open when a user opens the main menu view.
   CloseWelcomeDialog();
-  ToggleMainMenu();
+  ToggleMainMenu(GameDashboardMainMenuToggleMethod::kGameDashboardButton);
 }
 
 void GameDashboardContext::MaybeShowWelcomeDialog() {
