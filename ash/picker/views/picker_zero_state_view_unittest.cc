@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "ash/picker/picker_test_util.h"
+#include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
@@ -29,6 +31,7 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::Not;
+using ::testing::Property;
 
 constexpr int kPickerWidth = 320;
 
@@ -66,6 +69,22 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   LeftClickOn(*category_view);
 
   EXPECT_EQ(future.Get(), PickerCategory::kEmojis);
+}
+
+TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->SetFullscreen(true);
+  base::test::TestFuture<PickerCategory> future;
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      kPickerWidth, future.GetRepeatingCallback()));
+  widget->Show();
+
+  auto* caps_nudge_view = view->CapsNudgeViewForTesting();
+  EXPECT_THAT(caps_nudge_view, Property(&views::View::GetVisible, true));
+
+  LeftClickOn(*caps_nudge_view->GetOkButtonForTesting());
+
+  EXPECT_EQ(caps_nudge_view->parent(), nullptr);
 }
 
 }  // namespace

@@ -41,7 +41,8 @@ constexpr int kPaddingBetweenItems = 8;
 
 }  // namespace
 
-PickerCapsNudgeView::PickerCapsNudgeView() {
+PickerCapsNudgeView::PickerCapsNudgeView(
+    views::Button::PressedCallback hide_callback) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -99,12 +100,13 @@ PickerCapsNudgeView::PickerCapsNudgeView() {
                                      cros_tokens::kCrosSysSecondary));
 
   // RHS - OK pill button.
-  AddChildView(
+  ok_button_ = AddChildView(
       views::Builder<ash::PillButton>()
           .SetText(u"OK")
           .SetBorder(views::CreateEmptyBorder(
               gfx::Insets::TLBR(0, kPaddingBetweenItems, 0, 0)))
           .SetPillButtonType(ash::PillButton::Type::kDefaultElevatedWithoutIcon)
+          .SetCallback(std::move(hide_callback))
           .Build());
 
   SetBorder(views::CreateEmptyBorder(

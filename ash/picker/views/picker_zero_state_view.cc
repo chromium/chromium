@@ -35,7 +35,9 @@ PickerZeroStateView::PickerZeroStateView(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  AddChildView(std::make_unique<PickerCapsNudgeView>());
+  caps_nudge_view_ =
+      AddChildView(std::make_unique<PickerCapsNudgeView>(base::BindRepeating(
+          &PickerZeroStateView::ClearCapsNudge, base::Unretained(this))));
 
   section_list_view_ =
       AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
@@ -129,6 +131,10 @@ PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
       GetSectionTitleForPickerCategoryType(category_type));
   section_views_.insert({category_type, section_view});
   return section_view;
+}
+
+void PickerZeroStateView::ClearCapsNudge() {
+  RemoveChildView(caps_nudge_view_);
 }
 
 void PickerZeroStateView::SetPseudoFocusedItem(PickerItemView* item) {
