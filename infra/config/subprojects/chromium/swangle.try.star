@@ -53,7 +53,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-chromium-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -72,7 +72,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-chromium-x64-exp",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -90,7 +90,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-tot-swiftshader-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/linux-swangle-tot-swiftshader-x64",
@@ -103,7 +103,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/linux-swangle-x64",
@@ -116,7 +116,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-x64-exp",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/linux-swangle-x64-exp",
@@ -129,7 +129,7 @@ swangle_mac_builder(
     mirrors = [
         "ci/mac-swangle-chromium-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -148,7 +148,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-chromium-x86",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -166,7 +166,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-tot-swiftshader-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/win-swangle-tot-swiftshader-x64",
@@ -178,7 +178,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-tot-swiftshader-x86",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -196,7 +196,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/win-swangle-x64",
@@ -209,7 +209,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-x86",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(

@@ -986,7 +986,7 @@ try_.builder(
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -1079,7 +1079,7 @@ try_.builder(
     mirrors = [
         "ci/Android arm64 Builder All Targets (dbg)",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -1113,7 +1113,7 @@ try_.builder(
     mirrors = [
         "ci/Android x64 Builder All Targets (dbg)",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -1162,7 +1162,7 @@ try_.builder(
     mirrors = [
         "ci/Android x86 Builder (dbg)",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -1198,7 +1198,7 @@ try_.builder(
     mirrors = [
         "ci/android-cronet-arm-rel",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
     gn_args = gn_args.config(
@@ -1239,7 +1239,7 @@ try_.gpu.optional_tests_builder(
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -1296,7 +1296,7 @@ try_.gpu.optional_tests_builder(
         "ci/GPU FYI Android arm64 Builder",
         "ci/Android FYI Release (Pixel 6)",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/GPU FYI Android arm64 Builder",

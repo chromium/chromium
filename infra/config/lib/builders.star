@@ -451,7 +451,7 @@ def builder(
         builder_group = args.DEFAULT,
         builder_spec = None,
         mirrors = None,
-        try_settings = None,
+        builder_config_settings = None,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
         sheriff_rotations = None,
@@ -589,8 +589,9 @@ def builder(
             Cannot be set if `mirrors` is set.
         mirrors: References to the builders that the builder should mirror.
             Cannot be set if `builder_spec` is set.
-        try_settings: Try-builder-specific settings, can only be set if
-            `mirrors` is set.
+        builder_config_settings: Additional builder configuration that used by
+            the recipes. Could be an instance of ci_settings or try_settings.
+            It can only be set if one of builder_spec or mirrors is set.
         pool: a string indicating the pool of the machines that run the builder.
             Emits a dimension of the form 'pool:<pool>'. By default, considered
             None. When running a builder that has no explicit pool dimension,
@@ -761,8 +762,9 @@ def builder(
 
     if builder_spec and mirrors:
         fail("Only one of builder_spec or mirrors can be set")
-    if try_settings and not (builder_spec or mirrors):
-        fail("try_settings can only be set if builder_spec or mirrors is set")
+    if builder_config_settings and not (builder_spec or mirrors):
+        fail("builder_config_settings can only be set if builder_spec or " +
+             "mirrors is set")
 
     dimensions = {}
 
@@ -1040,7 +1042,7 @@ def builder(
         builder_group,
         builder_spec,
         mirrors,
-        try_settings,
+        builder_config_settings,
         targets,
         additional_exclusions,
     )

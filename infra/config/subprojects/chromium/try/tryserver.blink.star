@@ -54,7 +54,7 @@ try_.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -81,7 +81,7 @@ Runs <a href="https://web-platform-tests.org">web platform tests</a> against
 Chrome.\
 """,
     mirrors = ["ci/linux-wpt-chromium-rel"],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = "ci/linux-wpt-chromium-rel",
@@ -108,7 +108,7 @@ try_.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -141,7 +141,7 @@ try_.builder(
             target_platform = builder_config.target_platform.WIN,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
@@ -174,7 +174,7 @@ try_.builder(
             target_platform = builder_config.target_platform.WIN,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
@@ -206,7 +206,7 @@ blink_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
@@ -235,7 +235,7 @@ blink_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
@@ -266,7 +266,7 @@ blink_mac_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
@@ -296,7 +296,7 @@ blink_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -325,7 +325,7 @@ blink_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
@@ -355,7 +355,7 @@ blink_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -384,7 +384,7 @@ blink_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
@@ -414,7 +414,7 @@ blink_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
     gn_args = gn_args.config(

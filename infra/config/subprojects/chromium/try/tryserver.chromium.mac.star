@@ -453,7 +453,7 @@ try_.builder(
     mirrors = [
         "ci/Mac Builder (dbg)",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -476,7 +476,7 @@ try_.builder(
     mirrors = [
         "ci/Mac Builder",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),

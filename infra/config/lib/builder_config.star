@@ -315,6 +315,23 @@ def _builder_spec(
         bisect_archive = bisect_archive,
     )
 
+def _ci_settings(
+        *,
+        retry_failed_shards = None):
+    """Settings specific to CI builders.
+
+    Args:
+        retry_failed_shards: (bool) Whether or not failing shards of a test will
+            be retried. If retries for all failed shards of a test succeed, the
+            test will be considered to have passed.
+
+    Returns:
+        A struct that can be passed to the `ci_settings` argument of the builder.
+    """
+    return struct(
+        retry_failed_shards = retry_failed_shards,
+    )
+
 def _try_settings(
         *,
         include_all_triggered_testers = False,
@@ -403,6 +420,7 @@ builder_config = struct(
     android_config = _android_config,
 
     # Function for defining try-specific settings
+    ci_settings = _ci_settings,
     try_settings = _try_settings,
 )
 
@@ -436,7 +454,7 @@ def register_builder_config(
         builder_group,
         builder_spec,
         mirrors,
-        try_settings,
+        settings,
         targets,
         additional_exclusions):
     """Registers the builder config so the properties can be computed.
@@ -450,15 +468,16 @@ def register_builder_config(
         builder_group: The name of the group the builder belongs to.
         builder_spec: The spec describing the configuration for the builder.
         mirrors: References to the builders that the builder should mirror.
-        try_settings: The object determining the try-specific settings.
+        settings: The object determining the additional settings applied to
+            builder_config.
         targets: The targets to be built/run by the builder.
         additional_exclusions: A list of paths that are excluded when analyzing
             the change to determine affected targets. The paths should be
             relative to the per-builder output root dir.
     """
     if not builder_spec and not mirrors:
-        if try_settings:
-            fail("try_settings specified without builder_spec or mirrors")
+        if settings:
+            fail("settings specified without builder_spec or mirrors")
 
         # TODO(gbeaty) Eventually make this a failure for the chromium
         # family of recipes
@@ -471,13 +490,23 @@ def register_builder_config(
     if targets and not builder_spec:
         fail("builder_spec must be set to set targets")
 
-    if not try_settings:
-        try_settings = _try_settings(include_all_triggered_testers = not mirrors)
+    include_all_triggered_testers = None
+    settings_fields = {}
+    if settings:
+        settings_fields = structs.to_proto_properties(settings)
+        include_all_triggered_testers = settings_fields.pop(
+            "include_all_triggered_testers",
+            None,
+        )
+    if include_all_triggered_testers == None:
+        include_all_triggered_testers = not mirrors
+
     builder_config_key = _BUILDER_CONFIG.add(bucket, name, props = dict(
         builder_group = builder_group,
         builder_spec = builder_spec,
         mirrors = mirrors,
-        try_settings = try_settings,
+        include_all_triggered_testers = include_all_triggered_testers,
+        settings_fields = settings_fields,
         additional_exclusions = additional_exclusions,
     ))
 
@@ -531,7 +560,7 @@ def _get_mirroring_builders(bc_state, node):
     parent = bc_state.parent(node)
     if parent:
         for m in _get_mirroring_nodes(bc_state, parent):
-            if m.props.try_settings.include_all_triggered_testers:
+            if m.props.include_all_triggered_testers:
                 nodes.append(m)
 
     return nodes
@@ -726,7 +755,7 @@ def _set_builder_config_property(ctx):
                     if parent:
                         add(parent)
                     add(m, parent)
-                    if node.props.try_settings.include_all_triggered_testers:
+                    if node.props.include_all_triggered_testers:
                         for child in bc_state.children(m):
                             add(child, m)
 
@@ -747,7 +776,7 @@ def _set_builder_config_property(ctx):
                     entries = sorted(entries, key = lambda e: _builder_id_sort_key(e["builder_id"])),
                 ),
                 builder_ids = sorted(builder_ids, key = _builder_id_sort_key),
-                **structs.to_proto_properties(node.props.try_settings)
+                **node.props.settings_fields
             )
             if node.props.additional_exclusions:
                 builder_config["additional_exclusions"] = [
@@ -757,7 +786,6 @@ def _set_builder_config_property(ctx):
                     )
                     for exclusion in node.props.additional_exclusions
                 ]
-            builder_config.pop("include_all_triggered_testers", None)
 
             if builder_ids_in_scope_for_testing:
                 builder_config["builder_ids_in_scope_for_testing"] = (

@@ -46,7 +46,7 @@ angle_ios_builder(
         "ci/ios-angle-builder",
         "ci/ios-angle-intel",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(

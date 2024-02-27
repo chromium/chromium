@@ -158,7 +158,7 @@ try_.builder(
     mirrors = [
         "ci/linux-archive-rel",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -595,7 +595,7 @@ This builder shadows linux_chromium_asan_rel_ng builder to compare between Siso 
 This builder should be removed after migrating linux_chromium_asan_rel_ng from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/linux_chromium_asan_rel_ng"),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
     gn_args = "try/linux_chromium_asan_rel_ng",
@@ -706,7 +706,7 @@ try_.builder(
     name = "linux_chromium_compile_dbg_ng",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = ["ci/Linux Builder (dbg)"],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -741,7 +741,7 @@ This builder shadows linux_chromium_compile_dbg_ng builder to compare between Si
 This builder should be removed after migrating linux_chromium_compile_dbg_ng from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/linux_chromium_compile_dbg_ng"),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -767,7 +767,7 @@ try_.builder(
     mirrors = [
         "ci/Linux Builder",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
@@ -870,7 +870,7 @@ This builder shadows linux_chromium_tsan_rel_ng builder to compare between Siso 
 This builder should be removed after migrating linux_chromium_tsan_rel_ng from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/linux_chromium_tsan_rel_ng"),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
     gn_args = "try/linux_chromium_tsan_rel_ng",
@@ -1010,7 +1010,7 @@ try_.gpu.optional_tests_builder(
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(

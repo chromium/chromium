@@ -38,7 +38,7 @@ rules {
         arg: "builder_group"
         arg: "builder_spec"
         arg: "mirrors"
-        arg: "try_settings"
+        arg: "builder_config_settings"
         arg: "gn_args"
         arg: "targets"
         arg: "pool"

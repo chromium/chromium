@@ -418,7 +418,7 @@ try_.builder(
     mirrors = [
         "ci/linux-chromeos-dbg",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
