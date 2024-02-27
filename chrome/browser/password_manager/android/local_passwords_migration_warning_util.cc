@@ -134,12 +134,16 @@ void MaybeShowPostMigrationSheet(const gfx::NativeWindow window,
   if (!window) {
     return;
   }
+  if (!profile) {
+    return;
+  }
   if (!ShouldShowPostMigrationSheet(profile)) {
     return;
   }
 
   Java_PasswordMigrationWarningBridge_maybeShowPostMigrationSheet(
-      AttachCurrentThread(), window->GetJavaObject());
+      AttachCurrentThread(), window->GetJavaObject(),
+      ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }
 
 bool ShouldShowPostMigrationSheet(Profile* profile) {

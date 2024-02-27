@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.pwd_migration;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.VISIBLE;
@@ -19,28 +24,39 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link PostPasswordMigrationSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PostPasswordMigrationSheetMediatorTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    private PostPasswordMigrationSheetMediator mMediator = new PostPasswordMigrationSheetMediator();
+    private final PostPasswordMigrationSheetMediator mMediator =
+            new PostPasswordMigrationSheetMediator();
 
-    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Profile mProfile;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private PrefService mPrefService;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        when(mUserPrefsJni.get(eq(mProfile))).thenReturn(mPrefService);
         mMediator.initialize(
+                mProfile,
                 PostPasswordMigrationSheetProperties.createDefaultModel(mMediator::onDismissed));
     }
 
@@ -70,5 +86,29 @@ public class PostPasswordMigrationSheetMediatorTest {
         assertTrue(model.get(VISIBLE));
         model.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
         assertFalse(model.get(VISIBLE));
+    }
+
+    @Test
+    public void testOnDismissedChangesThePref() {
+        PropertyModel model = mMediator.getModel();
+        mMediator.showSheet();
+        assertTrue(model.get(VISIBLE));
+        mMediator.onDismissed(StateChangeReason.SWIPE);
+        assertFalse(model.get(VISIBLE));
+        verify(mPrefService)
+                .setBoolean(
+                        eq(Pref.SHOULD_SHOW_POST_PASSWORD_MIGRATION_SHEET_AT_STARTUP), eq(false));
+    }
+
+    @Test
+    public void testOnDismissedDoesNotChangeThePrefIfSheetWasNotShown() {
+        PropertyModel model = mMediator.getModel();
+        assertFalse(model.get(VISIBLE));
+        mMediator.onDismissed(StateChangeReason.NONE);
+        assertFalse(model.get(VISIBLE));
+        verify(mPrefService, times(0))
+                .setBoolean(
+                        eq(Pref.SHOULD_SHOW_POST_PASSWORD_MIGRATION_SHEET_AT_STARTUP),
+                        anyBoolean());
     }
 }

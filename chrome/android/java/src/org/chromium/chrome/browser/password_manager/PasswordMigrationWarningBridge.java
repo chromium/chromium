@@ -75,10 +75,11 @@ class PasswordMigrationWarningBridge {
     }
 
     @CalledByNative
-    static void maybeShowPostMigrationSheet(WindowAndroid windowAndroid) {
+    static void maybeShowPostMigrationSheet(WindowAndroid windowAndroid, Profile profile) {
         PostPasswordMigrationSheetCoordinator postMigrationSheet =
                 PostPasswordMigrationSheetCoordinatorFactory
-                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(windowAndroid);
+                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
+                                windowAndroid, profile);
         if (postMigrationSheet == null) return;
         postMigrationSheet.showSheet();
     }

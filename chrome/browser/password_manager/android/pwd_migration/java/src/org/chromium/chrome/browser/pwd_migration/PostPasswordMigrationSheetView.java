@@ -53,7 +53,9 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
 
                 @Override
                 public void onSheetStateChanged(int newState, int reason) {
-                    if (newState != BottomSheetController.SheetState.HIDDEN) return;
+                    if (newState != BottomSheetController.SheetState.HIDDEN) {
+                        return;
+                    }
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
                     mDismissHandler.onResult(StateChangeReason.NONE);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -90,7 +92,7 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
 
     void setVisible(boolean isVisible) {
         if (!isVisible) {
-            mBottomSheetController.hideContent(this, true);
+            mBottomSheetController.hideContent(this, true, StateChangeReason.NAVIGATION);
             return;
         }
         mBottomSheetController.addObserver(mBottomSheetObserver);

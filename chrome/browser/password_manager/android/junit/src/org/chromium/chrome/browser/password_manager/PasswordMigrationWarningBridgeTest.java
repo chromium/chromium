@@ -19,6 +19,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinator;
 import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinatorFactory;
 import org.chromium.ui.base.WindowAndroid;
@@ -31,8 +32,8 @@ public class PasswordMigrationWarningBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private WindowAndroid mWindowAndroid;
-
     @Mock private PostPasswordMigrationSheetCoordinator mPostPasswordMigrationSheetCoordinator;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
@@ -48,7 +49,7 @@ public class PasswordMigrationWarningBridgeTest {
 
     @Test
     public void showPostPasswordMigrationSheetCreatesTheCoordinator() {
-        PasswordMigrationWarningBridge.maybeShowPostMigrationSheet(mWindowAndroid);
+        PasswordMigrationWarningBridge.maybeShowPostMigrationSheet(mWindowAndroid, mProfile);
         verify(mPostPasswordMigrationSheetCoordinator).showSheet();
     }
 }

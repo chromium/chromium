@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -33,6 +34,7 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Profile mProfile;
 
     private PostPasswordMigrationSheetCoordinator mPostPasswordMigrationSheetCoordinator;
 
@@ -43,7 +45,8 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
         WeakReference<Context> weakContext = new WeakReference<Context>(context);
         when(mWindowAndroid.getContext()).thenReturn(weakContext);
         mPostPasswordMigrationSheetCoordinator =
-                new PostPasswordMigrationSheetCoordinator(context, mBottomSheetController);
+                new PostPasswordMigrationSheetCoordinator(
+                        context, mBottomSheetController, mProfile);
     }
 
     @After
@@ -56,7 +59,8 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         assertNull(
                 PostPasswordMigrationSheetCoordinatorFactory
-                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(mWindowAndroid));
+                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
+                                mWindowAndroid, mProfile));
     }
 
     @Test
@@ -64,7 +68,8 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(null));
         assertNull(
                 PostPasswordMigrationSheetCoordinatorFactory
-                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(mWindowAndroid));
+                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
+                                mWindowAndroid, mProfile));
     }
 
     @Test
@@ -73,7 +78,8 @@ public class PostPasswordMigrationSheetCoordinatorFactoryTest {
                 mPostPasswordMigrationSheetCoordinator);
         assertEquals(
                 PostPasswordMigrationSheetCoordinatorFactory
-                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(mWindowAndroid),
+                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
+                                mWindowAndroid, mProfile),
                 mPostPasswordMigrationSheetCoordinator);
     }
 }

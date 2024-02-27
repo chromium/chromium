@@ -40,6 +40,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -106,7 +107,7 @@ public class PostPasswordMigrationSheetViewTest {
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
 
         // The dismiss callback was called.
-        verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);
+        verify(mDismissCallback).onResult(StateChangeReason.NAVIGATION);
     }
 
     @Test
@@ -120,7 +121,7 @@ public class PostPasswordMigrationSheetViewTest {
         onView(withId(R.id.acknowledge_button)).perform(click());
 
         // The dismiss callback was called.
-        verify(mDismissCallback).onResult(BottomSheetController.StateChangeReason.NONE);
+        verify(mDismissCallback).onResult(StateChangeReason.NAVIGATION);
     }
 
     @Test
