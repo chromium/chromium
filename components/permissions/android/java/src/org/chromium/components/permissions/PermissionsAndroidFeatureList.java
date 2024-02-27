@@ -16,6 +16,4 @@ public abstract class PermissionsAndroidFeatureList {
     public static final String BLOCK_MIDI_BY_DEFAULT = "BlockMidiByDefault";
 
     public static final String ONE_TIME_PERMISSION = "OneTimePermission";
-
-    public static final String PERMISSION_STORAGE_ACCESS = "PermissionStorageAccessAPI";
 }

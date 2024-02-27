@@ -152,7 +152,6 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     // TODO(crbug.com/1344787): Fix tests and enable the feature.
     scoped_feature_list_.InitWithFeatures(
         {
-            permissions::features::kPermissionStorageAccessAPI,
 #if !BUILDFLAG(IS_ANDROID)
             features::kFileSystemAccessPersistentPermissions,
 #endif

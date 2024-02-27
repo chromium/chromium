@@ -2888,11 +2888,6 @@ const char kPermissionQuietChipDescription[] =
     "right-hand side address bar icon for quiet permission prompts. Requires "
     "chrome://flags/#quiet-notification-prompts to be enabled.";
 
-const char kPermissionStorageAccessAPIName[] =
-    "Storage Access API permission UI";
-const char kPermissionStorageAccessAPIDescription[] =
-    "Enables the new Storage Access API permission UI on Desktop";
-
 const char kShowRelatedWebsiteSetsPermissionGrantsName[] =
     "Show permission grants from Related Website Sets";
 const char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =

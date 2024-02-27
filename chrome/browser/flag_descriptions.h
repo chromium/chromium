@@ -1666,9 +1666,6 @@ extern const char kPermissionPredictionsDescription[];
 extern const char kPermissionQuietChipName[];
 extern const char kPermissionQuietChipDescription[];
 
-extern const char kPermissionStorageAccessAPIName[];
-extern const char kPermissionStorageAccessAPIDescription[];
-
 extern const char kShowRelatedWebsiteSetsPermissionGrantsName[];
 extern const char kShowRelatedWebsiteSetsPermissionGrantsDescription[];
 

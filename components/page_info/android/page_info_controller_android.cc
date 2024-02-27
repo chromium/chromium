@@ -147,10 +147,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     permissions_to_display.push_back(
         ContentSettingsType::FEDERATED_IDENTITY_API);
   }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionStorageAccessAPI)) {
     permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
-  }
 
   std::map<ContentSettingsType, ContentSetting>
       user_specified_settings_to_display;

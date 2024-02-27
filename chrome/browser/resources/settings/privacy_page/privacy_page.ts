@@ -188,12 +188,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
       },
 
-      enablePermissionStorageAccessApi_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
-      },
-
       autoPictureInPictureEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
@@ -354,7 +348,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
-  private enablePermissionStorageAccessApi_: boolean;
   private enableSafetyHub_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;

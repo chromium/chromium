@@ -16,8 +16,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
-import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -99,11 +97,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.VR:
                 return WebsitePermissionsType.PERMISSION_INFO;
             case ContentSettingsType.STORAGE_ACCESS:
-                if (PermissionsAndroidFeatureMap.isEnabled(
-                        PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS)) {
                     return WebsitePermissionsType.EMBEDDED_PERMISSION;
-                }
-                return null;
             case ContentSettingsType.BLUETOOTH_GUARD:
             case ContentSettingsType.USB_GUARD:
                 return WebsitePermissionsType.CHOSEN_OBJECT_INFO;

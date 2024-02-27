@@ -126,8 +126,6 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       break;
     case RequestType::kStorageAccess:
       // The SA prompt does not currently bold any part of its message.
-      if (base::FeatureList::IsEnabled(
-              permissions::features::kPermissionStorageAccessAPI)) {
         return AnnotatedMessageText(
             l10n_util::GetStringFUTF16(
                 IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
@@ -139,12 +137,6 @@ PermissionRequest::GetDialogAnnotatedMessageText(
                     requesting_origin_string_formatted,
                     embedding_origin_string_formatted)),
             /*bolded_ranges=*/{});
-      }
-      return AnnotatedMessageText(
-          l10n_util::GetStringFUTF16(IDS_STORAGE_ACCESS_INFOBAR_TEXT,
-                                     requesting_origin_string_formatted,
-                                     embedding_origin_string_formatted),
-          /*bolded_ranges=*/{});
     case RequestType::kTopLevelStorageAccess:
       NOTREACHED();
       break;
@@ -352,9 +344,7 @@ std::optional<std::u16string> PermissionRequest::GetAllowAlwaysText() const {
 }
 
 bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
-  return request_type() == RequestType::kStorageAccess &&
-         base::FeatureList::IsEnabled(
-             permissions::features::kPermissionStorageAccessAPI);
+  return request_type() == RequestType::kStorageAccess;
 }
 
 void PermissionRequest::PermissionGranted(bool is_one_time) {

@@ -64,10 +64,7 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER;
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
-      return base::FeatureList::IsEnabled(
-                 permissions::features::kPermissionStorageAccessAPI)
-                 ? IDR_ANDROID_STORAGE_ACCESS
-                 : IDR_ANDROID_INFOBAR_PERMISSION_COOKIE;
+      return IDR_ANDROID_STORAGE_ACCESS;
   }
   NOTREACHED();
   return 0;
@@ -139,12 +136,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
-      if (base::FeatureList::IsEnabled(
-              permissions::features::kPermissionStorageAccessAPI)) {
-        return vector_icons::kStorageAccessIcon;
-      }
-      return cr23 ? vector_icons::kCookieChromeRefreshIcon
-                  : vector_icons::kCookieIcon;
+      return vector_icons::kStorageAccessIcon;
     case RequestType::kWindowManagement:
       return cr23 ? vector_icons::kSelectWindowChromeRefreshIcon
                   : vector_icons::kSelectWindowIcon;

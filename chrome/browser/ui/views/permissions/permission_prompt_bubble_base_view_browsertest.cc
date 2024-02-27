@@ -98,11 +98,6 @@ class TestQuietNotificationPermissionUiSelector
 
 class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
  public:
-  PermissionPromptBubbleBaseViewBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {}, {permissions::features::kPermissionStorageAccessAPI});
-  }
-
   // DialogBrowserTest:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -399,35 +394,8 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-// Test fixture to test the Storage Access prompt with the new Google UI.
-//
-// We have created a new test fixture for the new Google UI so we can have a
-// test for the new and old prompt UI and avoid adding unnecessary Gold images.
-// If were to add a new parameter to |PermissionPromptBubbleBaseViewBrowserTest|
-// to toggle the PermissionStorageAccessAPI, we would have to add extra Gold
-// images for each of the other eleven tests, even though this flag only affects
-// the Storage Access prompt.
-class StorageAccessEnabledPermissionPromptBubbleViewBrowserTest
-    : public PermissionPromptBubbleBaseViewBrowserTest {
- public:
-  StorageAccessEnabledPermissionPromptBubbleViewBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {permissions::features::kPermissionStorageAccessAPI}, {});
-  }
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Host wants to access storage from the site in which it's embedded. Prompt
-// with new Google UI.
-IN_PROC_BROWSER_TEST_F(
-    StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
-    InvokeUi_storage_access) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    StorageAccessEnabledPermissionPromptBubbleViewBrowserTest,
-    OpenHelpCenterLinkInNewTab) {
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
+                       OpenHelpCenterLinkInNewTab) {
   ShowUi("storage_access");
 
   // Get link widget from the prompt.

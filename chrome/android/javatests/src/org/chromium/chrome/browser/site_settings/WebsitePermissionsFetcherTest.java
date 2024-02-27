@@ -33,7 +33,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -59,7 +58,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -1471,7 +1469,6 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
     public void testIncognitoFetching() throws TimeoutException {
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
@@ -1513,7 +1510,6 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
     public void testFetchAllSites() {
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(UNUSED_BROWSER_CONTEXT_HANDLE);
@@ -1612,7 +1608,6 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_STORAGE_ACCESS})
     @UseMethodParameter(EmbargoedParams.class)
     public void testFetchPreferencesForCategoryEmbeddedPermissionTypes(boolean isEmbargoed) {
         WebsitePermissionsFetcher fetcher =

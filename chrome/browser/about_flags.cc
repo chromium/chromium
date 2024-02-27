@@ -10139,12 +10139,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "WebAuthenticationAndroidCredMan")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"permission-storage-access-api",
-     flag_descriptions::kPermissionStorageAccessAPIName,
-     flag_descriptions::kPermissionStorageAccessAPIDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(permissions::features::kPermissionStorageAccessAPI)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-extended-keyboard-shortcuts",
      flag_descriptions::kAndroidExtendedKeyboardShortcutsName,

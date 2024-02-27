@@ -138,11 +138,8 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS =
       r.SITE_SETTINGS_FILE_SYSTEM_WRITE.createChild('siteDetails');
   r.SITE_SETTINGS_LOCAL_FONTS = r.SITE_SETTINGS.createChild('localFonts');
+  r.SITE_SETTINGS_STORAGE_ACCESS = r.SITE_SETTINGS.createChild('storageAccess');
 
-  if (loadTimeData.getBoolean('enablePermissionStorageAccessApi')) {
-    r.SITE_SETTINGS_STORAGE_ACCESS =
-        r.SITE_SETTINGS.createChild('storageAccess');
-  }
   if (loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting')) {
     r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
         r.SITE_SETTINGS.createChild('automaticFullscreen');

@@ -551,11 +551,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
 
   html_source->AddBoolean(
-      "enablePermissionStorageAccessApi",
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionStorageAccessAPI));
-
-  html_source->AddBoolean(
       "autoPictureInPictureEnabled",
       base::FeatureList::IsEnabled(
           blink::features::kMediaSessionEnterPictureInPicture));

@@ -1337,12 +1337,6 @@ void PageInfo::PresentSitePermissions() {
   }
 
   for (ContentSettingsType type : kTwoPatternPermissions) {
-    if (type == ContentSettingsType::STORAGE_ACCESS &&
-        !base::FeatureList::IsEnabled(
-            permissions::features::kPermissionStorageAccessAPI)) {
-      continue;
-    }
-
     for (auto& requester : GetTwoSitePermissionRequesters(type)) {
       PermissionInfo permission_info;
       permission_info.type = type;

@@ -22,7 +22,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidApproximateLocationPermissionSupport,
     &::features::kBlockMidiByDefault,
     &features::kOneTimePermission,
-    &features::kPermissionStorageAccessAPI,
 };
 
 // static

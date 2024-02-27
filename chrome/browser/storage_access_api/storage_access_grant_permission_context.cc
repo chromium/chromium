@@ -53,14 +53,6 @@ static int implicit_grant_limit = 0;
 constexpr base::TimeDelta kStorageAccessAPITopLevelUserInteractionBound =
     base::Days(30);
 
-// `kPermissionStorageAccessAPI` enables StorageAccessAPIwithPrompts
-// (https://chromestatus.com/feature/5085655327047680), which should not
-// auto-deny if FPS is irrelevant.
-bool ShouldAutoDenyOutsideFPS() {
-  return !base::FeatureList::IsEnabled(
-      permissions::features::kPermissionStorageAccessAPI);
-}
-
 // Returns true if the request wasn't answered by the user explicitly.
 bool IsImplicitOutcome(RequestOutcome outcome) {
   switch (outcome) {
@@ -342,14 +334,6 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
       case net::SiteType::kService:
         break;
     }
-  }
-  if (ShouldAutoDenyOutsideFPS()) {
-    NotifyPermissionSetInternal(request_data.id, request_data.requesting_origin,
-                                request_data.embedding_origin,
-                                std::move(callback),
-                                /*persist=*/true, CONTENT_SETTING_BLOCK,
-                                RequestOutcome::kDeniedByFirstPartySet);
-    return;
   }
 
   // Get all of our implicit grants and see which ones apply to our

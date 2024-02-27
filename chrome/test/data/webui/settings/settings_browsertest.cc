@@ -884,11 +884,12 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
  protected:
   SettingsPrivacyPageTest() {
     scoped_feature_list1_.InitWithFeatures(
-        {permissions::features::kPermissionStorageAccessAPI,
+        {
 #if BUILDFLAG(IS_CHROMEOS)
-         blink::features::kWebPrinting,
+            blink::features::kWebPrinting,
 #endif
-         features::kSafetyCheckNotificationPermissions, features::kSafetyHub},
+            features::kSafetyCheckNotificationPermissions,
+            features::kSafetyHub},
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
         features::kFedCm, {
@@ -1303,7 +1304,6 @@ class SettingsSiteSettingsPageTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {
             content_settings::features::kSafetyCheckUnusedSitePermissions,
-            permissions::features::kPermissionStorageAccessAPI,
             features::kAutomaticFullscreenContentSetting,
             features::kSafetyHub,
         },
@@ -1355,12 +1355,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        UnusedSitePermissionsReviewSafetyHubDisabled) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('UnusedSitePermissionsReviewSafetyHubDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
-                       PermissionStorageAccessApiDisabled) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('PermissionStorageAccessApiDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SafetyHubDisabled) {

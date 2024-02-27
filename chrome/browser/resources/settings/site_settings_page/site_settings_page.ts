@@ -339,8 +339,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:storage-access',
       enabledLabel: 'storageAccessAllowed',
       disabledLabel: 'storageAccessBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
     },
     {
       route: routes.SITE_SETTINGS_USB_DEVICES,
@@ -449,45 +447,36 @@ export class SettingsSiteSettingsPageElement extends
       lists_: {
         type: Object,
         value: function() {
-          // Move `BACKGROUND_SYNC` to the sixth position under the fold if
-          // `STORAGE_ACCESS` is present.
-          const enablePermissionStorageAccessApi =
-              loadTimeData.getBoolean('enablePermissionStorageAccessApi');
-          const basic = enablePermissionStorageAccessApi ? Id.STORAGE_ACCESS :
-                                                           Id.BACKGROUND_SYNC;
-          const advanced: ContentSettingsTypes[] =
-              enablePermissionStorageAccessApi ? [Id.BACKGROUND_SYNC] : [];
-
           return {
             permissionsBasic: buildItemListFromIds([
               Id.GEOLOCATION,
               Id.CAMERA,
               Id.MIC,
               Id.NOTIFICATIONS,
-              basic,
+              Id.STORAGE_ACCESS,
             ]),
             permissionsAdvanced: buildItemListFromIds([
-              ...advanced,
-              ...[Id.SENSORS,
-                  Id.AUTOMATIC_DOWNLOADS,
-                  Id.PROTOCOL_HANDLERS,
-                  Id.MIDI_DEVICES,
-                  Id.USB_DEVICES,
-                  Id.SERIAL_PORTS,
-                  Id.BLUETOOTH_DEVICES,
-                  Id.FILE_SYSTEM_WRITE,
-                  Id.HID_DEVICES,
-                  Id.CLIPBOARD,
-                  Id.PAYMENT_HANDLER,
-                  Id.BLUETOOTH_SCANNING,
-                  Id.AR,
-                  Id.VR,
-                  Id.IDLE_DETECTION,
-                  Id.WEB_PRINTING,
-                  Id.WINDOW_MANAGEMENT,
-                  Id.LOCAL_FONTS,
-                  Id.AUTO_PICTURE_IN_PICTURE,
-          ],
+              Id.BACKGROUND_SYNC,
+              Id.SENSORS,
+              Id.AUTOMATIC_DOWNLOADS,
+              Id.PROTOCOL_HANDLERS,
+              Id.MIDI_DEVICES,
+              Id.USB_DEVICES,
+              Id.SERIAL_PORTS,
+              Id.BLUETOOTH_DEVICES,
+              Id.FILE_SYSTEM_WRITE,
+              Id.HID_DEVICES,
+              Id.CLIPBOARD,
+              Id.PAYMENT_HANDLER,
+              Id.BLUETOOTH_SCANNING,
+              Id.AR,
+              Id.VR,
+              Id.IDLE_DETECTION,
+              Id.WEB_PRINTING,
+              Id.WINDOW_MANAGEMENT,
+              Id.LOCAL_FONTS,
+              Id.AUTO_PICTURE_IN_PICTURE,
+
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,

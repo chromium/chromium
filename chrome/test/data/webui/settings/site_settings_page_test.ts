@@ -454,33 +454,6 @@ suite('UnusedSitePermissionsReviewDisabled', function() {
   });
 });
 
-suite('PermissionStorageAccessApiDisabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enablePermissionStorageAccessApi: false,
-    });
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    flush();
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  test('StorageAccessLinkRow', function() {
-    assertFalse(isChildVisible(
-        page.shadowRoot!.querySelector('#basicPermissionsList')!,
-        '#storage-access'));
-  });
-});
-
 // TODO(crbug/1443466): Remove after SafetyHub is launched.
 suite('SafetyHubDisabled', function() {
   let page: SettingsSiteSettingsPageElement;

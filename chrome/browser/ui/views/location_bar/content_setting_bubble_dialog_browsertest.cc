@@ -114,8 +114,7 @@ class ContentSettingBubbleDialogTest
                       GetPopupNavigationDelegateFactoryForTesting(),
                   &CreateTestPopupNavigationDelegate) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts,
-         permissions::features::kPermissionStorageAccessAPI},
+        {features::kQuietNotificationPrompts},
         // Cookies icon intentionally does not show when 3PC are blocked.
         {content_settings::features::kTrackingProtection3pcd});
   }
