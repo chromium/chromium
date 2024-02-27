@@ -915,10 +915,6 @@ bool ShouldConsiderWindowForFasterSplitView(
     return false;
   }
 
-  // TODO(michelefan): Currently apply the snap source limitations for faster
-  // flag only. It will be removed when we figure out a good way to restore two
-  // windows in a snap group.
-  if (features::IsFasterSplitScreenSetupEnabled()) {
     if (PrefService* pref =
             Shell::Get()->session_controller()->GetActivePrefService();
         pref && !pref->GetBoolean(prefs::kSnapWindowSuggestions)) {
@@ -928,7 +924,6 @@ bool ShouldConsiderWindowForFasterSplitView(
     if (!CanSnapActionSourceStartFasterSplitView(snap_action_source)) {
       return false;
     }
-  }
 
   return !IsInOverviewSession();
 }
