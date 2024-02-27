@@ -3702,8 +3702,9 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
     // Only allow growth on "auto" block-size items, (a fixed block-size item
     // can't grow).
-    if (!item_style.LogicalHeight().IsAutoOrContentOrIntrinsic())
+    if (!item_style.LogicalHeight().HasAutoOrContentOrIntrinsic()) {
       return false;
+    }
 
     // Only allow growth on items which only span a single row.
     if (grid_item.SpanSize(kForRows) > 1)
@@ -3716,7 +3717,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       return false;
 
     return !grid_item.IsSpanningFixedMinimumTrack(kForRows) ||
-           Style().LogicalHeight().IsAutoOrContentOrIntrinsic();
+           Style().LogicalHeight().HasAutoOrContentOrIntrinsic();
   };
 
   wtf_size_t previous_expansion_row_set_index = kNotFound;

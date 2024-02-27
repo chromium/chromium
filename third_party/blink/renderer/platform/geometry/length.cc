@@ -203,7 +203,7 @@ float Length::NonNanCalculatedValue(float max_value,
   return result;
 }
 
-bool Length::IsContentOrIntrinsic() const {
+bool Length::HasContentOrIntrinsic() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasContentOrIntrinsicSize();
   }

@@ -112,8 +112,8 @@ class GridTrackSize {
   GridTrackSizeType GetType() const { return type_; }
 
   bool IsContentSized() const {
-    return min_track_breadth_.IsAutoOrContentOrIntrinsic() ||
-           max_track_breadth_.IsAutoOrContentOrIntrinsic();
+    return min_track_breadth_.HasAutoOrContentOrIntrinsic() ||
+           max_track_breadth_.HasAutoOrContentOrIntrinsic();
   }
   bool IsFitContent() const { return type_ == kFitContentTrackSizing; }
   bool HasPercentage() const {

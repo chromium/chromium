@@ -354,9 +354,9 @@ bool CanComputeBlockSizeWithoutLayout(
     return true;
   }
   const auto& style = node.Style();
-  if (style.LogicalHeight().IsContentOrIntrinsic() ||
-      style.LogicalMinHeight().IsContentOrIntrinsic() ||
-      style.LogicalMaxHeight().IsContentOrIntrinsic()) {
+  if (style.LogicalHeight().HasContentOrIntrinsic() ||
+      style.LogicalMinHeight().HasContentOrIntrinsic() ||
+      style.LogicalMaxHeight().HasContentOrIntrinsic()) {
     return false;
   }
   if (style.LogicalHeight().IsAuto()) {
@@ -831,10 +831,12 @@ const LayoutResult* ComputeOofBlockDimensions(
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.
-    if (style.LogicalMinHeight().IsContentOrIntrinsic())
+    if (style.LogicalMinHeight().HasContentOrIntrinsic()) {
       min_max_block_sizes.min_size = IntrinsicBlockSizeFunc();
-    if (style.LogicalMaxHeight().IsContentOrIntrinsic())
+    }
+    if (style.LogicalMaxHeight().HasContentOrIntrinsic()) {
       min_max_block_sizes.max_size = IntrinsicBlockSizeFunc();
+    }
     min_max_block_sizes.max_size =
         std::max(min_max_block_sizes.max_size, min_max_block_sizes.min_size);
 

@@ -28,9 +28,9 @@ class ConstraintSpace;
 class Length;
 
 inline bool NeedMinMaxSize(const ComputedStyle& style) {
-  return style.LogicalWidth().IsContentOrIntrinsic() ||
-         style.LogicalMinWidth().IsContentOrIntrinsic() ||
-         style.LogicalMaxWidth().IsContentOrIntrinsic();
+  return style.LogicalWidth().HasContentOrIntrinsic() ||
+         style.LogicalMinWidth().HasContentOrIntrinsic() ||
+         style.LogicalMaxWidth().HasContentOrIntrinsic();
 }
 
 CORE_EXPORT LayoutUnit
@@ -109,7 +109,7 @@ inline LayoutUnit ResolveMinInlineLength(
     return border_padding.InlineSum();
 
   std::optional<MinMaxSizes> min_max_sizes;
-  if (length.IsContentOrIntrinsic()) {
+  if (length.HasContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
                                                    : MinMaxSizesType::kContent)
@@ -136,7 +136,7 @@ inline LayoutUnit ResolveMaxInlineLength(
     return LayoutUnit::Max();
 
   std::optional<MinMaxSizes> min_max_sizes;
-  if (length.IsContentOrIntrinsic()) {
+  if (length.HasContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
                                                    : MinMaxSizesType::kContent)
@@ -160,7 +160,7 @@ inline LayoutUnit ResolveMainInlineLength(
     const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
   std::optional<MinMaxSizes> min_max_sizes;
-  if (length.IsContentOrIntrinsic()) {
+  if (length.HasContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
                                                    : MinMaxSizesType::kContent)
@@ -247,8 +247,9 @@ inline LayoutUnit ResolveMainBlockLength(
     return intrinsic_block_size_func();
 
   LayoutUnit intrinsic_block_size = kIndefiniteSize;
-  if (length.IsContentOrIntrinsic())
+  if (length.HasContentOrIntrinsic()) {
     intrinsic_block_size = intrinsic_block_size_func();
+  }
 
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, intrinsic_block_size,

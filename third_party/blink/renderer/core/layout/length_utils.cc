@@ -721,7 +721,7 @@ LogicalSize ComputeReplacedSizeInternal(
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;
       DCHECK_GE(*replaced_block, 0);
-    } else if (!block_length.IsAutoOrContentOrIntrinsic() ||
+    } else if (!block_length.HasAutoOrContentOrIntrinsic() ||
                (space.IsBlockAutoBehaviorStretch() &&
                 space.AvailableSize().block_size != kIndefiniteSize)) {
       Length block_length_to_resolve = block_length;

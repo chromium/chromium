@@ -2571,14 +2571,15 @@ bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
 
     // Only allow growth if the item's block-size is auto and either the item
     // can't shrink or its min-height is auto.
-    if (item_style.LogicalHeight().IsAutoOrContentOrIntrinsic() &&
+    if (item_style.LogicalHeight().HasAutoOrContentOrIntrinsic() &&
         (!can_shrink || algorithm_.ShouldApplyMinSizeAutoForChild(
-                            *item.ng_input_node.GetLayoutBox())))
+                            *item.ng_input_node.GetLayoutBox()))) {
       return true;
+    }
   } else {
     // Don't grow if the item's block-size should be the same as its container.
     if (WillChildCrossSizeBeContainerCrossSize(item.ng_input_node) &&
-        !Style().LogicalHeight().IsAutoOrContentOrIntrinsic()) {
+        !Style().LogicalHeight().HasAutoOrContentOrIntrinsic()) {
       return false;
     }
 
