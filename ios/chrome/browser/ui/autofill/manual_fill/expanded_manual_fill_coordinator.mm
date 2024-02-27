@@ -66,6 +66,12 @@ using manual_fill::ManualFillDataType;
 
 - (void)expandedManualFillViewController:
             (ExpandedManualFillViewController*)expandedManualFillViewController
+                     didPressCloseButton:(UIButton*)closeButton {
+  [self.delegate stopExpandedManualFillCoordinator:self];
+}
+
+- (void)expandedManualFillViewController:
+            (ExpandedManualFillViewController*)expandedManualFillViewController
                   didSelectSegmentOfType:(ManualFillDataType)dataType {
   [self showManualFillingOptionsForDataType:dataType];
 }

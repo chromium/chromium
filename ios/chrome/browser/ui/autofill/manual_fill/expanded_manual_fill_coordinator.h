@@ -9,8 +9,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class ManualFillInjectionHandler;
-
 namespace autofill {
 class FormRendererId;
 }
@@ -18,6 +16,18 @@ class FormRendererId;
 namespace manual_fill {
 enum class ManualFillDataType;
 }
+
+@class ManualFillInjectionHandler;
+@class ExpandedManualFillCoordinator;
+
+// Delegate for the ExpandedManualFillCoordinator.
+@protocol ExpandedManualFillCoordinatorDelegate
+
+// Called when the ExpandedManaualFillCoordinator needs to be stopped.
+- (void)stopExpandedManualFillCoordinator:
+    (ExpandedManualFillCoordinator*)coordinator;
+
+@end
 
 // The coordinator responsible for presenting the expanded manual fill view.
 @interface ExpandedManualFillCoordinator : ChromeCoordinator
@@ -37,6 +47,9 @@ enum class ManualFillDataType;
 // The frame ID associated with the field that was last focused. Needed to
 // instantiate the ManualFillPasswordCoordinator.
 @property(nonatomic, assign) std::string frameID;
+
+// The delegate to communicate with the parent coordinator.
+@property(nonatomic, weak) id<ExpandedManualFillCoordinatorDelegate> delegate;
 
 // Designated initializer. `dataType` represents the type of manual filling
 // options to show in the expanded manual fill view.

@@ -17,6 +17,11 @@ enum class ManualFillDataType;
 // Delegate for the ExpandedManualFillViewController.
 @protocol ExpandedManualFillViewControllerDelegate
 
+// Invoked after the user has tapped the close button.
+- (void)expandedManualFillViewController:
+            (ExpandedManualFillViewController*)expandedManualFillViewController
+                     didPressCloseButton:(UIButton*)closeButton;
+
 // Invoked after the user has selected a data type from the segmented control.
 - (void)expandedManualFillViewController:
             (ExpandedManualFillViewController*)expandedManualFillViewController

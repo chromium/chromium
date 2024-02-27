@@ -289,7 +289,7 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   [closeButton setImage:buttonImage forState:UIControlStateNormal];
 
   [closeButton addTarget:self
-                  action:@selector(onCloseButtonPressed)
+                  action:@selector(onCloseButtonPressed:)
         forControlEvents:UIControlEventTouchUpInside];
 
   return closeButton;
@@ -451,8 +451,9 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 }
 
 // Handles taps on the close button.
-- (void)onCloseButtonPressed {
-  //  TODO(b/40942168): Implement logic.
+- (void)onCloseButtonPressed:(id)sender {
+  [self.delegate expandedManualFillViewController:self
+                              didPressCloseButton:sender];
 }
 
 // Handles the selection of a different data type from the segmented control.

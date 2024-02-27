@@ -88,6 +88,7 @@ const CGFloat kIPHVerticalOffset = -5;
     FormInputAccessoryViewControllerDelegate,
     ManualFillAllPasswordCoordinatorDelegate,
     PasswordCoordinatorDelegate,
+    ExpandedManualFillCoordinatorDelegate,
     SecurityAlertCommands>
 
 // Coordinator in charge of the presenting password autofill options as a modal.
@@ -338,6 +339,7 @@ const CGFloat kIPHVerticalOffset = -5;
       invokedOnObfuscatedField;
   expandedManualFillCoordinator.formID = lastSeenParams.unique_form_id;
   expandedManualFillCoordinator.frameID = lastSeenParams.frame_id;
+  expandedManualFillCoordinator.delegate = self;
   [expandedManualFillCoordinator start];
 
   self.formInputViewController = expandedManualFillCoordinator.viewController;
@@ -522,6 +524,13 @@ const CGFloat kIPHVerticalOffset = -5;
 - (void)openAddressSettings {
   [self reset];
   [self.navigator openAddressSettings];
+}
+
+#pragma mark - ExpandedManualFillCoordinatorDelegate
+
+- (void)stopExpandedManualFillCoordinator:
+    (ExpandedManualFillCoordinator*)coordinator {
+  [self reset];
 }
 
 #pragma mark - SecurityAlertCommands

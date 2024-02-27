@@ -35,6 +35,17 @@ const char kCardNameFieldID[] = "CCName";
 const char kPasswordFieldID[] = "pw";
 const char kNameFieldID[] = "name";
 
+// Matcher for the close button.
+id<GREYMatcher> CloseButton() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL));
+}
+
+// Matcher for the expanded manual fill view.
+id<GREYMatcher> ExpandedManualFillView() {
+  return grey_accessibilityID(manual_fill::kExpandedManualFillViewID);
+}
+
 // Matcher for the segmented control's password tab.
 id<GREYMatcher> SegmentedControlPasswordTab() {
   return grey_accessibilityLabel(l10n_util::GetNSString(
@@ -51,6 +62,17 @@ id<GREYMatcher> SegmentedControlPaymentMethodTab() {
 id<GREYMatcher> SegmentedControlAddressTab() {
   return grey_accessibilityLabel(l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL));
+}
+
+// Matcher for the keyboard accessory's manual fill button.
+id<GREYMatcher> KeyboardAccessoryManualFillButton() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+}
+
+// Matcher for the password suggestion chip.
+id<GREYMatcher> KeyboardAccessoryPasswordSuggestionChip() {
+  return grey_text(@"concrete username");
 }
 
 // Checks that the header view is as expected according to whether or not the
@@ -229,16 +251,13 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
   }
 
   // Open the expanded manual fill view.
-  id<GREYMatcher> manualFillButton = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:manualFillButton];
-  [[EarlGrey selectElementWithMatcher:manualFillButton]
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:KeyboardAccessoryManualFillButton()];
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryManualFillButton()]
       performAction:grey_tap()];
 
   // Confirm that the expanded manual fill view is visible.
-  id<GREYMatcher> expandedManualFillView =
-      grey_accessibilityID(manual_fill::kExpandedManualFillViewID);
-  [[EarlGrey selectElementWithMatcher:expandedManualFillView]
+  [[EarlGrey selectElementWithMatcher:ExpandedManualFillView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -354,6 +373,33 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tapping the close button hides the expanded manual fill view to
+// show the keyboard and keyboard accessory bar.
+- (void)testClosingExpandedManualFillView {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
+                                  fieldToFill:kPasswordFieldID];
+
+  // Tap the close button.
+  [[EarlGrey selectElementWithMatcher:CloseButton()] performAction:grey_tap()];
+
+  // The expanded manual fill view should not be visible anymore.
+  [[EarlGrey selectElementWithMatcher:ExpandedManualFillView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // The keyboard accessory and keyboard should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      KeyboardAccessoryPasswordSuggestionChip()];
+  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryManualFillButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
 }
 
 @end
