@@ -9,8 +9,10 @@
 #include "base/containers/contains.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/initialize_extensions_client.h"
+#include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -69,7 +71,8 @@ bool AvailabilityCheck(const std::string& api_full_name,
   // Also allow API exposure in ChromeOS Kiosk mode for web apps.
   if (base::FeatureList::IsEnabled(features::kWebKioskEnableIwaApis) &&
       IsRunningInKioskMode() && url.SchemeIs(url::kHttpsScheme)) {
-    is_allowed_for_scheme = true;
+    is_allowed_for_scheme =
+        extensions::GetCurrentChannel() != version_info::Channel::STABLE;
   }
 #endif
 
