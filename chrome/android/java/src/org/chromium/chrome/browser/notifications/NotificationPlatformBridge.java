@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -233,6 +234,7 @@ public class NotificationPlatformBridge {
             }
         }
         recordJobStartDelayUMA(intent);
+        recordJobNativeStartupDuration(intent);
 
         NotificationIdentifyingAttributes attributes =
                 new NotificationIdentifyingAttributes(
@@ -301,6 +303,25 @@ public class NotificationPlatformBridge {
             if (duration < 0) return; // Possible if device rebooted before job started.
             RecordHistogram.recordMediumTimesHistogram(
                     "Notifications.Android.JobStartDelay", duration);
+            if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Notifications.Android.JobStartDelay.PreUnsubscribe", duration);
+            }
+        }
+    }
+
+    private static void recordJobNativeStartupDuration(Intent intent) {
+        if (intent.hasExtra(NotificationConstants.EXTRA_JOB_STARTED_TIME_MS)) {
+            long duration =
+                    SystemClock.elapsedRealtime()
+                            - intent.getLongExtra(
+                                    NotificationConstants.EXTRA_JOB_STARTED_TIME_MS, -1);
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Notifications.Android.JobNativeStartupDuration", duration);
+            if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Notifications.Android.JobNativeStartupDuration.PreUnsubscribe", duration);
+            }
         }
     }
 

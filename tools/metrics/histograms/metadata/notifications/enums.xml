@@ -88,6 +88,36 @@ chromium-metrics-reviews@google.com.
       label="LaunchId empty, AllowSetForegroundWindow failed, Handle missing"/>
 </enum>
 
+<enum name="NotificationJobStage">
+  <int value="0" label="Schedule job"/>
+  <int value="1" label="Job schedule failed"/>
+  <int value="2" label="onStartJob"/>
+  <int value="3" label="onStopJob"/>
+  <int value="4" label="Start native startup"/>
+  <int value="5" label="Dispatch intent"/>
+</enum>
+
+<enum name="NotificationPendingJobReason">
+  <int value="-2" label="PENDING_JOB_REASON_INVALID_JOB_ID"/>
+  <int value="-1" label="PENDING_JOB_REASON_EXECUTING"/>
+  <int value="0" label="PENDING_JOB_REASON_UNDEFINED"/>
+  <int value="1" label="PENDING_JOB_REASON_APP"/>
+  <int value="2" label="PENDING_JOB_REASON_APP_STANDBY"/>
+  <int value="3" label="PENDING_JOB_REASON_BACKGROUND_RESTRICTION"/>
+  <int value="4" label="PENDING_JOB_REASON_CONSTRAINT_BATTERY_NOT_LOW"/>
+  <int value="5" label="PENDING_JOB_REASON_CONSTRAINT_CHARGING"/>
+  <int value="6" label="PENDING_JOB_REASON_CONSTRAINT_CONNECTIVITY"/>
+  <int value="7" label="PENDING_JOB_REASON_CONSTRAINT_CONTENT_TRIGGER"/>
+  <int value="8" label="PENDING_JOB_REASON_CONSTRAINT_DEVICE_IDLE"/>
+  <int value="9" label="PENDING_JOB_REASON_CONSTRAINT_MINIMUM_LATENCY"/>
+  <int value="10" label="PENDING_JOB_REASON_CONSTRAINT_PREFETCH"/>
+  <int value="11" label="PENDING_JOB_REASON_CONSTRAINT_STORAGE_NOT_LOW"/>
+  <int value="12" label="PENDING_JOB_REASON_DEVICE_STATE"/>
+  <int value="13" label="PENDING_JOB_REASON_JOB_SCHEDULER_OPTIMIZATION"/>
+  <int value="14" label="PENDING_JOB_REASON_QUOTA"/>
+  <int value="15" label="PENDING_JOB_REASON_USER"/>
+</enum>
+
 <enum name="NotificationSchedulerActionButtonEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Helpful"/>

@@ -303,6 +303,27 @@ public class NotificationUmaTracker {
         int NUM_ENTRIES = 6;
     }
 
+    /** The stages of the job handling a notification intent. */
+    @IntDef({
+        IntentHandlerJobStage.SCHEDULE_JOB,
+        IntentHandlerJobStage.SCHEDULE_JOB_FAILED,
+        IntentHandlerJobStage.ON_START_JOB,
+        IntentHandlerJobStage.ON_STOP_JOB,
+        IntentHandlerJobStage.DISPATCH_EVENT,
+        IntentHandlerJobStage.NATIVE_STARTUP
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IntentHandlerJobStage {
+        int SCHEDULE_JOB = 0;
+        int SCHEDULE_JOB_FAILED = 1;
+        int ON_START_JOB = 2;
+        int ON_STOP_JOB = 3;
+        int NATIVE_STARTUP = 4;
+        int DISPATCH_EVENT = 5;
+
+        int NUM_ENTRIES = 6;
+    }
+
     private static class LazyHolder {
         private static final NotificationUmaTracker INSTANCE = new NotificationUmaTracker();
     }
@@ -540,6 +561,21 @@ public class NotificationUmaTracker {
                 "Mobile.SystemNotification.Permission.StartupState",
                 state,
                 NotificationPermissionState.NUM_ENTRIES);
+    }
+
+    /**
+     * Records a sample to indicate that the job to handle a notification intent has reached a given
+     * stage.
+     *
+     * @param stage The stage reached.
+     * @param intentAction The action of the intent being processed.
+     */
+    public void recordIntentHandlerJobStage(@IntentHandlerJobStage int stage, String intentAction) {
+        RecordHistogram.recordSparseHistogram("Notifications.Android.JobStage", stage);
+        if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intentAction)) {
+            RecordHistogram.recordSparseHistogram(
+                    "Notifications.Android.JobStage.PreUnsubscribe", stage);
+        }
     }
 
     /**
