@@ -4379,6 +4379,27 @@ Called by update_autofill_enums.py.-->
       label="Form passed is different from the one that initiated the session"/>
 </enum>
 
+<enum name="PhoneNumberGrammarUsage2">
+  <int value="0"
+      label="Country code: [cc] Area Code: [ac] Prefix: [phone] Suffix:
+             [suffix]"/>
+  <int value="1" label="Country code: [cc] Area Code: [ac] Phone: [phone]"/>
+  <int value="2" label="Phone: [cc] [ac]:3 - [phone]:3 - [suffix]:4"/>
+  <int value="3" label="Phone: [cc]:3 [ac]:3 [phone]:3 [suffix]:4"/>
+  <int value="4" label="Area Code: [ac] Phone: [phone] - [suffix]"/>
+  <int value="5" label="Area Code: [ac] Phone: [phone] Suffix [suffix]"/>
+  <int value="6" label="Area Code: [ac] Phone: [phone]"/>
+  <int value="7" label="Phone: [ac] [phone]:3 [suffix]:4"/>
+  <int value="8"
+      label="Area code: [ac]:3 Prefix: [prefix]:3 Suffix: [suffix]:4"/>
+  <int value="9" label="Phone: [ac] Prefix: [phone] Suffix: [suffix]"/>
+  <int value="10" label="Phone: [ac] - [phone]:3 - [suffix]:4"/>
+  <int value="11" label="Phone: [cc] - [ac] - [phone]"/>
+  <int value="12" label="Phone: [cc]:3 - [phone]"/>
+  <int value="13" label="Phone: [ac] - [phone]"/>
+  <int value="14" label="Phone: [phone]"/>
+</enum>
+
 <enum name="PlusAddressModalEvent">
   <int value="0" label="Modal shown"/>
   <int value="1" label="Modal canceled"/>

@@ -2063,6 +2063,16 @@ chromium-metrics-reviews@google.com.
   <token key="FillingStatus" variants="AutofillFieldFillingStats"/>
 </histogram>
 
+<histogram name="Autofill.FieldPrediction.PhoneNumberGrammarUsage2"
+    enum="PhoneNumberGrammarUsage2" expires_after="2024-12-12">
+  <owner>battre@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the index of the phone number grammar that matched. Emitted when
+    parsing forms using local heuristics.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.FieldPredictionQuality.Aggregate{AutofillFieldPredictionSource}"
     enum="AutofillFieldPredictionQuality" expires_after="2024-12-12">

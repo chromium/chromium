@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -253,6 +254,7 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
 
   // Find the first matching grammar.
   bool found_matching_grammar = false;
+  int grammar_id = 0;
   for (const PhoneGrammar& grammar : GetPhoneGrammars()) {
     base::ranges::fill(parsed_fields, nullptr);
     if (ParseGrammar(context, grammar, parsed_fields, scanner)) {
@@ -260,11 +262,19 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
       break;
     }
     scanner->RewindTo(start_cursor);
+    grammar_id++;
   }
   if (!found_matching_grammar)
     return nullptr;
   // No grammar without FIELD_PHONE should be defined.
   DCHECK(parsed_fields[FIELD_PHONE] != nullptr);
+
+  // If this CHECK fails, the number of grammar rules has changed and you need
+  // to increment the version counter in the histogram name and its enum.
+  CHECK_EQ(GetPhoneGrammars().size(), 15u);
+  base::UmaHistogramExactLinear(
+      "Autofill.FieldPrediction.PhoneNumberGrammarUsage2", grammar_id,
+      /*exclusive_max=*/GetPhoneGrammars().size());
 
   // Now look for an extension.
   // The extension is unused, but it is parsed to prevent other parsers from
