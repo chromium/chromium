@@ -61,7 +61,7 @@ namespace {
 
 constexpr int kAddNewTaskIconSize = 24;
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
-constexpr int kInteriorGlanceableBubbleMargin = 16;
+constexpr int kInteriorGlanceableBubbleMargin = 15;
 constexpr int kScrollViewBottomMargin = 12;
 constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
@@ -111,6 +111,7 @@ class AddNewTaskButton : public views::LabelButton {
     SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   }
 
   AddNewTaskButton(const AddNewTaskButton&) = delete;
@@ -210,7 +211,7 @@ GlanceablesTasksView::GlanceablesTasksView(
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/
-      gfx::Insets::TLBR(0, 0, kScrollViewBottomMargin, 0),
+      gfx::Insets::TLBR(1, 1, kScrollViewBottomMargin, 1),
       kListViewBetweenChildSpacing));
 
   add_new_task_button_ =

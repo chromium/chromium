@@ -217,6 +217,7 @@ class EditInBrowserButton : public views::LabelButton {
     SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
     button_controller()->set_notify_action(
         views::ButtonController::NotifyAction::kOnPress);
   }
@@ -287,6 +288,7 @@ class GlanceablesTaskViewV2::TaskTitleButton : public views::LabelButton {
   TaskTitleButton(const std::u16string& title, PressedCallback pressed_callback)
       : views::LabelButton(std::move(pressed_callback), title) {
     SetBorder(nullptr);
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
 
     label()->SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
     label()->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
