@@ -29,10 +29,12 @@ bool PickerSearchResult::EmoticonData::operator==(
 PickerSearchResult::GifData::GifData(const GURL& preview_url,
                                      const GURL& preview_image_url,
                                      const gfx::Size& preview_dimensions,
+                                     const GURL& full_url,
                                      std::u16string content_description)
     : preview_url(preview_url),
       preview_image_url(preview_image_url),
       preview_dimensions(preview_dimensions),
+      full_url(full_url),
       content_description(std::move(content_description)) {}
 
 PickerSearchResult::GifData::GifData(const PickerSearchResult::GifData&) =
@@ -78,9 +80,10 @@ PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon) {
 PickerSearchResult PickerSearchResult::Gif(const GURL& preview_url,
                                            const GURL& preview_image_url,
                                            const gfx::Size& preview_dimensions,
+                                           const GURL& full_url,
                                            std::u16string content_description) {
   return PickerSearchResult(GifData(preview_url, preview_image_url,
-                                    preview_dimensions,
+                                    preview_dimensions, full_url,
                                     std::move(content_description)));
 }
 

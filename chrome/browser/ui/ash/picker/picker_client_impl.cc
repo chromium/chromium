@@ -133,7 +133,7 @@ void PickerClientImpl::OnGifSearchResponse(
     const emoji_picker::mojom::GifUrlsPtr& urls = result->url;
     CHECK(urls);
     picker_results.push_back(ash::PickerSearchResult::Gif(
-        urls->preview, urls->preview_image, result->preview_size,
+        urls->preview, urls->preview_image, result->preview_size, urls->full,
         base::UTF8ToUTF16(result->content_description)));
   }
 

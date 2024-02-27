@@ -84,6 +84,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
       PickerSectionType::kGifs,
       {{PickerSearchResult::Gif(
           /*preview_url=*/GURL(), /*preview_image_url=*/GURL(), gfx::Size(),
+          /*full_url=*/GURL(),
           /*content_description=*/u"")}}));
 
   EXPECT_THAT(view.children(), SizeIs(1));
@@ -196,6 +197,7 @@ INSTANTIATE_TEST_SUITE_P(
         {"Gif", PickerSearchResult::Gif(/*preview_url=*/GURL(),
                                         /*preview_image_url=*/GURL(),
                                         gfx::Size(10, 10),
+                                        /*full_url=*/GURL(),
                                         u"cat gif")},
         {"Category", PickerSearchResult::Category(PickerCategory::kEmojis)},
     }),

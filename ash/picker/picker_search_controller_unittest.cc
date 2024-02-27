@@ -755,10 +755,9 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("preview_url",
-                            &PickerSearchResult::GifData::preview_url,
+                      Field("full_url", &PickerSearchResult::GifData::full_url,
                             Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/GOabrbLMl4AAAAAd/"
+                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
                                      "plink-cat-plink.gif")),
                       Field("content_description",
                             &PickerSearchResult::GifData::content_description,
@@ -775,7 +774,9 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchController::kGifDebouncingDelay);
 }
@@ -796,10 +797,9 @@ TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("preview_url",
-                            &PickerSearchResult::GifData::preview_url,
+                      Field("full_url", &PickerSearchResult::GifData::full_url,
                             Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/GOabrbLMl4AAAAAd/"
+                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
                                      "plink-cat-plink.gif")),
                       Field("content_description",
                             &PickerSearchResult::GifData::content_description,
@@ -838,11 +838,9 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("preview_url",
-                            &PickerSearchResult::GifData::preview_url,
+                      Field("full_url", &PickerSearchResult::GifData::full_url,
                             Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/"
-                                     "GOabrbLMl4AAAAAd/"
+                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
                                      "plink-cat-plink.gif")),
                       Field("content_description",
                             &PickerSearchResult::GifData::content_description,
@@ -864,7 +862,9 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchController::kGifDebouncingDelay);
 }
@@ -884,7 +884,9 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsBeforeBurnIn) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.GifProvider.QueryTime",
@@ -906,7 +908,9 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsAfterBurnIn) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.GifProvider.QueryTime",
@@ -948,11 +952,11 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
                   Contains(Property(
                       "data", &PickerSearchResult::data,
                       VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("preview_url",
-                                &PickerSearchResult::GifData::preview_url,
+                          Field("full_url",
+                                &PickerSearchResult::GifData::full_url,
                                 Property("spec", &GURL::spec,
                                          "https://media.tenor.com/"
-                                         "GOabrbLMl4AAAAAd/"
+                                         "GOabrbLMl4AAAAAC/"
                                          "plink-cat-plink.gif")),
                           Field(
                               "content_description",
@@ -991,7 +995,9 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchController::kGifDebouncingDelay);
 }
@@ -1019,7 +1025,9 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -1046,7 +1054,9 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
 }
 
 TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
@@ -1064,11 +1074,9 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("preview_url",
-                            &PickerSearchResult::GifData::preview_url,
+                      Field("full_url", &PickerSearchResult::GifData::full_url,
                             Property("spec", &GURL::spec,
-                                     "https://media.tenor.com/"
-                                     "GOabrbLMl4AAAAAd/"
+                                     "https://media.tenor.com/GOabrbLMl4AAAAAC/"
                                      "plink-cat-plink.gif")),
                       Field("content_description",
                             &PickerSearchResult::GifData::content_description,
@@ -1084,7 +1092,9 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
       .Run({ash::PickerSearchResult::Gif(
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(480, 480), u"cat blink")});
+          gfx::Size(360, 360),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
+          u"cat blink")});
 }
 
 TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {

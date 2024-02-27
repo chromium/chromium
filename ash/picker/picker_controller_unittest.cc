@@ -177,10 +177,11 @@ TEST_F(PickerControllerTest, InsertImageResultInsertsIntoInputFieldAfterFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
-      GURL("http://foo.com/fake.gif"),
-      GURL("http://foo.com/fake_preview_image.png"), gfx::Size(),
-      /*content_description=*/u""));
+  controller.InsertResultOnNextFocus(
+      PickerSearchResult::Gif(GURL("http://foo.com/fake_preview.gif"),
+                              GURL("http://foo.com/fake_preview_image.png"),
+                              gfx::Size(), GURL("http://foo.com/fake.gif"),
+                              /*content_description=*/u""));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(
       input_method,
@@ -199,8 +200,9 @@ TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
   controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
-      /*preview_url=*/GURL("http://foo.com"), /*preview_image_url=*/GURL(),
-      gfx::Size(30, 20),
+      /*preview_url=*/GURL("http://foo.com/preview"),
+      /*preview_image_url=*/GURL(), gfx::Size(30, 20),
+      /*full_url=*/GURL("http://foo.com"),
       /*content_description=*/u"a gif"));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(
