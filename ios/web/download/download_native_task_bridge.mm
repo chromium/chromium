@@ -173,6 +173,9 @@ void DownloadDidFinishWithSize(
     [self startObservingDownloadProgress];
     handler(_urlForDownload);
   } else {
+    if (_startDownloadBlock) {
+      _startDownloadBlock(nil);
+    }
     _startDownloadBlock = handler;
     if (![_delegate onDownloadNativeTaskBridgeReadyForDownload:self]) {
       [self cancel];
