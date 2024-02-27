@@ -199,6 +199,7 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Save IBAN"/>
   <int value="25" label="Mandatory Reauth"/>
   <int value="26" label="Price Insights"/>
+  <int value="27" label="Read Anything"/>
 </enum>
 
 <enum name="PageActionPageEvent">
