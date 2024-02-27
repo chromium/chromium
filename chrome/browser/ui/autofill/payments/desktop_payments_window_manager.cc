@@ -58,28 +58,40 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url) {
   params.source_contents = &source_contents;
   params.is_tab_modal_popup = true;
 
-  // TODO(crbug.com/1517762): Handle the case where the pop-up is not shown by
-  // displaying an error message.
   if (base::WeakPtr<content::NavigationHandle> navigation_handle =
           Navigate(&params)) {
     content::WebContentsObserver::Observe(navigation_handle->GetWebContents());
+  } else {
+    client_->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+            /*is_permanent_error=*/false));
   }
 }
 
 void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
   flow_type_ = FlowType::kNoFlow;
-  if (base::expected<PaymentsWindowManager::RedirectCompletionProof,
-                     PaymentsWindowManager::Vcn3dsAuthenticationPopupErrorType>
-          result = ParseFinalUrlForVcn3ds(web_contents()->GetVisibleURL());
-      result.has_value()) {
+  base::expected<RedirectCompletionProof, Vcn3dsAuthenticationPopupErrorType>
+      result = ParseFinalUrlForVcn3ds(web_contents()->GetVisibleURL());
+  if (result.has_value()) {
     CHECK(!result.value()->empty());
     return client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindOnce(
         &DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds,
         weak_ptr_factory_.GetWeakPtr(), std::move(result.value())));
   }
 
-  // TODO(crbug.com/1517762): Trigger an error dialog if `result` is
-  // `kAuthenticationFailed`.
+  switch (result.error()) {
+    case Vcn3dsAuthenticationPopupErrorType::kAuthenticationFailed:
+    case Vcn3dsAuthenticationPopupErrorType::kInvalidQueryParams:
+      client_->ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+              /*is_permanent_error=*/true));
+      break;
+    case Vcn3dsAuthenticationPopupErrorType::kAuthenticationNotCompleted:
+      break;
+  }
+
+  // In the case of an error, we show the user an error dialog but still run the
+  // callback to let the caller know failure occurred.
   std::move(vcn_3ds_context_->completion_callback)
       .Run(Vcn3dsAuthenticationResponse());
   vcn_3ds_context_.reset();
@@ -109,8 +121,12 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
   client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
       /*show_confirmation_before_closing=*/response.card.has_value(),
       /*no_interactive_authentication_callback=*/base::OnceClosure());
-  // TODO(crbug.com/1517762): Trigger an error dialog if no card is present in
-  // `response`.
+  if (!response.card.has_value()) {
+    client_->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+            /*is_permanent_error=*/true));
+  }
+
   std::move(vcn_3ds_context_->completion_callback).Run(std::move(response));
   vcn_3ds_context_.reset();
 }

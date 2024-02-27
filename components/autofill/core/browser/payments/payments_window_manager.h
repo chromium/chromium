@@ -58,8 +58,17 @@ class PaymentsWindowManager {
 
   // The error type of the 3DS authentication inside of the pop-up.
   enum class Vcn3dsAuthenticationPopupErrorType {
+    // The authentication inside of the 3DS pop-up was a failure. The reason for
+    // the failure is unknown to Chrome, and can be due to any of several
+    // possible reasons. Some reasons can be that the user failed to
+    // authenticate, or there is a server error.
     kAuthenticationFailed = 0,
+    // The authentication inside of the 3DS pop-up did not complete. This occurs
+    // if the user closes the pop-up before finishing the authentication, and
+    // there are no query params.
     kAuthenticationNotCompleted = 1,
+    // The query params are invalid. This should not happen, but since Chrome
+    // has no control over this it is handled gracefully.
     kInvalidQueryParams = 2,
   };
 
