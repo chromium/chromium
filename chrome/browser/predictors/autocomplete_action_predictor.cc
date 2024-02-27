@@ -67,6 +67,12 @@ namespace {
 // be PRERENDER or PRECONNECT. Due to the current design, the prerender one
 // should be higher than the preconnect one, otherwise preconnect will never
 // run.
+//
+// If you update these values, please also update values in
+// chrome/browser/resources/predictors/autocomplete_action_predictor.ts that
+// will be shown on chrome://predictors.
+// TODO(crbug.com/326277753): Avoid hard-coding the values in
+// autocomplete_action_predictor.ts.
 const base::FeatureParam<double> kPrerenderDUIConfidenceCutoff{
     &features::kAutocompleteActionPredictorConfidenceCutoff,
     "prerender_dui_confidence_cutoff", 0.5};
