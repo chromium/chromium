@@ -2517,7 +2517,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
 // Tests correct calculation of five-number summary when there is only one
 // origin.
 TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
-  db_ = LoadFromFile("shared_storage.v5.single_origin.sql");
+  db_ = LoadFromFile("shared_storage.v6.single_origin.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2549,7 +2549,7 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
 // Tests correct calculation of five-number summary when number of origins is
 // greater than one and has remainder 1 modulo 4.
 TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
-  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.5origins.sql");
+  db_ = LoadFromFile("shared_storage.v6.empty_values_mapping.5origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2569,7 +2569,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
   histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
   EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 5, 1);
-  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 335, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 12.5, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 20, 1);
@@ -2589,7 +2589,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 2 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SixOrigins) {
-  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.6origins.sql");
+  db_ = LoadFromFile("shared_storage.v6.empty_values_mapping.6origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2610,7 +2610,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
   histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
   EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 6, 1);
-  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 1934, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 15, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 30, 1);
@@ -2630,7 +2630,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 3 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
-  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.7origins.sql");
+  db_ = LoadFromFile("shared_storage.v6.empty_values_mapping.7origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2654,7 +2654,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
   histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
   EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 7, 1);
-  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 2935, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 15, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 40, 1);
@@ -2673,7 +2673,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 0 modulo 4.
 TEST_F(SharedStorageDatabaseTest, EightOrigins) {
-  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.8origins.sql");
+  db_ = LoadFromFile("shared_storage.v6.empty_values_mapping.8origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2698,7 +2698,7 @@ TEST_F(SharedStorageDatabaseTest, EightOrigins) {
   histogram_tester_.ExpectTotalCount(kFileSizeKBHistogram, 1);
   EXPECT_GT(histogram_tester_.GetTotalSum(kFileSizeKBHistogram), 0);
   histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 8, 1);
-  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 3035, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 17.5, 1);
   histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 70, 1);

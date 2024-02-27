@@ -54,17 +54,20 @@ namespace storage {
 //              * rename `context_origin` column in `budget_mapping` to
 //                `context_site`, converting existing data in this column from
 //                origins to sites
-// Version 5 - https://crev.com/c/5278559
+// Version 5 - https://crrev.com/c/5278559
 //              * add `num_bytes` to `per_origin_mapping` to keep track of the
 //                total number of bytes stored as key-value pairs, i.e. twice
 //                the total number of char16_t's currently stored as `key`s or
 //                `value`s for associated `context_origin` in `values_mapping`
+// Version 6 - https://crrev.com/c/5325884
+//              * remove `length` from `per_origin_mapping`, now that quota
+//                enforcement uses `num_bytes` instead
 
-const int SharedStorageDatabase::kCurrentVersionNumber = 5;
+const int SharedStorageDatabase::kCurrentVersionNumber = 6;
 
 // Earliest version which can use a `kCurrentVersionNumber` database
 // without failing.
-const int SharedStorageDatabase::kCompatibleVersionNumber = 5;
+const int SharedStorageDatabase::kCompatibleVersionNumber = 6;
 
 // Latest version of the database that cannot be upgraded to
 // `kCurrentVersionNumber` without razing the database.
@@ -93,14 +96,14 @@ std::string SerializeSite(const net::SchemefulSite& site) {
   if (!db.Execute(kValuesMappingSql))
     return false;
 
-  // Note that `length` tracks the total number of entries in `values_mapping`
-  // for `context_origin`, including any expired by not yet purged entries. The
-  // `Length()` method below returns the count of only the unexpired entries.
+  // Note that `num_bytes` tracks the total number of bytes stored in keys and
+  // values for `context_origin` in `values_mapping`, including for any expired
+  // by not yet purged entries. The `BytesUsed()` method below returns the byte
+  // count for only the unexpired entries.
   static constexpr char kPerOriginMappingSql[] =
       "CREATE TABLE IF NOT EXISTS per_origin_mapping("
       "context_origin TEXT NOT NULL PRIMARY KEY,"
       "creation_time INTEGER NOT NULL,"
-      "length INTEGER NOT NULL,"
       "num_bytes INTEGER NOT NULL) WITHOUT ROWID";
   if (!db.Execute(kPerOriginMappingSql))
     return false;
@@ -420,8 +423,8 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Delete(
 
   int64_t delta_bytes = -2 * (static_cast<int64_t>(key.size()) +
                               static_cast<int64_t>(current_value->size()));
-  if (!UpdateLength(origin_str, /*delta_length=*/-1,
-                    /*delta_bytes=*/delta_bytes)) {
+  if (!UpdateBytes(origin_str,
+                   /*delta_bytes=*/delta_bytes)) {
     return OperationResult::kSqlError;
   }
 
@@ -796,20 +799,19 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::PurgeStale() {
   if (!transaction.Begin())
     return OperationResult::kSqlError;
 
-  static constexpr char kUpdateLengthAndNumBytesSql[] =
+  static constexpr char kUpdateNumBytesSql[] =
       "UPDATE per_origin_mapping "
-      "SET length = length - expired.num_entries, "
-      "    num_bytes = num_bytes - expired.total_bytes "
+      "SET num_bytes = num_bytes - expired.total_bytes "
       "FROM "
-      "    (SELECT context_origin, COUNT(context_origin) AS num_entries, "
-      "    SUM(LENGTH(key) + LENGTH(value)) as total_bytes "
-      "    FROM values_mapping WHERE last_used_time<? "
-      "    GROUP BY context_origin) "
+      "  (SELECT context_origin, "
+      "  SUM(LENGTH(key) + LENGTH(value)) as total_bytes "
+      "  FROM values_mapping WHERE last_used_time<? "
+      "  GROUP BY context_origin) "
       "AS expired "
       "WHERE per_origin_mapping.context_origin = expired.context_origin";
 
   sql::Statement update_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kUpdateLengthAndNumBytesSql));
+      db_.GetCachedStatement(SQL_FROM_HERE, kUpdateNumBytesSql));
   base::Time cutoff_time = clock_->Now() - staleness_threshold_;
   update_statement.BindTime(0, cutoff_time);
 
@@ -828,7 +830,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::PurgeStale() {
     return OperationResult::kSqlError;
 
   static constexpr char kDeleteOriginsSql[] =
-      "DELETE FROM per_origin_mapping WHERE length<=0";
+      "DELETE FROM per_origin_mapping WHERE num_bytes<=0";
   sql::Statement origins_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteOriginsSql));
 
@@ -948,10 +950,9 @@ SharedStorageDatabase::TimeResult SharedStorageDatabase::GetCreationTime(
   }
 
   TimeResult result;
-  int64_t length = 0L;
   int64_t num_bytes = 0L;
-  result.result = GetOriginInfo(SerializeOrigin(context_origin), &length,
-                                &num_bytes, &result.time);
+  result.result =
+      GetOriginInfo(SerializeOrigin(context_origin), &num_bytes, &result.time);
 
   return result;
 }
@@ -1073,11 +1074,10 @@ bool SharedStorageDatabase::OverrideCreationTimeForTesting(
     return false;
 
   std::string origin_str = SerializeOrigin(context_origin);
-  int64_t length = 0L;
   int64_t num_bytes = 0L;
   base::Time old_creation_time;
   OperationResult result =
-      GetOriginInfo(origin_str, &length, &num_bytes, &old_creation_time);
+      GetOriginInfo(origin_str, &num_bytes, &old_creation_time);
 
   if (result != OperationResult::kSuccess &&
       result != OperationResult::kNotFound) {
@@ -1088,8 +1088,7 @@ bool SharedStorageDatabase::OverrideCreationTimeForTesting(
   if (result == OperationResult::kNotFound)
     return true;
 
-  return UpdatePerOriginMapping(origin_str, new_creation_time, length,
-                                num_bytes,
+  return UpdatePerOriginMapping(origin_str, new_creation_time, num_bytes,
                                 /*origin_exists=*/true);
 }
 
@@ -1555,10 +1554,8 @@ std::optional<std::u16string> SharedStorageDatabase::MaybeGetValueFor(
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::GetOriginInfo(
     const std::string& context_origin,
-    int64_t* out_length,
     int64_t* out_num_bytes,
     base::Time* out_creation_time) {
-  DCHECK(out_length);
   DCHECK(out_creation_time);
   DCHECK(out_num_bytes);
 
@@ -1567,7 +1564,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::GetOriginInfo(
   // entries are found, we retrieve only the `length` and `creation_time`
   // from the first entry found.
   static constexpr char kSelectSql[] =
-      "SELECT length,creation_time,num_bytes FROM per_origin_mapping "
+      "SELECT creation_time,num_bytes FROM per_origin_mapping "
       "WHERE context_origin=? "
       "LIMIT 1";
 
@@ -1575,9 +1572,8 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::GetOriginInfo(
   statement.BindString(0, context_origin);
 
   if (statement.Step()) {
-    *out_length = statement.ColumnInt64(0);
-    *out_creation_time = statement.ColumnTime(1);
-    *out_num_bytes = statement.ColumnInt64(2);
+    *out_creation_time = statement.ColumnTime(0);
+    *out_num_bytes = statement.ColumnInt64(1);
     return OperationResult::kSuccess;
   }
 
@@ -1586,19 +1582,17 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::GetOriginInfo(
   return OperationResult::kNotFound;
 }
 
-bool SharedStorageDatabase::UpdateLength(const std::string& context_origin,
-                                         int64_t delta_length,
-                                         int64_t delta_bytes) {
-  // No-op if both deltas are zero.
-  if (delta_length == 0L && delta_bytes == 0L) {
+bool SharedStorageDatabase::UpdateBytes(const std::string& context_origin,
+                                        int64_t delta_bytes) {
+  // No-op if delta is zero.
+  if (delta_bytes == 0L) {
     return true;
   }
 
-  int64_t length = 0L;
   int64_t num_bytes = 0L;
   base::Time creation_time;
   OperationResult result =
-      GetOriginInfo(context_origin, &length, &num_bytes, &creation_time);
+      GetOriginInfo(context_origin, &num_bytes, &creation_time);
 
   if (result != OperationResult::kSuccess &&
       result != OperationResult::kNotFound) {
@@ -1606,11 +1600,12 @@ bool SharedStorageDatabase::UpdateLength(const std::string& context_origin,
   }
 
   bool origin_exists = true;
+  int64_t new_bytes = num_bytes + delta_bytes;
   if (result == OperationResult::kNotFound) {
     // Don't delete or insert anything from/into `per_origin_mapping` for
-    // non-existent origin when we would have decremented its length if it
+    // non-existent origin when we would have decreased its byte count if it
     // existed.
-    if (delta_length < 0L) {
+    if (new_bytes < 0L) {
       return true;
     }
 
@@ -1619,11 +1614,8 @@ bool SharedStorageDatabase::UpdateLength(const std::string& context_origin,
     origin_exists = false;
   }
 
-  int64_t new_length = std::max<int64_t>(length + delta_length, 0L);
-  int64_t new_bytes = std::max<int64_t>(num_bytes + delta_bytes, 0L);
-
-  return UpdatePerOriginMapping(context_origin, creation_time, new_length,
-                                new_bytes, origin_exists);
+  return UpdatePerOriginMapping(context_origin, creation_time, new_bytes,
+                                origin_exists);
 }
 
 bool SharedStorageDatabase::UpdateValuesMappingWithTime(
@@ -1655,8 +1647,8 @@ bool SharedStorageDatabase::UpdateValuesMappingWithTime(
 
     delta_bytes = 2 * (static_cast<int64_t>(value.size()) -
                        static_cast<int64_t>(previous_value->size()));
-    if (!UpdateLength(context_origin, /*delta_length=*/0,
-                      /*delta_bytes=*/delta_bytes)) {
+    if (!UpdateBytes(context_origin,
+                     /*delta_bytes=*/delta_bytes)) {
       return false;
     }
 
@@ -1677,8 +1669,8 @@ bool SharedStorageDatabase::UpdateValuesMappingWithTime(
     return false;
 
   delta_bytes = static_cast<int64_t>(2 * (key.size() + value.size()));
-  if (!UpdateLength(context_origin, /*delta_length=*/1,
-                    /*delta_bytes=*/delta_bytes)) {
+  if (!UpdateBytes(context_origin,
+                   /*delta_bytes=*/delta_bytes)) {
     return false;
   }
 
@@ -1709,17 +1701,15 @@ bool SharedStorageDatabase::DeleteFromPerOriginMapping(
 bool SharedStorageDatabase::InsertIntoPerOriginMapping(
     const std::string& context_origin,
     base::Time creation_time,
-    uint64_t length,
     uint64_t num_bytes) {
   static constexpr char kInsertSql[] =
-      "INSERT INTO per_origin_mapping(context_origin,creation_time,length,"
-      "num_bytes) VALUES(?,?,?,?)";
+      "INSERT INTO per_origin_mapping(context_origin,creation_time,num_bytes) "
+      "VALUES(?,?,?)";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindString(0, context_origin);
   statement.BindTime(1, creation_time);
-  statement.BindInt64(2, static_cast<int64_t>(length));
-  statement.BindInt64(3, static_cast<int64_t>(num_bytes));
+  statement.BindInt64(2, static_cast<int64_t>(num_bytes));
 
   return statement.Run();
 }
@@ -1727,33 +1717,28 @@ bool SharedStorageDatabase::InsertIntoPerOriginMapping(
 bool SharedStorageDatabase::UpdatePerOriginMapping(
     const std::string& context_origin,
     base::Time creation_time,
-    uint64_t length,
     uint64_t num_bytes,
     bool origin_exists) {
-  DCHECK(length >= 0L);
-
-  if (length && origin_exists) {
+  if (num_bytes && origin_exists) {
     static constexpr char kUpdateSql[] =
-        "UPDATE per_origin_mapping SET creation_time=?, length=?, num_bytes=? "
+        "UPDATE per_origin_mapping SET creation_time=?, num_bytes=? "
         "WHERE context_origin=?";
     sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
     statement.BindTime(0, creation_time);
-    statement.BindInt64(1, static_cast<int64_t>(length));
-    statement.BindInt64(2, static_cast<int64_t>(num_bytes));
-    statement.BindString(3, context_origin);
+    statement.BindInt64(1, static_cast<int64_t>(num_bytes));
+    statement.BindString(2, context_origin);
 
     return statement.Run();
   }
-  if (length) {
-    return InsertIntoPerOriginMapping(context_origin, creation_time, length,
-                                      num_bytes);
+  if (num_bytes) {
+    return InsertIntoPerOriginMapping(context_origin, creation_time, num_bytes);
   }
   if (origin_exists) {
     return DeleteFromPerOriginMapping(context_origin);
   }
 
-  //  Origin does not exist and we are trying to set the length to 0, so this is
-  //  a no-op.
+  //  Origin does not exist and we are trying to set the `num_bytes` to 0, so
+  //  this is a no-op.
   return true;
 }
 
@@ -1787,20 +1772,18 @@ bool SharedStorageDatabase::ManualPurgeExpiredValues(
     return false;
   }
 
-  // Recalculate the `length` and `num_bytes` for `context_origin`.
+  // Recalculate the `num_bytes` for `context_origin`.
   static constexpr char kSelectSql[] =
-      "SELECT COUNT(*), SUM(LENGTH(key) + LENGTH(value)) FROM values_mapping "
+      "SELECT SUM(LENGTH(key) + LENGTH(value)) FROM values_mapping "
       "WHERE context_origin=?";
 
   sql::Statement select_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   select_statement.BindString(0, context_origin);
 
-  int64_t length = 0;
   int64_t num_bytes = 0;
   if (select_statement.Step()) {
-    length = select_statement.ColumnInt64(0);
-    num_bytes = select_statement.ColumnInt64(1);
+    num_bytes = select_statement.ColumnInt64(0);
   }
 
   if (!select_statement.Succeeded()) {
@@ -1809,19 +1792,17 @@ bool SharedStorageDatabase::ManualPurgeExpiredValues(
 
   // There are no entries left for `context_origin`, so remove it from
   // `per_origin_mapping`.
-  if (!length) {
+  if (!num_bytes) {
     return DeleteFromPerOriginMapping(context_origin) && transaction.Commit();
   }
 
   // Update the `per_origin_mapping` row for `context_origin`.
   static constexpr char kUpdateSql[] =
-      "UPDATE per_origin_mapping SET length=?, num_bytes=? "
-      "WHERE context_origin=?";
+      "UPDATE per_origin_mapping SET num_bytes=? WHERE context_origin=?";
   sql::Statement update_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
-  update_statement.BindInt64(0, static_cast<int64_t>(length));
-  update_statement.BindInt64(1, static_cast<int64_t>(num_bytes));
-  update_statement.BindString(2, context_origin);
+  update_statement.BindInt64(0, static_cast<int64_t>(num_bytes));
+  update_statement.BindString(1, context_origin);
 
   if (!update_statement.Run()) {
     return false;
@@ -1887,9 +1868,13 @@ void SharedStorageDatabase::LogInitHistograms() {
   const int64_t kMedianOffset = (origin_count - 1) / 2;
 
   static constexpr char kLengthQuartileSql[] =
-      "SELECT AVG(length) FROM "
-      "(SELECT length FROM per_origin_mapping "
-      "ORDER BY length LIMIT ? OFFSET ?)";
+      "SELECT AVG(length) "
+      "FROM "
+      "  (SELECT length "
+      "  FROM "
+      "    (SELECT context_origin, COUNT(context_origin) AS length "
+      "    FROM values_mapping GROUP BY context_origin) "
+      "  ORDER BY length LIMIT ? OFFSET ?)";
 
   sql::Statement length_median_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kLengthQuartileSql));
@@ -1900,13 +1885,14 @@ void SharedStorageDatabase::LogInitHistograms() {
     base::UmaHistogramCounts100000(
         "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
         "Median",
-        length_median_statement.ColumnInt64(0));
+        length_median_statement.ColumnDouble(0));
   }
 
   static constexpr char kBytesQuartileSql[] =
-      "SELECT AVG(num_bytes) FROM "
-      "(SELECT num_bytes FROM per_origin_mapping "
-      "ORDER BY num_bytes LIMIT ? OFFSET ?)";
+      "SELECT AVG(num_bytes) "
+      "FROM "
+      "  (SELECT num_bytes FROM per_origin_mapping "
+      "  ORDER BY num_bytes LIMIT ? OFFSET ?)";
 
   sql::Statement bytes_median_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kBytesQuartileSql));
@@ -1934,7 +1920,7 @@ void SharedStorageDatabase::LogInitHistograms() {
   if (length_q1_statement.Step()) {
     base::UmaHistogramCounts100000(
         "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q1",
-        length_q1_statement.ColumnInt64(0));
+        length_q1_statement.ColumnDouble(0));
   }
 
   // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
@@ -1953,9 +1939,13 @@ void SharedStorageDatabase::LogInitHistograms() {
   // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
   // calculate upper and lower quartiles.
   static constexpr char kLengthUpperQuartileSql[] =
-      "SELECT AVG(length) FROM "
-      "(SELECT length FROM per_origin_mapping "
-      "ORDER BY length DESC LIMIT ? OFFSET ?)";
+      "SELECT AVG(length) "
+      "FROM "
+      "  (SELECT length "
+      "  FROM "
+      "    (SELECT context_origin, COUNT(context_origin) AS length "
+      "    FROM values_mapping GROUP BY context_origin) "
+      "  ORDER BY length DESC LIMIT ? OFFSET ?)";
 
   sql::Statement length_q3_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kLengthUpperQuartileSql));
@@ -1965,15 +1955,16 @@ void SharedStorageDatabase::LogInitHistograms() {
   if (length_q3_statement.Step()) {
     base::UmaHistogramCounts100000(
         "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q3",
-        length_q3_statement.ColumnInt64(0));
+        length_q3_statement.ColumnDouble(0));
   }
 
   // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
   // calculate upper and lower quartiles.
   static constexpr char kBytesUpperQuartileSql[] =
-      "SELECT AVG(num_bytes) FROM "
-      "(SELECT num_bytes FROM per_origin_mapping "
-      "ORDER BY num_bytes DESC LIMIT ? OFFSET ?)";
+      "SELECT AVG(num_bytes) "
+      "FROM "
+      "  (SELECT num_bytes FROM per_origin_mapping "
+      "  ORDER BY num_bytes DESC LIMIT ? OFFSET ?)";
 
   sql::Statement bytes_q3_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kBytesUpperQuartileSql));
@@ -1987,7 +1978,10 @@ void SharedStorageDatabase::LogInitHistograms() {
   }
 
   static constexpr char kLengthMinSql[] =
-      "SELECT MIN(length) FROM per_origin_mapping";
+      "SELECT MIN(length) "
+      "FROM "
+      "  (SELECT context_origin, COUNT(context_origin) AS length "
+      "  FROM values_mapping GROUP BY context_origin) ";
 
   sql::Statement length_min_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kLengthMinSql));
@@ -2013,7 +2007,10 @@ void SharedStorageDatabase::LogInitHistograms() {
   }
 
   static constexpr char kLengthMaxSql[] =
-      "SELECT MAX(length) FROM per_origin_mapping";
+      "SELECT MAX(length) "
+      "FROM "
+      "  (SELECT context_origin, COUNT(context_origin) AS length "
+      "  FROM values_mapping GROUP BY context_origin)";
 
   sql::Statement length_max_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kLengthMaxSql));

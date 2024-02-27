@@ -559,8 +559,8 @@ void VerifySharedStorageTablesAndColumns(sql::Database& db) {
   // `context_origin`, `key`, `value`, and `last_used_time`.
   EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "values_mapping"));
 
-  // `context_origin`, `creation_time`, `length`, and `num_bytes`.
-  EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "per_origin_mapping"));
+  // `context_origin`, `creation_time`, and `num_bytes`.
+  EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "per_origin_mapping"));
 
   // `id`, `context_site`, `time_stamp`, and `bits_debit`.
   EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "budget_mapping"));
