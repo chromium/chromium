@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -158,12 +159,12 @@ public class BookmarkImageFetcherTest {
 
                             // Setup image fetching.
                             doCallback(
-                                            1,
+                                            2,
                                             (Callback<GURL> callback) -> {
                                                 callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
                                             })
                                     .when(mBookmarkModel)
-                                    .getImageUrlForBookmark(any(), any());
+                                    .getImageUrlForBookmark(any(), anyBoolean(), any());
                             doCallback(
                                             1,
                                             (Callback<Bitmap> callback) -> {
@@ -247,12 +248,12 @@ public class BookmarkImageFetcherTest {
     @Test
     public void testFetchImageForBookmarkWithFaviconFallback_fallbackToFavicon() {
         doCallback(
-                        1,
+                        2,
                         (Callback<GURL> callback) -> {
                             callback.onResult(null);
                         })
                 .when(mBookmarkModel)
-                .getImageUrlForBookmark(any(), any());
+                .getImageUrlForBookmark(any(), anyBoolean(), any());
 
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mBookmarkItem1, mDrawableCallback);
@@ -286,11 +287,12 @@ public class BookmarkImageFetcherTest {
 
     @Test
     public void testMediatorDestroyedBeforeCallback() {
-        doNothing().when(mBookmarkModel).getImageUrlForBookmark(any(), any());
+        doNothing().when(mBookmarkModel).getImageUrlForBookmark(any(), anyBoolean(), any());
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mBookmarkItem1, mDrawableCallback);
 
-        verify(mBookmarkModel).getImageUrlForBookmark(any(), mGURLCallbackCaptor.capture());
+        verify(mBookmarkModel)
+                .getImageUrlForBookmark(any(), anyBoolean(), mGURLCallbackCaptor.capture());
         mBookmarkImageFetcher.destroy();
 
         // Now that mBookmarkImageFetcher is destroyed, all the callbacks should have been

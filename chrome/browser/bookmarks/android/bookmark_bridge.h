@@ -76,6 +76,7 @@ class BookmarkBridge : public ProfileObserver,
   void GetImageUrlForBookmark(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_url,
+      bool is_account_bookmark,
       const base::android::JavaParamRef<jobject>& j_callback);
 
   base::android::ScopedJavaLocalRef<jobject>

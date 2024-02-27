@@ -227,7 +227,7 @@ BookmarkBridge::~BookmarkBridge() {
   profile_observation_.Reset();
 }
 
-void BookmarkBridge::Destroy(JNIEnv*) {
+void BookmarkBridge::Destroy(JNIEnv* env) {
   // This will call the destructor because the user data is a unique pointer.
   bookmark_model_->RemoveUserData(kBookmarkBridgeUserDataKey);
 }
@@ -243,7 +243,8 @@ jboolean BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
 
 void BookmarkBridge::GetImageUrlForBookmark(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_url,
+    const base::android::JavaParamRef<jobject>& j_url,
+    bool is_account_bookmark,
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   if (!image_service_) {

@@ -202,7 +202,7 @@ public class BookmarkImageFetcher {
         }
 
         // This call may invoke the callback immediately if the url is cached.
-        mPageImageServiceQueue.getSalientImageUrl(item.getUrl(), imageUrlCallback);
+        mPageImageServiceQueue.getSalientImageUrl(item, imageUrlCallback);
     }
 
     private void fetchImageUrl(GURL url, Callback<Drawable> callback) {

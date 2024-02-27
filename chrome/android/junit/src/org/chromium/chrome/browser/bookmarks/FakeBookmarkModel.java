@@ -280,8 +280,15 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public void getImageUrlForBookmark(
-                long nativeBookmarkBridge, GURL url, Callback<GURL> callback) {
-            callback.onResult(null);
+                long nativeBookmarkBridge,
+                GURL url,
+                boolean isAccountBookmark,
+                Callback<GURL> callback) {
+            if (areAccountBookmarkFoldersActive(nativeBookmarkBridge) && isAccountBookmark) {
+                callback.onResult(new GURL("https://fakeimage.com"));
+            } else {
+                callback.onResult(null);
+            }
         }
 
         @Override

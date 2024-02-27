@@ -99,11 +99,14 @@ class BookmarkBridge {
     /**
      * Gets the url for an image representing the given url.
      *
-     * @param url The url to fetch the image for.
+     * @param url The bookmark url to get the image url for.
+     * @param isAccountBookmark Whether the bookmark is associated with an account.
      * @param callback The callback which will receive the image url.
      */
-    public void getImageUrlForBookmark(GURL url, Callback<GURL> callback) {
-        BookmarkBridgeJni.get().getImageUrlForBookmark(mNativeBookmarkBridge, url, callback);
+    public void getImageUrlForBookmark(
+            GURL url, boolean isAccountBookmark, Callback<GURL> callback) {
+        BookmarkBridgeJni.get()
+                .getImageUrlForBookmark(mNativeBookmarkBridge, url, isAccountBookmark, callback);
     }
 
     /** Returns the most recently added BookmarkId */
@@ -1057,7 +1060,11 @@ class BookmarkBridge {
 
         boolean areAccountBookmarkFoldersActive(long nativeBookmarkBridge);
 
-        void getImageUrlForBookmark(long nativeBookmarkBridge, GURL url, Callback<GURL> callback);
+        void getImageUrlForBookmark(
+                long nativeBookmarkBridge,
+                GURL url,
+                boolean isAccountBookmark,
+                Callback<GURL> callback);
 
         BookmarkId getMostRecentlyAddedUserBookmarkIdForUrl(long nativeBookmarkBridge, GURL url);
 
