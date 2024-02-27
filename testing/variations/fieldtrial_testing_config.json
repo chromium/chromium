@@ -8846,6 +8846,21 @@
             ]
         }
     ],
+    "IOSDefaultBrowserVideoInSettings": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserVideoInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDiscoverFeedSportCard": [
         {
             "platforms": [
