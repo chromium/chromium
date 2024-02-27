@@ -48,6 +48,9 @@ TEST_F(DefaultBrowserSettingsTableViewControllerTest, TestModel) {
 
   CheckSectionHeaderWithId(IDS_IOS_SETTINGS_HEADER_TEXT, 0);
   CheckSectionHeaderWithId(IDS_IOS_SETTINGS_FOLLOW_STEPS_BELOW_TEXT, 1);
+
+  // Ensure primary button cell can be interacted with.
+  CheckTextCellEnabled(YES, 2, 0);
 }
 
 TEST_F(DefaultBrowserSettingsTableViewControllerTest,
