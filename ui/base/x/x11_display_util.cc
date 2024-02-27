@@ -46,6 +46,9 @@ constexpr const char kRandrEdidProperty[] = "EDID";
 std::map<x11::RandR::Output, size_t> GetMonitors(
     const x11::Response<x11::RandR::GetMonitorsReply>& reply) {
   std::map<x11::RandR::Output, size_t> output_to_monitor;
+  if (!reply) {
+    return output_to_monitor;
+  }
   for (size_t monitor = 0; monitor < reply->monitors.size(); monitor++) {
     for (x11::RandR::Output output : reply->monitors[monitor].outputs) {
       output_to_monitor[output] = monitor;
