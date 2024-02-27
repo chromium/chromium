@@ -93,7 +93,8 @@ class NavigationPredictor
   void ReportAnchorElementPointerDown(
       blink::mojom::AnchorElementPointerDownPtr pointer_down_event) override;
   void ReportNewAnchorElements(
-      std::vector<blink::mojom::AnchorElementMetricsPtr> elements) override;
+      std::vector<blink::mojom::AnchorElementMetricsPtr> elements,
+      const std::vector<uint32_t>& removed_elements) override;
   void ProcessPointerEventUsingMLModel(
       blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event)
       override;

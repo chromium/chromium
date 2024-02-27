@@ -709,9 +709,11 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
       HTMLElement::InsertedInto(insertion_point);
   LogAddElementIfIsolatedWorldAndInDocument("a", html_names::kHrefAttr);
 
-  if (auto* sender =
-          AnchorElementMetricsSender::GetForFrame(GetDocument().GetFrame())) {
-    sender->AddAnchorElement(*this);
+  if (isConnected()) {
+    if (auto* sender =
+            AnchorElementMetricsSender::GetForFrame(GetDocument().GetFrame())) {
+      sender->AddAnchorElement(*this);
+    }
   }
 
   if (isConnected() && IsLink()) {
@@ -747,6 +749,13 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
 
 void HTMLAnchorElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
+
+  if (insertion_point.isConnected()) {
+    if (auto* sender =
+            AnchorElementMetricsSender::GetForFrame(GetDocument().GetFrame())) {
+      sender->RemoveAnchorElement(*this);
+    }
+  }
 
   if (insertion_point.isConnected() && IsLink()) {
     if (auto* document_rules =

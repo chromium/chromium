@@ -191,7 +191,8 @@ NavigationPredictor::GetNavigationPredictorMetricsDocumentData() const {
 }
 
 void NavigationPredictor::ReportNewAnchorElements(
-    std::vector<blink::mojom::AnchorElementMetricsPtr> elements) {
+    std::vector<blink::mojom::AnchorElementMetricsPtr> elements,
+    const std::vector<uint32_t>& removed_elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
   DCHECK(!IsPrerendering(render_frame_host()));
@@ -213,37 +214,53 @@ void NavigationPredictor::ReportNewAnchorElements(
       continue;
     }
 
-    data.number_of_anchors_++;
-    if (element->contains_image) {
-      data.number_of_anchors_contains_image_++;
-    }
-    if (element->is_url_incremented_by_one) {
-      data.number_of_anchors_url_incremented_++;
-    }
-    if (element->is_in_iframe) {
-      data.number_of_anchors_in_iframe_++;
-    }
-    if (element->is_same_host) {
-      data.number_of_anchors_same_host_++;
-    }
-    data.viewport_height_ = element->viewport_size.height();
-    data.viewport_width_ = element->viewport_size.width();
-    data.total_clickable_space_ += element->ratio_area * 100;
-    data.link_locations_.push_back(element->ratio_distance_top_to_visible_top);
+    auto [id_it, id_inserted] = tracked_anchor_id_to_index_.insert(
+        {anchor_id, tracked_anchor_id_to_index_.size()});
 
-    // Collect the target URL if it is new, without ref (# fragment).
-    GURL target_url = element->target_url.GetWithoutRef();
-    if (target_url != document_url) {
-      auto [it, inserted] =
-          predicted_urls_.insert(base::FastHash(target_url.spec()));
-      if (inserted) {
-        new_predictions.push_back(std::move(target_url));
+    // We may have seen this anchor before, but it was removed from the page, so
+    // we stopped tracking it. We'll start tracking it again, but not treat it
+    // as a new anchor.
+    if (id_inserted) {
+      data.number_of_anchors_++;
+      if (element->contains_image) {
+        data.number_of_anchors_contains_image_++;
+      }
+      if (element->is_url_incremented_by_one) {
+        data.number_of_anchors_url_incremented_++;
+      }
+      if (element->is_in_iframe) {
+        data.number_of_anchors_in_iframe_++;
+      }
+      if (element->is_same_host) {
+        data.number_of_anchors_same_host_++;
+      }
+      data.viewport_height_ = element->viewport_size.height();
+      data.viewport_width_ = element->viewport_size.width();
+      data.total_clickable_space_ += element->ratio_area * 100;
+      data.link_locations_.push_back(
+          element->ratio_distance_top_to_visible_top);
+
+      // Collect the target URL if it is new, without ref (# fragment).
+      GURL target_url = element->target_url.GetWithoutRef();
+      if (target_url != document_url) {
+        auto [url_it, url_inserted] =
+            predicted_urls_.insert(base::FastHash(target_url.spec()));
+        if (url_inserted) {
+          new_predictions.push_back(std::move(target_url));
+        }
       }
     }
 
     anchors_.emplace(std::piecewise_construct, std::forward_as_tuple(anchor_id),
                      std::forward_as_tuple(std::move(element), NowTicks()));
-    tracked_anchor_id_to_index_[anchor_id] = tracked_anchor_id_to_index_.size();
+  }
+
+  for (uint32_t removed_element : removed_elements) {
+    AnchorId anchor_id(removed_element);
+    // Stop tracking removed elements to conserve memory. We leave an entry in
+    // `tracked_anchor_id_to_index_` to detect if a removed element is re-added
+    // to the page.
+    anchors_.erase(anchor_id);
   }
 
   if (!new_predictions.empty()) {

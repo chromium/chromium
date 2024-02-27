@@ -122,7 +122,8 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->ratio_distance_top_to_visible_top = 10;
   metrics[0]->viewport_size = GetDefaultViewport();
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
 
   NavigationPredictorMetricsDocumentData::AnchorsData& data =
@@ -142,7 +143,8 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   metrics.clear();
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->contains_image = true;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, data.number_of_anchors_);
   EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
@@ -155,7 +157,8 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   metrics.clear();
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->is_in_iframe = true;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3u, data.number_of_anchors_);
   EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
@@ -168,7 +171,8 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   metrics.clear();
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->is_same_host = true;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(4u, data.number_of_anchors_);
   EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
@@ -182,7 +186,8 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElements) {
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->is_url_incremented_by_one = true;
   metrics[0]->ratio_area = 0.05;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(5u, data.number_of_anchors_);
   EXPECT_EQ(1u, data.number_of_anchors_contains_image_);
@@ -197,14 +202,16 @@ TEST_F(NavigationPredictorTest, ReportSameAnchorElementTwice) {
   std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
   metrics.push_back(CreateMetricsPtr());
   uint32_t anchor_id = metrics[0]->anchor_id;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
   metrics.clear();
 
   // Report the same anchor again, it should be ignored.
   metrics.push_back(CreateMetricsPtr());
   metrics[0]->anchor_id = anchor_id;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
 
   NavigationPredictorMetricsDocumentData::AnchorsData& data =
@@ -246,7 +253,8 @@ TEST_F(NavigationPredictorTest, ReportNewAnchorElementsMultipleAnchors) {
   metrics.push_back(CreateMetricsPtr());
   metrics[1]->contains_image = true;
   metrics[1]->viewport_size = GetDefaultViewport();
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
   base::RunLoop().RunUntilIdle();
 
   NavigationPredictorMetricsDocumentData::AnchorsData& data =
@@ -279,7 +287,8 @@ class MetricsBuilder {
 
   void Run() {
     size_t num_entered_viewport = entered_viewport_.size();
-    tester_->predictor_service()->ReportNewAnchorElements(std::move(metrics_));
+    tester_->predictor_service()->ReportNewAnchorElements(
+        std::move(metrics_), /*removed_elements=*/{});
     tester_->predictor_service()->ReportAnchorElementsEnteredViewport(
         std::move(entered_viewport_));
     metrics_.clear();
@@ -449,7 +458,8 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClick) {
   int anchor_id_0 = metrics[0]->anchor_id;
   GURL target_url = metrics[0]->target_url;
   int anchor_id_1 = metrics[1]->anchor_id;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
 
   auto click = blink::mojom::AnchorElementClick::New();
   const long navigation_start_to_click_ms = 333;
@@ -493,7 +503,8 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClickMoreThan10Clicks) {
   metrics.push_back(CreateMetricsPtr());
 
   int anchor_id = metrics[0]->anchor_id;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service()->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
 
   auto add_click = [&]() {
     auto click = blink::mojom::AnchorElementClick::New();
@@ -555,6 +566,7 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
     auto it = tracked_anchor_id_to_index_.find(anchor_id);
     return (it != tracked_anchor_id_to_index_.end()) ? it->second : -1;
   }
+  size_t NumAnchorElementData() const { return anchors_.size(); }
   // NavigationPredictor::
   void OnPreloadingHeuristicsModelDone(
       GURL url,
@@ -592,7 +604,8 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
 
     MockNavigationPredictorForTesting::AnchorId anchor_id(
         metrics[0]->anchor_id);
-    predictor_service->ReportNewAnchorElements(std::move(metrics));
+    predictor_service->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
     return anchor_id;
   }
 
@@ -625,7 +638,8 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
 
     MockNavigationPredictorForTesting::AnchorId anchor_id(
         metrics[0]->anchor_id);
-    predictor_service->ReportNewAnchorElements(std::move(metrics));
+    predictor_service->ReportNewAnchorElements(std::move(metrics),
+                                               /*removed_elements=*/{});
     return anchor_id;
   }
 
@@ -901,7 +915,8 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordUserInteractionMetrics) {
   auto anchor_id_1 =
       MockNavigationPredictorForTesting::AnchorId(metrics[1]->anchor_id);
   GURL target_url_1 = metrics[1]->target_url;
-  predictor_service->ReportNewAnchorElements(std::move(metrics));
+  predictor_service->ReportNewAnchorElements(std::move(metrics),
+                                             /*removed_elements=*/{});
 
   // Both anchors enter the viewport.
   const int navigation_start_to_entered_viewport = 30;
@@ -1020,7 +1035,8 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordPreloadingOnHover) {
   AnchorId anchor_id_0(metrics[0]->anchor_id);
   AnchorId anchor_id_1(metrics[1]->anchor_id);
   GURL target_url = metrics[1]->target_url;
-  predictor_service->ReportNewAnchorElements(std::move(metrics));
+  predictor_service->ReportNewAnchorElements(std::move(metrics),
+                                             /*removed_elements=*/{});
 
   // Mouse moves over anchor_id_0, mouse down and then moves away.
   ReportAnchorElementPointerOver(
@@ -1336,4 +1352,49 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   task_runner()->AdvanceMockTickClock(base::Milliseconds(200));
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(did_ml_score_called);
+}
+
+TEST_F(NavigationPredictorTest, RemoveAnchorElement) {
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(0u, predictor_service_host->NumAnchorElementData());
+
+  std::vector<blink::mojom::AnchorElementMetricsPtr> metrics1;
+  blink::mojom::AnchorElementMetricsPtr anchor1 = CreateMetricsPtr();
+  metrics1.push_back(anchor1->Clone());
+  uint32_t anchor1_id = metrics1[0]->anchor_id;
+  predictor_service->ReportNewAnchorElements(std::move(metrics1),
+                                             /*removed_elements=*/{});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, predictor_service_host->NumAnchorElementData());
+  NavigationPredictorMetricsDocumentData::AnchorsData& data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          main_rfh())
+          ->GetAnchorsData();
+  EXPECT_EQ(1u, data.number_of_anchors_);
+
+  // Report the addition of another anchor and report that the first anchor was
+  // removed.
+  std::vector<blink::mojom::AnchorElementMetricsPtr> metrics2;
+  metrics2.push_back(CreateMetricsPtr());
+  predictor_service->ReportNewAnchorElements(std::move(metrics2),
+                                             /*removed_elements=*/{anchor1_id});
+  base::RunLoop().RunUntilIdle();
+  // We drop the information about the removed element in order to save memory.
+  EXPECT_EQ(1u, predictor_service_host->NumAnchorElementData());
+  EXPECT_EQ(2u, data.number_of_anchors_);
+
+  // Suppose the first anchor was reinserted.
+  std::vector<blink::mojom::AnchorElementMetricsPtr> metrics3;
+  metrics3.push_back(anchor1->Clone());
+  predictor_service->ReportNewAnchorElements(std::move(metrics3),
+                                             /*removed_elements=*/{});
+  base::RunLoop().RunUntilIdle();
+  // We start storing the information about this element again.
+  EXPECT_EQ(2u, predictor_service_host->NumAnchorElementData());
+  // We've seen the same element previously, so we don't consider this an
+  // additional anchor.
+  EXPECT_EQ(2u, data.number_of_anchors_);
 }

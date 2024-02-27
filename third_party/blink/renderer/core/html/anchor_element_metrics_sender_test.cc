@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -81,15 +82,17 @@ class MockAnchorElementMetricsHost
   }
 
   void ReportNewAnchorElements(
-      WTF::Vector<mojom::blink::AnchorElementMetricsPtr> elements) override {
+      WTF::Vector<mojom::blink::AnchorElementMetricsPtr> elements,
+      const WTF::Vector<uint32_t>& removed_elements) override {
     for (auto& element : elements) {
+      auto [it, inserted] = anchor_ids_.insert(element->anchor_id);
       // Ignore duplicates.
-      if (base::Contains(anchor_ids_, element->anchor_id)) {
-        continue;
+      if (inserted) {
+        elements_.emplace_back(std::move(element));
       }
-      anchor_ids_.insert(element->anchor_id);
-      elements_.emplace_back(std::move(element));
     }
+    removed_anchor_ids_.insert(removed_elements.begin(),
+                               removed_elements.end());
   }
 
   void ProcessPointerEventUsingMLModel(
@@ -114,7 +117,8 @@ class MockAnchorElementMetricsHost
   std::vector<mojom::blink::AnchorElementPointerDataOnHoverTimerFiredPtr>
       pointer_data_on_hover_;
   std::vector<mojom::blink::AnchorElementMetricsPtr> elements_;
-  std::set<int32_t> anchor_ids_;
+  std::set<uint32_t> anchor_ids_;
+  std::set<uint32_t> removed_anchor_ids_;
 
  private:
   mojo::Receiver<mojom::blink::AnchorElementMetricsHost> receiver_{this};
@@ -260,6 +264,358 @@ TEST_F(AnchorElementMetricsSenderTest, AddAnchorElementAfterLoad) {
   EXPECT_EQ(1u, mock_host->elements_.size());
   EXPECT_EQ(mock_host->entered_viewport_[0]->anchor_id,
             mock_host->elements_[0]->anchor_id);
+}
+
+TEST_F(AnchorElementMetricsSenderTest, AddAndRemoveAnchorElement) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <script>
+      window.addEventListener('load', () => {
+        const a1 = document.createElement('a');
+        a1.text = 'foo';
+        a1.href = '';
+        document.body.appendChild(a1);
+        a1.remove();
+        const a2 = document.createElement('a');
+        a2.text = 'bar';
+        a2.href = '';
+        document.body.appendChild(a2);
+      });
+    </script>
+  )HTML");
+
+  // `a1` was added and immediately removed, so it shouldn't be included.
+  ProcessEvents(1);
+
+  ASSERT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  // Treat `a1` as if it were never added.
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+}
+
+TEST_F(AnchorElementMetricsSenderTest, AddAnchorElementFromDocumentFragment) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <script>
+      window.addEventListener('load', () => {
+        const fragment = new DocumentFragment();
+        const a = document.createElement('a');
+        a.text = 'foo';
+        a.href = '';
+        fragment.appendChild(a);
+        document.body.appendChild(fragment);
+      });
+    </script>
+  )HTML");
+
+  ProcessEvents(1);
+
+  ASSERT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  // `a` was removed from the DocumentFragment in order to insert it into the
+  // document, so it should not be considered removed.
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+}
+
+TEST_F(AnchorElementMetricsSenderTest, AnchorElementNeverConnected) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <script>
+      window.addEventListener('load', () => {
+        const a1 = document.createElement('a');
+        a1.text = 'a1';
+        a1.href = '';
+        const div = document.createElement('div');
+        div.appendChild(a1);
+
+        const a2 = document.createElement('a');
+        a2.text = 'a2';
+        a2.href = '';
+        document.body.appendChild(a2);
+      });
+    </script>
+  )HTML");
+
+  // `a1` should not be processed.
+  ProcessEvents(1);
+
+  ASSERT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+}
+
+TEST_F(AnchorElementMetricsSenderTest, RemoveAnchorElement) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <script>
+      window.addEventListener('load', () => {
+        const a1 = document.createElement('a');
+        a1.text = 'foo';
+        a1.href = '';
+        document.body.appendChild(a1);
+        window.a1 = a1;
+      });
+    </script>
+  )HTML");
+
+  // Initially, `a1` should be reported.
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  ASSERT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+  uint32_t a1_id = mock_host->elements_[0]->anchor_id;
+
+  ClassicScript::CreateUnspecifiedScript(R"SCRIPT(
+    window.a1.remove();
+    const a2 = document.createElement('a');
+    a2.text = 'bar';
+    a2.href = '';
+    document.body.appendChild(a2);
+  )SCRIPT")
+      ->RunScript(&Window());
+
+  // For the next step, `a2` should be reported and `a1` should be reported as
+  // removed.
+  ProcessEvents(2);
+  EXPECT_EQ(2u, mock_host->elements_.size());
+  EXPECT_EQ(1u, mock_host->removed_anchor_ids_.size());
+  EXPECT_TRUE(mock_host->removed_anchor_ids_.contains(a1_id));
+}
+
+TEST_F(AnchorElementMetricsSenderTest,
+       RemoveAnchorElementWithoutMoreInsertions) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <script>
+      window.addEventListener('load', () => {
+        const a1 = document.createElement('a');
+        a1.text = 'foo';
+        a1.href = '';
+        document.body.appendChild(a1);
+        window.a1 = a1;
+      });
+    </script>
+  )HTML");
+
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  ASSERT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+  uint32_t a1_id = mock_host->elements_[0]->anchor_id;
+
+  ClassicScript::CreateUnspecifiedScript(R"SCRIPT(
+    window.a1.remove();
+  )SCRIPT")
+      ->RunScript(&Window());
+
+  // We should have a report of just the removal of `a1`.
+  ProcessEvents(1);
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(1u, mock_host->removed_anchor_ids_.size());
+  EXPECT_TRUE(mock_host->removed_anchor_ids_.contains(a1_id));
+}
+
+TEST_F(AnchorElementMetricsSenderTest, RemoveMultipleParents) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <script>
+      window.addEventListener('load', () => {
+        const a1grandparent = document.createElement('div');
+        const a1parent = document.createElement('div');
+        const a1 = document.createElement('a');
+        a1.text = 'a1';
+        a1.href = '';
+        a1parent.appendChild(a1);
+        a1grandparent.appendChild(a1parent);
+        document.body.appendChild(a1grandparent);
+
+        const a2grandparent = document.createElement('div');
+        const a2parent = document.createElement('div');
+        const a2 = document.createElement('a');
+        a2.text = 'a2';
+        a2.href = '';
+        a2parent.appendChild(a2);
+        a2grandparent.appendChild(a2parent);
+        document.body.appendChild(a2grandparent);
+
+        window.a1 = a1;
+        window.a2 = a2;
+      });
+    </script>
+  )HTML");
+
+  ProcessEvents(2);
+  ASSERT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  ASSERT_EQ(2u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+
+  ClassicScript::CreateUnspecifiedScript(R"SCRIPT(
+    window.a1.parentNode.parentNode.remove();
+    window.a1.parentNode.remove();
+    window.a1.remove();
+
+    const a2grandparent = window.a2.parentNode.parentNode;
+    const a2parent = window.a2.parentNode;
+    const a2 = window.a2;
+    a2grandparent.remove();
+    a2parent.remove();
+    a2.remove();
+    a2parent.appendChild(a2);
+    a2grandparent.appendChild(a2parent);
+    document.body.appendChild(a2grandparent);
+
+    const a3grandparent = document.createElement('div');
+    const a3parent = document.createElement('div');
+    const a3 = document.createElement('a');
+    a3.text = 'a3';
+    a3.href = '';
+    a3parent.appendChild(a3);
+    a3grandparent.appendChild(a3parent);
+    document.body.appendChild(a3grandparent);
+    a3grandparent.remove();
+    a3parent.remove();
+    a3.remove();
+
+    const a4 = document.createElement('a');
+    a4.text = 'a4';
+    a4.href = '';
+    document.body.appendChild(a4);
+  )SCRIPT")
+      ->RunScript(&Window());
+
+  ProcessEvents(3);
+  EXPECT_EQ(3u, mock_host->elements_.size());
+  EXPECT_EQ(1u, mock_host->removed_anchor_ids_.size());
+}
+
+TEST_F(AnchorElementMetricsSenderTest, RemoveAnchorElementAfterLayout) {
+  String source("https://example.com/p1");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <script>
+      window.addEventListener('load', () => {
+        const a0 = document.createElement('a');
+        a0.text = 'a0';
+        a0.href = '';
+        document.body.appendChild(a0);
+        window.a0 = a0;
+      });
+    </script>
+  )HTML");
+
+  // Report an initial anchor.
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+
+  ClassicScript::CreateUnspecifiedScript(R"SCRIPT(
+    const a1 = document.createElement('a');
+    a1.text = 'a1';
+    a1.href = '';
+    document.body.appendChild(a1);
+
+    const a2 = document.createElement('a');
+    a2.text = 'a2';
+    a2.href = '';
+    document.body.appendChild(a2);
+
+    const a3 = document.createElement('a');
+    a3.text = 'a3';
+    a3.href = '';
+    document.body.appendChild(a3);
+
+    const a4 = document.createElement('a');
+    a4.text = 'a4';
+    a4.href = '';
+    document.body.appendChild(a4);
+
+    const a5 = document.createElement('a');
+    a5.text = 'a5';
+    a5.href = '';
+    document.body.appendChild(a5);
+
+    window.a1 = a1;
+    window.a2 = a2;
+    window.a3 = a3;
+    window.a4 = a4;
+    window.a5 = a5;
+  )SCRIPT")
+      ->RunScript(&Window());
+
+  // Layout so the metrics are buffered.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Before metrics are flushed, remove the initial anchor and `a1`, remove and
+  // reinsert `a2`, repeatedly remove and reinsert `a3`, repeatedly remove and
+  // reinsert then remove `a4`, remove `a5`, add a new anchor `a6`.
+  ClassicScript::CreateUnspecifiedScript(R"SCRIPT(
+    window.a0.remove();
+    window.a1.remove();
+
+    window.a2.remove();
+    document.body.appendChild(window.a2);
+
+    window.a3.remove();
+    document.body.appendChild(window.a3);
+    window.a3.remove();
+    document.body.appendChild(window.a3);
+
+    window.a4.remove();
+    document.body.appendChild(window.a4);
+    window.a4.remove();
+
+    window.a5.remove();
+
+    const a6 = document.createElement('a');
+    a6.text = 'a6';
+    a6.href = '';
+    document.body.appendChild(a6);
+  )SCRIPT")
+      ->RunScript(&Window());
+
+  // After another buffering of metrics, reinsert `a5`.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ClassicScript::CreateUnspecifiedScript(R"SCRIPT(
+    document.body.appendChild(window.a5);
+  )SCRIPT")
+      ->RunScript(&Window());
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Flush metrics.
+  // At this point, 4 of the anchors are newly inserted and still inserted, 1
+  // was previously reported and removed, 2 were newly inserted but removed
+  // before the flush (so they're not reported).
+  ProcessEvents(5);
+  EXPECT_EQ(5u, mock_host->elements_.size());
+  EXPECT_EQ(1u, mock_host->removed_anchor_ids_.size());
 }
 
 TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {

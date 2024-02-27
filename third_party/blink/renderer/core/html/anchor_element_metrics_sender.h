@@ -58,6 +58,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
  public:
   static const char kSupplementName[];
 
+  using AnchorId = uint32_t;
+
   explicit AnchorElementMetricsSender(Document&);
   AnchorElementMetricsSender(const AnchorElementMetricsSender&) = delete;
   AnchorElementMetricsSender& operator=(const AnchorElementMetricsSender&) =
@@ -86,13 +88,12 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // Report the on-hover event and anchor element pointer data to the browser
   // process.
   void MaybeReportAnchorElementPointerDataOnHoverTimerFired(
-      uint32_t anchor_id,
+      AnchorId anchor_id,
       mojom::blink::AnchorElementPointerDataPtr mouse_data);
 
-  // Adds an anchor element to |anchor_elements_|.
   void AddAnchorElement(HTMLAnchorElement& element);
+  void RemoveAnchorElement(HTMLAnchorElement& element);
 
-  HeapMojoRemote<mojom::blink::AnchorElementMetricsHost>* MetricsHost();
   void SetTickClockForTesting(const base::TickClock* clock);
   void SetNowAsNavigationStartForTesting();
   void FireUpdateTimerForTesting();
@@ -141,8 +142,32 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // Mock timestamp for navigation start used for testing.
   std::optional<base::TimeTicks> mock_navigation_start_for_testing_;
 
+  // `anchor_elements_to_report_` and `removed_anchors_to_report_` store anchor
+  // insertions and removals that have happened since the last layout. Upon
+  // layout, they will be used to populate `metrics_` and
+  // `metrics_removed_anchors_`.
   // Use WeakMember to make sure we don't leak memory on long-lived pages.
   HeapHashSet<WeakMember<HTMLAnchorElement>> anchor_elements_to_report_;
+  WTF::Vector<AnchorId> removed_anchors_to_report_;
+
+  // `metrics_` and `metrics_removed_anchors_` buffer metrics updates that are
+  // scheduled to be sent to the browser.
+  WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
+  WTF::Vector<AnchorId> metrics_removed_anchors_;
+  // Contains the sizes of `metrics_` and `metrics_removed_anchors_`,
+  // respectively, at the completion of each layout.
+  //
+  // This allows buffering the outcomes of potentially multiple layouts
+  // before reporting to the browser, while still representing the
+  // coherent state of each. For example, if this contains:
+  //   [(x0, y0), (x1, y1), (x2, y2)]
+  // Then this conceptually contains the following updates:
+  //   metrics_[0..x0],  metrics_removed_anchors_[0..y0]
+  //   metrics_[x0..x1], metrics_removed_anchors_[y0..y1]
+  //   metrics_[x1..x2], metrics_removed_anchors_[y1..y2]
+  // This data is consolidated into a single report representing the
+  // net change before reporting to the browser.
+  WTF::Vector<std::pair<wtf_size_t, wtf_size_t>> metrics_partitions_;
 
   HeapMojoRemote<mojom::blink::AnchorElementMetricsHost> metrics_host_;
 
@@ -152,8 +177,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // is no longer done.
   bool should_skip_update_delays_for_testing_ = false;
 
-  WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
-
   const int random_anchor_sampling_period_;
 
   Member<IntersectionObserver> intersection_observer_;
@@ -161,7 +184,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;
 
-  using AnchorId = uint32_t;
   struct AnchorElementTimingStats {
     bool entered_viewport_should_be_enqueued_{true};
     std::optional<base::TimeTicks> viewport_entry_time_;

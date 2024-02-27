@@ -175,8 +175,11 @@ interface AnchorElementMetricsHost {
   // element. New HTMLAnchorElements that are not visible after the first layout
   // since their creation will never be reported. This is not ideal, but allows
   // us to avoid keeping references to elements that may never become visible.
+  // `removed_elements` contains the anchor ids of anchor elements that have
+  // been removed from the document since the last call to this method.
   // This is called for all anchor elements.
-  ReportNewAnchorElements(array<AnchorElementMetrics> metrics);
+  ReportNewAnchorElements(array<AnchorElementMetrics> metrics,
+                          array<uint32> removed_elements);
 
   // This is called regularly to report anchors that entered the viewport. This
   // just reports the ID of each element entering the viewport. These records
