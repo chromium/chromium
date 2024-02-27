@@ -1384,7 +1384,7 @@ static_library("extensions") {
     ]
   }
 
-  if (enable_pdf) {
+  if (enable_pdf && enable_screen_ai_service) {
     sources += [
       "api/pdf_viewer_private/pdf_viewer_private_event_router.cc",
       "api/pdf_viewer_private/pdf_viewer_private_event_router.h",

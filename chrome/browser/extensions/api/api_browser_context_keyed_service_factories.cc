@@ -42,6 +42,7 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "extensions/browser/api/bluetooth_low_energy/bluetooth_low_energy_api.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
+#include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -63,9 +64,9 @@
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_controller_lacros.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/extensions/api/pdf_viewer_private/pdf_viewer_private_event_router_factory.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
 #include "chrome/browser/extensions/api/mdns/mdns_api.h"
@@ -113,9 +114,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::OmniboxAPI::GetFactoryInstance();
   extensions::PasswordsPrivateDelegateFactory::GetInstance();
   extensions::PasswordsPrivateEventRouterFactory::GetInstance();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   extensions::PdfViewerPrivateEventRouterFactory::GetInstance();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   extensions::PreferenceAPI::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::GetFactoryInstance();
