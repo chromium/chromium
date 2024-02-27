@@ -25,6 +25,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/memory/dangling_ptr_instrumentation.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/to_address.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
@@ -1502,7 +1503,7 @@ TEST_F(RawPtrTest, CrossKindAssignment) {
 // `to_address()`.
 TEST_F(RawPtrTest, ToAddressDoesNotDereference) {
   CountingRawPtr<int> ptr = nullptr;
-  int* raw = std::to_address(ptr);
+  int* raw = base::to_address(ptr);
   std::ignore = raw;
   EXPECT_THAT((CountingRawPtrExpectations{.get_for_dereference_cnt = 0,
                                           .get_for_extraction_cnt = 1,
@@ -1514,7 +1515,7 @@ TEST_F(RawPtrTest, ToAddressDoesNotDereference) {
 TEST_F(RawPtrTest, ToAddressGivesBackRawAddress) {
   int* raw = nullptr;
   raw_ptr<int> miracle = raw;
-  EXPECT_EQ(std::to_address(raw), std::to_address(miracle));
+  EXPECT_EQ(base::to_address(raw), base::to_address(miracle));
 }
 
 void InOutParamFuncWithPointer(int* in, int** out) {

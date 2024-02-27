@@ -26,6 +26,7 @@
 #include "base/template_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/strong_alias.h"
+#include "base/types/to_address.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/public/browser/commit_deferring_condition.h"
@@ -585,10 +586,11 @@ bool IsWebcamAvailableOnSystem(WebContents* web_contents);
 class ToRenderFrameHost {
  public:
   template <typename Ptr>
+    requires requires(Ptr p) { base::to_address(p); }
   // NOLINTNEXTLINE(google-explicit-constructor)
   ToRenderFrameHost(Ptr frame_convertible_value)
       : render_frame_host_(ConvertToRenderFrameHost(
-            std::to_address(frame_convertible_value))) {}
+            base::to_address(frame_convertible_value))) {}
 
   // Extract the underlying frame.
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }

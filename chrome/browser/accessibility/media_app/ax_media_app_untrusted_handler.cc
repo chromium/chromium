@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/to_address.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -69,7 +70,7 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     return;
   }
   screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-      std::to_address(browser_context_))
+      base::to_address(browser_context_))
       ->GetServiceStateAsync(
           screen_ai::ScreenAIServiceRouter::Service::kOCR,
           base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
@@ -91,7 +92,7 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
   CHECK(!screen_ai_annotator_.is_bound());
   screen_ai::ScreenAIServiceRouter* service_router =
       screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-          std::to_address(browser_context_));
+          base::to_address(browser_context_));
   service_router->BindScreenAIAnnotator(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
   OcrNextDirtyPageIfAny();
@@ -251,7 +252,7 @@ void AXMediaAppUntrustedHandler::ViewportUpdated(
 content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
     const {
   Profile* profile =
-      Profile::FromBrowserContext(std::to_address(browser_context_));
+      Profile::FromBrowserContext(base::to_address(browser_context_));
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   if (!browser) {
     return nullptr;

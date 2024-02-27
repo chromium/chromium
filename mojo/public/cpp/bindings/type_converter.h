@@ -11,6 +11,8 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/types/to_address.h"
+
 namespace mojo {
 
 // NOTE: When possible, please consider using StructTraits / UnionTraits /
@@ -97,16 +99,16 @@ inline T ConvertTo(U* obj) {
 
 template <typename T, typename U>
   requires requires(const U& obj) {
-    not std::is_pointer_v<U>;
-    { mojo::ConvertTo<T>(std::to_address(obj)) } -> std::same_as<T>;
+    !std::is_pointer_v<U>;
+    { mojo::ConvertTo<T>(base::to_address(obj)) } -> std::same_as<T>;
   }
 inline T ConvertTo(const U& obj) {
-  return mojo::ConvertTo<T>(std::to_address(obj));
+  return mojo::ConvertTo<T>(base::to_address(obj));
 }
 
 template <typename T, typename U>
   requires requires(const U& obj) {
-    not std::is_pointer_v<U>;
+    !std::is_pointer_v<U>;
     TypeConverter<T, U>::Convert(obj);
   }
 inline T ConvertTo(const U& obj) {

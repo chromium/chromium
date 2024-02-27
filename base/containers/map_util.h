@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/types/to_address.h"
+
 namespace base {
 
 namespace internal {
@@ -46,7 +48,7 @@ template <typename Map,
 constexpr const MappedElementType* FindPtrOrNull(const Map& map,
                                                  const Key& key) {
   auto it = map.find(key);
-  return it != map.end() ? std::to_address(it->second) : nullptr;
+  return it != map.end() ? base::to_address(it->second) : nullptr;
 }
 
 // Returns the pointer value associated with the given key. If none is found,
@@ -61,7 +63,7 @@ template <typename Map,
               std::pointer_traits<internal::MappedType<Map>>::element_type>
 constexpr MappedElementType* FindPtrOrNull(Map& map, const Key& key) {
   auto it = map.find(key);
-  return it != map.end() ? std::to_address(it->second) : nullptr;
+  return it != map.end() ? base::to_address(it->second) : nullptr;
 }
 
 }  // namespace base

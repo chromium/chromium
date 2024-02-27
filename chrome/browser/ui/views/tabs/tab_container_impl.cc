@@ -9,6 +9,7 @@
 #include "base/bits.h"
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -634,7 +635,7 @@ void TabContainerImpl::AnimateToIdealBounds() {
   }
 
   const gfx::Rect overall_target_bounds = gfx::Rect(GetIdealTrailingX(), 0);
-  bounds_animator_.AnimateViewTo(std::to_address(overall_bounds_view_),
+  bounds_animator_.AnimateViewTo(base::to_address(overall_bounds_view_),
                                  overall_target_bounds);
 
   // Because the preferred size of the tabstrip depends on the IsAnimating()
