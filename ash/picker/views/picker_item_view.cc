@@ -9,15 +9,19 @@
 
 #include "ash/picker/views/picker_focus_indicator.h"
 #include "ash/style/style_util.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -38,15 +42,31 @@ std::unique_ptr<views::Background> GetPickerItemBackground(
 
 }  // namespace
 
-PickerItemView::PickerItemView(SelectItemCallback select_item_callback)
+PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
+                               FocusIndicatorStyle focus_indicator_style)
     : views::Button(select_item_callback),
-      select_item_callback_(select_item_callback) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
+      select_item_callback_(select_item_callback),
+      focus_indicator_style_(focus_indicator_style) {
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/true,
                                    /*highlight_on_focus=*/true);
+
+  switch (focus_indicator_style_) {
+    case FocusIndicatorStyle::kFocusRing:
+      views::FocusRing::Get(this)->SetHasFocusPredicate(
+          base::BindRepeating([](const View* view) {
+            const auto* v = views::AsViewClass<PickerItemView>(view);
+            CHECK(v);
+            return (v->HasFocus() ||
+                    v->GetItemState() ==
+                        PickerItemView::ItemState::kPseudoFocused);
+          }));
+      break;
+    case FocusIndicatorStyle::kFocusBar:
+      // Disable default focus ring to use a custom focus indicator.
+      SetInstallFocusRingOnFocus(false);
+      break;
+  }
 }
 
 PickerItemView::~PickerItemView() = default;
@@ -54,9 +74,8 @@ PickerItemView::~PickerItemView() = default;
 void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
   views::Button::PaintButtonContents(canvas);
 
-  if (item_state_ == ItemState::kPseudoFocused) {
-    // TODO: b/326870199 - Check whether grid items should have different focus
-    // indicator styling to list items.
+  if (focus_indicator_style_ == FocusIndicatorStyle::kFocusBar &&
+      item_state_ == ItemState::kPseudoFocused) {
     PaintPickerFocusIndicator(
         canvas, gfx::Point(0, kPickerItemFocusIndicatorMargins.top()),
         height() - kPickerItemFocusIndicatorMargins.height(),
@@ -90,8 +109,14 @@ void PickerItemView::SetItemState(ItemState item_state) {
 
   item_state_ = item_state;
   SetBackground(GetPickerItemBackground(item_state_, corner_radius_));
-  // Schedule paint to update pseudo focus indicator.
-  SchedulePaint();
+  switch (focus_indicator_style_) {
+    case FocusIndicatorStyle::kFocusRing:
+      views::FocusRing::Get(this)->SchedulePaint();
+      break;
+    case FocusIndicatorStyle::kFocusBar:
+      SchedulePaint();
+      break;
+  }
 }
 
 BEGIN_METADATA(PickerItemView)

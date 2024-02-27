@@ -29,9 +29,20 @@ class ASH_EXPORT PickerItemView : public views::Button {
     kPseudoFocused,
   };
 
+  // Used to determine the style of focus indicator used for the item.
+  enum class FocusIndicatorStyle {
+    // Indicate focus using a rounded rectangular ring around the item.
+    kFocusRing,
+    // Indicate focus using a vertical bar with half rounded corners at the left
+    // edge of the item.
+    kFocusBar,
+  };
+
   using SelectItemCallback = base::RepeatingClosure;
 
-  explicit PickerItemView(SelectItemCallback select_item_callback);
+  explicit PickerItemView(SelectItemCallback select_item_callback,
+                          FocusIndicatorStyle focus_indicator_style =
+                              FocusIndicatorStyle::kFocusRing);
   PickerItemView(const PickerItemView&) = delete;
   PickerItemView& operator=(const PickerItemView&) = delete;
   ~PickerItemView() override;
@@ -50,6 +61,8 @@ class ASH_EXPORT PickerItemView : public views::Button {
   SelectItemCallback select_item_callback_;
 
   ItemState item_state_ = ItemState::kNormal;
+
+  FocusIndicatorStyle focus_indicator_style_ = FocusIndicatorStyle::kFocusRing;
 
   // Corner radius of the item background and highlight.
   int corner_radius_ = 0;

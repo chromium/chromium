@@ -40,7 +40,8 @@ constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 }  // namespace
 
 PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
-    : PickerItemView(std::move(select_item_callback)) {
+    : PickerItemView(std::move(select_item_callback),
+                     FocusIndicatorStyle::kFocusBar) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto* item_contents =
       AddChildView(views::Builder<views::FlexLayoutView>()
