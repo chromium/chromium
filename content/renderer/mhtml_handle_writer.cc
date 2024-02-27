@@ -44,7 +44,6 @@ void MHTMLHandleWriter::Finish(mojom::MhtmlSaveStatus save_status) {
 
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), save_status));
-  delete this;
 }
 
 MHTMLFileHandleWriter::MHTMLFileHandleWriter(
