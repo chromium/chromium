@@ -63,7 +63,7 @@ _TRACE_BUFFER_SIZE = 2**32 - 1
 _SHUTDOWN_TIMEOUT = 90
 
 class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
-  URL = 'file://fresh_with_worklet.html'
+  SIZE = 0
   verbose_cpu_metrics = False
   verbose_memory_metrics = False
   iterations = _DEFAULT_NUM_ITERATIONS
@@ -71,6 +71,10 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
   xvfb_process = None
 
   options = {'pageset_repeat': _DEFAULT_NUM_REPEAT}
+
+  @property
+  def URL(self):
+    return "file://setup_worklet_and_db.html?size=%s" % self.SIZE
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
@@ -167,6 +171,7 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     # `options` is an instance of `timeline_based_measurement.Options`.
     return page_set.SharedStorageStorySet(
         url=self.URL,
+        size=self.SIZE,
         enable_memory_metric=self.verbose_memory_metrics,
         user_agent=options.user_agent,
         iterations=self.iterations,
@@ -178,7 +183,7 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfFreshDB(SharedStoragePerfBase):
-  URL = "file://fresh_with_worklet.html"
+  SIZE = 0
 
   @classmethod
   def Name(cls):
@@ -189,7 +194,7 @@ class SharedStoragePerfFreshDB(SharedStoragePerfBase):
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfSmallDB(SharedStoragePerfBase):
-  URL = "file://small_with_worklet.html"
+  SIZE = 10
 
   @classmethod
   def Name(cls):
@@ -200,7 +205,7 @@ class SharedStoragePerfSmallDB(SharedStoragePerfBase):
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfMediumDB(SharedStoragePerfBase):
-  URL = "file://medium_with_worklet.html"
+  SIZE = 1000
 
   @classmethod
   def Name(cls):
@@ -211,7 +216,9 @@ class SharedStoragePerfMediumDB(SharedStoragePerfBase):
                 component='Blink>Storage>SharedStorage',
                 documentation_url='')
 class SharedStoragePerfLargeDB(SharedStoragePerfBase):
-  URL = "file://large_with_worklet.html"
+  # TODO(cammie): Update the size for 'shared_storage.large' to 10000 when
+  # M124 reaches stable (and with it the change in quota enfocrement).
+  SIZE = 9000
 
   @classmethod
   def Name(cls):

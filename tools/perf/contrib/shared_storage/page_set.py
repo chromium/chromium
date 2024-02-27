@@ -118,6 +118,7 @@ class SharedStorageStory(
   def __init__(self,
                story_set,
                url,
+               size,
                shared_page_state_class,
                enable_memory_metric,
                iterations=_PLACEHOLDER_ITERATIONS,
@@ -127,9 +128,14 @@ class SharedStorageStory(
                          page_set=story_set,
                          name=self.NAME,
                          url=url)
+    self._size = size
     self._enable_memory_metric = enable_memory_metric
     self._iterations = iterations
     self._verbosity = verbosity
+
+  @property
+  def SIZE(self):
+    return self._size
 
   # TODO(crbug.com/1516507): Wait for relevant Shared Storage timing histograms
   # to be recorded in each step, rather than simply the event notifications.
@@ -251,6 +257,7 @@ class SharedStorageStorySet(story.StorySet):
 
   def __init__(self,
                url,
+               size,
                enable_memory_metric,
                user_agent='desktop',
                iterations=_PLACEHOLDER_ITERATIONS,
@@ -281,6 +288,7 @@ class SharedStorageStorySet(story.StorySet):
         self.AddStory(
             story_class(self,
                         url=url,
+                        size=size,
                         shared_page_state_class=shared_page_state_class,
                         enable_memory_metric=enable_memory_metric,
                         iterations=iterations,
