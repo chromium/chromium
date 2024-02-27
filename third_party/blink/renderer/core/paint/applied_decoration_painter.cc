@@ -12,6 +12,96 @@
 
 namespace blink {
 
+namespace {
+
+float RoundDownThickness(float stroke_thickness) {
+  return std::max(floorf(stroke_thickness), 1.0f);
+}
+
+gfx::RectF GetRectForTextLine(gfx::PointF pt,
+                              float width,
+                              float stroke_thickness) {
+  // Avoid anti-aliasing lines. Currently, these are always horizontal.
+  // Round to nearest pixel to match text and other content.
+  float y = floorf(pt.y() + 0.5f);
+  return gfx::RectF(pt.x(), y, width, stroke_thickness);
+}
+
+std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
+                                                       float width,
+                                                       float stroke_thickness) {
+  int y = floorf(pt.y() + std::max<float>(stroke_thickness / 2.0f, 0.5f));
+  return {gfx::Point(pt.x(), y), gfx::Point(pt.x() + width, y)};
+}
+
+bool ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
+  switch (stroke_style) {
+    case kNoStroke:
+    case kSolidStroke:
+    case kDoubleStroke:
+      return false;
+    case kDottedStroke:
+    case kDashedStroke:
+    case kWavyStroke:
+    default:
+      return true;
+  }
+}
+
+}  // namespace
+
+void AppliedDecorationPainter::DrawLineForText(
+    GraphicsContext& context,
+    const gfx::PointF& pt,
+    float width,
+    const StyledStrokeData& styled_stroke,
+    const AutoDarkMode& auto_dark_mode,
+    const cc::PaintFlags* paint_flags) {
+  if (width <= 0) {
+    return;
+  }
+
+  auto stroke_style = styled_stroke.Style();
+  const float thickness = styled_stroke.Thickness();
+  DCHECK_NE(stroke_style, kWavyStroke);
+  if (ShouldUseStrokeForTextLine(stroke_style)) {
+    auto [start, end] = GetPointsForTextLine(pt, width, thickness);
+    context.DrawLine(start, end, styled_stroke, auto_dark_mode, true,
+                     paint_flags);
+  } else {
+    if (paint_flags) {
+      // In SVG, we don't round down the thickness to an integer for better
+      // scaling behavior.  See crbug.com/1270336.
+      SkRect r = gfx::RectFToSkRect(GetRectForTextLine(pt, width, thickness));
+      context.DrawRect(r, *paint_flags, auto_dark_mode);
+    } else {
+      cc::PaintFlags flags = context.FillFlags();
+      // Text lines are drawn using the stroke color.
+      flags.setColor(context.StrokeFlags().getColor4f());
+      SkRect r = gfx::RectFToSkRect(
+          GetRectForTextLine(pt, width, RoundDownThickness(thickness)));
+      context.DrawRect(r, flags, auto_dark_mode);
+    }
+  }
+}
+
+Path AppliedDecorationPainter::GetPathForTextLine(const gfx::PointF& pt,
+                                                  float width,
+                                                  float stroke_thickness,
+                                                  StrokeStyle stroke_style) {
+  Path path;
+  DCHECK_NE(stroke_style, kWavyStroke);
+  if (ShouldUseStrokeForTextLine(stroke_style)) {
+    auto [start, end] = GetPointsForTextLine(pt, width, stroke_thickness);
+    path.MoveTo(gfx::PointF(start));
+    path.AddLineTo(gfx::PointF(end));
+  } else {
+    path.AddRect(
+        GetRectForTextLine(pt, width, RoundDownThickness(stroke_thickness)));
+  }
+  return path;
+}
+
 void AppliedDecorationPainter::Paint(const Color& color,
                                      const cc::PaintFlags* flags) {
   StyledStrokeData styled_stroke;
@@ -34,15 +124,16 @@ void AppliedDecorationPainter::Paint(const Color& color,
       context_.SetShouldAntialias(decoration_info_.ShouldAntialias());
       [[fallthrough]];
     default:
-      context_.DrawLineForText(decoration_info_.StartPoint(),
-                               decoration_info_.Width(), styled_stroke,
-                               auto_dark_mode, flags);
+      DrawLineForText(context_, decoration_info_.StartPoint(),
+                      decoration_info_.Width(), styled_stroke, auto_dark_mode,
+                      flags);
 
       if (decoration_info_.DecorationStyle() == ETextDecorationStyle::kDouble) {
-        context_.DrawLineForText(
-            decoration_info_.StartPoint() +
-                gfx::Vector2dF(0, decoration_info_.DoubleOffset()),
-            decoration_info_.Width(), styled_stroke, auto_dark_mode, flags);
+        DrawLineForText(context_,
+                        decoration_info_.StartPoint() +
+                            gfx::Vector2dF(0, decoration_info_.DoubleOffset()),
+                        decoration_info_.Width(), styled_stroke, auto_dark_mode,
+                        flags);
       }
   }
 }

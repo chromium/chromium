@@ -421,12 +421,6 @@ class PLATFORM_EXPORT GraphicsContext {
       const AutoDarkMode& auto_dark_mode,
       Font::CustomFontNotReadyAction = Font::kDoNotPaintIfFontNotReady);
 
-  void DrawLineForText(const gfx::PointF&,
-                       float width,
-                       const StyledStrokeData&,
-                       const AutoDarkMode& auto_dark_mode,
-                       const cc::PaintFlags* flags = nullptr);
-
   // BeginLayer()/EndLayer() behave like Save()/Restore() for CTM and clip
   // states. Apply opacity, blend mode, filter when the layer is composited on
   // the backdrop (i.e. EndLayer()).
@@ -500,12 +494,6 @@ class PLATFORM_EXPORT GraphicsContext {
   static void AdjustLineToPixelBoundaries(gfx::PointF& p1,
                                           gfx::PointF& p2,
                                           float stroke_width);
-
-  static Path GetPathForTextLine(const gfx::PointF&,
-                                 float width,
-                                 float stroke_thickness,
-                                 StrokeStyle);
-  static bool ShouldUseStrokeForTextLine(StrokeStyle);
 
   void SetInDrawingRecorder(bool);
   bool InDrawingRecorder() const { return in_drawing_recorder_; }

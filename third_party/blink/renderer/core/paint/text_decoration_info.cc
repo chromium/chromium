@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -731,7 +732,7 @@ Path TextDecorationInfo::PrepareDottedOrDashedStrokePath() const {
   // These coordinate transforms need to match what's happening in
   // GraphicsContext's drawLineForText and drawLine.
   gfx::PointF start_point = StartPoint();
-  return GraphicsContext::GetPathForTextLine(
+  return AppliedDecorationPainter::GetPathForTextLine(
       start_point, width_, ResolvedThickness(),
       TextDecorationStyleToStrokeStyle(DecorationStyle()));
 }

@@ -11,7 +11,9 @@
 
 namespace blink {
 
+struct AutoDarkMode;
 class GraphicsContext;
+class StyledStrokeData;
 
 // Helper class for painting a text decorations. Each instance paints a single
 // decoration.
@@ -24,6 +26,17 @@ class AppliedDecorationPainter final {
       : context_(context), decoration_info_(decoration_info) {}
 
   void Paint(const Color& color, const cc::PaintFlags* flags = nullptr);
+
+  static void DrawLineForText(GraphicsContext&,
+                              const gfx::PointF& pt,
+                              float width,
+                              const StyledStrokeData& styled_stroke,
+                              const AutoDarkMode& auto_dark_mode,
+                              const cc::PaintFlags* paint_flags = nullptr);
+  static Path GetPathForTextLine(const gfx::PointF& pt,
+                                 float width,
+                                 float stroke_thickness,
+                                 StrokeStyle stroke_style);
 
  private:
   void PaintWavyTextDecoration();

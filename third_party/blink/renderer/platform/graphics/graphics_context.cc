@@ -68,26 +68,6 @@ namespace blink {
 
 namespace {
 
-float RoundDownThickness(float stroke_thickness) {
-  return std::max(floorf(stroke_thickness), 1.0f);
-}
-
-gfx::RectF GetRectForTextLine(gfx::PointF pt,
-                              float width,
-                              float stroke_thickness) {
-  // Avoid anti-aliasing lines. Currently, these are always horizontal.
-  // Round to nearest pixel to match text and other content.
-  float y = floorf(pt.y() + 0.5f);
-  return gfx::RectF(pt.x(), y, width, stroke_thickness);
-}
-
-std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
-                                                       float width,
-                                                       float stroke_thickness) {
-  int y = floorf(pt.y() + std::max<float>(stroke_thickness / 2.0f, 0.5f));
-  return {gfx::Point(pt.x(), y), gfx::Point(pt.x() + width, y)};
-}
-
 SkColor4f DarkModeColor(GraphicsContext& context,
                         const SkColor4f& color,
                         const AutoDarkMode& auto_dark_mode) {
@@ -518,37 +498,6 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
 
   AdjustLineToPixelBoundaries(p1, p2, width);
   DrawLine(p1, p2, flags, auto_dark_mode);
-}
-
-void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
-                                      float width,
-                                      const StyledStrokeData& styled_stroke,
-                                      const AutoDarkMode& auto_dark_mode,
-                                      const cc::PaintFlags* paint_flags) {
-  if (width <= 0)
-    return;
-
-  auto stroke_style = styled_stroke.Style();
-  const float thickness = styled_stroke.Thickness();
-  DCHECK_NE(stroke_style, kWavyStroke);
-  if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetPointsForTextLine(pt, width, thickness);
-    DrawLine(start, end, styled_stroke, auto_dark_mode, true, paint_flags);
-  } else {
-    if (paint_flags) {
-      // In SVG, we don't round down the thickness to an integer for better
-      // scaling behavior.  See crbug.com/1270336.
-      SkRect r = gfx::RectFToSkRect(GetRectForTextLine(pt, width, thickness));
-      DrawRect(r, *paint_flags, auto_dark_mode);
-    } else {
-      cc::PaintFlags flags = ImmutableState()->FillFlags();
-      // Text lines are drawn using the stroke color.
-      flags.setColor(ImmutableState()->StrokeFlags().getColor4f());
-      SkRect r = gfx::RectFToSkRect(
-          GetRectForTextLine(pt, width, RoundDownThickness(thickness)));
-      DrawRect(r, flags, auto_dark_mode);
-    }
-  }
 }
 
 void GraphicsContext::DrawText(const Font& font,
@@ -1141,37 +1090,6 @@ void GraphicsContext::AdjustLineToPixelBoundaries(gfx::PointF& p1,
       p1.set_y(p1.y() + 0.5f);
       p2.set_y(p2.y() + 0.5f);
     }
-  }
-}
-
-Path GraphicsContext::GetPathForTextLine(const gfx::PointF& pt,
-                                         float width,
-                                         float stroke_thickness,
-                                         StrokeStyle stroke_style) {
-  Path path;
-  DCHECK_NE(stroke_style, kWavyStroke);
-  if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetPointsForTextLine(pt, width, stroke_thickness);
-    path.MoveTo(gfx::PointF(start));
-    path.AddLineTo(gfx::PointF(end));
-  } else {
-    path.AddRect(
-        GetRectForTextLine(pt, width, RoundDownThickness(stroke_thickness)));
-  }
-  return path;
-}
-
-bool GraphicsContext::ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
-  switch (stroke_style) {
-    case kNoStroke:
-    case kSolidStroke:
-    case kDoubleStroke:
-      return false;
-    case kDottedStroke:
-    case kDashedStroke:
-    case kWavyStroke:
-    default:
-      return true;
   }
 }
 
