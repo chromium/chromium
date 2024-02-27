@@ -39,6 +39,7 @@
 ../../third_party/catapult/common/py_utils/py_utils/tempfile_ext.py
 ../../third_party/catapult/common/py_utils/py_utils/ts_proxy_server.py
 ../../third_party/catapult/common/py_utils/py_utils/webpagereplay_go_server.py
+../../third_party/catapult/common/py_utils/py_utils/xvfb.py
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/__init__.py
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/html_generation_controller.py

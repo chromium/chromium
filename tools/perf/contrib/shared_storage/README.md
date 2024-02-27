@@ -43,6 +43,8 @@ Optionally, you can qualify your command further as follows:
         given number. Default is 10. Maximum allowed is 10.
 * `--pageset-repeat=PAGESET_REPEAT`
         Number of times to repeat the entire story set. Default is 10.
+* `--xvfb`
+        Runs tests with Xvfb server if possible.
 * `--verbose-cpu-metrics`
         Enables non-UMA CPU metrics.
 * `--verbose-memory-metrics`
@@ -58,5 +60,5 @@ tools/perf/run_benchmark run --help
 
 For example, a modified version of the original benchmark command is:
 ```bash
-tools/perf/run_benchmark shared_storage.small --browser=system --story-filter=Append --iterations=5 --pageset-repeat=1 --verbose-cpu-metrics --verbose-memory-metrics --verbose
+tools/perf/run_benchmark shared_storage.small --browser=system --story-filter=Append --iterations=5 --pageset-repeat=1 --xvfb --verbose-cpu-metrics --verbose-memory-metrics --verbose
 ```

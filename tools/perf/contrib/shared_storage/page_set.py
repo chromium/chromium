@@ -254,8 +254,10 @@ class SharedStorageStorySet(story.StorySet):
                enable_memory_metric,
                user_agent='desktop',
                iterations=_PLACEHOLDER_ITERATIONS,
-               verbosity=0):
+               verbosity=0,
+               xvfb_process=None):
     super(SharedStorageStorySet, self).__init__()
+    self.xvfb_process = xvfb_process
     if user_agent == 'mobile':
       shared_page_state_class = state.SharedStorageSharedMobilePageState
     elif user_agent == 'desktop':

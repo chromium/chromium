@@ -13,6 +13,8 @@ from telemetry import benchmark
 from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
+from py_utils import xvfb
+
 # Shared-storage-related histograms to measure.
 _SHARED_STORAGE_UMA_HISTOGRAMS = [
     "Storage.SharedStorage.Document.Timing.AddModule",
@@ -66,11 +68,16 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
   verbose_memory_metrics = False
   iterations = _DEFAULT_NUM_ITERATIONS
   verbosity = 0
+  xvfb_process = None
 
   options = {'pageset_repeat': _DEFAULT_NUM_REPEAT}
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
+    parser.add_option('--xvfb',
+                      action='store_true',
+                      default=False,
+                      help='Run with Xvfb server if possible.')
     parser.add_option('--user-agent',
                       action='store',
                       type='string',
@@ -102,16 +109,21 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
       logging.warning('The maximum allowed number of iterations is 10. ' +
                       'Increase pageset_repeat instead.')
       cls.iterations = _MAX_NUM_ITERATIONS
+    if args.xvfb and xvfb.ShouldStartXvfb():
+      cls.xvfb_process = xvfb.StartXvfb()
 
   def SetExtraBrowserOptions(self, options):
     # `options` is an instance of `browser_options.BrowserOptions`.
     if self.verbose_memory_metrics:
       memory.SetExtraBrowserOptionsForMemoryMeasurement(options)
 
-    options.AppendExtraBrowserArgs([
+    extra_args = [
         '--enable-features=' + ','.join(_ENABLED_FEATURES),
         '--enable-privacy-sandbox-ads-apis'
-    ])
+    ]
+    if self.xvfb_process:
+      extra_args.append('--disable-gpu')
+    options.AppendExtraBrowserArgs(extra_args)
 
     # Increase the default shutdown timeout due to some long-running tests.
     os.environ['CHROME_SHUTDOWN_TIMEOUT'] = str(_SHUTDOWN_TIMEOUT)
@@ -158,7 +170,8 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
         enable_memory_metric=self.verbose_memory_metrics,
         user_agent=options.user_agent,
         iterations=self.iterations,
-        verbosity=self.verbosity)
+        verbosity=self.verbosity,
+        xvfb_process=self.xvfb_process)
 
 
 @benchmark.Info(emails=['cammie@chromium.org'],
