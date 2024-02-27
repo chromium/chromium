@@ -7242,7 +7242,7 @@
   {
     "name": "screen-saver-duration",
     "owners": [ "pzliu@chromium.org", "assistive-eng@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "screen-time-integration-ios",
