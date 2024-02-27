@@ -6,14 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LAYOUT_GRID_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
+#include "third_party/blink/renderer/core/layout/layout_block.h"
 
 namespace blink {
 
+class SubgridMinMaxSizesCache;
+
 class CORE_EXPORT LayoutGrid : public LayoutBlock {
  public:
-  explicit LayoutGrid(Element*);
+  explicit LayoutGrid(Element* element);
+
+  void Trace(Visitor* visitor) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -28,20 +32,21 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
 
   bool HasCachedMinMaxSizes() const;
   const MinMaxSizes& CachedMinMaxSizes() const;
-  void SetMinMaxSizesCache(MinMaxSizes&& min_max_sizes);
-  void InvalidateMinMaxSizesCache();
+  void SetMinMaxSizesCache(MinMaxSizes&& min_max_sizes,
+                           const GridLayoutData& layout_data);
+  bool ShouldInvalidateMinMaxSizesCacheFor(
+      const GridLayoutData& layout_data) const;
 
   wtf_size_t AutoRepeatCountForDirection(
-      const GridTrackSizingDirection track_direction) const;
+      GridTrackSizingDirection track_direction) const;
   wtf_size_t ExplicitGridStartForDirection(
-      const GridTrackSizingDirection track_direction) const;
+      GridTrackSizingDirection track_direction) const;
   wtf_size_t ExplicitGridEndForDirection(
-      const GridTrackSizingDirection track_direction) const;
-  LayoutUnit GridGap(const GridTrackSizingDirection track_direction) const;
-  LayoutUnit GridItemOffset(
-      const GridTrackSizingDirection track_direction) const;
+      GridTrackSizingDirection track_direction) const;
+  LayoutUnit GridGap(GridTrackSizingDirection track_direction) const;
+  LayoutUnit GridItemOffset(GridTrackSizingDirection track_direction) const;
   Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
-      const GridTrackSizingDirection track_direction) const;
+      GridTrackSizingDirection track_direction) const;
 
   Vector<LayoutUnit> RowPositions() const;
   Vector<LayoutUnit> ColumnPositions() const;
@@ -58,16 +63,16 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
       const GridLayoutTrackCollection& track_collection,
       wtf_size_t range_index) const;
   Vector<LayoutUnit> ComputeExpandedPositions(
-      const GridTrackSizingDirection track_direction) const;
+      GridTrackSizingDirection track_direction) const;
 
-  void AddChild(LayoutObject* new_child,
-                LayoutObject* before_child = nullptr) override;
+  void AddChild(LayoutObject* new_child);
+  void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;
 
   std::optional<GridPlacementData> cached_placement_data_;
-  std::optional<MinMaxSizes> cached_min_max_sizes_;
+  Member<const SubgridMinMaxSizesCache> cached_min_max_sizes_;
 };
 
 // wtf/casting.h helper.
