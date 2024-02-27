@@ -626,6 +626,7 @@ chromium-metrics-reviews@google.com.
     <variant name="21To7" summary="21 days but not in the last 7 days"/>
     <variant name="28To14" summary="28 days but not in the last 14 days"/>
     <variant name="35To14" summary="35 days but not in the last 14 days"/>
+    <variant name="42To21" summary="42 days but not in the last 21 days"/>
   </token>
 </histogram>
 
