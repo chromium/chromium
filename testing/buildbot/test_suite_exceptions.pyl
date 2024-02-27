@@ -5293,6 +5293,11 @@
           'shards': 2,
         }
       },
+      'win-asan': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'win10-code-coverage': {
         'swarming': {
           'shards': 4,
