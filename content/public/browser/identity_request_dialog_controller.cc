@@ -109,13 +109,6 @@ std::optional<std::string> IdentityRequestDialogController::GetSubtitle()
   return std::nullopt;
 }
 
-void IdentityRequestDialogController::ShowIdpSigninFailureDialog(
-    base::OnceClosure dismiss_callback) {
-  if (!is_interception_enabled_) {
-    std::move(dismiss_callback).Run();
-  }
-}
-
 void IdentityRequestDialogController::ShowUrl(LinkType type, const GURL& url) {}
 
 WebContents* IdentityRequestDialogController::ShowModalDialog(

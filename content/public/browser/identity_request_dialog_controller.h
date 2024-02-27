@@ -179,9 +179,6 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual std::string GetTitle() const;
   virtual std::optional<std::string> GetSubtitle() const;
 
-  // Show dialog notifying user that IdP sign-in failed.
-  virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
-
   // Open a popup or similar that shows the specified URL.
   virtual void ShowUrl(LinkType type, const GURL& url);
 

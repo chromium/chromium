@@ -103,11 +103,6 @@ void IdentityDialogController::OnAccountsDisplayed() {
   std::move(on_accounts_displayed_).Run();
 }
 
-void IdentityDialogController::ShowIdpSigninFailureDialog(
-    base::OnceClosure user_notified_callback) {
-  NOTIMPLEMENTED();
-}
-
 std::string IdentityDialogController::GetTitle() const {
   return account_view_->GetTitle();
 }

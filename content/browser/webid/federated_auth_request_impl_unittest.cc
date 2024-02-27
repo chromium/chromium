@@ -646,8 +646,6 @@ class TestDialogController
     std::optional<SkColor> brand_text_color;
     // State related to ShowFailureDialog().
     size_t num_show_idp_signin_status_mismatch_dialog_requests{0u};
-    // State related to ShowIdpSigninFailureDialog().
-    bool did_show_idp_signin_failure_dialog{false};
     // State related to ShowErrorDialog().
     bool did_show_error_dialog{false};
     std::optional<TokenError> token_error;
@@ -805,16 +803,6 @@ class TestDialogController
       case ErrorDialogAction::kNone:
         break;
     }
-  }
-
-  void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override {
-    if (!state_) {
-      return;
-    }
-
-    state_->did_show_idp_signin_failure_dialog = true;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(dismiss_callback));
   }
 
   base::WeakPtr<TestDialogController> AsWeakPtr() {
@@ -3880,7 +3868,6 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiAccountEndpointKeepsFailing) {
 
   EXPECT_EQ(2u, dialog_controller_state_
                     .num_show_idp_signin_status_mismatch_dialog_requests);
-  EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
 
   // After the IdP sign-in status was updated, the endpoints should have been
   // fetched a 2nd time.
@@ -3950,124 +3937,11 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
   EXPECT_FALSE(did_show_accounts_dialog());
   EXPECT_EQ(1u, dialog_controller_state_
                     .num_show_idp_signin_status_mismatch_dialog_requests);
-  EXPECT_TRUE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
 
   // After the IdP sign-in status was updated, the endpoints should have been
   // fetched a 2nd time.
   EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
-
-  histogram_tester_.ExpectTotalCount(
-      "Blink.FedCm.Timing.AccountsDialogShownDuration2", 0);
-  histogram_tester_.ExpectTotalCount(
-      "Blink.FedCm.Timing.MismatchDialogShownDuration", 1);
-
-  ExpectNoUKMPresence("AccountsDialogShown");
-  ExpectUKMPresence("MismatchDialogShown");
-  ExpectNoUKMPresence("Timing.AccountsDialogShownDuration");
-  ExpectUKMPresence("Timing.MismatchDialogShownDuration");
-  CheckAllFedCmSessionIDs();
-}
-
-// Test that the IdP-sign-in-failure-dialog is not shown if there is an error
-// after the user has selected an account.
-TEST_F(FederatedAuthRequestImplTest,
-       FailAfterAccountSelectionHideDialogDoesNotShowIdpSigninFailureDialog) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
-
-  // Setup dialog controller to fail FedCM request after the user has selected
-  // an account.
-  url::Origin rp_origin_to_disable = main_test_rfh()->GetLastCommittedOrigin();
-  SetDialogController(
-      std::make_unique<DisableApiWhenDialogShownDialogController>(
-          kConfigurationValid, test_api_permission_delegate_.get(),
-          rp_origin_to_disable));
-
-  SetNetworkRequestManager(
-      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
-  auto* network_manager =
-      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
-          test_network_request_manager_.get());
-
-  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
-
-  // Setup IdP sign-in status mismatch.
-  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
-  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
-
-  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
-  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
-  EXPECT_FALSE(did_show_accounts_dialog());
-
-  // Simulate user signing into IdP by updating the IdP signin status and
-  // calling the observer.
-  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
-  network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
-  federated_auth_request_impl_->OnIdpSigninStatusReceived(
-      kIdpOrigin, /*idp_signin_status=*/true);
-  WaitForCurrentAuthRequest();
-
-  // Check that the FedCM request failed after the account picker was shown.
-  RequestExpectations expectations = {
-      RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorDisabledInSettings,
-      /*standalone_console_message=*/std::nullopt,
-      /*selected_idp_config_url=*/std::nullopt};
-  CheckAuthExpectations(kConfigurationValid, expectations);
-  EXPECT_TRUE(did_show_accounts_dialog());
-
-  // Check that the IdP-sign-in-failure dialog is not shown.
-  EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
-  histogram_tester_.ExpectTotalCount(
-      "Blink.FedCm.Timing.AccountsDialogShownDuration2", 1);
-  histogram_tester_.ExpectTotalCount(
-      "Blink.FedCm.Timing.MismatchDialogShownDuration", 1);
-
-  ExpectUKMPresence("AccountsDialogShown");
-  ExpectUKMPresence("MismatchDialogShown");
-  ExpectUKMPresence("Timing.AccountsDialogShownDuration");
-  ExpectUKMPresence("Timing.MismatchDialogShownDuration");
-  CheckAllFedCmSessionIDs();
-}
-
-// Test that the IdP-sign-in-failure dialog is not shown in the
-// following sequence of events:
-// 1) Failure dialog is shown due to IdP sign-in status mismatch
-// 2) FedCM call is aborted.
-TEST_F(FederatedAuthRequestImplTest,
-       FailureUiAbortDoesNotShowIdpSigninFailureDialog) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
-
-  SetNetworkRequestManager(
-      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
-  auto* network_manager =
-      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
-          test_network_request_manager_.get());
-
-  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
-
-  // Setup IdP sign-in status mismatch.
-  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
-  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
-
-  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
-  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
-  EXPECT_FALSE(did_show_accounts_dialog());
-
-  // Abort the request before DelayTimer kicks in.
-  federated_auth_request_impl_->CancelTokenRequest();
-
-  RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
-                                   FederatedAuthRequestResult::kErrorCanceled,
-                                   /*standalone_console_message=*/std::nullopt,
-                                   /*selected_idp_config_url=*/std::nullopt};
-  WaitForCurrentAuthRequest();
-  CheckAuthExpectations(kConfigurationValid, expectations);
-
-  // Abort should not trigger IdP-sign-in-failure dialog.
-  EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
 
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.Timing.AccountsDialogShownDuration2", 0);

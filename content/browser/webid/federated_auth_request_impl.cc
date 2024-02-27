@@ -329,16 +329,6 @@ std::string FormatOriginForDisplay(const url::Origin& origin) {
                                     /*for_display=*/true);
 }
 
-bool ShouldSuppressIdpSigninFailureDialog(
-    std::optional<TokenStatus> token_status) {
-  if (!token_status) {
-    return false;
-  }
-
-  return token_status == TokenStatus::kAborted ||
-         token_status == TokenStatus::kUnhandledRequest;
-}
-
 FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
   return FederatedAuthRequestPageData::GetOrCreateForPage(
       render_frame_host->GetPage());
@@ -2380,19 +2370,6 @@ void FederatedAuthRequestImpl::CompleteRequest(
   }
 
   if (!auth_request_token_callback_) {
-    return;
-  }
-
-  if (result != FederatedAuthRequestResult::kSuccess &&
-      fetch_data_.for_idp_signin &&
-      !ShouldSuppressIdpSigninFailureDialog(token_status)) {
-    fetch_data_ = FetchData();
-
-    request_dialog_controller_->ShowIdpSigninFailureDialog(base::BindOnce(
-        &FederatedAuthRequestImpl::CompleteRequest,
-        weak_ptr_factory_.GetWeakPtr(), result, std::move(token_status),
-        std::move(token_error), selected_idp_config_url, id_token,
-        should_delay_callback));
     return;
   }
 
