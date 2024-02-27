@@ -2659,6 +2659,7 @@ if (enable_java_templates && is_android) {
                                "android_manifest_dep",
                                "annotation_processor_deps",
                                "apk_under_test",
+                               "asset_deps",
                                "base_module_target",
                                "chromium_code",
                                "deps",
@@ -2696,6 +2697,9 @@ if (enable_java_templates && is_android) {
       merged_android_manifest = _android_manifest
       if (defined(_final_dex_path)) {
         final_dex_path = _final_dex_path
+      }
+      if (defined(invoker.assert_no_native_deps)) {
+        assert_no_deps = invoker.assert_no_native_deps
       }
 
       if (_is_bundle_module) {
@@ -2880,6 +2884,9 @@ if (enable_java_templates && is_android) {
                        ":$_compile_resources_target",
                        ":$_merge_manifest_target",
                      ] + _all_native_libs_deps
+      if (defined(invoker.asset_deps)) {
+        _final_deps += invoker.asset_deps
+      }
       if (_optimize_resources) {
         _final_deps += [ ":$_optimize_resources_target" ]
       }
@@ -2940,6 +2947,9 @@ if (enable_java_templates && is_android) {
         # Need full deps rather than _non_java_deps, because loadable_modules
         # may include .so files extracted by __unpack_aar targets.
         deps = _invoker_deps + [ ":$_build_config_target" ]
+        if (defined(invoker.asset_deps)) {
+          deps += invoker.asset_deps
+        }
 
         if (_incremental_apk) {
           _dex_target = "//build/android/incremental_install:apk_dex"
@@ -3217,6 +3227,8 @@ if (enable_java_templates && is_android) {
             "app_as_shared_lib",
             "art_profile_path",
             "assert_no_deps",
+            "assert_no_native_deps",
+            "asset_deps",
             "baseline_profile_path",
             "build_config_include_product_version_resource",
             "bundles_supported",
@@ -3367,6 +3379,8 @@ if (enable_java_templates && is_android) {
             "annotation_processor_deps",
             "app_as_shared_lib",
             "assert_no_deps",
+            "assert_no_native_deps",
+            "asset_deps",
             "base_module_target",
             "build_config_include_product_version_resource",
             "bundle_target",

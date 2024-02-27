@@ -152,6 +152,7 @@ template("chrome_feature_module") {
     # Adds unwind table asset to the chrome apk for the given library target. This
     # is not part of generic apk assets target since it depends on the main shared
     # library of the apk, to extract unwind tables.
+    asset_deps = []
     if (defined(_module_desc.include_unwind_assets) &&
         _module_desc.include_unwind_assets) {
       _needs_32bit_lib =
@@ -159,11 +160,14 @@ template("chrome_feature_module") {
 
       if (_needs_32bit_lib) {
         if (_is_monochrome_or_trichrome) {
-          deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
+          asset_deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
         } else {
-          deps += [ "//chrome/android:libchrome_unwind_table_assets" ]
+          asset_deps += [ "//chrome/android:libchrome_unwind_table_assets" ]
         }
       }
+    }
+    if (defined(invoker.asset_deps)) {
+      asset_deps += invoker.asset_deps
     }
   }
 }
