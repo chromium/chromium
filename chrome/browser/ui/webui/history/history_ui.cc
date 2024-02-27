@@ -23,6 +23,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
+#include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
@@ -239,6 +240,13 @@ base::RefCountedMemory* HistoryUI::GetFaviconResourceBytes(
   return static_cast<base::RefCountedMemory*>(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
           IDR_HISTORY_FAVICON, scale_factor));
+}
+
+void HistoryUI::BindInterface(
+    mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
+        pending_page_handler) {
+  history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
+      std::move(pending_page_handler));
 }
 
 void HistoryUI::BindInterface(

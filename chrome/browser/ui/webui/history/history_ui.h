@@ -15,6 +15,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
+#include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
 namespace base {
 class RefCountedMemory;
@@ -23,6 +24,8 @@ class RefCountedMemory;
 namespace history_clusters {
 class HistoryClustersHandler;
 }
+
+class HistoryEmbeddingsHandler;
 
 namespace page_image_service {
 class ImageServiceHandler;
@@ -50,6 +53,9 @@ class HistoryUI : public ui::MojoWebUIController {
       ui::ResourceScaleFactor scale_factor);
 
   // Instantiates the implementors of mojom interfaces.
+  void BindInterface(
+      mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
+          pending_page_handler);
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
   void BindInterface(
@@ -63,6 +69,7 @@ class HistoryUI : public ui::MojoWebUIController {
   }
 
  private:
+  std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>

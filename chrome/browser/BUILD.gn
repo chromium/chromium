@@ -2241,6 +2241,7 @@ static_library("browser") {
     "//components/history_clusters/core",
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/history_clusters/history_clusters_internals/webui:constants",
+    "//components/history_embeddings",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/invalidation/impl",
@@ -4657,6 +4658,7 @@ static_library("browser") {
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
+      "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     ]
     public_deps += [
       "//chrome/common:buildflags",
