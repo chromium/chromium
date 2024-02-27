@@ -29,6 +29,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -471,6 +472,24 @@ void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
 
 void CaptureModeCameraController::SetShouldShowPreview(bool value) {
   should_show_preview_ = value;
+
+  // TODO(http://b/290363225): Please remove once the crash is fixed.
+  SCOPED_CRASH_KEY_BOOL("SelfieCam", "selected_cam_valid",
+                        selected_camera_.is_valid());
+  SCOPED_CRASH_KEY_STRING256("SelfieCam", "selected_camera_",
+                             selected_camera_.ToString());
+  SCOPED_CRASH_KEY_STRING256("SelfieCam", "selected_cam_display_name",
+                             GetDisplayNameOfSelectedCamera());
+  SCOPED_CRASH_KEY_BOOL("SelfieCam", "should_show_preview_",
+                        should_show_preview_);
+  SCOPED_CRASH_KEY_BOOL("SelfieCam", "is_shutting_down_", is_shutting_down_);
+  SCOPED_CRASH_KEY_BOOL("SelfieCam", "camera_preview_widget_",
+                        !!camera_preview_widget_);
+  SCOPED_CRASH_KEY_BOOL("SelfieCam", "camera_preview_view_",
+                        !!camera_preview_view_);
+  SCOPED_CRASH_KEY_BOOL("SelfieCam", "IsCameraDisabledByPolicy",
+                        IsCameraDisabledByPolicy());
+
   RefreshCameraPreview();
 }
 
