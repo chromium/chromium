@@ -38,11 +38,12 @@ class TestKeyDataProvider : public KeyDataProvider, KeyDataProvider::Observer {
   std::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;
   KeyData* GetKeyData(const std::string& project_name) override;
-  void OnProfileAdded(const base::FilePath& profile_path) override;
   void Purge() override;
 
   // KeyDataProvider::Observer
   void OnKeyReady() override;
+
+  void OnProfileAdded(const base::FilePath& profile_path);
 
  private:
   base::FilePath device_key_path_;

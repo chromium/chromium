@@ -11,6 +11,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
@@ -20,7 +24,7 @@ namespace {
 StructuredEventProto BuildTestEvent(
     uint64_t id = 0,
     const std::vector<int64_t>& metrics = std::vector<int64_t>()) {
-  auto event = StructuredEventProto();
+  StructuredEventProto event;
   event.set_device_project_id(id);
   int metric_id = 0;
   for (int64_t metric : metrics) {
@@ -34,13 +38,23 @@ StructuredEventProto BuildTestEvent(
 
 class AshEventStorageTest : public testing::Test {
  public:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  AshEventStorageTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  AshEventStorageTest(const AshEventStorageTest&) = delete;
+  AshEventStorageTest& operator=(const AshEventStorageTest&) = delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(profile_manager_.SetUp());
+  }
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
   base::FilePath GetTestDirectory() { return temp_dir_.GetPath(); }
+  base::FilePath GetProfilePath() { return profile_manager_.profiles_dir(); }
   base::FilePath GetUserDirectory() {
-    return temp_dir_.GetPath()
+    return GetProfilePath()
         .Append(FILE_PATH_LITERAL("structured_metrics"))
         .Append(FILE_PATH_LITERAL("user"));
   }
@@ -54,6 +68,10 @@ class AshEventStorageTest : public testing::Test {
     // Wait for the device events to be loaded.
     Wait();
     return storage;
+  }
+
+  TestingProfile* AddProfile() {
+    return profile_manager_.CreateTestingProfile("p1");
   }
 
   StructuredDataProto GetReport(AshEventStorage* storage) {
@@ -70,18 +88,17 @@ class AshEventStorageTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
+  content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
+
+ protected:
+  TestingProfileManager profile_manager_;
 };
 
 TEST_F(AshEventStorageTest, StoreAndProvideEvents) {
   std::unique_ptr<AshEventStorage> storage = BuildTestStorage();
-  storage->OnProfileAdded(GetUserDirectory());
+  AddProfile();
 
   Wait();
 
@@ -116,7 +133,7 @@ TEST_F(AshEventStorageTest, PreRecordedEventsProcessedCorrectly) {
   Wait();
 
   // Add Profile and wait for the storage to be ready.
-  storage->OnProfileAdded(GetUserDirectory());
+  AddProfile();
   Wait();
 
   ASSERT_TRUE(storage->IsReady());
@@ -130,7 +147,7 @@ TEST_F(AshEventStorageTest, PreRecordedEventsProcessedCorrectly) {
 
 TEST_F(AshEventStorageTest, EventsClearedAfterReport) {
   std::unique_ptr<AshEventStorage> storage = BuildTestStorage();
-  storage->OnProfileAdded(GetUserDirectory());
+  AddProfile();
 
   Wait();
 
@@ -155,7 +172,7 @@ TEST_F(AshEventStorageTest, EventsClearedAfterReport) {
 TEST_F(AshEventStorageTest, EventsFromPreviousSessionAreLoaded) {
   // Start first session and record one event.
   std::unique_ptr<AshEventStorage> storage = BuildTestStorage();
-  storage->OnProfileAdded(GetUserDirectory());
+  TestingProfile* profile = AddProfile();
   Wait();
 
   storage->AddEvent(BuildTestEvent(0, {1234}));
@@ -165,7 +182,10 @@ TEST_F(AshEventStorageTest, EventsFromPreviousSessionAreLoaded) {
   Wait();
 
   storage = BuildTestStorage();
-  storage->OnProfileAdded(GetUserDirectory());
+
+  // Ideally, this would test signing in to the same profile, but it's not clear
+  // how to set that up, so instead we just call ProfileAdded() manually.
+  storage->ProfileAdded(*profile);
   Wait();
 
   // Start a second session and ensure the event is reported.
@@ -191,7 +211,7 @@ TEST_F(AshEventStorageTest, EventsPreProfilePersistedCorrectly) {
   EXPECT_EQ(events.non_uma_events_size(), 1);
   ExpectNoErrors();
 
-  storage->OnProfileAdded(GetUserDirectory());
+  AddProfile();
   Wait();
 
   // Add another event OnProfileAdded is called.
@@ -208,7 +228,7 @@ TEST_F(AshEventStorageTest, AddBatchEvents) {
   std::unique_ptr<AshEventStorage> storage = BuildTestStorage();
   Wait();
 
-  storage->OnProfileAdded(GetUserDirectory());
+  AddProfile();
   Wait();
 
   EventsProto proto;
@@ -239,7 +259,7 @@ TEST_F(AshEventStorageTest, MergePreUserAndUserEvents) {
   EXPECT_EQ(events_proto.non_uma_events_size(), 3);
 
   // Add profile and add an event while the profile events are being loaded.
-  storage->OnProfileAdded(GetUserDirectory());
+  AddProfile();
   storage->AddEvent(BuildTestEvent());
   Wait();
 

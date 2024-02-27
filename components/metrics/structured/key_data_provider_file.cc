@@ -30,11 +30,6 @@ bool KeyDataProviderFile::IsReady() {
   return is_data_loaded_;
 }
 
-void KeyDataProviderFile::OnKeyReady() {
-  is_data_loaded_ = true;
-  NotifyKeyReady();
-}
-
 std::optional<uint64_t> KeyDataProviderFile::GetId(
     const std::string& project_name) {
   DCHECK(IsReady());
@@ -61,13 +56,15 @@ KeyData* KeyDataProviderFile::GetKeyData(const std::string& project_name) {
   return key_data_.get();
 }
 
-// No-op.
-void KeyDataProviderFile::OnProfileAdded(const base::FilePath& profile_path) {}
-
 void KeyDataProviderFile::Purge() {
   if (IsReady()) {
     key_data_->Purge();
   }
+}
+
+void KeyDataProviderFile::OnKeyReady() {
+  is_data_loaded_ = true;
+  NotifyKeyReady();
 }
 
 }  // namespace metrics::structured

@@ -23,7 +23,6 @@ class KeyDataProviderPrefs : public KeyDataProvider {
 
   // KeyDataProvider:
   bool IsReady() override;
-  void OnProfileAdded(const base::FilePath& profile_path) override;
   std::optional<uint64_t> GetId(const std::string& project_name) override;
   KeyData* GetKeyData(const std::string& project_name) override;
   void Purge() override;

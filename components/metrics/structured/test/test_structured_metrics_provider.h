@@ -45,8 +45,6 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   void EnableRecording();
   void DisableRecording();
 
-  void AddProfilePath(const base::FilePath& user_path);
-
   // Waits until the recorder is fully initialized.
   void WaitUntilReady();
 
@@ -57,7 +55,6 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
 
  private:
   // Recorder::RecorderImpl:
-  void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnEventRecord(const Event& event) override;
 
   std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;

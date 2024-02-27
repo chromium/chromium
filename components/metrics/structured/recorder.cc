@@ -57,20 +57,6 @@ void Recorder::RecordEvent(Event&& event) {
   }
 }
 
-void Recorder::ProfileAdded(const base::FilePath& profile_path) {
-  // All calls to the StructuredMetricsProvider (the observer) must be on the UI
-  // sequence.
-  DCHECK(base::CurrentUIThread::IsSet());
-  // TODO(crbug.com/1016655 ): investigate whether we can verify that
-  // |profile_path| corresponds to a valid (non-guest, non-signin) profile.
-  for (auto& observer : observers_) {
-    observer.OnProfileAdded(profile_path);
-  }
-
-  // Notify the event processors.
-  delegating_events_processor_.OnProfileAdded(profile_path);
-}
-
 void Recorder::OnSystemProfileInitialized() {
   for (auto& observer : observers_) {
     observer.OnSystemProfileInitialized();

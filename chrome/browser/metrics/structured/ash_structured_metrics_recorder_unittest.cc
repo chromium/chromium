@@ -11,14 +11,16 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/metrics/structured/ash_event_storage.h"
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -119,14 +121,25 @@ class TestSystemProfileProvider : public metrics::MetricsProvider {
 
 class AshStructuredMetricsRecorderTest : public testing::Test {
  public:
+  AshStructuredMetricsRecorderTest()
+      : task_environment_(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  AshStructuredMetricsRecorderTest(const AshStructuredMetricsRecorderTest&) =
+      delete;
+  AshStructuredMetricsRecorderTest& operator=(
+      const AshStructuredMetricsRecorderTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(profile_manager_.SetUp(temp_dir_.GetPath()));
 
     // Fixed paths to store keys for test.
     device_key_path_ =
         temp_dir_.GetPath().Append("structured_metrics").Append("device_keys");
     profile_key_path_ =
-        temp_dir_.GetPath().Append("structured_metrics").Append("keys");
+        GetProfilePath().Append("structured_metrics").Append("keys");
 
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
@@ -136,7 +149,10 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
     task_environment_.AdvanceClock(base::Days(1000));
   }
 
-  void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
+  void TearDown() override {
+    StructuredMetricsClient::Get()->UnsetDelegate();
+    profile_manager_.DeleteAllTestingProfiles();
+  }
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
@@ -175,6 +191,14 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   base::FilePath ProfileKeyFilePath() { return profile_key_path_; }
 
   base::FilePath DeviceKeyFilePath() { return device_key_path_; }
+
+  base::FilePath GetProfilePath() {
+    // u-p1@test-hash is the directory name generated for user p1. This name
+    // seems to be consistent. If it changes, update the directory name. It is
+    // done this way so the directory can be pre-populated with key data such
+    // that it can be used in the remaining tests.
+    return profile_manager_.profiles_dir().Append("u-p1@test-hash");
+  }
 
   base::FilePath PreLoginEventPath() {
     return TempDirPath()
@@ -226,7 +250,8 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
         std::make_unique<AshEventStorage>(base::Seconds(0),
                                           PreLoginEventPath()),
         system_profile_provider_.get()));
-    recorder_->OnProfileAdded(TempDirPath());
+
+    profile_manager_.CreateTestingProfile("p1");
     OnRecordingEnabled();
   }
 
@@ -237,18 +262,17 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
   std::unique_ptr<AshStructuredMetricsRecorder> recorder_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
+  raw_ptr<TestingProfile> test_profile_;
 
  private:
   TestRecorder test_recorder_;
 
+  TestingProfileManager profile_manager_;
   base::FilePath device_key_path_;
   base::FilePath profile_key_path_;
 };

@@ -82,12 +82,15 @@ class StructuredMetricsServiceTest : public testing::Test {
   void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
 
   void Init() {
+    auto key_data_provider = std::make_unique<TestKeyDataProvider>(
+        DeviceKeyFilePath(), ProfileKeyFilePath());
+    TestKeyDataProvider* test_key_data_provider = key_data_provider.get();
     auto recorder = std::make_unique<StructuredMetricsRecorder>(
-        std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath(),
-                                              ProfileKeyFilePath()),
-        std::make_unique<TestEventStorage>());
+        std::move(key_data_provider), std::make_unique<TestEventStorage>());
 
-    recorder->OnProfileAdded(temp_dir_.GetPath());
+    // Register the profile with the key data provider.
+    test_key_data_provider->OnProfileAdded(temp_dir_.GetPath());
+
     service_ = std::make_unique<StructuredMetricsService>(&client_, &prefs_,
                                                           std::move(recorder));
     Wait();

@@ -43,14 +43,6 @@ TestStructuredMetricsProvider::~TestStructuredMetricsProvider() {
   Recorder::GetInstance()->RemoveObserver(this);
 }
 
-void TestStructuredMetricsProvider::EnableRecording() {
-  structured_metrics_provider_->OnRecordingEnabled();
-}
-
-void TestStructuredMetricsProvider::DisableRecording() {
-  structured_metrics_provider_->OnRecordingDisabled();
-}
-
 const EventsProto& TestStructuredMetricsProvider::ReadEvents() const {
   return *static_cast<const TestEventStorage*>(
               structured_metrics_provider_->recorder().event_storage())
@@ -93,14 +85,24 @@ TestStructuredMetricsProvider::FindEvents(uint64_t project_name_hash,
   return events_vector;
 }
 
+void TestStructuredMetricsProvider::EnableRecording() {
+  structured_metrics_provider_->OnRecordingEnabled();
+}
+
+void TestStructuredMetricsProvider::DisableRecording() {
+  structured_metrics_provider_->OnRecordingDisabled();
+}
+
+void TestStructuredMetricsProvider::WaitUntilReady() {
+  base::RunLoop run_loop;
+  structured_metrics_provider_->recorder().SetOnReadyToRecord(
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
 void TestStructuredMetricsProvider::SetOnEventsRecordClosure(
     base::RepeatingCallback<void(const Event& event)> event_record_callback) {
   event_record_callback_ = std::move(event_record_callback);
-}
-
-void TestStructuredMetricsProvider::OnProfileAdded(
-    const base::FilePath& profile_path) {
-  structured_metrics_provider_->recorder().OnProfileAdded(profile_path);
 }
 
 void TestStructuredMetricsProvider::OnEventRecord(const Event& event) {
@@ -110,18 +112,6 @@ void TestStructuredMetricsProvider::OnEventRecord(const Event& event) {
   }
 
   event_record_callback_.Run(event);
-}
-
-void TestStructuredMetricsProvider::AddProfilePath(
-    const base::FilePath& user_path) {
-  OnProfileAdded(temp_dir_.GetPath().Append(user_path));
-}
-
-void TestStructuredMetricsProvider::WaitUntilReady() {
-  base::RunLoop run_loop;
-  structured_metrics_provider_->recorder().SetOnReadyToRecord(
-      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
-  run_loop.Run();
 }
 
 }  // namespace metrics::structured

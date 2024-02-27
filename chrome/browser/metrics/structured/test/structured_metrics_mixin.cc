@@ -66,12 +66,19 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
   base::FilePath profile_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("profile"));
 
+  auto key_data_provider =
+      std::make_unique<TestKeyDataProvider>(device_keys_path);
+
+  if (setup_profile_) {
+    // Setup test profile directory immediately so that recording can happen.
+    key_data_provider->OnProfileAdded(profile_path);
+  }
+
   // Create test key data provider and initialize key data provider.
   // TODO(andrewbregger) make sure that all tests that rely on the persistent
   // storage are moved.
   auto recorder = std::make_unique<StructuredMetricsRecorder>(
-      std::make_unique<TestKeyDataProvider>(device_keys_path),
-      std::make_unique<TestEventStorage>());
+      std::move(key_data_provider), std::make_unique<TestEventStorage>());
 
   // TODO(b/282057109): Cleanup provider code once feature is removed.
   if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
@@ -81,11 +88,6 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
   } else {
     structured_metrics_provider_ =
         std::make_unique<TestStructuredMetricsProvider>(std::move(recorder));
-  }
-
-  if (setup_profile_) {
-    // Setup test profile directory immediately so that recording can happen.
-    GetRecorder()->OnProfileAdded(profile_path);
   }
 }
 
@@ -114,13 +116,20 @@ std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
     uint64_t event_name_hash) {
   std::vector<StructuredEventProto> events_vector;
 
-  const EventsProto& events = *GetEventStorage()->events();
+  // TODO(andrewbregger): Create an API to allow events to be iterated over
+  // without copying.
+  const EventStorage<StructuredEventProto>* storage = GetEventStorage();
+
+  EventsProto events;
+  storage->CopyEvents(&events);
+
   for (const auto& event : events.non_uma_events()) {
     if (event.project_name_hash() == project_name_hash &&
         event.event_name_hash() == event_name_hash) {
       events_vector.push_back(event);
     }
   }
+
   return events_vector;
 }
 
@@ -200,10 +209,8 @@ StructuredMetricsMixin::GetUmaProto() {
   return uma_proto;
 }
 
-TestEventStorage* StructuredMetricsMixin::GetEventStorage() {
-  // The mix-in initializes the recorder with a `TestEventStorage`, making this
-  // safe to do.
-  return static_cast<TestEventStorage*>(GetRecorder()->event_storage());
+EventStorage<StructuredEventProto>* StructuredMetricsMixin::GetEventStorage() {
+  return GetRecorder()->event_storage();
 }
 
 }  // namespace metrics::structured

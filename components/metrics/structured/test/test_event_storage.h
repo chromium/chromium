@@ -27,6 +27,7 @@ class TestEventStorage final : public EventStorage<StructuredEventProto> {
   void AddBatchEvents(
       const google::protobuf::RepeatedPtrField<StructuredEventProto>& events)
       override;
+  void CopyEvents(EventsProto* proto) const override;
 
   EventsProto* events() { return &events_; }
   const EventsProto* events() const { return &events_; }

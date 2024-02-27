@@ -11,9 +11,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/structured/lib/key_data_provider.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,8 +33,15 @@ constexpr char kCrOSEventsProjectName[] = "CrOSEvents";
 
 class KeyDataProviderAshTest : public testing::Test, KeyDataProvider::Observer {
  protected:
+  KeyDataProviderAshTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  KeyDataProviderAshTest(const KeyDataProviderAshTest&) = delete;
+  KeyDataProviderAshTest& operator=(const KeyDataProviderAshTest&) = delete;
+
   void SetUp() override {
     CHECK(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(profile_manager_.SetUp());
 
     run_loop_ = std::make_unique<base::RunLoop>();
     key_data_provider_ = std::make_unique<KeyDataProviderAsh>(
@@ -50,7 +59,7 @@ class KeyDataProviderAshTest : public testing::Test, KeyDataProvider::Observer {
 
   void SetUpProfileKeys() {
     run_loop_ = std::make_unique<base::RunLoop>();
-    key_data_provider_->OnProfileAdded(ProfileKeyFilePath());
+    profile_manager_.CreateTestingProfile("p1");
     Wait();
     run_loop_->Run();
   }
@@ -74,22 +83,21 @@ class KeyDataProviderAshTest : public testing::Test, KeyDataProvider::Observer {
   }
 
   base::FilePath ProfileKeyFilePath() {
-    return temp_dir_.GetPath()
-        .Append("structured_metrics")
-        .Append("profile_keys");
+    return GetProfilePath().Append("structured_metrics").Append("profile_keys");
   }
 
-  std::unique_ptr<KeyDataProviderAsh> key_data_provider_;
+  base::FilePath GetProfilePath() { return profile_manager_.profiles_dir(); }
 
  private:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
   base::ScopedTempDir temp_dir_;
 
   // Used to wait for keys.
   std::unique_ptr<base::RunLoop> run_loop_;
+
+ protected:
+  std::unique_ptr<KeyDataProviderAsh> key_data_provider_;
 };
 
 }  // namespace

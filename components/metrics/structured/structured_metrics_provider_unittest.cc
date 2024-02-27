@@ -107,16 +107,17 @@ class StructuredMetricsProviderTest : public testing::Test {
   // about: the metrics service initializing and enabling its providers, and a
   // user logging in.
   void Init() {
+    auto key_data_provider = std::make_unique<TestKeyDataProvider>(
+        DeviceKeyFilePath(), ProfileKeyFilePath());
+    test_key_data_provider_ = key_data_provider.get();
     // Create a system profile, normally done by ChromeMetricsServiceClient.
     structured_metrics_recorder_ = std::make_unique<StructuredMetricsRecorder>(
-        std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath(),
-                                              ProfileKeyFilePath()),
-        std::make_unique<TestEventStorage>());
+        std::move(key_data_provider), std::make_unique<TestEventStorage>());
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     provider_ = std::unique_ptr<StructuredMetricsProvider>(
         new StructuredMetricsProvider(
-            /*min_independent_metrics_interval=*/base::Seconds(0),
-            structured_metrics_recorder_.get()));
+            /*min_independent_metrics_interval=*/
+            base::Seconds(0), structured_metrics_recorder_.get()));
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     provider_->OnRecordingEnabled();
@@ -125,7 +126,7 @@ class StructuredMetricsProviderTest : public testing::Test {
   void OnRecordingEnabled() { provider_->OnRecordingEnabled(); }
 
   void OnProfileAdded(const base::FilePath& path) {
-    provider_->recorder().OnProfileAdded(path);
+    test_key_data_provider_->OnProfileAdded(path);
   }
 
   StructuredDataProto GetSessionData() {
@@ -161,6 +162,7 @@ class StructuredMetricsProviderTest : public testing::Test {
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
   std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
   std::unique_ptr<StructuredMetricsProvider> provider_;
+  raw_ptr<TestKeyDataProvider> test_key_data_provider_;
   // Feature list should be constructed before task environment.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{

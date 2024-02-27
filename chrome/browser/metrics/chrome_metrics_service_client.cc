@@ -159,6 +159,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/printing/printer_metrics_provider.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/keyboard_backlight_color_metrics_provider.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_metrics_provider.h"
@@ -1178,23 +1179,6 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
   if (!profiles::IsRegularUserProfile(profile)) {
     return true;
   }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-  // Begin initializing the structured metrics system. Initialization must wait
-  // until a profile is added, because it reads keys stored within the user's
-  // cryptohome. We only initialize for profiles that are valid candidates
-  // for metrics collection, ignoring the sign-in profile, lock screen app
-  // profile, and guest sessions.
-  //
-  // TODO(crbug.com/1016655): This call would be better placed in
-  // metrics::structured::Recorder, but can't be because it depends on Chrome
-  // code. Investigate whether there's a way of checking this from the
-  // component.
-  metrics::structured::Recorder::GetInstance()->ProfileAdded(
-      profile->GetPath());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-       // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the device is in Demo Mode, observe the sync service to enable UKM to

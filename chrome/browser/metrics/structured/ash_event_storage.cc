@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/metrics/structured/lib/histogram_util.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
@@ -88,25 +89,6 @@ void AshEventStorage::Purge() {
   }
 }
 
-void AshEventStorage::OnProfileAdded(const base::FilePath& path) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  if (is_user_initialized_) {
-    return;
-  }
-
-  // The directory used to store unsent logs. Relative to the user's cryptohome.
-  // This file is created by chromium.
-  user_events_ = std::make_unique<PersistentProto<EventsProto>>(
-      path.Append(FILE_PATH_LITERAL("structured_metrics"))
-          .Append(FILE_PATH_LITERAL("events")),
-      write_delay_,
-      base::BindOnce(&AshEventStorage::OnProfileRead,
-                     weak_factory_.GetWeakPtr()),
-      base::BindRepeating(&AshEventStorage::OnWrite,
-                          weak_factory_.GetWeakPtr()));
-}
-
 void AshEventStorage::AddBatchEvents(
     const google::protobuf::RepeatedPtrField<StructuredEventProto>& events) {
   for (const auto& event : events) {
@@ -122,6 +104,27 @@ void AshEventStorage::AddBatchEvents(
       pre_storage_events_.emplace_back(event);
     }
   }
+}
+
+void AshEventStorage::ProfileAdded(const Profile& profile) {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  if (is_user_initialized_) {
+    return;
+  }
+
+  const base::FilePath& path = profile.GetPath();
+
+  // The directory used to store unsent logs. Relative to the user's cryptohome.
+  // This file is created by chromium.
+  user_events_ = std::make_unique<PersistentProto<EventsProto>>(
+      path.Append(FILE_PATH_LITERAL("structured_metrics"))
+          .Append(FILE_PATH_LITERAL("events")),
+      write_delay_,
+      base::BindOnce(&AshEventStorage::OnProfileRead,
+                     weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&AshEventStorage::OnWrite,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void AshEventStorage::CopyEvents(EventsProto* events_proto) const {

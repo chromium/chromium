@@ -2272,6 +2272,7 @@ static_library("browser") {
     "//components/metrics/demographics",
     "//components/metrics/structured",
     "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:structured_metrics_validator",
     "//components/metrics_services_manager",
     "//components/mirroring/service:mirroring_service",
     "//components/ml/webnn:features",
@@ -4946,14 +4947,6 @@ static_library("browser") {
       "metrics/perf/windowed_incognito_observer.h",
       "metrics/profile_pref_names.cc",
       "metrics/profile_pref_names.h",
-      "metrics/structured/ash_structured_metrics_delegate.cc",
-      "metrics/structured/ash_structured_metrics_delegate.h",
-      "metrics/structured/cros_events_processor.cc",
-      "metrics/structured/cros_events_processor.h",
-      "metrics/structured/metadata_processor_ash.cc",
-      "metrics/structured/metadata_processor_ash.h",
-      "metrics/structured/structured_metrics_key_events_observer.cc",
-      "metrics/structured/structured_metrics_key_events_observer.h",
       "metrics/update_engine_metrics_provider.cc",
       "metrics/update_engine_metrics_provider.h",
       "metrics/usertype_by_devicetype_metrics_provider.cc",
@@ -5406,6 +5399,7 @@ static_library("browser") {
       "//components/drive",
       "//components/memory_pressure",
       "//components/metrics/structured",
+      "//components/metrics/structured:external_metrics",
       "//components/quirks",
       "//components/services/app_service/public/cpp:instance_update",
       "//components/services/font:lib",
@@ -8040,6 +8034,42 @@ static_library("browser") {
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
     ]
+  }
+
+  if (is_chromeos || is_win || is_linux || is_mac) {
+    deps += [
+      "//components/metrics",
+      "//components/metrics/structured",
+      "//components/metrics/structured:structured_metrics_validator",
+    ]
+
+    if (is_chromeos_ash) {
+      sources += [
+        "metrics/structured/ash_event_storage.cc",
+        "metrics/structured/ash_event_storage.h",
+        "metrics/structured/ash_structured_metrics_delegate.cc",
+        "metrics/structured/ash_structured_metrics_delegate.h",
+        "metrics/structured/ash_structured_metrics_recorder.cc",
+        "metrics/structured/ash_structured_metrics_recorder.h",
+        "metrics/structured/cros_events_processor.cc",
+        "metrics/structured/cros_events_processor.h",
+        "metrics/structured/key_data_provider_ash.cc",
+        "metrics/structured/key_data_provider_ash.h",
+        "metrics/structured/metadata_processor_ash.cc",
+        "metrics/structured/metadata_processor_ash.h",
+        "metrics/structured/profile_observer.cc",
+        "metrics/structured/profile_observer.h",
+        "metrics/structured/structured_metrics_key_events_observer.cc",
+        "metrics/structured/structured_metrics_key_events_observer.h",
+      ]
+
+      deps += [
+        "//components/metrics",
+        "//components/metrics/structured:external_metrics",
+        "//components/metrics/structured:structured_metrics_validator",
+        "//components/metrics/structured/lib",
+      ]
+    }
   }
 }
 

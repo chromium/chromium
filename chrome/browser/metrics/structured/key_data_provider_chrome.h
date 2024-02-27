@@ -14,10 +14,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace base {
-class FilePath;
-}
-
 namespace metrics::structured {
 
 // Implementation of KeyDataProvider for Chrome platforms.
@@ -35,7 +31,6 @@ class KeyDataProviderChrome : public KeyDataProvider {
 
   // KeyDataProvider:
   bool IsReady() override;
-  void OnProfileAdded(const base::FilePath& profile_path) override;
   std::optional<uint64_t> GetId(const std::string& project_name) override;
   KeyData* GetKeyData(const std::string& project_name) override;
   void Purge() override;

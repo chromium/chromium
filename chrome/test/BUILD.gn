@@ -6712,6 +6712,7 @@ test("unit_tests") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router:unittests",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/metrics/structured",
     "//chrome/browser/net:key_pinning_proto",
     "//chrome/browser/net:probe_message_proto",
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
@@ -6834,6 +6835,8 @@ test("unit_tests") {
     "//components/media_router/common/providers/cast/channel",
     "//components/media_router/common/providers/cast/channel:test_support",
     "//components/memory_pressure:test_support",
+    "//components/metrics/structured",
+    "//components/metrics/structured/lib",
     "//components/mirroring:mirroring_tests",
     "//components/nacl/common:buildflags",
     "//components/no_state_prefetch/browser",
@@ -8577,7 +8580,6 @@ test("unit_tests") {
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
-      "//chrome/browser/metrics/structured",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
@@ -8677,7 +8679,6 @@ test("unit_tests") {
       "//components/app_restore:unit_tests",
       "//components/arc:arc_test_support",
       "//components/arc/common",
-      "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
       "//components/metrics/structured:structured_metrics_features",
       "//components/metrics/structured:test_support",
@@ -10218,7 +10219,6 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser/metrics/structured",
       "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
       "//components/metrics/structured:structured_metrics_validator",

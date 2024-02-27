@@ -11,10 +11,6 @@ namespace metrics {
 class StructuredEventProto;
 }  // namespace metrics
 
-namespace base {
-class FilePath;
-}
-
 namespace metrics::structured {
 
 class EventsProto;
@@ -52,9 +48,6 @@ class EventStorage {
 
   // Delete all events.
   virtual void Purge() = 0;
-
-  // Temporary API for notifying storage that a profile has been added.
-  virtual void OnProfileAdded(const base::FilePath& path) {}
 
   // Copies the events out of the event storage.
   virtual void CopyEvents(EventsProto* events_proto) const {}

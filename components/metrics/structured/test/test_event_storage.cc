@@ -40,4 +40,8 @@ void TestEventStorage::AddBatchEvents(
   events_.mutable_non_uma_events()->MergeFrom(events);
 }
 
+void TestEventStorage::CopyEvents(EventsProto* proto) const {
+  proto->mutable_non_uma_events()->MergeFrom(events_.non_uma_events());
+}
+
 }  // namespace metrics::structured

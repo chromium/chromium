@@ -24,8 +24,6 @@ bool KeyDataProviderPrefs::IsReady() {
   return true;
 }
 
-void KeyDataProviderPrefs::OnProfileAdded(const base::FilePath& profile_path) {}
-
 std::optional<uint64_t> KeyDataProviderPrefs::GetId(
     const std::string& project_name) {
   // Validates the project. If valid, retrieve the metadata associated

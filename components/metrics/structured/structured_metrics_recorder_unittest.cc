@@ -120,9 +120,19 @@ class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
       : StructuredMetricsRecorder(
             std::make_unique<TestKeyDataProvider>(device_key_path,
                                                   profile_key_path),
-            std::make_unique<TestEventStorage>()) {}
+            std::make_unique<TestEventStorage>()) {
+    test_key_data_provider_ =
+        static_cast<TestKeyDataProvider*>(key_data_provider());
+  }
 
   using StructuredMetricsRecorder::StructuredMetricsRecorder;
+
+  void OnProfileAdded(const base::FilePath& profile_path) {
+    test_key_data_provider_->OnProfileAdded(profile_path);
+  }
+
+ private:
+  raw_ptr<TestKeyDataProvider> test_key_data_provider_;
 };
 
 class StructuredMetricsRecorderTest : public testing::Test {

@@ -73,13 +73,10 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
   // services.
   void UpdateRecordingState(bool state);
 
-  // Adds a test profile and loads and generates profile keys.
-  void AddProfile();
-
   // Builds a log of unstaged events.
   std::unique_ptr<ChromeUserMetricsExtension> GetUmaProto();
 
-  TestEventStorage* GetEventStorage();
+  EventStorage<StructuredEventProto>* GetEventStorage();
 
  private:
   std::unique_ptr<MetricsProvider> system_profile_provider_;
@@ -91,7 +88,7 @@ class StructuredMetricsMixin : public InProcessBrowserTestMixin {
   bool recording_state_ = true;
 
   // Controls whether a profile is added during setup.
-  bool setup_profile_ = true;
+  const bool setup_profile_;
 
   std::unique_ptr<base::RunLoop> record_run_loop_;
   std::unique_ptr<base::RunLoop> keys_run_loop_;
