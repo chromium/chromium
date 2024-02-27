@@ -261,38 +261,9 @@ std::string SerializeReportMetadata(
   return str;
 }
 
-// See https://crbug.com/1385500 for details. These tests can become
-// un-parameterized once the legacy recovery module is no longer used.
-enum class BuiltInRecoveryFeatureFlagState {
-  kDisabled,
-  kEnabled,
-};
-
-class AttributionStorageSqlTest
-    : public testing::TestWithParam<BuiltInRecoveryFeatureFlagState> {
+class AttributionStorageSqlTest : public testing::Test {
  public:
-  AttributionStorageSqlTest() {
-    // Whether or not database recovery uses the new built-in recovery module is
-    // predicated on both the per-database feature flag and the overarching
-    // feature flag being enabled. For the sake of these tests, just assume both
-    // or neither are set.
-    std::vector<base::test::FeatureRef> use_builtin_recovery_features{
-        kAttributionStorageUseBuiltInRecoveryIfSupported,
-        sql::features::kUseBuiltInRecoveryIfSupported};
-
-    switch (GetParam()) {
-      case BuiltInRecoveryFeatureFlagState::kDisabled:
-        scoped_feature_list_.InitWithFeatures(
-            /*enabled_features=*/{},
-            /*disabled_features=*/use_builtin_recovery_features);
-        break;
-      case BuiltInRecoveryFeatureFlagState::kEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            /*enabled_features=*/use_builtin_recovery_features,
-            /*disabled_features=*/{});
-        break;
-    }
-  }
+  AttributionStorageSqlTest() = default;
 
   void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
@@ -337,11 +308,6 @@ class AttributionStorageSqlTest
   AttributionStorage* storage() { return storage_.get(); }
 
   ConfigurableStorageDelegate* delegate() { return delegate_; }
-
-  bool UseBuiltInRecovery() const {
-    return GetParam() == BuiltInRecoveryFeatureFlagState::kEnabled &&
-           sql::BuiltInRecovery::IsSupported();
-  }
 
   void ExpectImpressionRows(size_t expected) {
     sql::Database raw_db;
@@ -432,7 +398,7 @@ class AttributionStorageSqlTest
   raw_ptr<ConfigurableStorageDelegate> delegate_ = nullptr;
 };
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        DatabaseInitialized_TablesAndIndexesLazilyInitialized) {
   base::HistogramTester histograms;
 
@@ -466,7 +432,7 @@ TEST_P(AttributionStorageSqlTest,
   EXPECT_TRUE(base::PathExists(db_path()));
 }
 
-TEST_P(AttributionStorageSqlTest, DatabaseReopened_DataPersisted) {
+TEST_F(AttributionStorageSqlTest, DatabaseReopened_DataPersisted) {
   OpenDatabase();
   AddReportToStorage();
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
@@ -475,7 +441,7 @@ TEST_P(AttributionStorageSqlTest, DatabaseReopened_DataPersisted) {
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
 }
 
-TEST_P(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
+TEST_F(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
   OpenDatabase();
   AddReportToStorage();
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
@@ -490,19 +456,13 @@ TEST_P(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
   // Open that database and ensure that it does not fail.
   EXPECT_NO_FATAL_FAILURE(OpenDatabase());
 
-  if (UseBuiltInRecovery()) {
-    // The database should have been recovered.
-    EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
-  } else {
-    // The recovery process does not recover tables without row IDs, causing no
-    // data to be returned here. See https://crbug.com/1418026.
-    EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(0));
-  }
+  // The database should have been recovered.
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
 
   EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
-TEST_P(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
+TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
   OpenDatabase();
   AddReportToStorage();
   ASSERT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
@@ -525,7 +485,7 @@ TEST_P(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
   ASSERT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        StoreAndRetrieveReportWithVerification_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -569,7 +529,7 @@ TEST_P(AttributionStorageSqlTest,
   CloseDatabase();
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        StoreAndRetrieveReportWithoutVerification_FeatureEnabled) {
   OpenDatabase();
   base::test::ScopedFeatureList feature_list;
@@ -600,7 +560,7 @@ TEST_P(AttributionStorageSqlTest,
   CloseDatabase();
 }
 
-TEST_P(AttributionStorageSqlTest, NullReportWithVerification_FeatureEnabled) {
+TEST_F(AttributionStorageSqlTest, NullReportWithVerification_FeatureEnabled) {
   OpenDatabase();
 
   base::test::ScopedFeatureList feature_list;
@@ -649,7 +609,7 @@ TEST_P(AttributionStorageSqlTest, NullReportWithVerification_FeatureEnabled) {
   CloseDatabase();
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        BothRealAndNullReports_OnlyOneReportWithVerification) {
   OpenDatabase();
 
@@ -698,7 +658,7 @@ TEST_P(AttributionStorageSqlTest,
   CloseDatabase();
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        BothRealAndNullReportsReverseShuffle_OnlyOneReportWithVerification) {
   OpenDatabase();
 
@@ -748,7 +708,7 @@ TEST_P(AttributionStorageSqlTest,
   CloseDatabase();
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        BothRealAndNullReports_MultipleReportsWithVerification) {
   OpenDatabase();
 
@@ -818,7 +778,7 @@ TEST_P(AttributionStorageSqlTest,
 }
 
 // Create a source with three triggers and craft a query that will target all.
-TEST_P(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
+TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
   base::HistogramTester histograms;
 
   OpenDatabase();
@@ -880,7 +840,7 @@ TEST_P(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
 //  target C2 and A2, which will in turn delete the source. We should ensure
 //  that C1 and A1 are properly deleted (reports should not be stored
 //  unattributed).
-TEST_P(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
+TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
   base::HistogramTester histograms;
 
   OpenDatabase();
@@ -930,7 +890,7 @@ TEST_P(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
 }
 
 // Same as the above test, but with a null filter.
-TEST_P(AttributionStorageSqlTest, ClearAllDataWithVestigialConversion) {
+TEST_F(AttributionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   base::HistogramTester histograms;
 
   OpenDatabase();
@@ -977,7 +937,7 @@ TEST_P(AttributionStorageSqlTest, ClearAllDataWithVestigialConversion) {
 }
 
 // The max time range with a null filter should delete everything.
-TEST_P(AttributionStorageSqlTest, DeleteEverything) {
+TEST_F(AttributionStorageSqlTest, DeleteEverything) {
   base::HistogramTester histograms;
 
   OpenDatabase();
@@ -1024,7 +984,7 @@ TEST_P(AttributionStorageSqlTest, DeleteEverything) {
       "Conversions.ReportsDeletedInDataClearOperation.Aggregatable", 2, 1);
 }
 
-TEST_P(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
+TEST_F(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
   OpenDatabase();
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -1062,7 +1022,7 @@ TEST_P(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
   }
 }
 
-TEST_P(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
+TEST_F(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
   OpenDatabase();
   storage()->StoreSource(SourceBuilder()
                              .SetReportingOrigin(*SuitableOrigin::Deserialize(
@@ -1101,7 +1061,7 @@ TEST_P(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
   }
 }
 
-TEST_P(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
+TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
   OpenDatabase();
   delegate()->set_max_sources_per_origin(2);
   storage()->StoreSource(SourceBuilder().Build());
@@ -1121,7 +1081,7 @@ TEST_P(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
   EXPECT_EQ(3u, rate_limit_rows);
 }
 
-TEST_P(AttributionStorageSqlTest, MaxReportsPerDestination) {
+TEST_F(AttributionStorageSqlTest, MaxReportsPerDestination) {
   OpenDatabase();
   delegate()->set_max_reports_per_destination(
       AttributionReport::Type::kEventLevel, 2);
@@ -1145,7 +1105,7 @@ TEST_P(AttributionStorageSqlTest, MaxReportsPerDestination) {
   EXPECT_EQ(3u, rate_limit_rows);
 }
 
-TEST_P(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
+TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
   base::CreateDirectoryAndGetError(db_path(), nullptr);
 
   auto sql_storage = std::make_unique<AttributionStorageSql>(
@@ -1162,7 +1122,7 @@ TEST_P(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
                 .event_level_status());
 }
 
-TEST_P(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
+TEST_F(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
   // Give the storage layer a database directory that doesn't exist.
   std::unique_ptr<AttributionStorage> storage =
       std::make_unique<AttributionStorageSql>(
@@ -1177,7 +1137,7 @@ TEST_P(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
                 .event_level_status());
 }
 
-TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
+TEST_F(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
   {
     base::HistogramTester histograms;
 
@@ -1219,7 +1179,7 @@ TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        DBinitializationSucceeds_SourcesPerSourceOrginHistogramsRecorded) {
   auto create_n_origins = [](size_t n) -> std::vector<SuitableOrigin> {
     std::vector<SuitableOrigin> origins;
@@ -1284,7 +1244,7 @@ TEST_P(AttributionStorageSqlTest,
   }
 }
 
-TEST_P(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
+TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
   constexpr uint64_t kMaxUint64 = std::numeric_limits<uint64_t>::max();
 
   OpenDatabase();
@@ -1305,7 +1265,7 @@ TEST_P(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
               ElementsAre(TriggerDebugKeyIs(kMaxUint64)));
 }
 
-TEST_P(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
+TEST_F(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
   OpenDatabase();
 
   storage()->StoreSource(
@@ -1318,7 +1278,7 @@ TEST_P(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
   ExpectImpressionRows(2u);
 }
 
-TEST_P(AttributionStorageSqlTest, ImpressionExpired_Deleted) {
+TEST_F(AttributionStorageSqlTest, ImpressionExpired_Deleted) {
   OpenDatabase();
 
   storage()->StoreSource(
@@ -1332,7 +1292,7 @@ TEST_P(AttributionStorageSqlTest, ImpressionExpired_Deleted) {
   ExpectImpressionRows(1u);
 }
 
-TEST_P(AttributionStorageSqlTest, ImpressionExpired_TooFrequent_NotDeleted) {
+TEST_F(AttributionStorageSqlTest, ImpressionExpired_TooFrequent_NotDeleted) {
   OpenDatabase();
 
   delegate()->set_delete_expired_sources_frequency(base::Milliseconds(4));
@@ -1348,7 +1308,7 @@ TEST_P(AttributionStorageSqlTest, ImpressionExpired_TooFrequent_NotDeleted) {
   ExpectImpressionRows(2u);
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        ExpiredImpressionWithPendingConversion_NotDeleted) {
   OpenDatabase();
 
@@ -1366,7 +1326,7 @@ TEST_P(AttributionStorageSqlTest,
   ExpectImpressionRows(2u);
 }
 
-TEST_P(AttributionStorageSqlTest, TwoImpressionsOneExpired_OneDeleted) {
+TEST_F(AttributionStorageSqlTest, TwoImpressionsOneExpired_OneDeleted) {
   OpenDatabase();
 
   storage()->StoreSource(
@@ -1383,7 +1343,7 @@ TEST_P(AttributionStorageSqlTest, TwoImpressionsOneExpired_OneDeleted) {
   ExpectImpressionRows(2u);
 }
 
-TEST_P(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
+TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   OpenDatabase();
 
   const base::TimeDelta kReportDelay = base::Milliseconds(5);
@@ -1410,7 +1370,7 @@ TEST_P(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   ExpectImpressionRows(1u);
 }
 
-TEST_P(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
+TEST_F(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
   OpenDatabase();
 
   storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
@@ -1438,7 +1398,7 @@ TEST_P(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
   CloseDatabase();
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        ExpiredSourceWithPendingAggregatableAttribution_NotDeleted) {
   OpenDatabase();
 
@@ -1474,7 +1434,7 @@ TEST_P(AttributionStorageSqlTest,
   ExpectImpressionRows(2u);
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        ExpiredSourceWithSentAggregatableAttribution_Deleted) {
   OpenDatabase();
 
@@ -1512,7 +1472,7 @@ TEST_P(AttributionStorageSqlTest,
   ExpectImpressionRows(1u);
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        InvalidSourceOriginOrSite_FailsDeserialization) {
   const struct {
     const char* sql;
@@ -1558,7 +1518,7 @@ TEST_P(AttributionStorageSqlTest,
   }
 }
 
-TEST_P(AttributionStorageSqlTest, CreateReport_DeletesUnattributedSources) {
+TEST_F(AttributionStorageSqlTest, CreateReport_DeletesUnattributedSources) {
   OpenDatabase();
   storage()->StoreSource(SourceBuilder().Build());
   storage()->StoreSource(SourceBuilder().Build());
@@ -1573,7 +1533,7 @@ TEST_P(AttributionStorageSqlTest, CreateReport_DeletesUnattributedSources) {
   ExpectImpressionRows(1);
 }
 
-TEST_P(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
+TEST_F(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
   OpenDatabase();
   storage()->StoreSource(SourceBuilder().SetPriority(1).Build());
   MaybeCreateAndStoreEventLevelReport(DefaultTrigger());
@@ -1585,7 +1545,7 @@ TEST_P(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
 }
 
 // Tests that invalid filter keys present in the serialized data are removed.
-TEST_P(AttributionStorageSqlTest, DeserializeFilterData_RemovesReservedKeys) {
+TEST_F(AttributionStorageSqlTest, DeserializeFilterData_RemovesReservedKeys) {
   {
     OpenDatabase();
     storage()->StoreSource(SourceBuilder().Build());
@@ -1615,7 +1575,7 @@ TEST_P(AttributionStorageSqlTest, DeserializeFilterData_RemovesReservedKeys) {
               ElementsAre(Pair("x", ElementsAre("y"))));
 }
 
-TEST_P(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
+TEST_F(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
   constexpr char kDestinationOriginA[] = "https://a.d.test";
   constexpr char kDestinationOriginB[] = "https://b.d.test";
 
@@ -1654,7 +1614,7 @@ TEST_P(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
   }
 }
 
-TEST_P(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
+TEST_F(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
   OpenDatabase();
 
   delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
@@ -1681,7 +1641,7 @@ TEST_P(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        InvalidExpiryOrReportTime_FailsDeserialization) {
   static constexpr const char* kUpdateSqls[] = {
       "UPDATE sources SET expiry_time=?",
@@ -1743,7 +1703,7 @@ TEST_P(AttributionStorageSqlTest,
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        RandomizedResponseRateNotStored_RecalculatedWhenHandled) {
   {
     OpenDatabase();
@@ -1788,7 +1748,7 @@ TEST_P(AttributionStorageSqlTest,
               ElementsAre(RandomizedResponseRateIs(0.2)));
 }
 
-TEST_P(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
+TEST_F(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
   {
     OpenDatabase();
     storage()->StoreSource(SourceBuilder().Build());
@@ -1833,7 +1793,7 @@ TEST_P(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
                            attribution_reporting::EventLevelEpsilon())));
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        TriggerDataNotStored_RecalculatedWhenHandled) {
   {
     OpenDatabase();
@@ -1893,7 +1853,7 @@ TEST_P(AttributionStorageSqlTest,
 
 // Having the missing field default to the correct value allows us to avoid a
 // DB migration to populate the field.
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        MissingTriggerDataMatchingProtoField_DefaultsToModulus) {
   proto::AttributionReadOnlySourceData msg;
   ASSERT_FALSE(msg.has_trigger_data_matching());
@@ -1901,7 +1861,7 @@ TEST_P(AttributionStorageSqlTest,
             proto::AttributionReadOnlySourceData::MODULUS);
 }
 
-TEST_P(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserialization) {
+TEST_F(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserialization) {
   const struct {
     const char* desc;
     const char* reporting_origin;
@@ -1952,7 +1912,7 @@ TEST_P(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserialization) {
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        InvalidEventLevelMetadata_FailsDeserialization) {
   const struct {
     const char* desc;
@@ -2042,7 +2002,7 @@ TEST_P(AttributionStorageSqlTest,
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        InvalidAggregatableMetadata_FailsDeserialization) {
   const struct {
     const char* desc;
@@ -2241,7 +2201,7 @@ TEST_P(AttributionStorageSqlTest,
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        InvalidNullAggregatableMetadata_FailsDeserialization) {
   const struct {
     const char* desc;
@@ -2339,7 +2299,7 @@ TEST_P(AttributionStorageSqlTest,
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        NullAggregatableReport_ValidSourceMatched_FailsDeserialization) {
   OpenDatabase();
   storage()->StoreSource(SourceBuilder().Build());
@@ -2374,7 +2334,7 @@ TEST_P(AttributionStorageSqlTest,
                                1);
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        NullAggregatableReport_CorruptedSourceMatched_FailsDeserialization) {
   OpenDatabase();
   storage()->StoreSource(SourceBuilder().Build());
@@ -2410,7 +2370,7 @@ TEST_P(AttributionStorageSqlTest,
                                1);
 }
 
-TEST_P(AttributionStorageSqlTest, InvalidStoredReportFields_MarkedAsCorrupted) {
+TEST_F(AttributionStorageSqlTest, InvalidStoredReportFields_MarkedAsCorrupted) {
   const struct {
     const char* desc;
     bool source_id_mismatch = false;
@@ -2604,7 +2564,7 @@ TEST_P(AttributionStorageSqlTest, InvalidStoredReportFields_MarkedAsCorrupted) {
   }
 }
 
-TEST_P(AttributionStorageSqlTest,
+TEST_F(AttributionStorageSqlTest,
        InvalidReportCorrespondingSourceFields_MarkedAsCorrupted) {
   base::HistogramTester histograms;
   OpenDatabase();
@@ -2714,7 +2674,7 @@ TEST_P(AttributionStorageSqlTest,
   histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 27);
 }
 
-TEST_P(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
+TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
   const struct {
     const char* desc;
     std::optional<bool> debug_cookie_set;
@@ -2811,12 +2771,6 @@ TEST_P(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
     CloseDatabase();
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AttributionStorageSqlTest,
-    testing::Values(BuiltInRecoveryFeatureFlagState::kDisabled,
-                    BuiltInRecoveryFeatureFlagState::kEnabled));
 
 }  // namespace
 }  // namespace content

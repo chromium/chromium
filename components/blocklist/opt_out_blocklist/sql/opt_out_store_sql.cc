@@ -28,13 +28,6 @@
 
 namespace blocklist {
 
-// When enabled, prefer to use the new recovery module to recover the
-// `OptOutStoreSQL` database. See https://crbug.com/1385500 for details.
-// This is a kill switch and is not intended to be used in a field trial.
-BASE_FEATURE(kOptOutStoreSQLUseBuiltInRecoveryIfSupported,
-             "OptOutStoreSQLUseBuiltInRecoveryIfSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // Command line switch to change the entry per host DB size.
@@ -102,8 +95,7 @@ void DatabaseErrorCallback(sql::Database* db,
                            sql::Statement* stmt) {
   // Attempt to recover a corrupt database, if it is eligible to be recovered.
   if (sql::BuiltInRecovery::RecoverIfPossible(
-          db, extended_error, sql::BuiltInRecovery::Strategy::kRecoverOrRaze,
-          &kOptOutStoreSQLUseBuiltInRecoveryIfSupported)) {
+          db, extended_error, sql::BuiltInRecovery::Strategy::kRecoverOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 

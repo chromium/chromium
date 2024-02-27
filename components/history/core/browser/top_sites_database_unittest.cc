@@ -78,20 +78,6 @@ class TopSitesDatabaseTest : public testing::Test {
   base::FilePath file_name_;
 };
 
-// Tests both the legacy `sql::Recovery` interface and the newer
-// `sql::BuiltInRecovery` interface, if it's supported.
-class TopSitesDatabaseRecoveryTest : public TopSitesDatabaseTest,
-                                     public testing::WithParamInterface<bool> {
- public:
-  TopSitesDatabaseRecoveryTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        kTopSitesDatabaseUseBuiltInRecoveryIfSupported, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Version 1 is deprecated, the resulting schema should be current,
 // with no data.
 TEST_F(TopSitesDatabaseTest, Version1) {
@@ -171,7 +157,7 @@ TEST_F(TopSitesDatabaseTest, Version5) {
 
 // Version 1 is deprecated, the resulting schema should be current, with no
 // data.
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
+TEST_F(TopSitesDatabaseTest, Recovery1) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v1.sql"));
 
@@ -204,7 +190,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery1) {
 
 // Version 2 is deprecated, the resulting schema should be current, with no
 // data.
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
+TEST_F(TopSitesDatabaseTest, Recovery2) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v2.sql"));
 
@@ -235,7 +221,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery2) {
   VerifyDatabaseEmpty(db.db_for_testing());
 }
 
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
+TEST_F(TopSitesDatabaseTest, Recovery4_CorruptHeader) {
   // Create an example database.
   EXPECT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v4.sql"));
 
@@ -277,7 +263,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery4_CorruptHeader) {
   }
 }
 
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndex) {
+TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndex) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v5.sql"));
 
@@ -336,7 +322,7 @@ TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndex) {
   EXPECT_EQ(kUrl2, urls[2].url);  // [2] because of url_rank.
 }
 
-TEST_P(TopSitesDatabaseRecoveryTest, Recovery5_CorruptIndexAndLostRow) {
+TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndexAndLostRow) {
   // Create an example database.
   ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, "TopSites.v5.sql"));
 
@@ -549,7 +535,5 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_UpdatesAddedSiteTitle) {
     ASSERT_EQ(urls[1].title, u"B");
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All, TopSitesDatabaseRecoveryTest, testing::Bool());
 
 }  // namespace history

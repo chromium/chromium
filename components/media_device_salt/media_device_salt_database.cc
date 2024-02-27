@@ -18,10 +18,6 @@
 
 namespace media_device_salt {
 
-BASE_FEATURE(kMediaDeviceSaltDatabaseUseBuiltInRecoveryIfSupported,
-             "MediaDeviceSaltDatabaseUseBuiltInRecoveryIfSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 // The current version of the database schema.
 constexpr int kCurrentVersion = 1;
@@ -226,8 +222,7 @@ void MediaDeviceSaltDatabase::OnDatabaseError(int error,
   sql::UmaHistogramSqliteResult("Media.MediaDevices.SaltDatabaseErrors", error);
   std::ignore = sql::BuiltInRecovery::RecoverIfPossible(
       &db_, error,
-      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
-      &kMediaDeviceSaltDatabaseUseBuiltInRecoveryIfSupported);
+      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
 }
 
 }  // namespace media_device_salt

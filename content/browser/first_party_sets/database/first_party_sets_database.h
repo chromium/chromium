@@ -34,8 +34,6 @@ class Statement;
 
 namespace content {
 
-BASE_DECLARE_FEATURE(kFirstPartySetsDatabaseUseBuiltInRecoveryIfSupported);
-
 // Wraps its own `sql::Database` instance on behalf of the First-Party Sets
 // database implementation. This class must be accessed and destroyed on the
 // same sequence. The sequence must outlive |this|.

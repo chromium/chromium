@@ -19,24 +19,6 @@ component("sql") {
     "internal_api_token.h",
     "meta_table.cc",
     "meta_table.h",
-    "recover_module/btree.cc",
-    "recover_module/btree.h",
-    "recover_module/cursor.cc",
-    "recover_module/cursor.h",
-    "recover_module/integers.cc",
-    "recover_module/integers.h",
-    "recover_module/module.cc",
-    "recover_module/module.h",
-    "recover_module/pager.cc",
-    "recover_module/pager.h",
-    "recover_module/parsing.cc",
-    "recover_module/parsing.h",
-    "recover_module/payload.cc",
-    "recover_module/payload.h",
-    "recover_module/record.cc",
-    "recover_module/record.h",
-    "recover_module/table.cc",
-    "recover_module/table.h",
     "recovery.cc",
     "recovery.h",
     "sandboxed_vfs.cc",
@@ -114,7 +96,6 @@ test("sql_unittests") {
     "database_options_unittest.cc",
     "database_unittest.cc",
     "meta_table_unittest.cc",
-    "recover_module/module_unittest.cc",
     "recovery_unittest.cc",
     "sql_memory_dump_provider_unittest.cc",
     "sqlite_features_unittest.cc",
@@ -143,10 +124,8 @@ test("sql_unittests") {
   ]
 }
 
-# Why "built in"? Chromium used to have bespoke recovery code before SQLite
-# had a built-in recovery module. See crbug.com/1513310
-fuzzer_test("sql_built_in_recovery_fuzzer") {
-  sources = [ "built_in_recovery_fuzzer.cc" ]
+fuzzer_test("sql_recovery_fuzzer") {
+  sources = [ "recovery_fuzzer.cc" ]
   deps = [
     ":sql",
     "//base",
@@ -158,5 +137,5 @@ fuzzer_test("sql_built_in_recovery_fuzzer") {
 
 group("fuzzers") {
   testonly = true
-  deps = [ "//sql/fuzzers:sql_built_in_recovery_lpm_fuzzer" ]
+  deps = [ "//sql/fuzzers:sql_recovery_lpm_fuzzer" ]
 }

@@ -105,13 +105,6 @@ const int kCurrentVersionNumber = 8;
 const int kCompatibleVersionNumber = 8;
 const int kDeprecatedVersionNumber = 6;  // and earlier.
 
-// When enabled, prefer to use the new recovery module to recover the
-// `FaviconDatabase` database. See https://crbug.com/1385500 for details.
-// This is a kill switch and is not intended to be used in a field trial.
-BASE_FEATURE(kFaviconDatabaseUseBuiltInRecoveryIfSupported,
-             "FaviconDatabaseUseBuiltInRecoveryIfSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 void FillIconMapping(const GURL& page_url,
                      sql::Statement& statement,
                      IconMapping* icon_mapping) {
@@ -204,8 +197,7 @@ void DatabaseErrorCallback(sql::Database* db,
   // Attempt to recover a corrupt database, if it is eligible to be recovered.
   if (sql::BuiltInRecovery::RecoverIfPossible(
           db, extended_error,
-          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
-          &kFaviconDatabaseUseBuiltInRecoveryIfSupported)) {
+          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 

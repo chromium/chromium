@@ -27,9 +27,6 @@ class Statement;
 
 namespace content {
 
-BASE_DECLARE_FEATURE(
-    kBrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported);
-
 class CONTENT_EXPORT BrowsingTopicsSiteDataStorage {
  public:
   explicit BrowsingTopicsSiteDataStorage(

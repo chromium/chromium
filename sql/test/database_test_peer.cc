@@ -26,9 +26,4 @@ bool DatabaseTestPeer::DetachDatabase(Database* db,
   return db->DetachDatabase(attachment_point, InternalApiToken());
 }
 
-// static
-bool DatabaseTestPeer::EnableRecoveryExtension(Database* db) {
-  return Recovery::EnableRecoveryExtension(db, InternalApiToken()) == SQLITE_OK;
-}
-
 }  // namespace sql

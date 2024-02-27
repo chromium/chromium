@@ -5,8 +5,8 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
-fuzzer_test("sql_built_in_recovery_lpm_fuzzer") {
-  sources = [ "built_in_recovery_lpm_fuzzer.cc" ]
+fuzzer_test("sql_recovery_lpm_fuzzer") {
+  sources = [ "recovery_lpm_fuzzer.cc" ]
   deps = [
     ":sql_disk_corruption_proto",
     "//base",

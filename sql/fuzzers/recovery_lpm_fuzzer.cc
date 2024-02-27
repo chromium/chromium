@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This fuzzer exercises BuiltInRecovery like sql_built_in_recovery_fuzzer, but
-// employs a different strategy for generating database files. Rather than
-// directly interpreting the fuzzer input as a SQLite database file, this fuzzer
+// This fuzzer exercises recovery like sql_recovery_fuzzer, but employs a
+// different strategy for generating database files. Rather than directly
+// interpreting the fuzzer input as a SQLite database file, this fuzzer
 // constructs a DB from fuzzer-derived SQL statements and then mutates the file
 // with fuzzer-derived XOR masks before exercising recovery.
 

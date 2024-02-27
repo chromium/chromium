@@ -2649,8 +2649,7 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
   // Attempt to recover a corrupt database, if it is eligible to be recovered.
   if (sql::BuiltInRecovery::RecoverIfPossible(
           &db_, extended_error,
-          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
-          &kAttributionStorageUseBuiltInRecoveryIfSupported)) {
+          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 

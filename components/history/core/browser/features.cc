@@ -84,13 +84,6 @@ BASE_FEATURE(kSyncSegmentsData,
              "SyncSegmentsData",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, prefer to use the new recovery module to recover the
-// `TopSitesDatabase` database. See https://crbug.com/1385500 for details.
-// This is a kill switch and is not intended to be used in a field trial.
-BASE_FEATURE(kTopSitesDatabaseUseBuiltInRecoveryIfSupported,
-             "TopSitesDatabaseUseBuiltInRecoveryIfSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The maximum number of New Tab Page displays to show with synced segments
 // data.
 const base::FeatureParam<int> kMaxNumNewTabPageDisplays(

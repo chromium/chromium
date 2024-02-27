@@ -809,7 +809,7 @@ bool QuotaDatabase::RecoverOrRaze(int error_code) {
 
   std::ignore = sql::BuiltInRecovery::RecoverIfPossible(
       db_.get(), error_code,
-      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze, nullptr);
+      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
 
   db_.reset();
   EnsureOpened();

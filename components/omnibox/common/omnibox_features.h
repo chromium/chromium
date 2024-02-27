@@ -159,9 +159,6 @@ BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
 BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
 BASE_DECLARE_FEATURE(kStarterPackExpansion);
 
-// Kill switch for use of the new SQL recovery module in `ShortcutsDatabase`.
-BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);
-
 BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
 
 BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);

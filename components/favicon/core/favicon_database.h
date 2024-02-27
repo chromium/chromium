@@ -33,8 +33,6 @@ namespace favicon {
 // All earlier updates are ignored.
 static const int kFaviconUpdateLastRequestedAfterDays = 10;
 
-BASE_DECLARE_FEATURE(kFaviconDatabaseUseBuiltInRecoveryIfSupported);
-
 // This database interface is owned by the history backend and runs on the
 // history thread.
 class FaviconDatabase {
