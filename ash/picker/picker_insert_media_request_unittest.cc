@@ -257,6 +257,22 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenInputMethodIsDestroyed) {
   EXPECT_EQ(client.text(), u"");
 }
 
+TEST_P(PickerInsertMediaRequestTest, DoesNotCallCallbackOnSuccess) {
+  InputMethodAsh input_method(nullptr);
+  ui::FakeTextInputClient client(
+      &input_method,
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
+
+  base::test::TestFuture<void> failure_future;
+  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
+                                   /*insert_timeout=*/base::Seconds(1),
+                                   failure_future.GetCallback());
+  client.Focus();
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  EXPECT_FALSE(failure_future.IsReady());
+}
+
 TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
   InputMethodAsh input_method(nullptr);
 

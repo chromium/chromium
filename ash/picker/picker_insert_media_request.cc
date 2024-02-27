@@ -19,7 +19,7 @@ PickerInsertMediaRequest::PickerInsertMediaRequest(
     const PickerRichMedia& media_to_insert,
     const base::TimeDelta insert_timeout,
     InsertFailedCallback insert_failed_callback)
-    : media_to_insert(media_to_insert),
+    : media_to_insert_(media_to_insert),
       insert_failed_callback_(std::move(insert_failed_callback)) {
   observation_.Observe(input_method);
   insert_timeout_timer_.Start(FROM_HERE, insert_timeout, this,
@@ -35,18 +35,18 @@ void PickerInsertMediaRequest::OnTextInputStateChanged(
   if (mutable_client == nullptr ||
       mutable_client->GetTextInputType() ==
           ui::TextInputType::TEXT_INPUT_TYPE_NONE ||
-      !media_to_insert.has_value()) {
+      !media_to_insert_.has_value()) {
     return;
   }
 
   DCHECK_EQ(mutable_client, client);
-  if (!InsertMediaToInputField(*media_to_insert, mutable_client)) {
+  if (!InsertMediaToInputField(*media_to_insert_, mutable_client)) {
     if (!insert_failed_callback_.is_null()) {
       std::move(insert_failed_callback_).Run();
     }
   }
 
-  media_to_insert = std::nullopt;
+  media_to_insert_ = std::nullopt;
   observation_.Reset();
 }
 
@@ -58,11 +58,13 @@ void PickerInsertMediaRequest::OnInputMethodDestroyed(
 }
 
 void PickerInsertMediaRequest::CancelPendingInsert() {
-  media_to_insert = std::nullopt;
   observation_.Reset();
 
-  if (!insert_failed_callback_.is_null()) {
-    std::move(insert_failed_callback_).Run();
+  if (media_to_insert_.has_value()) {
+    media_to_insert_ = std::nullopt;
+    if (!insert_failed_callback_.is_null()) {
+      std::move(insert_failed_callback_).Run();
+    }
   }
 }
 

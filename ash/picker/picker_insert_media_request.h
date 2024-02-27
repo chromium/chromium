@@ -54,7 +54,7 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
   // Does nothing if the insertion has already happened.
   void CancelPendingInsert();
 
-  std::optional<PickerRichMedia> media_to_insert;
+  std::optional<PickerRichMedia> media_to_insert_;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};
   base::OneShotTimer insert_timeout_timer_;
