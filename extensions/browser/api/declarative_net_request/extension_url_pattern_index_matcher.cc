@@ -9,9 +9,9 @@
 #include <list>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/notreached.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
@@ -120,7 +120,7 @@ ExtensionUrlPatternIndexMatcher::GetModifyHeadersActions(
       params, before_request_matchers_, flat::IndexType_modify_headers);
 
   if (min_priority) {
-    base::EraseIf(rules, [&min_priority](const flat_rule::UrlRule* rule) {
+    std::erase_if(rules, [&min_priority](const flat_rule::UrlRule* rule) {
       return rule->priority() <= *min_priority;
     });
   }

@@ -7,10 +7,10 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -143,7 +143,7 @@ class Handler : public content::WebContentsObserver {
 
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
-    int erased_count = base::Erase(pending_render_frames_, render_frame_host);
+    int erased_count = std::erase(pending_render_frames_, render_frame_host);
     DCHECK_LE(erased_count, 1);
     if (erased_count == 0)
       return;
@@ -268,7 +268,7 @@ class Handler : public content::WebContentsObserver {
       return;
 
     DCHECK(!pending_render_frames_.empty());
-    size_t erased = base::Erase(pending_render_frames_, render_frame_host);
+    size_t erased = std::erase(pending_render_frames_, render_frame_host);
     DCHECK_EQ(1u, erased);
 
     // TODO(devlin): Do we need to trust the renderer for the URL here? Is there

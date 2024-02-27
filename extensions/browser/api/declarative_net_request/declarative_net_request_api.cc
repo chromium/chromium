@@ -9,8 +9,8 @@
 #include <set>
 #include <utility>
 #include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -65,7 +65,7 @@ void FilterRules(std::vector<dnr_api::Rule>& rules,
   // Filter the rules by the rule IDs, if provided.
   if (rule_filter.rule_ids) {
     const base::flat_set<int>& rule_ids = *rule_filter.rule_ids;
-    base::EraseIf(rules, [rule_ids](const auto& rule) {
+    std::erase_if(rules, [rule_ids](const auto& rule) {
       return !rule_ids.contains(rule.id);
     });
   }
@@ -356,7 +356,7 @@ DeclarativeNetRequestGetEnabledRulesetsFunction::Run() {
 
     // Exclude any reserved ruleset IDs since they would correspond to
     // non-static rulesets.
-    base::EraseIf(public_ids, [](const std::string& id) {
+    std::erase_if(public_ids, [](const std::string& id) {
       DCHECK(!id.empty());
       return id[0] == declarative_net_request::kReservedRulesetIDPrefix;
     });

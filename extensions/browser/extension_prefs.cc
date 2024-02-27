@@ -10,10 +10,10 @@
 #include <iterator>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/json/values_util.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -1955,7 +1955,7 @@ void ExtensionPrefs::InitPrefStore() {
       return !Manifest::ShouldAlwaysLoadExtension(info.extension_location,
                                                   is_theme);
     };
-    base::EraseIf(extensions_info, predicate);
+    std::erase_if(extensions_info, predicate);
   }
 
   InitExtensionControlledPrefs(extensions_info);

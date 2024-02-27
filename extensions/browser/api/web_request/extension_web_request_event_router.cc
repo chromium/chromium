@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
@@ -1660,7 +1661,7 @@ bool WebRequestEventRouter::AddEventListener(
     // the *same order* in the extension. In practice, this should pretty much
     // always be the case, because we require listeners to be set up
     // synchronously.
-    size_t erased = base::EraseIf(
+    size_t erased = std::erase_if(
         listeners, [browser_context, extension_id, sub_event_name](
                        const std::unique_ptr<EventListener>& listener) {
           return listener->id.browser_context == browser_context &&

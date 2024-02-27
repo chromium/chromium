@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -829,7 +830,7 @@ ExtensionFunction::ResponseAction RuntimeGetContextsFunction::Run() {
                 std::make_move_iterator(frame_contexts.end()));
 
   // Erase any contexts that don't match the specified filter.
-  base::EraseIf(result,
+  std::erase_if(result,
                 [&filter](const api::runtime::ExtensionContext& context) {
                   return !ExtensionContextMatchesFilter(context, filter);
                 });

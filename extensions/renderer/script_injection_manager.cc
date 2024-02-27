@@ -7,8 +7,9 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
+
 #include "base/auto_reset.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -277,7 +278,7 @@ void ScriptInjectionManager::OnExtensionUnloaded(
 }
 
 void ScriptInjectionManager::OnInjectionFinished(ScriptInjection* injection) {
-  base::EraseIf(running_injections_,
+  std::erase_if(running_injections_,
                 [&injection](const std::unique_ptr<ScriptInjection>& mode) {
                   return injection == mode.get();
                 });
@@ -285,7 +286,7 @@ void ScriptInjectionManager::OnInjectionFinished(ScriptInjection* injection) {
 
 void ScriptInjectionManager::OnUserScriptsUpdated(
     const mojom::HostID& changed_host) {
-  base::EraseIf(
+  std::erase_if(
       pending_injections_,
       [&changed_host](const std::unique_ptr<ScriptInjection>& injection) {
         return changed_host == injection->host_id();
@@ -306,7 +307,7 @@ void ScriptInjectionManager::InvalidateForFrame(content::RenderFrame* frame) {
   // note it.
   active_injection_frames_.erase(frame);
 
-  base::EraseIf(pending_injections_,
+  std::erase_if(pending_injections_,
                 [&frame](const std::unique_ptr<ScriptInjection>& injection) {
                   return injection->render_frame() == frame;
                 });

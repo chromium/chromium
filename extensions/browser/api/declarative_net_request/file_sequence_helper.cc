@@ -7,11 +7,11 @@
 #include <cstdint>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
@@ -201,7 +201,7 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
 
   // Remove old rules
   std::set<int> ids_to_remove(rule_ids_to_remove.begin(), rule_ids_to_remove.end());
-  base::EraseIf(*new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
+  std::erase_if(*new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
     return base::Contains(ids_to_remove, rule.id);
   });
 

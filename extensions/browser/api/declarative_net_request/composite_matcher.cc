@@ -8,9 +8,9 @@
 #include <iterator>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -99,7 +99,7 @@ void CompositeMatcher::AddOrUpdateRulesets(MatcherList matchers) {
 }
 
 void CompositeMatcher::RemoveRulesetsWithIDs(const std::set<RulesetID>& ids) {
-  size_t erased_count = base::EraseIf(
+  size_t erased_count = std::erase_if(
       matchers_, [&ids](const std::unique_ptr<RulesetMatcher>& matcher) {
         return base::Contains(ids, matcher->id());
       });

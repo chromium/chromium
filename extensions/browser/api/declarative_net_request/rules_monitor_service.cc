@@ -5,10 +5,10 @@
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -673,7 +673,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
 
   std::set<int> ids_to_remove(rule_ids_to_remove.begin(),
                               rule_ids_to_remove.end());
-  base::EraseIf(new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
+  std::erase_if(new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
     return base::Contains(ids_to_remove, rule.id);
   });
 

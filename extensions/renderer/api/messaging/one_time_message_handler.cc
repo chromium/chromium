@@ -5,9 +5,9 @@
 #include "extensions/renderer/api/messaging/one_time_message_handler.h"
 
 #include <map>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
@@ -562,7 +562,7 @@ void OneTimeMessageHandler::OnResponseCallbackCollected(
 
   // Since there is no way to call the callback anymore, we can remove it from
   // the pending callbacks.
-  base::EraseIf(
+  std::erase_if(
       data->pending_callbacks,
       [raw_callback](const std::unique_ptr<OneTimeMessageCallback>& callback) {
         return reinterpret_cast<CallbackID>(callback.get()) == raw_callback;

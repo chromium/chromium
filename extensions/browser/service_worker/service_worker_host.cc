@@ -4,6 +4,8 @@
 
 #include "extensions/browser/service_worker/service_worker_host.h"
 
+#include <vector>
+
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/public/browser/browser_context.h"
@@ -356,8 +358,8 @@ void ServiceWorkerHost::Destroy() {
   auto* service_worker_host_list = ServiceWorkerHostList::Get(
       render_process_host_, /*create_if_not_exists=*/false);
   CHECK(service_worker_host_list);
-  // base::EraseIf will lead to a call to the destructor for this object.
-  base::EraseIf(service_worker_host_list->list, base::MatchesUniquePtr(this));
+  // std::erase_if will lead to a call to the destructor for this object.
+  std::erase_if(service_worker_host_list->list, base::MatchesUniquePtr(this));
 }
 
 void ServiceWorkerHost::RenderProcessExited(
