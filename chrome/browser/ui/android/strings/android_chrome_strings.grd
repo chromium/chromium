@@ -1259,6 +1259,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_FORM_DATA_TITLE" desc="Title for Clear Form Data in Clear Browsing Data preference">
         Autofill form data
       </message>
+      <message name="IDS_CLEAR_TABS_TITLE" desc="Title for Clear Tabs in Clear Browsing Data preference">
+        Tabs on this device
+      </message>
       <message name="IDS_CLEAR_BROWSING_DATA_PROGRESS_TITLE" desc='Title for the progress dialog used when waiting for "clear browsing data" to complete.'>
         Clearing browsing data
       </message>

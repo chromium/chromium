@@ -335,6 +335,7 @@ bool GetDeletionPreferenceFromDataType(
       case BrowsingDataType::SITE_SETTINGS:
       case BrowsingDataType::DOWNLOADS:
       case BrowsingDataType::HOSTED_APPS_DATA:
+      case BrowsingDataType::TABS:
         return false;  // No corresponding preference on basic tab.
       case BrowsingDataType::NUM_TYPES:
         // This is not an actual type.
@@ -370,6 +371,9 @@ bool GetDeletionPreferenceFromDataType(
       return true;
     case BrowsingDataType::HOSTED_APPS_DATA:
       *out_pref = prefs::kDeleteHostedAppsData;
+      return true;
+    case BrowsingDataType::TABS:
+      *out_pref = prefs::kCloseTabs;
       return true;
     case BrowsingDataType::NUM_TYPES:
       NOTREACHED();  // This is not an actual type.

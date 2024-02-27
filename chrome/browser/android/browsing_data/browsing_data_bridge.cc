@@ -117,6 +117,10 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
         // Bookmarks are deleted separately on the Java side.
         NOTREACHED();
         break;
+      case browsing_data::BrowsingDataType::TABS:
+        // Tab closure is not implemented yet.
+        NOTIMPLEMENTED();
+        break;
       case browsing_data::BrowsingDataType::SITE_SETTINGS:
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
         break;

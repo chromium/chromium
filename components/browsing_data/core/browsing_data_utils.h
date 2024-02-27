@@ -32,6 +32,7 @@ enum class BrowsingDataType {
   // Only for Desktop:
   DOWNLOADS,
   HOSTED_APPS_DATA,
+  TABS,
   NUM_TYPES
 };
 

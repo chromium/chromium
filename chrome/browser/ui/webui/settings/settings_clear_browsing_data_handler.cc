@@ -211,6 +211,10 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
         // Only implemented on Android.
         NOTREACHED();
         break;
+      case BrowsingDataType::TABS:
+        // Tab closure is not implemented yet.
+        NOTIMPLEMENTED();
+        break;
       case BrowsingDataType::NUM_TYPES:
         NOTREACHED();
         break;

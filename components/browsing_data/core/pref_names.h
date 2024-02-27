@@ -61,6 +61,7 @@ inline constexpr char kDeleteHostedAppsData[] =
     "browser.clear_data.hosted_apps_data";
 inline constexpr char kDeleteSiteSettings[] =
     "browser.clear_data.site_settings";
+inline constexpr char kCloseTabs[] = "browser.clear_data.close_tabs";
 
 // Other Clear Browsing Data preferences.
 inline constexpr char kLastClearBrowsingDataTime[] =

@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -63,11 +65,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -318,10 +322,15 @@ public class ClearBrowsingDataFragmentTest {
 
     private static int[] getAllDataTypes() {
         Set<Integer> dialogTypes = ClearBrowsingDataFragment.getAllOptions();
+        // Ignore "Tabs" datatype as the tab closure is not yet implemented.
+        dialogTypes.remove(DialogOption.CLEAR_TABS);
+
         int[] datatypes = new int[dialogTypes.size()];
-        for (int i = 0; i < datatypes.length; i++) {
-            datatypes[i] = ClearBrowsingDataFragment.getDataType(i);
+        int i = 0;
+        for (int dialogType : dialogTypes) {
+            datatypes[i++] = ClearBrowsingDataFragment.getDataType(dialogType);
         }
+
         Arrays.sort(datatypes);
         return datatypes;
     }
@@ -760,6 +769,34 @@ public class ClearBrowsingDataFragmentTest {
                         any(),
                         eq(ignoredDomains),
                         any());
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
+    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
+    public void testTabsCheckbox_withQuickDeleteV2Disabled() {
+        ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        CheckBoxPreference checkboxPreference =
+                preferences.findPreference(
+                        ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_TABS));
+        assertNull(checkboxPreference);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
+        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
+    })
+    public void testTabsCheckbox_withQuickDeleteV2Enabled() {
+        ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        CheckBoxPreference checkboxPreference =
+                preferences.findPreference(
+                        ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_TABS));
+        assertNotNull(checkboxPreference);
     }
 
     private void setDataTypesToClear(final Integer... typesToClear) {

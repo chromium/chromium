@@ -108,6 +108,7 @@ enum {
   kSyncableMergeableListPrefForTesting = 67,         // For tests.
   kSyncableHistorySensitiveListPrefForTesting = 68,  // For tests.
   kAutofillPaymentCardBenefits = 69,
+  kCloseTabs = 70,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -176,6 +177,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {browsing_data::prefs::kDeleteSiteSettings,
          {syncable_prefs_ids::kDeleteSiteSettings, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {browsing_data::prefs::kCloseTabs,
+         {syncable_prefs_ids::kCloseTabs, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {browsing_data::prefs::kDeleteTimePeriod,
          {syncable_prefs_ids::kDeleteTimePeriod, syncer::PREFERENCES,

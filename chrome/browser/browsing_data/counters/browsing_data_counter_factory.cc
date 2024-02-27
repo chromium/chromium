@@ -138,5 +138,10 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
   }
 #endif
 
+  if (pref_name == browsing_data::prefs::kCloseTabs) {
+    // Tab counter is not implemented yet.
+    return nullptr;
+  }
+
   return nullptr;
 }
