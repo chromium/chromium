@@ -37,6 +37,11 @@ class SESSIONS_EXPORT SessionIdGenerator {
   // locally (even across browser restarts). Must be preceded by Init().
   SessionID NewUnique();
 
+  // Calls this method after restoring a session passing the
+  // `highest_restored_id` to ensure that the next ID will not conflict with the
+  // existing ones.
+  void SetHighestRestoredID(SessionID highest_restored_id);
+
   // Preference name used to persist the last ID.
   static std::string GetLastValuePrefNameForTest();
 

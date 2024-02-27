@@ -16,6 +16,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sessions/core/session_id.h"
+#import "components/sessions/core/session_id_generator.h"
 #import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
@@ -310,7 +311,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   // the WebState as active during the insertion, if restored.
   const int active_index = deserializer.GetActiveIndex();
 
-  int32_t max_identifier = -1;
+  SessionID max_identifier = SessionID::InvalidValue();
 
   // Restore all items directly at their correct position in the WebStateList.
   // The opener-opened relationship is not restored yet, as some WebState may
@@ -323,7 +324,10 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
             session::features::kSessionRestorationSessionIDCheck)) {
       web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
       CHECK(web_state_id.valid(), base::NotFatalUntil::M125);
-      max_identifier = std::max(max_identifier, web_state_id.identifier());
+      if (!max_identifier.is_valid() ||
+          max_identifier.id() < web_state_id.identifier()) {
+        max_identifier = web_state_id.ToSessionID();
+      }
     }
 
     const int inserted_index = web_state_list->InsertWebState(
@@ -336,12 +340,8 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
 
   if (base::FeatureList::IsEnabled(
           session::features::kSessionRestorationSessionIDCheck)) {
-    int32_t next_id = SessionID::NewUnique().id();
-    if (next_id > max_identifier - 10000000) {
-      // In case the ID went over the max int value, make sure that we only
-      // compare them if they are not too far.
-      CHECK_LT(max_identifier, next_id, base::NotFatalUntil::M125);
-    }
+    sessions::SessionIdGenerator::GetInstance()->SetHighestRestoredID(
+        max_identifier);
   }
 
   // Check that all WebStates have been restored.
