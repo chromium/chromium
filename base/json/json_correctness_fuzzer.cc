@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -29,7 +30,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::unique_ptr<char[]> input(new char[size - 1]);
   memcpy(input.get(), data, size - 1);
 
-  base::StringPiece input_string(input.get(), size - 1);
+  std::string_view input_string(input.get(), size - 1);
 
   const int options = data[size - 1];
   auto result =

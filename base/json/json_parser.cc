@@ -6,7 +6,7 @@
 
 #include <cmath>
 #include <iterator>
-#include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -70,7 +69,7 @@ constexpr base_icu::UChar32 kUnicodeReplacementPoint = 0xFFFD;
 // UnprefixedHexStringToInt acts like |HexStringToInt|, but enforces that the
 // input consists purely of hex digits. I.e. no "0x" nor "OX" prefix is
 // permitted.
-bool UnprefixedHexStringToInt(StringPiece input, int* output) {
+bool UnprefixedHexStringToInt(std::string_view input, int* output) {
   for (size_t i = 0; i < input.size(); i++) {
     if (!IsHexDigit(input[i])) {
       return false;
@@ -127,7 +126,7 @@ JSONParser::JSONParser(int options, size_t max_depth)
 
 JSONParser::~JSONParser() = default;
 
-std::optional<Value> JSONParser::Parse(StringPiece input) {
+std::optional<Value> JSONParser::Parse(std::string_view input) {
   input_ = input;
   index_ = 0;
   // Line and column counting is 1-based, but |index_| is 0-based. For example,
@@ -230,30 +229,30 @@ std::string JSONParser::StringBuilder::DestructiveAsString() {
 
 // JSONParser private //////////////////////////////////////////////////////////
 
-std::optional<StringPiece> JSONParser::PeekChars(size_t count) {
+std::optional<std::string_view> JSONParser::PeekChars(size_t count) {
   if (index_ + count > input_.length())
     return std::nullopt;
   // Using StringPiece::substr() is significantly slower (according to
   // base_perftests) than constructing a substring manually.
-  return StringPiece(input_.data() + index_, count);
+  return std::string_view(input_.data() + index_, count);
 }
 
 std::optional<char> JSONParser::PeekChar() {
-  std::optional<StringPiece> chars = PeekChars(1);
+  std::optional<std::string_view> chars = PeekChars(1);
   if (chars)
     return (*chars)[0];
   return std::nullopt;
 }
 
-std::optional<StringPiece> JSONParser::ConsumeChars(size_t count) {
-  std::optional<StringPiece> chars = PeekChars(count);
+std::optional<std::string_view> JSONParser::ConsumeChars(size_t count) {
+  std::optional<std::string_view> chars = PeekChars(count);
   if (chars)
     index_ += count;
   return chars;
 }
 
 std::optional<char> JSONParser::ConsumeChar() {
-  std::optional<StringPiece> chars = ConsumeChars(1);
+  std::optional<std::string_view> chars = ConsumeChars(1);
   if (chars)
     return (*chars)[0];
   return std::nullopt;
@@ -335,7 +334,7 @@ void JSONParser::EatWhitespaceAndComments() {
 }
 
 bool JSONParser::EatComment() {
-  std::optional<StringPiece> comment_start = PeekChars(2);
+  std::optional<std::string_view> comment_start = PeekChars(2);
   if (!comment_start)
     return false;
 
@@ -530,7 +529,7 @@ bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
     return false;
   }
 
-  // StringBuilder will internally build a StringPiece unless a UTF-16
+  // StringBuilder will internally build a std::string_view unless a UTF-16
   // conversion occurs, at which point it will perform a copy into a
   // std::string.
   StringBuilder string(pos());
@@ -589,12 +588,12 @@ bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
     } else {
       // And if it is an escape sequence, the input string will be adjusted
       // (either by combining the two characters of an encoded escape sequence,
-      // or with a UTF conversion), so using StringPiece isn't possible -- force
-      // a conversion.
+      // or with a UTF conversion), so using std::string_view isn't possible --
+      // force a conversion.
       string.Convert();
 
       // Read past the escape '\' and ensure there's a character following.
-      std::optional<StringPiece> escape_sequence = ConsumeChars(2);
+      std::optional<std::string_view> escape_sequence = ConsumeChars(2);
       if (!escape_sequence) {
         ReportError(JSON_INVALID_ESCAPE, -1);
         return false;
@@ -685,7 +684,7 @@ bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
 
 // Entry is at the first X in \uXXXX.
 bool JSONParser::DecodeUTF16(base_icu::UChar32* out_code_point) {
-  std::optional<StringPiece> escape_sequence = ConsumeChars(4);
+  std::optional<std::string_view> escape_sequence = ConsumeChars(4);
   if (!escape_sequence)
     return false;
 
@@ -800,7 +799,7 @@ std::optional<Value> JSONParser::ConsumeNumber() {
 
   index_ = exit_index;
 
-  StringPiece num_string(num_start, end_index - start_index);
+  std::string_view num_string(num_start, end_index - start_index);
 
   int num_int;
   if (StringToInt(num_string, &num_int)) {
@@ -858,7 +857,7 @@ std::optional<Value> JSONParser::ConsumeLiteral() {
   return std::nullopt;
 }
 
-bool JSONParser::ConsumeIfMatch(StringPiece match) {
+bool JSONParser::ConsumeIfMatch(std::string_view match) {
   if (match == PeekChars(match.size())) {
     ConsumeChars(match.size());
     return true;
