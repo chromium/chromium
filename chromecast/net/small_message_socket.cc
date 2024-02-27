@@ -61,10 +61,9 @@ class SmallMessageSocket::BufferWrapper : public ::net::IOBuffer {
     return base_->data();
   }
 
-  size_t size() const { return size_; }
   size_t used() const { return used_; }
   size_t remaining() const {
-    DCHECK_GE(size_, used_);
+    DCHECK_GE(static_cast<size_t>(size_), used_);
     return size_ - used_;
   }
 
@@ -72,7 +71,6 @@ class SmallMessageSocket::BufferWrapper : public ::net::IOBuffer {
   ~BufferWrapper() override { data_ = nullptr; }
 
   scoped_refptr<IOBuffer> base_;
-  size_t size_ = 0;
   size_t used_ = 0;
 };
 
@@ -418,7 +416,7 @@ bool SmallMessageSocket::HandleCompletedMessageBuffers() {
     }
     size_t total_size = data_offset + message_size;
 
-    if (read_buffer_->size() < total_size) {
+    if (static_cast<size_t>(read_buffer_->size()) < total_size) {
       // Current buffer is not big enough.
       auto new_buffer =
           base::MakeRefCounted<::net::IOBufferWithSize>(total_size);
