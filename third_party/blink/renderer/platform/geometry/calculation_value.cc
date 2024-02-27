@@ -144,4 +144,11 @@ bool CalculationValue::HasContentOrIntrinsicSize() const {
   return IsExpression() && data_.expression->HasContentOrIntrinsicSize();
 }
 
+bool CalculationValue::HasPercent() const {
+  if (!IsExpression()) {
+    return HasExplicitPercent();
+  }
+  return data_.expression->HasPercent();
+}
+
 }  // namespace blink

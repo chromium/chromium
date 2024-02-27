@@ -51,6 +51,11 @@ class PLATFORM_EXPORT CalculationExpressionNode
   }
 
   bool HasContentOrIntrinsicSize() const { return has_content_or_intrinsic_; }
+  // HasPercent returns whether this node's value expression should be
+  // treated as having a percent.  Note that this means that percentages
+  // inside of the calculation part of a calc-size() do not make the
+  // calc-size() act as though it has a percent.
+  bool HasPercent() const { return has_percent_; }
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
@@ -77,6 +82,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool Equals(const CalculationExpressionNode& other) const = 0;
 
   bool has_content_or_intrinsic_ = false;
+  bool has_percent_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final
@@ -218,6 +224,9 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
 #if DCHECK_IS_ON()
     result_type_ = ResultType::kPixelsAndPercent;
 #endif
+    if (value.has_explicit_percent) {
+      has_percent_ = true;
+    }
   }
 
   float Pixels() const { return value_.pixels; }

@@ -367,9 +367,22 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
   result_type_ = ResolvedResultType();
   DCHECK_NE(result_type_, ResultType::kInvalid);
 #endif
-  for (const auto& child : children_) {
-    if (child->HasContentOrIntrinsicSize()) {
-      has_content_or_intrinsic_ = true;
+  if (op == CalculationOperator::kCalcSize) {
+    // "A calc-size() is treated, in all respects, as if it were its
+    // calc-size basis."  This is particularly relevant for ignoring the
+    // presence of percentages in the calculation.
+    DCHECK_EQ(children_.size(), 2u);
+    const auto& basis = children_[0];
+    has_content_or_intrinsic_ = basis->HasContentOrIntrinsicSize();
+    has_percent_ = basis->HasPercent();
+  } else {
+    for (const auto& child : children_) {
+      if (child->HasContentOrIntrinsicSize()) {
+        has_content_or_intrinsic_ = true;
+      }
+      if (child->HasPercent()) {
+        has_percent_ = true;
+      }
     }
   }
 }

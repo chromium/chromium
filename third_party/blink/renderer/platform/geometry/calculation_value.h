@@ -68,6 +68,7 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
                             : Length::ValueRange::kAll;
   }
   bool HasContentOrIntrinsicSize() const;
+  bool HasPercent() const;
 
   float Pixels() const {
     DCHECK(!IsExpression());

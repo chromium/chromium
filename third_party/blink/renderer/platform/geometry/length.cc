@@ -212,6 +212,13 @@ bool Length::HasContentOrIntrinsic() const {
          GetType() == kContent;
 }
 
+bool Length::HasPercent() const {
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasPercent();
+  }
+  return GetType() == kPercent;
+}
+
 bool Length::IsCalculatedEqual(const Length& o) const {
   return IsCalculated() &&
          (&GetCalculationValue() == &o.GetCalculationValue() ||
