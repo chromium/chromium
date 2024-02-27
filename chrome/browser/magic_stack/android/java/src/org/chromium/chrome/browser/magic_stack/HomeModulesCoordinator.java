@@ -444,10 +444,18 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                 options,
                 /* inputContext= */ null,
                 result -> {
+                    // It is possible that the result is received after the magic stack has been
+                    // hidden, exit now.
+                    long durationMs = SystemClock.elapsedRealtime() - segmentationServiceCallTimeMs;
+                    if (mHomeModulesConfigManager == null) {
+                        HomeModulesMetricsUtils.recordSegmentationFetchRankingDuration(
+                                getHostSurfaceType(), durationMs);
+                        return;
+                    }
                     onGotRankedModules(
                             onGetClassificationResult(result),
                             onHomeModulesShownCallback,
-                            SystemClock.elapsedRealtime() - segmentationServiceCallTimeMs);
+                            durationMs);
                 });
     }
 
