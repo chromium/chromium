@@ -110,6 +110,10 @@ public class TabGroupModelFilterUnitTest {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
     private static final String TAB_TITLE = "Tab";
 
+    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
+    private static final int INVALID_COLOR_ID = -1;
+    private static final int COLOR_ID = 0;
+
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -122,7 +126,9 @@ public class TabGroupModelFilterUnitTest {
 
     @Mock Context mContext;
 
-    @Mock SharedPreferences mSharedPreferences;
+    @Mock SharedPreferences mSharedPreferencesTitle;
+
+    @Mock SharedPreferences mSharedPreferencesColor;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -322,11 +328,15 @@ public class TabGroupModelFilterUnitTest {
             assertTrue(mTabGroupModelFilter.isTabModelRestored());
         }
 
-        doReturn(mSharedPreferences)
+        doReturn(mSharedPreferencesTitle)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
+        doReturn(mSharedPreferencesColor)
+                .when(mContext)
+                .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
         ContextUtils.initApplicationContextForTests(mContext);
-        when(mSharedPreferences.getString(anyString(), any())).thenReturn(TAB_TITLE);
+        when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
+        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
     }
 
     @Before
@@ -787,7 +797,8 @@ public class TabGroupModelFilterUnitTest {
                         Collections.singletonList(0),
                         Collections.singletonList(mTab1.getRootId()),
                         Collections.singletonList(null),
-                        null);
+                        null,
+                        INVALID_COLOR_ID);
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
 
         mTabGroupModelFilter.moveTabOutOfGroup(TAB1_ID);
@@ -1334,7 +1345,7 @@ public class TabGroupModelFilterUnitTest {
                 .didCreateNewGroup(mTab4.getRootId(), mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab4, mTab4.getId());
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(any(), any(), any(), any(), any());
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt());
 
         assertThat(mTab4.getTabGroupId(), equalTo(tabGroupId));
 
@@ -1594,7 +1605,8 @@ public class TabGroupModelFilterUnitTest {
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,
-                        TAB_TITLE);
+                        TAB_TITLE,
+                        COLOR_ID);
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
@@ -1637,7 +1649,8 @@ public class TabGroupModelFilterUnitTest {
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,
-                        TAB_TITLE);
+                        TAB_TITLE,
+                        COLOR_ID);
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
@@ -1673,7 +1686,8 @@ public class TabGroupModelFilterUnitTest {
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,
-                        TAB_TITLE);
+                        TAB_TITLE,
+                        COLOR_ID);
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab1.getId()).toArray(),
                 expectedGroup.toArray());
@@ -1691,7 +1705,7 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabGroupModelFilterObserver)
                 .didCreateNewGroup(mTab4.getRootId(), mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(any(), any(), any(), any(), any());
+                .didCreateGroup(any(), any(), any(), any(), any(), anyInt());
 
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab4.getTabGroupId(), tabGroupId);
