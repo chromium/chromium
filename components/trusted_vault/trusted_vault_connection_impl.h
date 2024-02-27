@@ -60,7 +60,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   std::unique_ptr<Request> RegisterDeviceWithoutKeys(
       const CoreAccountInfo& account_info,
       const SecureBoxPublicKey& device_public_key,
-      RegisterDeviceWithoutKeysCallback callback) override;
+      RegisterAuthenticationFactorCallback callback) override;
 
   std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,

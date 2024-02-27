@@ -664,9 +664,9 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
           *primary_account_, GetAllVaultKeys(*per_user_vault),
           per_user_vault->last_vault_key_version(), *imported_public_key,
           AuthenticationFactorType::kUnspecified, method_type_hint,
-          base::BindOnce(
+          base::IgnoreArgs<TrustedVaultRegistrationStatus, int>(base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
-              base::Unretained(this), std::move(cb)));
+              base::Unretained(this), std::move(cb))));
 }
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
@@ -866,7 +866,12 @@ void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
 }
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(
-    TrustedVaultRegistrationStatus status) {
+    TrustedVaultRegistrationStatus status,
+    int key_version_unused) {
+  // |key_version_unused| is unused because this callback is invoked when
+  // adding a member to an existing security domain. In this case the key
+  // version is already known.
+
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_.has_value());
@@ -921,7 +926,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
 
 void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
     TrustedVaultRegistrationStatus status,
-    const TrustedVaultKeyAndVersion& vault_key_and_version) {
+    int key_version) {
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_.has_value());
@@ -951,10 +956,9 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
       // there might be StoreKeys() call during handling the request.
       if (!HasNonConstantKey(*per_user_vault)) {
         AssignBytesToProtoString(
-            vault_key_and_version.key,
+            GetConstantTrustedVaultKey(),
             per_user_vault->add_vault_key()->mutable_key_material());
-        per_user_vault->set_last_vault_key_version(
-            vault_key_and_version.version);
+        per_user_vault->set_last_vault_key_version(key_version);
         // WriteToDisk() will be called by OnDeviceRegistered().
       }
       break;
@@ -967,7 +971,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
     case TrustedVaultRegistrationStatus::kOtherError:
       break;
   }
-  OnDeviceRegistered(status);
+  OnDeviceRegistered(status, key_version);
 }
 
 void StandaloneTrustedVaultBackend::OnKeysDownloaded(
@@ -1037,8 +1041,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
 }
 
 void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
-    base::OnceClosure cb,
-    TrustedVaultRegistrationStatus status) {
+    base::OnceClosure cb) {
   DCHECK(ongoing_add_recovery_method_request_);
   ongoing_add_recovery_method_request_ = nullptr;
 

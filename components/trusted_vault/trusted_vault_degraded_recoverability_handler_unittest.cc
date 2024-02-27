@@ -60,7 +60,7 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
               RegisterDeviceWithoutKeys,
               (const CoreAccountInfo& account_info,
                const SecureBoxPublicKey& device_public_key,
-               RegisterDeviceWithoutKeysCallback callback),
+               RegisterAuthenticationFactorCallback callback),
               (override));
   MOCK_METHOD(
       std::unique_ptr<Request>,

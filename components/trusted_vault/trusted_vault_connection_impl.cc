@@ -155,16 +155,7 @@ void RunRegisterAuthenticationFactorCallback(
     TrustedVaultConnection::RegisterAuthenticationFactorCallback callback,
     TrustedVaultRegistrationStatus status,
     int last_key_version) {
-  std::move(callback).Run(status);
-}
-
-void RunRegisterDeviceWithoutKeysCallback(
-    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback callback,
-    TrustedVaultRegistrationStatus status,
-    int last_key_version) {
-  std::move(callback).Run(
-      status, TrustedVaultKeyAndVersion{GetConstantTrustedVaultKey(),
-                                        last_key_version});
+  std::move(callback).Run(status, last_key_version);
 }
 
 void ProcessJoinSecurityDomainsResponse(
@@ -448,13 +439,13 @@ std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RegisterDeviceWithoutKeys(
     const CoreAccountInfo& account_info,
     const SecureBoxPublicKey& device_public_key,
-    RegisterDeviceWithoutKeysCallback callback) {
+    RegisterAuthenticationFactorCallback callback) {
   return SendJoinSecurityDomainsRequest(
       account_info, /*trusted_vault_keys=*/{GetConstantTrustedVaultKey()},
       /*last_trusted_vault_key_version=*/kUnknownConstantKeyVersion,
       device_public_key, AuthenticationFactorType::kPhysicalDevice,
       /*authentication_factor_type_hint=*/std::nullopt,
-      base::BindOnce(&RunRegisterDeviceWithoutKeysCallback,
+      base::BindOnce(&RunRegisterAuthenticationFactorCallback,
                      std::move(callback)));
 }
 

@@ -1265,7 +1265,8 @@ class EnclaveManager::StateMachine {
         /*authentication_factor_type_hint=*/std::nullopt,
         base::BindOnce(
             [](base::WeakPtr<StateMachine> machine,
-               trusted_vault::TrustedVaultRegistrationStatus status) {
+               trusted_vault::TrustedVaultRegistrationStatus status,
+               int key_version) {
               if (!machine) {
                 return;
               }

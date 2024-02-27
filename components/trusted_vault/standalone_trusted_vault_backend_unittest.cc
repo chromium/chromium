@@ -146,7 +146,7 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
               RegisterDeviceWithoutKeys,
               (const CoreAccountInfo& account_info,
                const SecureBoxPublicKey& device_public_key,
-               RegisterDeviceWithoutKeysCallback callback),
+               RegisterAuthenticationFactorCallback callback),
               (override));
   MOCK_METHOD(
       std::unique_ptr<Request>,
@@ -263,7 +263,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
     // Pretend that the registration completed successfully.
     std::move(device_registration_callback)
-        .Run(TrustedVaultRegistrationStatus::kSuccess);
+        .Run(TrustedVaultRegistrationStatus::kSuccess,
+             /*key_version=*/last_vault_key_version);
 
     // Reset primary account.
     SetPrimaryAccountWithUnknownAuthError(/*primary_account=*/std::nullopt);
@@ -791,7 +792,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
   histogram_tester.ExpectUniqueSample(
       /*name=*/"Sync.TrustedVaultDeviceRegistrationOutcome",
       /*sample=*/TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess,
@@ -841,7 +842,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Pretend that the registration failed with kLocalDataObsolete.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kLocalDataObsolete);
+      .Run(TrustedVaultRegistrationStatus::kLocalDataObsolete,
+           /*key_version=*/0);
 
   // Verify persisted file state.
   trusted_vault_pb::LocalTrustedVault proto =
@@ -879,13 +881,13 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   SetPrimaryAccountWithUnknownAuthError(account_info);
 
   // Expect device registration attempt without keys.
-  TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
   std::vector<uint8_t> serialized_public_device_key;
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(Eq(account_info), _, _))
       .WillOnce([&](const CoreAccountInfo& account_info,
                     const SecureBoxPublicKey& device_public_key,
-                    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         serialized_public_device_key = device_public_key.ExportToBytes();
         device_registration_callback = std::move(callback);
@@ -905,8 +907,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Mimic successful device registration and verify the state.
   std::move(device_registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess,
-           TrustedVaultKeyAndVersion(GetConstantTrustedVaultKey(),
-                                     kInitialLastKeyVersion + 1));
+           kInitialLastKeyVersion + 1);
 
   // Now the device should be registered.
   trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
@@ -1076,7 +1077,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic transient failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kOtherError);
+      .Run(TrustedVaultRegistrationStatus::kOtherError, /*key_version=*/0);
 
   // Mimic a restart to trigger device registration attempt, which should remain
   // throttled.
@@ -1135,7 +1136,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic access token fetching failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError);
+      .Run(TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError,
+           /*key_version=*/0);
 
   histogram_tester.ExpectUniqueSample(
       /*name=*/"Sync.TrustedVaultDeviceRegistrationOutcome",
@@ -1178,7 +1180,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldNotThrottleUponNetworkError) {
 
   // Mimic network error.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kNetworkError);
+      .Run(TrustedVaultRegistrationStatus::kNetworkError, /*key_version=*/0);
 
   // Mimic a restart to trigger device registration attempt, which should not be
   // throttled.
@@ -1219,7 +1221,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic transient failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kOtherError);
+      .Run(TrustedVaultRegistrationStatus::kOtherError, /*key_version=*/0);
 
   // Mimic system set to the past.
   clock()->Advance(base::Seconds(-1));
@@ -1539,11 +1541,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const int kServerConstantKeyVersion = 100;
 
-  TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(account_info, _, _))
       .WillOnce([&](const CoreAccountInfo&, const SecureBoxPublicKey&,
-                    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         device_registration_callback = std::move(callback);
         return std::make_unique<TrustedVaultConnection::Request>();
@@ -1555,9 +1557,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess,
-           TrustedVaultKeyAndVersion{GetConstantTrustedVaultKey(),
-                                     kServerConstantKeyVersion});
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kServerConstantKeyVersion);
 
   // Now the device should be registered.
   trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
@@ -1648,7 +1648,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
 
     // Pretend that the registration completed successfully.
     std::move(device_registration_callback)
-        .Run(TrustedVaultRegistrationStatus::kSuccess);
+        .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 
     // Now the device reregistration should be completed.
     trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
@@ -1688,11 +1688,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const int kInitialServerConstantKeyVersion = 100;
 
-  TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(account_info, _, _))
       .WillOnce([&](const CoreAccountInfo&, const SecureBoxPublicKey&,
-                    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         device_registration_callback = std::move(callback);
         return std::make_unique<TrustedVaultConnection::Request>();
@@ -1705,8 +1705,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ASSERT_FALSE(device_registration_callback.is_null());
   std::move(device_registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess,
-           TrustedVaultKeyAndVersion{GetConstantTrustedVaultKey(),
-                                     kInitialServerConstantKeyVersion});
+           kInitialServerConstantKeyVersion);
   // Mimic that device was registered before "redo registration" logic was
   // introduced.
   backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
@@ -1718,12 +1717,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Another device registration request should be issued upon setting the
   // primary account and it should ignore presence of
   // kInitialServerConstantKeyVersion, e.g. RegisterDeviceWithoutKeys() again.
-  TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_redo_registration_callback;
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(account_info, _, _))
       .WillOnce([&](const CoreAccountInfo&,
                     const SecureBoxPublicKey& device_public_key,
-                    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         device_redo_registration_callback = std::move(callback);
         return std::make_unique<TrustedVaultConnection::Request>();
@@ -1748,8 +1747,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
     ASSERT_FALSE(device_redo_registration_callback.is_null());
     std::move(device_redo_registration_callback)
         .Run(TrustedVaultRegistrationStatus::kSuccess,
-             TrustedVaultKeyAndVersion{GetConstantTrustedVaultKey(),
-                                       kNewServerConstantKeyVersion});
+             kNewServerConstantKeyVersion);
 
     // Now the device reregistration should be completed.
     trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
@@ -1856,7 +1854,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   // Mimic successful completion of the request.
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -1937,7 +1935,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Mimic successful completion of the request.
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -2000,7 +1998,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Mimic successful completion of the request.
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
 
 // Verifies that Backend can process device registration and keys downloading
@@ -2068,7 +2066,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Complete "redo device registration" and verify it succeeds.
   ASSERT_FALSE(redo_device_registration_callback.is_null());
   std::move(redo_device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
   trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
       backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
   EXPECT_THAT(registration_info.device_registered_version(), Eq(1));

@@ -109,14 +109,12 @@ struct TrustedVaultKeyAndVersion {
 // vault backend sequence.
 class TrustedVaultConnection {
  public:
+  // The result of attempting to add a member to the security domain. If the
+  // status is successful then `key_version` carries the current version of
+  // the security domain, otherwise it's zero.
   using RegisterAuthenticationFactorCallback =
-      base::OnceCallback<void(TrustedVaultRegistrationStatus)>;
-  // If registration request was successful without local keys, it means only
-  // constant key exists server-side and it's exposed as
-  // |vault_key_and_version|.
-  using RegisterDeviceWithoutKeysCallback = base::OnceCallback<void(
-      TrustedVaultRegistrationStatus,
-      const TrustedVaultKeyAndVersion& /*vault_key_and_version*/)>;
+      base::OnceCallback<void(TrustedVaultRegistrationStatus,
+                              /*key_version=*/int)>;
   using DownloadNewKeysCallback =
       base::OnceCallback<void(TrustedVaultDownloadKeysStatus,
                               const std::vector<std::vector<uint8_t>>& /*keys*/,
@@ -164,7 +162,7 @@ class TrustedVaultConnection {
   [[nodiscard]] virtual std::unique_ptr<Request> RegisterDeviceWithoutKeys(
       const CoreAccountInfo& account_info,
       const SecureBoxPublicKey& device_public_key,
-      RegisterDeviceWithoutKeysCallback callback) = 0;
+      RegisterAuthenticationFactorCallback callback) = 0;
 
   // Asynchronously attempts to download new vault keys (e.g. keys with version
   // greater than the on in |last_trusted_vault_key_and_version|) from the
