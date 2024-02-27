@@ -1178,6 +1178,7 @@ source_set("unit_tests") {
     "payments/virtual_card_enroll_metrics_logger_unittest.cc",
     "payments/virtual_card_enrollment_manager_unittest.cc",
     "payments/wait_for_signal_or_timeout_unittest.cc",
+    "payments_data_manager_unittest.cc",
     "personal_data_manager_test_base.cc",
     "personal_data_manager_test_base.h",
     "personal_data_manager_unittest.cc",
