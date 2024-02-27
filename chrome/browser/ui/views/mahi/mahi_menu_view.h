@@ -12,6 +12,7 @@
 
 namespace views {
 class ImageButton;
+class LabelButton;
 class UniqueWidgetPtr;
 }  // namespace views
 
@@ -40,11 +41,14 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   // Updates the bounds of the view according to the given `anchor_view_bounds`.
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
+  views::LabelButton* summary_button_for_test() { return summary_button_; }
+
  private:
   // Button callback.
   void OnSummaryButtonPressed();
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
+  raw_ptr<views::LabelButton> summary_button_ = nullptr;
 
   base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
 };

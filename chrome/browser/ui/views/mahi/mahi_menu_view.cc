@@ -6,8 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
@@ -107,26 +110,26 @@ MahiMenuView::MahiMenuView() {
 
   AddChildView(std::move(header_row));
 
-  auto button = std::make_unique<views::LabelButton>(
+  auto summary_button = std::make_unique<views::LabelButton>(
       /*callback=*/base::BindRepeating(&MahiMenuView::OnSummaryButtonPressed,
                                        weak_ptr_factory_.GetWeakPtr()),
       /*text=*/l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT));
-  button->SetLabelStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  button->SetImageModel(
+  summary_button->SetLabelStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  summary_button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(chromeos::kMahiSummarizeIcon,
                                      ui::kColorSysOnSurface, kButtonHeight));
-  button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
-                         ui::kColorSysOnSurface);
-  button->SetImageLabelSpacing(kButtonImageLabelSpacing);
-  button->SetBorder(views::CreatePaddedBorder(
+  summary_button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
+                                 ui::kColorSysOnSurface);
+  summary_button->SetImageLabelSpacing(kButtonImageLabelSpacing);
+  summary_button->SetBorder(views::CreatePaddedBorder(
       views::CreateThemedRoundedRectBorder(kButtonBorderThickness,
                                            kButtonCornerRadius,
                                            ui::kColorSysTonalOutline),
       kButtonPadding));
-  button->SetProperty(views::kCrossAxisAlignmentKey,
-                      views::LayoutAlignment::kStart);
-  AddChildView(std::move(button));
+  summary_button->SetProperty(views::kCrossAxisAlignmentKey,
+                              views::LayoutAlignment::kStart);
+  summary_button_ = AddChildView(std::move(summary_button));
 
   auto textfield = std::make_unique<views::Textfield>();
   textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
@@ -181,7 +184,9 @@ void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
 void MahiMenuView::OnSummaryButtonPressed() {
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
-  chromeos::MahiManager::Get()->OpenMahiPanel(display.id());
+  ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
+      display.id(), ::mahi::ButtonType::kSummary,
+      /*question=*/std::u16string());
 }
 
 BEGIN_METADATA(MahiMenuView)
