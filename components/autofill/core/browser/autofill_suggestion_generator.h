@@ -69,16 +69,6 @@ class AutofillSuggestionGenerator {
       std::optional<FieldTypeSet> last_targeted_fields,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Returns a list of profiles that will be displayed as suggestions to the
-  // user, sorted by their relevance. This involves many steps from fetching the
-  // profiles to matching with `field_contents`, and deduplicating based on
-  // `field_types`, which are the relevant types for the current suggestion.
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  GetProfilesToSuggest(FieldType trigger_field_type,
-                       const std::u16string& field_contents,
-                       bool field_is_autofilled,
-                       const FieldTypeSet& field_types);
-
   // Generates suggestions for all available credit cards based on the
   // `trigger_field_type`, `trigger_field` and `trigger_source`.
   // `with_offer` is set to true if ANY card has card-linked offers.
@@ -105,6 +95,9 @@ class AutofillSuggestionGenerator {
       base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
           virtual_card_guid_to_last_four_map);
 
+  // Returns the credit cards to be shown in touch to fill suggestions.
+  std::vector<CreditCard> GetTouchToFillCardsToSuggest();
+
   // Generates a separator suggestion.
   static Suggestion CreateSeparator();
 
@@ -119,13 +112,6 @@ class AutofillSuggestionGenerator {
 
   // Generate "Clear form" suggestion.
   static Suggestion CreateClearFormSuggestion();
-
-  // Returns the local and server cards ordered by the Autofill ranking. The
-  // cards which are expired and disused aren't included if
-  // |suppress_disused_cards| is true.
-  static std::vector<CreditCard> GetOrderedCardsToSuggest(
-      AutofillClient& autofill_client,
-      bool suppress_disused_cards);
 
   // Generates suggestions for all available IBANs.
   static std::vector<Suggestion> GetSuggestionsForIbans(
@@ -154,6 +140,21 @@ class AutofillSuggestionGenerator {
 
  private:
   friend class AutofillSuggestionGeneratorTestApi;
+
+  // Returns a list of profiles that will be displayed as suggestions to the
+  // user, sorted by their relevance. This involves many steps from fetching the
+  // profiles to matching with `field_contents`, and deduplicating based on
+  // `field_types`, which are the relevant types for the current suggestion.
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+  GetProfilesToSuggest(FieldType trigger_field_type,
+                       const std::u16string& field_contents,
+                       bool field_is_autofilled,
+                       const FieldTypeSet& field_types);
+
+  // Returns the local and server cards ordered by the Autofill ranking. The
+  // cards which are expired and disused aren't included if
+  // |suppress_disused_cards| is true.
+  std::vector<CreditCard> GetOrderedCardsToSuggest(bool suppress_disused_cards);
 
   // Returns a list of Suggestion objects, each representing an element in
   // `profiles`.

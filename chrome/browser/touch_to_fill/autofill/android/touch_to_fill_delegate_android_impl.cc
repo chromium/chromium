@@ -112,36 +112,21 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   if (!manager_->client().GetFastCheckoutClient()->IsNotShownYet()) {
     return {TriggerOutcome::kFastCheckoutWasShown, {}};
   }
-  // Trigger only if there is at least 1 complete valid credit card on file.
-  // Complete = contains number, expiration date and name on card.
-  // Valid = unexpired with valid number format.
-  std::vector<CreditCard> cards_to_suggest =
-      AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-          manager_->client(), /*suppress_disused_cards=*/true);
-  if (base::ranges::none_of(cards_to_suggest,
-                            &CreditCard::IsCompleteValidCard)) {
-    return {TriggerOutcome::kNoValidCards, {}};
-  }
   // Trigger only if the UI is available.
   if (!manager_->CanShowAutofillUi()) {
     return {TriggerOutcome::kCannotShowAutofillUi, {}};
   }
-
-  // If a virtual card should be shown, create a copy of the
-  // card with `CreditCard::RecordType::kVirtualCard` as the record type, and
-  // insert it before the actual card.
-  std::vector<autofill::CreditCard> real_and_virtual_cards;
-  for (const CreditCard& card : cards_to_suggest) {
-    if (AutofillSuggestionGenerator(
-            manager_->client(), *manager_->client().GetPersonalDataManager())
-            .ShouldShowVirtualCardOption(&card) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
-      real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(card));
-    }
-    real_and_virtual_cards.push_back(card);
-  }
-  return {TriggerOutcome::kShown, std::move(real_and_virtual_cards)};
+  // Trigger only if there is at least 1 complete valid credit card on file.
+  // Complete = contains number, expiration date and name on card.
+  // Valid = unexpired with valid number format.
+  std::vector<CreditCard> cards_to_suggest =
+      AutofillSuggestionGenerator(manager_->client(),
+                                  *manager_->client().GetPersonalDataManager())
+          .GetTouchToFillCardsToSuggest();
+  return cards_to_suggest.empty()
+             ? DryRunResult(TriggerOutcome::kNoValidCards, {})
+             : DryRunResult(TriggerOutcome::kShown,
+                            std::move(cards_to_suggest));
 }
 
 // TODO(crbug.com/1485693): Remove received FormData

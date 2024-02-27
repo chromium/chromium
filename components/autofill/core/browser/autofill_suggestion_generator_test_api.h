@@ -16,6 +16,21 @@ class AutofillSuggestionGeneratorTestApi {
       AutofillSuggestionGenerator& suggestion_generator)
       : suggestion_generator_(suggestion_generator) {}
 
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+  GetProfilesToSuggest(FieldType trigger_field_type,
+                       const std::u16string& field_contents,
+                       bool field_is_autofilled,
+                       const FieldTypeSet& field_types) {
+    return suggestion_generator_->GetProfilesToSuggest(
+        trigger_field_type, field_contents, field_is_autofilled, field_types);
+  }
+
+  std::vector<CreditCard> GetOrderedCardsToSuggest(
+      bool suppress_disused_cards) {
+    return suggestion_generator_->GetOrderedCardsToSuggest(
+        suppress_disused_cards);
+  }
+
   std::vector<Suggestion> CreateSuggestionsFromProfiles(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,

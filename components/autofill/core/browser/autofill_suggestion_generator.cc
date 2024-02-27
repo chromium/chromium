@@ -1554,10 +1554,9 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   auto field_contents = SanitizeCreditCardFieldValue(trigger_field.value);
 
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      *autofill_client_,
       field_contents.empty() &&
-          trigger_source !=
-              AutofillSuggestionTriggerSource::kManualFallbackPayments);
+      trigger_source !=
+          AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
 
@@ -1623,8 +1622,8 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   // TODO(crbug.com/1453739): Refactor credit card suggestion code by moving
   // duplicate logic to helper functions.
   std::vector<Suggestion> suggestions;
-  std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      *autofill_client_, /*suppress_disused_cards=*/true);
+  std::vector<CreditCard> cards_to_suggest =
+      GetOrderedCardsToSuggest(/*suppress_disused_cards=*/true);
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
 
@@ -1675,6 +1674,30 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
       std::back_inserter(suggestions));
 
   return suggestions;
+}
+
+std::vector<CreditCard>
+AutofillSuggestionGenerator::GetTouchToFillCardsToSuggest() {
+  std::vector<CreditCard> cards_to_suggest =
+      AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
+          /*suppress_disused_cards=*/true);
+  if (base::ranges::none_of(cards_to_suggest,
+                            &CreditCard::IsCompleteValidCard)) {
+    return {};
+  }
+  // If a virtual card should be shown, create a copy of the
+  // card with `CreditCard::RecordType::kVirtualCard` as the record type, and
+  // insert it before the actual card.
+  std::vector<autofill::CreditCard> real_and_virtual_cards;
+  for (const CreditCard& card : cards_to_suggest) {
+    if (ShouldShowVirtualCardOption(&card) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
+      real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(card));
+    }
+    real_and_virtual_cards.push_back(card);
+  }
+  return real_and_virtual_cards;
 }
 
 // static
@@ -1737,13 +1760,12 @@ Suggestion AutofillSuggestionGenerator::CreateClearFormSuggestion() {
 
 // static
 std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-    AutofillClient& autofill_client,
     bool suppress_disused_cards) {
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
-      GetCardLinkedOffers(autofill_client);
+      GetCardLinkedOffers(*autofill_client_);
 
   const PersonalDataManager& personal_data =
-      CHECK_DEREF(autofill_client.GetPersonalDataManager());
+      CHECK_DEREF(autofill_client_->GetPersonalDataManager());
   std::vector<CreditCard*> available_cards =
       personal_data.GetCreditCardsToSuggest();
 
