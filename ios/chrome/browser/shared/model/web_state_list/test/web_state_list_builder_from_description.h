@@ -23,8 +23,8 @@ class WebStateList;
 //
 //   WebStateList web_state_list(...);
 //   WebStateListBuilderFromDescription builder;
-//   builder.BuildWebStateListFromDescription(
-//       web_state_list, "a b | [ 0 c d* ] e f [ 1 g h ]");
+//   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+//       web_state_list, "a b | [ 0 c d* ] e f [ 1 g h ]"));
 //
 // will initialize `web_state_list` with two pinned tabs "a" and "b", six
 // regular tabs "c", "d", "e", "f", "g", "h" where "d" is active, and two tab
@@ -50,8 +50,9 @@ class WebStateListBuilderFromDescription {
   // Initializes `web_state_list` using `description` as a blueprint.
   // Returns `false` if `description` is not valid, in which case the state of
   // `web_state_list` is unspecified.
-  bool BuildWebStateListFromDescription(WebStateList& web_state_list,
-                                        std::string_view description);
+  [[nodiscard]] bool BuildWebStateListFromDescription(
+      WebStateList& web_state_list,
+      std::string_view description);
 
   // Returns the description for a given `web_state_list`.
   std::string GetWebStateListDescription(
