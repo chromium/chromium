@@ -5229,6 +5229,10 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
                ->CachedChildrenIncludingIgnored()
                .Find(obj);
 
+    // If there's a plugin, force the tree data to be generated in every
+    // message so the plugin can merge its own tree data changes.
+    AddPluginTreeToUpdate(&update);
+
     updates.push_back(update);
     if (RuntimeEnabledFeatures::
             AccessibilitySerializationSizeMetricsEnabled()) {
@@ -5296,25 +5300,16 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   pending_events_.clear();
 
 #if DCHECK_IS_ON()
-  CheckTreeConsistency(*this, *ax_tree_serializer_);
+  CheckTreeConsistency(*this, *ax_tree_serializer_, plugin_serializer_.get());
 
   // Provide the expected node count in the last update, so that
   // AXTree::Unserialize() can check for tree consistency on the browser side.
   if (!updates.back().tree_checks) {
     updates.back().tree_checks = std::make_optional<ui::AXTreeChecks>();
   }
-  updates.back().tree_checks->node_count = included_node_count_;
+  updates.back().tree_checks->node_count =
+      GetIncludedNodeCount() + GetPluginIncludedNodeCount();
 #endif  // DCHECK_IS_ON()
-
-  // If there's a plugin, force the tree data to be generated in every
-  // message so the plugin can merge its own tree data changes.
-  // TODO(accessibility): consider moving into above loop if we decide to
-  // include within consistency checks.
-  if (plugin_tree_source_) {
-    for (auto& update : updates) {
-      AddPluginTreeToUpdate(&update);
-    }
-  }
 }
 
 #if DCHECK_IS_ON()
@@ -5323,6 +5318,22 @@ void AXObjectCacheImpl::UpdateIncludedNodeCount(const AXObject* obj) {
     ++included_node_count_;
   } else {
     --included_node_count_;
+  }
+}
+
+void AXObjectCacheImpl::UpdatePluginIncludedNodeCount() {
+  plugin_included_node_count_ = 0;
+  if (plugin_tree_source_ && plugin_tree_source_->GetRoot()) {
+    std::stack<const ui::AXNode*> nodes;
+    nodes.push(plugin_tree_source_->GetRoot());
+    while (!nodes.empty()) {
+      const ui::AXNode* child = nodes.top();
+      nodes.pop();
+      plugin_included_node_count_++;
+      for (size_t i = 0; i < plugin_tree_source_->GetChildCount(child); i++) {
+        nodes.push(plugin_tree_source_->ChildAt(child, i));
+      }
+    }
   }
 }
 #endif  // DCHECK_IS_ON()
@@ -5841,6 +5852,13 @@ void AXObjectCacheImpl::SetAutofillSuggestionAvailability(
 }
 
 void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
+  if (!plugin_tree_source_) {
+#if DCHECK_IS_ON()
+    plugin_included_node_count_ = 0;
+#endif  // DCHECK_IS_ON()
+    return;
+  }
+
   // Conceptually, a plugin tree "stitches" itself into an existing Blink
   // accessibility node. For example, the node could be an <embed>. The plugin
   // tree itself contains a root who's parent is the target of the stitching
@@ -5890,6 +5908,10 @@ void AXObjectCacheImpl::AddPluginTreeToUpdate(ui::AXTreeUpdate* update) {
       break;
     }
   }
+
+#if DCHECK_IS_ON()
+  UpdatePluginIncludedNodeCount();
+#endif  // DCHECK_IS_ON()
 }
 
 ui::AXTreeSource<const ui::AXNode*>* AXObjectCacheImpl::GetPluginTreeSource() {
