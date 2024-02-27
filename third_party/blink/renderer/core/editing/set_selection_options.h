@@ -37,6 +37,9 @@ class CORE_EXPORT SetSelectionOptions final {
   bool ShouldCloseTyping() const { return should_close_typing_; }
   bool ShouldShowHandle() const { return should_show_handle_; }
   bool ShouldShrinkNextTap() const { return should_shrink_next_tap_; }
+  bool ShouldSkipSelectionChangeEvent() const {
+    return should_skip_selectionchange_event_;
+  }
   bool IsDirectional() const { return is_directional_; }
 
  private:
@@ -49,6 +52,7 @@ class CORE_EXPORT SetSelectionOptions final {
   bool should_close_typing_ = false;
   bool should_show_handle_ = false;
   bool should_shrink_next_tap_ = false;
+  bool should_skip_selectionchange_event_ = false;
   bool is_directional_ = false;
 };
 
@@ -73,6 +77,7 @@ class CORE_EXPORT SetSelectionOptions::Builder final {
   Builder& SetShouldCloseTyping(bool);
   Builder& SetShouldShowHandle(bool);
   Builder& SetShouldShrinkNextTap(bool);
+  Builder& SetShouldSkipSelectionChangeEvent(bool);
   Builder& SetIsDirectional(bool);
 
  private:
