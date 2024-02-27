@@ -11,40 +11,15 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/to_string.h"
+#include "base/strings/strcat.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
 
-namespace {
-
 using assistant::prefs::AssistantOnboardingMode;
-
-#define PRINT_VALUE(value) PrintValue(&result, #value, value())
-
-template <typename T, std::enable_if_t<std::is_enum<T>::value>* = nullptr>
-void PrintValue(std::stringstream* result, const std::optional<T>& value) {
-  *result << base::NumberToString(static_cast<int>(value.value()));
-}
-
-template <typename T, std::enable_if_t<!std::is_enum<T>::value>* = nullptr>
-void PrintValue(std::stringstream* result, const std::optional<T>& value) {
-  *result << value.value();
-}
-
-template <typename T>
-void PrintValue(std::stringstream* result,
-                const std::string& name,
-                const std::optional<T>& value) {
-  *result << std::endl << "  " << name << ": ";
-  if (value.has_value())
-    PrintValue(result, value);
-  else
-    *result << ("(no value)");
-}
-
-}  // namespace
 
 AssistantStateBase::AssistantStateBase() = default;
 
@@ -54,18 +29,15 @@ AssistantStateBase::~AssistantStateBase() {
 }
 
 std::string AssistantStateBase::ToString() const {
-  std::stringstream result;
-  result << "AssistantStatus: ";
-  result << assistant_status_;
-  PRINT_VALUE(settings_enabled);
-  PRINT_VALUE(context_enabled);
-  PRINT_VALUE(hotword_enabled);
-  PRINT_VALUE(allowed_state);
-  PRINT_VALUE(locale);
-  PRINT_VALUE(arc_play_store_enabled);
-  PRINT_VALUE(locked_full_screen_enabled);
-  PRINT_VALUE(onboarding_mode);
-  return result.str();
+#define STRINGIFY(field) \
+  #field, (field.has_value() ? base::ToString(field.value()) : "(no value)")
+  return base::StrCat(
+      {"AssistantStatus: ", base::ToString(assistant_status_),
+       STRINGIFY(settings_enabled()), STRINGIFY(context_enabled()),
+       STRINGIFY(hotword_enabled()), STRINGIFY(allowed_state()),
+       STRINGIFY(locale()), STRINGIFY(arc_play_store_enabled()),
+       STRINGIFY(locked_full_screen_enabled()), STRINGIFY(onboarding_mode())});
+#undef STRINGIFY
 }
 
 void AssistantStateBase::AddObserver(AssistantStateObserver* observer) {
