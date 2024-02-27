@@ -121,6 +121,9 @@ interface PasswordAutofillAgent {
   // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
 
+  // Previews the given `value` into the field identified by `field_id`.
+  PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
+
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);

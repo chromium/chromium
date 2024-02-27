@@ -138,6 +138,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
       bool should_show_popup_without_passwords) override;
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
+  void PreviewField(FieldRendererId field_id,
+                    const std::u16string& value) override;
   void SetLoggingState(bool active) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;

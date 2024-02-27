@@ -911,6 +911,17 @@ void PasswordAutofillAgent::FillIntoFocusedField(
   FillPasswordFieldAndSave(&focused_input_element, credential);
 }
 
+void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
+                                         const std::u16string& value) {
+  WebInputElement input = form_util::GetFormControlByRendererId(field_id)
+                              .DynamicTo<WebInputElement>();
+  if (input.IsNull() || !IsElementEditable(input)) {
+    return;
+  }
+  DoPreviewField(input, value,
+                 /*is_password=*/input.IsPasswordFieldForAutofill());
+}
+
 void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
                                            const std::u16string& credential,
                                            bool is_password) {

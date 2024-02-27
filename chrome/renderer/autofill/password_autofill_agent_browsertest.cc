@@ -1834,6 +1834,48 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewWithUsernameAutofilled) {
   }
 }
 
+// Tests that `PreviewField` correctly previews fields.
+TEST_F(PasswordAutofillAgentTest, PreviewField) {
+  WebInputElement random_element = GetInputElementByID("random_field");
+  std::vector<WebInputElement> elements{username_element_, password_element_,
+                                        random_element};
+  for (WebInputElement& element : elements) {
+    SetElementReadOnly(element, true);
+    password_autofill_agent_->PreviewField(
+        form_util::GetFieldRendererId(element), kAliceUsername16);
+    EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+
+    SetElementReadOnly(element, false);
+    password_autofill_agent_->PreviewField(
+        form_util::GetFieldRendererId(element), kAliceUsername16);
+    EXPECT_EQ(kAliceUsername, element.SuggestedValue().Utf8());
+  }
+}
+
+// Tests that the field state is correctly reset after preview.
+TEST_F(PasswordAutofillAgentTest, PreviewField_ClearPreviewedForm) {
+  WebInputElement random_element = GetInputElementByID("random_field");
+  std::vector<WebInputElement> elements{username_element_, password_element_,
+                                        random_element};
+  for (WebInputElement& element : elements) {
+    // Simulate autofilling the field with "ali".
+    ResetFieldState(&element, "ali", WebAutofillState::kAutofilled);
+    element.SetSelectionRange(0u, 0u);
+
+    password_autofill_agent_->PreviewField(
+        form_util::GetFieldRendererId(element), kAliceUsername16);
+    EXPECT_EQ(kAliceUsername, element.SuggestedValue().Utf8());
+    EXPECT_TRUE(element.IsPreviewed());
+
+    password_autofill_agent_->ClearPreviewedForm();
+    EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+    EXPECT_TRUE(element.IsAutofilled());
+    // The selection must stay intact.
+    EXPECT_EQ(0u, element.SelectionStart());
+    EXPECT_EQ(0u, element.SelectionEnd());
+  }
+}
+
 // Tests that `ClearPreview` properly clears previewed username and password
 // with username and password being previously autofilled.
 TEST_F(PasswordAutofillAgentTest,
