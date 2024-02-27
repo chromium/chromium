@@ -2841,46 +2841,27 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
 TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
   // Make form 1 data.
-  FormData form;
-  form.url = GURL("http://foo.com");
-  FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
-
-  field.label = u"fullname";
-  field.name = u"fullname";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"address";
-  field.name = u"address";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Checkable fields should be ignored in parsing
-  FormFieldData checkable_field;
-  checkable_field.label = u"radio_button";
-  checkable_field.form_control_type = FormControlType::kInputRadio;
-  checkable_field.check_status =
-      FormFieldData::CheckStatus::kCheckableButUnchecked;
-  checkable_field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(checkable_field);
+  FormData form = test::GetFormData(
+      {.fields = {{.label = u"fullname", .name = u"fullname"},
+                  {.label = u"address", .name = u"address"},
+                  // Checkable fields should be ignored in parsing
+                  {.label = u"radio_button",
+                   .form_control_type = FormControlType::kInputRadio,
+                   .check_status =
+                       FormFieldData::CheckStatus::kCheckableButUnchecked}}});
 
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
 
   // Make form 2 data.
-  FormData form2;
-  field.label = u"email";
-  field.name = u"email";
-  field.renderer_id = test::MakeFieldRendererId();
-  form2.fields.push_back(field);
-
-  field.label = u"password";
-  field.name = u"password";
-  field.form_control_type = FormControlType::kInputPassword;
-  field.renderer_id = test::MakeFieldRendererId();
-  form2.fields.push_back(field);
+  FormData form2 = test::GetFormData(
+      {.fields = {
+           {.label = u"email", .name = u"email"},
+           {.label = u"password",
+            .name = u"password",
+            .form_control_type = FormControlType::kInputPassword},
+       }});
 
   FormStructure form_structure2(form2);
   forms.push_back(&form_structure2);
@@ -3493,37 +3474,19 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
 // the flag is ON, we will overwrite the predicted type.
 TEST_F(AutofillCrowdsourcingEncoding,
        NoServerData_AutocompleteOff_FlagDisabled_NoOverwrite) {
-  FormData form;
-  form.url = GURL("http://foo.com");
-  FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
-  field.max_length = 10000;
-  field.should_autocomplete = false;
-
-  // Autocomplete Off, with server data.
-  field.label = u"First Name";
-  field.name = u"firstName";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Autocomplete Off, without server data.
-  field.label = u"Last Name";
-  field.name = u"lastName";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Autocomplete On, with server data.
-  field.should_autocomplete = true;
-  field.label = u"Address";
-  field.name = u"address";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Autocomplete On, without server data.
-  field.label = u"Country";
-  field.name = u"country";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {// Autocomplete Off, with server data.
+                  {.label = u"First Name",
+                   .name = u"firstName",
+                   .should_autocomplete = false},
+                  // Autocomplete Off, without server data.
+                  {.label = u"Last Name",
+                   .name = u"lastName",
+                   .should_autocomplete = false},
+                  // Autocomplete On, with server data.
+                  {.label = u"Address", .name = u"address"},
+                  // Autocomplete On, without server data.
+                  {.label = u"Country", .name = u"country"}}});
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
@@ -3561,33 +3524,19 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // Tests that we never overwrite the CVC heuristic-predicted type, even if there
 // is no server data (votes) for every CC fields.
 TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
-  FormData form;
-  form.url = GURL("http://foo.com");
-  FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
-  field.max_length = 10000;
-  field.should_autocomplete = false;
-
   // All fields with autocomplete off and no server data.
-  field.label = u"Cardholder Name";
-  field.name = u"fullName";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Credit Card Number";
-  field.name = u"cc-number";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Expiration Date";
-  field.name = u"exp-date";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"CVC";
-  field.name = u"cvc";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.label = u"Cardholder Name",
+            .name = u"fullName",
+            .should_autocomplete = false},
+           {.label = u"Credit Card Number",
+            .name = u"cc-number",
+            .should_autocomplete = false},
+           {.label = u"Expiration Date",
+            .name = u"exp-date",
+            .should_autocomplete = false},
+           {.label = u"CVC", .name = u"cvc", .should_autocomplete = false}}});
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
@@ -3629,33 +3578,19 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
 // Tests that we never overwrite the CVC heuristic-predicted type, even if there
 // is server data (votes) for every other CC fields.
 TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
-  FormData form;
-  form.url = GURL("http://foo.com");
-  FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
-  field.max_length = 10000;
-  field.should_autocomplete = false;
-
   // All fields with autocomplete off and no server data.
-  field.label = u"Cardholder Name";
-  field.name = u"fullName";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Credit Card Number";
-  field.name = u"cc-number";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Expiration Date";
-  field.name = u"exp-date";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"CVC";
-  field.name = u"cvc";
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.label = u"Cardholder Name",
+            .name = u"fullName",
+            .should_autocomplete = false},
+           {.label = u"Credit Card Number",
+            .name = u"cc-number",
+            .should_autocomplete = false},
+           {.label = u"Expiration Date",
+            .name = u"exp-date",
+            .should_autocomplete = false},
+           {.label = u"CVC", .name = u"cvc", .should_autocomplete = false}}});
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
