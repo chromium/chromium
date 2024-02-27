@@ -217,13 +217,13 @@ public interface TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange);
 
     /**
-     * Create a {@link TabGroupCreationDialog} when creating a new tab group.
+     * Create a TabGroupCreationDialogManager when creating a new tab group.
      *
      * @param activity The {@link Activity} that hosts this dialog.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param tabModelSelector The current {@link TabModelSelector}.
      */
-    Destroyable createTabGroupCreationDialogDelegate(
+    Destroyable createTabGroupCreationDialogManager(
             @NonNull Activity activity,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull TabModelSelector tabModelSelector);

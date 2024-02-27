@@ -25,8 +25,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Delegate that manages the observer for the modal dialog on new tab group creation. */
-public class TabGroupCreationDialogDelegate implements Destroyable {
+/** Manager of the observers that trigger a modal dialog on new tab group creation. */
+public class TabGroupCreationDialogManager implements Destroyable {
     /** The delegate for showing the dialog. */
     protected class ShowDialogDelegate {
         /**
@@ -122,7 +122,7 @@ public class TabGroupCreationDialogDelegate implements Destroyable {
     private PropertyModel mModel;
     private ShowDialogDelegate mShowDialogDelegate;
 
-    public TabGroupCreationDialogDelegate(
+    public TabGroupCreationDialogManager(
             @NonNull Activity activity,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull TabModelSelector tabModelSelector) {

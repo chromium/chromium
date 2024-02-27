@@ -35,10 +35,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Tests for TabGroupCreationDialogDelegate. */
+/** Tests for TabGroupCreationDialogManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabGroupCreationDialogDelegateUnitTest {
+public class TabGroupCreationDialogManagerUnitTest {
     private static final int TAB_COUNT = 3;
 
     @Mock private ModalDialogManager mModalDialogManager;
@@ -46,12 +46,12 @@ public class TabGroupCreationDialogDelegateUnitTest {
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
     @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
-    @Mock private TabGroupCreationDialogDelegate.ShowDialogDelegate mShowDialogDelegate;
+    @Mock private TabGroupCreationDialogManager.ShowDialogDelegate mShowDialogDelegate;
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mObserverCaptor;
 
     private Activity mActivity;
-    private TabGroupCreationDialogDelegate mTabGroupCreationDialogDelegate;
+    private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
 
     @Before
     public void setUp() {
@@ -62,19 +62,19 @@ public class TabGroupCreationDialogDelegateUnitTest {
                 .thenReturn(mRegularTabGroupModelFilter);
         when(mTabModelFilterProvider.getTabModelFilter(true))
                 .thenReturn(mIncognitoTabGroupModelFilter);
-        mTabGroupCreationDialogDelegate =
-                new TabGroupCreationDialogDelegate(
+        mTabGroupCreationDialogManager =
+                new TabGroupCreationDialogManager(
                         mActivity, mModalDialogManager, mTabModelSelector);
     }
 
     @After
     public void tearDown() {
-        mTabGroupCreationDialogDelegate.destroy();
+        mTabGroupCreationDialogManager.destroy();
     }
 
     @Test
     public void testShowOnDidCreateGroup() {
-        mTabGroupCreationDialogDelegate.setShowDialogDelegateForTesting(mShowDialogDelegate);
+        mTabGroupCreationDialogManager.setShowDialogDelegateForTesting(mShowDialogDelegate);
 
         verify(mRegularTabGroupModelFilter).addTabGroupObserver(mObserverCaptor.capture());
         TabGroupModelFilterObserver observer = mObserverCaptor.getValue();
@@ -89,7 +89,7 @@ public class TabGroupCreationDialogDelegateUnitTest {
 
     @Test
     public void testCreationDialogDelegate_showDialog() {
-        mTabGroupCreationDialogDelegate
+        mTabGroupCreationDialogManager
                 .getShowDialogDelegateForTesting()
                 .showDialog(TAB_COUNT, false);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));

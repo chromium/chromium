@@ -224,11 +224,11 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     }
 
     @Override
-    public Destroyable createTabGroupCreationDialogDelegate(
+    public Destroyable createTabGroupCreationDialogManager(
             @NonNull Activity activity,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull TabModelSelector tabModelSelector) {
-        return new TabGroupCreationDialogDelegate(activity, modalDialogManager, tabModelSelector);
+        return new TabGroupCreationDialogManager(activity, modalDialogManager, tabModelSelector);
     }
 
     @Override
