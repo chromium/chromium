@@ -3539,7 +3539,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     .SetSellerCapabilities(
                         {{{url::Origin::Create(GURL("https://example.test")),
                            {blink::SellerCapabilities::kInterestGroupCounts}}}})
-                    .SetAllSellerCapabilities(
+                    .SetAllSellersCapabilities(
                         {blink::SellerCapabilities::kLatencyStats})
                     .Build()));
 
@@ -7550,7 +7550,7 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
                         "/interest_group/trusted_bidding_signals.json"))
                 .SetTrustedBiddingSignalsKeys({{"key1"}})
                 .SetAds({{{ad_url_, R"({"ad":"metadata","here":[1,2]})"}}})
-                .SetAllSellerCapabilities(
+                .SetAllSellersCapabilities(
                     {blink::SellerCapabilities::kInterestGroupCounts,
                      blink::SellerCapabilities::kLatencyStats})
                 .Build()));
@@ -7877,7 +7877,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
                   "b.test", "/interest_group/trusted_bidding_signals.json"))
               .SetTrustedBiddingSignalsKeys({{"key1"}})
               .SetAds({{{ad_url_2, /*metadata=*/std::nullopt}}})
-              .SetAllSellerCapabilities(
+              .SetAllSellersCapabilities(
                   {blink::SellerCapabilities::kInterestGroupCounts,
                    blink::SellerCapabilities::kLatencyStats})
               .Build()));
@@ -8046,7 +8046,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                         "a.test", "/interest_group/bidding_logic.js"))
                     .SetAds({{{ad2_url, /*metadata=*/std::nullopt}}})
                     .SetUpdateUrl(update_url)
-                    .SetAllSellerCapabilities(
+                    .SetAllSellersCapabilities(
                         {blink::SellerCapabilities::kInterestGroupCounts})
                     .Build()));
 
@@ -8357,7 +8357,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                   "/interest_group/bidding_logic_stop_bidding_after_win.js"))
               .SetAds({{{ad1_url, /*metadata=*/std::nullopt}}})
               .SetUpdateUrl(update_url)
-              .SetAllSellerCapabilities(
+              .SetAllSellersCapabilities(
                   {blink::SellerCapabilities::kInterestGroupCounts})
               .Build()));
   EXPECT_EQ(kSuccess,
@@ -8369,7 +8369,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                         "a.test", "/interest_group/bidding_logic.js"))
                     .SetAds({{{ad2_url, /*metadata=*/std::nullopt}}})
                     .SetUpdateUrl(update_url)
-                    .SetAllSellerCapabilities(
+                    .SetAllSellersCapabilities(
                         {blink::SellerCapabilities::kInterestGroupCounts,
                          blink::SellerCapabilities::kLatencyStats})
                     .Build()));

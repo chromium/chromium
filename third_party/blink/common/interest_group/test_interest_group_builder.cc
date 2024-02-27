@@ -74,7 +74,7 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetSellerCapabilities(
   return *this;
 }
 
-TestInterestGroupBuilder& TestInterestGroupBuilder::SetAllSellerCapabilities(
+TestInterestGroupBuilder& TestInterestGroupBuilder::SetAllSellersCapabilities(
     SellerCapabilitiesType all_sellers_capabilities) {
   interest_group_.all_sellers_capabilities =
       std::move(all_sellers_capabilities);

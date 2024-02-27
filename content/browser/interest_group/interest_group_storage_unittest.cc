@@ -139,8 +139,9 @@ class InterestGroupStorageTest : public testing::Test {
             .SetSellerCapabilities(
                 {{{full_origin, {SellerCapabilities::kInterestGroupCounts}},
                   {partial_origin, {SellerCapabilities::kLatencyStats}}}})
-            .SetAllSellerCapabilities({SellerCapabilities::kInterestGroupCounts,
-                                       SellerCapabilities::kLatencyStats})
+            .SetAllSellersCapabilities(
+                {SellerCapabilities::kInterestGroupCounts,
+                 SellerCapabilities::kLatencyStats})
             .SetBiddingUrl(GURL("https://full.example.com/bid"))
             .SetBiddingWasmHelperUrl(GURL("https://full.example.com/bid_wasm"))
             .SetUpdateUrl(GURL("https://full.example.com/update"))

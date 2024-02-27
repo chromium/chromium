@@ -15521,7 +15521,7 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              std::nullopt)}})
-          .SetAllSellerCapabilities({blink::SellerCapabilities::kLatencyStats})
+          .SetAllSellersCapabilities({blink::SellerCapabilities::kLatencyStats})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchLatency});

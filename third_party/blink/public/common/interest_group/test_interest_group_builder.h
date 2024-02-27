@@ -44,7 +44,7 @@ class TestInterestGroupBuilder {
   TestInterestGroupBuilder& SetSellerCapabilities(
       std::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
           seller_capabilities);
-  TestInterestGroupBuilder& SetAllSellerCapabilities(
+  TestInterestGroupBuilder& SetAllSellersCapabilities(
       SellerCapabilitiesType all_sellers_capabilities);
   TestInterestGroupBuilder& SetExecutionMode(
       InterestGroup::ExecutionMode execution_mode);

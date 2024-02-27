@@ -131,7 +131,7 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeSellerCapabilities) {
 }
 
 TEST(InterestGroupMojomTraitsTest,
-     SerializeAndDeserializeAllSellerCapabilities) {
+     SerializeAndDeserializeAllSellersCapabilities) {
   InterestGroup interest_group = CreateInterestGroup();
 
   interest_group.all_sellers_capabilities.Put(
