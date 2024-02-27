@@ -36,8 +36,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.components.webauthn.WebauthnMode;
-import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
@@ -115,7 +113,6 @@ public class AwSettings {
     private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
     private Context mContext;
-    private WebContents mWebContents;
 
     // This class must be created on the UI thread. Afterwards, it can be
     // used from any thread. Internally, the class uses a message queue
@@ -199,8 +196,6 @@ public class AwSettings {
     private boolean mBuiltInZoomControls;
     private boolean mDisplayZoomControls = true;
     private final AwMediaIntegrityApiStatusConfig mIntegrityApiStatusConfig;
-
-    private @WebauthnMode int mWebauthnMode = WebauthnMode.NONE;
 
     // Cache default user agent string obtained through JNI, since it will not change during the
     // process lifetime. This saves a JNI call when creating new AwSettings objects after the first
@@ -418,10 +413,7 @@ public class AwSettings {
                 mEventHandler.bindUiThread();
                 mNativeAwSettings = AwSettingsJni.get().init(AwSettings.this, webContents);
                 updateEverythingLocked();
-                WebauthnModeProvider.getInstance()
-                        .setWebauthnModeForWebContents(webContents, mWebauthnMode);
             }
-            mWebContents = webContents;
         }
     }
 
@@ -2008,29 +2000,6 @@ public class AwSettings {
     public @MediaIntegrityApiStatus int getWebViewIntegrityApiStatusForUri(Uri uri) {
         synchronized (mAwSettingsLock) {
             return mIntegrityApiStatusConfig.getStatusForUri(uri);
-        }
-    }
-
-    public void setWebauthnSupport(@WebauthnMode int support) {
-        synchronized (mAwSettingsLock) {
-            if (mWebauthnMode != support) {
-                mWebauthnMode = support;
-                mEventHandler.updateWebkitPreferencesLocked();
-                WebauthnModeProvider.getInstance()
-                        .setWebauthnModeForWebContents(mWebContents, support);
-            }
-        }
-    }
-
-    @CalledByNative
-    public @WebauthnMode int getWebauthnSupportLocked() {
-        assert Thread.holdsLock(mAwSettingsLock);
-        return mWebauthnMode;
-    }
-
-    public int getWebauthnSupport() {
-        synchronized (mAwSettingsLock) {
-            return getWebauthnSupportLocked();
         }
     }
 

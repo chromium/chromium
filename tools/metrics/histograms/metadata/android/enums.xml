@@ -706,12 +706,6 @@ chromium-metrics-reviews@google.com.
     WebViewCompat#setAudioMuted(boolean)
   </int>
   <int value="101" label="IS_AUDIO_MUTED">WebViewCompat#isAudioMuted()</int>
-  <int value="102" label="SET_WEBAUTHN_SUPPORT">
-    WebSettingsCompat#setWebauthnSupport(int)
-  </int>
-  <int value="103" label="GET_WEBAUTHN_SUPPORT">
-    WebSettingsCompat#getWebauthnSupport()
-  </int>
 </enum>
 
 <enum name="AppPackageNameAllowlistParseStatus">

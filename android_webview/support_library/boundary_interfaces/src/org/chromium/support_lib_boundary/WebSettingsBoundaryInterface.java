@@ -55,16 +55,16 @@ public interface WebSettingsBoundaryInterface {
     int getForceDarkBehavior();
 
     @Retention(RetentionPolicy.SOURCE)
-    @interface WebauthnSupport {
+    @interface WebAuthnSupport {
         int NONE = 0;
         int APP = 1;
         int BROWSER = 2;
     }
 
-    void setWebauthnSupport(@WebauthnSupport int support);
+    void setWebAuthnSupport(@WebAuthnSupport int support);
 
-    @WebauthnSupport
-    int getWebauthnSupport();
+    @WebAuthnSupport
+    int getWebAuthnSupport();
 
     void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules);
 
