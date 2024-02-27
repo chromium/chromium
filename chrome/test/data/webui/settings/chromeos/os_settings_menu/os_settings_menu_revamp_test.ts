@@ -28,6 +28,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createFakePageContentData, TestMultideviceBrowserProxy} from '../multidevice_page/test_multidevice_browser_proxy.js';
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 const {Section} = routesMojom;
 type SectionName = keyof typeof Section;
@@ -39,15 +40,14 @@ interface MenuItemData {
 
 suite('<os-settings-menu>', () => {
   let settingsMenu: OsSettingsMenuElement;
-  let browserProxy: TestAccountManagerBrowserProxy;
+  let accountManagerBrowserProxy: TestAccountManagerBrowserProxy;
 
   async function createMenu(): Promise<void> {
+    clearBody();
     settingsMenu = document.createElement('os-settings-menu');
     settingsMenu.pageAvailability = createPageAvailabilityForTesting();
     settingsMenu.advancedOpened = true;
     document.body.appendChild(settingsMenu);
-
-    await browserProxy.whenCalled('getAccounts');
     await flushTasks();
   }
 
@@ -56,13 +56,20 @@ suite('<os-settings-menu>', () => {
         `os-settings-menu-item[path="${path}"]`);
   }
 
-  setup(() => {
-    browserProxy = new TestAccountManagerBrowserProxy();
-    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
-  });
+  function simulateGuestMode(enabled: boolean): void {
+    loadTimeData.overrideValues({isGuest: enabled});
 
-  teardown(() => {
-    settingsMenu.remove();
+    // Reinitialize Router and routes based on load time data. Some routes
+    // should not exist in guest mode.
+    Router.resetInstanceForTesting(createRouterForTesting());
+  }
+
+  setup(() => {
+    simulateGuestMode(/*enabled=*/ false);
+
+    accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(
+        accountManagerBrowserProxy);
   });
 
   suite('Menu item visibility', () => {
@@ -216,13 +223,36 @@ suite('<os-settings-menu>', () => {
       return accountsMenuItem;
     }
 
+    suite('when in guest mode', () => {
+      setup(() => {
+        simulateGuestMode(/*enabled=*/ true);
+      });
+
+      test('Accounts menu item should not exist', async () => {
+        await createMenu();
+        const accountsMenuItem =
+            queryMenuItemByPath(`/${routesMojom.PEOPLE_SECTION_PATH}`);
+        assertNull(accountsMenuItem);
+      });
+
+      test('Should not call getAccounts', async () => {
+        await createMenu();
+
+        const callCount =
+            accountManagerBrowserProxy.getCallCount('getAccounts');
+        assertEquals(0, callCount);
+      });
+    });
+
     suite('When there is only one account', () => {
       setup(() => {
-        browserProxy.setAccountsForTesting(fakeAccounts.slice(0, 1));
+        accountManagerBrowserProxy.setAccountsForTesting(
+            fakeAccounts.slice(0, 1));
       });
 
       test('Description should show account email', async () => {
         await createMenu();
+        await accountManagerBrowserProxy.whenCalled('getAccounts');
 
         const accountsMenuItem = getAccountsMenuItem();
         assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
@@ -230,12 +260,13 @@ suite('<os-settings-menu>', () => {
 
       test('Description should update when an account is added', async () => {
         await createMenu();
+        await accountManagerBrowserProxy.whenCalled('getAccounts');
 
         const accountsMenuItem = getAccountsMenuItem();
         assertEquals(fakeAccounts[0]!.email, accountsMenuItem.sublabel);
 
         // Update accounts to have 2 accounts
-        browserProxy.setAccountsForTesting(fakeAccounts);
+        accountManagerBrowserProxy.setAccountsForTesting(fakeAccounts);
         webUIListenerCallback('accounts-changed');
         await flushTasks();
 
@@ -245,11 +276,12 @@ suite('<os-settings-menu>', () => {
 
     suite('When there is more than one account', () => {
       setup(() => {
-        browserProxy.setAccountsForTesting(fakeAccounts);
+        accountManagerBrowserProxy.setAccountsForTesting(fakeAccounts);
       });
 
       test('Description should show number of accounts', async () => {
         await createMenu();
+        await accountManagerBrowserProxy.whenCalled('getAccounts');
 
         const accountsMenuItem = getAccountsMenuItem();
         assertEquals('2 accounts', accountsMenuItem.sublabel);
@@ -257,12 +289,14 @@ suite('<os-settings-menu>', () => {
 
       test('Description should update when an account is removed', async () => {
         await createMenu();
+        await accountManagerBrowserProxy.whenCalled('getAccounts');
 
         const accountsMenuItem = getAccountsMenuItem();
         assertEquals('2 accounts', accountsMenuItem.sublabel);
 
         // Remove an account to leave only 1 account
-        browserProxy.setAccountsForTesting(fakeAccounts.slice(0, 1));
+        accountManagerBrowserProxy.setAccountsForTesting(
+            fakeAccounts.slice(0, 1));
         webUIListenerCallback('accounts-changed');
         await flushTasks();
 
@@ -827,11 +861,7 @@ suite('<os-settings-menu>', () => {
 
     suite('when in guest mode', () => {
       setup(() => {
-        loadTimeData.overrideValues({isGuest: true});
-
-        // Reinitialize Router and routes based on load time data.
-        // i.e. Multdevice route should not exist in guest mode.
-        Router.resetInstanceForTesting(createRouterForTesting());
+        simulateGuestMode(/*enabled=*/ true);
       });
 
       test('Multidevice menu item should not exist', async () => {

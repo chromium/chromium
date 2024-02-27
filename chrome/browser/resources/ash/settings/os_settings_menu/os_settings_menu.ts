@@ -282,11 +282,13 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     super.connectedCallback();
 
     if (this.isRevampWayfindingEnabled_) {
-      // Accounts menu item.
-      this.updateAccountsMenuItemDescription_();
-      this.addWebUiListener(
-          'accounts-changed',
-          this.updateAccountsMenuItemDescription_.bind(this));
+      // Accounts menu item is not available in guest mode.
+      if (this.pageAvailability[Section.kPeople]) {
+        this.updateAccountsMenuItemDescription_();
+        this.addWebUiListener(
+            'accounts-changed',
+            this.updateAccountsMenuItemDescription_.bind(this));
+      }
 
       // Bluetooth menu item.
       this.observeBluetoothProperties_();
@@ -308,6 +310,9 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       if (this.pageAvailability[Section.kMultiDevice]) {
         this.addWebUiListener(
             'settings.updateMultidevicePageContentData',
+            this.updateMultideviceMenuItemDescription_.bind(this));
+
+        this.multideviceBrowserProxy_.getPageContentData().then(
             this.updateMultideviceMenuItemDescription_.bind(this));
       }
     }
@@ -331,12 +336,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     // Force render menu items so the matching item can be selected when the
     // page initially loads.
     this.$.topMenuRepeat.render();
-
-    if (this.isRevampWayfindingEnabled_ &&
-        this.pageAvailability[Section.kMultiDevice]) {
-      this.multideviceBrowserProxy_.getPageContentData().then(
-          this.updateMultideviceMenuItemDescription_.bind(this));
-    }
   }
 
   override currentRouteChanged(newRoute: Route): void {
