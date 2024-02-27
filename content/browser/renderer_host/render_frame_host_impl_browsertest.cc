@@ -7891,6 +7891,10 @@ IN_PROC_BROWSER_TEST_F(
   // the tests.
   rwhi_red->SetNewContentRenderingTimeoutForTesting(base::TimeDelta::Max());
 
+  // Ensure the first frame in the green page is rendered, so that the
+  // transition is not skipped.
+  WaitForCopyableViewInWebContents(web_contents());
+
   // Navigate back to Red.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(rfh_red.get(), web_contents()->GetPrimaryMainFrame());

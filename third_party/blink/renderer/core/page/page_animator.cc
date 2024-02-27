@@ -187,6 +187,7 @@ void PageAnimator::ServiceScriptedAnimations(
           // pagereveal is only fired on Documents.
           CHECK(window);
           CHECK(window->document());
+          CHECK(!window->HasBeenRevealed());
 
           if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
             if (auto* supplement = ViewTransitionSupplement::FromIfExists(
@@ -201,16 +202,18 @@ void PageAnimator::ServiceScriptedAnimations(
         });
 
     run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
-      const LocalDOMWindow* window = active_controllers[i]->GetWindow();
+      LocalDOMWindow* window = active_controllers[i]->GetWindow();
       bool pagereveal_dispatched = active_controllers[i]->DispatchEvents(
           WTF::BindRepeating(page_reveal_event_filter, WrapPersistent(window)));
 
-      if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled() &&
-          pagereveal_dispatched) {
-        if (ViewTransition* transition =
-                ViewTransitionUtils::GetTransition(*window->document());
-            transition && transition->IsForNavigationOnNewDocument()) {
-          transition->ActivateFromSnapshot();
+      if (pagereveal_dispatched) {
+        window->SetHasBeenRevealed(true);
+        if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+          if (ViewTransition* transition =
+                  ViewTransitionUtils::GetTransition(*window->document());
+              transition && transition->IsForNavigationOnNewDocument()) {
+            transition->ActivateFromSnapshot();
+          }
         }
       }
     });

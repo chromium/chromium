@@ -90,6 +90,10 @@ class CORE_EXPORT ViewTransitionSupplement
   // Document.
   void WillInsertBody();
 
+  // Since outbound transitions are only enabled once the document has been
+  // revealed, we recompute the opt-in status here.
+  void DidChangeRevealState() { SendOptInStatusToHost(); }
+
   // In the new page of a cross-document transition, this resolves the
   // @view-transition rule to use, sets types, and returns the ViewTransition.
   // It is the 'resolve cross-document view-transition` steps in the spec:
@@ -115,6 +119,8 @@ class CORE_EXPORT ViewTransitionSupplement
                        ViewTransitionState transition_state);
 
   void SetCrossDocumentOptIn(mojom::blink::ViewTransitionSameOriginOptIn);
+
+  void SendOptInStatusToHost();
 
   Member<ViewTransition> transition_;
 

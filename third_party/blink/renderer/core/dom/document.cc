@@ -9603,6 +9603,7 @@ void Document::EnqueuePageRevealEvent() {
   CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
   CHECK(dom_window_);
 
+  dom_window_->SetHasBeenRevealed(false);
   auto* page_reveal_event = MakeGarbageCollected<PageRevealEvent>();
   page_reveal_event->SetTarget(dom_window_);
   page_reveal_event->SetCurrentTarget(dom_window_);

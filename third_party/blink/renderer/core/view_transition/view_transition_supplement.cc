@@ -183,6 +183,19 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
   return transition_->GetScriptDelegate();
 }
 
+void ViewTransitionSupplement::SendOptInStatusToHost() {
+  // If we have a frame, notify the frame host that the opt-in has changed.
+  Document* document = GetSupplementable();
+  if (!document || !document->GetFrame() || !document->domWindow()) {
+    return;
+  }
+
+  document->GetFrame()->GetLocalFrameHostRemote().OnViewTransitionOptInChanged(
+      document->domWindow()->HasBeenRevealed()
+          ? cross_document_opt_in_
+          : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
+}
+
 void ViewTransitionSupplement::SetCrossDocumentOptIn(
     mojom::blink::ViewTransitionSameOriginOptIn cross_document_opt_in) {
   if (cross_document_opt_in_ == cross_document_opt_in) {
@@ -190,13 +203,7 @@ void ViewTransitionSupplement::SetCrossDocumentOptIn(
   }
 
   cross_document_opt_in_ = cross_document_opt_in;
-
-  // If we have a frame, notify the frame host that the opt-in has changed.
-  if (auto* document = GetSupplementable(); document->GetFrame()) {
-    document->GetFrame()
-        ->GetLocalFrameHostRemote()
-        .OnViewTransitionOptInChanged(cross_document_opt_in);
-  }
+  SendOptInStatusToHost();
 }
 
 // static
@@ -349,6 +356,11 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
   if (!transition_ || !transition_->IsForNavigationOnNewDocument()) {
     return nullptr;
   }
+
+  // We auto-skip *outbound* transitions when the document has not been
+  // revealed yet. We expect it to not be revealed yet when resolving the
+  // inbound transition.
+  CHECK(!GetSupplementable()->domWindow()->HasBeenRevealed());
 
   if (cross_document_opt_in_ ==
       mojom::blink::ViewTransitionSameOriginOptIn::kDisabled) {
