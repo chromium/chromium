@@ -1280,25 +1280,6 @@ character or string.
 [Migration bug](https://crbug.com/1414647)
 ***
 
-### std::to_address <sup>[allowed]</sup>
-
-```c++
-std::vector<int> numbers;
-int* i = std::to_address(numbers.begin());
-```
-
-**Description:** Converts a pointer-like object to a pointer, even if the
-pointer does not refer to a constructed object (in which case an expression like
-`&*p` is UB).
-
-**Documentation:**
-[`std::to_address`](https://en.cppreference.com/w/cpp/memory/to_address)
-
-**Notes:**
-*** promo
-None
-***
-
 ## C++20 Banned Language Features {#core-blocklist-20}
 
 The following C++20 language features are not allowed in the Chromium codebase.
@@ -1466,6 +1447,26 @@ encoded using the current C locale.
 **Notes:**
 *** promo
 Chromium functionality should not vary with the C locale.
+***
+
+### std::to_address <sup>[banned]</sup>
+
+```c++
+std::vector<int> numbers;
+int* i = std::to_address(numbers.begin());
+```
+
+**Description:** Converts a pointer-like object to a pointer, even if the
+pointer does not refer to a constructed object (in which case an expression like
+`&*p` is UB).
+
+**Documentation:**
+[`std::to_address`](https://en.cppreference.com/w/cpp/memory/to_address)
+
+**Notes:**
+*** promo
+Banned because it is not guaranteed to be SFINAE-compatible. Use
+base::to_address, which does guarantee this.
 ***
 
 ### &lt;syncstream&gt; <sup>[banned]</sup>

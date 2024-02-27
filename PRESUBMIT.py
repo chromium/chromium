@@ -1308,6 +1308,18 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
+      r'/\bstd::to_address\b',
+      (
+        'std::to_address is banned because it is not guaranteed to be',
+        'SFINAE-compatible. Use base::to_address instead.',
+      ),
+      True,
+      [
+        # Needed in base::to_address implementation.
+        r'base/types/to_address.h',
+        _THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+    ),
+    BanRule(
       r'/#include <syncstream>',
       (
         '<syncstream> is banned.',
