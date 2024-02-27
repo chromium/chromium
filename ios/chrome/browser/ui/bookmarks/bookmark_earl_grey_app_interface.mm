@@ -197,10 +197,8 @@
   }
 }
 
-+ (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
-    (BookmarkModelType)storageType {
-  const bookmarks::BookmarkNode* folder =
-      [self bookmarkModelOfStorage:storageType]->mobile_node();
++ (void)setLastUsedBookmarkFolder:(const bookmarks::BookmarkNode*)folder
+                      storageType:(BookmarkModelType)storageType {
   SetLastUsedBookmarkFolder(
       chrome_test_util::GetOriginalBrowserState()->GetPrefs(), folder,
       storageType);
