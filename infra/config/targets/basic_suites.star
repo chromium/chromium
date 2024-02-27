@@ -1495,13 +1495,11 @@ targets.legacy_basic_suite(
                 "print-reftest",
             ],
             swarming = targets.swarming(
-                shards = 20,
+                shards = 1,
             ),
         ),
         "chrome_wpt_tests_headful": targets.legacy_test_config(
             args = [
-                "--no-retry-failures",
-                "--exit-after-n-crashes-or-timeouts=500",
                 "--no-headless",
                 "--test-type",
                 "testharness",
@@ -1510,9 +1508,8 @@ targets.legacy_basic_suite(
                 "print-reftest",
             ],
             swarming = targets.swarming(
-                shards = 30,
+                shards = 1,
             ),
-            experiment_percentage = 10,
         ),
         "chrome_wpt_tests_old_headless": targets.legacy_test_config(
             args = [
@@ -1524,9 +1521,8 @@ targets.legacy_basic_suite(
                 "--additional-driver-flag=--headless",
             ],
             swarming = targets.swarming(
-                shards = 15,
+                shards = 1,
             ),
-            experiment_percentage = 100,
         ),
     },
 )

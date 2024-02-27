@@ -1562,7 +1562,7 @@
           'print-reftest',
         ],
         'swarming': {
-          'shards': 20,
+          'shards': 1,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -1578,8 +1578,6 @@
           'has_native_resultdb_integration',
         ],
         'args': [
-          '--no-retry-failures',
-          '--exit-after-n-crashes-or-timeouts=500',
           '--no-headless',
           '--test-type',
           'testharness',
@@ -1588,7 +1586,7 @@
           'print-reftest',
         ],
         'swarming': {
-          'shards': 30,
+          'shards': 1,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -1596,7 +1594,6 @@
             '--verbose',
           ],
         },
-        'experiment_percentage': 10,
       },
       'chrome_wpt_tests_old_headless': {
         'test': 'chrome_wpt_tests',
@@ -1613,7 +1610,7 @@
           '--additional-driver-flag=--headless',
         ],
         'swarming': {
-          'shards': 15,
+          'shards': 1,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -1621,7 +1618,6 @@
             '--verbose',
           ],
         },
-        'experiment_percentage': 100,
       },
     },
 
