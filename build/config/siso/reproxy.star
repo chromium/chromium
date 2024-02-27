@@ -80,6 +80,7 @@ def __parse_cros_rewrapper_cmdline(ctx, cmd):
         path.join(toolchainpath, "bin"),
         path.join(toolchainpath, "lib"),
         path.join(toolchainpath, "usr/bin"),
+        path.join(toolchainpath, "usr/lib64/clang"),
         # TODO: b/320189180 - Simple Chrome builds should use libraries under usr/lib64.
         # But, Ninja/Reclient also don't use them unexpectedly.
     ])
