@@ -39,7 +39,7 @@ function usage() {
       [HEADLESS=<true | default: false>]
       [MANIFEST=<default: 'MANIFEST.json'>]
       [RUN_TESTS=<default: true | false>]
-      [TIMEOUT_MULTIPLIER=<number, default: 4>]
+      [TIMEOUT_MULTIPLIER=<number, default: 1>]
       [THIS_CHUNK=<number, default: 1>]
       [TOTAL_CHUNKS=<number, default: 1>]
       [UPDATE_EXPECTATIONS=<true | default: false>]
@@ -82,7 +82,7 @@ const PRODUCT = process.env.PRODUCT || 'chrome';
 const RUN_TESTS = process.env.RUN_TESTS || 'true';
 
 // Multiplier relative to standard test timeout to use.
-const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '4';
+const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '1';
 
 // The current chunk number. Required for shard testing.
 const THIS_CHUNK = process.env.THIS_CHUNK || '1';
