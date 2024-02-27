@@ -11763,6 +11763,30 @@
             ]
         }
     ],
+    "OmniboxLogURLScoringSignals": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enable_scoring_signals_annotators": "true"
+                    },
+                    "enable_features": [
+                        "LogUrlScoringSignals"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxMatchToolbarAndStatusBarColor": [
         {
             "platforms": [
