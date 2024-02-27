@@ -30,6 +30,20 @@ class DesktopPaymentsWindowManagerTestApi {
                                                             response_details);
   }
 
+  void OnVcn3dsAuthenticationProgressDialogCancelled() {
+    window_manager_->OnVcn3dsAuthenticationProgressDialogCancelled();
+  }
+
+  const std::optional<PaymentsWindowManager::Vcn3dsContext>&
+  GetVcn3dsContext() {
+    return window_manager_->vcn_3ds_context_;
+  }
+
+  bool NoOngoingFlow() {
+    return window_manager_->flow_type_ ==
+           DesktopPaymentsWindowManager::FlowType::kNoFlow;
+  }
+
  private:
   const raw_ref<DesktopPaymentsWindowManager> window_manager_;
 };

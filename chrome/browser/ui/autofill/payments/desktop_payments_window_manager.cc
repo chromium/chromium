@@ -90,9 +90,9 @@ void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
     const std::string& risk_data) {
   client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
       AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
-      // TODO(crbug.com/1517762): Handle the user cancelling the progress
-      // dialog here.
-      /*cancel_callback=*/base::DoNothing());
+      base::BindOnce(&DesktopPaymentsWindowManager::
+                         OnVcn3dsAuthenticationProgressDialogCancelled,
+                     weak_ptr_factory_.GetWeakPtr()));
   client_->GetPaymentsNetworkInterface()->UnmaskCard(
       CreateUnmaskRequestDetailsForVcn3ds(*client_, vcn_3ds_context_.value(),
                                           std::move(redirect_completion_proof)),
@@ -112,6 +112,12 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
   // TODO(crbug.com/1517762): Trigger an error dialog if no card is present in
   // `response`.
   std::move(vcn_3ds_context_->completion_callback).Run(std::move(response));
+  vcn_3ds_context_.reset();
+}
+
+void DesktopPaymentsWindowManager::
+    OnVcn3dsAuthenticationProgressDialogCancelled() {
+  client_->GetPaymentsNetworkInterface()->CancelRequest();
   vcn_3ds_context_.reset();
 }
 

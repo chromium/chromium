@@ -70,6 +70,12 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
       AutofillClient::PaymentsRpcResult result,
       PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
 
+  // Resets the state of `this` in relation to the ongoing UnmaskCardRequest.
+  // Called if the user clicks cancel on the progress dialog, which is shown
+  // after a pop-up with valid query params gets closed and the second
+  // UnmaskCardRequest is triggered.
+  void OnVcn3dsAuthenticationProgressDialogCancelled();
+
   // Only present if `flow_type_` is `kVcn3ds`.
   std::optional<Vcn3dsContext> vcn_3ds_context_;
 

@@ -130,6 +130,16 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
         ->GetActiveWebContents();
   }
 
+  ::testing::AssertionResult ClosePopup() {
+    GetPopupWebContents()->Close();
+    base::RunLoop().RunUntilIdle();
+    if (!test_api(window_manager()).NoOngoingFlow()) {
+      return ::testing::AssertionFailure()
+             << "There is still an ongoing flow after closing the popup.";
+    }
+    return ::testing::AssertionSuccess();
+  }
+
   TestContentAutofillClientForWindowManagerTest* client() {
     return test_autofill_client_injector_[GetOriginalPageWebContents()];
   }
@@ -169,20 +179,15 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Vcn3ds_QueryParamsPresent) {
   ShowUi("Vcn3ds");
   VerifyUi();
-  auto* popup_web_contents = GetPopupWebContents();
 
   // Navigate to a page where there are isComplete and token query params.
-  popup_web_contents->OpenURL(content::OpenURLParams(
+  GetPopupWebContents()->OpenURL(content::OpenURLParams(
       GURL("https://site.example/?isComplete=true&token=sometesttoken"),
       content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false));
 
-  // Close the pop-up to mock the Payments Server closing the pop-up on
-  // redirect.
-  popup_web_contents->Close();
-
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ClosePopup());
 
   // Check that the flow was successful and an UnmaskCardRequest was triggered
   // with the correct fields set, and the progress dialog was shown.
@@ -239,21 +244,15 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds");
   VerifyUi();
 
-  auto* popup_web_contents = GetPopupWebContents();
-
   // Navigate to a page where there is an isComplete query param that denotes
   // the authentication failed.
-  popup_web_contents->OpenURL(content::OpenURLParams(
+  GetPopupWebContents()->OpenURL(content::OpenURLParams(
       GURL("https://site.example/?isComplete=false"), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false));
 
-  // Close the pop-up to mock the Payments Server closing the pop-up on
-  // redirect.
-  GetPopupWebContents()->Close();
-
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ClosePopup());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
   const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
@@ -274,11 +273,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds");
   VerifyUi();
 
-  // Close the pop-up to mock the Payments Server closing the pop-up on
-  // redirect.
-  GetPopupWebContents()->Close();
-
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ClosePopup());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
   const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
@@ -299,21 +294,15 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds");
   VerifyUi();
 
-  auto* popup_web_contents = GetPopupWebContents();
-
   // Navigate to a page where there is an isComplete query param but not token
   // query param.
-  popup_web_contents->OpenURL(content::OpenURLParams(
+  GetPopupWebContents()->OpenURL(content::OpenURLParams(
       GURL("https://site.example/?isComplete=true"), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false));
 
-  // Close the pop-up to mock the Payments Server closing the pop-up on
-  // redirect.
-  GetPopupWebContents()->Close();
-
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ClosePopup());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
   const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
@@ -325,6 +314,33 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
+}
+
+// Test that the VCN 3DS pop-up is shown correctly, and when the user cancels
+// the progress dialog, the state of the PaymentsWindowManager in relation to
+// the ongoing UnmaskCardRequest is reset.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Vcn3ds_ProgressDialogCancelled) {
+  ShowUi("Vcn3ds");
+  VerifyUi();
+
+  // Navigate to a page where there are isComplete and token query params.
+  GetPopupWebContents()->OpenURL(content::OpenURLParams(
+      GURL("https://site.example/?isComplete=true&token=sometesttoken"),
+      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false));
+
+  EXPECT_TRUE(ClosePopup());
+
+  EXPECT_TRUE(
+      client()->GetPaymentsAutofillClient()->autofill_progress_dialog_shown());
+
+  // Check that the state of the PaymentsWindowManager is reset correctly
+  // if the user cancels the progress dialog.
+  EXPECT_TRUE(test_api(window_manager()).GetVcn3dsContext().has_value());
+  test_api(window_manager()).OnVcn3dsAuthenticationProgressDialogCancelled();
+  EXPECT_FALSE(test_api(window_manager()).GetVcn3dsContext().has_value());
 }
 
 }  // namespace payments
