@@ -55,8 +55,6 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
     const network::ResourceRequest& url_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(frame_origin_.IsSameOriginWith(script_url_));
-
   if (url_request.url != script_url_) {
     receiver_.ReportBadMessage("Unexpected request");
     return;
@@ -70,7 +68,7 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.credentials_mode = credentials_mode_;
   new_request.site_for_cookies = site_for_cookies_;
   new_request.request_initiator = frame_origin_;
-  new_request.mode = network::mojom::RequestMode::kSameOrigin;
+  new_request.mode = network::mojom::RequestMode::kCors;
 
   // TODO(crbug/1268616): create a new factory when the current one gets
   // disconnected.

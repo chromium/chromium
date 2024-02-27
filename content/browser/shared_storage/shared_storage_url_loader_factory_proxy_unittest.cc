@@ -152,7 +152,7 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
     // The initiator should be set.
     EXPECT_EQ(frame_origin_, observed_request.request_initiator);
 
-    EXPECT_EQ(network::mojom::RequestMode::kSameOrigin, observed_request.mode);
+    EXPECT_EQ(network::mojom::RequestMode::kCors, observed_request.mode);
     ASSERT_FALSE(observed_request.trusted_params);
   }
 

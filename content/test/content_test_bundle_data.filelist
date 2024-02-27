@@ -7263,6 +7263,8 @@ data/shared_storage/customizable_script.js
 data/shared_storage/erroneous_function_module.js
 data/shared_storage/erroneous_module.js
 data/shared_storage/getter_module.js
+data/shared_storage/module_with_custom_header.js
+data/shared_storage/module_with_custom_header.js.mock-http-headers
 data/shared_storage/page-with-non-shared-storage-writable-iframe.html
 data/shared_storage/page-with-non-shared-storage-writable-image.html
 data/shared_storage/page-with-shared-storage-writable-iframe.html

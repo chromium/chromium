@@ -127,7 +127,10 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
 
   create_worklet_called_ = true;
 
-  if (!render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
+  // A document can only create cross-origin worklets with
+  // `kSharedStorageAPIM123` enabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123) &&
+      !render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
           script_source_url)) {
     // This could indicate a compromised renderer, so let's terminate it.
     receiver_.ReportBadMessage(

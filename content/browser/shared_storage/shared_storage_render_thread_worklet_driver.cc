@@ -5,6 +5,7 @@
 #include "content/browser/shared_storage/shared_storage_render_thread_worklet_driver.h"
 
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -13,25 +14,65 @@
 namespace content {
 
 SharedStorageRenderThreadWorkletDriver::SharedStorageRenderThreadWorkletDriver(
-    AgentSchedulingGroupHost* agent_scheduling_group_host)
-    : agent_scheduling_group_host_(agent_scheduling_group_host) {
-  agent_scheduling_group_host_->GetProcess()->AddObserver(this);
+    RenderFrameHost& render_frame_host,
+    const GURL& script_url) {
+  StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
+      render_frame_host.GetStoragePartition());
 
-  if (!agent_scheduling_group_host_->GetProcess()->AreRefCountsDisabled()) {
-    agent_scheduling_group_host_->GetProcess()->IncrementWorkerRefCount();
+  // Leave the worklet SiteInstance as NonIsolated(), as the cross-origin
+  // isolated capability is currently unspecified in the spec:
+  // https://html.spec.whatwg.org/multipage/worklets.html#script-settings-for-worklets%3Aconcept-settings-object-cross-origin-isolated-capability
+  //
+  // TODO(yaoxia): This may need to be revisited in the future.
+  UrlInfo url_info(
+      UrlInfoInit(script_url)
+          .WithStoragePartitionConfig(storage_partition->GetConfig())
+          .WithWebExposedIsolationInfo(
+              WebExposedIsolationInfo::CreateNonIsolated()));
+
+  // We aim to approximate the process allocation behavior of iframes when
+  // loading the script URL.
+  //
+  // Leverage the existing process creation and tracking approach for service
+  // workers, with an additional call to `ReuseExistingProcessIfPossible()` that
+  // allows the worklet to reuse the initiator frame's process (as in Android's
+  // relaxed site isolation).
+  //
+  // TODO(yaoxia): Refactor into a
+  // `SiteInstanceImpl::CreateForSharedStorageWorklet` method. That will require
+  // renaming several downstream components, such as
+  // `UnmatchedServiceWorkerProcessTracker`.
+  scoped_refptr<SiteInstanceImpl> site_instance =
+      SiteInstanceImpl::CreateForServiceWorker(
+          storage_partition->browser_context(), url_info,
+          /*can_reuse_process=*/true, storage_partition->is_guest(),
+          render_frame_host.IsNestedWithinFencedFrame());
+
+  site_instance->ReuseExistingProcessIfPossible(render_frame_host.GetProcess());
+
+  // TODO(yaoxia): Gracefully handle Init() error?
+  site_instance->GetProcess()->Init();
+
+  site_instance->GetProcess()->AddObserver(this);
+
+  if (!site_instance->GetProcess()->AreRefCountsDisabled()) {
+    site_instance->GetProcess()->IncrementWorkerRefCount();
   }
+
+  site_instance_ = site_instance;
 }
 
 SharedStorageRenderThreadWorkletDriver::
     ~SharedStorageRenderThreadWorkletDriver() {
   // The render process is already destroyed. No further action is needed.
-  if (!agent_scheduling_group_host_)
+  if (!site_instance_) {
     return;
+  }
 
-  agent_scheduling_group_host_->GetProcess()->RemoveObserver(this);
+  GetProcessHost()->RemoveObserver(this);
 
-  if (!agent_scheduling_group_host_->GetProcess()->AreRefCountsDisabled()) {
-    agent_scheduling_group_host_->GetProcess()->DecrementWorkerRefCount();
+  if (!GetProcessHost()->AreRefCountsDisabled()) {
+    GetProcessHost()->DecrementWorkerRefCount();
   }
 }
 
@@ -42,34 +83,33 @@ void SharedStorageRenderThreadWorkletDriver::StartWorkletService(
         global_scope_creation_params) {
   // `StartWorkletService` will be called right after the driver is created when
   // the document is still alive, as the driver is created on-demand on the
-  // first worklet operation. Thus, the `agent_scheduling_group_host_` should
-  // always be valid at this point.
-  DCHECK(agent_scheduling_group_host_);
+  // first worklet operation. Thus, `site_instance_` should always be valid at
+  // this point.
+  DCHECK(site_instance_);
 
-  agent_scheduling_group_host_->CreateSharedStorageWorkletService(
-      std::move(pending_receiver), std::move(global_scope_creation_params));
+  static_cast<SiteInstanceImpl&>(*site_instance_)
+      .GetOrCreateAgentSchedulingGroup()
+      .CreateSharedStorageWorkletService(
+          std::move(pending_receiver), std::move(global_scope_creation_params));
 }
 
 RenderProcessHost* SharedStorageRenderThreadWorkletDriver::GetProcessHost() {
-  if (!agent_scheduling_group_host_) {
+  if (!site_instance_) {
     return nullptr;
   }
 
-  return agent_scheduling_group_host_->GetProcess();
+  return site_instance_->GetProcess();
 }
 
 void SharedStorageRenderThreadWorkletDriver::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
   // This could occur when the browser shuts down during the worklet's
-  // keep-alive phase, or when the renderer process is terminated. Invalidate
-  // the pointers to signal this state change.
-  if (agent_scheduling_group_host_->GetProcess() == host) {
-    agent_scheduling_group_host_->GetProcess()->RemoveObserver(this);
-
-    // The destruction of RenderProcessHost implies that the
-    // AgentSchedulingGroupHost is going to be destroyed as well.
-    agent_scheduling_group_host_ = nullptr;
-  }
+  // keep-alive phase, or when the renderer process is terminated. Reset
+  // `site_instance_` to signal this state change. Note that calling
+  // GetProcessHost() again here would not return the
+  // original process host, so we wouldn't be able to assert `host` here.
+  host->RemoveObserver(this);
+  site_instance_ = nullptr;
 }
 
 }  // namespace content
