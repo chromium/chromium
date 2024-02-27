@@ -236,6 +236,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     private MagnifierAnimator mMagnifierAnimator;
 
+    // Cached selection menu items to check against new selections.
+    @Nullable private SelectionMenuCachedResult mSelectionMenuCachedResult;
+
     /** Custom {@link android.view.View.OnClickListener} map for ActionMode menu items. */
     private final Map<MenuItem, View.OnClickListener> mCustomActionMenuItemClickListeners;
 
@@ -438,6 +441,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     /** Gets the current {@link SelectionClient}. */
     public SelectionClient getSelectionClient() {
         return mSelectionClient;
+    }
+
+    @Nullable
+    public SelectionMenuCachedResult getSelectionMenuCachedResultForTesting() {
+        return mSelectionMenuCachedResult;
     }
 
     @Override
@@ -1008,7 +1016,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     // Default handlers for action mode callbacks.
-
     @Override
     public void onCreateActionMode(ActionMode mode, Menu menu) {
         mode.setTitle(
@@ -1031,21 +1038,41 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     logSelectionAction(item.getGroupId(), item.getItemId());
                     return false;
                 });
+
         return true;
     }
 
-    private SortedSet<SelectionMenuGroup> getSelectionMenuItems() {
+    @VisibleForTesting
+    public SortedSet<SelectionMenuGroup> getSelectionMenuItems() {
         TextProcessingIntentHandler textProcessingIntentHandler =
                 isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT) ? this::processText : null;
-        return SelectActionMenuHelper.getSelectionMenuItems(
-                this,
-                mContext,
-                mClassificationResult,
-                isSelectionPassword(),
-                !isFocusedNodeEditable(),
-                getSelectedText(),
-                textProcessingIntentHandler,
-                mSelectionActionMenuDelegate);
+
+        // If the menu items haven't been cached, process new menu and cache it.
+        if (mSelectionMenuCachedResult == null
+                || !mSelectionMenuCachedResult.canReuseResult(
+                        mClassificationResult,
+                        isSelectionPassword(),
+                        isFocusedNodeEditable(),
+                        getSelectedText())) {
+            mSelectionMenuCachedResult =
+                    new SelectionMenuCachedResult(
+                            mClassificationResult,
+                            isSelectionPassword(),
+                            isFocusedNodeEditable(),
+                            getSelectedText(),
+                            SelectActionMenuHelper.getSelectionMenuItems(
+                                    this,
+                                    mContext,
+                                    mClassificationResult,
+                                    isSelectionPassword(),
+                                    isFocusedNodeEditable(),
+                                    getSelectedText(),
+                                    textProcessingIntentHandler,
+                                    mSelectionActionMenuDelegate));
+        }
+
+        // Return the cached menu items for this selection.
+        return mSelectionMenuCachedResult.getResult();
     }
 
     private static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
@@ -1207,8 +1234,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         mContext, false, false, this::processText, mSelectionActionMenuDelegate);
         if (!textProcessingItems.items.isEmpty()) {
             boolean isSelectionMenuOrderCorrectionEnabled =
-                    ContentFeatureMap.isEnabled(
-                            ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
+                    ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
             addMenuItemsToActionMenu(
                     mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null,
                     isSelectionMenuOrderCorrectionEnabled);

@@ -56,8 +56,16 @@ public interface SelectionClient {
         public List<Drawable> additionalIcons;
 
         /**
-         * A helper method that returns true if the result has both visual info
-         * and an action so that, for instance, one can make a new menu item.
+         * Convenience method mainly for testing the behaviour of {@link
+         * org.chromium.content.browser.selection.SelectionMenuCachedResult}.
+         */
+        public void setTextClassificationForTesting(TextClassification textClassification) {
+            this.textClassification = textClassification;
+        }
+
+        /**
+         * A helper method that returns true if the result has both visual info and an action so
+         * that, for instance, one can make a new menu item.
          */
         public boolean hasNamedAction() {
             return (label != null || icon != null) && (intent != null || onClickListener != null);

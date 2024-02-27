@@ -33,6 +33,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.ViewGroup;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
+import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
@@ -71,6 +73,7 @@ import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
 
 /** Unit tests for {@link SelectionPopupController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -995,6 +998,101 @@ public class SelectionPopupControllerTest {
         Mockito.verify(dropdownMenuDelegate, times(1)).dismiss();
         Mockito.verify(spyController, never()).createAndShowPastePopup();
         Mockito.verify(spyController, never()).createAndShowDropdownMenu();
+    }
+
+    @Test
+    public void testMenuIsCachedForSameSelectionState() {
+        Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
+
+        // Called twice to check the selection menu has been cached properly.
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ false,
+                AMPHITHEATRE_FULL,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MENU_SOURCE_MOUSE,
+                mRenderFrameHost);
+
+        SortedSet<SelectionMenuGroup> result = mController.getSelectionMenuItems();
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ false,
+                AMPHITHEATRE_FULL,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MENU_SOURCE_MOUSE,
+                mRenderFrameHost);
+
+        Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
+        Assert.assertSame(result, mController.getSelectionMenuItems());
+    }
+
+    @Test
+    public void testNewMenuIsProcessedForDifferentSelectionState() {
+        Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
+
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ false,
+                AMPHITHEATRE_FULL,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MENU_SOURCE_MOUSE,
+                mRenderFrameHost);
+
+        SortedSet<SelectionMenuGroup> result = mController.getSelectionMenuItems();
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ false,
+                /* isPasswordType= */ true,
+                AMPHITHEATRE,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MENU_SOURCE_MOUSE,
+                mRenderFrameHost);
+
+        // Check the menu is different and not similar to the one we have stored.
+        Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
+        Assert.assertNotSame(result, mController.getSelectionMenuItems());
+        Assert.assertNotSame(
+                mController.getSelectionMenuCachedResultForTesting(),
+                mController.getSelectionMenuItems());
     }
 
     private void setDropdownMenuFeatureEnabled(boolean enabled) {
