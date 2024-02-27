@@ -138,7 +138,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual Scripting GetScripting() const = 0;
 
   // CSSLengthResolver override.
-  void ReferenceAnchor() const override {}
+  void ReferenceTreeScope() const override {}
 
  protected:
   virtual ContainerSnappedFlags SnappedFlags() const {

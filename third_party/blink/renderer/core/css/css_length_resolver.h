@@ -50,9 +50,11 @@ class CORE_EXPORT CSSLengthResolver {
 
   virtual WritingMode GetWritingMode() const = 0;
 
-  // Invoked to notify the resolver that there is an anchor reference in a
-  // calc() expression. Used to track the use of tree-scoped references.
-  virtual void ReferenceAnchor() const = 0;
+  // Invoked to notify the resolver that there is a function with
+  // a tree-scoped reference, e.g. anchor(--a top).
+  //
+  // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+  virtual void ReferenceTreeScope() const = 0;
 
   // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries,
   // when the runtime flag CSSAnchorPositioningComputeAnchor is enabled.

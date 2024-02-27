@@ -2522,7 +2522,7 @@ CSSMathExpressionAnchorQuery::ToCalculationExpressionQuery(
     anchor_specifier = AnchorSpecifierValue::Implicit();
   } else if (const auto* custom_ident =
                  DynamicTo<CSSCustomIdentValue>(anchor_specifier_.Get())) {
-    length_resolver.ReferenceAnchor();
+    length_resolver.ReferenceTreeScope();
     anchor_specifier = MakeGarbageCollected<AnchorSpecifierValue>(
         *MakeGarbageCollected<ScopedCSSName>(custom_ident->Value(),
                                              custom_ident->GetTreeScope()));

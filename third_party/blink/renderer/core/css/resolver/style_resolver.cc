@@ -390,7 +390,7 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
     builder.SetDependsOnSizeContainerQueries(true);
     builder.SetHasContainerRelativeUnits();
   }
-  if (flags & static_cast<Flags>(Flag::kAnchorRelative)) {
+  if (flags & static_cast<Flags>(Flag::kTreeScopedReference)) {
     state.SetHasTreeScopedReference();
   }
   if (flags & static_cast<Flags>(Flag::kLogicalDirectionRelative)) {
