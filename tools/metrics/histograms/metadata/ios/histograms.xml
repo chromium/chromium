@@ -2938,26 +2938,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.SandboxMetrics.AvailableCapacity" units="MB"
-    expires_after="2024-06-30">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The total amount of available storage capacity on the device. Logged once
-    per application cold launch, on startup.
-  </summary>
-</histogram>
-
-<histogram name="IOS.SandboxMetrics.AvailableCapacityPercentage" units="%"
-    expires_after="2024-06-30">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The percentage of the device storage which is available. Logged once per
-    application cold launch, on startup.
-  </summary>
-</histogram>
-
 <histogram name="IOS.SandboxMetrics.AverageColorSnapshotSize" units="KB"
     expires_after="2024-07-28">
   <owner>michaeldo@chromium.org</owner>
@@ -2977,46 +2957,6 @@ chromium-metrics-reviews@google.com.
     The average amount of storage used by a grey snapshot image for this user.
     Logged at application startup, maximum once every 2 weeks, if the
     `kLogApplicationStorageSizeMetrics` flag is enabled.
-  </summary>
-</histogram>
-
-<histogram name="IOS.SandboxMetrics.CapacityForImportantUsage" units="MB"
-    expires_after="2024-06-30">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The amount of device storage which is available for important storage.
-    Logged once per application cold launch, on startup.
-  </summary>
-</histogram>
-
-<histogram name="IOS.SandboxMetrics.CapacityForImportantUsagePercentage"
-    units="%" expires_after="2024-06-30">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The percentage of the device storage which is available for important
-    storage. Logged once per application cold launch, on startup.
-  </summary>
-</histogram>
-
-<histogram name="IOS.SandboxMetrics.CapacityForOpportunisticUsage" units="MB"
-    expires_after="2024-06-30">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The amount of device storage which is available for opportunistic storage.
-    Logged once per application cold launch, on startup.
-  </summary>
-</histogram>
-
-<histogram name="IOS.SandboxMetrics.CapacityForOpportunisticUsagePercentage"
-    units="%" expires_after="2024-06-30">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The percentage of the device storage which is available for opportunistic
-    storage. Logged once per application cold launch, on startup.
   </summary>
 </histogram>
 
@@ -3096,16 +3036,6 @@ chromium-metrics-reviews@google.com.
     The total amount of storage used by the optimization guide model downloads.
     Logged at application startup, maximum once every 2 weeks, if the
     `kLogApplicationStorageSizeMetrics` flag is enabled.
-  </summary>
-</histogram>
-
-<histogram name="IOS.SandboxMetrics.TotalCapacity" enum="IOSStorageCapacity"
-    expires_after="2024-06-30">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The total amount of storage capacity on the device. Logged once per
-    application cold launch, on startup.
   </summary>
 </histogram>
 

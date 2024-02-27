@@ -34,10 +34,6 @@ void SetMemoryWarningInProgress(bool value);
 // the key as getting no memory is important information.
 void SetCurrentFreeMemoryInKB(int value);
 
-// Sets a key indicating the current free disk space in KB. 0 does not remove
-// the key as getting no free disk space is important information.
-void SetCurrentFreeDiskInKB(int value);
-
 // Increases a key indicating the number of PDF tabs opened. If value is TRUE,
 // the counter is increased. If value is FALSE, the counter is decreased. If
 // counter falls to 0, the entry is removed. This function does not keep
