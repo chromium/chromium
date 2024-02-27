@@ -44,6 +44,9 @@ void BirchFileSuggestProvider::OnFileSuggestionUpdated(
 
 void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
     const std::optional<std::vector<FileSuggestData>>& suggest_results) {
+  if (!Shell::Get()->HasInstance()) {
+    return;
+  }
   if (!suggest_results) {
     Shell::Get()->birch_model()->SetFileSuggestItems({});
     return;
