@@ -36,6 +36,11 @@ class PrintPreviewCrosBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
+                       FakePrintPreviewPageHandlerTest) {
+  RunTestAtPath("fake_print_preview_page_handler_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, PrintPreviewCrosAppTest) {
   RunTestAtPath("print_preview_cros_app_test.js");
 }

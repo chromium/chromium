@@ -16,6 +16,9 @@ build_webui("build") {
   non_web_component_files = [
     "js/data/print_ticket_manager.ts",
     "js/summary_panel_controller.ts",
+    "js/fakes/fake_print_preview_page_handler.ts",
+    "js/utils/mojo_data_providers.ts",
+    "js/utils/print_preview_cros_app_types.ts",
   ]
 
   web_component_files = [
