@@ -319,8 +319,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_LooseSimilarityCheck",
+                    "name": "Enabled_LooseSimilarityCheckWithCancellingSession",
                     "enable_features": [
+                        "AndroidAutofillCancelSessionOnNavigation",
                         "AndroidAutofillPrefillRequestsForLoginForms",
                         "AndroidAutofillUsePwmPredictionsForOverrides"
                     ]

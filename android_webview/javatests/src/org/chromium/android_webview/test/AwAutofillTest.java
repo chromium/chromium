@@ -96,16 +96,18 @@ public class AwAutofillTest extends AwParameterizedTest {
     public static final int AUTOFILL_VIEW_EXITED = 1;
     public static final int AUTOFILL_VALUE_CHANGED = 2;
     public static final int AUTOFILL_COMMIT = 3;
-    public static final int AUTOFILL_CANCEL = 4;
-    public static final int AUTOFILL_SESSION_STARTED = 5;
-    public static final int AUTOFILL_PREDICTIONS_AVAILABLE = 6;
-    public static final int AUTOFILL_EVENT_MAX = 7;
+    public static final int AUTOFILL_CANCEL_PRE_P = 4;
+    public static final int AUTOFILL_CANCEL = 5;
+    public static final int AUTOFILL_SESSION_STARTED = 6;
+    public static final int AUTOFILL_PREDICTIONS_AVAILABLE = 7;
+    public static final int AUTOFILL_EVENT_MAX = 8;
 
     public static final String[] EVENT = {
         "VIEW_ENTERED",
         "VIEW_EXITED",
         "VALUE_CHANGED",
         "COMMIT",
+        "CANCEL_PRE_P",
         "CANCEL",
         "SESSION_STARTED",
         "QUERY_DONE"
@@ -183,7 +185,6 @@ public class AwAutofillTest extends AwParameterizedTest {
             mEventQueue.add(AUTOFILL_CANCEL);
             mCallbackHelper.notifyCalled();
         }
-
         @Override
         public void notifyNewSessionStarted(boolean hasServerPrediction) {
             if (DEBUG) Log.i(TAG, "notifyNewSessionStarted");
@@ -259,7 +260,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                     mTest.waitForCallbackAndVerifyTypes(
                             mCnt,
                             new Integer[] {
-                                AUTOFILL_CANCEL,
+                                AUTOFILL_CANCEL_PRE_P,
                                 AUTOFILL_VIEW_ENTERED,
                                 AUTOFILL_SESSION_STARTED,
                                 AUTOFILL_VALUE_CHANGED
@@ -277,7 +278,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                     mTest.waitForCallbackAndVerifyTypes(
                             mCnt,
                             new Integer[] {
-                                AUTOFILL_CANCEL,
+                                AUTOFILL_CANCEL_PRE_P,
                                 AUTOFILL_VIEW_ENTERED,
                                 AUTOFILL_SESSION_STARTED,
                                 AUTOFILL_VALUE_CHANGED
@@ -325,7 +326,10 @@ public class AwAutofillTest extends AwParameterizedTest {
             mTest.executeJavaScriptAndWaitForResult("document.getElementById('formid').submit();");
             mCnt +=
                     mTest.waitForCallbackAndVerifyTypes(
-                            mCnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+                            mCnt,
+                            new Integer[] {
+                                AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL
+                            });
         }
 
         public void reload() throws Throwable {
@@ -334,7 +338,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                     mTest.waitForCallbackAndVerifyTypes(
                             mCnt,
                             new Integer[] {
-                                AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                                AUTOFILL_VIEW_EXITED,
+                                AUTOFILL_VALUE_CHANGED,
+                                AUTOFILL_COMMIT,
+                                AUTOFILL_CANCEL
                             });
         }
 
@@ -347,7 +354,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                             mCnt,
                             new Integer[] {
                                 AUTOFILL_VIEW_EXITED,
-                                AUTOFILL_CANCEL,
+                                AUTOFILL_CANCEL_PRE_P,
                                 AUTOFILL_VIEW_ENTERED,
                                 AUTOFILL_SESSION_STARTED,
                                 AUTOFILL_VALUE_CHANGED
@@ -479,7 +486,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
+                            AUTOFILL_CANCEL_PRE_P, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
                         });
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
@@ -519,7 +526,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -674,7 +681,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VIEW_EXITED,
@@ -740,7 +747,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
+                            AUTOFILL_CANCEL_PRE_P, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
                         });
 
         // Reload the page and check that the user clicking on the same form field ends the current
@@ -755,6 +762,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                         new Integer[] {
                             AUTOFILL_VIEW_EXITED,
                             AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED
                         });
@@ -774,7 +782,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -809,7 +817,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -857,7 +865,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -909,7 +917,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -972,7 +980,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1023,7 +1031,8 @@ public class AwAutofillTest extends AwParameterizedTest {
                     AUTOFILL_VALUE_CHANGED,
                     AUTOFILL_VALUE_CHANGED,
                     AUTOFILL_VALUE_CHANGED,
-                    AUTOFILL_COMMIT
+                    AUTOFILL_COMMIT,
+                    AUTOFILL_CANCEL
                 });
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         assertEquals(4, values.size());
@@ -1046,7 +1055,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         waitForCallbackAndVerifyTypes(
                 cnt,
                 new Integer[] {
-                    AUTOFILL_CANCEL,
+                    AUTOFILL_CANCEL_PRE_P,
                     AUTOFILL_VIEW_ENTERED,
                     AUTOFILL_SESSION_STARTED,
                     AUTOFILL_VALUE_CHANGED
@@ -1078,7 +1087,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1090,7 +1099,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 cnt,
                 new Integer[] {
                     AUTOFILL_VIEW_EXITED,
-                    AUTOFILL_CANCEL,
+                    AUTOFILL_CANCEL_PRE_P,
                     AUTOFILL_VIEW_ENTERED,
                     AUTOFILL_SESSION_STARTED,
                     AUTOFILL_VALUE_CHANGED
@@ -1163,7 +1172,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         count,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1182,7 +1191,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 count,
                 new Integer[] {
                     AUTOFILL_VIEW_EXITED,
-                    AUTOFILL_CANCEL,
+                    AUTOFILL_CANCEL_PRE_P,
                     AUTOFILL_VIEW_ENTERED,
                     AUTOFILL_SESSION_STARTED,
                     AUTOFILL_VALUE_CHANGED
@@ -1217,7 +1226,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
+                            AUTOFILL_CANCEL_PRE_P, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
                         });
     }
 
@@ -1247,7 +1256,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
+                            AUTOFILL_CANCEL_PRE_P, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED
                         });
 
         // Removing focus from this element should cause a notification that the autofill view was
@@ -1293,7 +1302,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1305,7 +1314,8 @@ public class AwAutofillTest extends AwParameterizedTest {
                     AUTOFILL_VIEW_EXITED,
                     AUTOFILL_VALUE_CHANGED,
                     AUTOFILL_VALUE_CHANGED,
-                    AUTOFILL_COMMIT
+                    AUTOFILL_COMMIT,
+                    AUTOFILL_CANCEL
                 });
         assertEquals(SubmissionSource.PROBABLY_FORM_SUBMITTED, mSubmissionSource);
     }
@@ -1356,7 +1366,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1403,7 +1413,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1453,7 +1463,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1496,7 +1506,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -1535,7 +1545,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2176,7 +2186,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2188,7 +2198,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                            AUTOFILL_VIEW_EXITED,
+                            AUTOFILL_VALUE_CHANGED,
+                            AUTOFILL_COMMIT,
+                            AUTOFILL_CANCEL
                         });
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -2229,7 +2242,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2243,7 +2256,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                            AUTOFILL_VIEW_EXITED,
+                            AUTOFILL_VALUE_CHANGED,
+                            AUTOFILL_COMMIT,
+                            AUTOFILL_CANCEL
                         });
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -2280,7 +2296,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2300,7 +2316,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT
+                            AUTOFILL_VIEW_EXITED,
+                            AUTOFILL_VALUE_CHANGED,
+                            AUTOFILL_COMMIT,
+                            AUTOFILL_CANCEL
                         });
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -2386,7 +2405,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2425,7 +2444,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2458,7 +2477,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2499,7 +2518,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         // datalist.
         cnt +=
                 waitForCallbackAndVerifyTypes(
-                        cnt, new Integer[] {AUTOFILL_CANCEL, AUTOFILL_SESSION_STARTED});
+                        cnt, new Integer[] {AUTOFILL_CANCEL_PRE_P, AUTOFILL_SESSION_STARTED});
         // Verify input accepted.
         String value1 =
                 executeJavaScriptAndWaitForResult("document.getElementById('text2').value;");
@@ -2563,7 +2582,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2606,7 +2625,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2690,7 +2709,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2795,7 +2814,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2858,7 +2877,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -2949,7 +2968,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -3035,7 +3054,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -3130,7 +3149,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -3192,7 +3211,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -3273,7 +3292,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -3283,7 +3302,8 @@ public class AwAutofillTest extends AwParameterizedTest {
                     var iframe = document.getElementById('address_iframe');
                     var frame_doc = iframe.contentDocument;
                     frame_doc.getElementById('submit_button').click();""");
-        waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL});
         assertEquals(SubmissionSource.FORM_SUBMISSION, mSubmissionSource);
     }
 
@@ -3332,7 +3352,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -3368,7 +3388,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED
@@ -3382,7 +3402,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_EXITED,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
@@ -3509,17 +3529,21 @@ public class AwAutofillTest extends AwParameterizedTest {
     private int waitForCallbackAndVerifyTypes(int currentCallCount, Integer[] expectedEventArray)
             throws TimeoutException {
         Integer[] adjustedEventArray;
-        // Didn't call cancel after Android P.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ArrayList<Integer> adjusted = new ArrayList<Integer>();
+        ArrayList<Integer> adjusted = new ArrayList<>();
             for (Integer event : expectedEventArray) {
-                if (event != AUTOFILL_CANCEL) adjusted.add(event);
+            // Filter out AUTOFILL_CANCEL_PRE_P.
+            // TODO(b/326551145): clean that up once we stop supporting android O.
+            if (event == AUTOFILL_CANCEL_PRE_P) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                    adjusted.add(AUTOFILL_CANCEL);
+                }
+                continue;
             }
-            adjustedEventArray = new Integer[adjusted.size()];
-            adjusted.toArray(adjustedEventArray);
-        } else {
-            adjustedEventArray = expectedEventArray;
+            adjusted.add(event);
         }
+
+        adjustedEventArray = new Integer[adjusted.size()];
+        adjusted.toArray(adjustedEventArray);
         try {
             // Check against the call count to avoid missing out a callback in between waits, while
             // exposing it so that the test can control where the call count starts.
