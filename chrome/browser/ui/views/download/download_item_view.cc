@@ -929,7 +929,7 @@ void DownloadItemView::UpdateAccessibleAlert(
   views::ViewAccessibility& ax = accessible_alert_->GetViewAccessibility();
   ax.SetRole(ax::mojom::Role::kAlert);
   if (!accessible_alert_text.empty())
-    ax.OverrideName(accessible_alert_text);
+    ax.SetName(accessible_alert_text, ax::mojom::NameFrom::kAttribute);
   if (announce_accessible_alert_soon_ || !accessible_alert_timer_.IsRunning()) {
     AnnounceAccessibleAlert();
     accessible_alert_timer_.Reset();

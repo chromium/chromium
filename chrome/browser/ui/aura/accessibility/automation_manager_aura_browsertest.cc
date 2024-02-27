@@ -253,19 +253,22 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
 
   views::View* view1 = new views::View();
   view1->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  view1->GetViewAccessibility().OverrideName("view1");
+  view1->GetViewAccessibility().SetName("view1",
+                                        ax::mojom::NameFrom::kAttribute);
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view1);
   views::AXAuraObjWrapper* wrapper1 = cache_ptr->GetOrCreate(view1);
   views::View* view2 = new views::View();
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   view2->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  view2->GetViewAccessibility().OverrideName("view2");
+  view2->GetViewAccessibility().SetName("view2",
+                                        ax::mojom::NameFrom::kAttribute);
   widget->GetRootView()->AddChildView(view2);
   views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);
   views::View* view3 = new views::View();
   view3->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  view3->GetViewAccessibility().OverrideName("view3");
+  view3->GetViewAccessibility().SetName("view3",
+                                        ax::mojom::NameFrom::kAttribute);
   view3->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view3);
   views::AXAuraObjWrapper* wrapper3 = cache_ptr->GetOrCreate(view3);
@@ -528,13 +531,15 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
 
   views::View* view1 = new views::View();
   view1->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  view1->GetViewAccessibility().OverrideName("view1");
+  view1->GetViewAccessibility().SetName("view1",
+                                        ax::mojom::NameFrom::kAttribute);
   view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view1);
   views::View* view2 = new views::View();
   view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   view2->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  view2->GetViewAccessibility().OverrideName("view2");
+  view2->GetViewAccessibility().SetName("view2",
+                                        ax::mojom::NameFrom::kAttribute);
   widget->GetRootView()->AddChildView(view2);
   views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);
 

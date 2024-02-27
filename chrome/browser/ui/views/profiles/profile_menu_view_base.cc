@@ -708,7 +708,8 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
   // crbug.com/1161166: Orca does not read the accessible window title of the
   // bubble, so we duplicate it in the top-level menu item. To be revisited
   // after considering other options, including fixes on the AT side.
-  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
+  GetViewAccessibility().SetName(GetAccessibleWindowTitle(),
+                                 ax::mojom::NameFrom::kAttribute);
 #endif
 
   std::unique_ptr<views::Label> heading_label;
@@ -835,7 +836,8 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
   // accessibility tools can read it together with the button text. The role
   // change is required by Windows ATs.
   sync_info_container_->GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-  sync_info_container_->GetViewAccessibility().OverrideName(description);
+  sync_info_container_->GetViewAccessibility().SetName(
+      description, ax::mojom::NameFrom::kAttribute);
 
   // Add the prominent button at the bottom.
   auto* button =
@@ -970,8 +972,8 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
     // ATs.
     selectable_profiles_container_->GetViewAccessibility().SetRole(
         ax::mojom::Role::kGroup);
-    selectable_profiles_container_->GetViewAccessibility().OverrideName(
-        profile_mgmt_heading_);
+    selectable_profiles_container_->GetViewAccessibility().SetName(
+        profile_mgmt_heading_, ax::mojom::NameFrom::kAttribute);
   }
 
   DCHECK(!image_model.IsEmpty());

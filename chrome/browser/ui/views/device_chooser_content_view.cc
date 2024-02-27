@@ -73,8 +73,10 @@ DeviceChooserContentView::DeviceChooserContentView(
   table_view_ = table_view.get();
   table_view->SetSelectOnRemove(false);
   table_view->set_observer(table_view_observer);
-  table_view->GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
-      IDS_DEVICE_CHOOSER_ACCNAME_COMPATIBLE_DEVICES_LIST));
+  table_view->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_DEVICE_CHOOSER_ACCNAME_COMPATIBLE_DEVICES_LIST),
+      ax::mojom::NameFrom::kAttribute);
 
   table_parent_ = AddChildView(
       views::TableView::CreateScrollViewWithTable(std::move(table_view)));

@@ -110,7 +110,7 @@ ExtensionsMenuView::ExtensionsMenuView(
       GetAccessibleWindowTitle().empty()
           ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
           : ax::mojom::NameFrom::kAttribute;
-  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle(), name_from);
+  GetViewAccessibility().SetName(GetAccessibleWindowTitle(), name_from);
 
   SetEnableArrowKeyTraversal(true);
 
