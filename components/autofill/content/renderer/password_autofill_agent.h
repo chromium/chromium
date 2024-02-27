@@ -300,9 +300,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Stores information about fields previewed by this agent.
   struct PreviewInfo {
     FieldRendererId field_id;
-    blink::WebAutofillState autofill_state;
-    size_t prefix_length;
-    bool is_password;
+    blink::WebAutofillState autofill_state =
+        blink::WebAutofillState::kNotFilled;
+    bool is_password = false;
   };
 
   // This class keeps track of autofilled username and password input elements

@@ -852,6 +852,8 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     return;
   }
 
+  ClearPreviewedForm();
+
   password_info->password_was_edited_last = false;
   if (element.IsPasswordFieldForAutofill()) {
     password_info->password_field_suggestion_was_accepted = true;
@@ -916,7 +918,6 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
   previewed_elements_.emplace_back(PreviewInfo{
       .field_id = form_util::GetFieldRendererId(input),
       .autofill_state = input.GetAutofillState(),
-      .prefix_length = input.Value().Utf16().length(),
       .is_password = is_password,
   });
   input.SetSuggestedValue(WebString::FromUTF16(credential));
@@ -975,7 +976,7 @@ void PasswordAutofillAgent::PreviewSuggestion(
     DoPreviewField(username_element, username, /*is_password=*/false);
   }
   if (!password_element.IsNull()) {
-    DoPreviewField(password_element, password, /*is_password=*/false);
+    DoPreviewField(password_element, password, /*is_password=*/true);
   }
 }
 
@@ -995,7 +996,7 @@ void PasswordAutofillAgent::ClearPreviewedForm() {
     element.SetAutofillState(preview_info.autofill_state);
     if (!preview_info.is_password) {
       element.SetSelectionRange(
-          base::checked_cast<unsigned>(preview_info.prefix_length),
+          base::checked_cast<unsigned>(element.Value().length()),
           base::checked_cast<unsigned>(element.Value().length()));
     }
   }

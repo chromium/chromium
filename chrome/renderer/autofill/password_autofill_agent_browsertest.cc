@@ -1860,6 +1860,52 @@ TEST_F(PasswordAutofillAgentTest,
   }
 }
 
+// Test that preview is cleared before the suggestion is filled.
+TEST_F(PasswordAutofillAgentTest, ClearPreviewBeforeFillingSuggestion) {
+  // Simulate the browser sending the login info, but set `wait_for_username`
+  // to prevent the form from being immediately filled.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+  CheckTextFieldsDOMState(/*username=*/"", /*username_autofilled=*/false,
+                          /*password=*/"", /*password_autofilled=*/false);
+  for (const auto& selected_element : {username_element_, password_element_}) {
+    SetFocused(selected_element);
+
+    password_autofill_agent_->PreviewSuggestion(
+        selected_element, kAliceUsername16, kAlicePassword16);
+    CheckTextFieldsSuggestedState(
+        /*username=*/kAliceUsername, /*username_autofilled=*/true,
+        /*password=*/kAlicePassword, /*password_autofilled=*/true);
+    CheckTextFieldsDOMState(/*username=*/"", /*username_autofilled=*/true,
+                            /*password=*/"", /*password_autofilled=*/true);
+    EXPECT_TRUE(username_element_.IsPreviewed());
+    EXPECT_TRUE(password_element_.IsPreviewed());
+
+    password_autofill_agent_->FillPasswordSuggestion(kBobUsername16,
+                                                     kBobPassword16);
+    CheckTextFieldsSuggestedState(
+        /*username=*/"", /*username_autofilled=*/true, /*password=*/"",
+        /*password_autofilled=*/true);
+    CheckTextFieldsDOMState(
+        /*username=*/kBobUsername, /*username_autofilled=*/true,
+        /*password=*/kBobPassword, /*password_autofilled=*/true);
+    EXPECT_TRUE(username_element_.IsAutofilled());
+    EXPECT_TRUE(password_element_.IsAutofilled());
+
+    password_autofill_agent_->ClearPreviewedForm();
+    CheckTextFieldsSuggestedState(
+        /*username=*/"", /*username_autofilled=*/true, /*password=*/"",
+        /*password_autofilled=*/true);
+    CheckTextFieldsDOMState(
+        /*username=*/kBobUsername, /*username_autofilled=*/true,
+        /*password=*/kBobPassword, /*password_autofilled=*/true);
+    EXPECT_TRUE(username_element_.IsAutofilled());
+    EXPECT_TRUE(password_element_.IsAutofilled());
+
+    ClearUsernameAndPasswordFieldValues();
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Tests that TryToShowKeyboardReplacingSurface() works correctly for fillable
 // and non-fillable fields.
