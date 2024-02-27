@@ -28,6 +28,46 @@ using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::mojom::SourceType;
 
+attribution_reporting::TriggerSpecs SpecsFromWindowList(
+    std::vector<int> windows_per_type,
+    bool collapse_into_single_spec) {
+  attribution_reporting::TriggerSpecs::TriggerDataIndices indices;
+  std::vector<attribution_reporting::TriggerSpec> raw_specs;
+
+  bool supportable_by_single_spec = base::ranges::all_of(
+      windows_per_type, [&](int w) { return w == windows_per_type[0]; });
+
+  if (collapse_into_single_spec && supportable_by_single_spec) {
+    std::vector<base::TimeDelta> deltas;
+    for (int i = 0; i < windows_per_type[0]; i++) {
+      deltas.emplace_back(base::Days(1) + base::Days(i));
+    }
+    for (int i = 0; i < static_cast<int>(windows_per_type.size()); ++i) {
+      indices[i] = 0;
+    }
+    raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
+        base::Days(0), deltas));
+    auto specs =
+        *attribution_reporting::TriggerSpecs::Create(indices, raw_specs);
+    return specs;
+  }
+
+  int index = 0;
+  for (int windows : windows_per_type) {
+    std::vector<base::TimeDelta> deltas;
+    for (int i = 0; i < windows; i++) {
+      deltas.emplace_back(base::Days(1) + base::Days(i));
+    }
+    raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
+        base::Days(0), deltas));
+    indices[index] = index;
+    index++;
+  }
+
+  auto specs = *attribution_reporting::TriggerSpecs::Create(indices, raw_specs);
+  return specs;
+}
+
 TEST(PrivacyMathTest, BinomialCoefficient) {
   // Test cases generated via a python program using scipy.special.comb.
   struct {
@@ -133,9 +173,9 @@ TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
 // `index` = \sum_{i=1}^k {a_i}\choose{i}
 TEST(PrivacyMathTest, GetKCombination_MatchesDefinition) {
   for (int k = 1; k < 5; k++) {
-    for (int index = 0; index < 3000; index++) {
+    for (absl::uint128 index = 0; index < 3000; index++) {
       std::vector<int> combination = internal::GetKCombinationAtIndex(index, k);
-      int sum = 0;
+      absl::uint128 sum = 0;
       for (int i = 0; i < k; i++) {
         sum += internal::BinomialCoefficient(combination[i], k - i);
       }
@@ -251,7 +291,7 @@ TEST(PrivacyMathTest, GetRandomizedResponseRate) {
 // https://github.com/WICG/attribution-reporting-api/blob/ab43f8c989cf881ffd7a7f71801b98d649ed164a/flexible-event/privacy.test.ts#L38-L69
 TEST(PrivacyMathTest, ComputeChannelCapacity) {
   const struct {
-    int64_t num_states;
+    absl::uint128 num_states;
     double epsilon;
     double expected;
   } kTestCases[] = {
@@ -407,7 +447,7 @@ void RunRandomFakeReportsTest(const attribution_reporting::TriggerSpecs& specs,
   //
   // The probability that t trials are not enough to see all possible results is
   // at most n^{-t/(n*ln(n)) + 1}.
-  EXPECT_EQ(static_cast<int64_t>(output_counts.size()), num_states);
+  EXPECT_EQ(static_cast<absl::uint128>(output_counts.size()), num_states);
 
   // For any of the n possible results, the expected number of times it is seen
   // is equal to 1/n. Moreover, for any possible result, the probability that it
@@ -499,48 +539,50 @@ TEST(PrivacyMathTest, GetRandomFakeReports_Custom_MatchesExpectedDistribution) {
                            /*tolerance=*/0.1);
 }
 
+const struct {
+  MaxEventLevelReports max_reports;
+  std::vector<int> windows_per_type;
+  absl::uint128 expected_num_states;
+} kNumStateTestCases[] = {
+    {MaxEventLevelReports(3), {3, 3, 3, 3, 3, 3, 3, 3}, 2925},
+    {MaxEventLevelReports(1), {1, 1}, 3},
+
+    {MaxEventLevelReports(1), {1}, 2},
+    {MaxEventLevelReports(5), {1}, 6},
+    {MaxEventLevelReports(2), {1, 1, 2, 2}, 28},
+    {MaxEventLevelReports(3), {1, 1, 2, 2, 3, 3}, 455},
+
+    // Cases for # of states > 10000 will skip the unique check, otherwise the
+    // tests won't ever finish.
+    {MaxEventLevelReports(20), {5, 5, 5, 5, 5, 5, 5, 5}, 4191844505805495},
+
+    // This input would overflow any 64 bit integer.
+    {MaxEventLevelReports(20),
+     {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+     absl::MakeUint128(/*high=*/9494472u, /*low=*/10758590974061625903u)},
+};
+
+TEST(PrivacyMathTest, GetNumStates) {
+  for (const auto& test_case : kNumStateTestCases) {
+    // Test both single spec and multi-spec variants to ensure both code paths
+    // (optimized and non) get exercised.
+    auto specs = SpecsFromWindowList(test_case.windows_per_type,
+                                     /*collapse_into_single_spec=*/true);
+    EXPECT_EQ(test_case.expected_num_states,
+              GetNumStates(specs, test_case.max_reports));
+
+    specs = SpecsFromWindowList(test_case.windows_per_type,
+                                /*collapse_into_single_spec=*/false);
+    EXPECT_EQ(test_case.expected_num_states,
+              GetNumStates(specs, test_case.max_reports));
+  }
+}
+
 TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
-  const struct {
-    MaxEventLevelReports max_reports;
-    std::vector<int> windows_per_type;
-    absl::uint128 expected_num_states;
-  } kTestCases[] = {
-      {MaxEventLevelReports(3), {3, 3, 3, 3, 3, 3, 3, 3}, 2925},
-      {MaxEventLevelReports(1), {1, 1}, 3},
-
-      {MaxEventLevelReports(1), {1}, 2},
-      {MaxEventLevelReports(5), {1}, 6},
-      {MaxEventLevelReports(2), {1, 1, 2, 2}, 28},
-      {MaxEventLevelReports(3), {1, 1, 2, 2, 3, 3}, 455},
-
-      // Cases for # of states > 10000 will skip the unique check, otherwise the
-      // tests won't ever finish.
-      {MaxEventLevelReports(20), {5, 5, 5, 5, 5, 5, 5, 5}, 4191844505805495},
-
-      // This input would overflow any 64 bit integer.
-      {MaxEventLevelReports(20),
-       {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
-       absl::MakeUint128(/*high=*/9494472u, /*low=*/10758590974061625903u)},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    attribution_reporting::TriggerSpecs::TriggerDataIndices indices;
-    std::vector<attribution_reporting::TriggerSpec> raw_specs;
-    int index = 0;
-    for (int windows : test_case.windows_per_type) {
-      std::vector<base::TimeDelta> deltas;
-      for (int i = 0; i < windows; i++) {
-        deltas.emplace_back(base::Days(1) + base::Days(i));
-      }
-      raw_specs.emplace_back(*attribution_reporting::EventReportWindows::Create(
-          base::Days(0), deltas));
-      indices[index] = index;
-      index++;
-    }
-
-    auto specs =
-        *attribution_reporting::TriggerSpecs::Create(indices, raw_specs);
+  for (const auto& test_case : kNumStateTestCases) {
+    auto specs = SpecsFromWindowList(test_case.windows_per_type,
+                                     /*collapse_into_single_spec=*/false);
     ASSERT_EQ(test_case.expected_num_states,
               GetNumStates(specs, test_case.max_reports));
 

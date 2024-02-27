@@ -100,7 +100,7 @@ namespace internal {
 //
 // Note: large values of `n` and `k` may overflow. This function internally uses
 // checked_math to crash safely if this occurs.
-CONTENT_EXPORT int64_t BinomialCoefficient(int n, int k);
+CONTENT_EXPORT absl::uint128 BinomialCoefficient(int n, int k);
 
 // Returns the k-combination associated with the number `combination_index`. In
 // other words, returns the combination of `k` integers uniquely indexed by
@@ -109,21 +109,21 @@ CONTENT_EXPORT int64_t BinomialCoefficient(int n, int k);
 //
 // The returned vector is guaranteed to have size `k`.
 CONTENT_EXPORT std::vector<int> GetKCombinationAtIndex(
-    int64_t combination_index,
+    absl::uint128 combination_index,
     int k);
 
 // Returns the number of possible sequences of "stars and bars" sequences
 // https://en.wikipedia.org/wiki/Stars_and_bars_(combinatorics),
 // which is equivalent to (num_stars + num_bars choose num_stars).
-CONTENT_EXPORT int64_t GetNumberOfStarsAndBarsSequences(int num_stars,
-                                                        int num_bars);
+CONTENT_EXPORT absl::uint128 GetNumberOfStarsAndBarsSequences(int num_stars,
+                                                              int num_bars);
 
 // Returns a vector of the indices of every star in the stars and bars sequence
 // indexed by `sequence_index`. The indexing technique uses the k-combination
 // utility documented above.
 CONTENT_EXPORT std::vector<int> GetStarIndices(int num_stars,
                                                int num_bars,
-                                               int64_t sequence_index);
+                                               absl::uint128 sequence_index);
 
 // From a vector with the index of every star in a stars and bars sequence,
 // returns a vector which, for every star, counts the number of bars preceding
@@ -154,7 +154,7 @@ CONTENT_EXPORT double ComputeChannelCapacity(absl::uint128 num_states,
 CONTENT_EXPORT std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const attribution_reporting::TriggerSpecs&,
     int max_event_level_reports,
-    int64_t random_stars_and_bars_sequence_index);
+    absl::uint128 random_stars_and_bars_sequence_index);
 
 // Note: this method for sampling is not 1:1 with the above function for the
 // same sequence index, even for equivalent API configs.

@@ -30,6 +30,14 @@ namespace content {
 
 namespace {
 
+// Since base/numerics does not support checked math for 128 bit types,
+// implement it ourselves. This copies the relevant check from CheckedMulImpl.
+absl::uint128 CheckMul(absl::uint128 x, absl::uint128 y) {
+  // Note this is safe even with division with a remainder.
+  CHECK(y == 0 || x <= absl::Uint128Max() / y);
+  return x * y;
+}
+
 // The max possible number of state combinations given a valid input.
 // This comes from 20 maximum total reports, 20 reports per type, 5 windows per
 // type, and 32 distinct trigger data values.
@@ -195,7 +203,7 @@ absl::uint128 GetNumStatesCached(
 
   // Optimized fast-path.
   if (specs.SingleSharedSpec()) {
-    int64_t states = internal::GetNumberOfStarsAndBarsSequences(
+    absl::uint128 states = internal::GetNumberOfStarsAndBarsSequences(
         /*num_stars=*/max_reports,
         /*num_bars=*/specs.size() * num_windows);
     DCHECK_EQ(states, GetNumStatesRecursive(it, max_reports, num_windows,
@@ -264,7 +272,7 @@ RandomizedResponseData DoRandomizedResponse(
 
 namespace internal {
 
-int64_t BinomialCoefficient(int n, int k) {
+absl::uint128 BinomialCoefficient(int n, int k) {
   DCHECK_GE(n, 0);
   DCHECK_GE(k, 0);
 
@@ -284,16 +292,17 @@ int64_t BinomialCoefficient(int n, int k) {
   }
 
   // (n choose k) = n (n -1) ... (n - (k - 1)) / k!
-  // = mul((n + i - i) / i), i from 1 -> k.
+  // = mul((n + 1 - i) / i), i from 1 -> k.
   //
   // You might be surprised that this algorithm works just fine with integer
   // division (i.e. division occurs cleanly with no remainder). However, this is
   // true for a very simple reason. Imagine a value of `i` causes division with
   // remainder in the below algorithm. This immediately implies that
   // (n choose i) is fractional, which we know is not the case.
-  int64_t result = 1;
+  absl::uint128 result = 1;
   for (int i = 1; i <= k; i++) {
-    result = base::CheckMul(result, n + 1 - i).ValueOrDie();
+    absl::uint128 term = n + 1 - i;
+    result = CheckMul(result, term);
     DCHECK_EQ(0, result % i);
     result = result / i;
   }
@@ -317,7 +326,8 @@ int64_t BinomialCoefficient(int n, int k) {
 //
 // We find this set via a simple greedy algorithm.
 // http://math0.wvstateu.edu/~baker/cs405/code/Combinadics.html
-std::vector<int> GetKCombinationAtIndex(int64_t combination_index, int k) {
+std::vector<int> GetKCombinationAtIndex(absl::uint128 combination_index,
+                                        int k) {
   DCHECK_GE(combination_index, 0);
   DCHECK_GE(k, 0);
   // `k` can be no more than max number of event level reports per source (20).
@@ -333,18 +343,20 @@ std::vector<int> GetKCombinationAtIndex(int64_t combination_index, int k) {
   // maximum a such that (a choose k) <= `combination_index`. Let a_k = a. Use
   // the previous binomial coefficient to compute the next one. Note: possible
   // to speed this up via something other than incremental search.
-  int64_t target = combination_index;
+  absl::uint128 target = combination_index;
   int candidate = k - 1;
-  int64_t binomial_coefficient = 0;       // BinomialCoefficient(candidate, k)
-  int64_t next_binomial_coefficient = 1;  // BinomialCoefficient(candidate+1, k)
+
+  // BinomialCoefficient(candidate, k)
+  absl::uint128 binomial_coefficient = 0;
+  // BinomialCoefficient(candidate+1, k)
+  absl::uint128 next_binomial_coefficient = 1;
   while (next_binomial_coefficient <= target) {
     candidate++;
     binomial_coefficient = next_binomial_coefficient;
     DCHECK_EQ(binomial_coefficient, BinomialCoefficient(candidate, k));
 
     // (n + 1 choose k) = (n choose k) * (n + 1) / (n + 1 - k)
-    next_binomial_coefficient =
-        base::CheckMul(binomial_coefficient, candidate + 1).ValueOrDie();
+    next_binomial_coefficient = CheckMul(binomial_coefficient, candidate + 1);
     next_binomial_coefficient /= candidate + 1 - k;
   }
   // We know from the k-combination definition, all subsequent values will be
@@ -362,14 +374,15 @@ std::vector<int> GetKCombinationAtIndex(int64_t combination_index, int k) {
         return output_k_combination;
       }
       // (n - 1 choose k - 1) = (n choose k) * k / n
-      binomial_coefficient = binomial_coefficient * (current_k) / candidate;
+      binomial_coefficient =
+          CheckMul(binomial_coefficient, current_k) / candidate;
 
       current_k--;
       candidate--;
     } else {
       // (n - 1 choose k) = (n choose k) * (n - k) / n
       binomial_coefficient =
-          binomial_coefficient * (candidate - current_k) / candidate;
+          CheckMul(binomial_coefficient, candidate - current_k) / candidate;
 
       candidate--;
     }
@@ -394,13 +407,13 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
   return reports;
 }
 
-int64_t GetNumberOfStarsAndBarsSequences(int num_stars, int num_bars) {
+absl::uint128 GetNumberOfStarsAndBarsSequences(int num_stars, int num_bars) {
   return BinomialCoefficient(num_stars + num_bars, num_stars);
 }
 
 std::vector<int> GetStarIndices(int num_stars,
                                 int num_bars,
-                                int64_t sequence_index) {
+                                absl::uint128 sequence_index) {
   DCHECK_LT(sequence_index,
             GetNumberOfStarsAndBarsSequences(num_stars, num_bars));
   return GetKCombinationAtIndex(sequence_index, num_stars);
@@ -449,7 +462,7 @@ double ComputeChannelCapacity(absl::uint128 num_states,
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const attribution_reporting::TriggerSpecs& specs,
     int max_reports,
-    int64_t random_stars_and_bars_sequence_index) {
+    absl::uint128 random_stars_and_bars_sequence_index) {
   const attribution_reporting::TriggerSpec* single_spec =
       specs.SingleSharedSpec();
   CHECK(single_spec);
@@ -513,9 +526,7 @@ RandomizedResponseData DoRandomizedResponseWithCache(
     DCHECK_LT(sequence_index, kMaxNumCombinations);
     fake_reports = specs.SingleSharedSpec()
                        ? internal::GetFakeReportsForSequenceIndex(
-                             specs, max_reports,
-                             base::checked_cast<int64_t>(
-                                 absl::Uint128Low64(sequence_index)))
+                             specs, max_reports, sequence_index)
                        : internal::GetFakeReportsForSequenceIndex(
                              specs, max_reports, sequence_index, map);
   }
