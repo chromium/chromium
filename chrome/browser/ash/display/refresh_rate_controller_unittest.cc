@@ -90,10 +90,9 @@ class RefreshRateControllerTest : public AshTestBase {
                               ::features::kEnableVariableRefreshRate},
         /*disabled_features=*/{});
   }
-  RefreshRateControllerTest(const RefreshRateControllerTest&) =
+  RefreshRateControllerTest(const RefreshRateControllerTest&) = delete;
+  RefreshRateControllerTest& operator=(const RefreshRateControllerTest&) =
       delete;
-  RefreshRateControllerTest& operator=(
-      const RefreshRateControllerTest&) = delete;
   ~RefreshRateControllerTest() override = default;
 
   void SetUp() override {
@@ -335,8 +334,8 @@ TEST_F(RefreshRateControllerTest,
 
 TEST_F(RefreshRateControllerTest,
        ThrottlingUnaffectedForBorealisOnExternalDisplay) {
-  constexpr int64_t internal_id = 12345;
   const int64_t external_id = GetPrimaryDisplay().id();
+  const int64_t internal_id = external_id + 1;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
@@ -549,32 +548,44 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnUSBCharger) {
 }
 
 TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
-  const int64_t display_id = GetPrimaryDisplay().id();
+  const int64_t internal_id = GetPrimaryDisplay().id();
+  const int64_t external_id = internal_id + 1;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildVrrPanelSnapshot(
-      display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+      internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  snapshots.push_back(BuildVrrPanelSnapshot(
+      external_id, display::DISPLAY_CONNECTION_TYPE_HDMI));
   SetUpDisplays(std::move(snapshots));
-  ScopedSetInternalDisplayIds set_internal(display_id);
+  ScopedSetInternalDisplayIds set_internal(internal_id);
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
   // Expect VRR to be initially disabled.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
-    ASSERT_NE(snapshot, nullptr);
-    ASSERT_TRUE(snapshot->IsVrrCapable());
-    EXPECT_FALSE(snapshot->IsVrrEnabled());
+    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_NE(internal_snapshot, nullptr);
+    ASSERT_TRUE(internal_snapshot->IsVrrCapable());
+    EXPECT_FALSE(internal_snapshot->IsVrrEnabled());
+
+    const DisplaySnapshot* external_snapshot = GetDisplaySnapshot(external_id);
+    ASSERT_NE(external_snapshot, nullptr);
+    ASSERT_TRUE(external_snapshot->IsVrrCapable());
+    EXPECT_FALSE(external_snapshot->IsVrrEnabled());
   }
 
   // Set the game mode to indicate the user is gaming.
   game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
                                            ash::WindowState::Get(window.get()));
 
-  // Expect the new state to have VRR enabled.
+  // Expect the new state to have VRR enabled on the Borealis display only.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
-    ASSERT_NE(snapshot, nullptr);
-    EXPECT_TRUE(snapshot->IsVrrEnabled());
+    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_NE(internal_snapshot, nullptr);
+    EXPECT_TRUE(internal_snapshot->IsVrrEnabled());
+
+    const DisplaySnapshot* external_snapshot = GetDisplaySnapshot(external_id);
+    ASSERT_NE(external_snapshot, nullptr);
+    EXPECT_FALSE(external_snapshot->IsVrrEnabled());
   }
 
   // Reset the game mode.
@@ -583,9 +594,13 @@ TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
 
   // Expect the new state to have VRR disabled.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
-    ASSERT_NE(snapshot, nullptr);
-    EXPECT_FALSE(snapshot->IsVrrEnabled());
+    const DisplaySnapshot* internal_snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_NE(internal_snapshot, nullptr);
+    EXPECT_FALSE(internal_snapshot->IsVrrEnabled());
+
+    const DisplaySnapshot* external_snapshot = GetDisplaySnapshot(external_id);
+    ASSERT_NE(external_snapshot, nullptr);
+    EXPECT_FALSE(external_snapshot->IsVrrEnabled());
   }
 
   game_mode_controller_->NotifySetGameMode(GameMode::OFF,

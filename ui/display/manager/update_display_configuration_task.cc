@@ -74,7 +74,7 @@ UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
     chromeos::DisplayPowerState new_power_state,
     int power_flags,
     RefreshRateThrottleState refresh_rate_throttle_state,
-    bool new_vrr_state_,
+    const base::flat_set<int64_t>& new_vrr_state,
     bool force_configure,
     ConfigurationType configuration_type,
     ResponseCallback callback)
@@ -84,7 +84,7 @@ UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
       new_power_state_(new_power_state),
       power_flags_(power_flags),
       refresh_rate_throttle_state_(refresh_rate_throttle_state),
-      new_vrr_state_(new_vrr_state_),
+      new_vrr_state_(new_vrr_state),
       force_configure_(force_configure),
       configuration_type_(configuration_type),
       callback_(std::move(callback)),
@@ -131,7 +131,7 @@ void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
           << " new_power_state=" << DisplayPowerStateToString(new_power_state_)
           << " flags=" << power_flags_ << " refresh_rate_throttle_state_="
           << RefreshRateThrottleStateToString(refresh_rate_throttle_state_)
-          << " new_vrr_state=" << new_vrr_state_
+          << " new_vrr_state=" << VrrStateToString(new_vrr_state_)
           << " force_configure=" << force_configure_
           << " display_count=" << cached_displays_.size();
   if (ShouldConfigure()) {
@@ -214,7 +214,7 @@ void UpdateDisplayConfigurationTask::FinishConfiguration(bool success) {
 
   std::move(callback_).Run(success, cached_displays_,
                            cached_unassociated_displays_, new_display_state_,
-                           new_power_state_, new_vrr_state_);
+                           new_power_state_);
 }
 
 bool UpdateDisplayConfigurationTask::ShouldForceDpms() const {
@@ -279,7 +279,8 @@ bool UpdateDisplayConfigurationTask::ShouldConfigureVrr() const {
       continue;
     }
 
-    if (display->IsVrrEnabled() != new_vrr_state_) {
+    if (new_vrr_state_.contains(display->display_id()) !=
+        display->IsVrrEnabled()) {
       return true;
     }
   }

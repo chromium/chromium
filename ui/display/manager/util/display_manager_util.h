@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
@@ -40,6 +41,9 @@ std::string DisplayPowerStateToString(chromeos::DisplayPowerState state);
 
 // Returns a string describing |state|.
 std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state);
+
+// Returns a string describing |state|.
+std::string VrrStateToString(const base::flat_set<int64_t>& state);
 
 // Returns the number of displays in |displays| that should be turned on, per
 // |state|.  If |display_power| is non-NULL, it is updated to contain the
@@ -76,7 +80,7 @@ DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactors(
     const ManagedDisplayMode& mode);
 
 // Returns a list of display zooms supported by the given |display_width|.
-DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactorsByDsiplayWidth(
+DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactorsByDisplayWidth(
     const int display_width);
 
 // Returns a list of display zooms based on the provided |dsf| of the display.

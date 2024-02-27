@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -312,9 +313,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
     return requested_power_state_;
   }
 
-  // Requests to enable or disable variable refresh rates across all capable
-  // displays, and schedules a configuration change as needed.
-  void SetVrrEnabled(bool enable_vrr);
+  // Requests to enable variable refresh rates on the specified displays and to
+  // disable variable refresh rates on all other displays, and schedules a
+  // configuration change as needed.
+  void SetVrrEnabled(const base::flat_set<int64_t>& display_ids);
 
  private:
   friend class test::DisplayManagerTestApi;
@@ -358,8 +360,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
       const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
           unassociated_displays,
       MultipleDisplayState new_display_state,
-      chromeos::DisplayPowerState new_power_state,
-      bool new_vrr_state);
+      chromeos::DisplayPowerState new_power_state);
 
   // Updates the current and pending power state and notifies observers.
   void UpdatePowerState(chromeos::DisplayPowerState new_power_state);
@@ -400,8 +401,9 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   void SendRelinquishDisplayControl(DisplayControlCallback callback,
                                     bool success);
 
-  // Returns the requested VRR state, or the current state by default.
-  bool GetRequestedVrrState() const;
+  // Returns the requested VRR state listing the display ids which should have
+  // VRR enabled, defaulting to the current state as needed.
+  const base::flat_set<int64_t> GetRequestedVrrState() const;
 
   // Returns whether a configuration should occur on account of a pending VRR
   // request.
@@ -487,10 +489,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // notification will be created to inform user.
   bool has_unassociated_display_;
 
-  // Stores the current variable refresh rate enabled state.
-  bool current_vrr_state_ = false;
-  // Stores the requested variable refresh rate enabled state.
-  std::optional<bool> pending_vrr_state_;
+  // Stores the requested variable refresh rate state as a set of display ids
+  // for which VRR should be enabled. All omitted displays should have VRR
+  // disabled. Absent if there is no pending state.
+  std::optional<base::flat_set<int64_t>> pending_vrr_state_ = std::nullopt;
 
   // This must be the last variable.
   base::WeakPtrFactory<DisplayConfigurator> weak_ptr_factory_{this};

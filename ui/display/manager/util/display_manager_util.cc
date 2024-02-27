@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
@@ -58,6 +59,14 @@ std::string RefreshRateThrottleStateToString(RefreshRateThrottleState state) {
   NOTREACHED();
   return "unknown refresh rate throttle state (" + base::NumberToString(state) +
          ")";
+}
+
+std::string VrrStateToString(const base::flat_set<int64_t>& state) {
+  std::vector<std::string> entries;
+  for (const int64_t id : state) {
+    entries.push_back(base::NumberToString(id));
+  }
+  return "{" + base::JoinString(entries, ", ") + "}";
 }
 
 int GetDisplayPower(
@@ -193,10 +202,10 @@ std::vector<float> GetDisplayZoomFactors(const ManagedDisplayMode& mode) {
   const int effective_width = std::round(
       static_cast<float>(std::max(mode.size().width(), mode.size().height())) /
       mode.device_scale_factor());
-  return GetDisplayZoomFactorsByDsiplayWidth(effective_width);
+  return GetDisplayZoomFactorsByDisplayWidth(effective_width);
 }
 
-std::vector<float> GetDisplayZoomFactorsByDsiplayWidth(
+std::vector<float> GetDisplayZoomFactorsByDisplayWidth(
     const int display_width) {
   std::size_t index = kZoomListBuckets.size() - 1;
   while (index > 0 && display_width < kZoomListBuckets[index].first) {

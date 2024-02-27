@@ -2192,7 +2192,7 @@ TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_RaceWithDockMode) {
   test_api_.GetDisplayLayoutManager()->GetDisplayLayout(
       native_display_delegate_->GetOutputs(), MULTIPLE_DISPLAY_STATE_SINGLE,
       chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON,
-      kRefreshRateThrottleEnabled, false, &requests);
+      kRefreshRateThrottleEnabled, /*new_vrr_enabled_state=*/{}, &requests);
 
   bool has_internal_request = false;
   for (auto& request: requests) {
@@ -2213,14 +2213,15 @@ TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {
   observer_.Reset();
 
   // Set VRR noop.
-  configurator_.SetVrrEnabled(false);
+  configurator_.SetVrrEnabled({});
   EXPECT_EQ(0, observer_.num_changes());
   EXPECT_FALSE(GetOutput(0)->IsVrrEnabled());
   EXPECT_FALSE(GetOutput(1)->IsVrrEnabled());
   EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
 
   // Set VRR enabled.
-  configurator_.SetVrrEnabled(true);
+  configurator_.SetVrrEnabled(
+      {GetOutput(0)->display_id(), GetOutput(1)->display_id()});
   EXPECT_EQ(1, observer_.num_changes());
   EXPECT_TRUE(GetOutput(0)->IsVrrEnabled());
   EXPECT_FALSE(GetOutput(1)->IsVrrEnabled());
@@ -2249,7 +2250,7 @@ TEST_F(DisplayConfiguratorTest, SetVrrEnabled) {
   observer_.Reset();
 
   // Set VRR disabled.
-  configurator_.SetVrrEnabled(false);
+  configurator_.SetVrrEnabled({});
   EXPECT_EQ(1, observer_.num_changes());
   EXPECT_FALSE(GetOutput(0)->IsVrrEnabled());
   EXPECT_FALSE(GetOutput(1)->IsVrrEnabled());
@@ -2286,7 +2287,8 @@ TEST_F(DisplayConfiguratorTest, SetVrrEnabled_NotCapable) {
   log_->GetActionsAndClear();
   observer_.Reset();
 
-  configurator_.SetVrrEnabled(true);
+  configurator_.SetVrrEnabled(
+      {GetOutput(0)->display_id(), GetOutput(1)->display_id()});
   EXPECT_EQ(0, observer_.num_changes());
   EXPECT_FALSE(GetOutput(0)->IsVrrEnabled());
   EXPECT_FALSE(GetOutput(1)->IsVrrEnabled());
@@ -2313,7 +2315,7 @@ TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_VrrEnabled) {
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
   UpdateOutputs(1, true);
   // Enable VRR on internal display.
-  configurator_.SetVrrEnabled(true);
+  configurator_.SetVrrEnabled({GetOutput(0)->display_id()});
   EXPECT_EQ(120.0f, GetOutput(0)->current_mode()->refresh_rate());
   EXPECT_TRUE(GetOutput(0)->IsVrrEnabled());
   log_->GetActionsAndClear();
@@ -2391,7 +2393,8 @@ TEST_F(DisplayConfiguratorTest,
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   UpdateOutputs(2, true);
   // Enable VRR when only the external display is VRR-capable.
-  configurator_.SetVrrEnabled(true);
+  configurator_.SetVrrEnabled(
+      {GetOutput(0)->display_id(), GetOutput(1)->display_id()});
   EXPECT_EQ(120.0f, GetOutput(0)->current_mode()->refresh_rate());
   EXPECT_EQ(60.0f, GetOutput(1)->current_mode()->refresh_rate());
   EXPECT_FALSE(GetOutput(0)->IsVrrEnabled());

@@ -92,10 +92,16 @@ void RefreshRateController::RefreshVrrState() {
     return;
   }
 
-  // Enable VRR if battery saver is inactive.
+  // Enable VRR on the borealis-hosting display if battery saver is inactive.
   const bool battery_saver_mode_enabled = power_status_->IsBatterySaverActive();
-  display_configurator_->SetVrrEnabled(!battery_saver_mode_enabled &&
-                                       borealis_window_observer_.IsObserving());
+  if (borealis_window_observer_.IsObserving() && !battery_saver_mode_enabled) {
+    display_configurator_->SetVrrEnabled(
+        {display::Screen::GetScreen()
+             ->GetDisplayNearestWindow(borealis_window_observer_.GetSource())
+             .id()});
+  } else {
+    display_configurator_->SetVrrEnabled({});
+  }
 }
 
 display::RefreshRateThrottleState

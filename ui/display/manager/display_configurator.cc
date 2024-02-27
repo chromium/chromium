@@ -114,7 +114,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
-      bool new_vrr_enabled_state,
+      const base::flat_set<int64_t>& new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
   DisplayStateList GetDisplayStates() const override;
   bool IsMirroring() const override;
@@ -249,7 +249,7 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     RefreshRateThrottleState new_throttle_state,
-    bool new_vrr_enabled_state,
+    const base::flat_set<int64_t>& new_vrr_enabled_state,
     std::vector<DisplayConfigureRequest>* requests) const {
   std::vector<DisplayState> states = ParseDisplays(displays);
   std::vector<bool> display_power;
@@ -263,9 +263,12 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
   gfx::Size size;
 
   for (display::DisplaySnapshot* display : displays) {
-    requests->push_back(DisplayConfigureRequest(
-        display, display->current_mode(), gfx::Point(),
-        new_vrr_enabled_state && display->IsVrrCapable()));
+    const bool enable_vrr =
+        display->IsVrrCapable() &&
+        (::features::IsVariableRefreshRateAlwaysOn() ||
+         new_vrr_enabled_state.contains(display->display_id()));
+    requests->emplace_back(display, display->current_mode(), gfx::Point(),
+                           enable_vrr);
   }
 
   switch (new_display_state) {
@@ -598,8 +601,7 @@ DisplayConfigurator::DisplayConfigurator()
           layout_manager_.get(),
           base::BindRepeating(&DisplayConfigurator::configurator_disabled,
                               base::Unretained(this)))),
-      has_unassociated_display_(false),
-      pending_vrr_state_(::features::IsVariableRefreshRateAlwaysOn()) {
+      has_unassociated_display_(false) {
   AddObserver(content_protection_manager_.get());
 }
 
@@ -1097,8 +1099,7 @@ void DisplayConfigurator::OnConfigured(
     const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
         unassociated_displays,
     MultipleDisplayState new_display_state,
-    chromeos::DisplayPowerState new_power_state,
-    bool new_vrr_state_) {
+    chromeos::DisplayPowerState new_power_state) {
   VLOG(1) << "OnConfigured: success=" << success << " new_display_state="
           << MultipleDisplayStateToString(new_display_state)
           << " new_power_state=" << DisplayPowerStateToString(new_power_state);
@@ -1109,7 +1110,6 @@ void DisplayConfigurator::OnConfigured(
   if (success) {
     current_display_state_ = new_display_state;
     UpdatePowerState(new_power_state);
-    current_vrr_state_ = new_vrr_state_;
   }
 
   configuration_task_.reset();
@@ -1217,34 +1217,52 @@ bool DisplayConfigurator::IsDisplayOn() const {
   return current_power_state_ != chromeos::DISPLAY_POWER_ALL_OFF;
 }
 
-void DisplayConfigurator::SetVrrEnabled(bool enable_vrr) {
-  if (current_vrr_state_ == enable_vrr) {
-    return;
-  }
-
-  pending_vrr_state_ = enable_vrr;
-
-  if (!configure_timer_.IsRunning()) {
-    RunPendingConfiguration();
-  }
-}
-
-bool DisplayConfigurator::GetRequestedVrrState() const {
-  return pending_vrr_state_.value_or(current_vrr_state_);
-}
-
-bool DisplayConfigurator::ShouldConfigureVrr() const {
+void DisplayConfigurator::SetVrrEnabled(
+    const base::flat_set<int64_t>& display_ids) {
+  // Filter the provided set for VRR-capable displays only, and determine
+  // whether a configuration is required given the current state.
+  base::flat_set<int64_t> filtered_display_ids;
+  bool requires_configuration = false;
   for (const display::DisplaySnapshot* display : cached_displays_) {
     if (!display->IsVrrCapable()) {
       continue;
     }
 
-    if (display->IsVrrEnabled() != GetRequestedVrrState()) {
-      return true;
+    const bool vrr_should_be_enabled =
+        display_ids.contains(display->display_id());
+    if (vrr_should_be_enabled) {
+      filtered_display_ids.emplace(display->display_id());
+    }
+    requires_configuration |= vrr_should_be_enabled != display->IsVrrEnabled();
+  }
+
+  if (requires_configuration) {
+    pending_vrr_state_.emplace(filtered_display_ids);
+
+    if (!configure_timer_.IsRunning()) {
+      RunPendingConfiguration();
+    }
+  }
+}
+
+const base::flat_set<int64_t> DisplayConfigurator::GetRequestedVrrState()
+    const {
+  if (pending_vrr_state_.has_value()) {
+    return pending_vrr_state_.value();
+  }
+
+  base::flat_set<int64_t> requested_vrr_state;
+  for (const display::DisplaySnapshot* display : cached_displays_) {
+    if (display->IsVrrEnabled()) {
+      requested_vrr_state.emplace(display->display_id());
     }
   }
 
-  return false;
+  return requested_vrr_state;
+}
+
+bool DisplayConfigurator::ShouldConfigureVrr() const {
+  return pending_vrr_state_.has_value();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

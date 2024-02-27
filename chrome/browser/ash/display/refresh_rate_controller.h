@@ -35,8 +35,7 @@ class RefreshRateController : public PowerStatus::Observer,
                         bool force_throttle = false);
 
   RefreshRateController(const RefreshRateController&) = delete;
-  RefreshRateController& operator=(
-      const RefreshRateController&) = delete;
+  RefreshRateController& operator=(const RefreshRateController&) = delete;
 
   ~RefreshRateController() override;
 
