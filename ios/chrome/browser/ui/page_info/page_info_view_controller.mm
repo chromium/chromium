@@ -205,11 +205,6 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [_dataSource sectionIdentifierForIndex:section].integerValue);
 
   if (IsRevampPageInfoIosEnabled()) {
-    // Calculate the actual height of the header view for Permessions since it's
-    // not empty.
-    if (sectionIdentifier == SectionIdentifierPermissions) {
-      return UITableViewAutomaticDimension;
-    }
     return ChromeTableViewHeightForHeaderInSection(sectionIdentifier);
   }
 
@@ -227,6 +222,10 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
     case SectionIdentifierAboutThisSite:
       return nil;
     case SectionIdentifierPermissions: {
+      if (IsRevampPageInfoIosEnabled()) {
+        return nil;
+      }
+
       TableViewTextHeaderFooterView* header =
           DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(
               self.tableView);

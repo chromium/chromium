@@ -245,10 +245,14 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI openPageInfo];
-  // Checks that permission header is not visible.
+  // Checks that no permissions are not visible.
   [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER))]
+      selectElementWithMatcher:grey_anyOf(CameraPermissionsSwitch(YES),
+                                          CameraPermissionsSwitch(NO), nil)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_anyOf(MicrophonePermissionsSwitch(YES),
+                                          MicrophonePermissionsSwitch(NO), nil)]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -270,14 +274,9 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
       loadURL:self.testServer->GetURL("/permissions/microphone_only.html")];
   [self checkAndAllowPermissionAlerts];
 
-  // Check that permission header is visible.
-  [ChromeEarlGreyUI openPageInfo];
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER))]
-      assertWithMatcher:grey_sufficientlyVisible()];
   // Check that camera permission item is hidden, and in accordance with the
   // web state permission states.
+  [ChromeEarlGreyUI openPageInfo];
   [self checkStatesForPermissions:@{
     @(web::PermissionCamera) : @(web::PermissionStateNotAccessible),
     @(web::PermissionMicrophone) : @(web::PermissionStateAllowed)
@@ -321,13 +320,8 @@ void ExpectPermissionChangedHistograms(ContentSettingsType type) {
                               "/permissions/camera_and_microphone.html")];
   [self checkAndAllowPermissionAlerts];
 
-  // Check that permission header is visible.
-  [ChromeEarlGreyUI openPageInfo];
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER))]
-      assertWithMatcher:grey_sufficientlyVisible()];
   // Check that switchs for both permissions are visible.
+  [ChromeEarlGreyUI openPageInfo];
   [self checkStatesForPermissions:@{
     @(web::PermissionCamera) : @(web::PermissionStateAllowed),
     @(web::PermissionMicrophone) : @(web::PermissionStateAllowed)
