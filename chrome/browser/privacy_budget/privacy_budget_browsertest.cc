@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -30,6 +32,7 @@
 #include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/ukm/ukm_recorder_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -68,6 +71,10 @@ using testing::IsSupersetOf;
 using testing::Key;
 using testing::Pair;
 using testing::UnorderedElementsAreArray;
+
+MATCHER_P(Type, type, "") {
+  return blink::IdentifiableSurface::FromMetricHash(arg).GetType() == type;
+}
 
 constexpr uint64_t HashFeature(const blink::mojom::WebFeature& feature) {
   return blink::IdentifiableSurface::FromTypeAndToken(
@@ -724,4 +731,135 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
       blink::IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter));
   EXPECT_FALSE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
+}
+
+namespace {
+
+class EnableMetaExperiment {
+ public:
+  EnableMetaExperiment() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kIdentifiabilityStudyMetaExperiment,
+          {{features::kIdentifiabilityStudyMetaExperimentActivationProbability
+                .name,
+            "1"}}}},
+        {features::kIdentifiabilityStudy});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class PrivacyBudgetMetaExperimentBrowserTestWithUkmRecording
+    : private EnableMetaExperiment,
+      public PrivacyBudgetBrowserTestBaseWithUkmRecording {};
+
+class UkmRecorderAddEntryObserver : public ukm::UkmRecorderObserver {
+ public:
+  explicit UkmRecorderAddEntryObserver(
+      base::RepeatingCallback<void(ukm::mojom::UkmEntryPtr entry)> callback)
+      : callback_(std::move(callback)) {}
+  void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override {
+    callback_.Run(std::move(entry));
+  }
+
+ private:
+  base::RepeatingCallback<void(ukm::mojom::UkmEntryPtr entry)> callback_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetMetaExperimentBrowserTestWithUkmRecording,
+                       ReportsEncounteredSurfacesAndDocumentCreatedMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(blink::IdentifiabilityStudySettings::Get()->IsActive());
+  ASSERT_TRUE(EnableUkmRecording());
+
+  content::DOMMessageQueue messages(web_contents());
+  base::RunLoop run_loop;
+
+  constexpr uint64_t document_created_metric =
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableSurface::ReservedSurfaceMetrics::
+              kDocumentCreated_NavigationSourceId)
+          .ToUkmMetricHash();
+
+  const std::array<uint64_t, 6> expected_webfeature_metrics = {
+      HashFeature(blink::mojom::WebFeature::kV8Screen_Height_AttributeGetter),
+      HashFeature(blink::mojom::WebFeature::kV8Screen_Width_AttributeGetter),
+      HashFeature(
+          blink::mojom::WebFeature::kV8Screen_AvailLeft_AttributeGetter),
+      HashFeature(blink::mojom::WebFeature::kV8Screen_AvailTop_AttributeGetter),
+      HashFeature(
+          blink::mojom::WebFeature::kV8Screen_AvailWidth_AttributeGetter),
+      HashFeature(blink::mojom::WebFeature::kNavigatorDoNotTrack)};
+
+  // Add a callback checking when the metrics are reported.
+  base::flat_set<uint64_t> expected_metrics_set(
+      expected_webfeature_metrics.begin(), expected_webfeature_metrics.end());
+  expected_metrics_set.insert(document_created_metric);
+  UkmRecorderAddEntryObserver ukm_observer(base::BindLambdaForTesting(
+      [&run_loop, &expected_metrics_set](ukm::mojom::UkmEntryPtr entry) {
+        for (const auto& [key, value] : entry->metrics) {
+          expected_metrics_set.erase(key);
+        }
+        if (expected_metrics_set.empty()) {
+          run_loop.Quit();
+        }
+      }));
+  ukm_service()->AddUkmRecorderObserver(
+      {ukm::builders::Identifiability::kEntryNameHash}, &ukm_observer);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL(
+                          "/privacy_budget/samples_some_surfaces.html")));
+
+  // The document calls a bunch of instrumented functions and sends a message
+  // back to the test. Receipt of the message indicates that the script
+  // successfully completed.
+  std::string scraped_apis;
+  ASSERT_TRUE(messages.WaitForMessage(&scraped_apis));
+
+  // The contents of the received message isn't used for anything other than
+  // diagnostics.
+  SCOPED_TRACE(scraped_apis);
+
+  // Navigating away from the test page causes the document to be unloaded. That
+  // will cause any buffered metrics to be flushed.
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
+                                                      GURL("about:blank"), 1);
+
+  // Wait for the metrics to come down the pipe.
+  run_loop.Run();
+
+  ukm::UkmTestHelper ukm_test_helper(ukm_service());
+  ukm_test_helper.BuildAndStoreLog();
+  std::unique_ptr<ukm::Report> ukm_report = ukm_test_helper.GetUkmReport();
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
+  ASSERT_TRUE(ukm_report);
+  ASSERT_NE(ukm_report->entries_size(), 0);
+
+  std::map<uint64_t, int64_t> seen_metrics;
+  for (const auto& entry : ukm_report->entries()) {
+    ASSERT_TRUE(entry.has_event_hash());
+    if (entry.event_hash() != ukm::builders::Identifiability::kEntryNameHash) {
+      continue;
+    }
+    for (const auto& metric : entry.metrics()) {
+      ASSERT_TRUE(metric.has_metric_hash());
+      ASSERT_TRUE(metric.has_value());
+      seen_metrics.insert({metric.metric_hash(), metric.value()});
+    }
+  }
+
+  for (uint64_t expected_metric : expected_webfeature_metrics) {
+    EXPECT_THAT(
+        seen_metrics,
+        Contains(Pair(Type(blink::IdentifiableSurface::Type::kMeasuredSurface),
+                      expected_metric)));
+  }
+  EXPECT_THAT(seen_metrics, Contains(Key(document_created_metric)));
+
+  ukm_service()->RemoveUkmRecorderObserver(&ukm_observer);
 }

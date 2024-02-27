@@ -65,6 +65,8 @@ class PrivacyBudgetBrowserTestBaseWithUkmRecording : public SyncTest {
 
   static PrefService* local_state();
 
+  content::WebContents* web_contents();
+
   bool EnableUkmRecording();
 
   bool DisableUkmRecording();
