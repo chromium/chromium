@@ -358,7 +358,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   bool show_privacy_guide =
-      !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild();
+      base::FeatureList::IsEnabled(features::kPrivacyGuideForceAvailable) ||
+      (!chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild());
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
 
   html_source->AddBoolean("enablePrivacyGuide3", base::FeatureList::IsEnabled(

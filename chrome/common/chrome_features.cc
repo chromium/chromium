@@ -492,6 +492,12 @@ BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
 // of languages.
 BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Force Privacy Guide to be available even if it would be unavailable
+// otherwise. This is meant for development and test purposes only.
+BASE_FEATURE(kPrivacyGuideForceAvailable,
+             "PrivacyGuideForceAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Privacy Guide v3 update of the Privacy Guide feature
 // in Chrome Settings.
 BASE_FEATURE(kPrivacyGuide3,
