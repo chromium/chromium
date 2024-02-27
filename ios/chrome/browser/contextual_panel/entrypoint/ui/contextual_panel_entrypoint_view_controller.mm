@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 
 @interface ContextualPanelEntrypointViewController () {
-  UIImage* image;
+  UIImage* _image;
 }
 @end
 

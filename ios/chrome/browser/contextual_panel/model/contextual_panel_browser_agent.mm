@@ -6,12 +6,15 @@
 
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_commands.h"
 
 BROWSER_USER_DATA_KEY_IMPL(ContextualPanelBrowserAgent)
 
-ContextualPanelBrowserAgent::ContextualPanelBrowserAgent(Browser* browser) {
-  DCHECK(browser);
-  web_state_list_observation_.Observe(browser->GetWebStateList());
+ContextualPanelBrowserAgent::ContextualPanelBrowserAgent(Browser* browser)
+    : browser_(browser) {
+  DCHECK(browser_.get());
+  web_state_list_observation_.Observe(browser_->GetWebStateList());
 }
 
 ContextualPanelBrowserAgent::~ContextualPanelBrowserAgent() {
@@ -30,4 +33,5 @@ void ContextualPanelBrowserAgent::WebStateListDidChange(
 void ContextualPanelBrowserAgent::WebStateListDestroyed(
     WebStateList* web_state_list) {
   web_state_list_observation_.Reset();
+  browser_ = nullptr;
 }

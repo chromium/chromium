@@ -8,8 +8,12 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_commands.h"
 
 @interface ContextualPanelEntrypointCoordinator () <
+    ContextualPanelCommands,
     ContextualPanelEntrypointMediatorDelegate>
 
 // The mediator for this coordinator.
@@ -32,6 +36,10 @@
 
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:self
+                           forProtocol:@protocol(ContextualPanelCommands)];
 }
 
 - (void)stop {
@@ -45,6 +53,14 @@
   _mediator = nil;
   _viewController.mutator = nil;
   _viewController = nil;
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  [dispatcher stopDispatchingToTarget:self];
+}
+
+#pragma mark - ContextualPanelCommands
+
+- (void)showContextualPanelEntrypoint {
 }
 
 @end

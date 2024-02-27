@@ -43,6 +43,9 @@ class ContextualPanelBrowserAgent
   // ScopedObservation for WebStateList.
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};
+
+  // The owning Browser.
+  raw_ptr<Browser> browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_BROWSER_AGENT_H_
