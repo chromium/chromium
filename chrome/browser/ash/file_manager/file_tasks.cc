@@ -810,13 +810,15 @@ bool ExecuteFileTask(Profile* profile,
     UMA_HISTOGRAM_ENUMERATION(
         ash::cloud_upload::kOpenInitialCloudProviderMetric,
         ash::cloud_upload::CloudProvider::kGoogleDrive);
-    for (const FileSystemURL& file_url : file_urls) {
-      RecordOfficeOpenExtensionDriveMetric(file_url);
-    }
+    // Only attempt to open the first selected file, as a temporary way to
+    // avoid conflicts and error inconsistencies.
+    // TODO(b/242685536) add support for multiple files.
+    FileSystemURL file_url = file_urls[0];
+    RecordOfficeOpenExtensionDriveMetric(file_url);
     const bool started = ExecuteWebDriveOfficeTask(
-        profile, task, file_urls,
+        profile, task, {file_url},
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-            ash::cloud_upload::CloudProvider::kGoogleDrive, file_urls.size()));
+            ash::cloud_upload::CloudProvider::kGoogleDrive, 1));
     if (done) {
       if (started) {
         std::move(done).Run(
@@ -834,13 +836,15 @@ bool ExecuteFileTask(Profile* profile,
     UMA_HISTOGRAM_ENUMERATION(
         ash::cloud_upload::kOpenInitialCloudProviderMetric,
         ash::cloud_upload::CloudProvider::kOneDrive);
-    for (const FileSystemURL& file_url : file_urls) {
-      RecordOfficeOpenExtensionOneDriveMetric(file_url);
-    }
+    // Only attempt to open the first selected file, as a temporary way to
+    // avoid conflicts and error inconsistencies.
+    // TODO(b/242685536) add support for multiple files.
+    FileSystemURL file_url = file_urls[0];
+    RecordOfficeOpenExtensionOneDriveMetric(file_url);
     const bool started = ExecuteOpenInOfficeTask(
-        profile, task, file_urls,
+        profile, task, {file_url},
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-            ash::cloud_upload::CloudProvider::kOneDrive, file_urls.size()));
+            ash::cloud_upload::CloudProvider::kOneDrive, 1));
     if (done) {
       if (started) {
         std::move(done).Run(

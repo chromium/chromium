@@ -2107,7 +2107,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
 
 // Test that ExecuteFileTask() will open ODFS office files with the Open In
 // Office task.
-IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFilesFromODFS) {
+// TODO(b/242685536) add support for multiple files and reenable this test.
+IN_PROC_BROWSER_TEST_F(OneDriveTest, DISABLED_OpenFilesFromODFS) {
   // Creates a fake ODFS with test files.
   SetUpTest();
 
