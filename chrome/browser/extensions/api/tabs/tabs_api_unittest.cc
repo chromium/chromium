@@ -569,6 +569,75 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTabNotAllowed) {
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that calling chrome.tabs.update does update a saved tab for extensions
+// with locked fullscreen permission. Locked fullscreen permission is ChromeOS
+// only.
+TEST_F(TabsApiUnitTest,
+       TabsUpdateSavedTabGroupTabAllowedForLockedFullscreenPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UpdateTest")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddPermission("lockWindowFullscreenPrivate")
+          .Build();
+  const GURL kExampleCom("http://example.com");
+  const GURL kChromiumOrg("https://chromium.org");
+
+  // Add a web contents to the browser.
+  std::unique_ptr<content::WebContents> contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* raw_contents = contents.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  CreateSessionServiceTabHelper(raw_contents);
+  int tab_id = sessions::SessionTabHelper::IdForTab(raw_contents).id();
+
+  // Navigate the browser to example.com
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(raw_contents);
+  web_contents_tester->NavigateAndCommit(kExampleCom);
+  EXPECT_EQ(kExampleCom, raw_contents->GetLastCommittedURL());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group = browser()->tab_strip_model()->AddToNewGroup(
+      {browser()->tab_strip_model()->GetIndexOfWebContents(raw_contents)});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+  EXPECT_TRUE(ExtensionTabUtil::TabIsInSavedTabGroup(
+      raw_contents, browser()->tab_strip_model()));
+
+  // Try to use the TabsUpdateFunction to navigate to chromium.org
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
+  function->set_extension(extension);
+  static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_id, kChromiumOrg.spec().c_str());
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+  content::NavigationController& controller =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetController();
+  content::RenderFrameHostTester::CommitPendingLoad(&controller);
+  EXPECT_EQ(kChromiumOrg, raw_contents->GetLastCommittedURL());
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Tests that calling chrome.tabs.update with a JavaScript URL results
 // in an error.
 TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
@@ -791,6 +860,78 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabNotAllowed) {
   saved_service->UnsaveGroup(group);
   browser()->tab_strip_model()->CloseAllTabs();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that calling chrome.tabs.move does move a saved tab for extensions with
+// locked fullscreen permission. Locked fullscreen permission is ChromeOS only.
+TEST_F(TabsApiUnitTest,
+       TabsMoveSavedTabGroupTabAllowedForLockedFullscreenPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveWithinWindowTest")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddPermission("lockWindowFullscreenPrivate")
+          .Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // Use the TabsMoveFunction to switch the tabs at indices 0 and 1.
+  int tab_extension_id = sessions::SessionTabHelper::IdForTab(
+                             browser()->tab_strip_model()->GetWebContentsAt(0))
+                             .id();
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d], {"index": 1}])";
+  const std::string args = base::StringPrintf(kFormatArgs, tab_extension_id);
+
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  // Expect that the tabs have switched positions.
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1),
+            web_contentses[0]);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0),
+            web_contentses[1]);
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Test that the tabs.group() function correctly rearranges sets of tabs within
 // a single window before grouping.
@@ -1099,6 +1240,79 @@ TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTabNotAllowed) {
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Test that grouping tabs that are in a saved group should not fail for
+// extensions with locked fullscreen permission. Locked fullscreen permission
+// is ChromeOS only.
+TEST_F(TabsApiUnitTest,
+       TabsGroupForSavedTabGroupTabAllowedForLockedFullscreenPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GroupTest")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddPermission("lockWindowFullscreenPrivate")
+          .Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Group the first 3 tabs and save it.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // Use the TabsGroupFunction to group tabs 0, 2, and 4.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d, %d, %d]}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[0], tab_ids[2], tab_ids[4]);
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contentses[1]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contentses[0]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contentses[2]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[4]);
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[3]);
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Test that the tabs.ungroup() function correctly ungroups tabs from a single
 // group and deletes it.
 TEST_F(TabsApiUnitTest, TabsUngroupSingleGroup) {
@@ -1214,6 +1428,78 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroupNotAllowed) {
   saved_service->UnsaveGroup(group);
   browser()->tab_strip_model()->CloseAllTabs();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Test that the tabs.ungroup does ungroup a SavedTabGroup for extensions with
+// locked fullscreen permission. Locked fullscreen permission is ChromeOS only.
+TEST_F(
+    TabsApiUnitTest,
+    TabsUngroupSingleGroupForSavedTabGroupAllowedForLockedFullscreenPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UngroupTest")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddPermission("lockWindowFullscreenPrivate")
+          .Build();
+
+  // Add several web contents to the browser and get their tab IDs.
+  constexpr int kNumTabs = 5;
+  std::vector<int> tab_ids;
+  std::vector<content::WebContents*> web_contentses;
+  for (int i = 0; i < kNumTabs; ++i) {
+    std::unique_ptr<content::WebContents> contents(
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+    CreateSessionServiceTabHelper(contents.get());
+    tab_ids.push_back(
+        sessions::SessionTabHelper::IdForTab(contents.get()).id());
+    web_contentses.push_back(contents.get());
+
+    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/true);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // Use the TabsUngroupFunction to ungroup tabs 1, 2, and 3.
+  auto function = base::MakeRefCounted<TabsUngroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([[%d, %d, %d]])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_ids[1], tab_ids[2], tab_ids[3]);
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  // Check that the tab should be in the original saved group.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(1));
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(2));
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(3));
+  EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group));
+
+  // Clean up.
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Test that the tabs.ungroup() function correctly ungroups tabs from several
 // different groups and deletes any empty ones.
@@ -1411,6 +1697,93 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTabNotAllowed) {
   saved_service->UnsaveGroup(group);
   browser()->tab_strip_model()->CloseAllTabs();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that forward and back work on tabs in saved tab groups for extensions
+// with locked fullscreen permission. Locked fullscreen permission is ChromeOS
+// only.
+TEST_F(
+    TabsApiUnitTest,
+    TabsGoForwardAndBackSavedTabGroupTabAllowedForLockedFullscreenPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("GoForwardAndBackTest")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddPermission("lockWindowFullscreenPrivate")
+          .Build();
+
+  const std::vector<GURL> urls = {GURL("http://www.foo.com"),
+                                  GURL("http://www.bar.com"),
+                                  GURL("http://www.baz.com")};
+  content::WebContents* web_contents = CreateAndAppendWebContentsWithHistory(
+      profile(), GetTabStripModel(), urls);
+  ASSERT_TRUE(web_contents);
+
+  CreateSessionServiceTabHelper(web_contents);
+  const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  {
+    // Go back with chrome.tabs.goBack.
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension.get());
+    api_test_utils::RunFunction(goback_function.get(),
+                                base::StringPrintf("[%d]", tab_id), profile(),
+                                api_test_utils::FunctionMode::kIncognito);
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
+  }
+
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+  EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
+
+  // Save the tab and expect that it can =be navigated forwards or backwards,
+  // since the extension has locked-fullscreen permission.
+  tab_groups::TabGroupId group = browser()->tab_strip_model()->AddToNewGroup(
+      {browser()->tab_strip_model()->GetIndexOfWebContents(web_contents)});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  {
+    auto goback_function = base::MakeRefCounted<TabsGoBackFunction>();
+    goback_function->set_extension(extension.get());
+    ASSERT_TRUE(api_test_utils::RunFunction(
+        goback_function.get(), base::StringPrintf("[%d]", tab_id), profile(),
+        api_test_utils::FunctionMode::kIncognito));
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
+  }
+  EXPECT_EQ(urls[0], web_contents->GetLastCommittedURL());
+  EXPECT_EQ(urls[0], web_contents->GetVisibleURL());
+
+  {
+    auto goforward_function = base::MakeRefCounted<TabsGoForwardFunction>();
+    goforward_function->set_extension(extension.get());
+    ASSERT_TRUE(api_test_utils::RunFunction(
+        goforward_function.get(), base::StringPrintf("[%d]", tab_id), profile(),
+        api_test_utils::FunctionMode::kIncognito));
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
+  }
+  EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
+  EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(TabsApiUnitTest, TabsGoForwardAndBackWithoutTabId) {
   scoped_refptr<const Extension> extension_with_tabs_permission =
@@ -1722,5 +2095,70 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
   saved_service->UnsaveGroup(group);
   browser()->tab_strip_model()->CloseAllTabs();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that calling chrome.tabs.discard on a saved tab does discard for
+// extensions with locked fullscreen permission. Locked fullscreen permission
+// is ChromeOS only.
+TEST_F(TabsApiUnitTest,
+       TabsDiscardSavedTabGroupTabAllowedForLockedFullscreenPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kTabGroupsSave}, {});
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("DiscardTest")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddPermission("lockWindowFullscreenPrivate")
+          .Build();
+  const GURL kExampleCom("http://example.com");
+
+  // Add a web contents to the browser.
+  std::unique_ptr<content::WebContents> contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* web_contents = contents.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  CreateSessionServiceTabHelper(web_contents);
+  int index = browser()->tab_strip_model()->GetIndexOfWebContents(web_contents);
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  // Navigate the browser to example.com
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents);
+  web_contents_tester->NavigateAndCommit(kExampleCom);
+  EXPECT_EQ(kExampleCom, web_contents->GetLastCommittedURL());
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group = browser()->tab_strip_model()->AddToNewGroup(
+      {browser()->tab_strip_model()->GetIndexOfWebContents(web_contents)});
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  browser()
+      ->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(group)
+      ->SetVisualData(visual_data);
+
+  SavedTabGroupKeyedService* saved_service =
+      SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile());
+  ASSERT_NE(saved_service, nullptr);
+  saved_service->SaveGroup(group);
+
+  // The tab discard function should not fail.
+  auto function = base::MakeRefCounted<TabsDiscardFunction>();
+  function->set_extension(extension);
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      function.get(), base::StringPrintf("[%d]", tab_id), profile(),
+      api_test_utils::FunctionMode::kNone));
+  // Check that the tab was discarded.
+  content::WebContents* new_contents_at_index =
+      browser()->tab_strip_model()->GetWebContentsAt(index);
+  EXPECT_TRUE(new_contents_at_index->WasDiscarded());
+
+  // Clean up.
+  saved_service->UnsaveGroup(group);
+  browser()->tab_strip_model()->CloseAllTabs();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
