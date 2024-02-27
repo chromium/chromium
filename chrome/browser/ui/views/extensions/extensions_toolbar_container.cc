@@ -64,22 +64,6 @@ base::OnceClosure& GetOnVisibleCallbackForTesting() {
   return *callback;
 }
 
-// Check if there's any security UI that might be spoofable because of
-// overlapping with the extension popup. The media picker dialog has been
-// identified to be susceptible. See crbug.com/1300006.
-bool HasPossiblyOverlappingSecurityUI(Browser* browser) {
-  views::ElementTrackerViews::ViewList media_picker_dialogs =
-      views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
-          DesktopMediaPickerDialogView::kDesktopMediaPickerDialogViewIdentifier,
-          browser->window()->GetElementContext());
-
-  return std::any_of(media_picker_dialogs.begin(), media_picker_dialogs.end(),
-                     [](views::View* dialog_view) {
-                       views::Widget* dialog_widget = dialog_view->GetWidget();
-                       return dialog_widget && dialog_widget->IsVisible();
-                     });
-}
-
 }  // namespace
 
 void ExtensionsToolbarContainer::SetOnVisibleCallbackForTesting(
@@ -643,10 +627,6 @@ bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
   if (popped_out_action_ || !browser_->window()->IsActive())
     return false;
 
-  // Don't draw over security UIs.
-  if (HasPossiblyOverlappingSecurityUI(browser_))
-    return false;
-
   ToolbarActionViewController* action = GetActionForId(action_id);
   DCHECK(action);
   action->TriggerPopupForAPI(std::move(callback));
@@ -674,6 +654,28 @@ void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
 
 bool ExtensionsToolbarContainer::HasAnyExtensions() const {
   return !actions_.empty();
+}
+
+bool ExtensionsToolbarContainer::HasBlockingSecurityUI() const {
+  // Check if there's any security UI that might be spoofable because of
+  // overlapping with the extension popup. The media picker dialog has been
+  // identified to be susceptible. See crbug.com/40058873.
+  // Not all security UIs are blocking. Non-blocking security UIs can avoid
+  // being occluded by setting a higher z-order (sub)level. In contrast,
+  // blocking security UIs cannot leverage z-ordering because they share the
+  // same rendering layer with the browser window.
+  // TODO(crbug.com/326681253): block on other possibly overlapping security
+  // UIs.
+  views::ElementTrackerViews::ViewList media_picker_dialogs =
+      views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
+          DesktopMediaPickerDialogView::kDesktopMediaPickerDialogViewIdentifier,
+          browser_->window()->GetElementContext());
+
+  return std::any_of(media_picker_dialogs.begin(), media_picker_dialogs.end(),
+                     [](views::View* dialog_view) {
+                       views::Widget* dialog_widget = dialog_view->GetWidget();
+                       return dialog_widget && dialog_widget->IsVisible();
+                     });
 }
 
 void ExtensionsToolbarContainer::ReorderViews() {

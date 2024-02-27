@@ -589,6 +589,12 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
 
   const GURL popup_url = extension_action_->GetPopupUrl(tab_id);
 
+  // Skip popup if there is an open security UI that would be covered by it,
+  // mitigation occlusion/spoofing risks.
+  if (extensions_container_->HasBlockingSecurityUI()) {
+    return;
+  }
+
   std::unique_ptr<extensions::ExtensionViewHost> host =
       extensions::ExtensionViewHostFactory::CreatePopupHost(popup_url,
                                                             browser_);
