@@ -364,6 +364,7 @@ const OncFieldSignature cellular_with_state_fields[] = {
 
 const OncFieldSignature network_configuration_fields[] = {
     {::onc::network_config::kCellular, &kCellularSignature},
+    {::onc::network_config::kCheckCaptivePortal, &kStringSignature},
     {::onc::network_config::kEthernet, &kEthernetSignature},
     {::onc::network_config::kGUID, &kStringSignature},
     {::onc::network_config::kIPAddressConfigType, &kStringSignature,

@@ -652,6 +652,10 @@ bool Validator::ValidateNetworkConfiguration(base::Value::Dict* result) {
   const std::vector<const char*> valid_ipconfig_types = {
       ::onc::network_config::kIPConfigTypeDHCP,
       ::onc::network_config::kIPConfigTypeStatic};
+  const std::vector<const char*> valid_check_captive_portal_values = {
+      ::onc::check_captive_portal::kTrue,
+      ::onc::check_captive_portal::kFalse,
+      ::onc::check_captive_portal::kHTTPOnly};
   if (FieldExistsAndHasNoValidValue(*result, ::onc::network_config::kType,
                                     valid_types) ||
       FieldExistsAndHasNoValidValue(*result,
@@ -660,6 +664,9 @@ bool Validator::ValidateNetworkConfiguration(base::Value::Dict* result) {
       FieldExistsAndHasNoValidValue(
           *result, ::onc::network_config::kNameServersConfigType,
           valid_ipconfig_types) ||
+      FieldExistsAndHasNoValidValue(*result,
+                                    ::onc::network_config::kCheckCaptivePortal,
+                                    valid_check_captive_portal_values) ||
       FieldExistsAndIsEmpty(*result, ::onc::network_config::kGUID)) {
     return false;
   }

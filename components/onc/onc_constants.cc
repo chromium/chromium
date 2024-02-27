@@ -36,6 +36,7 @@ const char kUnencryptedConfiguration[] = "UnencryptedConfiguration";
 // Network Configuration
 namespace network_config {
 const char kCellular[] = "Cellular";
+const char kCheckCaptivePortal[] = "CheckCaptivePortal";
 const char kConnectable[] = "Connectable";
 const char kConnectionState[] = "ConnectionState";
 const char kDevice[] = "Device";
@@ -96,6 +97,12 @@ const char kWiFi[] = "WiFi";
 const char kWimaxDeprecated[] = "WiMAX";
 const char kWireless[] = "Wireless";
 }  // namespace network_type
+
+namespace check_captive_portal {
+const char kFalse[] = "False";
+const char kHTTPOnly[] = "HTTPOnly";
+const char kTrue[] = "True";
+}  // namespace check_captive_portal
 
 namespace cellular {
 const char kActivationState[] = "ActivationState";

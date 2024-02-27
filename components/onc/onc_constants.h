@@ -59,6 +59,7 @@ COMPONENT_EXPORT(ONC) extern const char kUnencryptedConfiguration[];
 // NetworkConfiguration.
 namespace network_config {
 COMPONENT_EXPORT(ONC) extern const char kCellular[];
+COMPONENT_EXPORT(ONC) extern const char kCheckCaptivePortal[];
 COMPONENT_EXPORT(ONC) extern const char kDevice[];
 COMPONENT_EXPORT(ONC) extern const char kEthernet[];
 COMPONENT_EXPORT(ONC) extern const char kGUID[];
@@ -113,6 +114,12 @@ COMPONENT_EXPORT(ONC) extern const char kWimaxDeprecated[];
 COMPONENT_EXPORT(ONC) extern const char kAllTypes[];
 COMPONENT_EXPORT(ONC) extern const char kWireless[];
 }  // namespace network_type
+
+namespace check_captive_portal {
+COMPONENT_EXPORT(ONC) extern const char kFalse[];
+COMPONENT_EXPORT(ONC) extern const char kHTTPOnly[];
+COMPONENT_EXPORT(ONC) extern const char kTrue[];
+}  // namespace check_captive_portal
 
 namespace cellular {
 COMPONENT_EXPORT(ONC) extern const char kActivationState[];

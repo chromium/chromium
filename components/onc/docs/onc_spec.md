@@ -443,6 +443,19 @@ Field **NetworkConfigurations** is an array of
       system to determine which network to connect to when multiple configured
       networks are available (or may be ignored).
 
+* **CheckCaptivePortal**
+    * (optional, defaults to *False*) - **string**
+    * Indicates whether captive portal detection is configured for this
+    * network. The configurations are:
+        * *False*: Captive portal detection is disabled
+        * *True*: Captive portal detection is enabled
+        * *HTTPOnly*: Captive portal detection is enabled
+          and the portal detector will only use HTTP web
+          probes.
+    * Allowed values are:
+        * *False*,
+        * *True*,
+        * *HTTPOnly*
 
 ## Ethernet networks
 
