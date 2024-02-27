@@ -105,10 +105,6 @@ void WebStateListMetricsBrowserAgent::WebStateListDidChange(
     return;
   }
 
-  if (change.type() == WebStateListChange::Type::kInsert) {
-    base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
-  }
-
   if (status.active_web_state_change()) {
     session_metrics_->OnWebStateActivated();
     if (change.type() == WebStateListChange::Type::kReplace) {

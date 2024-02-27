@@ -41,7 +41,6 @@ const char* kIgnoredActions[] = {
     "MobileFirstUserAction_NewTask",
     "MobileMenuCloseAllTabs",
     "MobileMenuCloseAllIncognitoTabs",
-    "MobileNewTabOpened",
     "MobileTabClosed",
     "MobileTabStripCloseTab",
     "MobileStackViewCloseTab",
