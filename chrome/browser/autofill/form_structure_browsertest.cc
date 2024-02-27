@@ -219,6 +219,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
           // TODO(crbug.com/1311937): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
+          features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/1441057): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           // TODO(crbug.com/1474308): Clean up when launched.
