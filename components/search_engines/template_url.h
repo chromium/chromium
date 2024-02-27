@@ -305,20 +305,32 @@ class TemplateURLRef {
   //
   // If this TemplateURLRef does not support replacement (SupportsReplacement
   // returns false), an empty string is returned.
-  // If this TemplateURLRef uses POST, and |post_content| is not NULL, the
-  // |post_params_| will be replaced, encoded in "multipart/form-data" format
-  // and stored into |post_content|.
+  // If this TemplateURLRef uses POST, and `post_content` is not NULL, the
+  // `post_params_` will be replaced, encoded in "multipart/form-data" format
+  // and stored into `post_content`.
+  //
+  // If `url_override` is set to a valid url, that url will be used and the url
+  // in the TemplateURL will be disregarded.  This is currently used to allow
+  // setting the URL of the @gemini scope for pre-prod testing without modifying
+  // any in-memory or database entries.
+  // TODO(crbug.com/41494524): Remove the `url_override` when the
+  //  `StarterPackExpansion` feature launches/gets cleaned up.
   std::string ReplaceSearchTerms(const SearchTermsArgs& search_terms_args,
                                  const SearchTermsData& search_terms_data,
-                                 PostContent* post_content) const;
+                                 PostContent* post_content,
+                                 std::string url_override = "") const;
 
   // TODO(jnd): remove the following ReplaceSearchTerms definition which does
-  // not have |post_content| parameter once all reference callers pass
-  // |post_content| parameter.
-  std::string ReplaceSearchTerms(
-      const SearchTermsArgs& search_terms_args,
-      const SearchTermsData& search_terms_data) const {
-    return ReplaceSearchTerms(search_terms_args, search_terms_data, NULL);
+  // not have `post_content` parameter once all reference callers pass
+  // `post_content` parameter.
+  //
+  // TODO(crbug.com/41494524): Remove the `url_override` when the
+  //  `StarterPackExpansion` feature launches/gets cleaned up.
+  std::string ReplaceSearchTerms(const SearchTermsArgs& search_terms_args,
+                                 const SearchTermsData& search_terms_data,
+                                 std::string url_override = "") const {
+    return ReplaceSearchTerms(search_terms_args, search_terms_data, nullptr,
+                              url_override);
   }
 
   // Returns true if the TemplateURLRef is valid. An invalid TemplateURLRef is
@@ -510,7 +522,11 @@ class TemplateURLRef {
   // If the url has not yet been parsed, ParseURL is invoked.
   // NOTE: While this is const, it modifies parsed_, valid_, parsed_url_ and
   // search_offset_.
-  void ParseIfNecessary(const SearchTermsData& search_terms_data) const;
+  //
+  // TODO(crbug.com/41494524): Remove the `url_override` when the
+  //  `StarterPackExpansion` feature launches/gets cleaned up.
+  void ParseIfNecessary(const SearchTermsData& search_terms_data,
+                        std::string url_override = "") const;
 
   // Parses a wildcard out of |path|, putting the parsed path in |path_prefix_|
   // and |path_suffix_| and setting |path_wildcard_present_| to true.
