@@ -21,7 +21,7 @@ namespace {
 const NSUInteger kCarouselCapacity = 10;
 /// Margin of the StackView.
 const CGFloat kStackMargin = 8.0f;
-/// Leading margin of the popout StackView.
+/// Leading margin of the StackView.
 const CGFloat kStackLeadingMargin = 16.0f;
 /// Minimum spacing between items in the StackView.
 const CGFloat kMinStackSpacing = 8.0f;
@@ -146,10 +146,11 @@ CAGradientLayer* CarouselGradientLayer() {
 
   AddSameConstraintsWithInsets(
       _suggestionsStackView, _scrollView,
-      NSDirectionalEdgeInsetsMake(
-          kStackMargin,
-          IsIpadPopoutOmniboxEnabled() ? kStackLeadingMargin : kStackMargin,
-          kStackMargin, kStackMargin));
+      NSDirectionalEdgeInsetsMake(kStackMargin,
+                                  self.shouldApplyLayoutMarginsGuide
+                                      ? kStackMargin
+                                      : kStackLeadingMargin,
+                                  kStackMargin, kStackMargin));
 
   id<LayoutGuideProvider> contentGuide =
       self.shouldApplyLayoutMarginsGuide ? self.contentView.layoutMarginsGuide
@@ -379,7 +380,7 @@ CAGradientLayer* CarouselGradientLayer() {
   }
   CGFloat tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing / 2;
 
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (!self.shouldApplyLayoutMarginsGuide) {
     availableWidth = self.bounds.size.width - kStackLeadingMargin;
     tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing;
   }
