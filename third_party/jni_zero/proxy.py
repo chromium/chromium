@@ -26,7 +26,7 @@ def get_gen_jni_class(*, short=False, name_prefix=None, package_prefix=None):
   return java_types.JavaClass(f'{package}/{name}').make_prefixed(package_prefix)
 
 
-def _create_hashed_method_name(non_hashed_name, is_test_only):
+def create_hashed_method_name(non_hashed_name, is_test_only):
   md5 = hashlib.md5(non_hashed_name.encode('utf8')).digest()
   hash_b64 = base64.b64encode(md5, altchars=b'$_').decode('utf-8')
 
@@ -50,5 +50,5 @@ def create_method_names(java_class, method_name, is_test_only):
   """Returns the method name used in GEN_JNI (both hashed an non-hashed)."""
   proxy_name = common.escape_class_name(
       f'{java_class.full_name_with_slashes}/{method_name}')
-  hashed_proxy_name = _create_hashed_method_name(proxy_name, is_test_only)
+  hashed_proxy_name = create_hashed_method_name(proxy_name, is_test_only)
   return proxy_name, hashed_proxy_name

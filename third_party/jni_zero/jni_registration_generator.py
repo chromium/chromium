@@ -5,7 +5,6 @@
 
 import collections
 import functools
-import hashlib
 import multiprocessing
 import os
 import pathlib
@@ -21,6 +20,8 @@ import jni_generator
 import parse
 import proxy
 
+
+_SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN = "<INSERT HERE>"
 
 # All but FULL_CLASS_NAME, which is used only for sorting.
 MERGEABLE_KEYS = [
@@ -102,6 +103,10 @@ def _Generate(options, native_sources, java_sources):
     for d in results:
       for signature, cases in d['SIGNATURE_TO_CASES'].items():
         signature_to_cases[signature].extend(cases)
+    combined_dict[
+        'FORWARDING_PROXY_METHODS'] = _InsertMultiplexingSwitchNumbers(
+            signature_to_cases, combined_dict['FORWARDING_PROXY_METHODS'],
+            short_gen_jni_class)
     combined_dict['FORWARDING_CALLS'] = _AddForwardingCalls(
         signature_to_cases, short_gen_jni_class)
 
@@ -238,6 +243,44 @@ def _GenerateStubs(natives):
   return final_string
 
 
+def _InsertMultiplexingSwitchNumbers(signature_to_cases, java_functions_string,
+                                     short_gen_jni_class):
+  switch_case_method_name_re = re.compile('return (\w+)\(')
+  java_function_call_re = re.compile('public static \S+ (\w+)\(')
+  method_to_switch_num = {}
+  for signature, cases in sorted(signature_to_cases.items()):
+    for i, case in enumerate(cases):
+      assert _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN in case
+      method_name = switch_case_method_name_re.search(case).group(1)
+      method_to_switch_num[method_name] = i
+      cases[i] = case.replace(_SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN, str(i))
+
+  swaps = {}
+  for match in java_function_call_re.finditer(java_functions_string):
+    unhashed_java_name = match.group(1)
+    is_test_only = jni_generator.NameIsTestOnly(unhashed_java_name)
+    hashed = proxy.create_hashed_method_name(unhashed_java_name, is_test_only)
+    fully_qualified_hash = f'{short_gen_jni_class.full_name_with_slashes}/{hashed}'
+    cpp_hash_name = 'Java_' + common.escape_class_name(fully_qualified_hash)
+    switch_num = method_to_switch_num[cpp_hash_name]
+    replace_location = java_functions_string.find(
+        _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN, match.end())
+    swaps[replace_location] = switch_num
+
+  # Doing a seperate pass to construct the new string for efficiency - don't
+  # want to do thousands of copies of a massive string.
+  new_java_functions_string = ""
+  prev_loc = 0
+  for loc, num in sorted(swaps.items()):
+    new_java_functions_string += java_functions_string[prev_loc:loc]
+    new_java_functions_string += str(num)
+    prev_loc = loc + len(_SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN)
+  new_java_functions_string += java_functions_string[prev_loc:]
+  return new_java_functions_string
+
+
+
+
 def _AddForwardingCalls(signature_to_cases, short_gen_jni_class):
   template = string.Template("""
 JNI_BOUNDARY_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
@@ -248,7 +291,7 @@ JNI_BOUNDARY_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
           ${CASES}
           default:
             JNI_ZERO_ELOG("${CLASS_NAME}_${PROXY_SIGNATURE} was called with an \
-invalid switch number: %ld", switch_num);
+invalid switch number: %d", switch_num);
             JNI_ZERO_DCHECK(false);
             return${DEFAULT_RETURN};
         }
@@ -462,7 +505,7 @@ ${MANUAL_REGISTRATION}
 
 def _GetJavaToNativeParamsList(param_types):
   if not param_types:
-    return 'jlong switch_num'
+    return 'jint switch_num'
 
   # Parameters are named after their type, with a unique number per parameter
   # type to make sure the names are unique, even within the same types.
@@ -473,7 +516,7 @@ def _GetJavaToNativeParamsList(param_types):
     params_in_stub.append('%s %s_param%d' % (t.to_cpp(), t.to_java().replace(
         '[]', '_array').lower(), params_type_count[t]))
 
-  return 'jlong switch_num, ' + ', '.join(params_in_stub)
+  return 'jint switch_num, ' + ', '.join(params_in_stub)
 
 
 class DictionaryGenerator(object):
@@ -517,7 +560,6 @@ class DictionaryGenerator(object):
         for native in self.proxy_natives))
 
     if self.options.enable_jni_multiplexing:
-      self._AssignSwitchNumberToNatives()
       self._AddCases()
 
     if self.options.use_proxy_hash or self.options.enable_jni_multiplexing:
@@ -717,19 +759,6 @@ ${NATIVES}\
       return self._SubstituteNativeMethods(template)
     return ''
 
-  def _AssignSwitchNumberToNatives(self):
-    # The switch number for a native method is a 64-bit long with the first
-    # bit being a sign digit. The signed two's complement is taken when
-    # appropriate to make use of negative numbers.
-    for native in self.proxy_natives:
-      hashed_long = hashlib.md5(
-          native.proxy_name.encode('utf-8')).hexdigest()[:16]
-      switch_num = int(hashed_long, 16)
-      if (switch_num & 1 << 63):
-        switch_num -= (1 << 64)
-
-      native.switch_num = str(switch_num)
-
   def _AddCases(self):
     # Switch cases are grouped together by the same proxy signatures.
     template = string.Template("""
@@ -742,7 +771,7 @@ ${NATIVES}\
       signature = native.proxy_signature
       params = _GetParamsListForMultiplex(native.proxy_params, with_types=False)
       values = {
-          'SWITCH_NUM': native.switch_num,
+          'SWITCH_NUM': _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN,
           # We are forced to call the generated stub instead of the impl because
           # the impl is not guaranteed to have a globally unique name.
           'STUB_NAME': self.helper.GetStubName(native),
@@ -816,9 +845,9 @@ def _MakeForwardingProxy(options, gen_jni_class, proxy_native):
 
   if options.enable_jni_multiplexing:
     if not param_names:
-      param_names = proxy_native.switch_num + 'L'
+      param_names = _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN
     else:
-      param_names = proxy_native.switch_num + 'L, ' + param_names
+      param_names = _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN + ', ' + param_names
     proxy_method_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
   else:
     proxy_method_name = proxy_native.hashed_proxy_name
@@ -854,7 +883,7 @@ def _MakeProxySignature(options, proxy_native):
 
     alt_name = None
     proxy_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
-    params_with_types = 'long switch_num' + _GetParamsListForMultiplex(
+    params_with_types = 'int switch_num' + _GetParamsListForMultiplex(
         proxy_native.proxy_params, with_types=True)
   elif options.use_proxy_hash:
     signature_template = string.Template("""

@@ -57,13 +57,12 @@ class NativeMethod:
     # lowercase. But we still want the CPP declaration to use upper camel
     # case for the method name.
     self.cpp_name = common.capitalize(self.name)
-    self.is_test_only = _NameIsTestOnly(self.name)
+    self.is_test_only = NameIsTestOnly(self.name)
 
     if self.is_proxy:
       self.proxy_signature = self.signature.to_proxy()
       self.proxy_name, self.hashed_proxy_name = proxy.create_method_names(
           java_class, self.name, self.is_test_only)
-      self.switch_num = None
     else:
       self.proxy_signature = self.signature
 
@@ -196,7 +195,7 @@ def GetParamsInStub(native):
   return ',\n    '.join(params)
 
 
-def _NameIsTestOnly(name):
+def NameIsTestOnly(name):
   return name.endswith(('ForTest', 'ForTests', 'ForTesting'))
 
 
