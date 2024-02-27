@@ -11,6 +11,7 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -98,6 +99,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     Observer* previous_observer_;
   };
 
+  static TaskAttributionTracker* From(v8::Isolate* isolate) {
+    return V8PerIsolateData::From(isolate)->GetTaskAttributionTracker();
+  }
+
   virtual ~TaskAttributionTracker() = default;
 
   // Create a new task scope.
@@ -114,7 +119,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
       DOMTaskSignal* priority_source) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
-  virtual TaskAttributionInfo* RunningTask(v8::Isolate*) const = 0;
+  virtual TaskAttributionInfo* RunningTask() const = 0;
 
   // Returns true iff `task` has an ancestor task with `ancestor_id`.
   virtual bool IsAncestor(const TaskAttributionInfo& task,

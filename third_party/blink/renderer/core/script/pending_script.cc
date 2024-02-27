@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -167,9 +166,8 @@ void PendingScript::ExecuteScriptBlock() {
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
   if (ScriptState* script_state = ToScriptStateForMainWorld(frame)) {
-    DCHECK(ThreadScheduler::Current());
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(
+            script_state->GetIsolate())) {
       task_attribution_scope = tracker->CreateTaskScope(
           script_state, parent_task_,
           scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);

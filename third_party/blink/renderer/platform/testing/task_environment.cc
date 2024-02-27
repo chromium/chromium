@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -36,8 +35,6 @@ TaskEnvironmentImpl::TaskEnvironmentImpl(
   main_thread_isolate_.emplace();
 
   main_thread_overrider_.emplace(scheduler_->CreateMainThread());
-  ThreadScheduler::Current()->InitializeTaskAttributionTracker(
-      std::make_unique<scheduler::TaskAttributionTrackerImpl>());
 }
 
 // static

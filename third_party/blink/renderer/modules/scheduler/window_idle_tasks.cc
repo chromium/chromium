@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 
 namespace blink {
@@ -36,9 +35,10 @@ class V8IdleTask : public IdleTask {
 
   explicit V8IdleTask(V8IdleRequestCallback* callback) : callback_(callback) {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     if (tracker && script_state->World().IsMainWorld()) {
-      parent_task_ = tracker->RunningTask(script_state->GetIsolate());
+      parent_task_ = tracker->RunningTask();
     }
   }
 
@@ -48,8 +48,8 @@ class V8IdleTask : public IdleTask {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
     std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
         task_attribution_scope;
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(
+            script_state->GetIsolate())) {
       DOMTaskSignal* signal = nullptr;
       if (RuntimeEnabledFeatures::SchedulerYieldEnabled(
               ExecutionContext::From(script_state))) {

@@ -236,8 +236,8 @@ void ModulesInitializer::Initialize() {
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<GPUCanvasContext::Factory>());
 
-  ThreadScheduler::Current()->InitializeTaskAttributionTracker(
-      std::make_unique<scheduler::TaskAttributionTrackerImpl>());
+  V8PerIsolateData::SetTaskAttributionTrackerFactory(
+      &scheduler::TaskAttributionTrackerImpl::Create);
 }
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {

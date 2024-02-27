@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 
@@ -105,8 +105,7 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
       callback_this_ =
           callback_this.V8Value(callback_->CallbackRelevantScriptState());
     }
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(isolate)) {
       // There are 3 possible callbacks here:
       // a) Callbacks which track their registering task as their parent
       // b) Callbacks which don't do the above, split into two groups:
@@ -119,7 +118,7 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
                         CallbackFunctionWithTaskAttributionBase>::value) {
         parent_task = callback_->GetParentTask();
       }
-      if (parent_task || !tracker->RunningTask(isolate)) {
+      if (parent_task || !tracker->RunningTask()) {
         task_attribution_scope_ = tracker->CreateTaskScope(
             callback_->CallbackRelevantScriptState(), parent_task,
             scheduler::TaskAttributionTracker::TaskScopeType::kCallback);

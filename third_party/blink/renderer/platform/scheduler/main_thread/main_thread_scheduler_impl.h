@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -211,9 +210,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void AddTaskObserver(base::TaskObserver* task_observer) override;
   void RemoveTaskObserver(base::TaskObserver* task_observer) override;
   void SetV8Isolate(v8::Isolate* isolate) override;
-  TaskAttributionTracker* GetTaskAttributionTracker() override;
-  void InitializeTaskAttributionTracker(
-      std::unique_ptr<TaskAttributionTracker> tracker) override;
   blink::MainThreadScheduler* ToMainThreadScheduler() override;
 
   // ThreadSchedulerBase implementation:
@@ -801,7 +797,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
 
-    std::unique_ptr<TaskAttributionTracker> task_attribution_tracker;
     Persistent<HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>
         agent_group_schedulers;
     // Task queues that have been detached from their scheduler and may have

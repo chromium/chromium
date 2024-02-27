@@ -164,7 +164,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -1035,9 +1035,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     // If `heuristics` exists, it means we're in an outermost main frame; if
     // `soft_navigation_heuristics_task_id` exists, it means the task state
     // being propagated was captured in a main world history API call.
-    CHECK(ThreadScheduler::Current());
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(
+            frame_->DomWindow()->GetIsolate())) {
       // Get the TaskId from tracker. We're passing that to dispatchEvent
       // further down, but regardless, we want to get it and previous tasks out
       // of the tracker's task queue, to enable them to get garbage collected if
@@ -2616,8 +2615,8 @@ void DocumentLoader::CommitNavigation() {
 
   // Previous same-document navigation tasks are not relevant once a
   // cross-document navigation has happened.
-  CHECK(ThreadScheduler::Current());
-  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+  if (auto* tracker = scheduler::TaskAttributionTracker::From(
+          frame_->DomWindow()->GetIsolate())) {
     tracker->ResetSameDocumentNavigationTasks();
   }
 

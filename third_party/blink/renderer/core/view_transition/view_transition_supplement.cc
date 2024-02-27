@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 namespace {
@@ -93,15 +93,15 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionInternal(
     const std::optional<Vector<String>>& types,
     ExceptionState& exception_state) {
   DCHECK(script_state);
-  DCHECK(ThreadScheduler::Current());
   auto* supplement = From(document);
 
   if (callback) {
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     // Set the parent task ID if we're not in an extension task (as extensions
     // are not currently supported in TaskAttributionTracker).
     if (tracker && script_state->World().IsMainWorld()) {
-      callback->SetParentTask(tracker->RunningTask(script_state->GetIsolate()));
+      callback->SetParentTask(tracker->RunningTask());
     }
   }
   return supplement->StartTransition(document, callback, types,

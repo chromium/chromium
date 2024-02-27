@@ -76,7 +76,7 @@ class CORE_EXPORT SoftNavigationHeuristics
    private:
     friend class SoftNavigationHeuristics;
 
-    explicit EventScope(SoftNavigationHeuristics*);
+    EventScope(SoftNavigationHeuristics*, scheduler::TaskAttributionTracker*);
 
     SoftNavigationHeuristics* heuristics_;
     std::optional<scheduler::TaskAttributionTracker::ObserverScope>

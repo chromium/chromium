@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -110,9 +109,9 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
   DCHECK(script_state && script_state->ContextIsValid());
 
   if (script_state->World().IsMainWorld()) {
-    if (auto* tracker =
-            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-      parent_task_ = tracker->RunningTask(script_state->GetIsolate());
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(
+            script_state->GetIsolate())) {
+      parent_task_ = tracker->RunningTask();
     }
   }
 
@@ -190,7 +189,8 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   // For the main thread (tracker exists), create the task scope with the signal
   // to set up propagation. On workers, set the current context here since there
   // is no tracker.
-  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+  if (auto* tracker =
+          scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
     task_attribution_scope = tracker->CreateTaskScope(
         script_state, parent_task_,
         scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,

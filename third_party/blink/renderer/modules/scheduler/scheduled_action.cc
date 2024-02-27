@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -62,10 +62,10 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           To<LocalDOMWindow>(&target))) {
     function_ = handler;
     arguments_ = arguments;
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     if (tracker && script_state->World().IsMainWorld()) {
-      function_->SetParentTask(
-          tracker->RunningTask(script_state->GetIsolate()));
+      function_->SetParentTask(tracker->RunningTask());
     }
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
@@ -82,9 +82,10 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           EnteredDOMWindow(script_state->GetIsolate()),
           To<LocalDOMWindow>(&target))) {
     code_ = handler;
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     if (tracker && script_state->World().IsMainWorld()) {
-      code_parent_task_ = tracker->RunningTask(script_state->GetIsolate());
+      code_parent_task_ = tracker->RunningTask();
     }
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
@@ -157,7 +158,8 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   // APIs properly track their ancestor as the registering task.
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (tracker && script_state->World().IsMainWorld()) {
     task_attribution_scope = tracker->CreateTaskScope(
         script_state, code_parent_task_,

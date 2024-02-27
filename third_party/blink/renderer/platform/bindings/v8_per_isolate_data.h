@@ -50,6 +50,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
+namespace blink::scheduler {
+class TaskAttributionTracker;
+}  // namespace blink::scheduler
+
 namespace blink {
 
 class DOMWrapperWorld;
@@ -218,6 +222,21 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   void LeaveGC() { gc_callback_depth_--; }
 
+  // Set the factory function used to initialize task attribution for the
+  // isolate upon creating main thread `V8PerIsolateData`. This should be set
+  // once per process before creating any isolates.
+  using TaskAttributionTrackerFactoryPtr =
+      std::unique_ptr<scheduler::TaskAttributionTracker> (*)(v8::Isolate*);
+  static void SetTaskAttributionTrackerFactory(
+      TaskAttributionTrackerFactoryPtr factory);
+
+  // Returns the `scheduler::TaskAttributionTracker` associated with the
+  // associated `v8::Isolate`. Returns null if the
+  // TaskAttributionInfrastructureDisabledForTesting feature is enabled.
+  scheduler::TaskAttributionTracker* GetTaskAttributionTracker() {
+    return task_attribution_tracker_.get();
+  }
+
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
@@ -292,6 +311,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   size_t gc_callback_depth_ = 0;
 
   Persistent<DOMWrapperWorld> main_world_;
+
+  std::unique_ptr<scheduler::TaskAttributionTracker> task_attribution_tracker_;
 };
 
 // Creates a histogram for V8. The returned value is a base::Histogram, but

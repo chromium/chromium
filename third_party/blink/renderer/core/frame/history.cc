@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -226,11 +226,12 @@ void History::go(ScriptState* script_state,
                     /*url=*/String(""));
     // Pass the current task ID so it'd be set as the parent task for the future
     // popstate event.
-    auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+    auto* tracker =
+        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     scheduler::TaskAttributionInfo* task = nullptr;
     if (tracker && script_state->World().IsMainWorld() &&
         frame->IsOutermostMainFrame()) {
-      task = tracker->RunningTask(script_state->GetIsolate());
+      task = tracker->RunningTask();
       tracker->AddSameDocumentNavigationTask(task);
     }
     DCHECK(frame->Client());

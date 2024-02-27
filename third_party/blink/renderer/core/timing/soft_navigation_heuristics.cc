@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
@@ -215,12 +214,9 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny() {
   if (potential_soft_navigation_tasks_.empty()) {
     return std::nullopt;
   }
-  ThreadScheduler* scheduler = ThreadScheduler::Current();
-  DCHECK(scheduler);
-  if (scheduler::TaskAttributionTracker* tracker =
-          scheduler->GetTaskAttributionTracker()) {
-    scheduler::TaskAttributionInfo* task =
-        tracker->RunningTask(GetSupplementable()->GetIsolate());
+  if (auto* tracker = scheduler::TaskAttributionTracker::From(
+          GetSupplementable()->GetIsolate())) {
+    scheduler::TaskAttributionInfo* task = tracker->RunningTask();
     if (!task) {
       return std::nullopt;
     }
@@ -655,7 +651,9 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     }
   }
 
-  return SoftNavigationHeuristics::EventScope(this);
+  return SoftNavigationHeuristics::EventScope(
+      this, scheduler::TaskAttributionTracker::From(
+                GetSupplementable()->GetIsolate()));
 }
 
 void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed() {
@@ -675,16 +673,13 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed() {
 // SoftNavigationHeuristics::EventScope implementation
 // ///////////////////////////////////////////
 SoftNavigationHeuristics::EventScope::EventScope(
-    SoftNavigationHeuristics* heuristics)
+    SoftNavigationHeuristics* heuristics,
+    scheduler::TaskAttributionTracker* tracker)
     : heuristics_(heuristics) {
   CHECK(heuristics_);
-  ThreadScheduler* scheduler = ThreadScheduler::Current();
-  DCHECK(scheduler);
-  auto* tracker = scheduler->GetTaskAttributionTracker();
-  if (!tracker) {
-    return;
+  if (tracker) {
+    observer_scope_ = tracker->RegisterObserver(heuristics_);
   }
-  observer_scope_ = tracker->RegisterObserver(heuristics_);
 }
 
 SoftNavigationHeuristics::EventScope::EventScope(EventScope&& other)

@@ -30,6 +30,7 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -50,12 +51,18 @@
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 
 namespace blink {
 
+BASE_FEATURE(kTaskAttributionInfrastructureDisabledForTesting,
+             "TaskAttributionInfrastructureDisabledForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
 void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
   using base::debug::AllocateCrashKeyString;
   using base::debug::CrashKeySize;
@@ -93,6 +100,10 @@ void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
       break;
   }
 }
+
+V8PerIsolateData::TaskAttributionTrackerFactoryPtr
+    task_attribution_tracker_factory = nullptr;
+
 }  // namespace
 
 static void BeforeCallEnteredCallback(v8::Isolate* isolate) {
@@ -146,6 +157,12 @@ V8PerIsolateData::V8PerIsolateData(
     main_world_ =
         DOMWrapperWorld::Create(GetIsolate(), DOMWrapperWorld::WorldType::kMain,
                                 /*is_default_world_of_isolate=*/true);
+    if (!base::FeatureList::IsEnabled(
+            kTaskAttributionInfrastructureDisabledForTesting)) {
+      CHECK(task_attribution_tracker_factory);
+      task_attribution_tracker_ =
+          task_attribution_tracker_factory(GetIsolate());
+    }
   }
 }
 
@@ -404,6 +421,13 @@ void V8PerIsolateData::SetPasswordRegexp(ScriptRegexp* password_regexp) {
 
 ScriptRegexp* V8PerIsolateData::GetPasswordRegexp() {
   return password_regexp_;
+}
+
+void V8PerIsolateData::SetTaskAttributionTrackerFactory(
+    TaskAttributionTrackerFactoryPtr factory) {
+  CHECK(!task_attribution_tracker_factory);
+  CHECK(IsMainThread());
+  task_attribution_tracker_factory = factory;
 }
 
 void* CreateHistogram(const char* name, int min, int max, size_t buckets) {

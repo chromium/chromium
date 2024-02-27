@@ -151,7 +151,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -176,9 +176,10 @@ bool IsRunningMicrotasks(ScriptState* script_state) {
 void SetCurrentTaskAsCallbackParent(
     CallbackFunctionWithTaskAttributionBase* callback) {
   ScriptState* script_state = callback->CallbackRelevantScriptState();
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetParentTask(tracker->RunningTask(script_state->GetIsolate()));
+    callback->SetParentTask(tracker->RunningTask());
   }
 }
 
@@ -929,9 +930,8 @@ void LocalDOMWindow::DispatchPopstateEvent(
   // method.
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  CHECK(ThreadScheduler::Current());
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (parent_task) {
+    auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
     ScriptState* script_state = ToScriptStateForMainWorld(GetFrame());
     if (script_state && tracker) {
       task_attribution_scope = tracker->CreateTaskScope(

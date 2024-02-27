@@ -36,9 +36,9 @@ namespace blink::scheduler {
 class MODULES_EXPORT TaskAttributionTrackerImpl
     : public TaskAttributionTracker {
  public:
-  TaskAttributionTrackerImpl();
+  static std::unique_ptr<TaskAttributionTracker> Create(v8::Isolate*);
 
-  TaskAttributionInfo* RunningTask(v8::Isolate*) const override;
+  TaskAttributionInfo* RunningTask() const override;
 
   bool IsAncestor(const TaskAttributionInfo& task,
                   TaskAttributionId ancestor_id) override;
@@ -113,6 +113,8 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     Persistent<ScriptState> script_state_;
   };
 
+  explicit TaskAttributionTrackerImpl(v8::Isolate*);
+
   void TaskScopeCompleted(const TaskScopeImpl&);
   void OnObserverScopeDestroyed(const ObserverScope&) override;
 
@@ -125,6 +127,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   // here to ensure the relevant object remains alive (and hence properly
   // tracked through task attribution).
   WTF::Deque<Persistent<TaskAttributionInfo>> same_document_navigation_tasks_;
+
+  // The lifetime of this class is tied to the `isolate_`.
+  raw_ptr<v8::Isolate> isolate_;
 };
 
 }  // namespace blink::scheduler

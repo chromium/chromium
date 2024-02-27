@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -50,12 +51,20 @@ int64_t TaskAttributionIdToInt(std::optional<TaskAttributionId> id) {
 
 }  // namespace
 
-TaskAttributionTrackerImpl::TaskAttributionTrackerImpl() : next_task_id_(0) {}
+// static
+std::unique_ptr<TaskAttributionTracker> TaskAttributionTrackerImpl::Create(
+    v8::Isolate* isolate) {
+  return base::WrapUnique(new TaskAttributionTrackerImpl(isolate));
+}
 
-TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
-    v8::Isolate* isolate) const {
+TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
+    : next_task_id_(0), isolate_(isolate) {
+  CHECK(isolate_);
+}
+
+TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask() const {
   ScriptWrappableTaskState* task_state =
-      ScriptWrappableTaskState::GetCurrent(isolate);
+      ScriptWrappableTaskState::GetCurrent(isolate_);
 
   // V8 embedder state may have no value in the case of a JSPromise that wasn't
   // yet resolved.
@@ -103,9 +112,11 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
                                             TaskScopeType type,
                                             AbortSignal* abort_source,
                                             DOMTaskSignal* priority_source) {
+  CHECK(script_state);
+  CHECK_EQ(script_state->GetIsolate(), isolate_);
   TaskAttributionInfo* running_task_to_be_restored = running_task_;
   ScriptWrappableTaskState* continuation_task_state_to_be_restored =
-      ScriptWrappableTaskState::GetCurrent(script_state->GetIsolate());
+      ScriptWrappableTaskState::GetCurrent(isolate_);
 
   // This compresses the task graph when encountering long task chains.
   // TODO(crbug.com/1501999): Consider compressing the task graph further.

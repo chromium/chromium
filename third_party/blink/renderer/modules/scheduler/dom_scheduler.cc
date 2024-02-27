@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
@@ -168,16 +167,13 @@ ScriptPromise DOMScheduler::yield(ScriptState* script_state,
 
 scheduler::TaskAttributionIdType DOMScheduler::taskId(
     ScriptState* script_state) {
-  ThreadScheduler* scheduler = ThreadScheduler::Current();
-  DCHECK(scheduler);
-  auto* tracker = scheduler->GetTaskAttributionTracker();
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (!tracker) {
     // Can happen when a feature flag disables TaskAttribution.
     return 0;
   }
-  scheduler::TaskAttributionInfo* task =
-      scheduler->GetTaskAttributionTracker()->RunningTask(
-          script_state->GetIsolate());
+  scheduler::TaskAttributionInfo* task = tracker->RunningTask();
   // task cannot be nullptr here, as a task has presumably already ran in order
   // for this API call to be called.
   DCHECK(task);
@@ -187,15 +183,13 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
 AtomicString DOMScheduler::isAncestor(
     ScriptState* script_state,
     scheduler::TaskAttributionIdType parent_id) {
-  ThreadScheduler* scheduler = ThreadScheduler::Current();
-  DCHECK(scheduler);
-  auto* tracker = scheduler->GetTaskAttributionTracker();
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (!tracker) {
     // Can happen when a feature flag disables TaskAttribution.
     return AtomicString("unknown");
   }
-  const scheduler::TaskAttributionInfo* current_task =
-      tracker->RunningTask(script_state->GetIsolate());
+  const scheduler::TaskAttributionInfo* current_task = tracker->RunningTask();
   return current_task &&
                  tracker->IsAncestor(*current_task,
                                      scheduler::TaskAttributionId(parent_id))

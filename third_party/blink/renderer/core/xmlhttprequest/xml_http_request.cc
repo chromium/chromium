@@ -98,7 +98,6 @@
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -1063,9 +1062,9 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   if (async_) {
     CHECK(!execution_context.IsContextDestroyed());
     if (world_ && world_->IsMainWorld()) {
-      if (auto* tracker =
-              ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-        parent_task_ = tracker->RunningTask(execution_context.GetIsolate());
+      if (auto* tracker = scheduler::TaskAttributionTracker::From(
+              execution_context.GetIsolate())) {
+        parent_task_ = tracker->RunningTask();
       }
     }
     async_task_context_.Schedule(&execution_context, "XMLHttpRequest.send");
@@ -2133,20 +2132,20 @@ XMLHttpRequest::MaybeCreateTaskAttributionScope() {
       GetExecutionContext()->IsContextDestroyed()) {
     return nullptr;
   }
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-  if (!tracker) {
-    return nullptr;
-  }
-  // `parent_task_` being non-null implies this object is associated with
-  // the main world.
+  // `parent_task_` being non-null implies that task tracking is enabled and
+  // this object is associated with the main world.
   auto* script_state = ToScriptStateForMainWorld(GetExecutionContext());
   CHECK(script_state);
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
+  CHECK(tracker);
+
   // Don't create a new (nested) task scope if we're still in the parent task,
   // otherwise we risk clobbering other propagated task state.
   //
   // TODO(crbug.com/1439971): Make this safe to do or move the logic into the
   // task attribution implementation.
-  if (tracker->RunningTask(script_state->GetIsolate()) == parent_task_.Get()) {
+  if (tracker->RunningTask() == parent_task_.Get()) {
     return nullptr;
   }
   return tracker->CreateTaskScope(
