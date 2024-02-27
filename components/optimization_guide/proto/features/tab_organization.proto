@@ -19,6 +19,9 @@ message TabOrganization {
 
   // The tabs that belong in this organization.
   repeated Tab tabs = 2;
+
+  // The id of the pre-existing tab group this corresponds to, if any.
+  optional string group_id = 3;
 }
 
 message Tab {
@@ -38,6 +41,13 @@ message TabOrganizationRequest {
 
   // The tab that was active at the time the user requested tab organization.
   int64 active_tab_id = 2;
+
+  // All pre-existing tab groups.
+  repeated TabOrganization pre_existing_tab_groups = 3;
+
+  // Whether or not the tab organization response can include reorganizing
+  // existing tab groups.
+  bool allow_reorganizing_existing_groups = 4;
 }
 
 message TabOrganizationResponse {
