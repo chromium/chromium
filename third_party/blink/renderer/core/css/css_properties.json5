@@ -273,6 +273,26 @@
       ],
     },
 
+    // - anchor_mode
+    // Determines whether or not anchor() / anchor-size() queries are allowed
+    // in the relevant property.
+    //
+    // If omitted, no anchor queries are allowed.
+    //
+    // See also Length::AnchorScope::Mode.
+    anchor_mode: {
+      valid_values: [
+        // anchor()
+        "left",
+        "right",
+        "top",
+        "bottom",
+
+        // anchor-size()
+        "size",
+      ]
+    },
+
     // Valid for field_template:derived_flag only. This specifies the function
     // on ComputedStyle used to calculate the flag.
     derived_from: {
@@ -2378,6 +2398,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      anchor_mode: "bottom",
       logical_property_group: {
         name: "inset",
         resolver: "bottom",
@@ -3101,6 +3122,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
+      anchor_mode: "size",
       logical_property_group: {
         name: "size",
         resolver: "vertical",
@@ -3267,6 +3289,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      anchor_mode: "left",
       logical_property_group: {
         name: "inset",
         resolver: "left",
@@ -3538,6 +3561,7 @@
       field_template: "<length>",
       default_value: "Length::None()",
       converter: "ConvertLengthMaxSizing",
+      anchor_mode: "size",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       logical_property_group: {
@@ -3555,6 +3579,7 @@
       field_template: "<length>",
       default_value: "Length::None()",
       converter: "ConvertLengthMaxSizing",
+      anchor_mode: "size",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       logical_property_group: {
@@ -3572,6 +3597,7 @@
       field_template: "<length>",
       default_value: "Length()",
       converter: "ConvertLengthSizing",
+      anchor_mode: "size",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
         name: "min-size",
@@ -3588,6 +3614,7 @@
       field_template: "<length>",
       default_value: "Length()",
       converter: "ConvertLengthSizing",
+      anchor_mode: "size",
       typedom_types: ["Length", "Percentage"],
       logical_property_group: {
         name: "min-size",
@@ -4244,6 +4271,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      anchor_mode: "right",
       logical_property_group: {
         name: "inset",
         resolver: "right",
@@ -5293,6 +5321,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
+      anchor_mode: "top",
       logical_property_group: {
         name: "inset",
         resolver: "top",
@@ -6341,6 +6370,7 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
+      anchor_mode: "size",
       logical_property_group: {
         name: "size",
         resolver: "horizontal",

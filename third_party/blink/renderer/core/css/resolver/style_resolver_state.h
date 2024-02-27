@@ -294,6 +294,9 @@ class CORE_EXPORT StyleResolverState {
   ElementType element_type_;
   Element* container_unit_context_;
 
+  // See StyleRecalcContext::anchor_evaluator_.
+  Length::AnchorEvaluator* anchor_evaluator_ = nullptr;
+
   // Whether this element is inside a link or not. Note that this is different
   // from ElementLinkState() if the element is not a link itself but is inside
   // one. It may also be overridden from non-visited to visited by devtools.

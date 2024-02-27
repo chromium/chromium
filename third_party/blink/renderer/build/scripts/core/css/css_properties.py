@@ -510,6 +510,9 @@ class CSSProperties(object):
         else:
             set_if_none(property_, 'converter', 'CSSIdentifierValue')
 
+        if property_.anchor_mode:
+            property_.anchor_mode = NameStyleConverter(property_.anchor_mode)
+
         if not property_.longhands:
             property_.superclass = 'Longhand'
             property_.namespace_group = 'Longhand'

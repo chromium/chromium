@@ -26,6 +26,29 @@
 
 namespace blink {
 
+namespace {
+
+// Evaluates any query to '1' when it's in the expected mode,
+// otherwise std::nullopt.
+class ModeCheckingAnchorEvaluator : public Length::AnchorEvaluator {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ModeCheckingAnchorEvaluator(Length::AnchorScope::Mode required_mode)
+      : required_mode_(required_mode) {}
+
+  std::optional<LayoutUnit> Evaluate(
+      const CalculationExpressionNode&) const override {
+    return (required_mode_ == GetMode()) ? std::optional<LayoutUnit>(1)
+                                         : std::optional<LayoutUnit>();
+  }
+
+ private:
+  Length::AnchorScope::Mode required_mode_;
+};
+
+}  // namespace
+
 class CSSPropertyTest : public PageTestBase {
  public:
   const CSSValue* Parse(String name, String value) {
@@ -37,22 +60,36 @@ class CSSPropertyTest : public PageTestBase {
     return &set->PropertyAt(0).Value();
   }
 
-  const ComputedStyle* ComputedStyleWithValue(const CSSProperty& property,
-                                              const CSSValue& value) {
-    StyleResolverState state(GetDocument(), *GetDocument().body());
+  String ComputedValue(String property_str,
+                       String value_str,
+                       StyleRecalcContext style_recalc_context) {
+    CSSPropertyRef ref(property_str, GetDocument());
+    CHECK(ref.IsValid());
+    const CSSProperty& property = ref.GetProperty();
+
+    const CSSValue* value =
+        css_test_helpers::ParseLonghand(GetDocument(), property, value_str);
+    CHECK(value);
+    // Any tree-scoped references within `result` need to be populated with
+    // their TreeScope. This is normally done by StyleCascade before length
+    // conversion, and we're simulating that here.
+    value = &value->EnsureScopedValue(&GetDocument());
+
+    StyleResolverState state(GetDocument(), *GetDocument().body(),
+                             &style_recalc_context);
     state.SetStyle(GetDocument().GetStyleResolver().InitialStyle());
 
-    // The border-style needs to be non-hidden and non-none, otherwise
-    // the computed values of border-width properties are always zero.
-    //
-    // https://drafts.csswg.org/css-backgrounds-3/#the-border-width
-    state.StyleBuilder().SetBorderBottomStyle(EBorderStyle::kSolid);
-    state.StyleBuilder().SetBorderLeftStyle(EBorderStyle::kSolid);
-    state.StyleBuilder().SetBorderRightStyle(EBorderStyle::kSolid);
-    state.StyleBuilder().SetBorderTopStyle(EBorderStyle::kSolid);
+    StyleBuilder::ApplyProperty(property, state, *value);
+    const ComputedStyle* style = state.TakeStyle();
+    CHECK(style);
 
-    StyleBuilder::ApplyProperty(property, state, value);
-    return state.TakeStyle();
+    const CSSValue* computed_value =
+        property.CSSValueFromComputedStyle(*style,
+                                           /* layout_object */ nullptr,
+                                           /* allow_visited_style */ true);
+    CHECK(computed_value);
+
+    return computed_value->CssText();
   }
 
   const ExecutionContext* GetExecutionContext() const {
@@ -296,6 +333,100 @@ TEST_F(CSSPropertyTest, AlternativePropertyCycle) {
       seen_properties.Set(current_id);
     }
   }
+}
+
+TEST_F(CSSPropertyTest, AnchorModeTop) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  ModeCheckingAnchorEvaluator anchor_evaluator(Length::AnchorScope::Mode::kTop);
+  StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
+
+  EXPECT_EQ("1px", ComputedValue("top", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("right", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("bottom", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("left", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-height", "anchor-size(width)", context));
+}
+
+TEST_F(CSSPropertyTest, AnchorModeRight) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  ModeCheckingAnchorEvaluator anchor_evaluator(
+      Length::AnchorScope::Mode::kRight);
+  StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
+
+  EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
+  EXPECT_EQ("1px", ComputedValue("right", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("bottom", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("left", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-height", "anchor-size(width)", context));
+}
+
+TEST_F(CSSPropertyTest, AnchorModeBottom) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  ModeCheckingAnchorEvaluator anchor_evaluator(
+      Length::AnchorScope::Mode::kBottom);
+  StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
+
+  EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("right", "anchor(top)", context));
+  EXPECT_EQ("1px", ComputedValue("bottom", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("left", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-height", "anchor-size(width)", context));
+}
+
+TEST_F(CSSPropertyTest, AnchorModeLeft) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  ModeCheckingAnchorEvaluator anchor_evaluator(
+      Length::AnchorScope::Mode::kLeft);
+  StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
+
+  EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("right", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("bottom", "anchor(top)", context));
+  EXPECT_EQ("1px", ComputedValue("left", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("min-height", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-width", "anchor-size(width)", context));
+  EXPECT_EQ("0px", ComputedValue("max-height", "anchor-size(width)", context));
+}
+
+TEST_F(CSSPropertyTest, AnchorModeSize) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(true);
+
+  ModeCheckingAnchorEvaluator anchor_evaluator(
+      Length::AnchorScope::Mode::kSize);
+  StyleRecalcContext context = {.anchor_evaluator = &anchor_evaluator};
+
+  EXPECT_EQ("0px", ComputedValue("top", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("right", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("bottom", "anchor(top)", context));
+  EXPECT_EQ("0px", ComputedValue("left", "anchor(top)", context));
+  EXPECT_EQ("1px", ComputedValue("width", "anchor-size(width)", context));
+  EXPECT_EQ("1px", ComputedValue("height", "anchor-size(width)", context));
+  EXPECT_EQ("1px", ComputedValue("min-width", "anchor-size(width)", context));
+  EXPECT_EQ("1px", ComputedValue("min-height", "anchor-size(width)", context));
+  EXPECT_EQ("1px", ComputedValue("max-width", "anchor-size(width)", context));
+  EXPECT_EQ("1px", ComputedValue("max-height", "anchor-size(width)", context));
 }
 
 }  // namespace blink

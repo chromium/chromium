@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_CONTEXT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
@@ -61,6 +62,14 @@ class CORE_EXPORT StyleRecalcContext {
   // Used to decide which is the the closest style() @container candidate for
   // ::slotted() and ::part() rule matching. Otherwise nullptr.
   Element* style_container = nullptr;
+
+  // Used to evaluate anchor() and anchor-size() queries.
+  //
+  // For normal (non-interleaved) style recalcs, this will be nullptr.
+  //
+  // TODO(crbug.com/41483417): For interleaved style updates from out-of-flow
+  // layout, use the real AnchorEvaluator.
+  Length::AnchorEvaluator* anchor_evaluator = nullptr;
 
   StyleScopeFrame* style_scope_frame = nullptr;
 

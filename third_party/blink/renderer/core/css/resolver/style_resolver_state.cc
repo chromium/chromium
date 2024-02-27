@@ -75,6 +75,9 @@ StyleResolverState::StyleResolverState(
       container_unit_context_(style_recalc_context
                                   ? style_recalc_context->container
                                   : element.ParentOrShadowHostElement()),
+      anchor_evaluator_(style_recalc_context
+                            ? style_recalc_context->anchor_evaluator
+                            : nullptr),
       originating_element_style_(style_request.originating_element_style),
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       uses_highlight_pseudo_inheritance_(
@@ -158,13 +161,12 @@ const ComputedStyle* StyleResolverState::TakeStyle() {
 }
 
 void StyleResolverState::UpdateLengthConversionData() {
-  // TODO(crbug.com/41483417): Pass an AnchorEvaluator to AnchorData.
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       *style_builder_, ParentStyle(), RootElementStyle(),
       GetDocument().GetStyleEngine().GetViewportSize(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
-      CSSToLengthConversionData::AnchorData(), StyleBuilder().EffectiveZoom(),
-      length_conversion_flags_);
+      CSSToLengthConversionData::AnchorData(anchor_evaluator_),
+      StyleBuilder().EffectiveZoom(), length_conversion_flags_);
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
 }
@@ -182,9 +184,7 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
       GetDocument().GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes(
       container_unit_context_);
-  // TODO(crbug.com/41483417): Pass an AnchorEvaluator to AnchorData.
-  CSSToLengthConversionData::AnchorData anchor_data;
-
+  CSSToLengthConversionData::AnchorData anchor_data(anchor_evaluator_);
   return CSSToLengthConversionData(
       StyleBuilder().GetWritingMode(), font_sizes, line_height_size,
       viewport_size, container_sizes, anchor_data, 1, length_conversion_flags_);
