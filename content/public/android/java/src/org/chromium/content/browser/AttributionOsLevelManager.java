@@ -129,7 +129,8 @@ public class AttributionOsLevelManager {
         } else if (thrown instanceof IllegalStateException) {
             // The Android API doesn't break out this error as a separate exception so we
             // are forced to inspect the message for now.
-            if (thrown.getMessage().toLowerCase(Locale.US).contains("background")) {
+            if (thrown.getMessage() != null
+                    && thrown.getMessage().toLowerCase(Locale.US).contains("background")) {
                 return OperationResult.ERROR_BACKGROUND_CALLER;
             } else {
                 return OperationResult.ERROR_ILLEGAL_STATE;
