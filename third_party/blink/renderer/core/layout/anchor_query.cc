@@ -362,7 +362,7 @@ const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
 }
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
-    const CalculationExpressionNode& node) const {
+    const CalculationExpressionNode& node) {
   DCHECK(node.IsAnchorQuery());
   const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
   switch (anchor_query.Type()) {

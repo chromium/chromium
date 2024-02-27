@@ -94,7 +94,7 @@ LayoutUnit ResolveInlineLengthInternal(
     const std::optional<MinMaxSizes>& min_max_sizes,
     const Length& length,
     LayoutUnit override_available_size,
-    const Length::AnchorEvaluator* anchor_evaluator) {
+    Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
@@ -171,7 +171,7 @@ LayoutUnit ResolveBlockLengthInternal(
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    const Length::AnchorEvaluator* anchor_evaluator) {
+    Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
@@ -407,12 +407,11 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
                                               MinMaxSizesFunc);
 }
 
-MinMaxSizes ComputeMinMaxBlockSizes(
-    const ConstraintSpace& space,
-    const ComputedStyle& style,
-    const BoxStrut& border_padding,
-    LayoutUnit override_available_size,
-    const Length::AnchorEvaluator* anchor_evaluator) {
+MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
+                                    const ComputedStyle& style,
+                                    const BoxStrut& border_padding,
+                                    LayoutUnit override_available_size,
+                                    Length::AnchorEvaluator* anchor_evaluator) {
   if (const std::optional<MinMaxSizes> override_sizes =
           space.OverrideMinMaxBlockSizes()) {
     DCHECK_GE(override_sizes->max_size, override_sizes->min_size);
@@ -687,7 +686,7 @@ LogicalSize ComputeReplacedSizeInternal(
     const ConstraintSpace& space,
     const BoxStrut& border_padding,
     ReplacedSizeMode mode,
-    const Length::AnchorEvaluator* anchor_evaluator) {
+    Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK(node.IsReplaced());
 
   const ComputedStyle& style = node.Style();
@@ -948,12 +947,11 @@ LogicalSize ComputeReplacedSizeInternal(
 }  // namespace
 
 // Computes size for a replaced element.
-LogicalSize ComputeReplacedSize(
-    const BlockNode& node,
-    const ConstraintSpace& space,
-    const BoxStrut& border_padding,
-    ReplacedSizeMode mode,
-    const Length::AnchorEvaluator* anchor_evaluator) {
+LogicalSize ComputeReplacedSize(const BlockNode& node,
+                                const ConstraintSpace& space,
+                                const BoxStrut& border_padding,
+                                ReplacedSizeMode mode,
+                                Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK(node.IsReplaced());
 
   const auto* svg_root = DynamicTo<LayoutSVGRoot>(node.GetLayoutBox());

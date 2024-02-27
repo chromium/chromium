@@ -174,7 +174,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     WritingDirectionMode container_writing_direction,
-    const AnchorEvaluatorImpl* anchor_evaluator,
+    AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
 // If layout was performed to determine the position, this will be returned
@@ -188,7 +188,7 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     WritingDirectionMode container_writing_direction,
-    const AnchorEvaluatorImpl* anchor_evaluator,
+    AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
 }  // namespace blink

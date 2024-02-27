@@ -380,7 +380,7 @@ class PLATFORM_EXPORT Length {
     // (e.g., no targets or wrong axis.), in which case the fallback should
     // be used.
     virtual std::optional<LayoutUnit> Evaluate(
-        const CalculationExpressionNode&) const = 0;
+        const CalculationExpressionNode&) = 0;
 
    protected:
     Mode GetMode() const { return mode_; }
@@ -426,7 +426,7 @@ class PLATFORM_EXPORT Length {
     STACK_ALLOCATED();
 
    public:
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr;
+    Length::AnchorEvaluator* anchor_evaluator = nullptr;
     std::optional<float> size_keyword_basis = std::nullopt;
     std::optional<IntrinsicLengthEvaluator> intrinsic_evaluator = std::nullopt;
   };

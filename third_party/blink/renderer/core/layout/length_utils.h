@@ -71,7 +71,7 @@ CORE_EXPORT LayoutUnit ResolveInlineLengthInternal(
     const std::optional<MinMaxSizes>&,
     const Length&,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
+    Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 // Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
 // plays the part of |MinMaxSizes|.
@@ -83,7 +83,7 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
+    Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 // In this file the template parameter MinMaxSizesFunc should have the
 // following form:
@@ -103,7 +103,7 @@ inline LayoutUnit ResolveMinInlineLength(
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(length.IsAuto() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
@@ -130,7 +130,7 @@ inline LayoutUnit ResolveMaxInlineLength(
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(length.IsNone() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
@@ -157,7 +157,7 @@ inline LayoutUnit ResolveMainInlineLength(
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
   std::optional<MinMaxSizes> min_max_sizes;
   if (length.HasContentOrIntrinsic()) {
@@ -180,7 +180,7 @@ inline LayoutUnit ResolveMinBlockLength(
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(BlockLengthUnresolvable(constraint_space, length,
                                      override_percentage_resolution_size)))
     return border_padding.BlockSum();
@@ -199,7 +199,7 @@ inline LayoutUnit ResolveMaxBlockLength(
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(BlockLengthUnresolvable(constraint_space, length,
                                      override_percentage_resolution_size)))
     return LayoutUnit::Max();
@@ -219,7 +219,7 @@ inline LayoutUnit ResolveMainBlockLength(
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
   if (UNLIKELY((length.HasPercent() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(constraint_space, length,
@@ -241,7 +241,7 @@ inline LayoutUnit ResolveMainBlockLength(
     const Length& length,
     const IntrinsicBlockSizeFunc& intrinsic_block_size_func,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
   if (UNLIKELY((length.HasPercent() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(constraint_space, length))) {
@@ -265,7 +265,7 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const ComputedStyle&,
     const BoxStrut& border_padding,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
+    Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(
     const LogicalSize& ratio,
@@ -295,7 +295,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length* opt_min_length = nullptr,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   const ComputedStyle& style = node.Style();
   const Length& min_length =
       opt_min_length ? *opt_min_length : style.LogicalMinWidth();
@@ -482,12 +482,12 @@ enum class ReplacedSizeMode {
 // This will handle both intrinsic, and layout calculations depending on the
 // space provided. (E.g. if the available inline-size is indefinite it will
 // return the intrinsic size).
-CORE_EXPORT LogicalSize ComputeReplacedSize(
-    const BlockNode&,
-    const ConstraintSpace&,
-    const BoxStrut& border_padding,
-    ReplacedSizeMode = ReplacedSizeMode::kNormal,
-    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
+CORE_EXPORT LogicalSize
+ComputeReplacedSize(const BlockNode&,
+                    const ConstraintSpace&,
+                    const BoxStrut& border_padding,
+                    ReplacedSizeMode = ReplacedSizeMode::kNormal,
+                    Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.

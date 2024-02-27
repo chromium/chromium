@@ -597,7 +597,7 @@ bool ComputeOofInlineDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     WritingDirectionMode container_writing_direction,
-    const AnchorEvaluatorImpl* anchor_evaluator,
+    AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);
   DCHECK_GE(imcb.InlineSize(), LayoutUnit());
@@ -740,7 +740,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     WritingDirectionMode container_writing_direction,
-    const AnchorEvaluatorImpl* anchor_evaluator,
+    AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);
   DCHECK_GE(imcb.BlockSize(), LayoutUnit());

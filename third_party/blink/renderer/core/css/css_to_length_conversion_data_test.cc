@@ -31,7 +31,7 @@ class TestAnchorEvaluator : public Length::AnchorEvaluator {
       : result_(result) {}
 
   std::optional<LayoutUnit> Evaluate(
-      const CalculationExpressionNode&) const override {
+      const CalculationExpressionNode&) override {
     return result_;
   }
 
