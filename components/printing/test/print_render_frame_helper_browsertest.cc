@@ -1392,9 +1392,9 @@ class PrintRenderFrameHelperPreviewTest
     EXPECT_EQ(expected_content_width, page_layout->content_width);
     EXPECT_EQ(expected_content_height, page_layout->content_height);
     EXPECT_EQ(expected_margin_top, page_layout->margin_top);
-    EXPECT_EQ(expected_margin_right, page_layout->margin_right);
-    EXPECT_EQ(expected_margin_left, page_layout->margin_left);
     EXPECT_EQ(expected_margin_bottom, page_layout->margin_bottom);
+    EXPECT_EQ(expected_margin_left, page_layout->margin_left);
+    EXPECT_EQ(expected_margin_right, page_layout->margin_right);
     EXPECT_EQ(expected_all_pages_have_custom_size,
               preview_ui()->all_pages_have_custom_size());
     EXPECT_EQ(expected_all_pages_have_custom_orientation,
@@ -2074,6 +2074,291 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   VerifyPreviewPageCount(10);
   OnClosePrintPreviewDialog();
 }
+
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter3) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 3 inches and margins to 0.5 inches results in a
+  // page area of 2 by 2 inches. Setting the input scale factor to 200% shrinks
+  // this to 1 inch. There's a 1.5in wide block in the test. To make it fit
+  // without overflowing, Blink will increase the page area size by 3/2 (1.5/1),
+  // i.e. 50% larger, so that the final page area for layout is 1.5 by 1.5
+  // inches. Content that is 5.25 inches tall should therefore require 3 and a
+  // half pages (1.5 * 3.5 = 5.25). The specified page size is smaller than the
+  // paper (8.5x11 inches), and should be centered on paper, meaning that the
+  // margins will be changed so that the sum of the margins and the page size
+  // will be equal to the paper size.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:0.5in; size:3in; }
+      body { margin:0; }
+    </style>
+    <div style="width:1.5in; height:5.25in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(144, 144, 324, 324, 234, 234, true, true);
+  VerifyPreviewPageCount(4);
+
+  // Look for the #0000ff background on all the pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(377, 467), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 468), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(377, 467), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 468), 0xffffffU);  // white outside
+
+  // Third page:
+  page = printer()->GetPrinterPage(2);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(377, 467), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 468), 0xffffffU);  // white outside
+
+  // Fourth and last page:
+  page = printer()->GetPrinterPage(3);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(377, 395), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 396), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter4) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 5 by 3 inches and margins to 0.5 inches results in
+  // a page area of 4 by 2 inches. Setting the input scale factor to 200%
+  // shrinks this to 2 by 1 inches. There's a 3in wide block in the test. To
+  // make it fit without overflowing, Blink will increase the page area size by
+  // 3/2, i.e. 50% larger, so that the final page area for layout is 3 by 1.5
+  // inches. Content that is 2.25 inches tall should therefore require one and a
+  // half page (1.5 * 1.5 = 2.25). The specified page size is smaller than the
+  // paper (8.5x11 inches), and should be centered on paper, meaning that the
+  // margins will be changed so that the sum of the margins and the page size
+  // will be equal to the paper size. Additionally, the orientation is
+  // landscape.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:0.5in; size:5in 3in; }
+      body { margin:0; }
+    </style>
+    <div style="width:3in; height:2.25in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(288, 144, 234, 234, 252, 252, true, true);
+  VerifyPreviewPageCount(2);
+
+  // Look for the #0000ff background on all the pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(251, 233), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(252, 234), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(539, 377), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(540, 378), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(251, 233), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(252, 234), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(539, 305), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(540, 306), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter5) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 34 inches and margins to 1 inch results in a page
+  // area of 32 inches. Setting the input scale factor to 200% shrinks this to
+  // 16 inches. There's a 24in wide block in the test. To make it fit without
+  // overflowing, Blink will increase the page area size by 3/2 (24/16),
+  // i.e. 50% larger, so that the final page area for layout is 24 by 24 inches.
+  // Content that is 36 inches tall should therefore require one and a half page
+  // (1.5 * 1.5 = 2.25). The specified page size is larger than the paper
+  // (8.5x11 inches), and needs to be zoomed down to fit. The zoom factor will
+  // be 0.25. 8.5 / 34 (short edges) = 0.25, which is less than 11 / 34 (long
+  // edges). Margins are also adjusted accordingly, since it's essentially the
+  // entire page box that's scaled down. The result should be centered on paper.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:1in; size:34in; }
+      body { margin:0; }
+    </style>
+    <div style="width:24in; height:36in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(576, 576, 108, 108, 18, 18, true, true);
+  VerifyPreviewPageCount(2);
+
+  // Look for the #0000ff background on the first and last pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(17, 107), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(18, 108), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(557, 683), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(558, 684), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(17, 107), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(18, 108), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(557, 395), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(558, 396), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter6) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 33 by 18 inches and margins to 1 inch results in a
+  // page area of 31 by 16 inches. Setting the input scale factor to 200%
+  // shrinks this to 15.5 by 8 inches. There's a 23.25in wide block in the
+  // test. To make it fit without overflowing, Blink will increase the page area
+  // size by 3/2 (23.25/15.5), i.e. 50% larger, so that the final page area for
+  // layout is 23.25 by 12 inches. Content that is 18 inches tall should
+  // therefore require one and a half page (12 * 1.5 = 18). The specified page
+  // size is larger than the paper (8.5x11 inches), and needs to be zoomed down
+  // to fit. The zoom factor will be 1/3. 11 / 33 (long edges) = 1/3, which is
+  // less than 8.5 / 18 (short edges). Margins are also adjusted accordingly,
+  // since it's essentially the entire page box that's scaled down.
+  // Additionally, the orientation is landscape. The result should be centered
+  // on paper.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:1in; size:33in 18in; }
+      body { margin:0; }
+    </style>
+    <div style="width:23.25in; height:18in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(744, 384, 114, 114, 24, 24, true, true);
+  VerifyPreviewPageCount(2);
+
+  // Look for the #0000ff background on the first and last pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(23, 113), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(24, 114), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(767, 497), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(768, 498), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(23, 113), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(24, 114), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(767, 305), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(768, 306), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 // Test to verify that print preview workflow honor the orientation settings
 // specified in css.
