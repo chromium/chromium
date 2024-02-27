@@ -20,11 +20,11 @@
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/legacy_password_store_backend_migration_decorator.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
-#include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -61,7 +61,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     // the GMS core local store.
     case UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
       return std::make_unique<
-          password_manager::PasswordStoreBackendMigrationDecorator>(
+          password_manager::LegacyPasswordStoreBackendMigrationDecorator>(
           std::move(built_in_backend),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
               prefs, affiliations_prefetcher),
@@ -80,7 +80,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     // account store.
     case UseUpmLocalAndSeparateStoresState::kOff:
       return std::make_unique<
-          password_manager::PasswordStoreBackendMigrationDecorator>(
+          password_manager::LegacyPasswordStoreBackendMigrationDecorator>(
           std::move(built_in_backend),
           // Even though this is a backend for a ProfilePasswordStore it has to
           // talk to the account. Before the store split, the ProfileStore only

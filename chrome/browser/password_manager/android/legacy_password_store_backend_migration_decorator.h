@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_LEGACY_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_LEGACY_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
 
 #include <memory>
 
@@ -26,22 +26,22 @@ class BuiltInBackendToAndroidBackendMigrator;
 // to delegating all backend responsibilities, it is responsible for migrating
 // credentials between both backends as well as instantiating any proxy backends
 // that are used for shadowing the traffic.
-class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
+class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
  public:
-  PasswordStoreBackendMigrationDecorator(
+  LegacyPasswordStoreBackendMigrationDecorator(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
       PrefService* prefs,
       IsAccountStore is_account_store);
-  PasswordStoreBackendMigrationDecorator(
-      const PasswordStoreBackendMigrationDecorator&) = delete;
-  PasswordStoreBackendMigrationDecorator(
-      PasswordStoreBackendMigrationDecorator&&) = delete;
-  PasswordStoreBackendMigrationDecorator& operator=(
-      const PasswordStoreBackendMigrationDecorator&) = delete;
-  PasswordStoreBackendMigrationDecorator& operator=(
-      PasswordStoreBackendMigrationDecorator&&) = delete;
-  ~PasswordStoreBackendMigrationDecorator() override;
+  LegacyPasswordStoreBackendMigrationDecorator(
+      const LegacyPasswordStoreBackendMigrationDecorator&) = delete;
+  LegacyPasswordStoreBackendMigrationDecorator(
+      LegacyPasswordStoreBackendMigrationDecorator&&) = delete;
+  LegacyPasswordStoreBackendMigrationDecorator& operator=(
+      const LegacyPasswordStoreBackendMigrationDecorator&) = delete;
+  LegacyPasswordStoreBackendMigrationDecorator& operator=(
+      LegacyPasswordStoreBackendMigrationDecorator&&) = delete;
+  ~LegacyPasswordStoreBackendMigrationDecorator() override;
 
  private:
   class PasswordSyncSettingsHelper : public syncer::SyncServiceObserver {
@@ -158,10 +158,10 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   // Listener for sync settings changes.
   PasswordSyncSettingsHelper sync_settings_helper_;
 
-  base::WeakPtrFactory<PasswordStoreBackendMigrationDecorator>
+  base::WeakPtrFactory<LegacyPasswordStoreBackendMigrationDecorator>
       weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_LEGACY_PASSWORD_STORE_BACKEND_MIGRATION_DECORATOR_H_

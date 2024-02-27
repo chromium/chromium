@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
+#include "chrome/browser/password_manager/android/legacy_password_store_backend_migration_decorator.h"
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -38,7 +38,7 @@ bool ShouldAttemptMigration(const PrefService* prefs) {
 
 }  // namespace
 
-PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
+LegacyPasswordStoreBackendMigrationDecorator::LegacyPasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
     PrefService* prefs,
@@ -54,14 +54,14 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
       is_account_store);
 }
 
-PasswordStoreBackendMigrationDecorator::
-    ~PasswordStoreBackendMigrationDecorator() = default;
+LegacyPasswordStoreBackendMigrationDecorator::
+    ~LegacyPasswordStoreBackendMigrationDecorator() = default;
 
-PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
+LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     PasswordSyncSettingsHelper(PrefService* prefs)
     : prefs_(prefs) {}
 
-void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
+void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     CachePasswordSyncSettingOnStartup(syncer::SyncService* sync) {
   sync_service_ = sync;
   // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
@@ -71,7 +71,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   password_sync_applied_setting_ = password_sync_configured_setting_;
 }
 
-void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
+void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     SyncStatusChangeApplied() {
   DCHECK(sync_service_);
   // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
@@ -80,7 +80,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
       sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_);
 }
 
-void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
+void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     OnStateChanged(syncer::SyncService* sync) {
   DCHECK(sync_service_ == sync);
 
@@ -109,7 +109,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   }
 }
 
-void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
+void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     OnSyncCycleCompleted(syncer::SyncService* sync) {
   // Reenrollment check is made on the first sync cycle when password sync is
   // active.
@@ -147,18 +147,18 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   }
 }
 
-void PasswordStoreBackendMigrationDecorator::InitBackend(
+void LegacyPasswordStoreBackendMigrationDecorator::InitBackend(
     AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
   base::RepeatingClosure handle_sync_status_change = base::BindRepeating(
-      &PasswordStoreBackendMigrationDecorator::SyncStatusChanged,
+      &LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged,
       weak_ptr_factory_.GetWeakPtr());
 
   // |sync_enabled_or_disabled_cb| is called on a background sequence so it
   // should be posted to the main sequence before invoking
-  // PasswordStoreBackendMigrationDecorator::SyncStatusChanged().
+  // LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged().
   base::RepeatingClosure handle_sync_status_change_on_main_thread =
       base::BindRepeating(
           base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
@@ -184,13 +184,13 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
-            &PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit,
+            &LegacyPasswordStoreBackendMigrationDecorator::StartMigrationAfterInit,
             weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(kMigrationToAndroidBackendDelay));
   }
 }
 
-void PasswordStoreBackendMigrationDecorator::Shutdown(
+void LegacyPasswordStoreBackendMigrationDecorator::Shutdown(
     base::OnceClosure shutdown_completed) {
   migrator_.reset();
   built_in_backend_ = nullptr;
@@ -203,14 +203,14 @@ void PasswordStoreBackendMigrationDecorator::Shutdown(
             // All the backends must be destroyed only after
             // |active_backend_| signals that Shutdown is over. It can be
             // done asynchronously and after
-            // PasswordStoreBackendMigrationDecorator destruction.
+            // LegacyPasswordStoreBackendMigrationDecorator destruction.
             combined_backend.reset();
           },
           std::move(active_backend_))
           .Then(std::move(shutdown_completed)));
 }
 
-bool PasswordStoreBackendMigrationDecorator::IsAbleToSavePasswords() {
+bool LegacyPasswordStoreBackendMigrationDecorator::IsAbleToSavePasswords() {
   // Suppress saving while the migration of local passwords is ongoing, to avoid
   // the migration "forgetting" any new passwords. In fact the same concern
   // applies to all migration types, but it's scary to change behavior now.
@@ -220,29 +220,29 @@ bool PasswordStoreBackendMigrationDecorator::IsAbleToSavePasswords() {
                                 MigrationType::kForLocalUsers);
 }
 
-void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
   active_backend_->GetAllLoginsAsync(std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::
+void LegacyPasswordStoreBackendMigrationDecorator::
     GetAllLoginsWithAffiliationAndBrandingAsync(LoginsOrErrorReply callback) {
   active_backend_->GetAllLoginsWithAffiliationAndBrandingAsync(
       std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
     LoginsOrErrorReply callback) {
   active_backend_->GetAutofillableLoginsAsync(std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }
 
-void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
@@ -250,32 +250,32 @@ void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
                                            forms);
 }
 
-void PasswordStoreBackendMigrationDecorator::GetGroupedMatchingLoginsAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     LoginsOrErrorReply callback) {
   active_backend_->GetGroupedMatchingLoginsAsync(std::move(form_digest),
                                                  std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::AddLoginAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   active_backend_->AddLoginAsync(form, std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::UpdateLoginAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   active_backend_->UpdateLoginAsync(form, std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginAsync(form, std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
@@ -286,7 +286,7 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
       std::move(sync_completion), std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {
@@ -294,7 +294,7 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
       std::move(delete_begin), std::move(delete_end), std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::DisableAutoSignInForOriginsAsync(
+void LegacyPasswordStoreBackendMigrationDecorator::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
   active_backend_->DisableAutoSignInForOriginsAsync(origin_filter,
@@ -302,12 +302,12 @@ void PasswordStoreBackendMigrationDecorator::DisableAutoSignInForOriginsAsync(
 }
 
 SmartBubbleStatsStore*
-PasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
+LegacyPasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
   return active_backend_->GetSmartBubbleStatsStore();
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
-PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
+LegacyPasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   if (base::FeatureList::IsEnabled(
           features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly)) {
     // The android backend (PasswordStoreAndroidBackend) creates a controller
@@ -319,7 +319,7 @@ PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }
 
-void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
+void LegacyPasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_settings_helper_.CachePasswordSyncSettingOnStartup(sync_service);
   sync_service->AddObserver(&sync_settings_helper_);
@@ -329,11 +329,11 @@ void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
 }
 
 base::WeakPtr<PasswordStoreBackend>
-PasswordStoreBackendMigrationDecorator::AsWeakPtr() {
+LegacyPasswordStoreBackendMigrationDecorator::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
+void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
   // Return early if the user was evicted after scheduling migration.
   if (!ShouldAttemptMigration(prefs_))
     return;
@@ -357,7 +357,7 @@ void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
       /*should_attempt_upm_reenrollment=*/false);
 }
 
-void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
+void LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
   if (!ShouldAttemptMigration(prefs_))
     return;
 

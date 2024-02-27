@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
+#include "chrome/browser/password_manager/android/legacy_password_store_backend_migration_decorator.h"
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -31,9 +31,9 @@ constexpr double kLastMigrationAttemptTime = 0.0;
 
 }  // namespace
 
-class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
+class LegacyPasswordStoreBackendMigrationDecoratorTest : public testing::Test {
  protected:
-  PasswordStoreBackendMigrationDecoratorTest() {
+  LegacyPasswordStoreBackendMigrationDecoratorTest() {
     prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
@@ -56,12 +56,12 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
 
     backend_migration_decorator_ =
-        std::make_unique<PasswordStoreBackendMigrationDecorator>(
+        std::make_unique<LegacyPasswordStoreBackendMigrationDecorator>(
             CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_,
             IsAccountStore(false));
   }
 
-  ~PasswordStoreBackendMigrationDecoratorTest() override {
+  ~LegacyPasswordStoreBackendMigrationDecoratorTest() override {
     backend_migration_decorator()->Shutdown(base::DoNothing());
   }
 
@@ -126,11 +126,11 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   raw_ptr<MockPasswordStoreBackend> android_backend_;
   syncer::TestSyncService sync_service_;
 
-  std::unique_ptr<PasswordStoreBackendMigrationDecorator>
+  std::unique_ptr<LegacyPasswordStoreBackendMigrationDecorator>
       backend_migration_decorator_;
 };
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncEnabled) {
   InitSyncService(/*is_password_sync_enabled=*/false);
   EXPECT_FALSE(
@@ -143,7 +143,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
             prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncDisabled) {
   InitSyncService(/*is_password_sync_enabled=*/true);
   EXPECT_FALSE(
@@ -157,7 +157,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 }
 
 TEST_F(
-    PasswordStoreBackendMigrationDecoratorTest,
+    LegacyPasswordStoreBackendMigrationDecoratorTest,
     MigrationPreferenceUnchangedWhenSyncDisabledAndEnabledWithoutClosingSettings) {
   InitSyncService(/*is_password_sync_enabled=*/true);
 
@@ -184,13 +184,13 @@ TEST_F(
             prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        OnSyncServiceInitializedPropagatedToAndroidBackend) {
   EXPECT_CALL(*android_backend(), OnSyncServiceInitialized(&sync_service()));
   backend_migration_decorator()->OnSyncServiceInitialized(&sync_service());
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        DisableSavingDuringLocalPasswordsMigration) {
   prefs().SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
@@ -217,7 +217,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   // False now because the migration is ongoing.
   EXPECT_FALSE(backend_migration_decorator()->IsAbleToSavePasswords());
 }
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        NonSyncableDataMigrationDoesNotStartWhenSyncEnabledAndStoresSplit) {
   // Mark that the local and account stores are split.
   prefs().SetInteger(
@@ -282,7 +282,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       0);
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        NonSyncableDataMigrationDoesNotStartWhenSyncDisabledAndStoresSplit) {
   // Mark that the local and account stores are split.
   prefs().SetInteger(
@@ -345,7 +345,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 }
 
 TEST_F(
-    PasswordStoreBackendMigrationDecoratorTest,
+    LegacyPasswordStoreBackendMigrationDecoratorTest,
     NonSyncableDataMigrationStartsWithoutRelaunchWhenSyncEnabledBeforeStoreSplit) {
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
   base::RepeatingClosure sync_status_changed_closure;
@@ -393,7 +393,7 @@ TEST_F(
 }
 
 TEST_F(
-    PasswordStoreBackendMigrationDecoratorTest,
+    LegacyPasswordStoreBackendMigrationDecoratorTest,
     NonSyncableDataMigrationStartsWithoutRelaunchWhenSyncBecomesDisabledBeforeStoreSplit) {
   // Init backend.
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
@@ -440,7 +440,7 @@ TEST_F(
 }
 
 TEST_F(
-    PasswordStoreBackendMigrationDecoratorTest,
+    LegacyPasswordStoreBackendMigrationDecoratorTest,
     ResetAutoSignInWhenInitBackendAfterSyncWasDisabledButSettingWasNotApplied) {
   prefs().SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
 
@@ -478,7 +478,7 @@ TEST_F(
             prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        NonSyncableDataMigrationHappensOnlyOnceOnMultipleSyncStatusChanges) {
   // Init backend.
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
@@ -545,7 +545,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   RunUntilIdle();
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        NonSyncableDataMigrationDoesNotStartForUsersUnenrolledFromUPM) {
   prefs().SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                      true);
@@ -594,7 +594,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       0.0);
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        ReenrollmentAttemptStartsForUsersUnenrolledFromUPM) {
   prefs().SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                      true);
@@ -632,7 +632,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       kLastMigrationAttemptTime);
 }
 
-TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+TEST_F(LegacyPasswordStoreBackendMigrationDecoratorTest,
        ReenrollmentAttemptDoesNotStartWhenSyncAuthErrorExists) {
   prefs().SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                      true);
