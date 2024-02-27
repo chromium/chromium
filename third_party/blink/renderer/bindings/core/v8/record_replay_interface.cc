@@ -1009,7 +1009,7 @@ InspectorData* getInspectorFor(v8::Isolate* isolate, int contextGroupId) {
  * This function makes sure that the session exists and
  * we are on main thread when accessing it.
  */
-v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int currentContextId) {
+v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int contextGroupId) {
   CHECK(v8::IsMainThread());
   CHECK(IsGReplayScriptEnabled());
   CHECK(gV8Inspectors);
@@ -1017,11 +1017,11 @@ v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int 
   v8_inspector::V8Inspector* inspector = (*gV8Inspectors)[isolate];
   CHECK(inspector);
 
-  InspectorData* data = getInspectorFor(isolate, currentContextId);
+  InspectorData* data = getInspectorFor(isolate, contextGroupId);
 
   if (!data->inspectorSession) {
     recordreplay::AutoDisallowEvents disallow("RecordReplayRegisterV8Inspector");
-    data->inspectorSession = inspector->connect(currentContextId,
+    data->inspectorSession = inspector->connect(contextGroupId,
                                             new InspectorChannel(),
                                             v8_inspector::StringView(),
                                             v8_inspector::V8Inspector::kFullyTrusted).release();

@@ -460,6 +460,9 @@ function Target_getCurrentNetworkStreamData(params) {
 
 function Target_topFrameLocation() {
   try {
+    if (!isReplayScriptAlive()) {
+      return {};
+    }
     const rv = sendCDPMessage("Debugger.getTopFrameLocation");
     if (!rv || !rv.location) {
       return {};
@@ -487,6 +490,9 @@ function Target_topFrameLocation() {
 function getStackFrames() {
   // NOTE: this is a custom command we added in `src/inspector/v8-debugger-agent-impl.cc`
   try {
+    if (!isReplayScriptAlive()) {
+      return [];
+    }
     const { callFrames } = sendCDPMessage("Debugger.getCallFrames", {
       objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
     });
