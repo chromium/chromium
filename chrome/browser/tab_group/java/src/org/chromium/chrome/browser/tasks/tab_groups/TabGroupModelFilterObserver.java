@@ -86,6 +86,7 @@ public interface TabGroupModelFilterObserver {
      * selection editor, or by longpressing a link on a tab and using the context menu.
      *
      * @param newRootId The new root id of the group after merge.
+     * @param filter The {@link TabGroupModelFilter} that the new group event triggers on.
      */
-    default void didCreateNewGroup(int newRootId) {}
+    default void didCreateNewGroup(int newRootId, TabGroupModelFilter filter) {}
 }

@@ -121,7 +121,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         tab.setTabGroupId(Token.createRandom());
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didCreateNewGroup(tab.getRootId());
+            observer.didCreateNewGroup(tab.getRootId(), this);
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -185,6 +185,8 @@ public class TabGroupModelFilter extends TabModelFilter {
             List<Integer> originalRootIds = new ArrayList<>();
             List<Token> originalTabGroupIds = new ArrayList<>();
             String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
+            boolean didCreateNewGroup =
+                    !isTabInTabGroup(sourceTab) && !isTabInTabGroup(destinationTab);
 
             if (!skipUpdateTabModel) {
                 tabsIncludingDestination.add(destinationTab);
@@ -224,6 +226,11 @@ public class TabGroupModelFilter extends TabModelFilter {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMergeTabToGroup(
                         tabsToMerge.get(tabsToMerge.size() - 1), group.getLastShownTabId());
+
+                if (didCreateNewGroup) {
+                    observer.didCreateNewGroup(destinationRootId, this);
+                }
+
                 // Since the undo group merge logic is unsupported when called from the tab strip,
                 // skip notifying the UndoGroupSnackbarController observer which shows the snackbar.
                 if (!skipUpdateTabModel) {
@@ -254,7 +261,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             List<Tab> tabs, Tab destinationTab, boolean isSameGroup, boolean notify) {
         // Check whether the destination tab is in a tab group before getOrCreateTabGroupId so we
         // send the correct signal for whether a tab group was newly created.
-        boolean didCreateGroup = isTabInTabGroup(destinationTab);
+        boolean didCreateNewGroup = !isTabInTabGroup(destinationTab);
         List<Tab> mergedTabs = new ArrayList<>();
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
@@ -288,6 +295,12 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
+
+            // Check if any of the tabs in the tab list are part of a tab group.
+            if (didCreateNewGroup && isTabInTabGroup(tab)) {
+                didCreateNewGroup = false;
+            }
+
             // When merging tabs are in the same group, only make one willMergeTabToGroup call.
             if (!isSameGroup || i == tabs.size() - 1) {
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -331,20 +344,12 @@ public class TabGroupModelFilter extends TabModelFilter {
             }
         }
 
-        // If any originalRootIds have duplicates, they are removed. This is to help indicate if a
-        // tab group is part of the tabs to merge.
-        HashSet<Integer> uniqueRootIds = new HashSet<>(originalRootIds);
-
-        // If the destination tab is not part of a tab group and none of the tabs to merge were part
-        // of a tab group, then this action is creating a new tab group.
-        if (!didCreateGroup && (uniqueRootIds.size() == originalRootIds.size())) {
-            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didCreateNewGroup(destinationRootId);
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            if (didCreateNewGroup) {
+                observer.didCreateNewGroup(destinationRootId, this);
             }
-        }
 
-        if (notify) {
-            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            if (notify) {
                 observer.didCreateGroup(
                         mergedTabs,
                         originalIndexes,
@@ -621,7 +626,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
                     // When creating a tab group with the context menu longpress, this action runs.
                     for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                        observer.didCreateNewGroup(rootId);
+                        observer.didCreateNewGroup(rootId, this);
                     }
                 }
             }
