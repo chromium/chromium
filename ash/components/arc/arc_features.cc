@@ -352,12 +352,12 @@ const base::FeatureParam<int> kVmMemoryPSIReportsPeriod{&kVmMemoryPSIReports,
 // RAM - 1024 MiB.
 BASE_FEATURE(kVmMemorySize,
              "ArcVmMemorySize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the amount to "shift" system RAM when sizing ARCVM. The default
 // value of 0 means that ARCVM's memory will be thr same as the system.
 const base::FeatureParam<int> kVmMemorySizeShiftMiB{&kVmMemorySize, "shift_mib",
-                                                    0};
+                                                    -500};
 
 // Controls the maximum amount of memory to give ARCVM. The default value of
 // INT32_MAX means that ARCVM's memory is not capped.

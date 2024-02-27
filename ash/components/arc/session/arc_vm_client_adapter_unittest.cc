@@ -2170,7 +2170,8 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeWithPercentageParam) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.memory_mib(), total_mib / 4);
+  // shift_mib is -500 by default
+  EXPECT_EQ(request.memory_mib(), total_mib / 4 - 500);
 }
 
 // Test that ARCMVM size is set by both ram_percentage and shift_mib.
@@ -2482,8 +2483,9 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_5GbSystem) {
   StartMiniArcWithParams(true, std::move(start_params));
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  // 5GB system should result in 4GB VM size => 2GB ZRAM.
-  EXPECT_EQ(2048u, request.guest_zram_mib());
+  // As shift_mib for memory size is -500 by default,
+  // 5GB system should result in 4.5GB VM size => 2.25GB ZRAM.
+  EXPECT_EQ(2310u, request.guest_zram_mib());
 }
 
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_4GbSystem) {
@@ -2506,8 +2508,9 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_4GbSystem) {
   StartMiniArcWithParams(true, std::move(start_params));
 
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  // 4GB system should result in 3GB VM size => 1.5GB ZRAM.
-  EXPECT_EQ(1536u, request.guest_zram_mib());
+  // As shift_mib for memory size is -500 by default,
+  // 4GB system should result in 3.5GB VM size => 1.75GB ZRAM.
+  EXPECT_EQ(1798u, request.guest_zram_mib());
 }
 
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_CustomMem) {
