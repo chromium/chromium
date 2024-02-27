@@ -79,23 +79,6 @@ class AutofillSuggestionGenerator {
                        bool field_is_autofilled,
                        const FieldTypeSet& field_types);
 
-  // Returns a list of Suggestion objects, each representing an element in
-  // `profiles`.
-  // `field_types` holds the type of fields relevant for the current suggestion.
-  // The profiles passed to this function should already have been matched on
-  // `trigger_field_contents_canon` and deduplicated.
-  // `previously_hidden_profiles_guid` stores the guids of the profiles that
-  // were not displayed prior to the effects of the Finch feature
-  // kAutofillUseAddressRewriterInProfileSubsetComparison.
-  std::vector<Suggestion> CreateSuggestionsFromProfiles(
-      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-          profiles,
-      const FieldTypeSet& field_types,
-      std::optional<FieldTypeSet> last_targeted_fields,
-      FieldType trigger_field_type,
-      uint64_t trigger_field_max_length,
-      const std::set<std::string>& previously_hidden_profiles_guid = {});
-
   // Generates suggestions for all available credit cards based on the
   // `trigger_field_type`, `trigger_field` and `trigger_source`.
   // `with_offer` is set to true if ANY card has card-linked offers.
@@ -182,6 +165,25 @@ class AutofillSuggestionGenerator {
                                         const url::Origin& origin) const;
 
  private:
+  friend class AutofillSuggestionGeneratorTestApi;
+
+  // Returns a list of Suggestion objects, each representing an element in
+  // `profiles`.
+  // `field_types` holds the type of fields relevant for the current suggestion.
+  // The profiles passed to this function should already have been matched on
+  // `trigger_field_contents_canon` and deduplicated.
+  // `previously_hidden_profiles_guid` stores the guids of the profiles that
+  // were not displayed prior to the effects of the Finch feature
+  // kAutofillUseAddressRewriterInProfileSubsetComparison.
+  std::vector<Suggestion> CreateSuggestionsFromProfiles(
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
+      const FieldTypeSet& field_types,
+      std::optional<FieldTypeSet> last_targeted_fields,
+      FieldType trigger_field_type,
+      uint64_t trigger_field_max_length,
+      const std::set<std::string>& previously_hidden_profiles_guid = {});
+
   // Dedupes the given profiles based on if one is a subset of the other for
   // suggestions represented by `field_types`. The function returns at most
   // `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of
