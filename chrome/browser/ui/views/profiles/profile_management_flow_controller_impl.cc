@@ -28,11 +28,6 @@ ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
     ClearHostClosure clear_host_callback)
     : ProfileManagementFlowController(host, std::move(clear_host_callback)) {}
 
-base::queue<ProfileManagementFlowController::Step>
-ProfileManagementFlowControllerImpl::RegisterPostIdentitySteps() {
-  return {};
-}
-
 ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
     default;
 
@@ -143,8 +138,10 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
 }
 #endif
 
-void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps() {
-  post_identity_steps_ = RegisterPostIdentitySteps();
+void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps(
+    PostHostClearedCallback post_host_cleared_callback) {
+  post_identity_steps_ =
+      RegisterPostIdentitySteps(std::move(post_host_cleared_callback));
   AdvanceToNextPostIdentityStep();
 }
 
@@ -156,4 +153,18 @@ void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep() {
   Step next_step = post_identity_steps_.front();
   post_identity_steps_.pop();
   SwitchToStep(next_step, /*reset_state=*/true);
+}
+
+void ProfileManagementFlowControllerImpl::HandleIdentityStepsCompleted(
+    Profile* profile,
+    PostHostClearedCallback post_host_cleared_callback,
+    bool is_continue_callback) {
+  CHECK(profile);
+
+  if (is_continue_callback) {
+    FinishFlowAndRunInBrowser(profile, std::move(post_host_cleared_callback));
+    return;
+  }
+
+  SwitchToPostIdentitySteps(std::move(post_host_cleared_callback));
 }

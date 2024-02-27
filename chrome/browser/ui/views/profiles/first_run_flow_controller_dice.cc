@@ -68,6 +68,23 @@ void MaybeLogSetAsDefaultSuccess(
   }
 }
 
+bool IsPostIdentityStep(ProfileManagementFlowController::Step step) {
+  switch (step) {
+    case ProfileManagementFlowController::Step::kUnknown:
+    case ProfileManagementFlowController::Step::kFinishFlow:
+    case ProfileManagementFlowController::Step::kFinishSamlSignin:
+    case ProfileManagementFlowController::Step::kPostSignInFlow:
+    case ProfileManagementFlowController::Step::kProfilePicker:
+    case ProfileManagementFlowController::Step::kAccountSelection:
+    case ProfileManagementFlowController::Step::kIntro:
+    case ProfileManagementFlowController::Step::kReauth:
+      return false;
+    case ProfileManagementFlowController::Step::kDefaultBrowser:
+    case ProfileManagementFlowController::Step::kSearchEngineChoice:
+      return true;
+  }
+}
+
 class IntroStepController : public ProfileManagementStepController {
  public:
   explicit IntroStepController(
@@ -401,10 +418,10 @@ FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   // The core of the flow stops at the sync opt in step. Considering the flow
   // completed means among other things that we would always proceed to the
   // browser when closing the host view.
-  bool is_core_flow_completed = current_step() == Step::kDefaultBrowser;
+  bool is_core_flow_completed = IsPostIdentityStep(current_step());
 
   if (is_core_flow_completed) {
-    FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
+    RunFinishFlowCallback();
   } else {
     // TODO(crbug.com/1466803): Revisit the enum value name for kQuitAtEnd.
     std::move(first_run_exited_callback_)
@@ -438,7 +455,8 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
   // hacky workarounds. Look into letting the user keep their account.
   signin::ClearProfileWithManagedAccounts(profile_);
 
-  HandleIdentityStepsCompleted(PostHostClearedCallback());
+  HandleIdentityStepsCompleted(profile_, PostHostClearedCallback(),
+                               /*is_continue_callback=*/false);
 }
 
 bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
@@ -455,27 +473,14 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
   }
 
   if (choice == IntroChoice::kContinueWithoutAccount) {
-    HandleIdentityStepsCompleted(PostHostClearedCallback());
+    HandleIdentityStepsCompleted(profile_, PostHostClearedCallback(),
+                                 /*is_continue_callback=*/false);
     return;
   }
 
   SwitchToIdentityStepsFromAccountSelection(
       /*step_switch_finished_callback=*/base::DoNothing(), kAccessPoint,
       profile_->GetPath());
-}
-
-void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
-    PostHostClearedCallback post_host_cleared_callback,
-    bool is_continue_callback) {
-  CHECK(post_host_cleared_callback_->is_null());
-  post_host_cleared_callback_ = std::move(post_host_cleared_callback);
-
-  if (is_continue_callback) {
-    FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
-    return;
-  }
-
-  SwitchToPostIdentitySteps();
 }
 
 std::unique_ptr<ProfilePickerSignedInFlowController>
@@ -489,12 +494,27 @@ FirstRunFlowControllerDice::CreateSignedInFlowController(
       base::BindOnce(&FirstRunFlowControllerDice::HandleIdentityStepsCompleted,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
-                     base::Unretained(this)));
+                     base::Unretained(this), base::Unretained(profile_)));
+}
+
+void FirstRunFlowControllerDice::RunFinishFlowCallback() {
+  if (finish_flow_callback_) {
+    std::move(finish_flow_callback_).Run();
+  }
 }
 
 base::queue<ProfileManagementFlowController::Step>
-FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
+FirstRunFlowControllerDice::RegisterPostIdentitySteps(
+    PostHostClearedCallback post_host_cleared_callback) {
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
+
+  finish_flow_callback_ = base::BindOnce(
+      &FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
+      base::Unretained(this),
+      // Unretained ok: the steps register a profile keep-alive and
+      // will be alive until this callback runs.
+      base::Unretained(profile_), std::move(post_host_cleared_callback));
+
   auto search_engine_choice_step_completed =
       base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
                      base::Unretained(this));
@@ -523,9 +543,8 @@ FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
       Step::kFinishFlow,
       ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
           host(),
-          base::BindOnce(&FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
-                         base::Unretained(this), base::Unretained(profile_),
-                         std::move(post_host_cleared_callback_))));
+          base::BindOnce(&FirstRunFlowControllerDice::RunFinishFlowCallback,
+                         base::Unretained(this))));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kFinishFlow);
   return post_identity_steps;

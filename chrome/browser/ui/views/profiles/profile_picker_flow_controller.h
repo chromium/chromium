@@ -52,8 +52,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
  protected:
   // ProfileManagementFlowControllerImpl
-  base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps()
-      override;
+  base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps(
+      PostHostClearedCallback post_host_cleared_callback) override;
 
  private:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -75,13 +75,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
-  // When `is_continue_callback` is true, the flow should finishing up
-  // immediately so that `post_host_cleared_callback` can be executed, without
-  // showing other steps.
-  void HandleIdentityStepsCompleted(
-      PostHostClearedCallback post_host_cleared_callback,
-      bool is_continue_callback);
-
   const ProfilePicker::EntryPoint entry_point_;
 
   // Color provided when a profile creation is initiated, that may be used to
@@ -99,7 +92,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       weak_signed_in_flow_controller_;
 
   base::WeakPtr<Profile> created_profile_;
-  PostHostClearedCallback post_host_cleared_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FLOW_CONTROLLER_H_

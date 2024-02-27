@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -520,7 +521,10 @@ ProfilePickerFlowController::CreateSignedInFlowController(
       base::BindOnce(&ProfilePickerFlowController::HandleIdentityStepsCompleted,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
-                     base::Unretained(this));
+                     base::Unretained(this),
+                     // Unretained ok: the steps register a profile keep-alive
+                     // and will be alive until this callback runs.
+                     base::Unretained(created_profile_.get()));
 
   auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
       host(), signed_in_profile, account_info, std::move(contents),
@@ -529,25 +533,9 @@ ProfilePickerFlowController::CreateSignedInFlowController(
   return signed_in_flow;
 }
 
-void ProfilePickerFlowController::HandleIdentityStepsCompleted(
-    PostHostClearedCallback post_host_cleared_callback,
-    bool is_continue_callback) {
-  CHECK(post_host_cleared_callback_->is_null());
-  CHECK(!post_host_cleared_callback->is_null());
-  CHECK(created_profile_);
-  post_host_cleared_callback_ = std::move(post_host_cleared_callback);
-
-  if (is_continue_callback) {
-    FinishFlowAndRunInBrowser(created_profile_.get(),
-                              std::move(post_host_cleared_callback_));
-    return;
-  }
-
-  SwitchToPostIdentitySteps();
-}
-
 base::queue<ProfileManagementFlowController::Step>
-ProfilePickerFlowController::RegisterPostIdentitySteps() {
+ProfilePickerFlowController::RegisterPostIdentitySteps(
+    PostHostClearedCallback post_host_cleared_callback) {
   CHECK(created_profile_);
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
 
@@ -578,7 +566,7 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
           base::BindOnce(
               &ProfilePickerFlowController::FinishFlowAndRunInBrowser,
               base::Unretained(this), base::Unretained(created_profile_.get()),
-              std::move(post_host_cleared_callback_))));
+              std::move(post_host_cleared_callback))));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kFinishFlow);
 
