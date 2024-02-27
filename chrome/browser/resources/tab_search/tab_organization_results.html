@@ -18,6 +18,7 @@
   #scrollable {
     display: flex;
     flex-direction: column;
+    gap: 12px;
     overflow-y: auto;
   }
 
@@ -36,13 +37,15 @@
     [[getTitle_()]]
   </div>
   <div id="scrollable">
-    <tab-organization-group
-        name="[[name_]]"
-        tabs="[[tabs_]]"
-        organization-id="[[organizationId_]]"
-        is-last-organization="[[isLastOrganization_]]"
+    <template is="dom-repeat" items="[[getOrganizations_(session)]]">
+      <tab-organization-group
+        name="[[getName_(item)]]"
+        tabs="[[item.tabs]]"
+        organization-id="[[item.organizationId]]"
+        is-last-organization="[[isLastOrganization_(item)]]"
         multi-tab-organization="[[multiTabOrganization]]">
-    </tab-organization-group>
+      </tab-organization-group>
+    </template>
   </div>
   <div class="feedback" role="toolbar" on-keydown="onFeedbackKeyDown_">
     <div class="tab-organization-body">

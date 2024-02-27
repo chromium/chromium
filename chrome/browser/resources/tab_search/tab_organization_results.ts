@@ -17,7 +17,7 @@ import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-sel
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_results.html.js';
-import type {Tab, TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
+import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
@@ -51,11 +51,6 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
       multiTabOrganization: Boolean,
 
-      tabs_: Array,
-      name_: String,
-      isLastOrganization_: Boolean,
-      organizationId_: Number,
-
       feedbackSelectedOption_: {
         type: String,
         value: CrFeedbackOption.UNSPECIFIED,
@@ -68,13 +63,6 @@ export class TabOrganizationResultsElement extends PolymerElement {
   multiTabOrganization: boolean;
 
   private feedbackSelectedOption_: CrFeedbackOption;
-
-  // TODO(emshack): These 4 variables are a holdover from a single-group UI.
-  // Remove once the UI can display multiple groups.
-  private tabs_: Tab[];
-  private name_: string;
-  private isLastOrganization_: boolean;
-  private organizationId_: number;
 
   static get template() {
     return getTemplate();
@@ -97,11 +85,20 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return loadTimeData.getString('successTitle');
   }
 
-  private getRefreshButtonText_(): string {
-    if (this.isLastOrganization_) {
-      return loadTimeData.getString('rejectFinalSuggestion');
+  private getOrganizations_() {
+    if (this.multiTabOrganization) {
+      return this.session.organizations;
+    } else {
+      return this.session.organizations.slice(0, 1);
     }
-    return loadTimeData.getString('rejectSuggestion');
+  }
+
+  private getName_(organization: TabOrganization) {
+    return mojoString16ToString(organization.name);
+  }
+
+  private isLastOrganization_(organization: TabOrganization) {
+    return organization === this.session.organizations.slice(-1)[0];
   }
 
   private onAvailableHeightChange_() {
@@ -113,15 +110,6 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   private onSessionChange_() {
     this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
-
-    if (!this.session || this.session.organizations.length === 0) {
-      return;
-    }
-    const organization: TabOrganization = this.session.organizations[0];
-    this.name_ = mojoString16ToString(organization.name);
-    this.tabs_ = organization.tabs;
-    this.organizationId_ = organization.organizationId;
-    this.isLastOrganization_ = this.session.organizations.length === 1;
   }
 
   private onLearnMoreClick_() {
@@ -170,7 +158,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('feedback', {
       bubbles: true,
       composed: true,
-      detail: {value: event.detail.value, organizationId: this.organizationId_},
+      detail: {value: event.detail.value},
     }));
   }
 }
