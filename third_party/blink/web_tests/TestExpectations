@@ -6883,3 +6883,7 @@ crbug.com/1467464 http/tests/devtools/security/security-details-updated-with-sec
 
 # Flaky test
 crbug.com/325415944 [ Linux ] external/wpt/longtask-timing/spin-eventloop-not-longtask.html [ Failure Pass ]
+
+# Flaky tests: 2024-02-27
+crbug.com/327190607 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fledge-container-size.https.html [ Failure Pass Timeout ]
+crbug.com/327193003 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Pass Timeout ]
