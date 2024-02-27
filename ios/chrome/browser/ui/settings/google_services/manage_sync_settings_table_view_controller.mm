@@ -130,24 +130,32 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 #pragma mark - ManageSyncSettingsConsumer
 
-- (void)insertSections:(NSIndexSet*)sections {
+- (void)insertSections:(NSIndexSet*)sections rowAnimation:(BOOL)rowAnimation {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  [self.tableView insertSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
+  if (rowAnimation) {
+    [self.tableView insertSections:sections
+                  withRowAnimation:UITableViewRowAnimationMiddle];
+  } else {
+    [UIView performWithoutAnimation:^{
+      [self.tableView beginUpdates];
+      [self.tableView insertSections:sections
+                    withRowAnimation:UITableViewRowAnimationNone];
+      [self.tableView endUpdates];
+    }];
+  }
 }
 
-- (void)deleteSections:(NSIndexSet*)sections
-      withRowAnimation:(BOOL)withRowAnimation {
+- (void)deleteSections:(NSIndexSet*)sections rowAnimation:(BOOL)rowAnimation {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  if (withRowAnimation) {
+  if (rowAnimation) {
     [self.tableView deleteSections:sections
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+                  withRowAnimation:UITableViewRowAnimationMiddle];
   } else {
     // To avoid animation glitches related to crbug.com/1469539.
     [UIView performWithoutAnimation:^{

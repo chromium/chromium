@@ -18,12 +18,11 @@
 
 // Inserts sections at `sections` indexes. Does nothing if the model is not
 // loaded yet.
-- (void)insertSections:(NSIndexSet*)sections;
+- (void)insertSections:(NSIndexSet*)sections rowAnimation:(BOOL)rowAnimation;
 
 // Deletes sections at `sections` indexes. Does nothing if the model is not
 // loaded yet.
-- (void)deleteSections:(NSIndexSet*)section
-      withRowAnimation:(BOOL)withRowAnimation;
+- (void)deleteSections:(NSIndexSet*)section rowAnimation:(BOOL)rowAnimation;
 
 // Reloads only a specific `item`. Does nothing if the model is not loaded
 // yet.
