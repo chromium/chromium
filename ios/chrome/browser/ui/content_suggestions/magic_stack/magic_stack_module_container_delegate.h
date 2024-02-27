@@ -12,10 +12,6 @@ enum class ContentSuggestionsModuleType;
 // Protocol asking the receiver for more contextual information about modules.
 @protocol MagicStackModuleContainerDelegate
 
-// YES if the module of `type` is the only module being shown in the Magic
-// Stack.
-- (BOOL)doesMagicStackShowOnlyOneModule:(ContentSuggestionsModuleType)type;
-
 // Indicates to the receiver that the "See More" button was tapped in the
 // module.
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type;

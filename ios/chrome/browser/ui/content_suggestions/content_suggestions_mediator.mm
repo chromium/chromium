@@ -171,6 +171,11 @@ using RequestSource = SearchTermsData::RequestSource;
   [self.magicStackConsumer replaceItem:oldItem withItem:item];
 }
 
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+                 didRemoveItem:(MagicStackModule*)item {
+  [self.magicStackConsumer removeItem:item];
+}
+
 #pragma mark - ContentSuggestionsCommands
 
 - (void)openMostRecentTab {

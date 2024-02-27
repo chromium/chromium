@@ -88,7 +88,7 @@ const CGFloat kSeparatorHeight = 0.5;
     _titleStackView.distribution = UIStackViewDistributionFill;
     // Resist Vertical expansion so all titles are the same height, allowing
     // content view to fill the rest of the module space.
-    [_titleStackView setContentHuggingPriority:UILayoutPriorityDefaultHigh
+    [_titleStackView setContentHuggingPriority:UILayoutPriorityRequired
                                        forAxis:UILayoutConstraintAxisVertical];
 
     _title = [[UILabel alloc] init];
@@ -112,7 +112,7 @@ const CGFloat kSeparatorHeight = 0.5;
     // intrinsic contentSize. Constraining the title label to the StackView will
     // ensure contentView expands.
     [NSLayoutConstraint activateConstraints:@[
-      [_title.topAnchor constraintEqualToAnchor:_titleStackView.topAnchor]
+      [_title.bottomAnchor constraintEqualToAnchor:_titleStackView.bottomAnchor]
     ]];
 
     _seeMoreButton = [[UIButton alloc] init];

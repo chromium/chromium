@@ -19,6 +19,9 @@
 // Insert `item` at `index` in the Magic Stack.
 - (void)insertItem:(MagicStackModule*)item atIndex:(NSUInteger)index;
 
+// Remove `item` from the Magic Stack.
+- (void)removeItem:(MagicStackModule*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_CONSUMER_H_

@@ -920,26 +920,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       titleStringForModule:[self currentlyShownModule]];
 }
 
-#pragma mark - MagicStackModuleContainerDelegate
-
-- (BOOL)doesMagicStackShowOnlyOneModule:(ContentSuggestionsModuleType)type {
-  // Return NO if Most Visited Module is asking while it is not in the Magic
-  // Stack.
-  if (type == ContentSuggestionsModuleType::kMostVisited &&
-      !ShouldPutMostVisitedSitesInMagicStack()) {
-    return NO;
-  }
-  if (!_magicStackRankReceived &&
-      base::FeatureList::IsEnabled(segmentation_platform::features::
-                                       kSegmentationPlatformIosModuleRanker)) {
-    // There are two placeholders shown in the Magic Stack.
-    return NO;
-  }
-  ContentSuggestionsModuleType firstModuleType = (ContentSuggestionsModuleType)[
-      [_magicStackModuleOrder objectAtIndex:0] intValue];
-  return [_magicStackModuleOrder count] == 1 && firstModuleType == type;
-}
-
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
   switch (type) {
     case ContentSuggestionsModuleType::kSafetyCheck:

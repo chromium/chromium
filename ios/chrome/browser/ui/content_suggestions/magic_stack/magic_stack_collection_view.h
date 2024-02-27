@@ -13,13 +13,15 @@ typedef UICollectionViewDiffableDataSource<NSString*, MagicStackModule*>
     MagicStackDiffableDataSource;
 
 @protocol MagicStackCollectionViewControllerAudience;
+@protocol MagicStackModuleContainerDelegate;
 
 // A UICollectionView that contains a horizontal list of Magic Stack cards.
 @interface MagicStackCollectionViewController
     : UIViewController <MagicStackConsumer>
 
 // Audience for Magic Stack module events.
-@property(nonatomic, weak) id<MagicStackCollectionViewControllerAudience>
+@property(nonatomic, weak) id<MagicStackCollectionViewControllerAudience,
+                              MagicStackModuleContainerDelegate>
     audience;
 
 @end

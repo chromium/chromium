@@ -25,6 +25,10 @@
                 didReplaceItem:(MagicStackModule*)oldItem
                       withItem:(MagicStackModule*)item;
 
+// Indicates that `item` should be removed.
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+                 didRemoveItem:(MagicStackModule*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_RANKING_MODEL_DELEGATE_H_

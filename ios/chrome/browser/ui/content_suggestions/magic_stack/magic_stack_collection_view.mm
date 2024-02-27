@@ -109,6 +109,17 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
+- (void)removeItem:(MagicStackModule*)item {
+  NSIndexPath* existingItemIndexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:item];
+  if (!existingItemIndexPath) {
+    return;
+  }
+  MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
+  [snapshot deleteItemsWithIdentifiers:@[ item ]];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
@@ -205,6 +216,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 - (void)configureCell:(MagicStackModuleContainer*)cell
              withItem:(MagicStackModule*)item
               atIndex:(NSUInteger)index {
+  cell.delegate = self.audience;
   [cell configureWithConfig:item];
 }
 

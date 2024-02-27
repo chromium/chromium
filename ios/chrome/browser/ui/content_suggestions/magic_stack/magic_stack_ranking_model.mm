@@ -161,6 +161,12 @@
 #pragma mark - SafetyCheckMagicStackMediatorDelegate
 
 - (void)removeSafetyCheckModule {
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    [self.delegate
+        magicStackRankingModel:self
+                 didRemoveItem:_safetyCheckMediator.safetyCheckState];
+    return;
+  }
   MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
   change.old_module = ContentSuggestionsModuleType::kSafetyCheck;
   change.index = [self
@@ -197,6 +203,11 @@
 }
 
 - (void)removeTabResumptionModule {
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    [self.delegate magicStackRankingModel:self
+                            didRemoveItem:_tabResumptionMediator.itemConfig];
+    return;
+  }
   [self.consumer hideTabResumption];
 }
 
@@ -234,6 +245,13 @@
 }
 
 - (void)parcelTrackingDisabled {
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    [self.delegate magicStackRankingModel:self
+                            didRemoveItem:_parcelTrackingMediator
+                                              .parcelTrackingItemToShow];
+    return;
+  }
+
   // Find all parcel tracking modules and remove them.
   for (NSUInteger i = 0; i < [_latestMagicStackOrder count]; i++) {
     ContentSuggestionsModuleType type =
