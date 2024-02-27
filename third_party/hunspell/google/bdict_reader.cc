@@ -5,6 +5,7 @@
 #include "third_party/hunspell/google/bdict_reader.h"
 
 #include <stdint.h>
+#include <cstdint>
 
 #include "base/check.h"
 
@@ -413,19 +414,32 @@ NodeReader::FindResult NodeReader::ReaderForLookupAt(
   if (index >= static_cast<size_t>(lookup_num_chars()) || !is_valid_)
     return FIND_DONE;
 
-  size_t child_offset;
+  size_t child_offset = 0;
   if (is_lookup_32()) {
     // Table contains 32-bit absolute offsets.
-    child_offset =
-        reinterpret_cast<const unsigned int*>(table_begin)[index];
+
+    // We need to use memcpy here instead of just casting the offset into a
+    // pointer to an int because the cast can cause undefined behavior if
+    // the pointer is not alligned, and in this case it is not.
+    int byte_offset = index * sizeof(uint32_t);
+    std::memcpy(&child_offset,
+                reinterpret_cast<const void*>(table_begin + byte_offset),
+                sizeof(uint32_t));
     if (!child_offset)
       return FIND_NOTHING;  // This entry in the table is empty.
   } else {
     // Table contains 16-bit offsets relative to the current node.
-    child_offset =
-        reinterpret_cast<const unsigned short*>(table_begin)[index];
-    if (!child_offset)
+
+    // We need to use memcpy here instead of just casting the offset into a
+    // pointer to an int because the cast can cause undefined behavior if
+    // the pointer is not alligned, and in this case it is not.
+    int byte_offset = index * sizeof(uint16_t);
+    std::memcpy(&child_offset,
+                reinterpret_cast<const void*>(table_begin + byte_offset),
+                sizeof(uint16_t));
+    if (!child_offset) {
       return FIND_NOTHING;  // This entry in the table is empty.
+    }
     child_offset += node_offset_;
   }
 
