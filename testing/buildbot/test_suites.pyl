@@ -5541,22 +5541,6 @@
       'web_engine_unittests': {},
     },
 
-    'webrtc_chromium_baremetal_gtests': {
-      'capture_unittests': {
-        'args': [
-          '--enable-logging',
-          '--v=1',
-          '--test-launcher-jobs=1',
-          '--test-launcher-print-test-stdio=always',
-        ],
-        'swarming': {
-          'dimensions': {
-            'pool': 'WebRTC-chromium',
-          },
-        },
-      },
-    },
-
     'webrtc_chromium_gtests': {
       'browser_tests': {
         'args': [
@@ -5623,17 +5607,6 @@
           '--gtest_filter=UsingRealWebcam*',
           '--run-manual',
           '--test-launcher-jobs=1',
-        ],
-      },
-    },
-
-    'webrtc_chromium_without_baremetal_gtests': {
-      'capture_unittests': {
-        'args': [
-          '--enable-logging',
-          '--v=1',
-          '--test-launcher-jobs=1',
-          '--test-launcher-print-test-stdio=always',
         ],
       },
     },
@@ -6890,16 +6863,6 @@
 
     'rust_host_gtests': [
       'rust_common_gtests',
-    ],
-
-    'webrtc_chromium_tests_with_baremetal_tests': [
-      'webrtc_chromium_baremetal_gtests',
-      'webrtc_chromium_gtests',
-    ],
-
-    'webrtc_chromium_tests_without_baremetal_tests': [
-      'webrtc_chromium_gtests',
-      'webrtc_chromium_without_baremetal_gtests',
     ],
 
     'webview_bot_all_gtests': [
