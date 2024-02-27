@@ -714,7 +714,6 @@ class VideoResourceUpdater::HardwarePlaneResource
       : PlaneResource(plane_resource_id, size, format, /*is_software=*/false),
         context_provider_(context_provider) {
     DCHECK(context_provider_);
-    const gpu::Capabilities& caps = context_provider_->ContextCapabilities();
     auto* sii = SharedImageInterface();
     if (format.is_single_plane()) {
       // TODO(crbug.com/1366495): Set `overlay_candidate_` for multiplanar
@@ -737,14 +736,18 @@ class VideoResourceUpdater::HardwarePlaneResource
     }
     if (overlay_candidate_) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      texture_target_ = gpu::GetBufferTextureTarget(
-          gfx::BufferUsage::SCANOUT,
-          SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
     shared_image_ = sii->CreateSharedImage(
         {format, size, color_space, shared_image_usage, "VideoResourceUpdater"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
+    // Determine if a platform-specific target for overlays is needed if this SI
+    // is an overlay candidate (note that if this SI is *not* an overlay
+    // candidate, i.e., it does not have SCANOUT in its own usage, this call
+    // will return GL_TEXTURE_2D and hence will leave `texture_target_`
+    // unchanged).
+    texture_target_ =
+        shared_image_->GetTextureTarget(gfx::BufferUsage::SCANOUT);
     InterfaceBase()->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
   }
