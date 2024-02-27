@@ -307,7 +307,8 @@ class TagHelpersUnittest(unittest.TestCase):
 
   def testGetDisplayServer(self) -> None:
     """Tests all code paths for the GetDisplayServer() method."""
-    with mock.patch('sys.platform', 'linux2'):
+    with mock.patch('gpu_tests.util.host_information.IsLinux',
+                    return_value=True):
       # Remote platforms.
       for browser_type in gpu_helper.REMOTE_BROWSER_TYPES:
         self.assertEqual(gpu_helper.GetDisplayServer(browser_type), None)
@@ -319,7 +320,8 @@ class TagHelpersUnittest(unittest.TestCase):
         self.assertEqual(gpu_helper.GetDisplayServer(''),
                          'display-server-wayland')
 
-    with mock.patch('sys.platform', 'win32'):
+    with mock.patch('gpu_tests.util.host_information.IsLinux',
+                    return_value=False):
       self.assertEqual(gpu_helper.GetDisplayServer(''), None)
 
   def testGetOOPCanvasStatus(self) -> None:

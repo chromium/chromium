@@ -33,6 +33,7 @@ import validate_tag_consistency
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
+from gpu_tests import constants
 from gpu_tests import gpu_helper
 from gpu_tests import overlay_support
 from gpu_tests.util import host_information
@@ -48,10 +49,10 @@ ResultType = json_results.ResultType
 # Please expand the following lists when we expand to new bot configs.
 _SUPPORTED_WIN_VERSIONS = ['win7', 'win10', 'win11']
 _SUPPORTED_WIN_GPU_VENDORS = [
-    gpu_helper.GpuVendors.AMD,
-    gpu_helper.GpuVendors.INTEL,
-    gpu_helper.GpuVendors.NVIDIA,
-    gpu_helper.GpuVendors.QUALCOMM,
+    constants.GpuVendor.AMD,
+    constants.GpuVendor.INTEL,
+    constants.GpuVendor.NVIDIA,
+    constants.GpuVendor.QUALCOMM,
 ]
 
 _ARGS_TO_CONSOLIDATE = frozenset([

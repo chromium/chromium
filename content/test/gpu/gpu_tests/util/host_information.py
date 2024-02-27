@@ -19,7 +19,7 @@ import subprocess
 import sys
 from typing import Any, List
 
-from gpu_tests import gpu_helper
+from gpu_tests import constants
 
 if sys.platform == 'win32':
   # pylint: disable=import-error
@@ -86,30 +86,30 @@ def Isx86Cpu() -> bool:
 
 @functools.lru_cache(maxsize=1)
 def IsIntelGpu() -> bool:
-  return _IsGpuVendorPresent(gpu_helper.GpuVendors.INTEL)
+  return _IsGpuVendorPresent(constants.GpuVendor.INTEL)
 
 
 @functools.lru_cache(maxsize=1)
 def IsAmdGpu() -> bool:
-  return _IsGpuVendorPresent(gpu_helper.GpuVendors.AMD)
+  return _IsGpuVendorPresent(constants.GpuVendor.AMD)
 
 
 @functools.lru_cache(maxsize=1)
 def IsNvidiaGpu() -> bool:
-  return _IsGpuVendorPresent(gpu_helper.GpuVendors.NVIDIA)
+  return _IsGpuVendorPresent(constants.GpuVendor.NVIDIA)
 
 
 @functools.lru_cache(maxsize=1)
 def IsQualcommGpu() -> bool:
-  return _IsGpuVendorPresent(gpu_helper.GpuVendors.QUALCOMM)
+  return _IsGpuVendorPresent(constants.GpuVendor.QUALCOMM)
 
 
 @functools.lru_cache(maxsize=1)
 def IsAppleGpu() -> bool:
-  return _IsGpuVendorPresent(gpu_helper.GpuVendors.APPLE)
+  return _IsGpuVendorPresent(constants.GpuVendor.APPLE)
 
 
-def _IsGpuVendorPresent(gpu_vendor: gpu_helper.GpuVendors) -> bool:
+def _IsGpuVendorPresent(gpu_vendor: constants.GpuVendor) -> bool:
   return any(gpu.vendor_id == gpu_vendor for gpu in _GetAvailableGpus())
 
 
@@ -144,7 +144,7 @@ def _GetAvailableGpusWindows() -> List[_Gpu]:
     if match:
       vendor_id = match.group(1).lower()
       if vendor_id == 'qcom':
-        vendor_id = gpu_helper.GpuVendors.QUALCOMM
+        vendor_id = constants.GpuVendor.QUALCOMM
       else:
         vendor_id = int(vendor_id, 16)
     else:
@@ -153,7 +153,7 @@ def _GetAvailableGpusWindows() -> List[_Gpu]:
     match = _PNP_DEVICE_REGEX.search(pnp_string)
     if match:
       device_id = match.group(1).lower()
-      if vendor_id == gpu_helper.GpuVendors.QUALCOMM:
+      if vendor_id == constants.GpuVendor.QUALCOMM:
         device_id = _QUALCOMM_DEVICE_MAP[device_id]
       device_id = int(device_id, 16)
     else:
@@ -253,7 +253,7 @@ def _HandleAppleGpu(gpu: dict) -> _Gpu:
   if not device_name:
     raise RuntimeError('Did not get a device name for Apple GPU')
 
-  return _Gpu(gpu_helper.GpuVendors.APPLE, device_name)
+  return _Gpu(constants.GpuVendor.APPLE, device_name)
 
 
 def _HandleNonAppleGpu(gpu: dict) -> _Gpu:
@@ -264,15 +264,14 @@ def _HandleNonAppleGpu(gpu: dict) -> _Gpu:
     # Should be NVIDIA.
     vendor_id = gpu['spdisplays_vendor-id'][2:]
     vendor_id = int(vendor_id, 16)
-    assert vendor_id == gpu_helper.GpuVendors.NVIDIA
+    assert vendor_id == constants.GpuVendor.NVIDIA
   elif 'spdisplays_vendor' in gpu:
     # Either Intel or AMD.
     match = _MAC_PCI_ID_REGEX.search(gpu['spdisplays_vendor'])
     if match:
       vendor_id = match.group(1)
       vendor_id = int(vendor_id, 16)
-      assert (vendor_id
-              in (gpu_helper.GpuVendors.INTEL, gpu_helper.GpuVendors.AMD))
+      assert vendor_id in (constants.GpuVendor.INTEL, constants.GpuVendor.AMD)
 
   # MacOS 10.13 and above stopped including the Vendor ID in the
   # spdisplays_vendor string, so infer it from the vendor name instead.
@@ -280,14 +279,14 @@ def _HandleNonAppleGpu(gpu: dict) -> _Gpu:
     model_name = gpu['sppci_model']
     vendor_name = model_name.split(' ', 1)[0].upper()
     if _IsKnownVendorName(vendor_name):
-      vendor_id = gpu_helper.GpuVendors[vendor_name]
+      vendor_id = constants.GpuVendor[vendor_name]
 
   if vendor_id is None and 'spdisplays_vendor' in gpu:
     match = _MAC_VENDOR_NAME_REGEX.search(gpu['spdisplays_vendor'])
     if match:
       vendor_name = match.group(1).upper()
       if _IsKnownVendorName(vendor_name):
-        vendor_id = gpu_helper.GpuVendors[vendor_name]
+        vendor_id = constants.GpuVendor[vendor_name]
 
   if vendor_id is None:
     raise RuntimeError('Unable to determine GPU vendor ID. Raw GPU info: %s' %
@@ -298,7 +297,7 @@ def _HandleNonAppleGpu(gpu: dict) -> _Gpu:
 
 def _IsKnownVendorName(vendor_name: str) -> bool:
   try:
-    _ = gpu_helper.GpuVendors[vendor_name]
+    _ = constants.GpuVendor[vendor_name]
     return True
   except KeyError:
     return False

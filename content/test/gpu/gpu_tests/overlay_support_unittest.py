@@ -9,7 +9,7 @@ from typing import Union
 import unittest
 from unittest import mock
 
-from gpu_tests import gpu_helper
+from gpu_tests import constants
 from gpu_tests import overlay_support
 
 from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
@@ -655,7 +655,7 @@ class GpuOverlayConfigUnittest(unittest.TestCase):
     self.assertNotEqual(config, other)
 
 
-def _createMockGpu(vendor: Union[gpu_helper.GpuVendors, int],
+def _createMockGpu(vendor: Union[constants.GpuVendor, int],
                    device: int) -> mock.Mock:
   gpu = mock.Mock()
   gpu.vendor_id = vendor
@@ -668,7 +668,7 @@ class GetOverlayConfigForGpuUnittest(unittest.TestCase):
 
   def testKnownGpu(self):  # pylint: disable=no-self-use
     """Tests behavior when a known GPU is provided."""
-    gpu = _createMockGpu(gpu_helper.GpuVendors.INTEL, 0x3e92)
+    gpu = _createMockGpu(constants.GpuVendor.INTEL, 0x3e92)
 
     overlay_support.GetOverlayConfigForGpu(gpu)
 
@@ -684,7 +684,7 @@ class GetOverlayConfigForGpuUnittest(unittest.TestCase):
 
   def testUnknownDevice(self):
     """Tests behavior when an unknown GPU devices is provided."""
-    gpu = _createMockGpu(gpu_helper.GpuVendors.INTEL, 0x1234)
+    gpu = _createMockGpu(constants.GpuVendor.INTEL, 0x1234)
 
     with self.assertRaisesRegex(
         RuntimeError,
@@ -717,7 +717,7 @@ class ParseOverlayJsonFileUnittest(fake_filesystem_unittest.TestCase):
         }
     }
     self.setJson(json_content)
-    gpu = _createMockGpu(vendor=gpu_helper.GpuVendors.INTEL, device=0x3e92)
+    gpu = _createMockGpu(vendor=constants.GpuVendor.INTEL, device=0x3e92)
     original_config = overlay_support.GetOverlayConfigForGpu(gpu)
     overlay_support.ParseOverlayJsonFile(self.filepath)
     updated_config = overlay_support.GetOverlayConfigForGpu(gpu)
@@ -769,7 +769,7 @@ class ParseOverlayJsonFileUnittest(fake_filesystem_unittest.TestCase):
     self.setJson(json_content)
     overlay_support.ParseOverlayJsonFile(self.filepath)
     actual = overlay_support.GetOverlayConfigForGpu(
-        _createMockGpu(gpu_helper.GpuVendors.INTEL, 0x1234))
+        _createMockGpu(constants.GpuVendor.INTEL, 0x1234))
     self.assertEqual(actual, expected)
 
   @mock.patch.dict(overlay_support.OVERLAY_CONFIGS, {}, clear=True)

@@ -13,6 +13,7 @@ from typing import Any, Dict, Iterable, List, Optional, Union
 import dataclasses  # Built-in, but pylint gives an ordering false positive
 
 from gpu_tests import common_typing as ct
+from gpu_tests import constants
 from gpu_tests import gpu_helper
 
 from telemetry.internal.platform import gpu_device
@@ -400,7 +401,7 @@ AllHardwareSupportDirectCompositionConfig = lambda: (
     .WithHardwareBGRA8Support())
 
 OVERLAY_CONFIGS = {
-    gpu_helper.GpuVendors.AMD: {
+    constants.GpuVendor.AMD: {
         0x7340: BasicDirectCompositionConfig()\
                 .WithHardwareNV12Support(supported_rotations=[
                     VideoRotation.ROT90,
@@ -416,7 +417,7 @@ OVERLAY_CONFIGS = {
         0x699f:
         BasicDirectCompositionConfig(),
     },
-    gpu_helper.GpuVendors.INTEL: {
+    constants.GpuVendor.INTEL: {
         # Hardware overlays are disabled in 26.20.100.8141 per
         # crbug.com/1079393#c105
         0x5912: BasicDirectCompositionConfig()\
@@ -434,7 +435,7 @@ OVERLAY_CONFIGS = {
         0x9bc5:
         AllHardwareSupportDirectCompositionConfig(),
     },
-    gpu_helper.GpuVendors.NVIDIA: {
+    constants.GpuVendor.NVIDIA: {
         # For some reason, software BGRA8 software overlay support changes
         # based on driver version.
         0x2184: BasicDirectCompositionConfig()\
@@ -449,7 +450,7 @@ OVERLAY_CONFIGS = {
                     supported_codecs=[
                         ZeroCopyCodec.H264])),
     },
-    gpu_helper.GpuVendors.QUALCOMM: {
+    constants.GpuVendor.QUALCOMM: {
         0x41333430: BasicDirectCompositionConfig()\
                     .WithHardwareNV12Support(supported_rotations=[
                         VideoRotation.ROT180])\
@@ -549,7 +550,7 @@ def ParseOverlayJsonFile(filepath: str) -> None:
   for vendor_str, device_map in json_content.items():
     assert vendor_str.lower().startswith('0x')
     vendor = int(vendor_str, 0)
-    vendor = gpu_helper.GpuVendors(vendor)
+    vendor = constants.GpuVendor(vendor)
 
     for device_str, function_list in device_map.items():
       assert device_str.lower().startswith('0x')
@@ -557,12 +558,12 @@ def ParseOverlayJsonFile(filepath: str) -> None:
       _ParseOverlayJsonForDevice(vendor, device, function_list)
 
 
-def _ParseOverlayJsonForDevice(vendor: gpu_helper.GpuVendors, device: int,
+def _ParseOverlayJsonForDevice(vendor: constants.GpuVendor, device: int,
                                function_list: List[dict]) -> None:
   """Helper to parse overlay config JSON for a single device.
 
   Args:
-    vendor: The GpuVendors value for the device's vendor.
+    vendor: The GpuVendor value for the device's vendor.
     device: An int representing the device's ID.
     function_list: A list of dicts, each dict representing a function to call.
   """

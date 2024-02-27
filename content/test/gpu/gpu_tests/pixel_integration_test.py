@@ -50,7 +50,7 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
           # Flakily fails to capture a screenshot when run in parallel on Mac.
           'Pixel_VideoStreamFrom*',
       }
-    if sys.platform == 'win32':
+    if host_information.IsWindows():
       serial_globs |= {
           # Serialized for the same reasons as in trace_integration_test.
           'Pixel_DirectComposition_Underlay*',

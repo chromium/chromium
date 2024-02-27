@@ -12,7 +12,7 @@ import six
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_typing as ct
-from gpu_tests import gpu_helper
+from gpu_tests import constants
 from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
 from gpu_tests.util import host_information
@@ -194,22 +194,22 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Running on unknown platform')
 
     expected_vendor_id = int(test_args.expected_vendor_id_str, 16)
-    if expected_vendor_id == gpu_helper.GpuVendors.QUALCOMM:
+    if expected_vendor_id == constants.GpuVendor.QUALCOMM:
       self.assertTrue(host_information.IsArmCpu())
       self.assertFalse(host_information.Isx86Cpu())
       self.assertTrue(host_information.IsQualcommGpu())
-    elif expected_vendor_id == gpu_helper.GpuVendors.APPLE:
+    elif expected_vendor_id == constants.GpuVendor.APPLE:
       self.assertTrue(host_information.IsArmCpu())
       self.assertFalse(host_information.Isx86Cpu())
       self.assertTrue(host_information.IsAppleGpu())
     else:
       self.assertTrue(host_information.Isx86Cpu())
       self.assertFalse(host_information.IsArmCpu())
-      if expected_vendor_id == gpu_helper.GpuVendors.AMD:
+      if expected_vendor_id == constants.GpuVendor.AMD:
         self.assertTrue(host_information.IsAmdGpu())
-      elif expected_vendor_id == gpu_helper.GpuVendors.INTEL:
+      elif expected_vendor_id == constants.GpuVendor.INTEL:
         self.assertTrue(host_information.IsIntelGpu())
-      elif expected_vendor_id == gpu_helper.GpuVendors.NVIDIA:
+      elif expected_vendor_id == constants.GpuVendor.NVIDIA:
         self.assertTrue(host_information.IsNvidiaGpu())
       else:
         self.fail('Running with unknown GPU vendor')

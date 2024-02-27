@@ -295,8 +295,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     instance.is_asan = True
     self.assertEqual(instance._GetTestTimeout(), 600)
 
-  @mock.patch('sys.platform', 'win32')
-  def testGenerateNvidiaExampleTags(self) -> None:
+  @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
+  def testGenerateNvidiaExampleTags(self, _) -> None:
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -319,8 +319,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'graphite-disabled',
         ]))
 
-  @mock.patch('sys.platform', 'darwin')
-  def testGenerateVendorTagUsingVendorString(self) -> None:
+  @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
+  def testGenerateVendorTagUsingVendorString(self, _) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -346,8 +346,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'graphite-disabled',
         ]))
 
-  @mock.patch('sys.platform', 'darwin')
-  def testGenerateVendorTagUsingDeviceString(self) -> None:
+  @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
+  def testGenerateVendorTagUsingDeviceString(self, _) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -377,12 +377,14 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     browser = fakes.FakeBrowser(platform, 'release')
     browser = typing.cast(ct.Browser, browser)
 
-    with mock.patch('sys.platform', 'darwin'):
+    with mock.patch('gpu_tests.util.host_information.IsLinux',
+                    return_value=False):
       tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
       for t in tags:
         self.assertFalse(t.startswith('display-server'))
 
-    with mock.patch('sys.platform', 'linux'):
+    with mock.patch('gpu_tests.util.host_information.IsLinux',
+                    return_value=True):
       tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
       self.assertIn('display-server-x', tags)
 
