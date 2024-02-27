@@ -126,6 +126,7 @@ class SigninFirstRunViewBinder {
         final boolean isSelectedAccountSupervised =
                 model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
         final boolean hasPolicy = model.get(SigninFirstRunProperties.FRE_POLICY) != null;
+        view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
         view.getSubtitle()
                 .setVisibility(
                         !showInitialLoadProgressSpinner

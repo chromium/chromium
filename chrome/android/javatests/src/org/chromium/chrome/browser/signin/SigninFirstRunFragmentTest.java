@@ -1178,7 +1178,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.title)).check(matches(isDisplayed()));
+        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
@@ -1277,7 +1277,7 @@ public class SigninFirstRunFragmentTest {
     private void checkFragmentWhenLoadingNativeAndPolicy() {
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(isDisplayed()));
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
+        onView(withText(R.string.fre_welcome)).check(matches(not(isDisplayed())));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         onView(withText(TEST_EMAIL1)).check(matches(not(isDisplayed())));
         onView(withText(FULL_NAME1)).check(matches(not(isDisplayed())));

@@ -100,4 +100,8 @@ public class SigninFirstRunView extends RelativeLayout {
     TextView getSubtitle() {
         return mSubtitle;
     }
+
+    TextView getTitle() {
+        return mTitle;
+    }
 }
