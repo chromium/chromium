@@ -6,13 +6,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -215,7 +215,7 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
   // Changes to this map should be reflected in
   // ui/file_manager/base/gn/file_types.json5
   static const auto extension_to_icon =
-      base::MakeFixedFlatMap<base::StringPiece, IconType>({
+      base::MakeFixedFlatMap<std::string_view, IconType>({
           // Image
           {".JPEG", IconType::kImage},
           {".JPG", IconType::kImage},
