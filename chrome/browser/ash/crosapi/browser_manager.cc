@@ -1222,7 +1222,6 @@ void BrowserManager::HandleReload() {
   // Reset BrowserManager's state.
   CHECK(!browser_launcher_.IsProcessValid());
   reload_requested_ = false;
-  is_initial_lacros_launch_after_reboot_ = true;
   should_attempt_update_ = true;
   SetState(State::RELOADING);
 
