@@ -10,6 +10,7 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -25,6 +26,7 @@ using autofill::AutofillClient;
 using autofill::AutofillPopupDelegate;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::FieldRendererId;
+using autofill::PopupHidingReason;
 using autofill::PopupItemId;
 using autofill::TestAutofillClient;
 using autofill::test::AutofillUnitTestEnvironment;
@@ -44,6 +46,7 @@ class MockAutofillClient : public TestAutofillClient {
               (const AutofillClient::PopupOpenArgs&,
                base::WeakPtr<AutofillPopupDelegate>),
               (override));
+  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
 };
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -52,6 +55,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
   ~MockPasswordManagerDriver() override = default;
   MOCK_METHOD(void,
               PreviewField,
+              (FieldRendererId, const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              FillField,
               (FieldRendererId, const std::u16string&),
               (override));
 };
@@ -256,6 +263,25 @@ TEST_F(PasswordManualFallbackFlowTest, SelectUsernameFieldByFieldSuggestion) {
               PreviewField(field_id, std::u16string(u"username@example.com")));
   flow().DidSelectSuggestion(autofill::test::CreateAutofillSuggestion(
       PopupItemId::kPasswordFieldByFieldFilling, u"username@example.com"));
+}
+
+// Test that username field-by-field suggestion is filled into the correct field
+// by the manual fallback flow.
+TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
+  ProcessPasswordStoreUpdates();
+
+  const FieldRendererId field_id = MakeFieldRendererId();
+  flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(),
+              FillField(field_id, std::u16string(u"username@example.com")));
+  EXPECT_CALL(autofill_client(),
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  flow().DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          PopupItemId::kPasswordFieldByFieldFilling, u"username@example.com"),
+      AutofillPopupDelegate::SuggestionPosition{.row = 0,
+                                                .sub_popup_level = 1});
 }
 
 }  // namespace password_manager

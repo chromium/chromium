@@ -108,6 +108,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       // TODO(b/321678448): Fill password form for acceptable suggestions.
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
+      password_manager_driver_->FillField(saved_field_id_,
+                                          suggestion.main_text.value);
       // TODO(b/321678448): Fill username.
       break;
     case autofill::PopupItemId::kFillPassword:
@@ -124,6 +126,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       // Other suggestion types are not supported.
       NOTREACHED_NORETURN();
   }
+  autofill_client_->HideAutofillPopup(
+      autofill::PopupHidingReason::kAcceptSuggestion);
 }
 
 void PasswordManualFallbackFlow::DidPerformButtonActionForSuggestion(

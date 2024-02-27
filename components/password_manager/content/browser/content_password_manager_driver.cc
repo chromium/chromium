@@ -208,6 +208,13 @@ void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
   GetPasswordGenerationAgent()->FocusNextFieldAfterPasswords();
 }
 
+void ContentPasswordManagerDriver::FillField(autofill::FieldRendererId field_id,
+                                             const std::u16string& value) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->FillField(field_id, value);
+  }
+}
+
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password) {

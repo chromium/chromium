@@ -85,6 +85,11 @@ class PasswordManagerDriver {
   // in account creation).
   virtual void FocusNextFieldAfterPasswords() {}
 
+  // Tells the renderer to fill the given `value` into the field identified by
+  // the `field_id`.
+  virtual void FillField(autofill::FieldRendererId field_id,
+                         const std::u16string& value) {}
+
   // Tells the driver to fill the form with the `username` and `password`.
   virtual void FillSuggestion(const std::u16string& username,
                               const std::u16string& password) = 0;
