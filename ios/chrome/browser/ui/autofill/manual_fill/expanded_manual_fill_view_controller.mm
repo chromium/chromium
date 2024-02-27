@@ -34,6 +34,8 @@ constexpr CGFloat kHeaderViewHorizontalPadding = 20;
 constexpr CGFloat kHeaderViewTopPadding = 8;
 // Height of the segmented control.
 constexpr CGFloat kSegmentedControlHeight = 32;
+// Multiplier used to constraint the view's height.
+constexpr CGFloat kViewHeightMultiplier = 0.6;
 
 // Height of the header's top view. Used for the narrow layout only.
 constexpr CGFloat kHeaderTopViewHeightNarrowLayout = 44;
@@ -124,6 +126,13 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   self.view.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
+  // Set the view's frame to get the right height initially. Once the view's
+  // window is loaded in `viewDidAppear`, the view's height will be dynamically
+  // constraint to its window's height instead.
+  self.view.autoresizingMask = UIViewAutoresizingNone;
+  self.view.frame = CGRectMake(
+      0, 0, 0, UIScreen.mainScreen.bounds.size.height * kViewHeightMultiplier);
+
   _headerView = [self createHeaderView];
   _headerTopView = [self createHeaderTopView];
   _chromeLogo = [self createChromeLogo];
@@ -156,6 +165,16 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+
+  // Anchor the view's height to its window's height so that the view's height
+  // resizes dynamically when switching between portrait and landscape modes.
+  self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.view.heightAnchor
+        constraintEqualToAnchor:self.view.window.heightAnchor
+                     multiplier:kViewHeightMultiplier],
+  ]];
+
   UIAccessibilityPostNotification(
       UIAccessibilityAnnouncementNotification,
       l10n_util::GetNSString(
