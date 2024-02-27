@@ -4,24 +4,16 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet to provide info about the page that is shared. */
-class PageInfoBottomSheet implements BottomSheetContent {
-    private final Context mContext;
-    private View mContentView;
+class PageInfoBottomSheetContent implements BottomSheetContent {
+    private final View mContentView;
 
-    public PageInfoBottomSheet(Context context) {
-        mContext = context;
-    }
-
-    private void initializeContentView() {
-        mContentView = LayoutInflater.from(mContext).inflate(R.layout.page_info_bottom_sheet, null);
+    public PageInfoBottomSheetContent(View contentView) {
+        mContentView = contentView;
     }
 
     /* BottomSheetContent implementation. */

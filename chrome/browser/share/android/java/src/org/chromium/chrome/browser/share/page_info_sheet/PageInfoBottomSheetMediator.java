@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet;
 
-import androidx.annotation.IntDef;
+import android.text.TextUtils;
+import android.view.View;
 
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.PageInfoContents;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetProperties.PageInfoState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -16,58 +19,86 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class PageInfoBottomSheetMediator extends EmptyBottomSheetObserver {
 
-    /** Refers to the result of trying to show the page info UI. */
-    @IntDef({
-        PageInfoUiResult.ACCEPTED,
-        PageInfoUiResult.REJECTED,
-        PageInfoUiResult.REFRESHED,
-        PageInfoUiResult.FAILED
-    })
-    public @interface PageInfoUiResult {
-        /** Page info was shown and user accepted. */
-        int ACCEPTED = 0;
+    private final PropertyModel mModel;
+    private final PageInfoBottomSheetCoordinator.Delegate mPageInfoDelegate;
+    private final PageInfoBottomSheetContent mPageInfoBottomSheetContent;
+    private final BottomSheetController mBottomSheetController;
 
-        /** Page info was shown and user rejected or dismissed. */
-        int REJECTED = 1;
-
-        /** Page info refresh was requested. */
-        int REFRESHED = 2;
-
-        /** Page info failed to fetch. */
-        int FAILED = 4;
+    public PropertyModel getModel() {
+        return mModel;
     }
 
-    private PageInfoBottomSheet mPageInfoBottomSheet;
-    private final BottomSheetController mBottomSheetController;
-    private PropertyModel mModel;
-
     public PageInfoBottomSheetMediator(
-            PageInfoBottomSheet pageInfoBottomSheet, BottomSheetController bottomSheetController) {
-        mPageInfoBottomSheet = pageInfoBottomSheet;
+            PageInfoBottomSheetCoordinator.Delegate pageInfoDelegate,
+            PageInfoBottomSheetContent pageInfoBottomSheetContent,
+            BottomSheetController bottomSheetController) {
+        mPageInfoDelegate = pageInfoDelegate;
+        mPageInfoBottomSheetContent = pageInfoBottomSheetContent;
         mBottomSheetController = bottomSheetController;
-        mModel = PageInfoBottomSheetProperties.defaultModelBuilder().build();
+        mModel =
+                PageInfoBottomSheetProperties.defaultModelBuilder()
+                        .with(
+                                PageInfoBottomSheetProperties.ON_ACCEPT_CLICKED,
+                                this::onAcceptClicked)
+                        .with(
+                                PageInfoBottomSheetProperties.ON_CANCEL_CLICKED,
+                                this::onCancelClicked)
+                        .with(
+                                PageInfoBottomSheetProperties.ON_REFRESH_CLICKED,
+                                this::onRefreshClicked)
+                        .with(PageInfoBottomSheetProperties.STATE, PageInfoState.INITIALIZING)
+                        .build();
+
+        mPageInfoDelegate.getContentSupplier().addObserver(this::onContentsChanged);
+    }
+
+    private void onContentsChanged(PageInfoContents contents) {
+        if (contents == null) {
+            mModel.set(PageInfoBottomSheetProperties.STATE, PageInfoState.INITIALIZING);
+        } else if (!TextUtils.isEmpty(contents.errorMessage)) {
+            mModel.set(PageInfoBottomSheetProperties.STATE, PageInfoState.ERROR);
+            mModel.set(PageInfoBottomSheetProperties.CONTENT_TEXT, contents.errorMessage);
+        } else if (!TextUtils.isEmpty(contents.resultContents)) {
+            mModel.set(PageInfoBottomSheetProperties.CONTENT_TEXT, contents.resultContents);
+            if (contents.isLoading) {
+                mModel.set(PageInfoBottomSheetProperties.STATE, PageInfoState.LOADING);
+            } else {
+                mModel.set(PageInfoBottomSheetProperties.STATE, PageInfoState.SUCCESS);
+            }
+        }
+    }
+
+    boolean requestShowContent() {
+        return mBottomSheetController.requestShowContent(mPageInfoBottomSheetContent, true);
     }
 
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
         switch (reason) {
-            case StateChangeReason.BACK_PRESS:
-                destroySheet(PageInfoUiResult.REJECTED);
-                break;
-            case StateChangeReason.SWIPE:
-                destroySheet(PageInfoUiResult.REJECTED);
-                break;
-            case StateChangeReason.TAP_SCRIM:
-                destroySheet(PageInfoUiResult.REJECTED);
-                break;
-            default:
-                destroySheet(PageInfoUiResult.REJECTED);
-                break;
+            case StateChangeReason.BACK_PRESS,
+                    StateChangeReason.SWIPE,
+                    StateChangeReason.TAP_SCRIM -> destroySheet();
         }
+    }
+
+    private void onAcceptClicked(View view) {
+        mPageInfoDelegate.onAccept();
+        mBottomSheetController.hideContent(mPageInfoBottomSheetContent, true);
+    }
+
+    private void onCancelClicked(View view) {
+        mPageInfoDelegate.onCancel();
+        mBottomSheetController.hideContent(mPageInfoBottomSheetContent, true);
+    }
+
+    private void onRefreshClicked(View view) {
+        mPageInfoDelegate.onRefresh();
     }
 
     @Override
     public void onSheetOpened(int reason) {}
 
-    private void destroySheet(@PageInfoUiResult int callbackResult) {}
+    void destroySheet() {
+        mPageInfoDelegate.onCancel();
+    }
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:padding="@dimen/page_info_bottom_sheet_padding"
+    android:orientation="vertical">
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingBottom="@dimen/page_info_bottom_sheet_padding">
+    <!-- TODO(salg): Ensure bottom sheet handles long texts correctly -->
+    <TextView
+        android:id="@+id/sheet_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:layout_weight="1"
+        style="@style/TextAppearance.AlertDialogTitleStyle" />
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_refresh_white_36dp"
+        android:layout_gravity="end|center_vertical"
+        app:tint="@macro/default_icon_color"
+        style="@style/ToolbarButton" />
+  </LinearLayout>
+  <org.chromium.components.browser_ui.widget.MaterialProgressBar
+      android:id="@+id/loading_indicator"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/page_info_loading_indicator_height" />
+  <TextView
+      android:id="@+id/sheet_content"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="@dimen/page_info_bottom_sheet_padding"
+      android:gravity="end|center_vertical"
+      android:orientation="horizontal">
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/cancel"
+        style="@style/TextButton" />
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/accept_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/ok"
+        style="@style/FilledButton.Flat" />
+  </LinearLayout>
+</org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetView>

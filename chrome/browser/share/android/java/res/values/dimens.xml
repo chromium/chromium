@@ -20,4 +20,8 @@ found in the LICENSE file.
 
     <!-- Android share sheet -->
     <dimen name="share_preview_favicon_size">48dp</dimen>
+
+    <!-- Page info bottom sheet -->
+    <dimen name="page_info_bottom_sheet_padding">16dp</dimen>
+    <dimen name="page_info_loading_indicator_height">20dp</dimen>
 </resources>
