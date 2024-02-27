@@ -21,6 +21,8 @@ class BookmarkNode;
 
 namespace commerce {
 
+class AccountChecker;
+
 // A mock ShoppingService that allows us to decide the response.
 class MockShoppingService : public commerce::ShoppingService {
  public:
@@ -31,6 +33,7 @@ class MockShoppingService : public commerce::ShoppingService {
   ~MockShoppingService() override;
 
   // commerce::ShoppingService overrides.
+  MOCK_METHOD(AccountChecker*, GetAccountChecker, (), (override));
   MOCK_METHOD(void,
               GetProductInfoForUrl,
               (const GURL& url, commerce::ProductInfoCallback callback),
@@ -123,6 +126,7 @@ class MockShoppingService : public commerce::ShoppingService {
   // data for all accessors of shopping data.
   void SetupPermissiveMock();
 
+  void SetAccountChecker(AccountChecker* account_checker);
   void SetResponseForGetProductInfoForUrl(
       std::optional<commerce::ProductInfo> product_info);
   void SetResponseForGetPriceInsightsInfoForUrl(

@@ -10,6 +10,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_discounts_storage.h"
 #include "components/commerce/core/pref_names.h"
@@ -97,15 +98,6 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
     sync_service_->SetHasSyncConsent(
         !ShouldEnableReplaceSyncPromosWithSignInPromos());
     ShoppingServiceTestBase::SetUp();
-  }
-
-  // Expose the private feature check for testing.
-  static bool IsShoppingListEligible(AccountChecker* account_checker,
-                                     PrefService* prefs,
-                                     const std::string& country,
-                                     const std::string& locale) {
-    return ShoppingService::IsShoppingListEligible(account_checker, prefs,
-                                                   country, locale);
   }
 
   bool ShouldEnableReplaceSyncPromosWithSignInPromos() const {
@@ -643,13 +635,14 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_Policy) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
 
   SetShoppingListEnterprisePolicyPref(&prefs, false);
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_FeatureFlagOff) {
@@ -661,9 +654,11 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_FeatureFlagOff) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_MSBB) {
@@ -675,14 +670,15 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_MSBB) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
 
   checker.SetAnonymizedUrlDataCollectionEnabled(false);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
@@ -694,14 +690,15 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
 
   checker.SetSignedIn(false);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
@@ -713,14 +710,15 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
 
   checker.SetIsSubjectToParentalControls(true);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
@@ -732,14 +730,15 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
 
   checker.SetSyncingBookmarks(false);
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
@@ -751,13 +750,18 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
+
+  checker.SetCountry("ZZ");
+  checker.SetLocale("zz-zz");
 
   // This should continue to work since we can assume, for the sake of the test,
   // that the experiment config includes the ZZ country and zz-zz locale.
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest,
@@ -770,13 +774,18 @@ TEST_P(ShoppingServiceTest,
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
+
+  checker.SetCountry("ZZ");
+  checker.SetLocale("zz-zz");
 
   // Same as the previous test, this should still work since, presumably, the
   // experiment config for "ShoppingList" includes these.
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale_NoFlags) {
@@ -789,10 +798,12 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale_NoFlags) {
 
   MockAccountChecker checker;
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+  checker.SetCountry("ZZ");
+  checker.SetLocale("zz-zz");
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 TEST_P(ShoppingServiceTest,
@@ -805,14 +816,19 @@ TEST_P(ShoppingServiceTest,
   SetShoppingListEnterprisePolicyPref(&prefs, true);
 
   MockAccountChecker checker;
+  checker.SetCountry(kEligibleCountry);
+  checker.SetLocale(kEligibleLocale);
+  checker.SetPrefs(&prefs);
 
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
+  ASSERT_TRUE(IsShoppingListEligible(&checker));
+
+  checker.SetCountry("ZZ");
+  checker.SetLocale("zz-zz");
 
   // If we only have the region flag enabled, we should be restricted to
   // specific countries and locales. The fake country and locale below should
   // be blocked.
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, "ZZ", "zz-zz"));
+  ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
 
 class ShoppingServiceReadyTest : public ShoppingServiceTest {

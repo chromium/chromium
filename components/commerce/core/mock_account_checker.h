@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_COMMERCE_CORE_MOCK_ACCOUNT_CHECKER_H_
 #define COMPONENTS_COMMERCE_CORE_MOCK_ACCOUNT_CHECKER_H_
 
+#include <string>
+
 #include "components/commerce/core/account_checker.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+class PrefService;
 
 namespace commerce {
 
@@ -26,6 +30,12 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSubjectToParentalControls, (), (override));
 
+  MOCK_METHOD(std::string, GetCountry, (), (override));
+
+  MOCK_METHOD(std::string, GetLocale, (), (override));
+
+  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
+
   void SetSignedIn(bool signed_in);
 
   void SetSyncingBookmarks(bool syncing);
@@ -33,6 +43,12 @@ class MockAccountChecker : public AccountChecker {
   void SetAnonymizedUrlDataCollectionEnabled(bool enabled);
 
   void SetIsSubjectToParentalControls(bool subject_to_parental_controls);
+
+  void SetCountry(std::string country);
+
+  void SetLocale(std::string locale);
+
+  void SetPrefs(PrefService* prefs);
 };
 
 }  // namespace commerce

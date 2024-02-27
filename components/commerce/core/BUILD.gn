@@ -34,6 +34,17 @@ source_set("feature_list") {
   ]
 }
 
+source_set("feature_utils") {
+  sources = [
+    "feature_utils.cc",
+    "feature_utils.h",
+  ]
+  deps = [
+    ":account_checker",
+    ":feature_list",
+  ]
+}
+
 source_set("feature_list_unittests") {
   testonly = true
   sources = [ "commerce_feature_list_unittest.cc" ]
@@ -206,7 +217,6 @@ static_library("shopping_service") {
   ]
 
   deps = [
-    ":account_checker",
     ":commerce_constants",
     ":commerce_subscription_db_content_proto",
     ":discounts_db_content_proto",
@@ -242,7 +252,9 @@ static_library("shopping_service") {
   ]
 
   public_deps = [
+    ":account_checker",
     ":commerce_types",
+    ":feature_utils",
     "//components/commerce/core/subscriptions:subscriptions",
     "//services/data_decoder/public/cpp",
   ]
@@ -379,6 +391,7 @@ source_set("account_checker_test_support") {
   deps = [
     ":account_checker",
     "//base",
+    "//components/prefs",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",
   ]

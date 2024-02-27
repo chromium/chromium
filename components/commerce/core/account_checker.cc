@@ -37,11 +37,15 @@ const char kNotificationsPrefUrl[] =
     "https://memex-pa.googleapis.com/v1/notifications/preferences";
 
 AccountChecker::AccountChecker(
+    std::string country,
+    std::string locale,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : pref_service_(pref_service),
+    : country_(country),
+      locale_(locale),
+      pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       url_loader_factory_(url_loader_factory),
@@ -111,6 +115,18 @@ bool AccountChecker::IsSubjectToParentalControls() {
 
   return capabilities.is_subject_to_parental_controls() ==
          signin::Tribool::kTrue;
+}
+
+std::string AccountChecker::GetCountry() {
+  return country_;
+}
+
+std::string AccountChecker::GetLocale() {
+  return locale_;
+}
+
+PrefService* AccountChecker::GetPrefs() {
+  return pref_service_.get();
 }
 
 void AccountChecker::FetchPriceEmailPref() {

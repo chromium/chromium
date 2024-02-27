@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 #define COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 
+#include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -43,12 +45,22 @@ class AccountChecker {
 
   virtual bool IsSubjectToParentalControls();
 
+  // Gets the user's country as determined at startup.
+  virtual std::string GetCountry();
+
+  // Gets the user's locale as determine at startup.
+  virtual std::string GetLocale();
+
+  virtual PrefService* GetPrefs();
+
  protected:
   friend class ShoppingService;
   friend class MockAccountChecker;
 
   // This class should only be initialized in ShoppingService.
   AccountChecker(
+      std::string country,
+      std::string locale,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
@@ -95,6 +107,10 @@ class AccountChecker {
 
   void OnFetchPriceEmailPrefJsonParsed(
       data_decoder::DataDecoder::ValueOrError result);
+
+  std::string country_;
+
+  std::string locale_;
 
   raw_ptr<PrefService> pref_service_;
 

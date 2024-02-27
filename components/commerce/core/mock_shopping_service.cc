@@ -58,6 +58,11 @@ void MockShoppingService::SetupPermissiveMock() {
   SetGetAllParcelStatusesCallbackValue(std::vector<ParcelTrackingStatus>());
 }
 
+void MockShoppingService::SetAccountChecker(AccountChecker* account_checker) {
+  ON_CALL(*this, GetAccountChecker)
+      .WillByDefault(testing::Return(account_checker));
+}
+
 void MockShoppingService::SetResponseForGetProductInfoForUrl(
     std::optional<commerce::ProductInfo> product_info) {
   ON_CALL(*this, GetProductInfoForUrl)

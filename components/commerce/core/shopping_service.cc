@@ -24,6 +24,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/discounts_storage.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
 #include "components/commerce/core/parcel/parcels_manager.h"
@@ -146,7 +147,8 @@ ShoppingService::ShoppingService(
 
   if (identity_manager) {
     account_checker_ = base::WrapUnique(new AccountChecker(
-        pref_service, identity_manager, sync_service, url_loader_factory));
+        country_on_startup_, locale_on_startup_, pref_service, identity_manager,
+        sync_service, url_loader_factory));
   }
 
   if (identity_manager && account_checker_) {
@@ -207,6 +209,10 @@ ShoppingService::ShoppingService(
               dangling_sub_count);
         }));
   }
+}
+
+AccountChecker* ShoppingService::GetAccountChecker() {
+  return account_checker_.get();
 }
 
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}
@@ -1486,8 +1492,7 @@ void ShoppingService::ScheduleSavedProductUpdate() {
 }
 
 bool ShoppingService::IsShoppingListEligible() {
-  return IsShoppingListEligible(account_checker_.get(), pref_service_,
-                                country_on_startup_, locale_on_startup_);
+  return commerce::IsShoppingListEligible(account_checker_.get());
 }
 
 void ShoppingService::WaitForReady(
@@ -1506,30 +1511,6 @@ void ShoppingService::WaitForReady(
         std::move(callback).Run(service.get());
       },
       AsWeakPtr(), sync_service_, std::move(callback)));
-}
-
-bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
-                                             PrefService* prefs,
-                                             const std::string& country_code,
-                                             const std::string& locale) {
-  if (!commerce::IsRegionLockedFeatureEnabled(
-          kShoppingList, kShoppingListRegionLaunched, country_code, locale)) {
-    return false;
-  }
-
-  if (!prefs || !IsShoppingListAllowedForEnterprise(prefs))
-    return false;
-
-  // Make sure the user allows subscriptions to be made and that we can fetch
-  // store data.
-  if (!account_checker || !account_checker->IsSignedIn() ||
-      !account_checker->IsSyncingBookmarks() ||
-      !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
-      account_checker->IsSubjectToParentalControls()) {
-    return false;
-  }
-
-  return true;
 }
 
 void ShoppingService::StartTrackingParcels(

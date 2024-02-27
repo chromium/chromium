@@ -247,6 +247,9 @@ class ShoppingService : public KeyedService,
   ShoppingService(const ShoppingService&) = delete;
   ShoppingService& operator=(const ShoppingService&) = delete;
 
+  // Gets an AccountChecker instance to aid in determining feature eligibility.
+  virtual AccountChecker* GetAccountChecker();
+
   // This API retrieves the product information for the provided |url| and
   // passes the payload back to the caller via |callback|. At minimum, this
   // API will wait for data from the backend but may provide a "partial" result
@@ -550,15 +553,6 @@ class ShoppingService : public KeyedService,
   // |on_page_data_map|. The merged data is written to |info|.
   static void MergeProductInfoData(ProductInfo* info,
                                    const base::Value::Dict& on_page_data_map);
-
-  // Check if the shopping list is eligible for use. This not only checks the
-  // feature flag, but whether the feature is allowed by enterprise policy and
-  // whether the user is signed in. The value returned here can change during
-  // runtime so it should not be used when deciding to build infrastructure.
-  static bool IsShoppingListEligible(AccountChecker* account_checker,
-                                     PrefService* prefs,
-                                     const std::string& country_code,
-                                     const std::string& locale);
 
   void HandleOptGuideMerchantInfoResponse(
       const GURL& url,
