@@ -250,7 +250,7 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   // a mechanism for installing a pending profile except through the dedicated
   // dialog which performs a fresh SM-DS scan each time it is opened.
   if (ash::features::IsSmdsSupportEnabled()) {
-    base::EraseIf(profiles_from_hermes, [](const CellularESimProfile& profile) {
+    std::erase_if(profiles_from_hermes, [](const CellularESimProfile& profile) {
       if (profile.state() == CellularESimProfile::State::kPending) {
         NET_LOG(DEBUG) << "Removing eSIM profile {iccid: " << profile.iccid()
                        << ", eid: " << profile.eid()

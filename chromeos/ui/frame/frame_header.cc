@@ -4,7 +4,8 @@
 
 #include "chromeos/ui/frame/frame_header.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/logging.h"  // DCHECK
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -192,8 +193,9 @@ views::View::Views FrameHeader::GetAdjustedChildrenInZOrder(
                                        ? frame_view->GetWidget()->client_view()
                                        : nullptr;
 
-  if (client_view && base::Erase(paint_order, client_view))
+  if (client_view && std::erase(paint_order, client_view)) {
     paint_order.insert(std::next(paint_order.begin(), 1), client_view);
+  }
 
   return paint_order;
 }

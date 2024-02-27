@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -185,7 +184,7 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
       }
 
       // Filter out non-matching results.
-      base::EraseIf(results_, [=](const auto& item_ptr) {
+      std::erase_if(results_, [=](const auto& item_ptr) {
         if (!item_ptr->metadata) {
           return true;
         }

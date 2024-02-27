@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/i18n/case_conversion.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/notification.h"
@@ -98,12 +99,12 @@ void AppStreamLauncherDataModel::AddAppToList(
 
 void AppStreamLauncherDataModel::RemoveAppFromList(
     const proto::App app_to_remove) {
-  base::EraseIf(apps_list_,
+  std::erase_if(apps_list_,
                 [&app_to_remove](const Notification::AppMetadata& app) {
                   return app.package_name == app_to_remove.package_name();
                 });
 
-  base::EraseIf(apps_list_sorted_by_name_,
+  std::erase_if(apps_list_sorted_by_name_,
                 [&app_to_remove](const Notification::AppMetadata& app) {
                   return app.package_name == app_to_remove.package_name();
                 });

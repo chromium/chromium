@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/phonehub/fake_recent_apps_interaction_handler.h"
+
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/time/time.h"
@@ -74,10 +76,12 @@ void FakeRecentAppsInteractionHandler::SetStreamableApps(
 
 void FakeRecentAppsInteractionHandler::RemoveStreamableApp(
     proto::App app_to_remove) {
-  base::EraseIf(recent_apps_metadata_, [&app_to_remove](
-              const std::pair<Notification::AppMetadata, base::Time>& app) {
-    return app.first.package_name == app_to_remove.package_name();
-  });
+  std::erase_if(
+      recent_apps_metadata_,
+      [&app_to_remove](
+          const std::pair<Notification::AppMetadata, base::Time>& app) {
+        return app.first.package_name == app_to_remove.package_name();
+      });
 }
 
 void FakeRecentAppsInteractionHandler::ComputeAndUpdateUiState() {
