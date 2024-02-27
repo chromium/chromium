@@ -5,12 +5,18 @@
 #include "crypto/unexportable_key.h"
 
 #include <tuple>
-
 #include <optional>
+
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "crypto/features.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "crypto/scoped_fake_apple_keychain_v2.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -21,7 +27,16 @@ const crypto::SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
 
 class UnexportableKeySigningTest
     : public testing::TestWithParam<
-          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, bool>> {};
+          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, bool>> {
+ private:
+#if BUILDFLAG(IS_MAC)
+  crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+      "keychain-group-for-test"};
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      crypto::kEnableMacUnexportableKeys};
+#endif  // BUILDFLAG(IS_MAC)
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          UnexportableKeySigningTest,

@@ -6,7 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
-#include "crypto/fake_apple_keychain_v2.h"
+#include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"

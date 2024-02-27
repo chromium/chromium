@@ -24,6 +24,9 @@ VirtualUnexportableKeyProvider::~VirtualUnexportableKeyProvider() = default;
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
 std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProviderWin();
+#elif BUILDFLAG(IS_MAC)
+std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
+    std::string keychain_access_group);
 #endif
 
 // Implemented in unexportable_key_software_unsecure.cc.
@@ -37,6 +40,9 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider() {
 
 #if BUILDFLAG(IS_WIN)
   return GetUnexportableKeyProviderWin();
+#elif BUILDFLAG(IS_MAC)
+  // TODO(nsatragno): inject the keychain access group from the embedder.
+  return GetUnexportableKeyProviderMac("keychain-group-for-test");
 #else
   return nullptr;
 #endif

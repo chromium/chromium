@@ -38,6 +38,14 @@ class CRYPTO_EXPORT AppleKeychainV2 {
   // KeyCopyPublicKey wraps the |SecKeyCopyPublicKey| function.
   virtual base::apple::ScopedCFTypeRef<SecKeyRef> KeyCopyPublicKey(
       SecKeyRef key);
+  // KeyCopyExternalRepresentation wraps the |SecKeyCopyExternalRepresentation|
+  // function.
+  virtual base::apple::ScopedCFTypeRef<CFDataRef> KeyCopyExternalRepresentation(
+      SecKeyRef key,
+      CFErrorRef* error);
+  // KeyCopyAttributes wraps the |SecKeyCopyAttributes| function.
+  virtual base::apple::ScopedCFTypeRef<CFDictionaryRef> KeyCopyAttributes(
+      SecKeyRef key);
 
   // ItemCopyMatching wraps the |SecItemCopyMatching| function.
   virtual OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result);
@@ -55,6 +63,7 @@ class CRYPTO_EXPORT AppleKeychainV2 {
  protected:
   friend class base::NoDestructor<AppleKeychainV2>;
   friend class ScopedTouchIdTestEnvironment;
+  friend class ScopedFakeAppleKeychainV2;
 
   // Set an override to the singleton instance returned by |GetInstance|. The
   // caller keeps ownership of the injected keychain and must remove the

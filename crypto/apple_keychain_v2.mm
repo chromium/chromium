@@ -58,6 +58,19 @@ base::apple::ScopedCFTypeRef<SecKeyRef> AppleKeychainV2::KeyCopyPublicKey(
   return base::apple::ScopedCFTypeRef<SecKeyRef>(SecKeyCopyPublicKey(key));
 }
 
+base::apple::ScopedCFTypeRef<CFDataRef>
+AppleKeychainV2::KeyCopyExternalRepresentation(SecKeyRef key,
+                                               CFErrorRef* error) {
+  return base::apple::ScopedCFTypeRef<CFDataRef>(
+      SecKeyCopyExternalRepresentation(key, error));
+}
+
+base::apple::ScopedCFTypeRef<CFDictionaryRef>
+AppleKeychainV2::KeyCopyAttributes(SecKeyRef key) {
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
+      SecKeyCopyAttributes(key));
+}
+
 OSStatus AppleKeychainV2::ItemCopyMatching(
     CFDictionaryRef query, CFTypeRef* result) {
   return SecItemCopyMatching(query, result);

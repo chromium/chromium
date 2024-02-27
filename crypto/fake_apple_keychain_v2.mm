@@ -4,18 +4,20 @@
 
 #include "crypto/fake_apple_keychain_v2.h"
 
-#include <CoreFoundation/CoreFoundation.h>
-#import <Foundation/Foundation.h>
-#import <Security/Security.h>
-#include "base/strings/sys_string_conversions.h"
+#include <vector>
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
 #endif
 
+#import <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
+#import <Security/Security.h>
+
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
+#include "base/strings/sys_string_conversions.h"
 #include "crypto/apple_keychain_v2.h"
 
 namespace crypto {
@@ -38,15 +40,16 @@ base::apple::ScopedCFTypeRef<SecKeyRef> FakeAppleKeychainV2::KeyCreateRandomKey(
   // Validate certain fields that we always expect to be set.
   DCHECK(
       base::apple::GetValueFromDictionary<CFStringRef>(params, kSecAttrLabel));
-  DCHECK(base::apple::GetValueFromDictionary<CFDataRef>(
-      params, kSecAttrApplicationLabel));
   // kSecAttrApplicationTag is CFDataRef for new credentials and CFStringRef for
   // version < 3. Keychain docs say it should be CFDataRef
   // (https://developer.apple.com/documentation/security/ksecattrapplicationtag).
-  DCHECK(base::apple::GetValueFromDictionary<CFDataRef>(
-             params, kSecAttrApplicationTag) ||
-         base::apple::GetValueFromDictionary<CFStringRef>(
-             params, kSecAttrApplicationTag));
+  CFTypeRef application_tag = nil;
+  CFDictionaryGetValueIfPresent(params, kSecAttrApplicationTag,
+                                &application_tag);
+  if (application_tag) {
+    CHECK(base::apple::CFCast<CFDataRef>(application_tag) ||
+          base::apple::CFCast<CFStringRef>(application_tag));
+  }
   DCHECK_EQ(
       base::apple::GetValueFromDictionary<CFStringRef>(params, kSecAttrTokenID),
       kSecAttrTokenIDSecureEnclave);
@@ -93,9 +96,35 @@ base::apple::ScopedCFTypeRef<SecKeyRef> FakeAppleKeychainV2::KeyCreateRandomKey(
       CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
                                     params));
   CFDictionarySetValue(keychain_item.get(), kSecValueRef, private_key.get());
+
+  // When left unset, the real keychain sets the application label to the hash
+  // of the public key on creation. We need to retrieve it to allow filtering
+  // for it later.
+  if (!base::apple::GetValueFromDictionary<CFDataRef>(
+          keychain_item.get(), kSecAttrApplicationLabel)) {
+    base::apple::ScopedCFTypeRef<CFDictionaryRef> key_metadata(
+        SecKeyCopyAttributes(private_key.get()));
+    CFDataRef application_label =
+        base::apple::GetValueFromDictionary<CFDataRef>(
+            key_metadata.get(), kSecAttrApplicationLabel);
+    CFDictionarySetValue(keychain_item.get(), kSecAttrApplicationLabel,
+                         application_label);
+  }
   items_.push_back(keychain_item);
 
   return private_key;
+}
+
+base::apple::ScopedCFTypeRef<CFDictionaryRef>
+FakeAppleKeychainV2::KeyCopyAttributes(SecKeyRef key) {
+  const auto& it = std::ranges::find_if(items_, [&key](const auto& item) {
+    return CFEqual(key, CFDictionaryGetValue(item.get(), kSecValueRef));
+  });
+  if (it == items_.end()) {
+    return base::apple::ScopedCFTypeRef<CFDictionaryRef>();
+  }
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
+      CFDictionaryCreateCopy(kCFAllocatorDefault, it->get()));
 }
 
 OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
@@ -108,9 +137,20 @@ OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
   DCHECK_EQ(base::apple::GetValueFromDictionary<CFBooleanRef>(
                 query, kSecReturnAttributes),
             kCFBooleanTrue);
-  DCHECK_EQ(
-      base::apple::GetValueFromDictionary<CFStringRef>(query, kSecMatchLimit),
-      kSecMatchLimitAll);
+  CFStringRef match_limit =
+      base::apple::GetValueFromDictionary<CFStringRef>(query, kSecMatchLimit);
+  bool match_all = match_limit && CFEqual(match_limit, kSecMatchLimitAll);
+
+  // Match fields present in `query`.
+  CFStringRef query_label =
+      base::apple::GetValueFromDictionary<CFStringRef>(query, kSecAttrLabel);
+  CFDataRef query_application_label =
+      base::apple::GetValueFromDictionary<CFDataRef>(query,
+                                                     kSecAttrApplicationLabel);
+  // kSecAttrApplicationTag can be CFStringRef for legacy credentials and
+  // CFDataRef for new ones, hence using CFTypeRef.
+  CFTypeRef query_application_tag =
+      CFDictionaryGetValue(query, kSecAttrApplicationTag);
 
   // Filter the items based on `query`.
   base::apple::ScopedCFTypeRef<CFMutableArrayRef> items(
@@ -126,29 +166,32 @@ OSStatus FakeAppleKeychainV2::ItemCopyMatching(CFDictionaryRef query,
                        item.get(), kSecAttrAccessGroup)) &&
            CFEqual(keychain_access_group, keychain_access_group_.get()));
 
-    // Match fields present in `query`.
-    CFStringRef label =
-        base::apple::GetValueFromDictionary<CFStringRef>(query, kSecAttrLabel);
-    CFDataRef application_label =
+    CFStringRef item_label = base::apple::GetValueFromDictionary<CFStringRef>(
+        item.get(), kSecAttrLabel);
+    CFDataRef item_application_label =
         base::apple::GetValueFromDictionary<CFDataRef>(
-            query, kSecAttrApplicationLabel);
-    // kSecAttrApplicationTag can be CFStringRef for legacy credentials and
-    // CFDataRef for new ones. We currently don't need to query for either.
-    DCHECK(!CFDictionaryGetValue(query, kSecAttrApplicationTag));
-    if ((label &&
-         !CFEqual(label, base::apple::GetValueFromDictionary<CFStringRef>(
-                             item.get(), kSecAttrLabel))) ||
-        (application_label &&
-         !CFEqual(application_label,
-                  base::apple::GetValueFromDictionary<CFStringRef>(
-                      item.get(), kSecAttrApplicationLabel)))) {
+            item.get(), kSecAttrApplicationLabel);
+    CFTypeRef item_application_tag =
+        CFDictionaryGetValue(item.get(), kSecAttrApplicationTag);
+    if ((query_label && (!item_label || !CFEqual(query_label, item_label))) ||
+        (query_application_label &&
+         (!item_application_label ||
+          !CFEqual(query_application_label, item_application_label))) ||
+        (query_application_tag &&
+         (!item_application_tag ||
+          !CFEqual(query_application_tag, item_application_tag)))) {
       continue;
     }
-    base::apple::ScopedCFTypeRef<CFDictionaryRef> item_copy(
-        CFDictionaryCreateCopy(kCFAllocatorDefault, item.get()));
-    CFArrayAppendValue(items.get(), item_copy.get());
+    if (match_all) {
+      base::apple::ScopedCFTypeRef<CFDictionaryRef> item_copy(
+          CFDictionaryCreateCopy(kCFAllocatorDefault, item.get()));
+      CFArrayAppendValue(items.get(), item_copy.get());
+    } else {
+      *result = CFDictionaryCreateCopy(kCFAllocatorDefault, item.get());
+      return errSecSuccess;
+    }
   }
-  if (!items) {
+  if (CFArrayGetCount(items.get()) == 0) {
     return errSecItemNotFound;
   }
   *result = items.release();
@@ -219,16 +262,6 @@ OSStatus FakeAppleKeychainV2::ItemUpdate(
     return errSecSuccess;
   }
   return errSecItemNotFound;
-}
-
-ScopedFakeAppleKeychainV2::ScopedFakeAppleKeychainV2(
-    const std::string& keychain_access_group)
-    : FakeAppleKeychainV2(keychain_access_group) {
-  SetInstanceOverride(this);
-}
-
-ScopedFakeAppleKeychainV2::~ScopedFakeAppleKeychainV2() {
-  ClearInstanceOverride();
 }
 
 }  // namespace crypto

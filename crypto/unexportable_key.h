@@ -31,16 +31,18 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // this object.
   virtual std::vector<uint8_t> GetSubjectPublicKeyInfo() const = 0;
 
-  // GetWrappedKey returns the encrypted private key of this object. It is
-  // encrypted to a key that is kept in hardware and the unencrypted private
-  // key never exists in the CPU's memory.
+  // GetWrappedKey returns a handle to the private key of this object. Usually,
+  // it is the private key encrypted to a key that is kept in hardware and the
+  // unencrypted private key never exists in the CPU's memory, hence the name.
+  // On Mac, this is instead a hash of the public key and the wrapped key
+  // material is stored in the Keychain.
   //
-  // A wrapped key may be used with a future instance of this code to recreate
+  // A key handle may be used with a future instance of this code to recreate
   // the key so long as it's running on the same computer.
   //
-  // Note: it is possible to export this wrapped key off machine, but it must be
-  // sealed with an AEAD first. The wrapped key may contain machine identifiers
-  // and other values that you wouldn't want to export. Additionally
+  // Note: on Windows it is possible to export this wrapped key off machine, but
+  // it must be sealed with an AEAD first. The wrapped key may contain machine
+  // identifiers and other values that you wouldn't want to export. Additionally
   // |UnexportableKeyProvider::FromWrappedSigningKey| should not be presented
   // attacked-controlled input and the AEAD would serve to authenticate the
   // wrapped key.

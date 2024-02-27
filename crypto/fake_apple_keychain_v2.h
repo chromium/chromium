@@ -27,10 +27,16 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
   FakeAppleKeychainV2& operator=(const FakeAppleKeychainV2&) = delete;
   ~FakeAppleKeychainV2() override;
 
-  // FakeAppleKeychainV2:
+  const std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>& items() {
+    return items_;
+  }
+
+  // AppleKeychainV2:
   base::apple::ScopedCFTypeRef<SecKeyRef> KeyCreateRandomKey(
       CFDictionaryRef params,
       CFErrorRef* error) override;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> KeyCopyAttributes(
+      SecKeyRef key) override;
   OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result) override;
   OSStatus ItemDelete(CFDictionaryRef query) override;
   OSStatus ItemUpdate(CFDictionaryRef query,
@@ -43,14 +49,6 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
   // keychain_access_group_ is the value of `kSecAttrAccessGroup` that this
   // keychain expects to operate on.
   base::apple::ScopedCFTypeRef<CFStringRef> keychain_access_group_;
-};
-
-// ScopedFakeAppleKeychainV2 installs itself as testing override for
-// `AppleKeychainV2::GetInstance()`.
-class CRYPTO_EXPORT ScopedFakeAppleKeychainV2 : public FakeAppleKeychainV2 {
- public:
-  explicit ScopedFakeAppleKeychainV2(const std::string& keychain_access_group);
-  ~ScopedFakeAppleKeychainV2() override;
 };
 
 }  // namespace crypto

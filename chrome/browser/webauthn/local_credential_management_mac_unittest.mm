@@ -11,7 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/apple_keychain_v2.h"
-#include "crypto/fake_apple_keychain_v2.h"
+#include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/public_key_credential_user_entity.h"
