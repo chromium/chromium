@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
-import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TAB_SELECTION_CALLBACKS;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.ListModel;
@@ -85,7 +84,7 @@ public class KeyboardAccessoryButtonGroupViewBinder
             KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener listener =
                     model.get(BUTTON_SELECTION_CALLBACKS);
             if (listener != null) view.setButtonSelectionListener(listener);
-        } else if (propertyKey == ACTIVE_TAB || propertyKey == TAB_SELECTION_CALLBACKS) {
+        } else if (propertyKey == ACTIVE_TAB) {
             // not used for this view.
         } else {
             assert false : "Every possible property update needs to be handled!";

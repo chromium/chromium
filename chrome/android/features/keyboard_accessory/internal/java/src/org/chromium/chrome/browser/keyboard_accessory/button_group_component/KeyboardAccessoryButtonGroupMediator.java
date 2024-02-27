@@ -7,18 +7,14 @@ package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
-import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TAB_SELECTION_CALLBACKS;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
-
-import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,11 +25,10 @@ import java.util.Set;
 
 /**
  * This mediator observes and changes a {@link PropertyModel} that contains the visual appearance of
- * a {@link TabLayout}. It manages {@link ViewPager.OnPageChangeListener}s.
+ * a {@link KeyboardAccessoryButtonGroupView}. It manages {@link ViewPager.OnPageChangeListener}s.
  */
 class KeyboardAccessoryButtonGroupMediator
-        implements TabLayout.OnTabSelectedListener,
-                KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener,
+        implements KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener,
                 PropertyObservable.PropertyObserver<PropertyKey>,
                 KeyboardAccessoryCoordinator.TabSwitchingDelegate {
     private final PropertyModel mModel;
@@ -84,7 +79,7 @@ class KeyboardAccessoryButtonGroupMediator
             closeActiveTab(); // Make sure the active tab is reset for a modified tab list.
             return;
         }
-        if (propertyKey == TAB_SELECTION_CALLBACKS || propertyKey == BUTTON_SELECTION_CALLBACKS) {
+        if (propertyKey == BUTTON_SELECTION_CALLBACKS) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";
@@ -136,23 +131,8 @@ class KeyboardAccessoryButtonGroupMediator
     }
 
     @Override
-    public void onTabSelected(TabLayout.Tab tab) {
-        mModel.set(ACTIVE_TAB, validateActiveTab(tab.getPosition()));
-    }
-
-    @Override
-    public void onTabUnselected(TabLayout.Tab tab) {}
-
-    @Override
-    public void onTabReselected(TabLayout.Tab tab) {
-        if (mModel.get(ACTIVE_TAB) == null) {
-            mModel.set(ACTIVE_TAB, validateActiveTab(tab.getPosition()));
-        }
-    }
-
-    @Override
     public void onButtonClicked(int position) {
-        mModel.set(ACTIVE_TAB, validateActiveTab(position));
+        mModel.set(ACTIVE_TAB, position >= mModel.get(TABS).size() ? null : position);
     }
 
     void setTabObserver(AccessoryTabObserver accessoryTabObserver) {
@@ -165,16 +145,5 @@ class KeyboardAccessoryButtonGroupMediator
 
     void removePageChangeListener(ViewPager.OnPageChangeListener pageChangeListener) {
         mPageChangeListeners.remove(pageChangeListener);
-    }
-
-    @VisibleForTesting
-    Integer validateActiveTab(int tabLayoutPosition) {
-        // The tab was detached but the object stayed in the pool and was reset:
-        if (tabLayoutPosition == TabLayout.Tab.INVALID_POSITION) return null;
-
-        // The tab was removed but the removeTabAt dispatched a onTabSelected event on it:
-        if (tabLayoutPosition >= mModel.get(TABS).size()) return null;
-
-        return tabLayoutPosition;
     }
 }
