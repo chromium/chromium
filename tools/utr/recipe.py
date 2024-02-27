@@ -4,8 +4,10 @@
 """Utilities for invoking recipes"""
 
 import json
+import logging
 import pathlib
 import subprocess
+import tempfile
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
@@ -81,17 +83,37 @@ class LegacyRunner:
     """Runs the UTR recipe with the settings defined on the CLI.
 
     Returns:
-      Exit code of the `recipes.py` invocation.
+      Tuple of (exit code, error message) of the `recipes.py` invocation.
     """
-    cmd = [
-        self._recipes_py,
-        'run',
-        '--properties-file',
-        '-',  # '-' means read from stdin
-        self.UTR_RECIPE_NAME,
-    ]
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, text=True)
-    p.communicate(input=json.dumps(self._input_props))
-    # TODO(crbug.com/41492688): Support better status message streaming. For
-    # now, just use the recipe engine's overly-verbose stdout.
-    return p.returncode
+    with tempfile.TemporaryDirectory() as tmp_dir:
+      output_path = pathlib.Path(tmp_dir).joinpath('out.json')
+      cmd = [
+          self._recipes_py,
+          'run',
+          '--output-result-json',
+          output_path,
+          '--properties-file',
+          '-',  # '-' means read from stdin
+          self.UTR_RECIPE_NAME,
+      ]
+      p = subprocess.Popen(cmd, stdin=subprocess.PIPE, text=True)
+      p.communicate(input=json.dumps(self._input_props))
+
+      # Try to pull out the summary markdown from the recipe run.
+      failure_reason = None
+      if not output_path.exists():
+        logging.error('Recipe output json not found')
+      else:
+        try:
+          with open(output_path) as f:
+            output = json.load(f)
+          failure_reason = output.get('failure', {}).get('humanReason')
+          # TODO(crbug.com/41492688): Also pull out info about gclient/GN arg
+          # mismatches, surface those as a Y/N prompt to the user, and re-run
+          # if Y.
+        except json.decoder.JSONDecodeError:
+          logging.exception('Recipe output is invalid json')
+
+      # TODO(crbug.com/41492688): Support better status message streaming. For
+      # now, just use the recipe engine's overly-verbose stdout.
+      return p.returncode, failure_reason

@@ -105,7 +105,11 @@ def main():
   # rather than simply exit code, and use that to send Y/N prompts to the user
   # to control/override default behavior (eg: using pre-builts with incorrect
   # GN args).
-  return recipe_runner.run_recipe()
+  exit_code, error_msg = recipe_runner.run_recipe()
+  if error_msg:
+    logging.error('UTR failure:')
+    logging.error(error_msg)
+  return exit_code
 
 
 if __name__ == '__main__':

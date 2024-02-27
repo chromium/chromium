@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Tests for recipe.py"""
 
+import json
 import os
 import pathlib
 import shutil
@@ -36,7 +37,29 @@ class LegacyRunnerTests(unittest.TestCase):
                                  'some-builder', [], False, False)
     self.subp_mock.returncode = 123
     with mock.patch('subprocess.Popen', return_value=self.subp_mock):
-      self.assertEqual(runner.run_recipe(), 123)
+      exit_code, _ = runner.run_recipe()
+      self.assertEqual(exit_code, 123)
+
+  def testJson(self):
+    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
+                                 'some-builder', [], False, False)
+    with mock.patch('tempfile.TemporaryDirectory', return_value=self.tmp_dir):
+      with mock.patch('subprocess.Popen', return_value=self.subp_mock):
+        # Missing json file
+        _, error_msg = runner.run_recipe()
+        self.assertIsNone(error_msg)
+
+        # Broken json
+        with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
+          f.write('this-is-not-json')
+        _, error_msg = runner.run_recipe()
+        self.assertIsNone(error_msg)
+
+        # Actual json
+        with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
+          json.dump({'failure': {'humanReason': 'it exploded'}}, f)
+        _, error_msg = runner.run_recipe()
+        self.assertEqual(error_msg, 'it exploded')
 
 
 if __name__ == '__main__':
