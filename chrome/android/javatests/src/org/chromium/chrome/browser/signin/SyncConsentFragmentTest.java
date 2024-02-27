@@ -898,7 +898,7 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/326462005")
+    @DisableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully()
             throws IOException {
         mAutoTestRule.setIsAutomotive(true);
@@ -944,12 +944,108 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/326462005")
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void
+            testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully_withMinorModeRestrictionsEnabled()
+                    throws IOException {
+        mAutoTestRule.setIsAutomotive(true);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_NOT_REQUIRED);
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.BOOKMARK_MANAGER,
+                                            accountInfo.getEmail());
+                        });
+
+        // Should display the sync page, clicking the 'more' button to scroll down if needed.
+        if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        // Accepting the sync on an automotive device should take the user to the device lock page.
+        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).check(doesNotExist());
+
+        simulateDeviceLockReadyOnAutomotive();
+
+        // Wait for the sync consent to be set and the activity has finished.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return IdentityServicesProvider.get()
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+                });
+        onView(withId(R.id.device_lock_title)).check(doesNotExist());
+        ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
     public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws IOException {
         mAutoTestRule.setIsAutomotive(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.BOOKMARK_MANAGER,
+                                            accountInfo.getEmail());
+                        });
+
+        // Should display the sync page, clicking the 'more' button to scroll down if needed.
+        if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        // Accepting the sync on an automotive device should take the user to the device lock page.
+        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_accept_button)).check(doesNotExist());
+
+        simulateDeviceLockRefused();
+
+        // Check that the user is not consented to sync and the activity has finished.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !IdentityServicesProvider.get()
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+                });
+        onView(withId(R.id.device_lock_title)).check(doesNotExist());
+        ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void
+            testAutomotiveDevice_deviceLockRefused_syncRefused_withMinorModeRestrictionsEnabled()
+                    throws IOException {
+        mAutoTestRule.setIsAutomotive(true);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_NOT_REQUIRED);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
