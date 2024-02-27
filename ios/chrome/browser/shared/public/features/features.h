@@ -47,7 +47,16 @@ BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
 // Docking Promo experiment variations.
+
+// A parameter representing the experimental arm for when the Docking Promo is
+// displayed: during the FRE, or after the FRE.
 extern const char kIOSDockingPromoExperimentType[];
+// A parameter representing how many hours of inactivity are required (for users
+// no older than 2 days) before the Docking Promo is shown.
+extern const char kIOSDockingPromoNewUserInactiveThresholdHours[];
+// A parameter representing how many hours of inactivity are required (for users
+// no older than 14 days) before the Docking Promo is shown.
+extern const char kIOSDockingPromoOldUserInactiveThresholdHours[];
 
 // Feature flag to enable the Docking Promo.
 BASE_DECLARE_FEATURE(kIOSDockingPromo);
@@ -64,6 +73,14 @@ bool IsDockingPromoEnabled();
 
 // Returns the experiment type for the Docking Promo feature.
 DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled();
+
+// For users no older than 2 days, how many hours of inactivity must pass before
+// showing the Docking Promo.
+int HoursInactiveForNewUsersUntilShowingDockingPromo();
+
+// For users no older than 14 days, how many hours of inactivity must pass
+// before showing the Docking Promo.
+int HoursInactiveForOldUsersUntilShowingDockingPromo();
 
 // Feature flag to enable the non-modal DB promo cooldown refactor separating
 // the cooldown periods for full screen and non-modal promos, as well as

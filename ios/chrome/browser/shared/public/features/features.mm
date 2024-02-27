@@ -59,6 +59,10 @@ BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kIOSDockingPromoExperimentType[] = "IOSDockingPromoExperimentType";
+const char kIOSDockingPromoNewUserInactiveThresholdHours[] =
+    "IOSDockingPromoNewUserInactiveThresholdHours";
+const char kIOSDockingPromoOldUserInactiveThresholdHours[] =
+    "IOSDockingPromoOldUserInactiveThresholdHours";
 
 BASE_FEATURE(kIOSDockingPromo,
              "IOSDockingPromo",
@@ -427,6 +431,18 @@ DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled() {
       base::GetFieldTrialParamByFeatureAsInt(
           kIOSDockingPromo, kIOSDockingPromoExperimentType,
           /*default_value=*/(int)DockingPromoDisplayTriggerArm::kAfterFRE));
+}
+
+int HoursInactiveForNewUsersUntilShowingDockingPromo() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kIOSDockingPromo, kIOSDockingPromoNewUserInactiveThresholdHours,
+      /*default_value=*/24);
+}
+
+int HoursInactiveForOldUsersUntilShowingDockingPromo() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kIOSDockingPromo, kIOSDockingPromoOldUserInactiveThresholdHours,
+      /*default_value=*/72);
 }
 
 bool IsWebChannelsEnabled() {
