@@ -2260,17 +2260,20 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
   };
 
   // We first collect the focused (if one exists) and the unfocused autofillable
-  // elements, and the autofill them in the following order:
-  // 1. Autofill the focused element.
-  // 2. Send the blur event.
-  // 3. Autofill the unfocused elements.
-  // 4. Send the focus event for the initially focused element.
-  // See crbug.com/326995529 for details.
+  // fields, and the autofill them in the following order:
+  //
+  // 1. Autofill the focused field.
+  // 2. Send a blur event for the initially focused field.
+  // 3. For each unfocused field, focus -> autofill -> blur.
+  // 4. Send a focus event for the initially focused field.
+  //
+  // We currently do not emit other events like keydown/keyup or paste and
+  // beforeinput/textInput/input.
   Field focused_field;
   std::vector<Field> unfocused_fields;
   unfocused_fields.reserve(fields.size());
 
-  // Step 0: Find the focused element and the unfocused elements to fill.
+  // Step 0: Find the focused and the unfocused fields to fill.
   for (const FormFieldData::FillData& field : fields) {
     WebFormControlElement element =
         GetFormControlByRendererId(field.renderer_id);
@@ -2323,6 +2326,8 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
   }
 
   // Step 3: Autofill the non-initiating elements.
+  // blink::WebFormControlElement::SetAutofillValue fires the focus and blur
+  // events.
   for (Field& field : unfocused_fields) {
     filled_fields.emplace_back(field.element, field.element.GetAutofillState());
     fill_or_preview(*field.data, false, field.element, field_data_manager);
