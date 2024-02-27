@@ -4,21 +4,13 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
-import android.content.Context;
-import android.os.Bundle;
-
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -93,15 +85,5 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
         if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
             fragment.addPreferencesFromResource(R.xml.image_descriptions_settings_preference);
         }
-    }
-
-    @Override
-    public void launchSiteSettingsZoomActivity(Context context) {
-        Bundle initialArguments = new Bundle();
-        initialArguments.putString(
-                SingleCategorySettings.EXTRA_CATEGORY,
-                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(context, AllSiteSettings.class, initialArguments);
     }
 }

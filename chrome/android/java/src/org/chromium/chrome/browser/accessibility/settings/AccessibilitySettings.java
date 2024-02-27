@@ -11,8 +11,9 @@ import android.provider.Settings;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.chrome.R;
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
@@ -21,7 +22,11 @@ import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUma;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
@@ -155,7 +160,15 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             zoomInfo.setVisible(true);
             zoomInfo.setOnPreferenceClickListener(
                     preference -> {
-                        mDelegate.launchSiteSettingsZoomActivity(getContext());
+                        Bundle initialArguments = new Bundle();
+                        initialArguments.putString(
+                                SingleCategorySettings.EXTRA_CATEGORY,
+                                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
+                        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                        settingsLauncher.launchSettingsActivity(
+                                ContextUtils.getApplicationContext(),
+                                AllSiteSettings.class,
+                                initialArguments);
                         return true;
                     });
         } else {

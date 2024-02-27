@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -58,11 +56,4 @@ public interface AccessibilitySettingsDelegate {
      * @param fragment the fragment to add the preferences to.
      */
     void addExtraPreferences(@NonNull PreferenceFragmentCompat fragment);
-
-    /**
-     * Launches a site settings category that displays zoom levels for each website.
-     *
-     * @param context the context from which to launch the activity from.
-     */
-    void launchSiteSettingsZoomActivity(Context context);
 }
