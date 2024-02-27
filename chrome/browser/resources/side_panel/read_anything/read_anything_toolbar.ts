@@ -21,7 +21,7 @@ import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon
 import type {DomRepeat, DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PauseActionSource, ReadAnythingElement} from './app.js';
+import {ReadAnythingElement} from './app.js';
 import {validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
@@ -703,15 +703,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   onPlayPauseClick() {
-    if (!this.contentPage) {
-      return;
-    }
-
-    if (this.paused) {
-      this.contentPage.playSpeech();
-    } else {
-      this.contentPage.stopSpeech(PauseActionSource.BUTTON_CLICK);
-    }
+    this.dispatchEvent(new CustomEvent('play-pause-click', {
+      bubbles: true,
+      composed: true,
+      detail: {},
+    }));
   }
 
   private onToolbarKeyDown_(e: KeyboardEvent) {

@@ -689,6 +689,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.playSpeech();
     }
   }
+  private onPlayPauseClick_() {
+    if (this.speechPlayngState.paused) {
+      this.playSpeech();
+    } else {
+      this.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    }
+  }
 
   stopSpeech(pauseSource: PauseActionSource) {
     // TODO(crbug.com/1474951): When pausing, can we pause on a word boundary
@@ -1335,7 +1342,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private onKeyDown_(e: KeyboardEvent) {
     if (e.key === 'k') {
       e.stopPropagation();
-      this.$.toolbar.onPlayPauseClick();
+      this.onPlayPauseClick_();
     }
   }
 }
