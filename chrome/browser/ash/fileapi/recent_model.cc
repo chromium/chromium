@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/fileapi/recent_arc_media_source.h"
@@ -56,13 +57,23 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
     Profile* profile,
     size_t max_files) {
   std::vector<std::unique_ptr<RecentSource>> sources;
-  sources.emplace_back(
-      std::make_unique<RecentArcMediaSource>(profile, max_files));
+
+  // ARC sources.
+  sources.emplace_back(std::make_unique<RecentArcMediaSource>(
+      profile, arc::kImagesRootId, max_files));
+  sources.emplace_back(std::make_unique<RecentArcMediaSource>(
+      profile, arc::kVideosRootId, max_files));
+  sources.emplace_back(std::make_unique<RecentArcMediaSource>(
+      profile, arc::kDocumentsRootId, max_files));
+  // Android's MediaDocumentsProvider.queryRecentDocuments() doesn't support
+  // audio files, http://b/175155820. Therefore no arc::kAudioRootId source.
+
   // Crostini.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
       file_manager::util::GetCrostiniMountPointName(profile),
       true /* ignore_dotfiles */, 4 /* max_depth */, max_files,
       "FileBrowser.Recent.LoadCrostini"));
+
   // Downloads / MyFiles.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
       file_manager::util::GetDownloadsMountPointName(profile),

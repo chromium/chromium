@@ -104,8 +104,6 @@ class RecentArcMediaSourceTest : public testing::Test {
     // Add documents to FakeFileSystemInstance. Note that they are not available
     // until EnableFakeFileSystemInstance() is called.
     AddDocumentsToFakeFileSystemInstance();
-
-    source_ = std::make_unique<RecentArcMediaSource>(profile_.get(), 10);
   }
 
   void TearDown() override {
@@ -187,6 +185,7 @@ class RecentArcMediaSourceTest : public testing::Test {
   // of the roots (documents, images, videos) to experience an artificial lag.
   // If the lag is specified, it must be greater than 100ms.
   std::vector<RecentFile> GetRecentFiles(
+      RecentArcMediaSource* source,
       const std::string& query,
       RecentSource::FileType file_type = RecentSource::FileType::kAll,
       std::optional<std::pair<const char*, base::TimeDelta>> root_lag = {}) {
@@ -198,15 +197,15 @@ class RecentArcMediaSourceTest : public testing::Test {
     if (root_lag.has_value()) {
       auto [root_id, lag] = root_lag.value();
       base::TimeDelta stop_delta = lag - base::Milliseconds(100);
-      EXPECT_TRUE(source_->SetLagForTesting(root_id, lag));
+      source->SetLagForTesting(lag);
       EXPECT_TRUE(stop_delta.is_positive());
       timer.Start(FROM_HERE, stop_delta, base::BindLambdaForTesting([&]() {
-                    files = source_->Stop(call_id);
+                    files = source->Stop(call_id);
                     run_loop.Quit();
                   }));
     }
 
-    source_->GetRecentFiles(
+    source->GetRecentFiles(
         RecentSource::Params(
             /*file_system_context=*/nullptr, call_id,
             /*origin=*/GURL(), query,
@@ -242,37 +241,56 @@ class RecentArcMediaSourceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   raw_ptr<arc::ArcFileSystemOperationRunner> runner_;
-
-  std::unique_ptr<RecentArcMediaSource> source_;
 };
 
 TEST_F(RecentArcMediaSourceTest, Normal) {
   EnableFakeFileSystemInstance();
 
-  std::vector<RecentFile> files = GetRecentFiles("");
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
+  std::vector<RecentFile> doc_files = GetRecentFiles(doc_source.get(), "");
 
-  ASSERT_EQ(6u, files.size());
-  EXPECT_THAT(files[0],
+  ASSERT_EQ(2u, doc_files.size());
+  EXPECT_THAT(doc_files[0],
               IsRecentFile(GetDocumentPath("text.txt"), ModifiedTime(10)));
-  EXPECT_THAT(files[1],
+  EXPECT_THAT(doc_files[1],
               IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
-  EXPECT_THAT(files[2],
-              IsRecentFile(GetVideoPath("ink.webm"), ModifiedTime(8)));
-  EXPECT_THAT(files[3], IsRecentFile(GetVideoPath("hot.mp4"), ModifiedTime(7)));
-  EXPECT_THAT(files[4], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
-  EXPECT_THAT(files[5], IsRecentFile(GetImagePath("cat.png"), ModifiedTime(2)));
 
-  files = GetRecentFiles("text");
-  ASSERT_EQ(1u, files.size());
-  EXPECT_THAT(files[0],
+  auto video_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kVideosRootId, 10);
+  std::vector<RecentFile> video_files = GetRecentFiles(video_source.get(), "");
+
+  ASSERT_EQ(2u, video_files.size());
+  EXPECT_THAT(video_files[0],
+              IsRecentFile(GetVideoPath("ink.webm"), ModifiedTime(8)));
+  EXPECT_THAT(video_files[1],
+              IsRecentFile(GetVideoPath("hot.mp4"), ModifiedTime(7)));
+
+  auto image_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kImagesRootId, 10);
+  std::vector<RecentFile> image_files = GetRecentFiles(image_source.get(), "");
+
+  EXPECT_THAT(image_files[0],
+              IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+  EXPECT_THAT(image_files[1],
+              IsRecentFile(GetImagePath("cat.png"), ModifiedTime(2)));
+
+  doc_files = GetRecentFiles(doc_source.get(), "text");
+  ASSERT_EQ(1u, doc_files.size());
+  EXPECT_THAT(doc_files[0],
               IsRecentFile(GetDocumentPath("text.txt"), ModifiedTime(10)));
+  ASSERT_EQ(0u, GetRecentFiles(video_source.get(), "text").size());
+  ASSERT_EQ(0u, GetRecentFiles(image_source.get(), "text").size());
 }
 
 TEST_F(RecentArcMediaSourceTest, ArcNotAvailable) {
-  std::vector<RecentFile> files = GetRecentFiles("");
+  // By not enabling fake file system instance we make Arc unavailable.
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
+  std::vector<RecentFile> files = GetRecentFiles(doc_source.get(), "");
   EXPECT_EQ(0u, files.size());
 
-  files = GetRecentFiles("hot");
+  files = GetRecentFiles(doc_source.get(), "hot");
   EXPECT_EQ(0u, files.size());
 }
 
@@ -280,18 +298,22 @@ TEST_F(RecentArcMediaSourceTest, Deferred) {
   EnableFakeFileSystemInstance();
   EnableDefer();
 
-  std::vector<RecentFile> files = GetRecentFiles("");
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
+  std::vector<RecentFile> files = GetRecentFiles(doc_source.get(), "");
   EXPECT_EQ(0u, files.size());
 
-  files = GetRecentFiles("word");
+  files = GetRecentFiles(doc_source.get(), "word");
   EXPECT_EQ(0u, files.size());
 }
 
 TEST_F(RecentArcMediaSourceTest, GetAudioFiles) {
   EnableFakeFileSystemInstance();
 
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
   std::vector<RecentFile> files =
-      GetRecentFiles("", RecentSource::FileType::kAudio);
+      GetRecentFiles(doc_source.get(), "", RecentSource::FileType::kAudio);
   // Query for recently-modified audio files should be ignored, since
   // MediaDocumentsProvider doesn't support queryRecentDocuments for audio.
   ASSERT_EQ(0u, files.size());
@@ -300,8 +322,10 @@ TEST_F(RecentArcMediaSourceTest, GetAudioFiles) {
 TEST_F(RecentArcMediaSourceTest, GetImageFiles) {
   EnableFakeFileSystemInstance();
 
+  auto image_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kImagesRootId, 10);
   std::vector<RecentFile> files =
-      GetRecentFiles("", RecentSource::FileType::kImage);
+      GetRecentFiles(image_source.get(), "", RecentSource::FileType::kImage);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_THAT(files[0], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
@@ -311,8 +335,10 @@ TEST_F(RecentArcMediaSourceTest, GetImageFiles) {
 TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
   EnableFakeFileSystemInstance();
 
+  auto video_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kVideosRootId, 10);
   std::vector<RecentFile> files =
-      GetRecentFiles("", RecentSource::FileType::kVideo);
+      GetRecentFiles(video_source.get(), "", RecentSource::FileType::kVideo);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_THAT(files[0],
@@ -323,8 +349,10 @@ TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
 TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
   EnableFakeFileSystemInstance();
 
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
   std::vector<RecentFile> files =
-      GetRecentFiles("", RecentSource::FileType::kDocument);
+      GetRecentFiles(doc_source.get(), "", RecentSource::FileType::kDocument);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_THAT(files[0],
@@ -332,33 +360,34 @@ TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
   EXPECT_THAT(files[1],
               IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
 
-  files = GetRecentFiles("word", RecentSource::FileType::kDocument);
+  files = GetRecentFiles(doc_source.get(), "word",
+                         RecentSource::FileType::kDocument);
   ASSERT_EQ(1u, files.size());
   EXPECT_THAT(files[0],
               IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
 
-  files = GetRecentFiles("no-match", RecentSource::FileType::kDocument);
+  files = GetRecentFiles(doc_source.get(), "no-match",
+                         RecentSource::FileType::kDocument);
   ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentArcMediaSourceTest, LaggyDocuments) {
   EnableFakeFileSystemInstance();
   // Find all recent files containing 'd' in their name.
-  std::vector<RecentFile> files_no_lag = GetRecentFiles("d");
-  ASSERT_EQ(2u, files_no_lag.size());
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
+  std::vector<RecentFile> files_no_lag = GetRecentFiles(doc_source.get(), "d");
+  ASSERT_EQ(1u, files_no_lag.size());
   EXPECT_THAT(files_no_lag[0],
               IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
-  EXPECT_THAT(files_no_lag[1],
-              IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
 
   // Now search again; but with an artificial lag for documents. Expect that
   // word.doc is no longer found.
   std::vector<RecentFile> files = GetRecentFiles(
-      "d", RecentSource::FileType::kAll,
+      doc_source.get(), "d", RecentSource::FileType::kAll,
       std::make_pair(arc::kDocumentsRootId, base::Milliseconds(500)));
 
-  ASSERT_EQ(1u, files.size());
-  EXPECT_THAT(files[0], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
@@ -366,6 +395,8 @@ TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
   // The number of times laggy, overlapping search is repeated.
   constexpr int32_t reps = 10;
 
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
   std::vector<RecentFile> results[reps];
   base::OneShotTimer timers[reps];
 
@@ -375,7 +406,7 @@ TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
   for (int32_t call_id = 0; call_id < reps; ++call_id) {
     base::TimeDelta stop_delta = base::Milliseconds(250 + 100 * call_id);
     base::TimeDelta lag_delta = base::Milliseconds(500 + 100 * call_id);
-    EXPECT_TRUE(source_->SetLagForTesting(arc::kDocumentsRootId, lag_delta));
+    doc_source->SetLagForTesting(lag_delta);
     timers[call_id].Start(
         FROM_HERE, stop_delta,
         base::BindOnce(
@@ -383,30 +414,29 @@ TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
                RecentArcMediaSource* source) {
               *out_files = source->Stop(my_call_id);
             },
-            call_id, &results[call_id], source_.get()));
-    source_->GetRecentFiles(RecentSource::Params(
-                                /*file_system_context=*/nullptr,
-                                /**call_id=*/call_id,
-                                /*origin=*/GURL(),
-                                /**query=*/"d",
-                                /*cutoff_time=*/base::Time(),
-                                /*end_time=*/base::TimeTicks::Max(),
-                                /*file_type=*/RecentSource::FileType::kAll),
-                            base::BindOnce(
-                                [](std::vector<RecentFile>* out_files,
-                                   std::vector<RecentFile> files) {
-                                  *out_files = std::move(files);
-                                },
-                                &results[call_id]));
+            call_id, &results[call_id], doc_source.get()));
+    doc_source->GetRecentFiles(RecentSource::Params(
+                                   /*file_system_context=*/nullptr,
+                                   /**call_id=*/call_id,
+                                   /*origin=*/GURL(),
+                                   /**query=*/"d",
+                                   /*cutoff_time=*/base::Time(),
+                                   /*end_time=*/base::TimeTicks::Max(),
+                                   /*file_type=*/RecentSource::FileType::kAll),
+                               base::BindOnce(
+                                   [](std::vector<RecentFile>* out_files,
+                                      std::vector<RecentFile> files) {
+                                     *out_files = std::move(files);
+                                   },
+                                   &results[call_id]));
   }
 
   // Last call; wait for the results; these results are not interrupted and take
   // longer than any of the request requested above.
-  EXPECT_TRUE(source_->SetLagForTesting(arc::kDocumentsRootId,
-                                        base::Milliseconds(500 + 100 * reps)));
+  doc_source->SetLagForTesting(base::Milliseconds(500 + 100 * reps));
   base::RunLoop run_loop;
   std::vector<RecentFile> final_result;
-  source_->GetRecentFiles(
+  doc_source->GetRecentFiles(
       RecentSource::Params(
           /*file_system_context=*/nullptr,
           /*call_id=*/reps,
@@ -424,24 +454,22 @@ TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
           &run_loop, &final_result));
 
   run_loop.Run();
-  ASSERT_EQ(2u, final_result.size());
+  ASSERT_EQ(1u, final_result.size());
   EXPECT_THAT(final_result[0],
               IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
-  EXPECT_THAT(final_result[1],
-              IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
   for (int32_t call_id = 0; call_id < reps; ++call_id) {
-    ASSERT_EQ(1u, results[call_id].size());
-    EXPECT_THAT(results[call_id][0],
-                IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+    ASSERT_EQ(0u, results[call_id].size());
   }
 }
 
 TEST_F(RecentArcMediaSourceTest, UmaStats) {
   EnableFakeFileSystemInstance();
 
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles("");
+  GetRecentFiles(doc_source.get(), "");
 
   histogram_tester.ExpectTotalCount(RecentArcMediaSource::kLoadHistogramName,
                                     1);
@@ -451,12 +479,44 @@ TEST_F(RecentArcMediaSourceTest, UmaStats_Deferred) {
   EnableFakeFileSystemInstance();
   EnableDefer();
 
+  auto doc_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kDocumentsRootId, 10);
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles("");
+  GetRecentFiles(doc_source.get(), "");
 
   histogram_tester.ExpectTotalCount(RecentArcMediaSource::kLoadHistogramName,
                                     0);
+}
+
+TEST_F(RecentArcMediaSourceTest, MaxFiles) {
+  EnableFakeFileSystemInstance();
+
+  // Maximum one image can be returned per query, regardless of matched numbers.
+  auto image_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kImagesRootId, 1);
+  std::vector<RecentFile> files =
+      GetRecentFiles(image_source.get(), "", RecentSource::FileType::kImage);
+
+  ASSERT_EQ(1u, files.size());
+  EXPECT_THAT(files[0], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+}
+
+TEST_F(RecentArcMediaSourceTest, CallStopLate) {
+  EnableFakeFileSystemInstance();
+
+  // Maximum one image can be returned per query, relardless of matched numbers.
+  auto image_source = std::make_unique<RecentArcMediaSource>(
+      profile_.get(), arc::kImagesRootId, 10);
+  std::vector<RecentFile> files =
+      GetRecentFiles(image_source.get(), "", RecentSource::FileType::kImage);
+
+  ASSERT_EQ(2u, files.size());
+  EXPECT_THAT(files[0], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+  EXPECT_THAT(files[1], IsRecentFile(GetImagePath("cat.png"), ModifiedTime(2)));
+
+  std::vector<RecentFile> stop_files = image_source->Stop(0);
+  ASSERT_EQ(0u, stop_files.size());
 }
 
 }  // namespace ash
