@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -279,6 +280,11 @@ class VIEWS_EXPORT StyledLabel : public View {
   // recalculation, while |layout_views_| only exists until the next Layout().
   mutable LayoutSizeInfo layout_size_info_{0};
   mutable std::unique_ptr<LayoutViews> layout_views_;
+  // Saves the LayoutSizeInfo for additional CalculateLayout() calls. Layout
+  // managers sometimes repeatedly ask for size information for the same (small)
+  // number of widths. Caching multiple LayoutSideInfos helps avoid doing many
+  // unnecessary calculations.
+  mutable base::LRUCache<int, LayoutSizeInfo> layout_size_info_cache_{16};
 
   // Background color on which the label is drawn, for auto color readability.
   ColorVariant displayed_on_background_color_;

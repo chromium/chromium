@@ -238,7 +238,12 @@ void StyledLabel::SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled) {
 
 const StyledLabel::LayoutSizeInfo& StyledLabel::GetLayoutSizeInfoForWidth(
     int w) const {
+  if (auto it = layout_size_info_cache_.Get(w);
+      it != layout_size_info_cache_.end()) {
+    return it->second;
+  }
   CalculateLayout(w);
+  layout_size_info_cache_.Put(w, layout_size_info_);
   return layout_size_info_;
 }
 
@@ -272,8 +277,9 @@ gfx::Size StyledLabel::CalculatePreferredSize(
   }
 
   // Respect any existing size.  If there is none, default to a single line.
-  CalculateLayout(width == 0 ? std::numeric_limits<int>::max() : width);
-  return layout_size_info_.total_size;
+  return GetLayoutSizeInfoForWidth(width == 0 ? std::numeric_limits<int>::max()
+                                              : width)
+      .total_size;
 }
 
 void StyledLabel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -299,6 +305,7 @@ void StyledLabel::Layout(PassKey) {
 void StyledLabel::PreferredSizeChanged() {
   need_recreate_child_ = true;
   layout_size_info_ = LayoutSizeInfo(0);
+  layout_size_info_cache_.Clear();
   layout_views_.reset();
   View::PreferredSizeChanged();
 }
