@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -83,8 +84,8 @@ bool IsRTLKeyboardLayoutInstalled() {
 
   // Retrieve the keyboard layouts in an array and check if there is an RTL
   // layout in it.
-  std::unique_ptr<HKL[]> layouts(new HKL[size]);
-  ::GetKeyboardLayoutList(size, layouts.get());
+  auto layouts = base::HeapArray<HKL>::Uninit(size);
+  ::GetKeyboardLayoutList(size, layouts.data());
   for (int i = 0; i < size; ++i) {
     if (IsRTLPrimaryLangID(
             PRIMARYLANGID(reinterpret_cast<uintptr_t>(layouts[i])))) {
