@@ -3678,7 +3678,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
   CHECK(profile);
-  if (supervised_user::IsUrlFilteringEnabled(*profile->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(*profile->GetPrefs())) {
     supervised_user::SupervisedUserService* supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(profile);
     supervised_user::SupervisedUserURLFilter* url_filter =
@@ -4077,7 +4077,7 @@ void RenderViewContextMenu::ExecInspectBackgroundPage() {
 void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
   CHECK(profile);
-  if (supervised_user::IsUrlFilteringEnabled(*profile->GetPrefs())) {
+  if (supervised_user::IsSubjectToParentalControls(*profile->GetPrefs())) {
     supervised_user::SupervisedUserService* supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(profile);
     supervised_user::SupervisedUserURLFilter* url_filter =

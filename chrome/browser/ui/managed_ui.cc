@@ -109,7 +109,8 @@ bool ShouldDisplayManagedByParentUi(Profile* profile) {
   // * on ChromeOS, because similar UI is displayed at the OS level.
   return false;
 #else
-  return profile && supervised_user::IsChildAccount(*profile->GetPrefs()) &&
+  return profile &&
+         supervised_user::IsSubjectToParentalControls(*profile->GetPrefs()) &&
          base::FeatureList::IsEnabled(
              supervised_user::kEnableManagedByParentUi);
 #endif  // !BUILDFLAG(ENABLE_SUPERVISED_USERS) || BUILDFLAG(IS_CHROMEOS)

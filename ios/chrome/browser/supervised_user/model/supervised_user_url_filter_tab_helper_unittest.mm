@@ -88,9 +88,9 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
             chrome_browser_state_.get());
     supervised_user_service->Init();
 
-    EXPECT_EQ(
-        supervised_user::IsChildAccount(*chrome_browser_state_->GetPrefs()),
-        is_subject_to_parental_controls);
+    EXPECT_EQ(supervised_user::IsSubjectToParentalControls(
+                  *chrome_browser_state_->GetPrefs()),
+              is_subject_to_parental_controls);
   }
 
   // Calls `ShouldAllowRequest` for a request with the given `url_string`.

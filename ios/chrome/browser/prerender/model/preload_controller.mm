@@ -87,8 +87,8 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 // Returns true if the primary account is subject to parental controls and the
 // URL filtering control has been enabled.
 bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
-  return browserState &&
-         supervised_user:: IsUrlFilteringEnabled(*browserState->GetPrefs());
+  return browserState && supervised_user::IsSubjectToParentalControls(
+                             *browserState->GetPrefs());
 }
 
 // Returns whether `url` can be prerendered.

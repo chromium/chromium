@@ -82,7 +82,7 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
     return;
   }
 
-  if (!supervised_user::IsUrlFilteringEnabled(
+  if (!supervised_user::IsSubjectToParentalControls(
           *chrome_browser_state->GetPrefs())) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;

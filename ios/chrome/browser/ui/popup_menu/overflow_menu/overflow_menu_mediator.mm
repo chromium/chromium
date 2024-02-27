@@ -1296,8 +1296,9 @@ bool IsBookmarked(const GURL& url,
         @"overflow_menu_footer_managed", ^{
           [self enterpriseLearnMore];
         });
-  } else if (chrome_browser_state && supervised_user::IsChildAccount(
-                                         *chrome_browser_state->GetPrefs())) {
+  } else if (chrome_browser_state &&
+             supervised_user::IsSubjectToParentalControls(
+                 *chrome_browser_state->GetPrefs())) {
     self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
         IDS_IOS_TOOLS_MENU_PARENT_MANAGED, IDS_IOS_TOOLS_MENU_PARENT_LEARN_MORE,
         kTextMenuFamilyLinkInfo, @"overflow_menu_footer_family_link", ^{

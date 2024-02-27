@@ -27,23 +27,12 @@ void DisableParentalControls(PrefService& pref_service);
 
 bool IsChildAccountStatusKnown(const PrefService& pref_service);
 
-// Returns true if the user is a type of Family Link supervised account.
-// This method should be preferred on gating child-specific features if there
-// is no dedicated method for the feature (e.g IsUrlFilteringEnabled).
-bool IsChildAccount(const PrefService& pref_service);
-
 // Returns true if the safe sites preference is enabled and user is supervised.
 bool IsSafeSitesEnabled(const PrefService& pref_service);
 
 // Returns true if both the primary account is a child account subject to
 // parental controls and the platform supports Family Link supervision features.
 bool IsSubjectToParentalControls(const PrefService& pref_service);
-
-// Returns true if the URL filtering parental control is enabled.
-//
-// TODO(crbug.com/326552693): remove duplication between this method and others
-// in this file.
-bool IsUrlFilteringEnabled(const PrefService& pref_service);
 
 // Returns true if the extensions permissions parental control is enabled
 // for supervised users.

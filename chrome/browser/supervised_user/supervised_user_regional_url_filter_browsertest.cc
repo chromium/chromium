@@ -115,7 +115,7 @@ class SupervisedUserRegionalURLFilterTest
   }
 
   bool IsUrlFilteringEnabled() const {
-    return supervised_user::IsUrlFilteringEnabled(
+    return supervised_user::IsSubjectToParentalControls(
         *browser()->profile()->GetPrefs());
   }
 

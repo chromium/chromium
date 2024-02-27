@@ -40,7 +40,7 @@ TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefs) {
       pref_service_.GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
       static_cast<int>(supervised_user::FilteringBehavior::kAllow));
   EXPECT_EQ(pref_service_.GetBoolean(prefs::kSupervisedUserSafeSites), true);
-  EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
+  EXPECT_FALSE(supervised_user::IsSubjectToParentalControls(pref_service_));
   // TODO(b/306376651): When we migrate more preference reading methods in this
   // library, add more test cases for their correct default values.
 }
@@ -111,17 +111,6 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   }
 }
 
-TEST_F(SupervisedUserPreferencesTest, IsChildAccountSupervisedUser) {
-  pref_service_.SetString(prefs::kSupervisedUserId,
-                            supervised_user::kChildAccountSUID);
-  EXPECT_TRUE(supervised_user::IsChildAccount(pref_service_));
-}
-
-TEST_F(SupervisedUserPreferencesTest, IsChildAccountNonSupervisedUser) {
-  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
-  EXPECT_FALSE(supervised_user::IsChildAccount(pref_service_));
-}
-
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
   pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
   pref_service_.SetString(prefs::kSupervisedUserId,
@@ -156,20 +145,6 @@ TEST_F(SupervisedUserPreferencesTest,
   // Set non-supervised user preference.
   pref_service_.SetString(prefs::kSupervisedUserId, std::string());
   EXPECT_FALSE(supervised_user::IsSubjectToParentalControls(pref_service_));
-}
-
-TEST_F(SupervisedUserPreferencesTest, IsUrlFilteringEnabledForSupervisedUser) {
-  // Set supervised user preference.
-  pref_service_.SetString(prefs::kSupervisedUserId,
-                          supervised_user::kChildAccountSUID);
-  EXPECT_TRUE(supervised_user::IsUrlFilteringEnabled(pref_service_));
-}
-
-TEST_F(SupervisedUserPreferencesTest,
-       IsUrlFilteringEnabledForNonSupervisedUser) {
-  // Set non-supervised user preference.
-  pref_service_.SetString(prefs::kSupervisedUserId, std::string());
-  EXPECT_FALSE(supervised_user::IsUrlFilteringEnabled(pref_service_));
 }
 
 enum class ExtensionsPermissionStatus { kEnabled, kDisabled };

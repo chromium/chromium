@@ -72,7 +72,7 @@ void ChildAccountService::Init() {
   identity_manager_->AddObserver(this);
 
   std::move(check_user_child_status_callback_)
-      .Run(supervised_user::IsChildAccount(user_prefs_.get()));
+      .Run(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
 
   // If we're already signed in, check the account immediately just to be sure.
   // (We might have missed an update before registering as an observer.)
@@ -127,7 +127,8 @@ base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
 }
 
 void ChildAccountService::SetActive(bool active) {
-  if (!supervised_user::IsChildAccount(user_prefs_.get()) && !active_) {
+  if (!supervised_user::IsSubjectToParentalControls(user_prefs_.get()) &&
+      !active_) {
     return;
   }
   if (active_ == active) {
@@ -149,7 +150,7 @@ void ChildAccountService::SetActive(bool active) {
 
 void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
     bool supervision_status) {
-  if (supervised_user::IsChildAccount(user_prefs_.get()) !=
+  if (supervised_user::IsSubjectToParentalControls(user_prefs_.get()) !=
       supervision_status) {
     if (supervision_status) {
       EnableParentalControls(user_prefs_.get());

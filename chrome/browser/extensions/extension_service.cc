@@ -1318,8 +1318,8 @@ void ExtensionService::CheckManagementPolicy() {
     // related disable reasons.
     bool is_supervised = false;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    is_supervised =
-        profile() && supervised_user::IsChildAccount(*profile()->GetPrefs());
+    is_supervised = profile() && supervised_user::IsSubjectToParentalControls(
+                                     *profile()->GetPrefs());
 #endif
     if (!is_supervised) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
