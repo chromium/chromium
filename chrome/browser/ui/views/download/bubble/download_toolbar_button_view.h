@@ -230,6 +230,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   bool ShouldShowBubbleAsInactive() const;
 
+  void CloseAutofillPopup();
+
   // Whether to show the progress ring as a continuously spinning ring, during
   // deep scanning or if the progress is indeterminate.
   bool ShouldShowScanningAnimation() const;
