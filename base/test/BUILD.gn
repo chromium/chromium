@@ -278,6 +278,7 @@ static_library("test_support") {
     deps += [
       ":google_test_runner_shared_headers",
       "//build:blink_buildflags",
+      "//build:ios_buildflags",
     ]
 
     # With blink, we use the standard unit_test_launcher.cc.

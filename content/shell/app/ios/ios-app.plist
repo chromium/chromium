@@ -56,5 +56,7 @@
 	<string>Allow content_shell access to Bluetooth</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow content_shell access to location</string>
+	<key>com.apple.developer.web-browser-engine.host</key>
+	<true/>
 </dict>
 </plist>

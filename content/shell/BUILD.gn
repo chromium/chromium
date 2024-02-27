@@ -33,6 +33,8 @@ if (is_android) {
   import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else if (is_ios) {
   import("//build/config/ios/config.gni")
+  import("//build/config/ios/swift_source_set.gni")
+  import("//build/ios/extension_bundle_data.gni")
 }
 
 # TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
@@ -43,6 +45,24 @@ declare_args() {
   content_shell_product_name = "Content Shell"
   content_shell_version = "999.77.34.5"
   content_shell_major_version = "999"
+}
+
+template("extension2_bundle_data") {
+  assert(defined(invoker.extension_target),
+         "extension_target must be defined for $target_name")
+
+  _extension_name = get_label_info(invoker.extension_target, "name") + ".appex"
+  if (defined(invoker.extension_name)) {
+    _extension_name = invoker.extension_name
+  }
+
+  bundle_data(target_name) {
+    testonly = true
+    public_deps = [ invoker.extension_target ]
+    outputs = [ "{{bundle_contents_dir}}/Extensions/{{source_file_part}}" ]
+    sources = [ get_label_info(invoker.extension_target, "root_out_dir") +
+                "/$_extension_name" ]
+  }
 }
 
 config("content_shell_lib_warnings") {
@@ -616,11 +636,11 @@ if (is_android) {
     # Path to an entitlements file used in ios_content_shell. Can be overridden
     # to provide an alternative.
     ios_content_shell_entitlements_path =
-        "//build/config/ios/entitlements.plist"
+        "//content/shell/app/ios/content_shell.entitlements"
   }
 
   ios_app_bundle("content_shell") {
-    info_plist = "app/ios-Info.plist"
+    info_plist = "app/ios/ios-app.plist"
     testonly = true
 
     sources = [ "app/shell_main.cc" ]
@@ -629,14 +649,28 @@ if (is_android) {
       ":content_shell_app",
       ":content_shell_lib",
       "//base",
+      "//build:ios_buildflags",
       "//content/public/app",
     ]
     bundle_deps = [
       ":content_shell_framework_resources",
       "app/ios/resources",
     ]
+    if (ios_deployment_target == "17.4") {
+      deps += [ ":content_process_bundle" ]
+    }
     entitlements_path = ios_content_shell_entitlements_path
     bundle_identifier = ios_content_shell_bundle_identifier
+  }
+
+  if (ios_deployment_target == "17.4" &&
+      current_toolchain == default_toolchain) {
+    _extension_toolchain = "${current_toolchain}_app_ext"
+    extension2_bundle_data("content_process_bundle") {
+      extension_name = "content_process.appex"
+      extension_target =
+          "//content/shell/app/ios:content_process(${_extension_toolchain})"
+    }
   }
 } else {
   executable("content_shell") {

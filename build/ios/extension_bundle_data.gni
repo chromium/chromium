@@ -23,6 +23,7 @@ template("extension_bundle_data") {
     _extension_name = invoker.extension_name
   }
 
+  forward_variables_from(invoker, [ "testonly" ])
   bundle_data(target_name) {
     public_deps = [ invoker.extension_target ]
     outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
