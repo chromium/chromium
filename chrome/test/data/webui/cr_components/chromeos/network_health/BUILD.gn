@@ -27,6 +27,7 @@ js_library("network_diagnostics_test") {
     "../../../chromeos:chai_assert",
     "//ash/webui/common/resources/network_health:mojo_interface_provider",
     "//ash/webui/common/resources/network_health:network_diagnostics",
+    "//ash/webui/common/resources/network_health:routine_group",
     "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -38,6 +39,7 @@ js_library("routine_group_test") {
     ":network_health_test_utils",
     "../../../chromeos:chai_assert",
     "//ash/webui/common/resources/network_health:network_diagnostics",
+    "//ash/webui/common/resources/network_health:routine_group",
     "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

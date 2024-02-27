@@ -6,6 +6,7 @@ import 'chrome://connectivity-diagnostics/strings.m.js';
 import 'chrome://resources/ash/common/network_health/routine_group.js';
 
 import {Icons, Routine} from 'chrome://resources/ash/common/network_health/network_diagnostics_types.js';
+import {RoutineGroupElement} from 'chrome://resources/ash/common/network_health/routine_group.js';
 import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -77,7 +78,8 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * Clicks the routine group container to toggle the expanded state.
    */
   function clickRoutineGroup() {
-    const container = routineGroup.$$('network-health-container');
+    const container =
+        routineGroup.shadowRoot.querySelector('network-health-container');
     assertTrue(!!container);
     container.click();
     flush();
@@ -87,10 +89,10 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * Check that the spinner is visible and the group icon is not.
    */
   function checkRunning() {
-    const spinner = routineGroup.$$('paper-spinner-lite');
+    const spinner = routineGroup.shadowRoot.querySelector('paper-spinner-lite');
     assertTrue(!!spinner);
     assertFalse(spinner.hidden);
-    const icon = routineGroup.$$('.routine-icon');
+    const icon = routineGroup.shadowRoot.querySelector('.routine-icon');
     assertTrue(!!icon);
     assertTrue(icon.hidden);
   }
@@ -101,9 +103,9 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * @param {string} iconResult
    */
   function checkResult(iconResult) {
-    const spinner = routineGroup.$$('paper-spinner-lite');
+    const spinner = routineGroup.shadowRoot.querySelector('paper-spinner-lite');
     assertFalse(!!spinner);
-    const icon = routineGroup.$$('.routine-icon');
+    const icon = routineGroup.shadowRoot.querySelector('.routine-icon');
     assertTrue(!!icon);
     assertFalse(icon.hidden);
     assertEquals(getIconFromSrc(icon.src), iconResult);

@@ -9,67 +9,78 @@
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './network_health_container.js';
 
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {RoutineResult, RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {Icons, Routine} from './network_diagnostics_types.js';
 import {getTemplate} from './routine_group.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'routine-group',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const RoutineGroupElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+export class RoutineGroupElement extends RoutineGroupElementBase {
+  static get is() {
+    return 'routine-group';
+  }
 
-  properties: {
-    /**
-     * List of routines to display in the group.
-     * @type {!Array<!Routine>}
-     */
-    routines: {
-      type: Array,
-      value: [],
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Localized name for the group of routines.
-     * @type {string}
-     */
-    name: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * List of routines to display in the group.
+       * @type {!Array<!Routine>}
+       */
+      routines: {
+        type: Array,
+        value: [],
+      },
 
-    /**
-     * Boolean flag if the container is expanded.
-     * @type {boolean}
-     */
-    expanded: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Localized name for the group of routines.
+       * @type {string}
+       */
+      name: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Boolean flag if any routines in the group are running.
-     * @private {boolean}
-     */
-    running_: {
-      type: Boolean,
-      computed: 'routinesRunning_(routines.*)',
-    },
+      /**
+       * Boolean flag if the container is expanded.
+       * @type {boolean}
+       */
+      expanded: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Boolean flag if icon representing the group result should be shown.
-     * @private {boolean}
-     */
-    showGroupIcon_: {
-      type: Boolean,
-      computed: 'computeShowGroupIcon_(running_, expanded)',
-    },
-  },
+      /**
+       * Boolean flag if any routines in the group are running.
+       * @private {boolean}
+       */
+      running_: {
+        type: Boolean,
+        computed: 'routinesRunning_(routines.*)',
+      },
+
+      /**
+       * Boolean flag if icon representing the group result should be shown.
+       * @private {boolean}
+       */
+      showGroupIcon_: {
+        type: Boolean,
+        computed: 'computeShowGroupIcon_(running_, expanded)',
+      },
+    };
+  }
 
   /**
    * Helper function to get the icon for a group of routines based on all of
@@ -109,7 +120,7 @@ Polymer({
     }
 
     return Icons.TEST_PASSED;
-  },
+  }
 
   /**
    * Determine if the group routine icon should be showing.
@@ -118,7 +129,7 @@ Polymer({
    */
   computeShowGroupIcon_() {
     return !this.running_ && !this.expanded;
-  },
+  }
 
   /**
    * Helper function to get the icon for a routine based on the result.
@@ -141,7 +152,7 @@ Polymer({
     }
 
     return Icons.TEST_NOT_RUN;
-  },
+  }
 
   /**
    * Determine if any routines in the group are running.
@@ -156,7 +167,7 @@ Polymer({
       }
     }
     return false;
-  },
+  }
 
   /**
    * Helper function to toggle the expanded properties when the routine group
@@ -165,5 +176,7 @@ Polymer({
    */
   onToggleExpanded_() {
     this.set('expanded', !this.expanded);
-  },
-});
+  }
+}
+
+customElements.define(RoutineGroupElement.is, RoutineGroupElement);
