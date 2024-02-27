@@ -43,7 +43,7 @@ import java.util.Set;
 /** Root coordinator which is responsible for showing modules on home surfaces. */
 public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCallback {
     private final ModuleDelegateHost mModuleDelegateHost;
-    private final HomeModulesMediator mMediator;
+    private HomeModulesMediator mMediator;
     private final SimpleRecyclerViewAdapter mAdapter;
     private final RecyclerView mRecyclerView;
     private final ModelList mModel;
@@ -67,6 +67,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     @Nullable private DisplayStyleObserver mDisplayStyleObserver;
 
     @Nullable private Callback<Profile> mOnProfileAvailableObserver;
+    private boolean mHasHomeModulesBeenScrolled;
+    private RecyclerView.OnScrollListener mOnScrollListener;
 
     /**
      * @param activity The instance of {@link Activity}.
@@ -112,6 +114,18 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         // Add pager indicator.
         setupRecyclerView(activity);
+
+        mOnScrollListener =
+                new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        if (dx != 0) {
+                            mHasHomeModulesBeenScrolled = true;
+                            recordMagicStackScroll(/* hasHomeModulesBeenScrolled= */ true);
+                        }
+                    }
+                };
 
         mMediator = new HomeModulesMediator(mModel, moduleRegistry);
     }
@@ -256,6 +270,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     /** Hides the modules and cleans up. */
     public void hide() {
+        if (!mHasHomeModulesBeenScrolled) {
+            recordMagicStackScroll(/* hasHomeModulesBeenScrolled= */ false);
+        }
+        mHasHomeModulesBeenScrolled = false;
         mMediator.hide();
     }
 
@@ -273,20 +291,23 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     @Override
     public void onUrlClicked(@NonNull GURL gurl, @ModuleType int moduleType) {
+        int moduleRank = mMediator.getModuleRank(moduleType);
         mModuleDelegateHost.onUrlClicked(gurl);
-        onModuleClicked(moduleType);
+        onModuleClicked(moduleType, moduleRank);
     }
 
     @Override
     public void onTabClicked(int tabId, @ModuleType int moduleType) {
+        int moduleRank = mMediator.getModuleRank(moduleType);
         mModuleDelegateHost.onTabSelected(tabId);
-        onModuleClicked(moduleType);
+        onModuleClicked(moduleType, moduleRank);
     }
 
     @Override
-    public void onModuleClicked(@ModuleType int moduleType) {
-        HomeModulesMetricsUtils.recordModuleClick(
-                mModuleDelegateHost.getHostSurfaceType(), moduleType);
+    public void onModuleClicked(@ModuleType int moduleType, int modulePosition) {
+        int hostSurface = mModuleDelegateHost.getHostSurfaceType();
+        HomeModulesMetricsUtils.recordModuleClickedPosition(
+                hostSurface, moduleType, modulePosition);
     }
 
     @Override
@@ -406,6 +427,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             return;
         }
 
+        mRecyclerView.addOnScrollListener(mOnScrollListener);
         mMediator.buildModulesAndShow(
                 moduleList,
                 this,
@@ -468,5 +490,18 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         if (mEnabledModuleSet != null) return;
 
         mEnabledModuleSet = mHomeModulesConfigManager.getEnabledModuleSet();
+    }
+
+    /**
+     * Records whether the magic stack is scrollable and has been scrolled or not before it is
+     * hidden or destroyed and remove the on scroll listener.
+     */
+    private void recordMagicStackScroll(boolean hasHomeModulesBeenScrolled) {
+        mMediator.recordMagicStackScroll(hasHomeModulesBeenScrolled);
+        mRecyclerView.removeOnScrollListener(mOnScrollListener);
+    }
+
+    void setMediatorForTesting(HomeModulesMediator mediator) {
+        mMediator = mediator;
     }
 }

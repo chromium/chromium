@@ -27,9 +27,23 @@ chromium-metrics-reviews@google.com.
   <variant name="StartSurface"/>
 </variants>
 
+<variants name="ModulePosition">
+  <variant name="0"/>
+  <variant name="1"/>
+  <variant name="2"/>
+  <variant name="3"/>
+  <variant name="4"/>
+</variants>
+
 <variants name="ModuleType">
   <variant name="PriceChange"/>
   <variant name="SingleTab"/>
+  <variant name="TabResumption"/>
+</variants>
+
+<variants name="ScrollState">
+  <variant name="NotScrolled"/>
+  <variant name="Scrolled"/>
 </variants>
 
 <histogram
@@ -78,6 +92,21 @@ chromium-metrics-reviews@google.com.
     Record the total count of clicks on different modules of the magic stack on
     the {ModuleDelegateHost}. The histogram is logged on Android-only.
   </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click.{ModuleType}.{ModulePosition}"
+    units="count" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the type and position of the module when the home modules are
+    clicked. The histogram is logged when showing the magic stack on
+    {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+  <token key="ModulePosition" variants="ModulePosition"/>
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
 
@@ -172,6 +201,32 @@ chromium-metrics-reviews@google.com.
     a {ModuleDelegateHost}. The histogram is logged on Android-only.
   </summary>
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.{ModuleDelegateHost}.NotScrollable"
+    units="count" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the total count of times that magic stack is not scrollable. The
+    histogram is logged when showing the magic stack on {ModuleDelegateHost},
+    Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.Scrollable.{ScrollState}"
+    units="count" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the total count of times that magic stack is scrollable and the
+    number of times it has been scrolled or not. The histogram is logged when
+    showing the magic stack on {ModuleDelegateHost}, Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+  <token key="ScrollState" variants="ScrollState"/>
 </histogram>
 
 <histogram

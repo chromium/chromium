@@ -29,20 +29,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 public class HomeModulesMetricsUtilsUnitTest {
     @Test
     @SmallTest
-    public void testRecordModuleClick() {
-        @HostSurface int hostSurface = HostSurface.START_SURFACE;
-        @ModuleType int moduleType = ModuleType.SINGLE_TAB;
-        String histogramName =
-                "MagicStack.Clank.StartSurface"
-                        + HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE_CLICK;
-
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, moduleType);
-        HomeModulesMetricsUtils.recordModuleClick(hostSurface, moduleType);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
     public void testRecordModuleShown() {
         @HostSurface int hostSurface = HostSurface.START_SURFACE;
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
@@ -201,6 +187,40 @@ public class HomeModulesMetricsUtilsUnitTest {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectIntRecord(histogramName, duration).build();
         HomeModulesMetricsUtils.recordSegmentationFetchRankingDuration(hostSurface, duration);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordModuleClickedPosition() {
+        @HostSurface int hostSurface = HostSurface.START_SURFACE;
+        @ModuleType int moduleType = ModuleType.SINGLE_TAB;
+        int modulePosition = 0;
+        String histogramName =
+                "MagicStack.Clank.StartSurface"
+                        + HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE_CLICK
+                        + HomeModulesMetricsUtils.getModuleName(moduleType)
+                        + "."
+                        + modulePosition;
+
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
+        HomeModulesMetricsUtils.recordModuleClickedPosition(
+                hostSurface, moduleType, modulePosition);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordHomeModulesScrollState() {
+        @HostSurface int hostSurface = HostSurface.START_SURFACE;
+        boolean isScrollable = true;
+        boolean isScrolled = true;
+        String histogramName =
+                "MagicStack.Clank.StartSurface"
+                        + HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_SCROLLABLE_SCROLLED;
+
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
+        HomeModulesMetricsUtils.recordHomeModulesScrollState(hostSurface, isScrollable, isScrolled);
         histogramWatcher.assertExpected();
     }
 }

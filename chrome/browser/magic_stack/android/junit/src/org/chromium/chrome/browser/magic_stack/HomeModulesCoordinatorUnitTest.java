@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,9 +99,11 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock SegmentationPlatformService mSegmentationPlatformService;
     @Mock private ModuleRegistry mModuleRegistry;
+    @Mock private HomeModulesMediator mMediator;
 
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserver;
     @Captor private ArgumentCaptor<Callback<Profile>> mProfileObserver;
+    @Captor private ArgumentCaptor<RecyclerView.OnScrollListener> mOnScrollListener;
 
     @Captor
     private ArgumentCaptor<HomeModulesConfigManager.HomeModulesStateListener>
@@ -376,6 +379,48 @@ public class HomeModulesCoordinatorUnitTest {
         mProfileObserver.getValue().onResult(mProfile);
 
         verify(mProfileSupplier).removeObserver(mProfileObserver.capture());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
+    })
+    public void testRecordMagicStackScroll_Scrolled() {
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
+        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        when(mProfileSupplier.hasValue()).thenReturn(true);
+        mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.show(callback);
+
+        // Besides the onScrollListener added in {@link HomeModulesCoordinator}, there is another
+        // one added in {@link SnapHelper}.
+        verify(mRecyclerView, times(2)).addOnScrollListener(mOnScrollListener.capture());
+        mOnScrollListener.getAllValues().get(0).onScrolled(mRecyclerView, 1, 0);
+        mOnScrollListener.getAllValues().get(1).onScrolled(mRecyclerView, 1, 0);
+
+        verify(mMediator).recordMagicStackScroll(/* hasHomeModulesBeenScrolled= */ true);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
+    })
+    public void testRecordMagicStackScroll_NotScrolled() {
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
+        Callback<Boolean> callback = Mockito.mock(Callback.class);
+        when(mProfileSupplier.hasValue()).thenReturn(true);
+        mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.show(callback);
+
+        mCoordinator.destroy();
+
+        verify(mMediator).recordMagicStackScroll(/* hasHomeModulesBeenScrolled= */ false);
     }
 
     private void setupAndVerifyTablets() {
