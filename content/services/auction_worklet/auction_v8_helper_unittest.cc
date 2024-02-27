@@ -1561,9 +1561,10 @@ TEST_F(AuctionV8HelperTest, SerializeDeserialize) {
 }
 
 TEST_F(AuctionV8HelperTest, ExtractJsonTimeout) {
-  // Use a shorter timeout so test runs faster.
-  const base::TimeDelta kTimeout = base::Milliseconds(20);
-  auto time_limit = helper_->CreateTimeLimit(kTimeout);
+  // While it's tempting to use a shorter timeout since this is a
+  // non-termination test, that flakes occasionally, and even more so under
+  // *SAN, for which the default is auto-adjusted.
+  auto time_limit = helper_->CreateTimeLimit(/*script_timeout=*/std::nullopt);
   auto time_limit_scope =
       std::make_unique<AuctionV8Helper::TimeLimitScope>(time_limit.get());
 
