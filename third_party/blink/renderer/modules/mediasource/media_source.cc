@@ -711,11 +711,10 @@ bool MediaSource::RunUnlessElementGoneOrClosingUs(
   DCHECK(IsMainThread() ||
          !tracer);  // Cross-thread attachments do not use a tracer.
 
-  // TODO(https://crbug.com/878133): Relax to DCHECK once clear that same-thread
-  // indeed always has attachment here and is not regressed by requiring one to
-  // run |cb|.
-  CHECK(attachment) << "Attempt to run operation requiring attachment, but "
-                       "without having one.";
+  if (!attachment) {
+    // Element's context destruction may be in flight.
+    return false;
+  }
 
   if (!attachment->RunExclusively(true /* abort if not fully attached */,
                                   std::move(cb))) {
