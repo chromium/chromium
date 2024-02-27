@@ -30,7 +30,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "local_desk_data_manager.h"
 
 namespace desks_storage {
 
