@@ -4,9 +4,9 @@
 
 #include "components/web_package/web_bundle_builder.h"
 
-#include "base/big_endian.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -48,9 +48,8 @@ TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
                       "payload");
   std::vector<uint8_t> bundle = builder.CreateBundle();
   uint8_t written_size[8];
-  memcpy(written_size, bundle.data() + bundle.size() - 8, 8);
-  uint64_t written_size_int;
-  base::ReadBigEndian(written_size, &written_size_int);
+  base::span(written_size).copy_from(base::span(bundle).last<8u>());
+  uint64_t written_size_int = base::numerics::U64FromBigEndian(written_size);
   EXPECT_EQ(bundle.size(), written_size_int);
 }
 

@@ -32,29 +32,35 @@ constexpr uint64_t kMaxCBORItemHeaderSize = 9;
 // A utility class for reading various values from input buffer.
 class InputReader {
  public:
-  explicit InputReader(base::span<const uint8_t> buf) : buf_(buf) {}
+  explicit InputReader(base::span<const uint8_t> buf)
+      : buf_(buf), total_size_(buf_.remaining()) {}
 
   InputReader(const InputReader&) = delete;
   InputReader& operator=(const InputReader&) = delete;
 
-  uint64_t CurrentOffset() const { return current_offset_; }
-  size_t Size() const { return buf_.size(); }
+  uint64_t CurrentOffset() const { return total_size_ - buf_.remaining(); }
+  size_t Size() const { return buf_.remaining(); }
 
   std::optional<uint8_t> ReadByte();
 
   template <typename T>
+    requires(std::is_integral_v<T> && std::is_unsigned_v<T>)
   bool ReadBigEndian(T* out) {
-    auto bytes = ReadBytes(sizeof(T));
-    if (!bytes) {
-      return false;
+    if constexpr (sizeof(T) == 1) {
+      return buf_.ReadU8(out);
+    } else if constexpr (sizeof(T) == 2) {
+      return buf_.ReadU16(out);
+    } else if constexpr (sizeof(T) == 4) {
+      return buf_.ReadU32(out);
+    } else {
+      static_assert(sizeof(T) == 8);
+      return buf_.ReadU64(out);
     }
-    base::ReadBigEndian(bytes->data(), out);
-    return true;
   }
 
   std::optional<base::span<const uint8_t>> ReadBytes(size_t n);
 
-  std::optional<base::StringPiece> ReadString(size_t n);
+  std::optional<std::string_view> ReadString(size_t n);
 
   // Parses the type and argument of a CBOR item from the input head. If parsed
   // successfully and the type matches |expected_type|, returns the argument.
@@ -64,10 +70,8 @@ class InputReader {
  private:
   std::optional<std::pair<CBORType, uint64_t>> ReadTypeAndArgument();
 
-  void Advance(size_t n);
-
-  base::span<const uint8_t> buf_;
-  uint64_t current_offset_ = 0;
+  base::BigEndianReader buf_;
+  uint64_t total_size_;
 };
 
 }  // namespace web_package

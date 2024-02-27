@@ -9,30 +9,24 @@
 namespace web_package {
 
 std::optional<uint8_t> InputReader::ReadByte() {
-  if (buf_.empty()) {
+  uint8_t b;
+  if (!buf_.ReadU8(&b)) {
     return std::nullopt;
   }
-  uint8_t byte = buf_[0];
-  Advance(1);
-  return byte;
+  return {b};
 }
 
 std::optional<base::span<const uint8_t>> InputReader::ReadBytes(size_t n) {
-  if (buf_.size() < n) {
-    return std::nullopt;
-  }
-  auto result = buf_.first(n);
-  Advance(n);
-  return result;
+  return buf_.ReadSpan(n);
 }
 
-std::optional<base::StringPiece> InputReader::ReadString(size_t n) {
-  auto bytes = ReadBytes(n);
+std::optional<std::string_view> InputReader::ReadString(size_t n) {
+  auto bytes = buf_.ReadSpan(n);
   if (!bytes) {
     return std::nullopt;
   }
-  base::StringPiece str(reinterpret_cast<const char*>(bytes->data()),
-                        bytes->size());
+  std::string_view str(base::as_chars(*bytes).begin(),
+                       base::as_chars(*bytes).end());
   if (!base::IsStringUTF8(str)) {
     return std::nullopt;
   }
@@ -90,12 +84,6 @@ InputReader::ReadTypeAndArgument() {
     return std::make_pair(type, content);
   }
   return std::nullopt;
-}
-
-void InputReader::Advance(size_t n) {
-  DCHECK_LE(n, buf_.size());
-  buf_ = buf_.subspan(n);
-  current_offset_ += n;
 }
 
 }  // namespace web_package
