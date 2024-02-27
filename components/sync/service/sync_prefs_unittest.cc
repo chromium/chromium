@@ -1285,28 +1285,24 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
 #endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SyncPrefsSyncToSigninMigrationTest,
-       TurnsAutofillAndPaymentsOffForCustomPassphraseUser) {
+       TurnsAutofillOffForCustomPassphraseUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(
       kReplaceSyncPromosWithSignInPromos);
 
   SyncPrefs prefs(&pref_service_);
 
-  // Autofill and payments are enabled (by default).
+  // Autofill is enabled (by default).
   ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                   .Has(UserSelectableType::kAutofill));
-  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kPayments));
 
   // Run the first phase of the migration.
   prefs.MaybeMigratePrefsForSyncToSigninPart1(
       SyncPrefs::SyncAccountState::kSignedInNotSyncing, gaia_id_hash_);
 
-  // Autofill and payments should still be unaffected for now, since the
-  // passphrase state wasn't known yet.
+  // Autofill should still be unaffected for now, since the passphrase state
+  // wasn't known yet.
   ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                   .Has(UserSelectableType::kAutofill));
-  ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                  .Has(UserSelectableType::kPayments));
 
   // Now run the second phase, once the passphrase state is known (and it's
   // a custom passphrase).
@@ -1314,12 +1310,9 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest,
       gaia_id_hash_,
       /*is_using_explicit_passphrase=*/true);
 
-  // Now Autofill and Payments should've been turned off in the account-scoped
-  // settings.
+  // Now Autofill should've been turned off in the account-scoped settings.
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                    .Has(UserSelectableType::kAutofill));
-  EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(UserSelectableType::kPayments));
 }
 
 TEST_F(SyncPrefsSyncToSigninMigrationTest,
@@ -1367,11 +1360,9 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, Part2RunsOnSecondAttempt) {
   {
     SyncPrefs prefs(&pref_service_);
 
-    // Autofill and payments are enabled (by default).
+    // Autofill is enabled (by default).
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                     .Has(UserSelectableType::kAutofill));
-    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                    .Has(UserSelectableType::kPayments));
 
     // Run the first phase of the migration.
     prefs.MaybeMigratePrefsForSyncToSigninPart1(
@@ -1381,8 +1372,6 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, Part2RunsOnSecondAttempt) {
     // passphrase state wasn't known yet.
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                     .Has(UserSelectableType::kAutofill));
-    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                    .Has(UserSelectableType::kPayments));
   }
 
   // Before the second phase runs, Chrome gets restarted.
@@ -1395,19 +1384,15 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, Part2RunsOnSecondAttempt) {
 
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                     .Has(UserSelectableType::kAutofill));
-    ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                    .Has(UserSelectableType::kPayments));
 
     // Now run the second phase.
     prefs.MaybeMigratePrefsForSyncToSigninPart2(
         gaia_id_hash_,
         /*is_using_explicit_passphrase=*/true);
 
-    // Now the types should've been turned off in the account-scoped settings.
+    // Now the type should've been turned off in the account-scoped settings.
     EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                      .Has(UserSelectableType::kAutofill));
-    EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kPayments));
   }
 }
 

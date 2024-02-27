@@ -411,7 +411,9 @@ TEST_F(ManageSyncSettingsMediatorTest,
     }
     SyncSwitchItem* switch_item =
         base::apple::ObjCCastStrict<SyncSwitchItem>(item);
-    if (switch_item.type == PaymentsDataTypeItemType) {
+    if (switch_item.type == PaymentsDataTypeItemType &&
+        !base::FeatureList::IsEnabled(
+            syncer::kSyncDecoupleAddressPaymentSettings)) {
       EXPECT_FALSE(switch_item.enabled);
     } else {
       EXPECT_TRUE(switch_item.enabled);

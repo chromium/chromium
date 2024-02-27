@@ -218,7 +218,7 @@ BASE_FEATURE(kSyncSessionOnVisibilityChanged,
 
 BASE_FEATURE(kSyncDecoupleAddressPaymentSettings,
              "SyncDecoupleAddressPaymentSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1374718): Delete feature toggle after a grace period.
 BASE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing,
