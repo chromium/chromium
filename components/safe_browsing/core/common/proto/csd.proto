@@ -249,8 +249,7 @@ message ClientPhishingRequest {
   // users.
   optional VisualFeatures visual_features = 26;
 
-  // Carried over from realtime API response, this is used to identify cases
-  // where the scoring from protego requested this request.
+  // This is used to identify what process sent the ping.
   optional ClientSideDetectionType client_side_detection_type = 28;
 
   // Image embedding from model output tensor
@@ -1153,6 +1152,10 @@ enum ClientSideDetectionType {
   CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED = 0;
   // Send a CSD request regardless of the client side model's score values.
   FORCE_REQUEST = 1;
+  // Either the local DOM or visual model triggered.
+  TRIGGER_MODELS = 2;
+  // A Notification prompt triggered.
+  NOTIFICATION_PERMISSION_PROMPT = 3;
 }
 
 message ClientDownloadResponse {

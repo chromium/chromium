@@ -271,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
 
   // Bypass the pre-classification checks.
-  csd_host->OnPhishingPreClassificationDone(/*should_classify=*/true);
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
 
   // A prerendered navigation committing should not cancel classification.
   // We simulate the commit of a prerendered navigation to avoid races
@@ -328,7 +329,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   prerender_helper().NavigatePrimaryPage(prerender_url);
 
   // Bypass the pre-classification checks.
-  csd_host->OnPhishingPreClassificationDone(/*should_classify=*/true);
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
 
   run_loop.Run();
 

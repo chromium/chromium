@@ -77,6 +77,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="CancellationSucceeded"/>
 </enum>
 
+<enum name="ClientSideDetectionType">
+  <int value="0" label="CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED"/>
+  <int value="1" label="FORCE_REQUEST"/>
+  <int value="2" label="TRIGGER_MODELS"/>
+  <int value="3" label="NOTIFICATION_PERMISSION_PROMPT"/>
+</enum>
+
 <enum name="ClientSidePhishingImageEmbeddingResult">
   <summary>
     Enumerates the possible results from client side phishing image embedding

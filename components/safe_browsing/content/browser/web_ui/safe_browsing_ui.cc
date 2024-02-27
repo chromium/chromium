@@ -792,6 +792,10 @@ std::string SerializeClientSideDetectionType(ClientSideDetectionType csd_type) {
       return "CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED";
     case ClientSideDetectionType::FORCE_REQUEST:
       return "FORCE_REQUEST";
+    case ClientSideDetectionType::TRIGGER_MODELS:
+      return "TRIGGER_MODELS";
+    case ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT:
+      return "NOTIFICATION_PERMISSION_PROMPT";
   }
   return "UNKNOWN_ENUM_SPECIFIED";
 }

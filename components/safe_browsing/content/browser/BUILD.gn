@@ -280,6 +280,7 @@ source_set("client_side_detection") {
     ":client_side_detection_images_cache",
     ":client_side_detection_service",
     "//base:base",
+    "//components/permissions:permissions",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
