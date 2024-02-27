@@ -1053,6 +1053,44 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Temperature) {
   }
 }
 
+TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Profile) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kCtmPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutPropId, .value = 0});
+
+  // Color profile change will set all properties.
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+  display::ColorCalibration calibration;
+  calibration.srgb_to_linear = display::GammaCurve::MakeGamma(2.2f);
+  calibration.linear_to_device = display::GammaCurve::MakeGamma(1.f / 2.2);
+  fake_drm_->plane_manager()->SetColorCalibration(
+      fake_drm_->crtc_property(0).id, calibration);
+
+  if (use_atomic_) {
+    HardwareDisplayPlaneList state;
+    PerformPageFlip(/*crtc_idx=*/0, &state);
+    EXPECT_EQ(2, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+    EXPECT_NE(
+        0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
+                                       "DEGAMMA_LUT"));
+  } else {
+    EXPECT_EQ(3, fake_drm_->get_set_object_property_count());
+  }
+}
+
 TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_GammaAdjustment) {
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);

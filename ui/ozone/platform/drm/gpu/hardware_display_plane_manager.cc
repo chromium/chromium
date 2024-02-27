@@ -309,6 +309,16 @@ void HardwareDisplayPlaneManager::SetColorTemperatureAdjustment(
   UpdateAndCommitCrtcState(crtc_id, crtc_state);
 }
 
+void HardwareDisplayPlaneManager::SetColorCalibration(
+    uint32_t crtc_id,
+    const display::ColorCalibration& calibration) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->color_calibration = calibration;
+  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+}
+
 void HardwareDisplayPlaneManager::SetGammaAdjustment(
     uint32_t crtc_id,
     const display::GammaAdjustment& adjustment) {

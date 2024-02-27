@@ -305,13 +305,27 @@ void DrmDisplay::SetColorTemperatureAdjustment(
   drm_->plane_manager()->SetColorTemperatureAdjustment(crtc_, cta);
 }
 
+void DrmDisplay::SetColorCalibration(
+    const display::ColorCalibration& calibration) {
+  drm_->plane_manager()->SetColorCalibration(crtc_, calibration);
+}
+
 void DrmDisplay::SetGammaAdjustment(
     const display::GammaAdjustment& adjustment) {
   drm_->plane_manager()->SetGammaAdjustment(crtc_, adjustment);
 }
 
+void DrmDisplay::SetColorMatrix(const std::vector<float>& color_matrix) {
+  // TODO(https://crbug.com/1505062): Remove callers of this function.
+}
+
 void DrmDisplay::SetBackgroundColor(const uint64_t background_color) {
   drm_->plane_manager()->SetBackgroundColor(crtc_, background_color);
+}
+
+void DrmDisplay::SetGammaCorrection(const display::GammaCurve& degamma,
+                                    const display::GammaCurve& gamma) {
+  // TODO(https://crbug.com/1505062): Remove callers of this function.
 }
 
 bool DrmDisplay::SetPrivacyScreen(bool enabled) {
