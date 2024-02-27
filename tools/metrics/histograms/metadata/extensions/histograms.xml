@@ -481,7 +481,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.ContentVerification.VerifyFailedOnFileMV2.{VerifiedFileType}"
+    name="Extensions.ContentVerification.VerifyFailedOnFileMV2{VerifiedFileType}"
     enum="CorruptExtensionDisabledReason" expires_after="2024-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -496,7 +496,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.ContentVerification.VerifyFailedOnFileMV3.{VerifiedFileType}"
+    name="Extensions.ContentVerification.VerifyFailedOnFileMV3{VerifiedFileType}"
     enum="CorruptExtensionDisabledReason" expires_after="2024-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
