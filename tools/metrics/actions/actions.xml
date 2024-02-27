@@ -9512,6 +9512,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DownloadNotificationV2.Button_CopyToClipboard">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-system-ui-productivity-eng@google.com</owner>
+  <description>
+    User clicks &quot;Copy to clipboard&quot; button on a download notification
+    with the downloads integration V2 feature enabled.
+  </description>
+</action>
+
 <action name="DownloadNotificationV2.Button_Pause">
   <owner>andrewxu@chromium.org</owner>
   <owner>cros-system-ui-productivity-eng@google.com</owner>

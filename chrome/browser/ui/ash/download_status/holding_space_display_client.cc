@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -28,14 +29,17 @@ namespace ash::download_status {
 
 namespace {
 
-// Returns the command ID corresponding to the given command type.
+// Returns the command ID corresponding to the given command type if any. If
+// there is no such command ID, returns `std::nullopt`.
 // NOTE: It is fine to map both `CommandType::kOpenFile` and
 // `CommandType::kShowInBrowser` to `kOpenItem`, because `kOpenItem` is not
 // accessible from a holding space chip's context menu.
-HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
+std::optional<HoldingSpaceCommandId> ConvertCommandTypeToId(CommandType type) {
   switch (type) {
     case CommandType::kCancel:
       return HoldingSpaceCommandId::kCancelItem;
+    case CommandType::kCopyToClipboard:
+      return std::nullopt;
     case CommandType::kOpenFile:
       return HoldingSpaceCommandId::kOpenItem;
     case CommandType::kPause:
@@ -51,12 +55,16 @@ HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
   }
 }
 
-// Returns the holding space item action corresponding to `type`.
-holding_space_metrics::ItemAction ConvertCommandTypeToAction(CommandType type) {
+// Returns the holding space item action corresponding to `type` if any. If
+// there is no such action, returns `std::nullopt`.
+std::optional<holding_space_metrics::ItemAction> ConvertCommandTypeToAction(
+    CommandType type) {
   using ItemAction = holding_space_metrics::ItemAction;
   switch (type) {
     case CommandType::kCancel:
       return ItemAction::kCancel;
+    case CommandType::kCopyToClipboard:
+      return std::nullopt;
     case CommandType::kOpenFile:
       return ItemAction::kLaunch;
     case CommandType::kPause:
@@ -121,23 +129,31 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
   // Generate in-progress commands from `display_metadata`.
   std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
   for (const auto& command_info : display_metadata.command_infos) {
-    if (const HoldingSpaceCommandId id =
-            ConvertCommandTypeToId(command_info.type);
-        holding_space_util::IsInProgressCommand(id)) {
-      in_progress_commands.emplace_back(
-          id, command_info.text_id, command_info.icon,
-          base::BindRepeating(
-              [](holding_space_metrics::ItemAction action,
-                 const base::RepeatingClosure& command_callback,
-                 const HoldingSpaceItem* item, HoldingSpaceCommandId command_id,
-                 holding_space_metrics::EventSource event_source) {
-                command_callback.Run();
-                holding_space_metrics::RecordItemAction(
-                    /*items=*/{item}, action, event_source);
-              },
-              ConvertCommandTypeToAction(command_info.type),
-              command_info.command_callback));
+    const std::optional<HoldingSpaceCommandId> id =
+        ConvertCommandTypeToId(command_info.type);
+    const std::optional<holding_space_metrics::ItemAction> item_action =
+        ConvertCommandTypeToAction(command_info.type);
+
+    // Skip `command_info` if:
+    // 1. It does not have a corresponding ID; OR
+    // 2. Its corresponding ID is not for an in-progress command; OR
+    // 3. It does not have a corresponding item action.
+    if (!id || !holding_space_util::IsInProgressCommand(*id) || !item_action) {
+      continue;
     }
+
+    in_progress_commands.emplace_back(
+        *id, command_info.text_id, command_info.icon,
+        base::BindRepeating(
+            [](holding_space_metrics::ItemAction action,
+               const base::RepeatingClosure& command_callback,
+               const HoldingSpaceItem* item, HoldingSpaceCommandId command_id,
+               holding_space_metrics::EventSource event_source) {
+              command_callback.Run();
+              holding_space_metrics::RecordItemAction(
+                  /*items=*/{item}, action, event_source);
+            },
+            *item_action, command_info.command_callback));
   }
 
   // Specify the backing file.

@@ -53,6 +53,8 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/test/find_window.h"
 #include "ui/aura/window.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -75,7 +77,9 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::Each;
+using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Not;
@@ -123,6 +127,8 @@ int GetCommandTextId(CommandType command_type) {
   switch (command_type) {
     case CommandType::kCancel:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL;
+    case CommandType::kCopyToClipboard:
+      return IDS_ASH_DOWNLOAD_COMMAND_TEXT_COPY_TO_CLIPBOARD;
     case CommandType::kOpenFile:
       NOTREACHED_NORETURN();
     case CommandType::kPause:
@@ -251,6 +257,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
           }));
   crosapi::mojom::DownloadStatusPtr uncancellable_download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   uncancellable_download->cancellable = false;
@@ -278,6 +285,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
           }));
   crosapi::mojom::DownloadStatusPtr cancellable_download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   cancellable_download->cancellable = true;
@@ -335,13 +343,13 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
           [&notification_id](const message_center::Notification& notification) {
             notification_id = notification.id();
           }));
-  crosapi::mojom::DownloadStatusPtr download =
-      CreateDownloadStatus(profile, crosapi::mojom::DownloadState::kComplete,
-                           crosapi::mojom::DownloadProgress::New(
-                               /*loop=*/false,
-                               /*received_bytes=*/1024,
-                               /*total_bytes=*/1024,
-                               /*visible=*/false));
+  crosapi::mojom::DownloadStatusPtr download = CreateDownloadStatus(
+      profile, /*extension=*/"txt", crosapi::mojom::DownloadState::kComplete,
+      crosapi::mojom::DownloadProgress::New(
+          /*loop=*/false,
+          /*received_bytes=*/1024,
+          /*total_bytes=*/1024,
+          /*visible=*/false));
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
@@ -384,6 +392,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
           }));
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -418,9 +427,10 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
 // still show.
 IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  crosapi::mojom::DownloadStatusPtr download =
-      CreateDownloadStatus(profile, crosapi::mojom::DownloadState::kInProgress,
-                           /*progress=*/nullptr);
+  crosapi::mojom::DownloadStatusPtr download = CreateDownloadStatus(
+      profile,
+      /*extension=*/"txt", crosapi::mojom::DownloadState::kInProgress,
+      /*progress=*/nullptr);
   EXPECT_FALSE(download->target_file_path);
   std::string notification_id;
 
@@ -544,6 +554,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -580,12 +591,14 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ImageDownload) {
             notification_id = notification.id();
           }));
 
-  // Create a download.
+  // Create an image download.
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile,
-                                     /*received_bytes=*/0,
-                                     /*total_bytes=*/1024);
+  crosapi::mojom::DownloadStatusPtr download = CreateDownloadStatus(
+      profile,
+      /*extension=*/"png", crosapi::mojom::DownloadState::kInProgress,
+      crosapi::mojom::DownloadProgress::New(
+          /*loop=*/false, /*received_bytes=*/0,
+          /*total_bytes=*/1024, /*visible=*/true));
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
@@ -614,6 +627,49 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ImageDownload) {
       *large_image_view->original_image().bitmap(),
       gfx::test::CreateBitmap(/*width=*/360,
                               /*height=*/240, image_color)));
+
+  // An in-progress image download's notification should not have a 'Copy to
+  // clipboard' button.
+  const std::u16string copy_to_clipboard_button_text =
+      l10n_util::GetStringUTF16(
+          GetCommandTextId(CommandType::kCopyToClipboard));
+  EXPECT_THAT(
+      popup_view->GetActionButtonsForTest(),
+      Not(Contains(Pointee(Property(&views::LabelButton::GetText,
+                                    Eq(copy_to_clipboard_button_text))))));
+
+  // Complete `download`. Then check action buttons.
+  MarkDownloadStatusCompleted(*download);
+  Update(download->Clone());
+  const std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+      action_buttons = popup_view->GetActionButtonsForTest();
+  EXPECT_THAT(
+      action_buttons,
+      ElementsAre(
+          Pointee(Property(&views::LabelButton::GetText,
+                           Eq(l10n_util::GetStringUTF16(
+                               GetCommandTextId(CommandType::kShowInFolder))))),
+          Pointee(Property(&views::LabelButton::GetText,
+                           Eq(copy_to_clipboard_button_text)))));
+
+  // Click the 'Copy to clipboard' button. Then verify the click is recorded.
+  base::UserActionTester tester;
+  auto copy_to_clipboard_button_iter =
+      base::ranges::find(action_buttons, copy_to_clipboard_button_text,
+                         &views::LabelButton::GetText);
+  ASSERT_NE(copy_to_clipboard_button_iter, action_buttons.cend());
+  test::Click(*copy_to_clipboard_button_iter, ui::EF_NONE);
+  EXPECT_EQ(
+      tester.GetActionCount("DownloadNotificationV2.Button_CopyToClipboard"),
+      1);
+
+  // Verify the filename in the clipboard as expected.
+  base::test::TestFuture<std::vector<ui::FileInfo>> test_future;
+  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
+      ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr, test_future.GetCallback());
+  EXPECT_THAT(test_future.Get(),
+              ElementsAre(Field(&ui::FileInfo::path, *download->full_path)));
 }
 
 // Verifies that the notification of a download with an unknown total bytes
@@ -630,6 +686,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0);
 
   Update(download->Clone());
@@ -668,6 +725,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
           }));
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -691,6 +749,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
           }));
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   download->pausable = true;
@@ -803,6 +862,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ShowInFolder) {
           }));
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -860,6 +920,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   download->cancellable = true;

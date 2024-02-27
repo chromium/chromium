@@ -137,17 +137,18 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr in_progress_download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   in_progress_download->cancellable = true;
   Update(in_progress_download->Clone());
-  crosapi::mojom::DownloadStatusPtr completed_download =
-      CreateDownloadStatus(profile, crosapi::mojom::DownloadState::kComplete,
-                           crosapi::mojom::DownloadProgress::New(
-                               /*loop=*/false,
-                               /*received_bytes=*/1024,
-                               /*total_bytes=*/1024,
-                               /*visible=*/false));
+  crosapi::mojom::DownloadStatusPtr completed_download = CreateDownloadStatus(
+      profile, /*extension=*/"txt", crosapi::mojom::DownloadState::kComplete,
+      crosapi::mojom::DownloadProgress::New(
+          /*loop=*/false,
+          /*received_bytes=*/1024,
+          /*total_bytes=*/1024,
+          /*visible=*/false));
   Update(completed_download->Clone());
   test_api().Show();
 
@@ -258,12 +259,13 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr in_progress_download =
       CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   in_progress_download->cancellable = true;
   Update(in_progress_download->Clone());
   crosapi::mojom::DownloadStatusPtr completed_download = CreateDownloadStatus(
-      profile, crosapi::mojom::DownloadState::kComplete,
+      profile, /*extension=*/"txt", crosapi::mojom::DownloadState::kComplete,
       crosapi::mojom::DownloadProgress::New(
           /*loop=*/false,
           /*received_bytes=*/1024, /*total_bytes=*/1024, /*visible=*/false));
@@ -367,14 +369,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                        ClickCompletedDownloadChip) {
   // Add a completed download.
-  crosapi::mojom::DownloadStatusPtr download =
-      CreateDownloadStatus(ProfileManager::GetActiveUserProfile(),
-                           crosapi::mojom::DownloadState::kComplete,
-                           crosapi::mojom::DownloadProgress::New(
-                               /*loop=*/false,
-                               /*received_bytes=*/1024,
-                               /*total_bytes=*/1024,
-                               /*visible=*/false));
+  crosapi::mojom::DownloadStatusPtr download = CreateDownloadStatus(
+      ProfileManager::GetActiveUserProfile(),
+      /*extension=*/"txt", crosapi::mojom::DownloadState::kComplete,
+      crosapi::mojom::DownloadProgress::New(
+          /*loop=*/false,
+          /*received_bytes=*/1024,
+          /*total_bytes=*/1024,
+          /*visible=*/false));
   Update(download->Clone());
   test_api().Show();
 
@@ -416,6 +418,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   // Add an in-progress download.
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -456,6 +459,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   Profile* const active_profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(active_profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -535,6 +539,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   // Add a new in-progress download with the duplicate download guid.
   crosapi::mojom::DownloadStatusPtr duplicate_download =
       CreateInProgressDownloadStatus(active_profile,
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   duplicate_download->guid = download->guid;
@@ -548,8 +553,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                        IndeterminateDownload) {
   // Create a download with an unknown total bytes count.
-  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
-      ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0);
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt", /*received_bytes=*/0);
   Update(download->Clone());
   test_api().Show();
 
@@ -568,6 +574,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   // could happen when a download is blocked.
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   download->progress->visible = false;
@@ -592,6 +599,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                        InterruptDownload) {
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -610,6 +618,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                        PauseAndResumeDownloadViaContextMenu) {
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   download->pausable = true;
@@ -689,6 +698,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                        PauseAndResumeDownloadViaSecondaryAction) {
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   download->pausable = true;
@@ -773,6 +783,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, SecondaryLabel) {
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -806,6 +817,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                        ServiceSuspendedDuringDownload) {
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   Update(download->Clone());
@@ -849,6 +861,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   // Create an in-progress download that can be canceled and paused.
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*extension=*/"txt",
                                      /*received_bytes=*/0,
                                      /*total_bytes=*/1024);
   download->cancellable = true;
