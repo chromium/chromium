@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
@@ -39,6 +40,8 @@
 
 namespace {
 
+constexpr int64_t kBytesPerMegabyte = 1024 * 1024;
+
 void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
                                   const DriveStorageQuotaResult& result) {
   [mediator didReceiveStorageQuotaResult:result];
@@ -62,6 +65,7 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   // The file uploader is used to fetch the storage quota for a given identity.
   std::unique_ptr<DriveFileUploader> _fileUploader;
   BOOL _prefsLoaded;
+  int _numberOfAttempts;
 }
 
 - (instancetype)initWithDownloadTask:(web::DownloadTask*)downloadTask
@@ -117,7 +121,12 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 }
 
 - (void)saveWithSelectedIdentity:(id<SystemIdentity>)identity {
+  _numberOfAttempts++;
   if (!_downloadTask || !_webState) {
+    base::UmaHistogramEnumeration(
+        kSaveToDriveUIOutcome,
+        !_downloadTask ? SaveToDriveOutcome::kFailureDownloadDestroyed
+                       : SaveToDriveOutcome::kFailureWebStateDestroyed);
     [_saveToDriveHandler hideSaveToDrive];
     return;
   }
@@ -130,6 +139,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
       DownloadManagerTabHelper* downloadManagerTabHelper =
           DownloadManagerTabHelper::FromWebState(_webState);
       downloadManagerTabHelper->StartDownload(_downloadTask);
+      base::UmaHistogramEnumeration(kSaveToDriveUIOutcome,
+                                    SaveToDriveOutcome::kSuccessSelectedFiles);
+      [self recordCommonHistogramsWithSuffix:".SuccessSelectedFiles"];
       [_accountPickerHandler hideAccountPickerAnimated:YES];
       break;
     }
@@ -156,7 +168,23 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
       base::SysNSStringToUTF8(identity.userEmail));
   OpenNewTabCommand* newTabCommand =
       [OpenNewTabCommand commandWithURLFromChrome:manageStorageURL];
+  base::UmaHistogramEnumeration(
+      kSaveToDriveUIOutcome,
+      SaveToDriveOutcome::kSuccessSelectedDriveManageStorage);
+  [self recordCommonHistogramsWithSuffix:".SuccessSelectedDriveManageStorage"];
   [_applicationHandler openURLInNewTab:newTabCommand];
+}
+
+- (void)cancelSaveToDrive {
+  const bool selectedFiles = _fileDestination == FileDestination::kFiles;
+  const auto outcome = selectedFiles
+                           ? SaveToDriveOutcome::kFailureCanceledFiles
+                           : SaveToDriveOutcome::kFailureCanceledDrive;
+  base::UmaHistogramEnumeration(kSaveToDriveUIOutcome, outcome);
+  [self recordCommonHistogramsWithSuffix:selectedFiles
+                                             ? ".FailureCanceledFiles"
+                                             : ".FailureCanceledDrive"];
+  [_accountPickerHandler hideAccountPickerAnimated:YES];
 }
 
 #pragma mark - Properties getters/setters
@@ -179,12 +207,16 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   task->RemoveObserver(_downloadTaskObserverBridge.get());
   _downloadTaskObserverBridge = nullptr;
   _downloadTask = nullptr;
+  base::UmaHistogramEnumeration(kSaveToDriveUIOutcome,
+                                SaveToDriveOutcome::kFailureDownloadDestroyed);
   [_saveToDriveHandler hideSaveToDrive];
 }
 
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateWasHidden:(web::WebState*)webState {
+  base::UmaHistogramEnumeration(kSaveToDriveUIOutcome,
+                                SaveToDriveOutcome::kFailureWebStateHidden);
   [_saveToDriveHandler hideSaveToDrive];
 }
 
@@ -193,6 +225,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   webState->RemoveObserver(_webStateObserverBridge.get());
   _webStateObserverBridge = nullptr;
   _webState = nullptr;
+  base::UmaHistogramEnumeration(kSaveToDriveUIOutcome,
+                                SaveToDriveOutcome::kFailureWebStateDestroyed);
   [_saveToDriveHandler hideSaveToDrive];
 }
 
@@ -238,7 +272,6 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 
 // Called when the storage quota has been fetched, with or without any error.
 - (void)didReceiveStorageQuotaResult:(const DriveStorageQuotaResult&)result {
-  [_accountPickerConsumer stopValidationSpinner];
   // Report storage quota histograms.
   base::UmaHistogramBoolean(kDriveStorageQuotaResultSuccessful,
                             result.error == nil);
@@ -246,26 +279,50 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     base::UmaHistogramSparse(kDriveStorageQuotaResultErrorCode,
                              result.error.code);
   }
+  // Stop validation spinner.
+  [_accountPickerConsumer stopValidationSpinner];
   // Check that there is enough storage space to store an additional file of the
   // given size. The upload is expected to fail if the storage space usage after
   // upload exceeds the storage capacity.
-  int64_t usageAfterUpload =
-      result.usage + std::max(0LL, _downloadTask->GetTotalBytes());
-  if (result.limit != -1 && usageAfterUpload > result.limit) {
-    [_manageStorageAlertHandler
-        showManageStorageAlertForIdentity:_fileUploader->GetIdentity()];
-    return;
+  if (!result.error) {
+    int64_t usageAfterUpload =
+        result.usage + std::max(0LL, _downloadTask->GetTotalBytes());
+    if (result.limit != -1 && usageAfterUpload > result.limit) {
+      [_manageStorageAlertHandler
+          showManageStorageAlertForIdentity:_fileUploader->GetIdentity()];
+      base::UmaHistogramBoolean(kSaveToDriveUIManageStorageAlertShown, true);
+      return;
+    }
   }
-  // If there is enough storage to upload the file, add the download task to the
-  // Drive tab helper, start the task through the Download Manager tab helper
-  // and hide the account picker view.
+  base::UmaHistogramBoolean(kSaveToDriveUIManageStorageAlertShown, false);
+  // If storage quota could not be fetched or if there is enough storage to
+  // upload the file, add the download task to the Drive tab helper, start the
+  // task through the Download Manager tab helper and hide the account picker
+  // view.
   DriveTabHelper* driveTabHelper = DriveTabHelper::FromWebState(_webState);
   driveTabHelper->AddDownloadToSaveToDrive(_downloadTask,
                                            _fileUploader->GetIdentity());
   DownloadManagerTabHelper* downloadManagerTabHelper =
       DownloadManagerTabHelper::FromWebState(_webState);
   downloadManagerTabHelper->StartDownload(_downloadTask);
+  base::UmaHistogramEnumeration(kSaveToDriveUIOutcome,
+                                SaveToDriveOutcome::kSuccessSelectedDrive);
+  [self recordCommonHistogramsWithSuffix:".SuccessSelectedDrive"];
   [_accountPickerHandler hideAccountPickerAnimated:YES];
+}
+
+- (void)recordCommonHistogramsWithSuffix:(const char*)histogramSuffix {
+  base::UmaHistogramEnumeration(
+      std::string(kSaveToDriveUIMimeType) + histogramSuffix,
+      GetDownloadMimeTypeResultFromMimeType(_downloadTask->GetMimeType()));
+  if (_downloadTask->GetTotalBytes() != -1) {
+    base::UmaHistogramMemoryMB(
+        std::string(kSaveToDriveUIFileSize) + histogramSuffix,
+        _downloadTask->GetTotalBytes() / kBytesPerMegabyte);
+  }
+  base::UmaHistogramCounts100(
+      std::string(kSaveToDriveUINumberOfAttempts) + histogramSuffix,
+      _numberOfAttempts);
 }
 
 @end

@@ -29,3 +29,14 @@ const char kDriveUploadTaskNumberOfAttempts[] =
     "IOS.SaveToDrive.UploadTask.NumberOfAttempts";
 const char kDriveUploadTaskMimeType[] = "IOS.SaveToDrive.UploadTask.MimeType";
 const char kDriveUploadTaskFileSize[] = "IOS.SaveToDrive.UploadTask.FileSizeMB";
+
+// Save to Drive UI histograms.
+const char kSaveToDriveUIOutcome[] = "IOS.SaveToDrive.UI.Outcome";
+const char kSaveToDriveUIManageStorageAlertShown[] =
+    "IOS.SaveToDrive.UI.ManageStorageAlert.Shown";
+const char kSaveToDriveUIManageStorageAlertCanceled[] =
+    "IOS.SaveToDrive.UI.ManageStorageAlert.Cancelled";
+const char kSaveToDriveUIMimeType[] = "IOS.SaveToDrive.UI.MimeType";
+const char kSaveToDriveUIFileSize[] = "IOS.SaveToDrive.UI.FileSizeMB";
+const char kSaveToDriveUINumberOfAttempts[] =
+    "IOS.SaveToDrive.UI.NumberOfAttempts";

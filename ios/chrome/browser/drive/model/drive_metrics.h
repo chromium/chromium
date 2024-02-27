@@ -23,6 +23,31 @@ extern const char kDriveUploadTaskNumberOfAttempts[];
 extern const char kDriveUploadTaskMimeType[];
 extern const char kDriveUploadTaskFileSize[];
 
+// Save to Drive UI histograms.
+extern const char kSaveToDriveUIOutcome[];
+extern const char kSaveToDriveUIManageStorageAlertShown[];
+extern const char kSaveToDriveUIManageStorageAlertCanceled[];
+extern const char kSaveToDriveUIMimeType[];
+extern const char kSaveToDriveUIFileSize[];
+extern const char kSaveToDriveUINumberOfAttempts[];
+
+// Enum for the IOS.SaveToPhotos histogram.
+// Keep in sync with "IOSSaveToDriveOutcomeType"
+// in tools/metrics/histograms/metadata/ios/enums.xml.
+// LINT.IfChange
+enum class SaveToDriveOutcome {
+  kFailureWebStateHidden = 0,
+  kFailureWebStateDestroyed = 1,
+  kFailureDownloadDestroyed = 2,
+  kFailureCanceledFiles = 3,
+  kFailureCanceledDrive = 4,
+  kSuccessSelectedFiles = 5,
+  kSuccessSelectedDrive = 6,
+  kSuccessSelectedDriveManageStorage = 7,
+  kMaxValue = kSuccessSelectedDriveManageStorage,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
 // Possible states of the upload task.
 // Used as enum for the IOS.SaveToDrive.UploadTask.FinalState histogram.
 // Keep in sync with "IOSSaveToDriveUploadTaskStateType"
