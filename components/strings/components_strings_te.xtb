@@ -1316,6 +1316,7 @@
 <translation id="3542628208405253498">కార్డ్ ఇమేజ్</translation>
 <translation id="3542768452570884558">లింక్‌ను కొత్త విండోలో తెరవండి</translation>
 <translation id="3547746132308051926">20 x 24 అంగుళాలు</translation>
+<translation id="3552155506104542239">హెచ్చరిక: ఈ పాలసీ <ph name="POLICY_NAME" /> పాలసీకి విరుద్ధంగా ఉంది, Android యాప్‌లపై ఎటువంటి ప్రభావం చూపదు. లేకపోతే, ఈ పాలసీ ఆశించిన విధంగానే పని చేస్తుంది.</translation>
 <translation id="3552297013052089404">Sans-Serif ఫాంట్</translation>
 <translation id="3558573058928565255">రోజు, సమయం</translation>
 <translation id="355995771319966853">ఆటోఫిల్‌ను చర్య రద్దు చేయండి</translation>
@@ -4277,5 +4278,6 @@
     &lt;li&gt;మరో నెట్‌వర్క్‌కు కనెక్ట్ చేయడం ప్రయత్నించండి&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">IBANను జోడించండి</translation>
 <translation id="997986563973421916">Google Pay నుండి</translation>
 </translationbundle>

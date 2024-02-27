@@ -1320,6 +1320,7 @@
 <translation id="3542628208405253498">የካርድ ምስል</translation>
 <translation id="3542768452570884558">አገናኙን በአዲስ መስኮት ይክፈቱ</translation>
 <translation id="3547746132308051926">20 x 24 ኢንች</translation>
+<translation id="3552155506104542239">ማስጠንቀቂያ፦ ይህ መመሪያ ከ<ph name="POLICY_NAME" /> ጋር ይጋጫል እና በAndroid መተግበሪያዎች ላይ ምንም ተጽእኖ አይኖረውም። አለበለዚያ ይህ መመሪያ እንደታሰበው እየሰራ ነው።</translation>
 <translation id="3552297013052089404">Sans-Serif ቅርጸ ቁምፊ</translation>
 <translation id="3558573058928565255">የቀን ሰዓት</translation>
 <translation id="355995771319966853">ራስ-ሙላን ቀልብስ</translation>
@@ -1867,6 +1868,7 @@
 <translation id="46128681529823442">የእግር ኳስ መሣሪያ</translation>
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4622292761762557753">ቢሆንም አስተላልፍ</translation>
+<translation id="4622647778991854660">በማሳወቂያ ማእከል ውስጥ ማሳወቂያዎችን ያንቁ። <ph name="LINK" /> ይክፈቱ።</translation>
 <translation id="4627675673814409125">ይህ መመሪያ በChrome መገለጫ ደረጃ ላይ ሊዋቀር አይችልም፣ እንዲሁም ችላ ይባላል።</translation>
 <translation id="4628678854894591460">የእረፍት ቅናሾች</translation>
 <translation id="4628948037717959914">ፎቶ</translation>
@@ -3198,6 +3200,7 @@
 <translation id="7234112195906418665">ጉዞ እና መጓጓዣ</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% ተጠናቅቋል | <ph name="ESTIMATED_REMAINING_TIME" />።</translation>
 <translation id="7237166092326447040">ስጦታዎች እና የልዩ ማህበራዊ ክስተት ንጥሎች</translation>
+<translation id="7237454422623102448">የስርዓት ቅንብሮች</translation>
 <translation id="7237492777898608035">ይህን መልዕክት እንደገና ለዚህ ጣቢያ አታሳይ</translation>
 <translation id="7240120331469437312">የሰርቲፊኬት ርዕስ ተለዋጭ ስም</translation>
 <translation id="7241863998525879494">ምን መጠበቅ እንዳለብዎ</translation>
@@ -4282,5 +4285,6 @@
     &lt;li&gt;ከሌላ አውታረ መረብ ጋር ለመገናኘት ይሞክሩ&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">አይ ቢ ኤ ኤን ያክሉ</translation>
 <translation id="997986563973421916">ከGoogle Pay</translation>
 </translationbundle>

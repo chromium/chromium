@@ -358,6 +358,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2484513351006226581">Paspauskite <ph name="KEYBOARD_SHORTCUT" />, kad perjungtumėte klaviatūros išdėstymą.</translation>
 <translation id="2486214324139475545">„<ph name="DESK_NAME" />“ peržiūra. Aktyvus darbalaukis.</translation>
 <translation id="2487915095798731898">Prisijungti</translation>
+<translation id="2499445554382787206">Darbalaukio profilio meniu. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Fiksuotos pozicijos klavišai</translation>
 <translation id="2504454902900101003">Atsisakyti nustatyti naujausių telefono nuotraukų, medijos ir pranešimų peržiūrą</translation>
 <translation id="2509468283778169019">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS įjungtas</translation>
@@ -604,6 +605,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3509391053705095206">Nepavyko rasti telefono. Patikrinkite, ar įjungtas telefono „Bluetooth“ ryšys.</translation>
 <translation id="3510164367642747937">Paryškinti pelės žymeklį</translation>
 <translation id="3513798432020909783">Paskyrą tvarko: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Užduotys paskutinį kartą atnaujintos: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Atnaujinkite įrenginį per vieną minutę}one{Atnaujinkite įrenginį per # minutę}few{Atnaujinkite įrenginį per # minutes}many{Atnaujinkite įrenginį per # minutės}other{Atnaujinkite įrenginį per # minučių}}</translation>
 <translation id="3522979239100719575">Ieškoma pasiekiamų profilių. Tai gali užtrukti kelias minutes.</translation>
 <translation id="3526440770046466733">Atidaryti nuorodą naujame skirtuke ir likti dabartiniame skirtuke</translation>
@@ -1142,6 +1144,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5536723544185013515">„Naujausios programos“: naršykite naudodami rodyklės kairėn ar dešinėn klavišus, kad pasiektumėte visas naujausias programas</translation>
 <translation id="553675580533261935">Išeinama iš sesijos</translation>
 <translation id="5537725057119320332">Perduoti</translation>
+<translation id="554017492391497564">Nepavyko pažymėti kaip baigtos.</translation>
 <translation id="5546397813406633847">Atkurti naudotoją</translation>
 <translation id="554893713779400387">Perjungti diktavimą</translation>
 <translation id="5550417424894892620">Nuvilkite failus darbalaukyje, kad pridėtumėte juos prie „<ph name="HOLDING_SPACE_TITLE" />“. Negalite pridėti failų prie darbalaukio.</translation>
@@ -1336,6 +1339,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Akumuliatorius senka. Įjungta akumuliatoriaus tausojimo priemonė.</translation>
 <translation id="6247728804802644171">Atidaryti pranešimus</translation>
+<translation id="6249795363855770621">Nepavyko pažymėti kaip baigtos. Bandykite dar kartą, kai prisijungsite.</translation>
 <translation id="6254629735336163724">Užrakinta horizontali padėtis</translation>
 <translation id="6259254695169772643">Pasirinkite naudodami rašiklį</translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: aktyvinama...</translation>
@@ -1496,6 +1500,7 @@ Naujas įdiegimas</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
 <translation id="6912841030378044227">Paryškinti adreso juostą</translation>
 <translation id="6912901278692845878">Greita apžvalga</translation>
+<translation id="6917259695595127329">Užduotys paskutinį kartą atnaujintos: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
 <translation id="692135145298539227">ištrinti</translation>
 <translation id="6929081673585394903">Rodyti valdiklius</translation>

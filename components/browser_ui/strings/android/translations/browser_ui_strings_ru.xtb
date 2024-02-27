@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1044891598689252897">Сайты будут работать в нормальном режиме</translation>
 <translation id="1073417869336441572">Помогите нам улучшить Chrome – расскажите, почему вы разрешили сторонние файлы cookie. <ph name="BEGIN_LINK" />Отправить отзыв<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Скрыть оповещение о скидках</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1192844206376121885">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Справка/отзыв</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
+<translation id="2550801787432930915">Оповещение о скидках</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Заблокирован 1 файл cookie}one{Заблокирован # файл cookie}few{Заблокировано # файла cookie}many{Заблокировано # файлов cookie}other{Заблокировано # файла cookie}}</translation>
 <translation id="2570922361219980984">Определение местоположения отключено и для самого устройства. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Развернуто. Нажмите, чтобы свернуть.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Если функция включена</translation>
 <translation id="8805385115381080995">Сайты реже запрашивают проверку личности, поэтому вы меньше отвлекаетесь от работы в браузере.</translation>
 <translation id="8816026460808729765">Закрыть сайтам доступ к датчикам</translation>
+<translation id="8843699287283948910">Скрыть вкладки с других устройств</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Попробуйте временно разрешить сторонние файлы cookie. Браузер будет хуже защищен, но функции сайта могут начать работать правильно.</translation>
 <translation id="8889294078294184559">Затем другие сайты также могут запрашивать эти данные у браузера.</translation>

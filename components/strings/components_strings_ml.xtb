@@ -1320,6 +1320,7 @@
 <translation id="3542628208405253498">കാർഡിന്റെ ചിത്രം</translation>
 <translation id="3542768452570884558">പുതിയ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="3547746132308051926">20 x 24 ഇഞ്ച്</translation>
+<translation id="3552155506104542239">മുന്നറിയിപ്പ്: ഈ നയവും <ph name="POLICY_NAME" /> എന്നതും തമ്മിൽ വൈരുദ്ധ്യമുണ്ട്, ഇത് Android ആപ്പുകളിൽ ഫലപ്രദമാകുകയും ഇല്ല. ഇക്കാര്യം ഒഴിച്ച് നിർത്തിയാൽ, ഈ നയം ഉദ്ദേശിക്കുന്നത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്.</translation>
 <translation id="3552297013052089404">Sans Serif ഫോണ്ട്</translation>
 <translation id="3558573058928565255">പകൽ</translation>
 <translation id="355995771319966853">'സ്വയമേവ പൂരിപ്പിക്കൽ' പഴയപടിയാക്കുക</translation>
@@ -4279,5 +4280,6 @@
     &lt;li&gt;മറ്റൊരു നെറ്റ്‍വര്‍ക്കിലേക്ക് കണക്റ്റ് ചെയ്യുന്നത് പരീക്ഷിക്കുക&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">IBAN ചേർക്കുക</translation>
 <translation id="997986563973421916">Google Pay-യിൽ നിന്ന്</translation>
 </translationbundle>

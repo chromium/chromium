@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">Більше не показувати</translation>
 <translation id="1680919990519905526">Купити через Об’єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">Невдовзі в розділі "Підписки" відображатиметься контент із каналу <ph name="SITE_NAME" /> і про нього. Сайти й пошукові запити, на які ви підписалися, зберігаються в обліковому записі Google. Ви можете будь-коли керувати підписками в налаштуваннях.</translation>
+<translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1696555181932908973">Ви можете спробувати інші способи ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Змінити налаштування темної теми?</translation>
 <translation id="1702907158640575240">Керований веб-переглядач</translation>
@@ -517,6 +518,7 @@
 <translation id="381861209280417772">Видалити паролі</translation>
 <translation id="3819178904835489326">Видалено завантажених файлів: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Ви не в мережі. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3830886834687455630">Щоб перевірити паролі, оновіть сервіси Google Play</translation>
 <translation id="3845098929839618392">Відкрити в анонімній вкладці</translation>
 <translation id="3847319713229060696">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
@@ -597,6 +599,7 @@
 <translation id="4249955472157341256">Сортувати за категорією "Останні"</translation>
 <translation id="4256782883801055595">Ліцензії ПЗ з відкритим кодом</translation>
 <translation id="4257230861809842349">Видалити паролі з Google Менеджера паролів?</translation>
+<translation id="426652736638196239">Номер IBAN буде збережено лише на цьому пристрої</translation>
 <translation id="4269820728363426813">Копіювати адресу посилання</translation>
 <translation id="4277529130885813215">Скористатись іншим пристроєм</translation>
 <translation id="4285846616383034558">Файли cookie, кеш і інші дані сайтів</translation>
@@ -1077,7 +1080,6 @@
 <translation id="6649642165559792194">Переглянути зображення <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Tab</translation>
-<translation id="6662119761881114773">Зараз паролі, збережені на цьому пристрої, не можна використовувати в каналах Chrome. Після виходу версії 121 ваші збережені паролі для Chrome і <ph name="CHROME_CHANNEL" /> буде об’єднано, і їх можна буде використовувати в обох додатках.</translation>
 <translation id="666731172850799929">Відкрити в програмі <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
 <translation id="6672697278890207089">Введіть парольну фразу</translation>

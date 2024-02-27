@@ -4527,7 +4527,6 @@
 在 <ph name="MAC_OS_NAME" /> 執行個體上，執行個體必須透過行動裝置管理 (MDM) 進行管理、透過 MCX 加入網域或是註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />，系統才能強制安裝來自 Chrome 線上應用程式商店以外的應用程式和擴充功能。</translation>
 <translation id="4739596156184678950">允許直接將檔案儲存到 <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">限制背景圖形列印模式</translation>
-<translation id="4744467872051608680">自 M119 起，如果將這項政策設為 False 或未設定，WebSQL 就會停用，但可以透過 Chrome 旗標「web-sql-access」啟用。如果將這項政策設為 True，系統就會啟用 WebSQL 存取。</translation>
 <translation id="4745232963710538589">啟用深入分析擴充功能以回報用量指標</translation>
 <translation id="4749670563834935149">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用「<ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />」。
 

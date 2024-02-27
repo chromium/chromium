@@ -4790,7 +4790,6 @@ En instancias de <ph name="MS_WIN_NAME" />, las apps y extensiones que no proven
 En instancias de <ph name="MAC_OS_NAME" />, las apps y extensiones que no provengan de Chrome Web Store podrán instalarse de manera automática solo si la instancia está administrada con MDM, vinculada a un dominio a través de MCX o inscrita en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4739596156184678950">Permitir que se guarden los archivos directamente en <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Restringe el modo de impresión con gráficos de fondo</translation>
-<translation id="4744467872051608680">A partir de la versión M119, si estableces esta política como falsa o no la estableces, WebSQL estará inhabilitado, pero se podrá habilitar con la función experimental de Chrome "web-sql-access". Si estableces la política como verdadera, se habilitará el acceso a WebSQL.</translation>
 <translation id="4745232963710538589">Habilitar la extensión de estadísticas para métricas de informes de uso</translation>
 <translation id="4749670563834935149">Habilita <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para ver una lista de URLs en la pantalla de acceso y de bloqueo.
 

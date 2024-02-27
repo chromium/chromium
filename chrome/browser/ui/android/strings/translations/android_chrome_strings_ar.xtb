@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">عدم العرض مرة أخرى</translation>
 <translation id="1680919990519905526">‏التسوّق باستخدام "عدسة Google" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">‏سيظهر لك قريبًا محتوى من موقع "<ph name="SITE_NAME" />" وحوله في القسم "تتم متابعته حاليًا". يتم حفظ المواقع الإلكترونية وعمليات البحث التي تُتابعها في حسابك على Google. يمكنك إدارة المحتوى الذي تُتابعه من خلال الإعدادات في أي وقت.</translation>
+<translation id="1689333818294560261">اللقب</translation>
 <translation id="1696555181932908973">يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="1702543251015153180">هل تريد تغيير إعدادات المظهر الداكن؟</translation>
 <translation id="1702907158640575240">متصفّح مُدار</translation>
@@ -519,6 +520,7 @@
 <translation id="381861209280417772">حذف كلمات المرور</translation>
 <translation id="3819178904835489326">تم إلغاء <ph name="NUMBER_OF_DOWNLOADS" /> من عمليات التنزيل</translation>
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
+<translation id="3823019343150397277">‏رقم الحساب بصيغة IBAN</translation>
 <translation id="3830886834687455630">‏يجب تحديث "خدمات Google Play" للتحقّق من كلمات المرور.</translation>
 <translation id="3845098929839618392">فتح في علامة تبويب تصفّح متخفي</translation>
 <translation id="3847319713229060696">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
@@ -599,6 +601,7 @@
 <translation id="4249955472157341256">الترتيب حسب الأحدث</translation>
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
 <translation id="4257230861809842349">‏هل تريد حذف كلمات المرور من "مدير كلمات المرور في Google"؟</translation>
+<translation id="426652736638196239">‏سيتم حفظ رقم الحساب هذا بصيغة IBAN على هذا الجهاز فقط.</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
 <translation id="4277529130885813215">استخدام جهاز آخر</translation>
 <translation id="4285846616383034558">ملفات تعريف الارتباط وذاكرة التخزين المؤقّت والبيانات الأخرى للمواقع الإلكترونية</translation>
@@ -1079,7 +1082,6 @@
 <translation id="6649642165559792194">معاينة صورة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659594942844771486">علامة تبويب</translation>
-<translation id="6662119761881114773">‏في الوقت الحالي، لا يمكن استخدام كلمات المرور المحفوظة على هذا الجهاز في جميع قنوات Chrome. في إصدارات Chrome الأحدث من إصدار 121، سيتم دمج كلمات المرور المحفوظة على جهازك في Chrome و"<ph name="CHROME_CHANNEL" />" وسيمكن استخدامها في كلا التطبيقَين.</translation>
 <translation id="666731172850799929">الفتح في <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">نسخ الصورة</translation>
 <translation id="6672697278890207089">إدخال عبارة المرور</translation>
@@ -1373,7 +1375,7 @@
 <translation id="8032569120109842252">المواقع التي تتابعها</translation>
 <translation id="8035133914807600019">مجلد جديد...</translation>
 <translation id="8037750541064988519">عدد الأيام المتبقية: <ph name="DAYS" /></translation>
-<translation id="8037801708772278989">تمّ إجراء عملية التحقُّق للتوّ.</translation>
+<translation id="8037801708772278989">كلمات المرور التي تم التحقق منها الآن</translation>
 <translation id="804335162455518893">‏لم يتم العثور على بطاقة SD.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{علامة تبويب واحدة في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_NORMAL" />)}few{<ph name="TAB_COUNT_NORMAL" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
 <translation id="8051695050440594747">هناك <ph name="MEGABYTES" /> ميغابايت متوفرة</translation>

@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">Больш не паказваць</translation>
 <translation id="1680919990519905526">Аб'ектыў: пошук тавару<ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">Хутка вы ўбачыце змесціва канала "<ph name="SITE_NAME" />" і інфармацыю пра яго ў раздзеле "Вы падпісаны". Сайты і вынікі пошуку, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Падпіскамі можна кіраваць у наладах у любы час.</translation>
+<translation id="1689333818294560261">Псеўданім</translation>
 <translation id="1696555181932908973">Каб працягнуць работу на сайце <ph name="SITE_ETLD_PLUS_ONE" />, паспрабуйце іншыя спосабы ўваходу.</translation>
 <translation id="1702543251015153180">Змяніць налады цёмнай тэмы?</translation>
 <translation id="1702907158640575240">Браўзер пад кіраваннем</translation>
@@ -517,6 +518,7 @@
 <translation id="381861209280417772">Выдаліць паролі</translation>
 <translation id="3819178904835489326">Выдалена спамповак: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
+<translation id="3823019343150397277">Нумар IBAN</translation>
 <translation id="3830886834687455630">Для праверкі пароляў абнавіце сэрвісы Google Play</translation>
 <translation id="3845098929839618392">Адкрыць ва ўкладцы інкогніта</translation>
 <translation id="3847319713229060696">Дапамагаць павышаць бяспеку ў інтэрнэце для ўсіх</translation>
@@ -597,6 +599,7 @@
 <translation id="4249955472157341256">Сартаваць па апошняй даце</translation>
 <translation id="4256782883801055595">Ліцэнзіі на ПЗ з адкрытым зыходным кодам</translation>
 <translation id="4257230861809842349">Выдаліць паролі з Менеджара пароляў Google?</translation>
+<translation id="426652736638196239">Нумар IBAN будзе захаваны толькі на гэтай прыладзе</translation>
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
 <translation id="4277529130885813215">Скарыстаць іншую прыладу</translation>
 <translation id="4285846616383034558">Файлы cookie, кэш і іншыя даныя сайтаў</translation>
@@ -1080,7 +1083,6 @@
 <translation id="6649642165559792194">Перадпрагляд відарыса <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Укладка</translation>
-<translation id="6662119761881114773">Пакуль што паролі, захаваныя на гэтай прыладзе, нельга выкарыстоўваць ва ўсіх каналах Chrome. Пасля Chrome 121 паролі, захаваныя на прыладзе для Chrome і <ph name="CHROME_CHANNEL" />, будуць аб'яднаны, і іх можна будзе выкарыстоўваць у абедзвюх праграмах.</translation>
 <translation id="666731172850799929">Адкрыць у праграме <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6672697278890207089">Увядзіце фразу-пароль</translation>

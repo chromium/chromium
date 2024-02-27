@@ -358,6 +358,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2484513351006226581">Naciśnij <ph name="KEYBOARD_SHORTCUT" />, by przełączyć układ klawiatury.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> – podgląd. Biurko aktywne.</translation>
 <translation id="2487915095798731898">Dołącz</translation>
+<translation id="2499445554382787206">Menu profilu biurka. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
 <translation id="2504454902900101003">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych i powiadomień z telefonu</translation>
 <translation id="2509468283778169019">CAPS LOCK jest włączony.</translation>
@@ -604,6 +605,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3509391053705095206">Nie udało się znaleźć telefonu. Sprawdź, czy jest na nim włączony Bluetooth.</translation>
 <translation id="3510164367642747937">Podświetlaj wskaźnik myszy</translation>
 <translation id="3513798432020909783">Kontem zarządza <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Ostatnia aktualizacja zadań: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu 1 minuty}few{Aktualizacja urządzenia nastąpi w ciągu # minut}many{Aktualizacja urządzenia nastąpi w ciągu # minut}other{Aktualizacja urządzenia nastąpi w ciągu # minuty}}</translation>
 <translation id="3522979239100719575">Szukam dostępnych profili. Może to potrwać kilka minut.</translation>
 <translation id="3526440770046466733">Otwórz link na nowej karcie, pozostając na bieżącej</translation>
@@ -1142,6 +1144,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5536723544185013515">Ostatnie aplikacje; aby uzyskać dostęp do wszystkich ostatnich aplikacji, poruszaj się za pomocą klawiszy strzałek w lewo lub w prawo</translation>
 <translation id="553675580533261935">Zamykanie sesji</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
+<translation id="554017492391497564">Nie udało się oznaczyć jako ukończonego.</translation>
 <translation id="5546397813406633847">Przywróć konto użytkownika</translation>
 <translation id="554893713779400387">Włącz lub wyłącz dyktowanie</translation>
 <translation id="5550417424894892620">Upuść pliki na pulpicie, aby dodać je do obszaru <ph name="HOLDING_SPACE_TITLE" />. Nie możesz dodać plików do pulpitu.</translation>
@@ -1336,6 +1339,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Słaba bateria. Zostało włączone Oszczędzanie baterii.</translation>
 <translation id="6247728804802644171">Otwórz powiadomienia</translation>
+<translation id="6249795363855770621">Nie udało się oznaczyć jako ukończonego. Spróbuj ponownie, gdy połączysz się z internetem.</translation>
 <translation id="6254629735336163724">Zablokowano w orientacji poziomej</translation>
 <translation id="6259254695169772643">Zaznacz rysikiem</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktywuję...</translation>
@@ -1495,6 +1499,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6912841030378044227">Zaznacz pasek adresu</translation>
 <translation id="6912901278692845878">Krótka prezentacja</translation>
+<translation id="6917259695595127329">Ostatnia aktualizacja zadań: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
 <translation id="692135145298539227">usuń</translation>
 <translation id="6929081673585394903">Pokaż elementy sterujące</translation>

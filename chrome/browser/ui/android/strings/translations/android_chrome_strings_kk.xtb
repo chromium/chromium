@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">Қайта көрсетілмесін</translation>
 <translation id="1680919990519905526">Суретті Google Lens арқылы сатып алу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139"><ph name="SITE_NAME" /> туралы және соның ішіндегі контентті жақында "Жазылымдар" бөлімінен көресіз. Сіз жазылған сайттар мен іздеу нәтижелері Google аккаунтыңызда сақталады. Жазылымдарды параметрлерден кез келген уақытта реттеуге болады.</translation>
+<translation id="1689333818294560261">Лақап ат</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> сайтында жұмысты жалғастырудың басқа жолдарын байқап көрсеңіз болады.</translation>
 <translation id="1702543251015153180">Қараңғы режим параметрлері өзгертілсін бе?</translation>
 <translation id="1702907158640575240">Басқарылатын браузер</translation>
@@ -517,6 +518,7 @@
 <translation id="381861209280417772">Құпия сөздерді жою</translation>
 <translation id="3819178904835489326">Жүктелген <ph name="NUMBER_OF_DOWNLOADS" /> файл жойылды</translation>
 <translation id="3819183753496523827">Офлайн режимдесіз. Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3830886834687455630">Құпия сөздерді тексеру үшін Google Play қызметтерін жаңартыңыз.</translation>
 <translation id="3845098929839618392">Инкогнито қойындысында ашу</translation>
 <translation id="3847319713229060696">Интернеттің барлық пайдаланушылары үшін қауіпсіздікті жақсартуға көмектеседі.</translation>
@@ -597,6 +599,7 @@
 <translation id="4249955472157341256">Соңғысы бойынша сұрыптау</translation>
 <translation id="4256782883801055595">Ашық кодты бағдарлама лицензиялары</translation>
 <translation id="4257230861809842349">Google Password Manager қызметінен құпия сөздерді жою керек пе?</translation>
+<translation id="426652736638196239">Бұл IBAN нөмірі осы құрылғыға ғана сақталады.</translation>
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="4277529130885813215">Басқа құрылғыны пайдалану</translation>
 <translation id="4285846616383034558">Cookie файлдары, кэш және басқа сайт деректері</translation>
@@ -1077,7 +1080,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6649642165559792194">Кескінді алдын ала көру <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659594942844771486">Қойынды</translation>
-<translation id="6662119761881114773">Дәл қазір осы құрылғыда сақталған құпия сөздерді Chrome арналарында пайдалану мүмкін емес. Chrome 121 нұсқасынан кейін Chrome және <ph name="CHROME_CHANNEL" /> үшін құрылғыңызда сақталған құпия сөздер біріктіріледі және екі қолданбада да пайдалануға болады.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> арқылы ашу</translation>
 <translation id="6671495933530132209">Кескінді көшіру</translation>
 <translation id="6672697278890207089">Құпия фразаңызды енгізу</translation>

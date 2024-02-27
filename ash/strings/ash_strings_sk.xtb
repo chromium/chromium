@@ -358,6 +358,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2484513351006226581">Stlačením klávesov <ph name="KEYBOARD_SHORTCUT" /> zmeníte rozloženie klávesnice.</translation>
 <translation id="2486214324139475545">Ukážka plochy <ph name="DESK_NAME" />. Plocha je aktívna.</translation>
 <translation id="2487915095798731898">Pripojiť sa</translation>
+<translation id="2499445554382787206">Ponuka profilu plochy. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Funkcia sticky keys</translation>
 <translation id="2504454902900101003">Zrušiť nastavovanie zobrazovania nedávnych fotiek, médií a upozornení z telefónu</translation>
 <translation id="2509468283778169019">Kláves CAPS LOCK je zapnutý</translation>
@@ -604,6 +605,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3509391053705095206">Váš telefón sa nedá nájsť. Skontrolujte, či v ňom máte zapnuté rozhranie Bluetooth.</translation>
 <translation id="3510164367642747937">Zvýrazniť ukazovateľ myši</translation>
 <translation id="3513798432020909783">Správca účtu: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Úlohy boli naposledy aktualizované <ph name="DATE" /> o <ph name="TIME" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Aktualizujte zariadenie do 1 minúty}few{Aktualizujte zariadenie do # minút}many{Aktualizujte zariadenie do # minúty}other{Aktualizujte zariadenie do # minút}}</translation>
 <translation id="3522979239100719575">Hľadajú sa dostupné profily. Môže to niekoľko minút trvať.</translation>
 <translation id="3526440770046466733">Otvorenie odkazu na novej karte a zotrvanie na aktuálnej karte</translation>
@@ -1142,6 +1144,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="5536723544185013515">Nedávne aplikácie: prístup k všetkým nedávnym aplikáciám získate klávesmi so šípkami doľava a doprava</translation>
 <translation id="553675580533261935">Ukončuje sa relácia</translation>
 <translation id="5537725057119320332">Prenášať</translation>
+<translation id="554017492391497564">Nepodarilo sa označiť ako dokončenú.</translation>
 <translation id="5546397813406633847">Obnoviť používateľa</translation>
 <translation id="554893713779400387">Prepnúť diktovanie</translation>
 <translation id="5550417424894892620">Presunutím súborov na pracovnú plochu ich pridáte do umiestnenia <ph name="HOLDING_SPACE_TITLE" />. Na pracovnú plochu nemôžete pridávať súbory.</translation>
@@ -1336,6 +1339,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Slabá batéria. Bol zapnutý šetrič batérie.</translation>
 <translation id="6247728804802644171">Otvorenie upozornení</translation>
+<translation id="6249795363855770621">Nepodarilo sa označiť ako dokončenú. Skúste to znova, keď budete online.</translation>
 <translation id="6254629735336163724">Uzamknuté vodorovne</translation>
 <translation id="6259254695169772643">Vyberte pomocou dotykového pera</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktivuje sa...</translation>
@@ -1496,6 +1500,7 @@ Nová inštalácia</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6912841030378044227">Označenie panela s adresou</translation>
 <translation id="6912901278692845878">Rýchla prehliadka</translation>
+<translation id="6917259695595127329">Úlohy boli naposledy aktualizované o <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>
 <translation id="692135145298539227">odstrániť</translation>
 <translation id="6929081673585394903">Zobraziť ovládanie</translation>

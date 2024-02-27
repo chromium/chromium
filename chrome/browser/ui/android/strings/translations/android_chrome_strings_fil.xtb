@@ -130,6 +130,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1672586136351118594">Huwag ipakitang muli</translation>
 <translation id="1680919990519905526">Mamili ng larawan sa Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">Malapit ka nang makakita ng content mula at tungkol sa <ph name="SITE_NAME" /> sa Sinusubaybayan. Mase-save sa iyong Google Account ang mga site at paghahanap na sinusubaybayan mo. Mapapamahalaan mo ang iyong mga sinusubaybayan sa mga setting anumang oras.</translation>
+<translation id="1689333818294560261">Nickname</translation>
 <translation id="1696555181932908973">Puwede kang sumubok ng iba pang paraan para magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Baguhin ang mga setting ng iyong madilim na tema?</translation>
 <translation id="1702907158640575240">Pinapamahalaang browser</translation>
@@ -517,6 +518,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="381861209280417772">I-delete ang mga password</translation>
 <translation id="3819178904835489326">Na-delete ang <ph name="NUMBER_OF_DOWNLOADS" /> (na) pag-download</translation>
 <translation id="3819183753496523827">Offline ka. Suriin ang iyong koneksyon sa internet at subukan ulit.</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3830886834687455630">I-update ang mga serbisyo ng Google Play para tingnan ang iyong mga password</translation>
 <translation id="3845098929839618392">Buksan sa Incognito tab</translation>
 <translation id="3847319713229060696">Tumulong na pahusayin ang seguridad sa web para sa lahat</translation>
@@ -597,6 +599,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="4249955472157341256">Pagbukud-bukurin ayon sa Pinakabago</translation>
 <translation id="4256782883801055595">Mga lisensya ng open source</translation>
 <translation id="4257230861809842349">Mag-delete ng mga password mula sa Google Password Manager?</translation>
+<translation id="426652736638196239">Sa device lang na ito ise-save ang IBAN na ito</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="4277529130885813215">Gumamit ng ibang device</translation>
 <translation id="4285846616383034558">Cookies, cache, at iba pang data ng site</translation>
@@ -1077,7 +1080,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6649642165559792194">I-preview ang larawang <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
-<translation id="6662119761881114773">Sa ngayon, hindi magagamit sa lahat ng channel ng Chrome ang mga password na naka-save sa device na ito. Pagkatapos ng Chrome 121, ime-merge ang mga password na naka-save sa iyong device para sa Chrome at <ph name="CHROME_CHANNEL" />, at magagamit ang mga ito sa parehong app.</translation>
 <translation id="666731172850799929">Buksan sa <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6672697278890207089">Ipasok ang iyong passphrase</translation>

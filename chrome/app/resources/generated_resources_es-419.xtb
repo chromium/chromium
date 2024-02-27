@@ -295,7 +295,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1217117837721346030">Descargar archivo sospechoso</translation>
 <translation id="1217483152325416304">Pronto se borrarán tus datos locales</translation>
 <translation id="1217668622537098248">Volver al clic con el botón izquierdo después de la acción</translation>
-<translation id="121783623783282548">Las contraseñas no coinciden.</translation>
 <translation id="1218015446623563536">Borrar Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como conexiones Wi-Fi, redes móviles y sensores para calcular la ubicación de este dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para inhabilitar la Ubicación, desactiva la configuración de la ubicación principal de este dispositivo. También puedes desactivar el uso de redes Wi-Fi, redes móviles y sensores para obtener la ubicación en la configuración de la ubicación.<ph name="END_PARAGRAPH2" /></translation>
@@ -516,7 +515,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1395832189806039783">Destacar el elemento con el enfoque del teclado</translation>
 <translation id="1396120028054416908">Volver a <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Se produjo un error al configurar la impresora</translation>
-<translation id="1396963298126346194">El nombre de usuario y la contraseña que ingresaste no coinciden</translation>
 <translation id="1397500194120344683">No hay dispositivos compatibles. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1397594434718759194">Accediste a Chrome desde estos dispositivos. Puedes usarlos como llaves de seguridad.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
@@ -895,7 +893,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1657937299377480641">Pídele permiso a tu madre o padre para ingresar de nuevo a la cuenta que te permita acceder a recursos educativos</translation>
 <translation id="1658424621194652532">Esta página está accediendo al micrófono.</translation>
 <translation id="1660763353352708040">Problema en el adaptador de alimentación</translation>
-<translation id="1661156625580498328">Implementa la encriptación AES (recomendado).</translation>
 <translation id="16620462294541761">No es posible verificar tu contraseña. Inténtalo nuevamente.</translation>
 <translation id="166278006618318542">Algoritmo de clave pública del sujeto</translation>
 <translation id="1662801900924515589">Se instaló <ph name="APP" /></translation>
@@ -989,7 +986,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="174123615272205933">Personalizado</translation>
 <translation id="1741314857973421784">Continuar</translation>
 <translation id="1743970419083351269">Cerrar la barra de descargas</translation>
-<translation id="1744060673522309905">No se pudo unir el dispositivo al dominio. Asegúrate de no haber superado la cantidad de dispositivos que puedes agregar.</translation>
 <translation id="1744108098763830590">página en segundo plano</translation>
 <translation id="1745732479023874451">Administrar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Quieres abrir y editar # archivos en la aplicación web?}}</translation>
@@ -1021,7 +1017,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1767043563165955993">Usar en las apps para Android</translation>
 <translation id="1767508543310534319">Eco de los signos de puntuación</translation>
 <translation id="1768212860412467516">Envía comentarios sobre <ph name="EXPERIMENT_NAME" />.</translation>
-<translation id="1768278914020124551">Se produjo un error al contactar el servidor de acceso. Comprueba la conexión de tu red y el nombre del dominio; luego, vuelve a intentarlo.</translation>
 <translation id="1769104665586091481">Abrir vínculo en una ventana &amp;nueva</translation>
 <translation id="1770407692401984718">Arrastra una imagen hasta aquí o</translation>
 <translation id="177053719077591686">Crea copias de seguridad de las apps para Android en Google Drive.</translation>
@@ -1099,7 +1094,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1818913467757368489">La carga del registro está en curso.</translation>
 <translation id="1819443852740954262">Abrir todo en una ventana de incógnito</translation>
 <translation id="1819721979226826163">Presiona Notificaciones de apps &gt; Servicios de Google Play.</translation>
-<translation id="1820028137326691631">Ingresar la contraseña que proporcionó el administrador</translation>
 <translation id="1822140782238030981">¿Ya eres usuario de Chrome? Acceder</translation>
 <translation id="1822517323280215012">Gris</translation>
 <translation id="1822635184853104396">Mostrar el historial de descargas completo en una pestaña nueva</translation>
@@ -1216,7 +1210,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
 <translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1904603806662441960">Cómo administrar los permisos de la cámara de sitios en Chrome</translation>
-<translation id="1905375423839394163">Nombre de la Chromebook</translation>
 <translation id="1906181697255754968">Por lo general los sitios acceden a archivos y carpetas de tu dispositivo para habilitar funciones, como la de guardar las tareas de forma automática.</translation>
 <translation id="1906488504371069394">Descubre más extensiones y temas en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Escribe con la voz. Usa Búsqueda + D y, luego, comienza a hablar.</translation>
@@ -1528,7 +1521,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="21354425047973905">Oculta los PIN</translation>
 <translation id="2135456203358955318">Lupa con vista acoplada</translation>
 <translation id="2135787500304447609">&amp;Reanudar</translation>
-<translation id="2136372518715274136">Ingresa la nueva contraseña</translation>
 <translation id="2136476978468204130">La frase de contraseña que ingresaste es incorrecta</translation>
 <translation id="2137128126782078222">No permitir notificaciones de <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Botón de configuración</translation>
@@ -1628,7 +1620,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2210462644007531147">No se pudo completar la instalación</translation>
 <translation id="2211245494465528624">Administrar opciones de sincronización</translation>
 <translation id="2214018885812055163">Carpetas compartidas</translation>
-<translation id="2214884991347062907">La contraseña es incorrecta; vuelve a intentarlo</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;No se muestra una línea&gt;}other{&lt;No se muestran <ph name="NUMBER_OF_LINES" /> líneas&gt;}}</translation>
 <translation id="2215070081105889450">Para compartir audio, comparte una pestaña o pantalla</translation>
 <translation id="2218019600945559112">Mouse y panel táctil</translation>
@@ -2279,7 +2270,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2692503699962701720">Cambiar el tono cuando se leen tipos de elementos y texto con formato</translation>
 <translation id="2692901429679246677">Aqua</translation>
 <translation id="2693134906590795721">Sonidos de carga</translation>
-<translation id="2693176596243495071">Se produjo un error desconocido. Vuelve a intentarlo más tarde o comunícate con tu administrador si el problema persiste.</translation>
 <translation id="2698147581454716013">Este es un dispositivo agrupado y no se puede inscribir en la actualización de Kiosk &amp; Signage.</translation>
 <translation id="2699911226086014512">No se pudo realizar la operación del PIN con el código <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Se compartió de <ph name="DEVICE_NAME" /></translation>
@@ -2412,7 +2402,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
 <translation id="2783024642731649028"><ph name="DISCOUNT_TEXT" /> en 1 artículo de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visto <ph name="RELATIVE_TIME" /> que está en tu carrito</translation>
 <translation id="2783298271312924866">Descargado</translation>
-<translation id="2783829359200813069">Seleccionar tipos de encriptación</translation>
 <translation id="2783952358106015700">Usar la llave de seguridad con <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contraseñas</translation>
 <translation id="2785873697295365461">Descriptores de archivo</translation>
@@ -2696,7 +2685,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3003144360685731741">Redes preferidas</translation>
 <translation id="3003253259757197230">Se enviarán a Google las URLs que visites para predecir los sitios que posiblemente vayas a visitar y mostrarte información adicional sobre la página que estés visitando</translation>
 <translation id="3003623123441819449">Caché CSS</translation>
-<translation id="3003828226041301643">No se puede unir el dispositivo al dominio. Asegúrate de que tu cuenta tenga privilegios para agregarlos.</translation>
 <translation id="3003967365858406397">Tu número <ph name="PHONE_NAME" /> creará una conexión de Wi-Fi privada.</translation>
 <translation id="3004385386820284928">Personalizar las teclas del teclado</translation>
 <translation id="3005574332301273731">No mostrar</translation>
@@ -2756,7 +2744,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3033348223765101500">Controla tus datos</translation>
 <translation id="3036327949511794916">Ya pasó la fecha límite para devolver este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Habilitar Flash</translation>
-<translation id="3037754279345160234">No se puede analizar la configuración para vincular el dominio. Comunícate con el administrador.</translation>
 <translation id="3038272154009688107">Ver todos los sitios</translation>
 <translation id="3038612606416062604">Agregar una impresora manualmente</translation>
 <translation id="3039491566278747710">No se pudo instalar la política sin conexión en el dispositivo.</translation>
@@ -2946,7 +2933,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3210736980143419785">No se pudo completar la descarga.</translation>
 <translation id="321084946921799184">Amarillo y blanco</translation>
 <translation id="3211126692872351610">&amp;Buscar <ph name="SEARCH_TERMS" /> en <ph name="SEARCH_ENGINE" /> en una nueva pestaña</translation>
-<translation id="321356136776075234">UO del dispositivo (p. ej., OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Agrega un favorito a esta carpeta</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una grabación o una voz similares también pueda acceder a los resultados personales de <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3217843140356091325">¿Deseas crear un acceso directo?</translation>
@@ -3625,7 +3611,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3741056951918180319">Puedes hacer clic en la extensión en cualquier momento para usarla en el sitio que desees</translation>
 <translation id="3741510433331996336">Reinicia el dispositivo para completar la actualización</translation>
 <translation id="3742235229730461951">Disposición del teclado coreano</translation>
-<translation id="3742666961763734085">No se encontró ninguna unidad organizativa con ese nombre. Vuelve a intentarlo.</translation>
 <translation id="3743842571276656710">Ingresa el PIN para vincular con <ph name="DEVICE_NAME" /></translation>
 <translation id="3744219658596020825">No se importaron tus contraseñas</translation>
 <translation id="3747077776423672805">Para quitar apps, ve a Configuración &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.</translation>
@@ -4514,7 +4499,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4416582610654027550">Escribe una URL válida</translation>
 <translation id="4421932782753506458">Peludito</translation>
 <translation id="4423376891418188461">Restaurar configuración</translation>
-<translation id="442397852638519243"><ph name="USER_NAME" />, tu administrador te solicita que cambies la contraseña.</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones se estaban usando y la cantidad de memoria que se usaba en general.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426268963847471040">Borrar <ph name="FILE_NAME" /></translation>
@@ -4530,7 +4514,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4430369329743628066">Se agregó a Favoritos</translation>
 <translation id="4430422687972614133">Activar la tarjeta virtual</translation>
 <translation id="4432621511648257259">La contraseña es incorrecta</translation>
-<translation id="443454694385851356">Heredados (inseguro)</translation>
 <translation id="4434611816075088065">No hay nada más que requiera tu atención en este momento</translation>
 <translation id="443475966875174318">Actualizar o quitar las aplicaciones incompatibles</translation>
 <translation id="4437947179446780764">Agregar proveedor de servicios de DNS personalizado</translation>
@@ -5072,7 +5055,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4868284252360267853">Este diálogo no está enfocado en este momento. Presiona Command+Mayúsculas-Opción+A para enfocar este diálogo.</translation>
 <translation id="4869170227080975044">Leer la información de la red de ChromeOS</translation>
 <translation id="4870724079713069532">Puedes abrir y editar los archivos compatibles con esta app desde el Explorador de archivos o desde otras apps. Para controlar qué archivos se abren en esta app de forma predeterminada, ve a la <ph name="BEGIN_LINK" />configuración de Windows<ph name="END_LINK" />.</translation>
-<translation id="4870758487381879312">Ingresar la contraseña que proporcionó el administrador para obtener información sobre la configuración</translation>
 <translation id="4870995365819149457">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y una app más.</translation>
 <translation id="4871308555310586478">No se obtuvo en Chrome Web Store.</translation>
 <translation id="4871322859485617074">El PIN contiene caracteres no válidos</translation>
@@ -5139,7 +5121,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4913209098186576320">Es posible que este archivo sea peligroso<ph name="LINE_BREAK" />La revisión está tardando más de lo habitual…</translation>
 <translation id="4915961947098019832">Puede mostrar imágenes</translation>
 <translation id="4916542008280060967">¿Quieres permitir que el sitio edite <ph name="FILE_NAME" />?</translation>
-<translation id="4917385247580444890">Fuerte</translation>
 <translation id="491779113051926205">Contadores de tráfico de ChromeOS</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quiere comunicarse con la extensión "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="4918086044614829423">Aceptar</translation>
@@ -5453,7 +5434,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5172855596271336236">Hay 1 impresora administrada.</translation>
 <translation id="5173668317844998239">Agrega huellas dactilares y borra las que están guardadas en tu llave de seguridad</translation>
 <translation id="5174169235862638850">Se copió la contraseña al portapapeles</translation>
-<translation id="5175379009094579629">El nombre del dispositivo no es válido. Ingresa uno que sí lo sea y vuelve a intentarlo.</translation>
 <translation id="5177479852722101802">Continuar el bloqueo del acceso a la cámara y al micrófono</translation>
 <translation id="5177549709747445269">Estás usando el plan de datos móviles.</translation>
 <translation id="5178667623289523808">Buscar anterior</translation>
@@ -5682,7 +5662,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5368255566854433132">Crear contraseña para <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368441245151140827">Esta extensión no puede leer ni cambiar la información del sitio, ni ejecutarse en segundo plano</translation>
 <translation id="5368720394188453070">El teléfono está bloqueado. Desbloquéalo para ingresar.</translation>
-<translation id="5368779022775404937">Acceder a <ph name="REALM" /></translation>
 <translation id="536882527576164740">{0,plural, =1{Incógnito}other{Incógnito (#)}}</translation>
 <translation id="5369491905435686894">Habilitar la aceleración del mouse</translation>
 <translation id="5369694795837229225">Configurar el entorno de desarrollo de Linux</translation>
@@ -5898,7 +5877,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{El administrador instaló una extensión}other{El administrador instaló # extensiones}}</translation>
 <translation id="5523532775593636291">Los sitios que agregues siempre permanecerán activos y no se liberará la memoria</translation>
 <translation id="5523558474028191231">El nombre puede incluir letras, números y caracteres especiales, y debe tener <ph name="MAX_CHARACTER_COUNT" /> caracteres como máximo.</translation>
-<translation id="5526701598901867718">Todos (inseguro)</translation>
 <translation id="5526745900034778153">Volver a acceder para reanudar la sincronización</translation>
 <translation id="5527463195266282916">Se ha intentado instalar una versión anterior de la extensión.</translation>
 <translation id="5527474464531963247">También puedes seleccionar otra red.</translation>
@@ -5909,7 +5887,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5539070192556911367">No se puede acceder a Google</translation>
-<translation id="5539221284352502426">El servidor rechazó la contraseña que ingresaste porque es demasiado corta, debe incluir números o símbolos, o debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador inhabilitó esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
 <translation id="5542750926112347543">Las cookies de <ph name="DOMAIN" /> están bloqueadas</translation>
@@ -6152,7 +6129,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5734362860645681824">Comunicaciones</translation>
 <translation id="5734697361979786483">Agregar sistema de archivos compartidos</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estos datos o tu dispositivo no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.}=1{Este archivo o tu dispositivo no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.}other{Estos archivos no cumplen con algunas de las políticas de seguridad de tu organización. Consulta con el administrador qué tienes que corregir.}}</translation>
-<translation id="5736796278325406685">Ingresa un nombre de usuario válido</translation>
 <translation id="5738093759615225354">Necesitas esta clave de acceso para acceder a tu computadora</translation>
 <translation id="5739017626473506901">Accede para ayudar a <ph name="USER_NAME" /> a agregar una cuenta de una institución educativa</translation>
 <translation id="5739235828260127894">La verificación está pendiente. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -6556,7 +6532,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6054138466019582920">Bus&amp;ca en esta página con Google…</translation>
 <translation id="6054284857788651331">Grupo de pestañas recientemente cerrado</translation>
 <translation id="6054961935262556546">Cambiar visibilidad</translation>
-<translation id="6055171183283175969">La contraseña que ingresaste es incorrecta.</translation>
 <translation id="6055392876709372977">PKCS N. º 1 SHA-256 con encriptación RSA</translation>
 <translation id="6055544610007596637">Instala apps en tu <ph name="DEVICE_TYPE" /> desde Google Play Store</translation>
 <translation id="6056710589053485679">Volver a cargar normalmente</translation>
@@ -6626,7 +6601,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6102043788063419338">La "Protección avanzada" bloqueó este archivo.</translation>
 <translation id="6103681770816982672">Advertencia: vas a cambiar al canal de programadores</translation>
 <translation id="6104068876731806426">Cuentas de Google</translation>
-<translation id="6104311680260824317">No se puede unir el dispositivo con el dominio. El servidor no es compatible con los tipos de encriptación de Kerberos especificados. Para conocer la configuración de la encriptación, consulta "Más opciones".</translation>
 <translation id="6104667115274478616">Administrar la configuración de audio de ChromeOS</translation>
 <translation id="6104796831253957966">La cola de la impresora está completa</translation>
 <translation id="610487644502954950">Se dejó de fijar el panel lateral</translation>
@@ -7313,7 +7287,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6651237644330755633">Confía en este certificado para identificar sitios web</translation>
 <translation id="6651495917527016072">Sincroniza las redes Wi-Fi con tu teléfono. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6651762277693024112">Se ejecuta automáticamente cada vez que visitas este sitio</translation>
-<translation id="665355505818177700">La integración de <ph name="MS_AD_NAME" /> en Chrome solo es compatible en plataformas x86_64. Las Chromebooks creadas a partir de una plataforma ARM o x86 no son compatibles con esta funcionalidad.</translation>
 <translation id="6654509035557065241">Configurar una red preferida</translation>
 <translation id="6655190889273724601">Modo de desarrollador</translation>
 <translation id="6655458902729017087">Ocultar cuentas</translation>
@@ -7449,7 +7422,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="676560328519657314">Tus formas de pago de Google Pay</translation>
 <translation id="6766488013065406604">Ir al Administrador de contraseñas de Google</translation>
 <translation id="6767566652486411142">Elegir otro idioma…</translation>
-<translation id="6767639283522617719">No se puede unir al dominio. Asegúrate de que sea correcta la configuración de la unidad organizativa.</translation>
 <translation id="6768034047581882264">No puede mostrar contenido no seguro</translation>
 <translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Para proporcionar la mejor experiencia, <ph name="DEVICE_OS" /> recopila datos de hardware de los dispositivos y los comparte con Google de modo que podamos determinar qué actualizaciones hacer. De manera opcional, podrás permitir que Google utilice estos datos con otros fines, como la asistencia y mejoras en la experiencia y el servicio de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes acceder en este dispositivo y consultar los campos que aparecen como chromeosflex_ en chrome://system para ver los datos que se enviaron a Google con el fin de filtrar las actualizaciones, así como cualquier otra instancia en la que decidas compartir datos con Google.<ph name="END_PARAGRAPH2" />
@@ -7526,7 +7498,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Accede automáticamente a los sitios web con las credenciales almacenadas. Si la función está inhabilitada, deberás confirmar siempre tu identidad para acceder a un sitio web.</translation>
-<translation id="6810768462515084623">Parece que caducó la contraseña. Renuévala en otro dispositivo y vuelve a intentarlo.</translation>
 <translation id="6811034713472274749">Ya puedes ver la página</translation>
 <translation id="6811151703183939603">Firme</translation>
 <translation id="6811332638216701903">Nombre de host DHCP</translation>
@@ -7598,7 +7569,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6856623341093082836">Configurar y ajustar la precisión de tu pantalla táctil</translation>
 <translation id="6856850379840757744">Cuando está activado, se silencian todas las notificaciones.</translation>
 <translation id="6857145580237920905">Quitar los perfiles de eSIM antes de aplicar la función Powerwash</translation>
-<translation id="6857699260879628349">Obtener información sobre la configuración</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Configuración de proxy...</translation>
 <translation id="68601584151169673">&amp;Guardar y compartir</translation>
@@ -7617,7 +7587,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="686839242150793617">Pueden ingresar automáticamente al modo de pantalla en pantalla</translation>
 <translation id="6868934826811377550">Ver detalles</translation>
 <translation id="6871644448911473373">Respondedor de OCSP:<ph name="LOCATION" /></translation>
-<translation id="6872781471649843364">El servidor rechazó la contraseña que ingresaste.</translation>
 <translation id="6873571253135628430">Cambiar los permisos de sitios</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6876469544038980967">Poco útil</translation>
@@ -7651,7 +7620,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6902066522699286937">Voz de prueba</translation>
 <translation id="6902336033320348843">La sección no es compatible: <ph name="ERROR_LINE" /></translation>
-<translation id="6902837902700739466">Une el dispositivo al dominio</translation>
 <translation id="6903022061658753260">Tu información se sincronizará en todos los navegadores Chrome donde hayas activado la sincronización con esta cuenta. Para acceder a las opciones de sincronización de ChromeOS, ve a la <ph name="LINK_BEGIN" />configuración de ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Abrir todo (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Activar la sincronización</translation>
@@ -8009,7 +7977,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7198503619164954386">Debes acceder desde un dispositivo empresarial</translation>
 <translation id="7199158086730159431">Obtener ayuda</translation>
 <translation id="7199452998289813782">Pausar la transmisión a <ph name="DEVICE_NAME" /></translation>
-<translation id="7200083590239651963">Seleccionar configuración</translation>
 <translation id="720110658997053098">Mantener este dispositivo en modo kiosco de forma permanente</translation>
 <translation id="7201118060536064622">Se borró "<ph name="DELETED_ITEM_NAME" />"</translation>
 <translation id="7201420661433230412">Ver archivos</translation>
@@ -8126,7 +8093,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7292067737327289208">Tu organización <ph name="BEGIN_LINK" />administra el navegador<ph name="END_LINK" /> y <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />administra tu perfil<ph name="END_LINK" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Ten en cuenta que Android, Play y las apps asociadas se rigen por sus propias políticas de uso y recopilación de datos.</translation>
-<translation id="729583233778673644">Permite la encriptación AES y RC4. Esta opción es riesgosa, ya que los cifrados RC4 son inseguros.</translation>
 <translation id="7296503797589217366">Seleccionar la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
 <translation id="7298195798382681320">Recomendado</translation>
@@ -8144,7 +8110,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7307647374092371434">Las contraseñas y llaves de acceso de tu Cuenta de Google también estarán disponibles en este dispositivo cuando accedas</translation>
 <translation id="7308643132139167865">Idiomas de sitios web</translation>
-<translation id="7310598146671372464">No pudiste acceder porque el servidor no es compatible con los tipos de encriptación de Kerberos especificados. Comunícate con el administrador.</translation>
 <translation id="7311005168897771689">Accede a tus archivos de Google Drive cuando estés sin conexión</translation>
 <translation id="7311244614769792472">No se encontraron resultados</translation>
 <translation id="7312210124139670355">El administrador está restableciendo tu eSIM. Es posible que este proceso demore unos minutos.</translation>
@@ -8517,7 +8482,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7594725637786616550">Usa la función Powerwash para restablecer el dispositivo <ph name="DEVICE_TYPE" /> y que quede como nuevo.</translation>
 <translation id="7595453277607160340">Para usar las apps de Android y que tu <ph name="DEVICE_TYPE" /> funcione correctamente, vuelve a acceder y actualiza.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (código de error <ph name="ERROR_CODE" />).</translation>
-<translation id="7599527631045201165">El nombre del dispositivo es demasiado largo. Ingresa uno más corto y vuelve a intentarlo.</translation>
 <translation id="7600054753482800821">&amp;Administrar búsqueda en sitios y motores de búsqueda</translation>
 <translation id="7600218158048761260">Google Drive está inhabilitado para este tipo de cuenta.</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
@@ -8662,7 +8626,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7686086654630106285">Obtén más información sobre los anuncios sugeridos por sitios</translation>
 <translation id="7686581688229391955">Seleccionar para permitir extensiones en este sitio</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
-<translation id="7690294790491645610">Confirmar contraseña nueva</translation>
 <translation id="7690378713476594306">Elegir de la lista</translation>
 <translation id="7690853182226561458">Agregar &amp;carpeta...</translation>
 <translation id="7691073721729883399">No se pudo activar Cryptohome para la app del kiosco.</translation>
@@ -9324,7 +9287,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Impresora <ph name="ITEM_POSITION" /> de <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Se activó el Ahorro de energía</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" puede leer y eliminar imágenes, videos y archivos de sonido en las ubicaciones marcadas.</translation>
-<translation id="8181215761849004992">No se puede unir al dominio. Verifica que tu cuenta tenga privilegios suficientes para agregar dispositivos.</translation>
 <translation id="8182105986296479640">La app no responde.</translation>
 <translation id="8182412589359523143">Para borrar todos los datos de este dispositivo <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />haz clic aquí<ph name="END_LINK" />.</translation>
 <translation id="8183703640399301650">El EID de tu dispositivo es <ph name="EID_NUMBER" /> y el IMEI es <ph name="IMEI_NUMBER" />. Estos números se pueden usar para activar el servicio.</translation>
@@ -9785,7 +9747,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8531367864749403520">Selecciona "Ocultar grupo" para quitar el grupo de la barra de pestañas</translation>
 <translation id="8531701051932785007">Se desactivó la Navegación segura mejorada</translation>
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
-<translation id="8534656636775144800">Se produjo un error al intentar unirse al dominio. Vuelve a intentarlo.</translation>
 <translation id="8535005006684281994">URL de renovación del certificado Netscape</translation>
 <translation id="8536810348276651776">Saldrás de la mayoría de los sitios. Permanecerás en tu Cuenta de Google para que se utilice la configuración de Family Link para Chrome.</translation>
 <translation id="8536956381488731905">Sonar al presionar teclas</translation>
@@ -9864,7 +9825,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8607828412110648570">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Agregar un ticket de Kerberos</translation>
 <translation id="8609465669617005112">Subir</translation>
-<translation id="8610103157987623234">El formato es incorrecto; vuelve a intentarlo</translation>
 <translation id="8612252270453580753">&amp;Buscar fotograma con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8613164732773110792">Solo se permiten caracteres en minúscula, números, guiones bajos o rayas</translation>
 <translation id="8613504115484579584">Métodos de acceso</translation>
@@ -10478,7 +10438,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9052404922357793350">Seguir bloqueando</translation>
 <translation id="90528604757378587">Es posible que se limiten la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave.</translation>
 <translation id="9053563360605707198">Imprimir de ambos lados</translation>
-<translation id="9055636786322918818">Aplica la encriptación RC4. Esta opción es riesgosa, ya que los cifrados RC4 son inseguros.</translation>
 <translation id="9056788090206401048">La conexión Bluetooth debe estar activada para usar tu llave de acceso en otro dispositivo. Puedes administrar esta opción en cualquier momento en Configuración.</translation>
 <translation id="9056810968620647706">No se encontraron coincidencias.</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> desea acceder al siguiente contenido:</translation>

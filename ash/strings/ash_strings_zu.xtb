@@ -358,6 +358,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2484513351006226581">Shaya u-<ph name="KEYBOARD_SHORTCUT" /> ukuze ushintshe isendlalelo sekhibhodi.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> buka kuqala. Itafula elisebenzayo.</translation>
 <translation id="2487915095798731898">Joyina</translation>
+<translation id="2499445554382787206">Imenyu yephrofayela yetafula. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Okhiye abanamathelayo</translation>
 <translation id="2504454902900101003">Yeka ukusetha ukubuka izithombe, imidiya, nezaziso zakamuva zefoni yakho</translation>
 <translation id="2509468283778169019">I-CAPS LOCK ivuliwe</translation>
@@ -604,6 +605,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3509391053705095206">Ayikwazi ukuthola ifoni yakho. Qiniseka ukuthi i-Bluetooth yefoni yakho ivuliwe.</translation>
 <translation id="3510164367642747937">Gqamisa isikhombisi semawuzi</translation>
 <translation id="3513798432020909783">I-akhawunti iphethwe ngu-<ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">I-Tasks igcine ukubuyekezwa: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Buyekeza idivayisi phakathi kweminithi elingu-1}one{Buyekeza idivayisi yakho phakathi kwamaminithi angu-#}other{Buyekeza idivayisi yakho phakathi kwamaminithi angu-#}}</translation>
 <translation id="3522979239100719575">Ifuna amaphrofayela atholakalayo. Lokhu kungathatha imizuzu embalwa.</translation>
 <translation id="3526440770046466733">Vula ilinki kuthebhu entsha futhi uhlale kuthebhu yamanje</translation>
@@ -1142,6 +1144,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="5536723544185013515">Ama-App akamuva, funa ngokhiye bomcibisholo wesobunxele noma wesokudla ukuze ufinyelele wonke ama-app akamuva</translation>
 <translation id="553675580533261935">Iphuma kuseshini</translation>
 <translation id="5537725057119320332">Sakaza</translation>
+<translation id="554017492391497564">Ayikwazi ukuphawula njengeqediwe.</translation>
 <translation id="5546397813406633847">Thola umsebenzisi</translation>
 <translation id="554893713779400387">Guqula ukuthola</translation>
 <translation id="5550417424894892620">Yehlisa amafayela kudeskithophu ukuze uwengeze ku-<ph name="HOLDING_SPACE_TITLE" />. Awukwazi ukwengeza amafayili kudeskithophu.</translation>
@@ -1336,6 +1339,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Ibhethri liphansi. Isilondolozi Sebhethri sivuliwe.</translation>
 <translation id="6247728804802644171">Vula izaziso</translation>
+<translation id="6249795363855770621">Ayikwazi ukuphawula njengeqediwe. Zama futhi lapho uxhumeke ku-inthanethi.</translation>
 <translation id="6254629735336163724">Kukhiywe ngokuqondile</translation>
 <translation id="6259254695169772643">Sebenzisa i-stylus yakho ukuze ukhethe</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Yenza kusebenze...</translation>
@@ -1496,6 +1500,7 @@ Ukufaka okusha</translation>
 <translation id="6896758677409633944">Kopisha</translation>
 <translation id="6912841030378044227">Gxila kubha yekheli</translation>
 <translation id="6912901278692845878">Uhambo olusheshayo</translation>
+<translation id="6917259695595127329">I-Tasks igcine ukubuyekezwa: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Ayikwazanga ukubona ikhadi lakho elisebenza ngobuchwepheshe besimanje. Zama futhi.</translation>
 <translation id="692135145298539227">sula</translation>
 <translation id="6929081673585394903">Bonisa izilawuli</translation>

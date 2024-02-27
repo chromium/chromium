@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">Экинчи көрүнбөсүн</translation>
 <translation id="1680919990519905526">Google Lens аркылуу соода кылуу <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">Жакында <ph name="SITE_NAME" /> каналындагы контентти жана маалыматты Жазылгансыз бөлүмүндө көрөсүз. Сиз жазылган сайттар жана издеген нерселер Google аккаунтуңузда сакталат. Жазылгандарды параметрлерден каалаган убакта тескей аласыз.</translation>
+<translation id="1689333818294560261">Ылакап ат</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> аркылуу башка жолдор менен улантып көрүңүз.</translation>
 <translation id="1702543251015153180">Караңгы теманын параметрлерин өзгөртөсүзбү?</translation>
 <translation id="1702907158640575240">Башкарылган серепчи</translation>
@@ -517,6 +518,7 @@
 <translation id="381861209280417772">Сырсөздөрдү өчүрүү</translation>
 <translation id="3819178904835489326">Жүктөлүп алынган <ph name="NUMBER_OF_DOWNLOADS" /> нерсе өчүрүлдү</translation>
 <translation id="3819183753496523827">Оффлайн режиминдесиз. Интернет байланышыңызды текшерип, кайталап көрүңүз.</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3830886834687455630">Сырсөздөрдү текшерүү үчүн Google Play кызматтарын жаңыртыңыз</translation>
 <translation id="3845098929839618392">Жашыруун режимде ачуу</translation>
 <translation id="3847319713229060696">Баары үчүн Интернеттеги коопсуздукту арттырууга жардам берүү</translation>
@@ -597,6 +599,7 @@
 <translation id="4249955472157341256">Акыркылар боюнча иреттөө</translation>
 <translation id="4256782883801055595">Ачык программа уруксаттамалары</translation>
 <translation id="4257230861809842349">Сырсөздөрдү башкаргычтан сырсөздөрдү өчүрөсүзбү?</translation>
+<translation id="426652736638196239">Бул IBAN ушул түзмөккө гана сакталат</translation>
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
 <translation id="4277529130885813215">Башка түзмөктү колдонуу</translation>
 <translation id="4285846616383034558">Cookie файлдары, кештер жана сайттагы маалымат</translation>
@@ -1077,7 +1080,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6649642165559792194">Сүрөттү алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6659594942844771486">Өтмөк</translation>
-<translation id="6662119761881114773">Учурда бул түзмөктө сакталган сырсөздөрдү Chrome каналдарында колдонууга болбойт. Chrome'дун 121-версиясынан кийин Chrome жана <ph name="CHROME_CHANNEL" /> каналы үчүн түзмөгүңүздө сакталган сырсөздөр бириктирилип, эки колдонмодо тең колдонула алышат.</translation>
 <translation id="666731172850799929">Төмөнкүдө ачуу <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
 <translation id="6672697278890207089">Сыр сүйлөмүңүздү жазыңыз</translation>

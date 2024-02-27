@@ -33,6 +33,7 @@
 <translation id="1516530951338665275">Google Chrome бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Приспособете го вашиот Chrome</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
 <translation id="1583073672411044740">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ја користи вашата камера.</translation>
@@ -72,6 +73,7 @@
 <translation id="2121284319307530122">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете да го подобриме Chrome со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Преземената датотека не можеше да се потврди.</translation>
+<translation id="2128411189117340671">Управувајте со профилите на Chrome</translation>
 <translation id="2130870084309816036">Не може да се поврзе на интернет. Ако користите заштитен ѕид, ставете ја датотеката <ph name="PRODUCT_EXE_NAME" /> во список со дозволени.</translation>
 <translation id="2131230230468101642">Заради заштита на вашата приватност, автоматски ги бришеме вашите интереси што се постари од 4 седмици. Додека прелистувате, може да се појави интерес на списокот повторно. Или можете да ги отстраните интересите што не сакате Chrome да ги зема предвид.</translation>
 <translation id="2139300032719313227">Рестартирајте го Chrome OS</translation>
@@ -425,6 +427,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7917876797003313048">Може да управувате со најавените сметки на Google. Вашите сметки на Google се користат за прелистувачот Chrome, Play Store, Gmail и друго. Ако сакате да додадете сметка за некој друг, како член на семејството, додајте ново лице во вашиот уред <ph name="DEVICE_TYPE" /> наместо тоа. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome го блокираше преземањево затоа што датотеката е измамничка и може да изврши неочекувани промени на вашиот уред</translation>
 <translation id="7951272445806340501">ChromeOS Flex треба да се рестартира за да се примени ажурирањето.</translation>
+<translation id="7959172989483770734">Управувајте со профилите на Chrome</translation>
 <translation id="7962368738413920945">Сајтовите веројатно ќе функционираат според вашите очекувања, но нема да ве паметат по затворање на сите прозорци на Chrome</translation>
 <translation id="7962410387636238736">Компјутеров веќе нема да добива ажурирања за Google Chrome затоа што Windows XP и Windows Vista веќе не се поддржуваат</translation>
 <translation id="8005666035647241369">До „Управникот со лозинки на Google“ на уредов</translation>
@@ -432,6 +435,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8009904340233602924">Користи Chrome без сметка</translation>
 <translation id="8013993649590906847">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
 <translation id="8019103195866286235">Програмерот го поништи објавувањето на екстензијава, па можеби не е безбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
+<translation id="8031641407207794385">Приспособете го вашиот Chrome</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>

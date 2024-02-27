@@ -1868,6 +1868,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="46128681529823442">Equipamento de futebol</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
+<translation id="4622647778991854660">Ative as notificações no Centro de notificações. Abra as <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Não é possível definir esta política ao nível do perfil do Chrome e a mesma será ignorada.</translation>
 <translation id="4628678854894591460">Ofertas de férias</translation>
 <translation id="4628948037717959914">Fotografia</translation>
@@ -3199,6 +3200,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7234112195906418665">Viagens e transportes</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% concluído | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Presentes e artigos para eventos especiais</translation>
+<translation id="7237454422623102448">Definições do Sistema</translation>
 <translation id="7237492777898608035">Não voltar a mostrar esta mensagem para este site</translation>
 <translation id="7240120331469437312">Nome alternativo do requerente do certificado</translation>
 <translation id="7241863998525879494">O que esperar</translation>
@@ -4282,5 +4284,6 @@ Detalhes adicionais:
     &lt;li&gt;Experimente estabelecer ligação a outra rede&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">Adicione o IBAN</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
 </translationbundle>

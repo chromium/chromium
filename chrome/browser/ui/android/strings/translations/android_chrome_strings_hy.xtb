@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">Այլևս ցույց չտալ</translation>
 <translation id="1680919990519905526">Գնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">Շուտով «Բաժանորդագրություններ» բաժնում կցուցադրվի բովանդակություն <ph name="SITE_NAME" /> կայքից և դրա մասին։ Կայքերն ու որոնման հարցումները, որոնց հետևում եք, պահվում են ձեր Google հաշվում։ Դուք ցանկացած ժամանակ կարող եք կառավարել ձեր բաժանորդագրությունները կարգավորումներում։</translation>
+<translation id="1689333818294560261">Կեղծանուն</translation>
 <translation id="1696555181932908973">Փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="1702543251015153180">Փոխե՞լ մուգ թեմայի կարգավորումները</translation>
 <translation id="1702907158640575240">Կառավարվող դիտարկիչ</translation>
@@ -517,6 +518,7 @@
 <translation id="381861209280417772">Ջնջել գաղտնաբառերը</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ներբեռնում ջնջվեց</translation>
 <translation id="3819183753496523827">Կապ չկա։ Ստուգեք կապը և նորից փորձեք։</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3830886834687455630">Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերը ստուգելու համար</translation>
 <translation id="3845098929839618392">Բացել ինկոգնիտո ներդիրում</translation>
 <translation id="3847319713229060696">Օգնեք բարելավել համացանցից օգտվողների անվտանգությունը</translation>
@@ -597,6 +599,7 @@
 <translation id="4249955472157341256">Տեսակավորել ըստ ամսաթվի</translation>
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի լիցենզիաներ</translation>
 <translation id="4257230861809842349">Ջնջե՞լ գաղտնաբառերը Google գաղտնաբառերի կառավարչից</translation>
+<translation id="426652736638196239">IBAN-ը կպահվի միայն այս սարքում</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
 <translation id="4277529130885813215">Օգտագործել այլ սարք</translation>
 <translation id="4285846616383034558">Քուքիները, քեշը և կայքերի այլ տվյալներ</translation>
@@ -1077,7 +1080,6 @@
 <translation id="6649642165559792194">Նախադիտել պատկերը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6659594942844771486">Ներդիր</translation>
-<translation id="6662119761881114773">Ներկայումս այս սարքում պահված գաղտնաբառերը հնարավոր չէ օգտագործել Chrome-ի տարբերակներում։ Chrome-ի տարբերակ 121-ի թողարկումից հետո Chrome-ի և <ph name="CHROME_CHANNEL" />-ի համար ձեր սարքում պահված գաղտնաբառերը կմիավորվեն և կարող են օգտագործվել երկու հավելվածներում։</translation>
 <translation id="666731172850799929">Բացել <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6672697278890207089">Մուտքագրեք ձեր անցաբառը</translation>

@@ -4704,7 +4704,6 @@ Bu politika, uzantı kimliklerini veya güncelleme URL'lerini yalnızca kendi ö
 <ph name="MAC_OS_NAME" /> örneklerinde, Chrome Web Mağazası dışından uygulamalar ve uzantılar, örnek yalnızca MDM ile çalışıyorsa, MCX aracılığıyla bir alan adına katılmışsa veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuşsa zorunlu olarak yüklenebilir.</translation>
 <translation id="4739596156184678950">Dosyaların doğrudan <ph name="GOOGLE_DRIVE_NAME" /> hedefine kaydedilmesine izin ver</translation>
 <translation id="4742973303930120836">Arka plan grafikleri yazdırma modunu kısıtla</translation>
-<translation id="4744467872051608680">Bu politika, M119 sürümünden itibaren yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa WebSQL devre dışı bırakılır, ancak "web-sql-access" Chrome flag'i ile etkinleştirilebilir. Politika, Doğru değerine ayarlanırsa WebSQL erişimi etkinleştirilir.</translation>
 <translation id="4745232963710538589">Kullanım metriklerini raporlamak için analizler uzantısını etkinleştir</translation>
 <translation id="4749670563834935149">Giriş ve kilit ekranında URL listesi için <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> politikasını etkinleştirin.
 

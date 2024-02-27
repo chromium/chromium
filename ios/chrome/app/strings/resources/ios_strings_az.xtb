@@ -107,7 +107,6 @@
 <translation id="152234381334907219">Heç vaxt Saxlanılmır</translation>
 <translation id="1523341279170789507">Bütün kukilərə icazə verin</translation>
 <translation id="1524563461097350801">Xeyr, təşəkkürlər</translation>
-<translation id="1535268707340844072">Cari ayar bəzi saytların dayanmasına səbəb ola bilər. Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Kuki Ayarlarına<ph name="END_LINK" /> baxın.</translation>
 <translation id="1540800554400757039">Ünvan 1</translation>
 <translation id="1545749641540134597">QR Kodunu skan edin</translation>
 <translation id="1552525382687785070">Sinxronizasiya Administratorunuz Tərəfindən Deaktiv Eilib</translation>
@@ -136,7 +135,6 @@
 <translation id="1650222530560417226">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə Başlayın" düyməsinə klikləyin. Qeydlər bu səhifə bağlanana və ya "Qeydləri Dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="1657011748321897393">Paylaşım uğursuz oldu, çünki Siz şəbəkəyə qoşulmamısınız.</translation>
-<translation id="1657641691196698092">Bloklanmış Kukilər</translation>
 <translation id="165877110639533037">Açıq Panel Yoxdur</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilindən <ph name="TARGET_LANGUAGE" /> dilinə</translation>
 <translation id="1683483432843341018">Mobil Sayt formatına keçid</translation>
@@ -238,6 +236,7 @@
 <translation id="2252674110805316998">Veb-axtarış</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> üçün Diskdə yadda saxlanır.</translation>
 <translation id="2256933947031277845">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir.</translation>
+<translation id="2257594476751932246">Fərdiləşdirilmiş xəbərlər</translation>
 <translation id="2258326562203545455">{count,plural, =1{Əlfəcini Google Hesabında ({email}) yadda saxlaya bilərsiniz.}other{Əlfəcinləri Google Hesabında ({email}) yadda saxlaya bilərsiniz.}}</translation>
 <translation id="225943865679747347">Xəta kodu: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Hesab Əlavə edin</translation>
@@ -275,7 +274,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2390457533592708044">Gizlədin: "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Bağlamanı çatdırmaq mümkün deyil</translation>
 <translation id="2411749908844615428">{count,plural, =1{{count} yaddaşda saxlanılmış ünvan klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış ünvan klaviaturanızın yuxarısında əlçatandır.}}</translation>
-<translation id="2421004566762153674">Üçüncü tərəf kukilərinin bloklanması</translation>
 <translation id="2421044535038393232">Redaktəyə Davam Edin</translation>
 <translation id="2434405374328098816">Artıq <ph name="WEBSITE" /> saytında "<ph name="USERNAME" />" üçün parolu yadda saxlamısınız</translation>
 <translation id="2434918313224755415">Sola sürüşdürərək Anonim rejimdə baxa bilərsiniz.</translation>
@@ -309,7 +307,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2584132361465095047">Hesab əlavə edin...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Oğurlanmış parol yoxdur}=1{{count} oğurlanmış parol}other{{count} oğurlanmış parol}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Ən çox istifadə etdiyiniz tablara fokuslanmaq üçün ən az bir gün istifadə edilməyən açıq tablar Deaktiv Tablara köçürülür. İstənilən vaxt ayarlarda dəyişə bilərsiniz.}other{Ən çox istifadə etdiyiniz tablara fokuslanmaq üçün ən az {COUNT} gün istifadə edilməyən açıq tablar Deaktiv Tablara köçürülür. İstənilən vaxt ayarlarda dəyişə bilərsiniz.}}</translation>
-<translation id="2600682495497606169">Sayt Kukilərini Silin</translation>
 <translation id="260378315836159338">Ekranın yuxarısında + üzərinə toxunun</translation>
 <translation id="2604176749896001318">Brauzeri güncəlləyin</translation>
 <translation id="2609008503159898744">Bütün Tablar Bağlansın?</translation>
@@ -320,7 +317,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2625189173221582860">Parol kopyalandı</translation>
 <translation id="2626236249646841566">Bağlantını yoxlayın və yenidən daxil olmağa cəhd edin.</translation>
 <translation id="2637313651144986786">Tabları axtarın...</translation>
-<translation id="2647269890314209800">İstifadə edilən kukilər</translation>
 <translation id="2648721026697078500">Heç vaxt köçürməyin</translation>
 <translation id="2648803196158606475">Oxunmuşları Silin</translation>
 <translation id="2664621323652615289">Dayandırın</translation>
@@ -738,7 +734,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="478808905805139173">Anonim rejimində açılsın?</translation>
 <translation id="4803185665210547709">Təşkilatınız tərəfindən idarə olunur.
 <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
-<translation id="4805558373042023669">Maraqlarınıza əsaslanan xəbərlər və kontent.</translation>
 <translation id="4805759445554688327">Yanlış kart nömrəsi</translation>
 <translation id="4808646838864186379">Çatdırılma ləğv edildi</translation>
 <translation id="4808744395915275922">Güncəlləmələr</translation>
@@ -876,7 +871,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5475069061743940393">Bağlamanın izlənilməsi</translation>
 <translation id="5478327362747197944">Veb-səhifədə tarixə klikləməklə Təqvim tədbiri yaradın.</translation>
 <translation id="5482922178977937393">Maraqlarınıza əsasən xəbərlər, idman və s. haqqında bildiriş almaq istərdiniz?</translation>
-<translation id="5489208564673669003">Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Kuki Ayarlarına<ph name="END_LINK" /> baxın.</translation>
 <translation id="5490005495580364134">Bütün kukiləri bloklayın (Tövsiyə edilmir)</translation>
 <translation id="5497202150450073388">Çatdırılma cəhdi edildi. Təkrar cəhd ediləcək</translation>
 <translation id="5511959326926949696">Brauzer üçün üstün qoruma (könüllü). Yalnız yüksəksəviyyəli kiberhücuma qarşı istifadə edilməlidir.</translation>

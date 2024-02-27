@@ -128,6 +128,7 @@
 <translation id="1672586136351118594">不要再顯示</translation>
 <translation id="1680919990519905526">選購 Google 智慧鏡頭拍攝的產品<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">不久後，你會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
+<translation id="1689333818294560261">暱稱</translation>
 <translation id="1696555181932908973">你可以在「<ph name="SITE_ETLD_PLUS_ONE" />」上試著透過其他方法繼續操作。</translation>
 <translation id="1702543251015153180">要變更深色主題設定嗎？</translation>
 <translation id="1702907158640575240">受管理的瀏覽器</translation>
@@ -515,6 +516,7 @@
 <translation id="381861209280417772">刪除密碼</translation>
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>
 <translation id="3819183753496523827">你已經離線，請檢查網際網路連線，然後再試一次。</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3830886834687455630">必須更新 Google Play 服務才能檢查密碼</translation>
 <translation id="3845098929839618392">在無痕分頁中開啟</translation>
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
@@ -595,6 +597,7 @@
 <translation id="4249955472157341256">依最新時間排序</translation>
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="4257230861809842349">要從 Google 密碼管理工具中刪除密碼嗎？</translation>
+<translation id="426652736638196239">這個 IBAN 只會儲存在這部裝置上</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4277529130885813215">改用其他裝置</translation>
 <translation id="4285846616383034558">Cookie、快取和其他網站資料</translation>
@@ -1075,7 +1078,6 @@
 <translation id="6649642165559792194">預覽圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
-<translation id="6662119761881114773">目前無法將儲存在這部裝置上的密碼用於其他 Chrome 版本。在 Chrome 121 以後的版本中，系統會將裝置上儲存的 Chrome 和 <ph name="CHROME_CHANNEL" /> 密碼合併，可同時用於這兩個應用程式。</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6672697278890207089">請輸入你的複雜密碼</translation>
@@ -1159,6 +1161,7 @@
 <translation id="7037830628447527439">使用 Google 帳戶登入 Chrome</translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
+<translation id="7057969023583258980">開啟完整的 Chrome 歷史記錄</translation>
 <translation id="7063006564040364415">無法連線至同步處理伺服器。</translation>
 <translation id="7071521146534760487">管理帳戶</translation>
 <translation id="707155805709242880">請在下方選擇要同步處理的項目</translation>

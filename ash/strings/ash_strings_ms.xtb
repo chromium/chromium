@@ -358,6 +358,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk menukar atur letak papan kekunci.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> pratonton. Meja aktif.</translation>
 <translation id="2487915095798731898">Sertai</translation>
+<translation id="2499445554382787206">Menu profil meja. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Kekunci lekit</translation>
 <translation id="2504454902900101003">Menolak penyediaan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
 <translation id="2509468283778169019">Kekunci CAPS LOCK dihidupkan</translation>
@@ -604,6 +605,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3509391053705095206">Tidak dapat menemukan telefon anda. Pastikan Bluetooth telefon anda dihidupkan.</translation>
 <translation id="3510164367642747937">Serlahkan kursor tetikus</translation>
 <translation id="3513798432020909783">Akaun diurus oleh <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Kemaskinian terakhir tugasan: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Kemas kini peranti dalam masa 1 minit}other{Kemas kini peranti dalam masa # minit}}</translation>
 <translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="3526440770046466733">Buka pautan dalam tab baharu dan kekal pada tab semasa</translation>
@@ -1142,6 +1144,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5536723544185013515">Apl Terbaharu, navigasi dengan anak panah ke kiri atau ke kanan untuk mengakses semua apl terbaharu</translation>
 <translation id="553675580533261935">Keluar daripada sesi</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="554017492391497564">Tidak dapat ditandai sebagai selesai.</translation>
 <translation id="5546397813406633847">Pulihkan pengguna</translation>
 <translation id="554893713779400387">Togol pengimlakan</translation>
 <translation id="5550417424894892620">Lepaskan fail pada desktop untuk menambahkan fail tersebut pada <ph name="HOLDING_SPACE_TITLE" />. Anda tidak boleh menambahkan fail pada desktop.</translation>
@@ -1336,6 +1339,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Bateri lemah. Penjimat Bateri dihidupkan.</translation>
 <translation id="6247728804802644171">Buka pemberitahuan</translation>
+<translation id="6249795363855770621">Tidak dapat ditandai sebagai selesai. Cuba lagi apabila anda kembali dalam talian.</translation>
 <translation id="6254629735336163724">Dikunci mendatar</translation>
 <translation id="6259254695169772643">Gunakan stilus anda untuk memilih</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
@@ -1496,6 +1500,7 @@ Pemasangan baharu</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6912841030378044227">Fokus pada bar alamat</translation>
 <translation id="6912901278692845878">Lawatan pantas</translation>
+<translation id="6917259695595127329">Kemaskinian terakhir tugasan: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
 <translation id="692135145298539227">padam</translation>
 <translation id="6929081673585394903">Tunjukkan kawalan</translation>

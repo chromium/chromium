@@ -1319,6 +1319,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3542628208405253498">Isithombe sekhadi</translation>
 <translation id="3542768452570884558">Vula Ilinki Ngewindi Elisha</translation>
 <translation id="3547746132308051926">U-20 x 24 phakathi</translation>
+<translation id="3552155506104542239">Isexwayiso: le nqubomgomo ishayisana nethi <ph name="POLICY_NAME" /> futhi angeke ithinte ama-app e-Android. Ngale kwalokho, le nqubomgomo isebenza njengokuhlosiwe.</translation>
 <translation id="3552297013052089404">I-Fonti ye-Sans-serif</translation>
 <translation id="3558573058928565255">Isikhathi sasemini</translation>
 <translation id="355995771319966853">Hlehlisa Ukugcwalisa Okuzenzakalelayo</translation>
@@ -1865,6 +1866,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="46128681529823442">Isisetshenziswa Sebhola Likanobhutshuzwayo</translation>
 <translation id="4619564267100705184">Qinisekisa ukuthi nguwe</translation>
 <translation id="4622292761762557753">Dlulisa noma kunjalo</translation>
+<translation id="4622647778991854660">Vula izaziso Esikhungweni Sezaziso. Vula i-<ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Le nqubomgomo ayikwazi ukusethwa kuleveli yephrofayela ye-Chrome futhi izozitshwa.</translation>
 <translation id="4628678854894591460">Imititilizo Yokuvakasha</translation>
 <translation id="4628948037717959914">Isithombe</translation>
@@ -3196,6 +3198,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7234112195906418665">Ezokuvakasha Nezokuthutha</translation>
 <translation id="7236417832106250253">U-<ph name="PROGRESS_PERCENT" />% uqediwe | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Izipho Nezinto Zemicimbi Ekhethekile</translation>
+<translation id="7237454422623102448">Izilungiselelo Zendlela Yokusebenza</translation>
 <translation id="7237492777898608035">Ungasawubonisi lo mlayezo futhi kuleli khasi</translation>
 <translation id="7240120331469437312">Elinye igama lesihloko sesitifiketi</translation>
 <translation id="7241863998525879494">Yini ongayilindela</translation>
@@ -4279,5 +4282,6 @@ Imininingwane engeziwe:
     &lt;li&gt;Zama ukuxhuma kwenye inethiwekhi&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">I-JIS B1</translation>
+<translation id="995755448277384931">Engeza i-IBAN</translation>
 <translation id="997986563973421916">Kusukela ku-Google Play</translation>
 </translationbundle>

@@ -1321,6 +1321,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3542628208405253498">Obraz na karcie</translation>
 <translation id="3542768452570884558">Otwórz link w nowym oknie</translation>
 <translation id="3547746132308051926">20 x 24 cale</translation>
+<translation id="3552155506104542239">Ostrzeżenie: ta zasada jest w konflikcie z zasadą <ph name="POLICY_NAME" /> i nie będzie miała wpływu na aplikacje na Androida. Gdy konflikt nie występuje, zasada działa zgodnie z oczekiwaniami.</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
 <translation id="355995771319966853">Cofnij autouzupełnianie</translation>
@@ -1868,6 +1869,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="46128681529823442">Sprzęt piłkarski</translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4622292761762557753">Przenieś mimo to</translation>
+<translation id="4622647778991854660">Włącz powiadomienia w Centrum powiadomień. Otwórz <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Tej zasady nie można ustawić na poziomie profilu Chrome, dlatego zostanie ona zignorowana.</translation>
 <translation id="4628678854894591460">Oferty wakacyjne</translation>
 <translation id="4628948037717959914">Zdjęcie</translation>
@@ -3199,6 +3201,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7234112195906418665">Podróże i transport</translation>
 <translation id="7236417832106250253">Ukończono <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Pamiątki i przedmioty na specjalne okazje</translation>
+<translation id="7237454422623102448">Ustawienia systemu</translation>
 <translation id="7237492777898608035">Nie pokazuj więcej tej wiadomości w przypadku tej strony</translation>
 <translation id="7240120331469437312">Alternatywna nazwa podmiotu certyfikatu</translation>
 <translation id="7241863998525879494">Czego możesz oczekiwać</translation>
@@ -4281,5 +4284,6 @@ Dodatkowe informacje:
     &lt;li&gt;Połącz się z inną siecią.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">Dodaj numer IBAN</translation>
 <translation id="997986563973421916">Z Google Pay</translation>
 </translationbundle>

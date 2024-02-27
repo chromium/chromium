@@ -107,7 +107,6 @@
 <translation id="152234381334907219">Neuloženo</translation>
 <translation id="1523341279170789507">Povolit všechny soubory cookie</translation>
 <translation id="1524563461097350801">Ne, díky</translation>
-<translation id="1535268707340844072">Vaše aktuální nastavení může způsobit, že některé weby nebudou fungovat správně. Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení souborů cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">První řádek adresy</translation>
 <translation id="1545749641540134597">Naskenovat QR kód</translation>
 <translation id="1552525382687785070">Synchronizaci administrátor zakázal</translation>
@@ -136,7 +135,6 @@
 <translation id="1650222530560417226">Klepnutím na tlačítko Spustit protokolování začnete shromažďovat budoucí protokoly konzole JavaScriptu a chyby ze všech karet. Protokoly se budou shromažďovat (a ukládat jen do paměti), dokud tuto stránku nezavřete nebo neklepnete na Zastavit protokolování.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložené heslo.}few{Nad klávesnicí jsou k dispozici {count} uložená hesla.}many{Nad klávesnicí je k dispozici {count} uloženého hesla.}other{Nad klávesnicí je k dispozici {count} uložených hesel.}}</translation>
 <translation id="1657011748321897393">Sdílení se nezdařilo, protože nejste připojeni k síti.</translation>
-<translation id="1657641691196698092">Blokované soubory cookie</translation>
 <translation id="165877110639533037">Žádné otevřené karty</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> do: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Vyžádat web pro mobily</translation>
@@ -276,7 +274,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2390457533592708044">Skrýt modul <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Zásilku nelze doručit</translation>
 <translation id="2411749908844615428">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložená adresa.}few{Nad klávesnicí jsou k dispozici {count} uložené adresy.}many{Nad klávesnicí je k dispozici {count} uložené adresy.}other{Nad klávesnicí je k dispozici {count} uložených adres.}}</translation>
-<translation id="2421004566762153674">Blokování souborů cookie třetích stran</translation>
 <translation id="2421044535038393232">Pokračovat v úpravách</translation>
 <translation id="2434405374328098816">Heslo pro uživatelské jméno „<ph name="USERNAME" />“ už jste na webu <ph name="WEBSITE" /> uložili</translation>
 <translation id="2434918313224755415">Posunutím doleva si web můžete prohlížet v anonymním režimu.</translation>
@@ -310,7 +307,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2584132361465095047">Přidat účet...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Žádná prolomená hesla}=1{{count} prolomené heslo}few{{count} prolomená hesla}many{{count} prolomeného hesla}other{{count} prolomených hesel}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Otevřené karty, které jste den nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}few{Otevřené karty, které jste {COUNT} dny nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}many{Otevřené karty, které jste {COUNT} dne nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}other{Otevřené karty, které jste {COUNT} dní nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}}</translation>
-<translation id="2600682495497606169">Vymazat soubory cookie webu</translation>
 <translation id="260378315836159338">V horní části obrazovky klepněte na +</translation>
 <translation id="2604176749896001318">Aktualizujte prohlížeč</translation>
 <translation id="2609008503159898744">Zavřít všechny karty?</translation>
@@ -321,7 +317,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
 <translation id="2626236249646841566">Zkontrolujte připojení a zkuste se přihlásit znovu.</translation>
 <translation id="2637313651144986786">Hledat karty…</translation>
-<translation id="2647269890314209800">Používané soubory cookie</translation>
 <translation id="2648721026697078500">Nikdy nepřesouvat</translation>
 <translation id="2648803196158606475">Smazat přečtené</translation>
 <translation id="2664621323652615289">Ukončit</translation>
@@ -739,7 +734,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="478808905805139173">Otevřít v anonymním okně?</translation>
 <translation id="4803185665210547709">Spravováno vaší organizací.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="4805558373042023669">Zprávy a obsah podle vašich zájmů.</translation>
 <translation id="4805759445554688327">Neplatné číslo karty</translation>
 <translation id="4808646838864186379">Zásilka byla zrušena</translation>
 <translation id="4808744395915275922">Aktualizace</translation>
@@ -877,7 +871,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5475069061743940393">Sledování zásilek</translation>
 <translation id="5478327362747197944">Vytvářejte události v kalendáři přímo kliknutím na datum na webové stránce.</translation>
 <translation id="5482922178977937393">Chcete dostávat upozornění na zprávy, sport a podobně na základě svých zájmů?</translation>
-<translation id="5489208564673669003">Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení souborů cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="5497202150450073388">Proběhl pokus o doručení. Bude zopakován</translation>
 <translation id="5511959326926949696">Extrémní volitelná ochrana pro váš prohlížeč. Měli byste ji používat, pouze pokud se domníváte, že byste se mohli stát terčem vysoce sofistikovaného kybernetického útoku.</translation>

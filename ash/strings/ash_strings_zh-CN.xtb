@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
 <translation id="2486214324139475545">“<ph name="DESK_NAME" />”预览。活动桌面。</translation>
 <translation id="2487915095798731898">加入</translation>
+<translation id="2499445554382787206">桌面个人资料菜单。<ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">粘滞键</translation>
 <translation id="2504454902900101003">取消设置查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="2509468283778169019">CAPS LOCK 已打开</translation>
@@ -604,6 +605,7 @@
 <translation id="3509391053705095206">找不到您的手机。请确保手机已开启蓝牙功能。</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
 <translation id="3513798432020909783">该账号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
+<translation id="3517037892157925473">任务上次更新时间：<ph name="DATE" /><ph name="TIME" />。</translation>
 <translation id="352245152354538528">{0,plural, =1{请在 1 分钟内更新此设备}other{请在 # 分钟内更新此设备}}</translation>
 <translation id="3522979239100719575">正在查找可用的配置文件。这可能需要几分钟的时间。</translation>
 <translation id="3526440770046466733">在新标签页中打开链接，同时留在当前标签页中</translation>
@@ -1140,6 +1142,7 @@
 <translation id="5536723544185013515">“最近用过的应用”：若要访问最近用过的所有应用，请使用向左键或向右键导航</translation>
 <translation id="553675580533261935">退出会话</translation>
 <translation id="5537725057119320332">投放</translation>
+<translation id="554017492391497564">无法标记为完成。</translation>
 <translation id="5546397813406633847">让用户恢复登录</translation>
 <translation id="554893713779400387">开启/关闭语音输入</translation>
 <translation id="5550417424894892620">将文件拖放到桌面上即可将其添加到<ph name="HOLDING_SPACE_TITLE" />。您无法将文件添加到桌面。</translation>
@@ -1334,6 +1337,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">电池电量低。省电模式已开启。</translation>
 <translation id="6247728804802644171">打开通知</translation>
+<translation id="6249795363855770621">无法标记为完成。请在联网后重试。</translation>
 <translation id="6254629735336163724">已锁定为横向</translation>
 <translation id="6259254695169772643">请使用您的触控笔进行选择</translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在激活…</translation>
@@ -1494,6 +1498,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6912841030378044227">聚焦于地址栏</translation>
 <translation id="6912901278692845878">快速导览</translation>
+<translation id="6917259695595127329">任务上次更新时间：<ph name="TIME" />。</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="692135145298539227">删除</translation>
 <translation id="6929081673585394903">显示控件</translation>

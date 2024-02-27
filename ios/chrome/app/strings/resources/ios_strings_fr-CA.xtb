@@ -107,7 +107,6 @@
 <translation id="152234381334907219">Jamais enregistrés</translation>
 <translation id="1523341279170789507">Autoriser tous les témoins</translation>
 <translation id="1524563461097350801">Non, merci</translation>
-<translation id="1535268707340844072">Vos paramètres actuels pourraient nuire au fonctionnement de certains sites. Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Ligne adresse 1</translation>
 <translation id="1545749641540134597">Numérisez le code QR</translation>
 <translation id="1552525382687785070">La synchronisation est désactivée par votre administrateur</translation>
@@ -136,7 +135,6 @@
 <translation id="1650222530560417226">Touchez le bouton « Démarrer la journalisation » pour collecter les éventuels journaux et erreurs de la console JavaScript sur tous les onglets. Les journaux seront collectés (et stockés dans la mémoire uniquement) jusqu'à ce que cette page soit fermée ou que le bouton « Arrêter la journalisation » soit touché.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} mot de passe enregistré proposé en haut du clavier.}one{{count} mot de passe enregistré proposé en haut du clavier.}other{{count} mots de passe enregistrés proposés en haut du clavier.}}</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté(e) au réseau.</translation>
-<translation id="1657641691196698092">Témoins bloqués</translation>
 <translation id="165877110639533037">Aucun onglet ouvert</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> en <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Voir la version pour appareil mobile</translation>
@@ -275,7 +273,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2390457533592708044">Masquez « <ph name="MODULE_NAME" /> »</translation>
 <translation id="2403129868389095715">Votre colis ne peut pas être livré</translation>
 <translation id="2411749908844615428">{count,plural, =1{{count} adresse enregistrée proposée en haut du clavier.}one{{count} adresse enregistrée proposée en haut du clavier.}other{{count} adresses enregistrées proposées en haut du clavier.}}</translation>
-<translation id="2421004566762153674">Blocage des témoins tiers</translation>
 <translation id="2421044535038393232">Continuer à modifier</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour l'utilisateur « <ph name="USERNAME" /> » sur le site <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Vous pouvez faire défiler l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
@@ -309,7 +306,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2584132361465095047">Ajouter un compte…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Aucun mot de passe compromis}=1{{count} mot de passe compromis}one{{count} mot de passe compromis}other{{count} mots de passe compromis}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Les onglets ouverts non utilisés pendant un jour ou plus sont déplacés vers les onglets inactifs afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez changer cette option en tout temps dans les paramètres.}one{Les onglets ouverts non utilisés pendant {COUNT} jour ou plus sont déplacés vers les onglets inactifs afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez changer cette option en tout temps dans les paramètres.}other{Les onglets ouverts non utilisés pendant {COUNT} jours ou plus sont déplacés vers les onglets inactifs afin que vous puissiez facilement vous concentrer sur ceux que vous utilisez le plus. Vous pouvez changer cette option en tout temps dans les paramètres.}}</translation>
-<translation id="2600682495497606169">Effacer les témoins du site</translation>
 <translation id="260378315836159338">En haut de l'écran, touchez +</translation>
 <translation id="2604176749896001318">Mettre à jour votre navigateur</translation>
 <translation id="2609008503159898744">Fermer tous les onglets?</translation>
@@ -320,7 +316,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2625189173221582860">Mot de passe copié</translation>
 <translation id="2626236249646841566">Vérifiez votre connexion et réessayez de vous connecter.</translation>
 <translation id="2637313651144986786">Rechercher des onglets…</translation>
-<translation id="2647269890314209800">Témoins en cours d'utilisation</translation>
 <translation id="2648721026697078500">Ne jamais déplacer</translation>
 <translation id="2648803196158606475">Supprimer les éléments lus</translation>
 <translation id="2664621323652615289">Arrêter</translation>
@@ -738,7 +733,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="478808905805139173">Ouvrir en mode de navigation privée?</translation>
 <translation id="4803185665210547709">Géré par votre organisation.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="4805558373042023669">Actualités et contenu en fonction de vos centres d'intérêt.</translation>
 <translation id="4805759445554688327">Numéro de carte incorrect</translation>
 <translation id="4808646838864186379">Votre livraison a été annulée</translation>
 <translation id="4808744395915275922">Mises à jour</translation>
@@ -876,7 +870,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5475069061743940393">Suivi de livraison</translation>
 <translation id="5478327362747197944">Créez des événements d'agenda directement en cliquant sur une date dans une page Web.</translation>
 <translation id="5482922178977937393">Souhaitez-vous recevoir des notifications sur les actualités, les sports et bien plus encore en fonction de vos centres d'intérêt?</translation>
-<translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
 <translation id="5497202150450073388">Tentative de livraison effectuée. Nouvel essai à venir</translation>
 <translation id="5511959326926949696">Protection extrême facultative pour votre navigateur. Elle ne doit être utilisée que si vous soupçonnez être la cible d'une cyberattaque très sophistiquée.</translation>

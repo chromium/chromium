@@ -107,7 +107,6 @@
 <translation id="152234381334907219">一律不儲存</translation>
 <translation id="1523341279170789507">允許所有 Cookie</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
-<translation id="1535268707340844072">你目前的設定可能會導致某些網站無法正常運作。如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="1540800554400757039">地址 1</translation>
 <translation id="1545749641540134597">掃描 QR code</translation>
 <translation id="1552525382687785070">你的管理員停用了同步功能</translation>
@@ -136,7 +135,6 @@
 <translation id="1650222530560417226">輕觸 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕觸 [停止記錄] 為止。</translation>
 <translation id="1653432787084483144">{count,plural, =1{鍵盤上方顯示 {count} 組已儲存的密碼。}other{鍵盤上方顯示 {count} 組已儲存的密碼。}}</translation>
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
-<translation id="1657641691196698092">已封鎖的 Cookie</translation>
 <translation id="165877110639533037">沒有開啟的分頁</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯為<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">切換為行動版網站</translation>
@@ -275,7 +273,6 @@
 <translation id="2390457533592708044">隱藏「<ph name="MODULE_NAME" />」</translation>
 <translation id="2403129868389095715">無法配送包裹</translation>
 <translation id="2411749908844615428">{count,plural, =1{鍵盤上方顯示 {count} 個已儲存的地址。}other{鍵盤上方顯示 {count} 個已儲存的地址。}}</translation>
-<translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
 <translation id="2434405374328098816">你已儲存過「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2434918313224755415">向左捲動即可使用無痕模式瀏覽。</translation>
@@ -309,7 +306,6 @@
 <translation id="2584132361465095047">新增帳戶…</translation>
 <translation id="2587010742985678408">{count,plural, =0{沒有任何密碼外洩}=1{{count} 組密碼外洩}other{{count} 組密碼外洩}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{如果開啟的分頁已 1 天以上未使用，這些分頁就會轉成閒置狀態，方便你將注意力放在常用的分頁上。你隨時可以前往設定進行變更。}other{如果開啟的分頁已 {COUNT} 天以上未使用，這些分頁就會轉成閒置狀態，方便你將注意力放在常用的分頁上。你隨時可以前往設定進行變更。}}</translation>
-<translation id="2600682495497606169">清除網站 Cookie</translation>
 <translation id="260378315836159338">輕觸畫面頂端的「+」圖示</translation>
 <translation id="2604176749896001318">更新瀏覽器</translation>
 <translation id="2609008503159898744">要關閉所有分頁嗎？</translation>
@@ -320,7 +316,6 @@
 <translation id="2625189173221582860">已複製密碼</translation>
 <translation id="2626236249646841566">請檢查你的連線狀態，然後再次嘗試登入。</translation>
 <translation id="2637313651144986786">搜尋分頁...</translation>
-<translation id="2647269890314209800">使用中的 Cookie</translation>
 <translation id="2648721026697078500">永不移動</translation>
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
 <translation id="2664621323652615289">停止</translation>
@@ -738,7 +733,6 @@
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
 <translation id="4803185665210547709">由貴機構管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="4805558373042023669">依興趣接收新聞、體育賽事和內容通知。</translation>
 <translation id="4805759445554688327">卡號無效</translation>
 <translation id="4808646838864186379">已取消配送</translation>
 <translation id="4808744395915275922">更新</translation>
@@ -876,7 +870,6 @@
 <translation id="5475069061743940393">包裹追蹤</translation>
 <translation id="5478327362747197944">按一下網頁上的日期，即可直接建立日曆活動。</translation>
 <translation id="5482922178977937393">想收到與你個人興趣有關的新聞、體育賽事等通知嗎？</translation>
-<translation id="5489208564673669003">如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">封鎖所有 Cookie (不建議)</translation>
 <translation id="5497202150450073388">已嘗試配送，之後會再次嘗試</translation>
 <translation id="5511959326926949696">選用的瀏覽器極端保護措施。除非你認為自己有可能成為網路攻擊的目標，否則不建議採用這項措施。</translation>

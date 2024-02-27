@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">აღარ გამოჩნდეს</translation>
 <translation id="1680919990519905526">ყიდვა Google Lens-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">მალე, სექციაში „თვალმიდევნებული“ იხილავთ <ph name="SITE_NAME" />-ის და მასთან დაკავშირებულ კონტენტს. საიტები და ძიებები, რომელთაც თვალს ადევნებთ, შენახულია თქვენს Google ანგარიშში. თვალის დევნების მართვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
+<translation id="1689333818294560261">მეტსახელი</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="1702543251015153180">გსურთ, შეცვალოთ მუქი თემის პარამეტრები?</translation>
 <translation id="1702907158640575240">მართული ბრაუზერი</translation>
@@ -517,6 +518,7 @@
 <translation id="381861209280417772">პაროლების წაშლა</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ჩამოტვირთული ფაილი წაიშალა</translation>
 <translation id="3819183753496523827">თქვენ ხაზგარეშე რეჟიმში ხართ. შეამოწმეთ ინტერნეტ-კავშირი და ხელახლა ცადეთ.</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3830886834687455630">პაროლების შესამოწმებლად განაახლეთ Google Play services</translation>
 <translation id="3845098929839618392">ინკოგნიტო ჩანართში გახსნა</translation>
 <translation id="3847319713229060696">ხელი შეუწყვეთ ვების უსაფრთხოების ყველასთვის გაუმჯობესებას</translation>
@@ -597,6 +599,7 @@
 <translation id="4249955472157341256">დალაგება უახლესის მიხედვით</translation>
 <translation id="4256782883801055595">ღია წყაროს ლიცენზიები</translation>
 <translation id="4257230861809842349">გსურთ, წაშალოთ პაროლები Google პაროლების მმართველიდან?</translation>
+<translation id="426652736638196239">ეს IBAN შეინახება მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
 <translation id="4277529130885813215">სხვა მოწყობილობის გამოყენება</translation>
 <translation id="4285846616383034558">ქუქი-ჩანაწერები, ქეში და საიტების სხვა მონაცემები</translation>
@@ -1080,7 +1083,6 @@
 <translation id="6649642165559792194">სურათის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6659594942844771486">ჩანართი</translation>
-<translation id="6662119761881114773">ამ მოწყობილობაზე შენახული პაროლების გამოყენება ამჟამად ვერ ხერხდება Chrome-ის სხვადასხვა არხზე. Chrome-ის ვერსია 121-ის შემდეგ, თქვენს მოწყობილობაზე Chrome-ისა და <ph name="CHROME_CHANNEL" />-ისთვის შენახული პაროლები გაერთიანდება და მათი გამოყენება შესაძლებელი იქნება ორივე აპში.</translation>
 <translation id="666731172850799929">გახსნა <ph name="APP_NAME" />-ში</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
 <translation id="6672697278890207089">შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>

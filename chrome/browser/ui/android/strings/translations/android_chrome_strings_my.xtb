@@ -130,6 +130,7 @@
 <translation id="1672586136351118594">နောက်ထပ်မပြပါနှင့်</translation>
 <translation id="1680919990519905526">Google Lens ဖြင့်ဝယ်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">မကြာမီ သင်သည် <ph name="SITE_NAME" /> အကြောင်းနှင့် ၎င်း၏အကြောင်းအရာများကို ‘လိုက်ကြည့်နေသည်များ’ တွင်တွေ့ရပါမည်။ သင်လိုက်ကြည့်သော ဝဘ်ဆိုက်နှင့်ရှာဖွေမှုများကို သင့် Google Account တွင်သိမ်းသည်။ သင်၏လိုက်ကြည့်မှုများကို ဆက်တင်များတွင် အချိန်မရွေး စီမံနိုင်သည်။</translation>
+<translation id="1689333818294560261">နာမည်ပြောင်</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> တွင် ရှေ့ဆက်ရန် အခြားနည်းလမ်းများ စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="1702543251015153180">အမှောင်နောက်ခံ ဆက်တင်များကို ပြောင်းမလား။</translation>
 <translation id="1702907158640575240">စီမံထားသော ဘရောင်ဇာ</translation>
@@ -517,6 +518,7 @@
 <translation id="381861209280417772">စကားဝှက်များ ဖျက်ရန်</translation>
 <translation id="3819178904835489326">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ခုကို ဖျက်လိုက်သည်</translation>
 <translation id="3819183753496523827">သင် အော့ဖ်လိုင်းဖြစ်နေသည်။ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="3823019343150397277">အိုင်ဘီအေအန် (IBAN)</translation>
 <translation id="3830886834687455630">စကားဝှက်များစစ်ရန် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="3845098929839618392">ရုပ်ဖျက်တဘ်တွင် ဖွင့်ရန်</translation>
 <translation id="3847319713229060696">လူတိုင်းအတွက် ဝဘ်ပေါ်တွင် လုံခြုံရေးပိုမိုကောင်းမွန်လာအောင် ကူညီပါ</translation>
@@ -597,6 +599,7 @@
 <translation id="4249955472157341256">နောက်ဆုံးရရှိမှုအလိုက် စီရန်</translation>
 <translation id="4256782883801055595">လွပ်လွပ်လပ်လပ်ဖွင့်ပေးထားသော ရင်းမြစ် လိုင်စင်များ</translation>
 <translation id="4257230861809842349">Google Password Manager မှ စကားဝှက်များကို ဖျက်မလား။</translation>
+<translation id="426652736638196239">ဤ IBAN ကို ယခုစက်တွင်သာ သိမ်းပါမည်</translation>
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
 <translation id="4277529130885813215">စက်နောက်တစ်ခု သုံးရန်</translation>
 <translation id="4285846616383034558">ကွတ်ကီး၊ ကက်ရှ်နှင့် အခြား ဝဘ်ဆိုက်ဒေတာများ</translation>
@@ -1076,7 +1079,6 @@
 <translation id="6649642165559792194">ပုံအစမ်းကြည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6659594942844771486">တဘ်</translation>
-<translation id="6662119761881114773">ဤစက်တွင် သိမ်းထားသော စကားဝှက်များကို Chrome ချန်နယ်များတွင် ယခု မသုံးနိုင်ပါ။ Chrome 121 နောက်ပိုင်းတွင် Chrome နှင့် <ph name="CHROME_CHANNEL" /> အတွက် သင့်စက်တွင် သိမ်းထားသော စကားဝှက်များကို ပေါင်းစည်းမည်ဖြစ်ပြီး အက်ပ်နှစ်ခုလုံးတွင် သုံးနိုင်မည်။</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="6671495933530132209">ပုံကို ကူးယူရန်</translation>
 <translation id="6672697278890207089">သင့်စကားဝှက်စာ ထည့်ပါ</translation>

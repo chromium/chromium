@@ -107,7 +107,6 @@
 <translation id="152234381334907219">Contrasinais que non se gardan nunca</translation>
 <translation id="1523341279170789507">Permitir todas as cookies</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
-<translation id="1535268707340844072">A túa configuración actual pode provocar que algúns sitios non funcionen. Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
 <translation id="1552525382687785070">O teu administrador desactivou a sincronización</translation>
@@ -136,7 +135,6 @@
 <translation id="1650222530560417226">Toca o botón Iniciar o rexistro; obterás rexistros e erros futuros da consola de JavaScript procedentes de todas as pestanas. Os rexistros compilaranse (e almacenaranse só na memoria) ata que se peche a páxina ou se toque o botón Deter rexistro.</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hai {count} contrasinal gardado dispoñible sobre o teclado.}other{Hai {count} contrasinais gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="1657011748321897393">Non se puido compartir porque non tes conexión á rede.</translation>
-<translation id="1657641691196698092">Cookies bloqueadas</translation>
 <translation id="165877110639533037">Non hai pestanas abertas</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Solicitar sitio para móbiles</translation>
@@ -275,7 +273,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2390457533592708044">Oculta <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Non se pode entregar o paquete</translation>
 <translation id="2411749908844615428">{count,plural, =1{Hai {count} enderezo gardado dispoñible sobre o teclado.}other{Hai {count} enderezos gardados dispoñibles sobre o teclado.}}</translation>
-<translation id="2421004566762153674">Bloqueando cookies de terceiros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
 <translation id="2434405374328098816">Xa gardaches un contrasinal de <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Podes desprazarte cara á esquerda para navegar no modo de incógnito.</translation>
@@ -309,7 +306,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2584132361465095047">Engadir conta...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Ningún contrasinal vulnerado}=1{{count} contrasinal vulnerado}other{{count} contrasinais vulnerados}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{As pestanas abertas que leven un día ou máis sen uso móvense a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento en Configuración.}other{As pestanas abertas que leven {COUNT} días ou máis sen uso móvense a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento en Configuración.}}</translation>
-<translation id="2600682495497606169">Borrar cookies dos sitios</translation>
 <translation id="260378315836159338">Na parte superior da pantalla, toca +</translation>
 <translation id="2604176749896001318">Actualiza o navegador</translation>
 <translation id="2609008503159898744">Queres pechar todas as pestanas?</translation>
@@ -320,7 +316,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
 <translation id="2626236249646841566">Comproba a túa conexión e tenta iniciar sesión de novo.</translation>
 <translation id="2637313651144986786">Busca nas pestanas…</translation>
-<translation id="2647269890314209800">Cookies en uso</translation>
 <translation id="2648721026697078500">Non mover nunca</translation>
 <translation id="2648803196158606475">Eliminar os elementos lidos</translation>
 <translation id="2664621323652615289">Deter</translation>
@@ -738,7 +733,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="478808905805139173">Queres abrir a ligazón no modo de incógnito?</translation>
 <translation id="4803185665210547709">Xestionado pola túa organización.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="4805558373042023669">Noticias e contido baseados nos teus intereses.</translation>
 <translation id="4805759445554688327">O número de tarxeta non é válido</translation>
 <translation id="4808646838864186379">Cancelouse a entrega</translation>
 <translation id="4808744395915275922">Actualizacións</translation>
@@ -876,7 +870,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5475069061743940393">Seguimento de paquetes</translation>
 <translation id="5478327362747197944">Fai clic nunha data dunha páxina web para crear directamente eventos no calendario.</translation>
 <translation id="5482922178977937393">Queres recibir notificacións de noticias, deportes e máis temas en función dos teus intereses?</translation>
-<translation id="5489208564673669003">Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="5497202150450073388">Tentouse realizar a entrega. Tentarase de novo</translation>
 <translation id="5511959326926949696">Protección opcional extrema para o navegador. Só se debe usar se consideras que podes ser obxecto dun ciberataque moi sofisticado.</translation>

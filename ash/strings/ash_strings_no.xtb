@@ -358,6 +358,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2484513351006226581">Trykk på <ph name="KEYBOARD_SHORTCUT" /> for å bytte tastaturoppsett.</translation>
 <translation id="2486214324139475545">Forhåndsvisning av <ph name="DESK_NAME" />. Aktivt skrivebord.</translation>
 <translation id="2487915095798731898">Bli med</translation>
+<translation id="2499445554382787206">Meny for skrivebordsprofil. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Trege taster</translation>
 <translation id="2504454902900101003">Lukk konfigurering av visning av nylige bilder, medier og varsler fra telefonen din</translation>
 <translation id="2509468283778169019">Caps Lock er på</translation>
@@ -604,6 +605,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3509391053705095206">Finner ikke telefonen. Kontroller at Bluetooth på telefonen er slått på.</translation>
 <translation id="3510164367642747937">Fremhev musemarkøren</translation>
 <translation id="3513798432020909783">Kontoen er administrert av <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Gjøremålene ble sist oppdatert <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Oppdater enheten innen 1 minutt}other{Oppdater enheten innen # minutter}}</translation>
 <translation id="3522979239100719575">Ser etter tilgjengelige profiler. Dette kan ta noen minutter.</translation>
 <translation id="3526440770046466733">Åpne link i en ny fane, og bli værende på den gjeldende fanen</translation>
@@ -1142,6 +1144,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5536723544185013515">Nylige apper – naviger med venstrepilen eller høyrepilen for å få tilgang til alle nylige apper</translation>
 <translation id="553675580533261935">Avslutning av økten</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="554017492391497564">Kunne ikke merke som fullført.</translation>
 <translation id="5546397813406633847">Gjenopprett bruker</translation>
 <translation id="554893713779400387">Slå av/på diktering</translation>
 <translation id="5550417424894892620">Slipp filene på skrivebordet for å legge dem til på <ph name="HOLDING_SPACE_TITLE" />. Du kan ikke legge til filer på skrivebordet.</translation>
@@ -1336,6 +1339,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Lavt batterinivå. Batterisparing er slått på.</translation>
 <translation id="6247728804802644171">Åpne varsler</translation>
+<translation id="6249795363855770621">Kunne ikke merke som fullført. Prøv på nytt når du er på nett.</translation>
 <translation id="6254629735336163724">Låst til horisontal</translation>
 <translation id="6259254695169772643">Bruk pekepennen til å velge</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveres …</translation>
@@ -1496,6 +1500,7 @@ Nylig installert</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6912841030378044227">Fokuser på adressefeltet</translation>
 <translation id="6912901278692845878">Hurtiginnføring</translation>
+<translation id="6917259695595127329">Gjøremålene ble sist oppdatert <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="692135145298539227">slett</translation>
 <translation id="6929081673585394903">Vis kontroller</translation>

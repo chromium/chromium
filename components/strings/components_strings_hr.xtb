@@ -1867,6 +1867,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="46128681529823442">Oprema za nogomet</translation>
 <translation id="4619564267100705184">Potvrđivanje identiteta</translation>
 <translation id="4622292761762557753">Svejedno prenesi</translation>
+<translation id="4622647778991854660">Omogućite obavijesti u centru za obavijesti. Otvorite <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">To se pravilo ne može postaviti na razini profila u Chromeu i zanemarit će se.</translation>
 <translation id="4628678854894591460">Ponuda odmora</translation>
 <translation id="4628948037717959914">Fotografija</translation>
@@ -3198,6 +3199,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7234112195906418665">Putovanja i prijevoz</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% dovršeno | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Darovi i artikli za posebne događaje</translation>
+<translation id="7237454422623102448">Postavke sustava</translation>
 <translation id="7237492777898608035">Više ne prikazuj tu poruku za ovu web-lokaciju</translation>
 <translation id="7240120331469437312">Zamjenski naziv predmeta certifikata</translation>
 <translation id="7241863998525879494">Što možete očekivati</translation>
@@ -4282,5 +4284,6 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
     &lt;li&gt;Pokušajte se povezati s drugom mrežom&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">Dodavanje IBAN-a</translation>
 <translation id="997986563973421916">S Google Paya</translation>
 </translationbundle>

@@ -4622,7 +4622,6 @@ Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issue
 Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4739596156184678950">Autoriser l'enregistrement de fichiers directement dans <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limiter le mode d'impression d'images de fond</translation>
-<translation id="4744467872051608680">À partir de M119, si cette règle est définie sur "False" ou n'est pas configurée, WebSQL est désactivé, mais peut être activé via le flag Chrome "web-sql-access". Si cette règle est définie sur "True", l'accès WebSQL est activé.</translation>
 <translation id="4745232963710538589">Activer l'extension des insights pour transmettre des statistiques d'utilisation</translation>
 <translation id="4749670563834935149">Activer <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL sur l'écran de connexion et de verrouillage.
 

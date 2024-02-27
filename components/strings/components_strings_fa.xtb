@@ -1868,6 +1868,7 @@
 <translation id="46128681529823442">تجهیزات فوتبال</translation>
 <translation id="4619564267100705184">تأیید کنید این شمایید</translation>
 <translation id="4622292761762557753">درهرصورت منتقل شود</translation>
+<translation id="4622647778991854660">اعلان‌ها را در «مرکز اعلان» فعال کنید. باز کردن <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">‏این خط‌مشی را نمی‌توان در سطح نمایه Chrome تنظیم کرد و نادیده گرفته خواهد شد.</translation>
 <translation id="4628678854894591460">پیشنهادهای تعطیلات</translation>
 <translation id="4628948037717959914">عکس</translation>
@@ -3199,6 +3200,7 @@
 <translation id="7234112195906418665">سفر و حمل‌ونقل</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />٪ تکمیل شد | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">هدیه و وسایل رویدادهای ویژه</translation>
+<translation id="7237454422623102448">تنظیمات سیستم</translation>
 <translation id="7237492777898608035">این پیام برای این سایت دیگر نشان داده نشود</translation>
 <translation id="7240120331469437312">نام دیگر موضوع گواهی</translation>
 <translation id="7241863998525879494">آنچه انتظار می‌رود</translation>
@@ -4282,5 +4284,6 @@
     &lt;li&gt;به شبکه دیگری متصل شوید&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">‏افزودن IBAN</translation>
 <translation id="997986563973421916">‏از Google Pay</translation>
 </translationbundle>

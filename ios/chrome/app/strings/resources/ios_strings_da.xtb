@@ -107,7 +107,6 @@
 <translation id="152234381334907219">Gemmes aldrig</translation>
 <translation id="1523341279170789507">Tillad alle cookies</translation>
 <translation id="1524563461097350801">Nej tak</translation>
-<translation id="1535268707340844072">Din aktuelle indstilling kan medføre, at nogle websites går ned. Gå til <ph name="BEGIN_LINK" />indstillingerne for cookies<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
 <translation id="1552525382687785070">Din administrator har deaktiveret synkronisering</translation>
@@ -136,7 +135,6 @@
 <translation id="1650222530560417226">Tryk på knappen "Start logføring" for at indsamle fremtidige JavaScript-konsollogfiler og -fejl fra alle faner. Logfiler indsamles (og gemmes kun i hukommelsen), indtil denne side lukkes, eller der trykkes på "Stop logføring".</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} gemt adgangskode er tilgængelig over dit tastatur.}one{{count} gemt adgangskode er tilgængelig over dit tastatur.}other{{count} gemte adgangskoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="1657011748321897393">Deling mislykkedes. Du har ikke forbindelse til netværket.</translation>
-<translation id="1657641691196698092">Blokerede cookies</translation>
 <translation id="165877110639533037">Ingen åbne faner</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Request Mobile Site [Anmod om mobilversion]</translation>
@@ -275,7 +273,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2390457533592708044">Skjul "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Din pakke kan ikke leveres</translation>
 <translation id="2411749908844615428">{count,plural, =1{{count} gemt adresse er tilgængelig over dit tastatur.}one{{count} gemt adresse er tilgængelig over dit tastatur.}other{{count} gemte adresser er tilgængelige over dit tastatur.}}</translation>
-<translation id="2421004566762153674">Blokering af cookies fra tredjeparter</translation>
 <translation id="2421044535038393232">Rediger videre</translation>
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan rulle til venstre for at browse i inkognito.</translation>
@@ -309,7 +306,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2584132361465095047">Tilføj konto...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Ingen kompromitterede adgangskoder}=1{{count} kompromitteret adgangskode}one{{count} kompromitteret adgangskode}other{{count} kompromitterede adgangskoder}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Åbne faner, der ikke har været i brug i mindst én dag, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}one{Åbne faner, der ikke har været i brug i mindst {COUNT} dag, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}other{Åbne faner, der ikke har været i brug i mindst {COUNT} dage, flyttes til Inaktive faner, så du nemt kan fokusere på de faner, du bruger mest. Du kan til enhver tid ændre dette i indstillingerne.}}</translation>
-<translation id="2600682495497606169">Ryd cookies fra websitet</translation>
 <translation id="260378315836159338">Tryk på + øverst på skærmen</translation>
 <translation id="2604176749896001318">Opdater din browser</translation>
 <translation id="2609008503159898744">Vil du lukke alle faner?</translation>
@@ -320,7 +316,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2625189173221582860">Adgangskoden er kopieret</translation>
 <translation id="2626236249646841566">Tjek din forbindelse, og prøv at logge ind igen.</translation>
 <translation id="2637313651144986786">Søg i faner...</translation>
-<translation id="2647269890314209800">Cookies i brug</translation>
 <translation id="2648721026697078500">Flyt aldrig</translation>
 <translation id="2648803196158606475">Slet læste</translation>
 <translation id="2664621323652615289">Stop</translation>
@@ -735,7 +730,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="478808905805139173">Vil du åbne i inkognitotilstand?</translation>
 <translation id="4803185665210547709">Administreret af din organisation.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="4805558373042023669">Nyheder og indhold baseret på dine interesser.</translation>
 <translation id="4805759445554688327">Kortnummeret er ugyldigt</translation>
 <translation id="4808646838864186379">Din levering blev annulleret</translation>
 <translation id="4808744395915275922">Opdateringer</translation>
@@ -873,7 +867,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5475069061743940393">Pakkesporing</translation>
 <translation id="5478327362747197944">Opret kalenderbegivenheder direkte ved at klikke på en dato på en webside.</translation>
 <translation id="5482922178977937393">Vil du have notifikationer om nyheder, sport m.m. baseret på dine interesser?</translation>
-<translation id="5489208564673669003">Gå til <ph name="BEGIN_LINK" />indstillingerne for cookies<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="5490005495580364134">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="5497202150450073388">Levering er forsøgt. Prøver igen</translation>
 <translation id="5511959326926949696">Valgfri ekstrem beskyttelse af din browser. Funktionen bør kun bruges, hvis du mener, at du bliver udsat for et meget sofistikeret cyberangreb.</translation>
@@ -916,7 +909,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5702108177581350218">Når du deler en kopi af dit brugernavn og din adgangskode, kan dine familiemedlemmer udfylde dem ved hjælp af Google Adgangskodeadministrator.</translation>
 <translation id="5704908597376970822">Det lykkedes ikke at logge ind.</translation>
 <translation id="5706552126692816153">Aktiv for 1 dag siden</translation>
-<translation id="5718049162805123412">Du bør ændre adgangskoderne med det samme</translation>
+<translation id="5718049162805123412">Du bør ændre disse med det samme</translation>
 <translation id="5724941645893276623">Tilføj en ny fane for at surfe privat på nettet</translation>
 <translation id="5728700505257787410">Der var et problem med at logge ind på din konto.</translation>
 <translation id="5737974891429562743">Loginoplysningerne for kontoen er forældede. Opdater dem for at påbegynde synkroniseringen.</translation>

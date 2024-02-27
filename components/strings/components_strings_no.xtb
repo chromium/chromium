@@ -1321,6 +1321,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3542628208405253498">Kortbilde</translation>
 <translation id="3542768452570884558">Åpne linken i et nytt vindu</translation>
 <translation id="3547746132308051926">20 x 24 tommer</translation>
+<translation id="3552155506104542239">Advarsel: Denne regelen er i konflikt med <ph name="POLICY_NAME" /> og har ingen innvirkning på Android-apper. Ellers fungerer denne regelen som den skal.</translation>
 <translation id="3552297013052089404">Sans-serif-skrifttype</translation>
 <translation id="3558573058928565255">Dagtid</translation>
 <translation id="355995771319966853">Angre autofyll</translation>
@@ -1868,6 +1869,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="46128681529823442">Fotballutstyr</translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
 <translation id="4622292761762557753">Overfør likevel</translation>
+<translation id="4622647778991854660">Slå på varsler i varselsenteret. Åpne <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Denne regelen kan ikke konfigureres på Chrome-profilnivå og blir derfor ignorert.</translation>
 <translation id="4628678854894591460">Ferietilbud</translation>
 <translation id="4628948037717959914">Bilde</translation>
@@ -3199,6 +3201,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7234112195906418665">Reise og transport</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % er fullført | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Gaver og artikler til spesielle anledninger</translation>
+<translation id="7237454422623102448">Systeminnstillinger</translation>
 <translation id="7237492777898608035">Ikke vis denne meldingen igjen for dette nettstedet</translation>
 <translation id="7240120331469437312">Alternativt navn på sertifikatemne</translation>
 <translation id="7241863998525879494">Dette kan du forvente</translation>
@@ -4281,5 +4284,6 @@ Mer informasjon:
     &lt;li&gt;Prøv å koble til et annet nettverk&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">Legg til IBAN-nummer</translation>
 <translation id="997986563973421916">Fra Google Pay</translation>
 </translationbundle>

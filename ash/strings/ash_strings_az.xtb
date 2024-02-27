@@ -358,6 +358,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2484513351006226581">Klaviatura düzülüşünü dəyişmək üçün <ph name="KEYBOARD_SHORTCUT" /> süyməsinə klikləyin.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> önizləməsi. Aktiv masa.</translation>
 <translation id="2487915095798731898">Qoşulun</translation>
+<translation id="2499445554382787206">Masanın profil menyusu. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Əvəzedici açarlar</translation>
 <translation id="2504454902900101003">Telefonun son foto, media və bildirişlərinə baxmağı ayarlamaqdan imtina edin</translation>
 <translation id="2509468283778169019">CAPS LOCK aktivdir</translation>
@@ -604,6 +605,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3509391053705095206">Telefonunuzu tapmaq olmur. Telefonda Bluetooth'un aktiv olduğuna əmin olun.</translation>
 <translation id="3510164367642747937">Maus kursorunu vurğulayın</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> tərəfindən idarə edilən hesab</translation>
+<translation id="3517037892157925473">Son tapşırıq yeniləməsi: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Cihazı 1 dəqiqə ərzində güncəlləyin}other{Cihazı # dəqiqə ərzində güncəlləyin}}</translation>
 <translation id="3522979239100719575">Əlçatan profillər axtarılır. Bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="3526440770046466733">Linki yeni tabda açın və cari tabda qalın</translation>
@@ -1142,6 +1144,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="5536723544185013515">Son Tətbiqlər, bütün son tətbiqlərə giriş üçün sola və ya sağa ox ilə hərəkət edin</translation>
 <translation id="553675580533261935">Mövcud sessiya</translation>
 <translation id="5537725057119320332">Yayım</translation>
+<translation id="554017492391497564">"Tamamlanmış" kimi işarələnmədi.</translation>
 <translation id="5546397813406633847">İstifadəçini bərpa edin</translation>
 <translation id="554893713779400387">İmlanı aktiv edin</translation>
 <translation id="5550417424894892620">Faylları əsas səhifəyə buraxaraq <ph name="HOLDING_SPACE_TITLE" /> bölməsinə əlavə edin. Faylları əsas səhifəyə əlavə etmək olmur.</translation>
@@ -1336,6 +1339,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batareya enerjisi azdır. Enerjiyə Qənaət aktivdir.</translation>
 <translation id="6247728804802644171">Bildirişləri açın</translation>
+<translation id="6249795363855770621">"Tamamlanmış" kimi işarələnmədi. Onlayn olduqda yenidən cəhd edin.</translation>
 <translation id="6254629735336163724">Horizontal formada kilidləndi</translation>
 <translation id="6259254695169772643">Seçmək üçün fırçadan istifadə edin</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktivləşdirilir...</translation>
@@ -1496,6 +1500,7 @@ Yeni quraşdırma</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6912841030378044227">Ünvan panelini fokuslayın</translation>
 <translation id="6912901278692845878">Qısa tur</translation>
+<translation id="6917259695595127329">Son tapşırıq yeniləməsi: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
 <translation id="692135145298539227">silin</translation>
 <translation id="6929081673585394903">Nizamlayıcıları göstərin</translation>

@@ -1869,6 +1869,7 @@
 <translation id="46128681529823442">Опрема за фудбал</translation>
 <translation id="4619564267100705184">Потврдите свој идентитет</translation>
 <translation id="4622292761762557753">Ипак пренеси</translation>
+<translation id="4622647778991854660">Омогућите обавештења у Центру за обавештења. Отворите <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Ове смернице не могу да се подесе на нивоу Chrome профила и биће занемарене.</translation>
 <translation id="4628678854894591460">Понуде за одмор</translation>
 <translation id="4628948037717959914">Слика</translation>
@@ -3199,6 +3200,7 @@
 <translation id="7234112195906418665">Путовања и превоз</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% завршено | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Поклони и предмети за посебне догађаје</translation>
+<translation id="7237454422623102448">Системска подешавања</translation>
 <translation id="7237492777898608035">Не приказуј ову поруку поново за овај сајт</translation>
 <translation id="7240120331469437312">Алтернативно име субјекта сертификата</translation>
 <translation id="7241863998525879494">Шта можете да очекујете</translation>
@@ -4283,5 +4285,6 @@
     &lt;li&gt;Пробајте да се повежете са другом мрежом&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">Додајте IBAN</translation>
 <translation id="997986563973421916">Са Google Pay-а</translation>
 </translationbundle>

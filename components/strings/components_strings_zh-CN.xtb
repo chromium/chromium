@@ -1318,6 +1318,7 @@
 <translation id="3542628208405253498">虚拟卡图片</translation>
 <translation id="3542768452570884558">在新窗口中打开链接</translation>
 <translation id="3547746132308051926">20 x 24 英寸</translation>
+<translation id="3552155506104542239">警告：此政策与 <ph name="POLICY_NAME" /> 冲突，不会影响 Android 应用。否则，此政策将会按预期运行。</translation>
 <translation id="3552297013052089404">Sans-Serif 字体</translation>
 <translation id="3558573058928565255">日间</translation>
 <translation id="355995771319966853">撤消自动填充</translation>
@@ -4277,5 +4278,6 @@
     &lt;li&gt;请尝试连接到其他网络&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">添加 IBAN</translation>
 <translation id="997986563973421916">来自 Google Pay</translation>
 </translationbundle>

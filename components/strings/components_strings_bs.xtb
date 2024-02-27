@@ -1868,6 +1868,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="46128681529823442">Oprema za fudbal</translation>
 <translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4622292761762557753">Ipak prenesi</translation>
+<translation id="4622647778991854660">Omogućite obavijesti u centru za obavijesti. Otvorite <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Nije moguće postaviti ovo pravilo na nivou Chrome profila i bit će zanemareno.</translation>
 <translation id="4628678854894591460">Ponude za odmor</translation>
 <translation id="4628948037717959914">Fotografija</translation>
@@ -3199,6 +3200,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7234112195906418665">Putovanja i prijevoz</translation>
 <translation id="7236417832106250253">Završeno <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Pokloni i artikli za posebne događaje</translation>
+<translation id="7237454422623102448">Postavke sustava</translation>
 <translation id="7237492777898608035">Ne prikazuj ponovo ovu poruku za ovu web lokaciju</translation>
 <translation id="7240120331469437312">Alternativni naziv subjekta potvrde</translation>
 <translation id="7241863998525879494">Šta možete očekivati</translation>
@@ -4282,5 +4284,6 @@ Dodatni detalji:
     &lt;li&gt;Pokušajte se povezati na drugu mrežu&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">Dodajte IBAN</translation>
 <translation id="997986563973421916">Iz Google Paya</translation>
 </translationbundle>

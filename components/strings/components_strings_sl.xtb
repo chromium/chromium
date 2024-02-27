@@ -1201,6 +1201,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3324687287337751929">4 x 6 palcev</translation>
 <translation id="3324983252691184275">Škrlatna</translation>
 <translation id="3325027355611702542">Avtodomi in počitniška vozila</translation>
+<translation id="3325568918769906282">v padajočem vrstnem redu</translation>
 <translation id="3329013043687509092">Nasičenost</translation>
 <translation id="3333762389743153920">Ni ustrezna za virtualno kartico</translation>
 <translation id="3336044043987989409">Pritisnite gumb za vnovično nalaganje, če želite omogočiti povezovanje z napravami ali strežniki v vašem zasebnem omrežju.</translation>
@@ -2246,6 +2247,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5371425731340848620">Posodobite kartico</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Ura zaostaja« ali »Ura prehiteva« ali »&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;«</translation>
+<translation id="5380953781541843508">v naraščajočem vrstnem redu</translation>
 <translation id="5383478552402031184">Storitve, povezane s talnimi oblogami</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Predogleda URL-ja, ki ni HTTPS, ni mogoče prikazati</translation>
@@ -3481,6 +3483,7 @@ Dodatne podrobnosti:
 <translation id="7719791801330803993">Programska oprema za fotografije in videoposnetke</translation>
 <translation id="772128550427553158">Koda CVC je na sprednji strani kartice.</translation>
 <translation id="7724603315864178912">Izreži</translation>
+<translation id="7730057435797792985">Razvrsti</translation>
 <translation id="7734285854693414638">Hitro ustvarjanje novega obrazca v Google Obrazcih</translation>
 <translation id="773466115871691567">Vedno prevedi strani v jeziku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Kopiraj naslov povezave</translation>
@@ -4282,5 +4285,6 @@ Dodatne podrobnosti:
     &lt;li&gt;Poskusite se povezati z drugim omrežjem&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995755448277384931">Dodajanje IBAN-a</translation>
 <translation id="997986563973421916">Iz Googla Pay</translation>
 </translationbundle>

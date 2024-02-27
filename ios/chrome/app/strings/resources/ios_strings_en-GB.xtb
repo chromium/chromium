@@ -107,7 +107,6 @@
 <translation id="152234381334907219">Never saved</translation>
 <translation id="1523341279170789507">Allow All Cookies</translation>
 <translation id="1524563461097350801">No, thanks</translation>
-<translation id="1535268707340844072">Your current setting may cause some sites to break. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1552525382687785070">Sync is disabled by your administrator</translation>
@@ -136,7 +135,6 @@
 <translation id="1650222530560417226">Tap the 'Start Logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop Logging' is tapped.</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} saved password available above your keyboard.}other{{count} saved passwords available above your keyboard.}}</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
-<translation id="1657641691196698092">Blocked cookies</translation>
 <translation id="165877110639533037">No open tabs</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Request Mobile Site</translation>
@@ -275,7 +273,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2390457533592708044">Hide '<ph name="MODULE_NAME" />'</translation>
 <translation id="2403129868389095715">Your package can't be delivered</translation>
 <translation id="2411749908844615428">{count,plural, =1{{count} saved address available above your keyboard.}other{{count} saved addresses available above your keyboard.}}</translation>
-<translation id="2421004566762153674">Blocking third-party cookies</translation>
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">You can scroll left to browse in Incognito.</translation>
@@ -309,7 +306,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2584132361465095047">Add Account…</translation>
 <translation id="2587010742985678408">{count,plural, =0{No compromised passwords}=1{{count} compromised password}other{{count} compromised passwords}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Open tabs not used for one day or more get moved to Inactive Tabs so you can easily focus on the tabs you use the most. You can change this at any time in settings.}other{Open tabs not used for {COUNT} days or more get moved to Inactive Tabs so you can easily focus on the tabs you use the most. You can change this at any time in settings.}}</translation>
-<translation id="2600682495497606169">Clear site cookies</translation>
 <translation id="260378315836159338">At the top of the screen, tap +</translation>
 <translation id="2604176749896001318">Update your browser</translation>
 <translation id="2609008503159898744">Close all tabs?</translation>
@@ -320,7 +316,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2625189173221582860">Password copied</translation>
 <translation id="2626236249646841566">Check your connection and try signing in again.</translation>
 <translation id="2637313651144986786">Search Tabs…</translation>
-<translation id="2647269890314209800">Cookies in Use</translation>
 <translation id="2648721026697078500">Never Move</translation>
 <translation id="2648803196158606475">Delete Read</translation>
 <translation id="2664621323652615289">Stop</translation>
@@ -738,7 +733,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="478808905805139173">Open in Incognito?</translation>
 <translation id="4803185665210547709">Managed by your organisation.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="4805558373042023669">News and content based on your interests.</translation>
 <translation id="4805759445554688327">Invalid Card Number</translation>
 <translation id="4808646838864186379">Your delivery was cancelled</translation>
 <translation id="4808744395915275922">Updates</translation>
@@ -876,7 +870,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5475069061743940393">Package tracking</translation>
 <translation id="5478327362747197944">Create calendar events directly by clicking on a date in a web page.</translation>
 <translation id="5482922178977937393">Would you like to receive notifications for news, sports and more based on your interests?</translation>
-<translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
 <translation id="5497202150450073388">Delivery attempted Will retry</translation>
 <translation id="5511959326926949696">Extreme optional protection for your browser. It should only be used if you believe you may be targeted by a highly sophisticated cyberattack.</translation>

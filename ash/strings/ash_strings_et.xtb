@@ -358,6 +358,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2484513351006226581">Klaviatuuripaigutuse muutmiseks vajutage klahvikombinatsiooni <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2486214324139475545">Töölaua <ph name="DESK_NAME" /> eelvaade. Aktiivne töölaud.</translation>
 <translation id="2487915095798731898">Liitu</translation>
+<translation id="2499445554382787206">Töölauaprofiili menüü. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Nakkeklahvid</translation>
 <translation id="2504454902900101003">Teie telefoni hiljutiste fotode, meediafailide ja märguannete kuvamise seadistamisest loobumine</translation>
 <translation id="2509468283778169019">SUURTÄHELUKK on sisse lülitatud</translation>
@@ -604,6 +605,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3509391053705095206">Teie telefoni ei õnnestu leida. Veenduge, et telefonis oleks Bluetooth sisse lülitatud.</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
 <translation id="3513798432020909783">Kontohaldur: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Ülesannete viimase värskendamise aeg: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Värskendage seadet 1 minuti jooksul}other{Värskendage seadet # minuti jooksul}}</translation>
 <translation id="3522979239100719575">Otsitakse saadaolevaid profiile. See võib võtta mõne minuti.</translation>
 <translation id="3526440770046466733">Lingi avamine uuel vahelehel ja praegusele vahelehele jäämine</translation>
@@ -1143,6 +1145,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5536723544185013515">Hiljutised rakendused, kõigile hiljutistele rakendustele juurdepääsemiseks navigeerige vasak- või paremnooleklahvidega</translation>
 <translation id="553675580533261935">Seansist väljumine</translation>
 <translation id="5537725057119320332">Ülekanne</translation>
+<translation id="554017492391497564">Ei saanud tehtuks märkida.</translation>
 <translation id="5546397813406633847">Taasta konto</translation>
 <translation id="554893713779400387">Dikteerimise sisse-/väljalülitamine</translation>
 <translation id="5550417424894892620">Pukseerige töölaual faile, et lisada need asukohta <ph name="HOLDING_SPACE_TITLE" />. Töölauale ei saa faile lisada.</translation>
@@ -1337,6 +1340,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Aku hakkab tühjaks saama. Akusäästja on sisse lülitatud.</translation>
 <translation id="6247728804802644171">Ava märguanded</translation>
+<translation id="6249795363855770621">Ei saanud tehtuks märkida. Proovige uuesti pärast võrguühenduse loomist.</translation>
 <translation id="6254629735336163724">Lukustatud horisontaalasendisse</translation>
 <translation id="6259254695169772643">Kasutage valimiseks elektronpliiatsit</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveerimine ...</translation>
@@ -1497,6 +1501,7 @@ Uus installimine</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6912841030378044227">Keskenduge aadressiribale</translation>
 <translation id="6912901278692845878">Kiire tutvustus</translation>
+<translation id="6917259695595127329">Ülesannete viimase värskendamise aeg: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>
 <translation id="692135145298539227">Kustuta</translation>
 <translation id="6929081673585394903">Kuva juhtelemendid</translation>

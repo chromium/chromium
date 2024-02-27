@@ -4727,7 +4727,6 @@ Trên các phiên bản <ph name="MS_WIN_NAME" />, bạn chỉ có thể buộc 
 Trên các phiên bản <ph name="MAC_OS_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4739596156184678950">Cho phép lưu tệp vào <ph name="GOOGLE_DRIVE_NAME" /> ngay</translation>
 <translation id="4742973303930120836">Hạn chế chế độ in đồ họa nền</translation>
-<translation id="4744467872051608680">Kể từ M119, nếu bạn không đặt hoặc đặt chính sách này thành false thì WebSQL sẽ tắt, nhưng bạn có thể bật thông qua cờ Chrome "web-sql-access". Nếu bạn đặt chính sách này thành true, thì quyền truy cập vào WebSQL sẽ bật.</translation>
 <translation id="4745232963710538589">Bật tiện ích thông tin chi tiết để báo cáo các chỉ số về việc sử dụng</translation>
 <translation id="4749670563834935149">Bật <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> cho một danh sách URL trên màn hình đăng nhập và màn hình khoá.
 

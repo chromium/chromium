@@ -4602,7 +4602,6 @@ In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de 
 In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4739596156184678950">Toestaan dat bestanden rechtstreeks worden opgeslagen in <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">De modus voor afdrukken met achtergrondbeelden beperken</translation>
-<translation id="4744467872051608680">Vanaf M119 geldt dat als je dit beleid instelt op False of niet instelt, WebSQL wordt uitgezet, maar kan worden aangezet via de Chrome-flag web-sql-access. Als je het beleid instelt op True, wordt WebSQL-toegang aangezet.</translation>
 <translation id="4745232963710538589">Extensie voor inzichten aanzetten om gebruiksstatistieken te rapporteren</translation>
 <translation id="4749670563834935149">Zet <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aan voor een lijst met URL's op het inlog- en vergrendelscherm.
 

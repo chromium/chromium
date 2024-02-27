@@ -4611,7 +4611,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
 ในอินสแตนซ์ <ph name="MAC_OS_NAME" /> จะบังคับติดตั้งแอปและส่วนขยายที่ไม่ได้มาจาก Chrome เว็บสโตร์ได้เฉพาะในกรณีที่อินสแตนซ์นั้นจัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /></translation>
 <translation id="4739596156184678950">อนุญาตให้บันทึกไฟล์ไปยัง <ph name="GOOGLE_DRIVE_NAME" /> โดยตรง</translation>
 <translation id="4742973303930120836">จำกัดโหมดการพิมพ์กราฟิกพื้นหลัง</translation>
-<translation id="4744467872051608680">ตั้งแต่เวอร์ชัน M119 เป็นต้นไป หากตั้งค่านโยบายนี้เป็น "เท็จ" หรือไม่ได้ตั้งค่าไว้ ระบบจะปิดใช้ WebSQL แต่สามารถเปิดใช้ผ่าน Chrome Flag "web-sql-access" ได้ หากตั้งค่านโยบายเป็น "จริง" ระบบจะเปิดใช้การเข้าถึง WebSQL</translation>
 <translation id="4745232963710538589">เปิดใช้ส่วนขยายข้อมูลเชิงลึกสำหรับการรายงานเมตริกการใช้งาน</translation>
 <translation id="4749670563834935149">เปิดใช้ <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> สำหรับรายการ URL ในหน้าจอการเข้าสู่ระบบและหน้าจอล็อก
 
