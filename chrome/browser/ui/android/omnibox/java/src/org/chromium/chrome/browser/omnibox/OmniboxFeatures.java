@@ -171,4 +171,35 @@ public class OmniboxFeatures {
         return ChromeFeatureList.sTabletToolbarIncognitoStatus.isEnabled()
                 || ChromeFeatureList.sDynamicTopChrome.isEnabled();
     }
+
+    /** Returns whether answer suggestions should be annotated with attached action chips. */
+    public static boolean shouldShowAnswerActions() {
+        return ChromeFeatureList.sOmniboxAnswerActions.isEnabled();
+    }
+
+    /** Returns whether answers with actions should be re-ordered to just above the keyboard */
+    public static boolean shouldShowAnswerWithActionsAboveKeyboard() {
+        return shouldShowAnswerActions()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.OMNIBOX_ANSWER_ACTIONS,
+                        "AnswerActionsShowAboveKeyboard",
+                        false);
+    }
+
+    /**
+     * Returns whether answers with actions should be displayed if there are url suggestions
+     * present.
+     */
+    public static boolean shouldShowAnswerWithActionsIfUrlsPresent() {
+        return shouldShowAnswerActions()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowIfUrlsPresent", false);
+    }
+
+    /** Returns whether answers with actions should be presented as a rich card */
+    public static boolean shouldShowRichAnswerCard() {
+        return shouldShowAnswerActions()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
+    }
 }

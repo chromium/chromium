@@ -303,6 +303,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &messages::kMessagesForAndroidSaveCard,
     &offline_pages::kOfflinePagesCTFeature,  // See crbug.com/620421.
     &omnibox::kMostVisitedTilesHorizontalRenderGroup,
+    &omnibox::kOmniboxAnswerActions,
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
     &omnibox::kOmniboxModernizeVisualUpdate,
     &omnibox::kOmniboxOnClobberFocusTypeOnContent,

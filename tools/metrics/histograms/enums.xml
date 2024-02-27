@@ -24119,6 +24119,7 @@ from previous Chrome versions.
   <int value="1518833340" label="MediaAppDisplayExif:enabled"/>
   <int value="1518946321" label="DisableProcessReuse:disabled"/>
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
+  <int value="1519228932" label="OmniboxAnswerActions:enabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1520754417" label="ConfirmationChip:enabled"/>
   <int value="1521290440" label="ModalMemorySaver:disabled"/>
@@ -24322,6 +24323,7 @@ from previous Chrome versions.
   <int value="1615988672" label="GrantNotificationsToDSE:enabled"/>
   <int value="1616398626" label="FencedFramesDefaultMode:enabled"/>
   <int value="1616418306" label="AssistAutoCorrect:disabled"/>
+  <int value="1616445483" label="OmniboxAnswerActions:disabled"/>
   <int value="1616782064" label="shelf-dense-clamshell"/>
   <int value="1616938915"
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:disabled"/>

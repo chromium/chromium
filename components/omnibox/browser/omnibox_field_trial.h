@@ -760,6 +760,21 @@ constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>
         {},
         &kActionsInSuggestRemoveActionTypesVariants);
 
+constexpr base::FeatureParam<bool> kAnswerActionsShowAboveKeyboard(
+    &omnibox::kOmniboxAnswerActions,
+    "ShowAboveKeyboard",
+    false);
+
+constexpr base::FeatureParam<bool> kAnswerActionsShowIfUrlsPresent(
+    &omnibox::kOmniboxAnswerActions,
+    "ShowIfUrlsPresent",
+    false);
+
+constexpr base::FeatureParam<bool> kAnswerActionsShowRichCard(
+    &omnibox::kOmniboxAnswerActions,
+    "ShowRichCard",
+    false);
+
 // Controls the placement of Reviews and Call actions position.
 // false => Call, Directions, Reviews.
 // true  => Reviews, Directions, Call.

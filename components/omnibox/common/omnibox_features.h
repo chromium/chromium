@@ -141,6 +141,9 @@ BASE_DECLARE_FEATURE(kInspireMe);
 // Data driven feature; flag helps tune behavior.
 BASE_DECLARE_FEATURE(kActionsInSuggest);
 
+// Action Chips for Answer Suggestions.
+BASE_DECLARE_FEATURE(kOmniboxAnswerActions);
+
 // Adds support for categorical suggestion type.
 BASE_DECLARE_FEATURE(kCategoricalSuggestions);
 BASE_DECLARE_FEATURE(kMergeSubtypes);

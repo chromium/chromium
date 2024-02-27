@@ -1573,6 +1573,51 @@ constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
      std::size(kOmniboxActionsInSuggestTreatment8), "t3366528"},
 };
 
+constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsCounterfactual[] = {};
+constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment1[] = {
+    {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"},
+    {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "false"},
+    {OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "false"}};
+
+constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment2[] = {
+    {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "false"},
+    {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "true"},
+    {OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "false"}};
+
+constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment3[] = {
+    {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "false"},
+    {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "false"},
+    {OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "false"}};
+
+constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment4[] = {
+    {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"},
+    {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "false"},
+    {OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "true"}};
+
+constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment5[] = {
+    {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "false"},
+    {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "false"},
+    {OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "true"}};
+
+constexpr FeatureEntry::FeatureVariation kOmniboxAnswerActionsVariants[] = {
+    {"Counterfactual: fetch without rendering ",
+     kOmniboxAnswerActionsCounterfactual, 0, nullptr},
+    {"T1: Show chips above keyboard when there are no url matches",
+     kOmniboxAnswerActionsTreatment1,
+     std::size(kOmniboxAnswerActionsTreatment1), nullptr},
+    {"T2: Show chips at position 0", kOmniboxAnswerActionsTreatment2,
+     std::size(kOmniboxAnswerActionsTreatment2), nullptr},
+    {"T3: Show chips at position 0 when there are no url matches",
+     kOmniboxAnswerActionsTreatment3,
+     std::size(kOmniboxAnswerActionsTreatment3), nullptr},
+    {"T4: Show rich card above keyboard when there are no url matches",
+     kOmniboxAnswerActionsTreatment4,
+     std::size(kOmniboxAnswerActionsTreatment4), nullptr},
+    {"T5: Show rich card at position 0 when there are no url matches",
+     kOmniboxAnswerActionsTreatment5,
+     std::size(kOmniboxAnswerActionsTreatment5), nullptr},
+};
+
 constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowListAboveTrends[] = {
     {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "true"},
     {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "false"}};
@@ -5989,6 +6034,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxActionsInSuggestDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kActionsInSuggest,
                                     kOmniboxActionsInSuggestVariants,
+                                    "OmniboxBundledExperimentV1")},
+
+    {"omnibox-answer-actions", flag_descriptions::kOmniboxAnswerActionsName,
+     flag_descriptions::kOmniboxAnswerActionsDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxAnswerActions,
+                                    kOmniboxAnswerActionsVariants,
                                     "OmniboxBundledExperimentV1")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
