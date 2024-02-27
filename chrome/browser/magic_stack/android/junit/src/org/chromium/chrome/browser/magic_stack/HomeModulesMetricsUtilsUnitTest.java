@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_CONFIGURATION_TURN_ON_MODULE;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_FIRST_MODULE_SHOWN_DURATION_MS;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS;
@@ -221,6 +223,25 @@ public class HomeModulesMetricsUtilsUnitTest {
 
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
         HomeModulesMetricsUtils.recordHomeModulesScrollState(hostSurface, isScrollable, isScrolled);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordModuleToggledInConfiguration() {
+        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
+        boolean isEnabled = true;
+        String histogramName = "MagicStack.Clank." + HISTOGRAM_CONFIGURATION_TURN_ON_MODULE;
+
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, moduleType);
+        HomeModulesMetricsUtils.recordModuleToggledInConfiguration(moduleType, isEnabled);
+        histogramWatcher.assertExpected();
+
+        isEnabled = false;
+        histogramName = "MagicStack.Clank." + HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE;
+
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, moduleType);
+        HomeModulesMetricsUtils.recordModuleToggledInConfiguration(moduleType, isEnabled);
         histogramWatcher.assertExpected();
     }
 }

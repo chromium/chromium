@@ -41,6 +41,9 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
                     (preference, newValue) -> {
                         homeModulesConfigManager.setPrefModuleTypeEnabled(
                                 moduleType, (boolean) newValue);
+                        HomeModulesMetricsUtils.recordModuleToggledInConfiguration(
+                                moduleType, (boolean) newValue);
+
                         return true;
                     });
             getPreferenceScreen().addPreference(currentSwitch);
