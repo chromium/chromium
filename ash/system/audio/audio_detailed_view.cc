@@ -514,7 +514,7 @@ AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
   // Ignore the toggle for accessibility.
   auto& view_accessibility = toggle->GetViewAccessibility();
   view_accessibility.OverrideIsLeaf(true);
-  view_accessibility.OverrideIsIgnored(true);
+  view_accessibility.SetIsIgnored(true);
   noise_cancellation_button_ = toggle.get();
   noise_cancellation_view->AddRightView(toggle.release());
 

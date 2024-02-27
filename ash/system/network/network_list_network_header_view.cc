@@ -56,8 +56,8 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
   entry_row()->SetExpandable(true);
   entry_row()->AddRightView(toggle.release());
   // ChromeVox users will use the `toggle_` to toggle the feature.
-  entry_row()->left_view()->GetViewAccessibility().OverrideIsIgnored(true);
-  entry_row()->text_label()->GetViewAccessibility().OverrideIsIgnored(true);
+  entry_row()->left_view()->GetViewAccessibility().SetIsIgnored(true);
+  entry_row()->text_label()->GetViewAccessibility().SetIsIgnored(true);
 }
 
 NetworkListNetworkHeaderView::~NetworkListNetworkHeaderView() = default;

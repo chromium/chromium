@@ -39,7 +39,7 @@ TEST_F(OverlayDialogTest, ShowAndClose) {
         std::move(dialog_view)));
 
     const auto& view_ax = widget->GetRootView()->GetViewAccessibility();
-    EXPECT_EQ(!has_dialog_view, view_ax.IsIgnored());
+    EXPECT_EQ(!has_dialog_view, view_ax.GetIsIgnored());
 
     widget->Show();
     EXPECT_FALSE(called);

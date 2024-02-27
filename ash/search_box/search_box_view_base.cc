@@ -89,7 +89,7 @@ void SetupLabelView(views::Label* label,
                     gfx::Insets border_insets,
                     ui::ColorId color_id) {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->GetViewAccessibility().OverrideIsIgnored(true);
+  label->GetViewAccessibility().SetIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetEnabledColorId(color_id);
@@ -243,8 +243,8 @@ class SearchBoxTextfield : public views::Textfield {
     // alert, so we ignored the search box in those cases. Now reset the flag
     // here.
     auto& accessibility = GetViewAccessibility();
-    if (accessibility.IsIgnored()) {
-      accessibility.OverrideIsIgnored(false);
+    if (accessibility.GetIsIgnored()) {
+      accessibility.SetIsIgnored(false);
       NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
     }
   }

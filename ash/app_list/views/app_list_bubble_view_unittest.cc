@@ -1374,33 +1374,33 @@ TEST_F(AppListBubbleViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
   LeftClickOn(folder_item);
 
   auto* search_box = GetSearchBoxView();
-  EXPECT_TRUE(search_box->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(search_box->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(search_box->GetViewAccessibility().IsLeaf());
   auto* continue_section = GetContinueSectionView();
-  EXPECT_TRUE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(continue_section->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(continue_section->GetViewAccessibility().IsLeaf());
   auto* recent_apps = GetRecentAppsView();
-  EXPECT_TRUE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(recent_apps->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(recent_apps->GetViewAccessibility().IsLeaf());
   auto* toast_container = GetToastContainerView();
-  EXPECT_TRUE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(toast_container->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(toast_container->GetViewAccessibility().IsLeaf());
   auto* apps_grid = GetAppsGridView();
-  EXPECT_TRUE(apps_grid->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(apps_grid->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(apps_grid->GetViewAccessibility().IsLeaf());
 
   // Close the folder.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
-  EXPECT_FALSE(search_box->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(search_box->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(search_box->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(continue_section->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(continue_section->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(recent_apps->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(recent_apps->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(toast_container->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(toast_container->GetViewAccessibility().IsLeaf());
-  EXPECT_FALSE(apps_grid->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(apps_grid->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(apps_grid->GetViewAccessibility().IsLeaf());
 }
 

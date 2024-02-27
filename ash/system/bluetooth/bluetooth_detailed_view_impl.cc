@@ -219,8 +219,8 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   toggle_row_->tri_view()->SetInsets(kToggleRowTriViewInsets);
 
   // ChromeVox users will just use the `toggle_button_` to toggle.
-  toggle_icon_->GetViewAccessibility().OverrideIsIgnored(true);
-  toggle_row_->text_label()->GetViewAccessibility().OverrideIsIgnored(true);
+  toggle_icon_->GetViewAccessibility().SetIsIgnored(true);
+  toggle_row_->text_label()->GetViewAccessibility().SetIsIgnored(true);
 }
 
 void BluetoothDetailedViewImpl::CreateMainContainer() {

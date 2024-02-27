@@ -88,7 +88,7 @@ SearchResultImageView::SearchResultImageView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
-  result_image_->GetViewAccessibility().OverrideIsIgnored(true);
+  result_image_->GetViewAccessibility().SetIsIgnored(true);
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
@@ -138,7 +138,7 @@ void SearchResultImageView::CreatePulsingBlockView() {
   pulsing_block_view_ = AddChildView(std::make_unique<PulsingBlockView>(
       size(), base::Milliseconds(index_ * 200), kRoundedCornerRadius));
   pulsing_block_view_->SetCanProcessEventsWithinSubtree(false);
-  pulsing_block_view_->GetViewAccessibility().OverrideIsIgnored(true);
+  pulsing_block_view_->GetViewAccessibility().SetIsIgnored(true);
 }
 
 gfx::ImageSkia SearchResultImageView::CreateDragImage() {

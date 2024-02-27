@@ -332,7 +332,7 @@ class ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore {
     for (auto& item_view_command_id_pair :
          menu_model_adapter_->item_views_by_command_id_) {
       views::View* item_view = item_view_command_id_pair.second;
-      item_view->GetViewAccessibility().OverrideIsIgnored(ignore);
+      item_view->GetViewAccessibility().SetIsIgnored(ignore);
     }
   }
 
@@ -530,7 +530,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_ITEM_DELETION));
 
   // Enable a11y announcement for the view to be deleted.
-  view_accessibility.OverrideIsIgnored(false);
+  view_accessibility.SetIsIgnored(false);
 
   // Disabling `item_view_to_delete` is more like implementation details.
   // So do not expose it to users.
@@ -721,7 +721,7 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
 
   // Ignore `container` in accessibility events handling. Let `item_view`
   // handle.
-  container->GetViewAccessibility().OverrideIsIgnored(true);
+  container->GetViewAccessibility().SetIsIgnored(true);
 
   // Margins are managed by `ClipboardHistoryItemView`.
   container->set_vertical_margin(0);

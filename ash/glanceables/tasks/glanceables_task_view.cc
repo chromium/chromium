@@ -59,7 +59,7 @@ views::Label* SetupLabel(views::View* parent) {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // Views should not be individually selected for accessibility. Accessible
   // name and behavior comes from the parent.
-  label->GetViewAccessibility().OverrideIsIgnored(true);
+  label->GetViewAccessibility().SetIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetAutoColorReadabilityEnabled(false);
   return label;

@@ -100,7 +100,7 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   title_->layer()->SetFillsBoundsOpaquely(false);
   // Ignore labels for accessibility - the accessible name is defined for the
   // whole dialog view.
-  title_->GetViewAccessibility().OverrideIsIgnored(true);
+  title_->GetViewAccessibility().SetIsIgnored(true);
 
   // Add dialog body.
   body_ =
@@ -125,7 +125,7 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   body_->layer()->SetFillsBoundsOpaquely(false);
   // Ignore labels for accessibility - the accessible name is defined for the
   // whole dialog view.
-  body_->GetViewAccessibility().OverrideIsIgnored(true);
+  body_->GetViewAccessibility().SetIsIgnored(true);
 
   auto run_callback = [](RemoveQueryConfirmationDialog* dialog, bool accept) {
     if (!dialog->confirm_callback_)

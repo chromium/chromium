@@ -62,7 +62,7 @@ void OverlayDialog::AddedToWidget() {
     return;
 
   auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
-  view_ax.OverrideIsIgnored(true);
+  view_ax.SetIsIgnored(true);
 }
 
 void OverlayDialog::OnThemeChanged() {

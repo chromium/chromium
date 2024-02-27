@@ -112,7 +112,7 @@ class ScrollableShelfView::ScrollableShelfArrowView
     // the hidden icon which receives the accessibility focus shows through
     // scroll animation. So the arrow button is not useful for the spoken
     // feedback users. The spoken feedback should ignore the arrow button.
-    GetViewAccessibility().OverrideIsIgnored(/*value=*/true);
+    GetViewAccessibility().SetIsIgnored(/*value=*/true);
   }
   ~ScrollableShelfArrowView() override = default;
 

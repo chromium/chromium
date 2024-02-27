@@ -141,7 +141,7 @@ class PaintCallbackLabel : public views::Label {
   }
 
   void SetViewAccessibilityIsIgnored(bool is_ignored) {
-    GetViewAccessibility().OverrideIsIgnored(is_ignored);
+    GetViewAccessibility().SetIsIgnored(is_ignored);
   }
 
  private:
