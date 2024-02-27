@@ -4,33 +4,54 @@
 
 #include "content/browser/indexed_db/indexed_db_connection_coordinator.h"
 
+#include <atomic>
+#include <map>
 #include <set>
+#include <string>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/callback_tags.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
+#include "content/browser/indexed_db/indexed_db_connection.h"
+#include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
+#include "content/browser/indexed_db/indexed_db_task_helper.h"
+#include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "content/browser/indexed_db/list_set.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 using base::NumberToString16;

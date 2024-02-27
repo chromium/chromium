@@ -4,7 +4,16 @@
 
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
 
-#include "base/task/sequenced_task_runner.h"
+#include <ostream>
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
+#include "content/browser/indexed_db/indexed_db_context_impl.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {

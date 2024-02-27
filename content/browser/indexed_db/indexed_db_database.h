@@ -24,7 +24,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_connection_coordinator.h"
 #include "content/browser/indexed_db/indexed_db_factory_client.h"
@@ -50,6 +49,10 @@ class IndexedDBConnection;
 class IndexedDBDatabaseCallbacks;
 class IndexedDBTransaction;
 struct IndexedDBValue;
+
+namespace indexed_db {
+enum class CursorType;
+}
 
 class CONTENT_EXPORT IndexedDBDatabase {
  public:

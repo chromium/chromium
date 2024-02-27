@@ -24,6 +24,10 @@ struct BucketLocator;
 
 namespace content {
 
+namespace indexed_db {
+enum class CursorType { kKeyAndValue = 0, kKeyOnly = 1 };
+}  // namespace indexed_db
+
 class IndexedDBCursor : public blink::mojom::IDBCursor {
  public:
   // Creates a new self-owned instance and binds to `pending_remote`.
@@ -54,8 +58,9 @@ class IndexedDBCursor : public blink::mojom::IDBCursor {
     return cursor_->primary_key();
   }
   IndexedDBValue* Value() const {
-    return (cursor_type_ == indexed_db::CURSOR_KEY_ONLY) ? nullptr
-                                                         : cursor_->value();
+    return (cursor_type_ == indexed_db::CursorType::kKeyOnly)
+               ? nullptr
+               : cursor_->value();
   }
 
   void Close();

@@ -304,10 +304,10 @@ leveldb::Status IndexedDBCursor::PrefetchIterationOperation(
     found_primary_keys.push_back(cursor_->primary_key());
 
     switch (cursor_type_) {
-      case indexed_db::CURSOR_KEY_ONLY:
+      case indexed_db::CursorType::kKeyOnly:
         found_values.push_back(IndexedDBValue());
         break;
-      case indexed_db::CURSOR_KEY_AND_VALUE: {
+      case indexed_db::CursorType::kKeyAndValue: {
         IndexedDBValue value;
         value.swap(*cursor_->value());
         size_estimate += value.SizeEstimate();

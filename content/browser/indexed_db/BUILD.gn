@@ -16,7 +16,6 @@ source_set("indexed_db") {
     "file_path_util.h",
     "file_stream_reader_to_data_pipe.cc",
     "file_stream_reader_to_data_pipe.h",
-    "indexed_db.h",
     "indexed_db_active_blob_registry.cc",
     "indexed_db_active_blob_registry.h",
     "indexed_db_backing_store.cc",

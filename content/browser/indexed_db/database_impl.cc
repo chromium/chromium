@@ -17,6 +17,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
+#include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -195,7 +196,8 @@ void DatabaseImpl::Get(int64_t transaction_id,
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::GetOperation, connection_->database()->AsWeakPtr(),
       object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
-      key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE,
+      key_only ? indexed_db::CursorType::kKeyOnly
+               : indexed_db::CursorType::kKeyAndValue,
       std::move(aborting_callback)));
 }
 
@@ -259,7 +261,8 @@ void DatabaseImpl::GetAll(int64_t transaction_id,
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::GetAllOperation, connection_->database()->AsWeakPtr(),
       object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
-      key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE,
+      key_only ? indexed_db::CursorType::kKeyOnly
+               : indexed_db::CursorType::kKeyAndValue,
       max_count, std::move(aborting_callback)));
 }
 
@@ -398,8 +401,8 @@ void DatabaseImpl::OpenCursor(
   params->index_id = index_id;
   params->key_range = std::make_unique<IndexedDBKeyRange>(key_range);
   params->direction = direction;
-  params->cursor_type =
-      key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE;
+  params->cursor_type = key_only ? indexed_db::CursorType::kKeyOnly
+                                 : indexed_db::CursorType::kKeyAndValue;
   params->task_type = task_type;
   params->callback = std::move(aborting_callback);
   transaction->ScheduleTask(

@@ -744,7 +744,7 @@ Status IndexedDBDatabase::GetOperation(
   } else {
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // ObjectStore Retrieval Operation
-      if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+      if (cursor_type == indexed_db::CursorType::kKeyOnly) {
         backing_store_cursor = backing_store()->OpenObjectStoreKeyCursor(
             transaction->BackingStoreTransaction(), id(), object_store_id,
             *key_range, blink::mojom::IDBCursorDirection::Next, &s);
@@ -753,7 +753,7 @@ Status IndexedDBDatabase::GetOperation(
             transaction->BackingStoreTransaction(), id(), object_store_id,
             *key_range, blink::mojom::IDBCursorDirection::Next, &s);
       }
-    } else if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+    } else if (cursor_type == indexed_db::CursorType::kKeyOnly) {
       // Index Value Retrieval Operation
       backing_store_cursor = backing_store()->OpenIndexKeyCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
@@ -802,7 +802,7 @@ Status IndexedDBDatabase::GetOperation(
       return s;
     }
 
-    if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+    if (cursor_type == indexed_db::CursorType::kKeyOnly) {
       std::move(callback).Run(
           blink::mojom::IDBDatabaseGetResult::NewKey(std::move(*key)));
       return s;
@@ -839,7 +839,7 @@ Status IndexedDBDatabase::GetOperation(
     std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewEmpty(true));
     return s;
   }
-  if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+  if (cursor_type == indexed_db::CursorType::kKeyOnly) {
     // Index Value Retrieval Operation
     std::move(callback).Run(
         blink::mojom::IDBDatabaseGetResult::NewKey(std::move(*primary_key)));
@@ -911,7 +911,7 @@ Status IndexedDBDatabase::GetAllOperation(
   Status s = Status::OK();
   std::unique_ptr<IndexedDBBackingStore::Cursor> cursor;
 
-  if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+  if (cursor_type == indexed_db::CursorType::kKeyOnly) {
     // Retrieving keys
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // Object Store: Key Retrieval Operation
@@ -990,7 +990,7 @@ Status IndexedDBDatabase::GetAllOperation(
     IndexedDBReturnValue return_value;
     IndexedDBKey return_key;
 
-    if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+    if (cursor_type == indexed_db::CursorType::kKeyOnly) {
       return_key = cursor->primary_key();
     } else {
       // Retrieving values
@@ -1001,13 +1001,14 @@ Status IndexedDBDatabase::GetAllOperation(
       }
     }
 
-    if (cursor_type == indexed_db::CURSOR_KEY_ONLY)
+    if (cursor_type == indexed_db::CursorType::kKeyOnly) {
       found_keys.push_back(return_key);
-    else
+    } else {
       found_values.push_back(return_value);
+    }
 
     // Periodically stream values and keys if we have too many.
-    if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+    if (cursor_type == indexed_db::CursorType::kKeyOnly) {
       if (found_keys.size() >= max_values_before_sending) {
         result_sink->ReceiveKeys(std::move(found_keys));
         found_keys.clear();
@@ -1021,7 +1022,7 @@ Status IndexedDBDatabase::GetAllOperation(
     }
   }
 
-  if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+  if (cursor_type == indexed_db::CursorType::kKeyOnly) {
     if (!found_keys.empty()) {
       result_sink->ReceiveKeys(std::move(found_keys));
     }
@@ -1249,7 +1250,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
   Status s;
   std::unique_ptr<IndexedDBBackingStore::Cursor> backing_store_cursor;
   if (params->index_id == IndexedDBIndexMetadata::kInvalidId) {
-    if (params->cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+    if (params->cursor_type == indexed_db::CursorType::kKeyOnly) {
       DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
       backing_store_cursor = backing_store()->OpenObjectStoreKeyCursor(
           transaction->BackingStoreTransaction(), id(), params->object_store_id,
@@ -1261,7 +1262,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
     }
   } else {
     DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
-    if (params->cursor_type == indexed_db::CURSOR_KEY_ONLY) {
+    if (params->cursor_type == indexed_db::CursorType::kKeyOnly) {
       backing_store_cursor = backing_store()->OpenIndexKeyCursor(
           transaction->BackingStoreTransaction(), id(), params->object_store_id,
           params->index_id, *params->key_range, params->direction, &s);
