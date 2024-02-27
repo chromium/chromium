@@ -33,8 +33,6 @@ extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
-extern NSString* const kCameraSymbol;
-extern NSString* const kCameraFillSymbol;
 extern NSString* const kPasswordManagerSymbol;
 extern NSString* const kPopupBadgeMinusSymbol;
 extern NSString* const kPhotoBadgePlusSymbol;
@@ -76,6 +74,11 @@ extern NSString* const kCustomMovePlatterToTopPhoneSymbol;
 // Custom symbol to replace "palette" symbols on iOS 14. Cannot be used with a
 // palette.
 extern NSString* const kIncognitoCircleFilliOS14Symbol;
+
+// Use custom symbol for camera because the default video icon in iOS should
+// always represent “Apple Facetime”.
+extern NSString* const kCameraSymbol;
+extern NSString* const kCameraFillSymbol;
 
 // Default symbol names.
 extern NSString* const kChartBarXAxisSymbol;

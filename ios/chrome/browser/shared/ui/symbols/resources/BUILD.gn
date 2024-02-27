@@ -126,17 +126,17 @@ symbolset("translate") {
   ]
 }
 
-symbolset("camera") {
+symbolset("custom_camera") {
   sources = [
-    "camera.symbolset/Contents.json",
-    "camera.symbolset/camera.cr.svg",
+    "custom_camera.symbolset/Contents.json",
+    "custom_camera.symbolset/custom.camera.cr.svg",
   ]
 }
 
-symbolset("camera_fill") {
+symbolset("custom_camera_fill") {
   sources = [
-    "camera_fill.symbolset/Contents.json",
-    "camera_fill.symbolset/camera.fill.cr.svg",
+    "custom_camera_fill.symbolset/Contents.json",
+    "custom_camera_fill.symbolset/custom.camera.fill.cr.svg",
   ]
 }
 

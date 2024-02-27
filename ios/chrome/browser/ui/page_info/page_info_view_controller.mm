@@ -346,6 +346,16 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [cell.switchView addTarget:self
                           action:@selector(permissionSwitchToggled:)
                 forControlEvents:UIControlEventValueChanged];
+
+      if (IsRevampPageInfoIosEnabled()) {
+        [cell setIconImage:CustomSymbolWithPointSize(kCameraSymbol,
+                                                     kPageInfoSymbolPointSize)
+                  tintColor:UIColor.whiteColor
+            backgroundColor:[UIColor colorNamed:kOrange500Color]
+               cornerRadius:kColorfulBackgroundSymbolCornerRadius
+                borderWidth:0];
+      }
+
       return cell;
     }
     case ItemIdentifierPermissionsMicrophone: {
@@ -365,6 +375,16 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [cell.switchView addTarget:self
                           action:@selector(permissionSwitchToggled:)
                 forControlEvents:UIControlEventValueChanged];
+
+      if (IsRevampPageInfoIosEnabled()) {
+        [cell setIconImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
+                                                      kPageInfoSymbolPointSize)
+                  tintColor:UIColor.whiteColor
+            backgroundColor:[UIColor colorNamed:kOrange500Color]
+               cornerRadius:kColorfulBackgroundSymbolCornerRadius
+                borderWidth:0];
+      }
+
       return cell;
     }
     case ItemIdentifierAboutThisSiteHeader: {
