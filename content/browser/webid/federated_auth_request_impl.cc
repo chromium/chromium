@@ -752,18 +752,41 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   if (HasPendingRequest()) {
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests,
-                                             requirement);
+    RpMode pending_request_rp_mode = GetPageData(&render_frame_host())
+                                         ->PendingWebIdentityRequest()
+                                         ->GetRpMode();
+    bool can_replace_pending_request =
+        IsFedCmButtonModeEnabled() &&
+        idp_get_params_ptrs[0]->mode == RpMode::kButton &&
+        render_frame_host().HasTransientUserActivation() &&
+        pending_request_rp_mode != RpMode::kButton;
 
-    AddDevToolsIssue(
-        blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
-    AddConsoleErrorMessage(
-        blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
+    // TODO(crbug.com/326587232): We should add metrics to capture
+    // 1. how often a button flow is triggered while a widget flow is pending
+    // 2. how often a button flow is triggered while a button flow is pending
+    // 3. how often a widget flow is triggered while a button flow is pending
+    if (!can_replace_pending_request) {
+      fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests,
+                                               requirement);
 
-    std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
-                            std::nullopt, "", /*error=*/nullptr,
-                            /*is_auto_selected=*/false);
-    return;
+      AddDevToolsIssue(
+          blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
+      AddConsoleErrorMessage(
+          blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
+
+      std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
+                              std::nullopt, "", /*error=*/nullptr,
+                              /*is_auto_selected=*/false);
+      return;
+    }
+    // Cancel the pending request before starting the new button flow request.
+    // TODO(crbug.com/326587232): Use specific error type.
+    GetPageData(&render_frame_host())
+        ->PendingWebIdentityRequest()
+        ->CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                                   /*token_status=*/std::nullopt,
+                                   /*token_error=*/std::nullopt,
+                                   /*should_delay_callback=*/false);
   }
 
   bool intercept = false;
@@ -792,6 +815,8 @@ void FederatedAuthRequestImpl::RequestToken(
                                /*should_delay_callback=*/false);
       return;
     }
+  } else {
+    rp_mode_ = RpMode::kWidget;
   }
 
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
@@ -2469,6 +2494,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   token_error_ = std::nullopt;
   dialog_type_ = kNone;
   identity_selection_type_ = kExplicit;
+  rp_mode_ = RpMode::kWidget;
 }
 
 void FederatedAuthRequestImpl::AddDevToolsIssue(
