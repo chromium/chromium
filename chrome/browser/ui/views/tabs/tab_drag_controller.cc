@@ -2250,7 +2250,14 @@ gfx::Rect TabDragController::CalculateDraggedBrowserBounds(
   // Vertically center the dragged tabs around the mouse.
   gfx::Point center(0, drag_bounds->front().CenterPoint().y());
   views::View::ConvertPointToWidget(source, &center);
-  gfx::Rect new_bounds(source->GetWidget()->GetRestoredBounds());
+  // To support immersive fullscreen on macOS get the top level widget, which
+  // will be the browser widget. In immersive fullscreen there are other
+  // intermediate widgets that host the toolbar and tab strip, getting their
+  // restored bounds is not helpful. Getting the top level widget in the
+  // non-immersive fullscreen case is a essentially a NOP, so use it
+  // unconditionally here for all platforms.
+  gfx::Rect new_bounds(
+      source->GetWidget()->GetTopLevelWidget()->GetRestoredBounds());
 
   gfx::Rect work_area = display::Screen::GetScreen()
                             ->GetDisplayNearestPoint(last_point_in_screen_)
