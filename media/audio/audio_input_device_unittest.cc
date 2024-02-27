@@ -11,6 +11,7 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,6 +62,34 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
                void(AudioCapturerSource::ErrorCode code,
                     const std::string& message));
   MOCK_METHOD1(OnCaptureMuted, void(bool is_muted));
+};
+
+// Verifies that the capture time passed to Capture() are correct.
+class AssertingCaptureCallback : public AudioCapturerSource::CaptureCallback {
+ public:
+  explicit AssertingCaptureCallback(base::TimeTicks expected_capture_time)
+      : expected_capture_time_(expected_capture_time) {}
+  ~AssertingCaptureCallback() override = default;
+
+  void Capture(const AudioBus* audio_source,
+               base::TimeTicks audio_capture_time,
+               double volume,
+               bool key_pressed) override {
+    EXPECT_EQ(audio_capture_time, expected_capture_time_);
+    capture_called_event_.Signal();
+  }
+
+  void WaitForCapture() { capture_called_event_.Wait(); }
+
+  MOCK_METHOD0(OnCaptureStarted, void());
+  MOCK_METHOD2(OnCaptureError,
+               void(AudioCapturerSource::ErrorCode code,
+                    const std::string& message));
+  MOCK_METHOD1(OnCaptureMuted, void(bool is_muted));
+
+ private:
+  base::TimeTicks expected_capture_time_;
+  base::WaitableEvent capture_called_event_;
 };
 
 }  // namespace.
@@ -141,6 +170,68 @@ TEST_P(AudioInputDeviceTest, CreateStream) {
 
   EXPECT_CALL(callback, OnCaptureStarted());
   device->Start();
+  EXPECT_CALL(*input_ipc, CloseStream());
+  device->Stop();
+}
+
+TEST_P(AudioInputDeviceTest, CaptureCallback) {
+  base::test::TaskEnvironment ste;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         ChannelLayoutConfig::Stereo(), 48000, 480);
+  base::MappedReadOnlyRegion shared_memory;
+  CancelableSyncSocket browser_socket;
+  CancelableSyncSocket renderer_socket;
+
+  const uint32_t memory_size =
+      media::ComputeAudioInputBufferSize(params, kMemorySegmentCount);
+
+  shared_memory = base::ReadOnlySharedMemoryRegion::Create(memory_size);
+  ASSERT_TRUE(shared_memory.IsValid());
+  memset(shared_memory.mapping.memory(), 0xff, memory_size);
+
+  ASSERT_TRUE(
+      CancelableSyncSocket::CreatePair(&browser_socket, &renderer_socket));
+  base::ReadOnlySharedMemoryRegion duplicated_shared_memory_region =
+      shared_memory.region.Duplicate();
+  ASSERT_TRUE(duplicated_shared_memory_region.IsValid());
+
+  MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
+  scoped_refptr<AudioInputDevice> device(new AudioInputDevice(
+      base::WrapUnique(input_ipc), AudioInputDevice::Purpose::kUserInput,
+      AudioInputDeviceTest::GetParam()));
+
+  const base::TimeTicks capture_time =
+      base::TimeTicks() + base::Microseconds(123);
+  // The AssertingCaptureCallback will check that the capture time is correct
+  // upon the call to Capture().
+  AssertingCaptureCallback callback(capture_time);
+  device->Initialize(params, &callback);
+
+  EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
+      .WillOnce(InvokeWithoutArgs([&]() {
+        static_cast<AudioInputIPCDelegate*>(device.get())
+            ->OnStreamCreated(std::move(duplicated_shared_memory_region),
+                              renderer_socket.Take(), false);
+      }));
+  EXPECT_CALL(*input_ipc, RecordStream());
+  EXPECT_CALL(callback, OnCaptureStarted());
+
+  uint8_t* ptr = static_cast<uint8_t*>(shared_memory.mapping.memory());
+  AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(ptr);
+  buffer->params.id = 0;
+  buffer->params.capture_time_us =
+      (capture_time - base::TimeTicks()).InMicroseconds();
+  buffer->params.glitch_duration_us = 0;
+  buffer->params.glitch_count = 0;
+  uint32_t buffer_index = 0;
+  browser_socket.Send(&buffer_index, sizeof(buffer_index));
+
+  device->Start();
+  ste.RunUntilIdle();
+
+  // The capture occurs on another thread, wait for it.
+  callback.WaitForCapture();
+
   EXPECT_CALL(*input_ipc, CloseStream());
   device->Stop();
 }
