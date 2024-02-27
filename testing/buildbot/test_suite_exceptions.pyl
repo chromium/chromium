@@ -1025,9 +1025,9 @@
       'Linux ChromiumOS MSan Tests': {
         # These are very slow on the Chrome OS MSAN trybot, most likely because browser_tests on cros has ~40% more tests. Also, these tests
         # run on ash, which means every test starts and shuts down ash, which most likely explains why it takes longer than on other platforms.
-        # crbug.com/865455
+        # crbug.com/40585695 and crbug.com/326621525
         'swarming': {
-          'shards': 80,
+          'shards': 100,
         },
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
