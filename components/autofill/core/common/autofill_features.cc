@@ -619,12 +619,16 @@ BASE_FEATURE(kAutofillMoreProminentPopup,
 const base::FeatureParam<int> kAutofillMoreProminentPopupMaxOffsetToCenterParam{
     &kAutofillMoreProminentPopup, "max_offset_to_center_px", 92};
 
-// If enabled, we will log information of field types and autofill and forms
-// with sample rates according to Autofill FormSummary/FieldInfo UKM schema:
+// Enable the feature by default, and set the enabled percentage as a feature
+// param. We are logging information of field types, autofill status and
+// forms with a defined sampling rate of 10% on sessions.
+// Autofill FormSummary/FieldInfo UKM schema:
 // https://docs.google.com/document/d/1ZH0JbL6bES3cD4KqZWsGR6n8I-rhnkx6no6nQOgYq5w/.
-BASE_FEATURE(kAutofillLogUKMEventsWithSampleRate,
-             "AutofillLogUKMEventsWithSampleRate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillLogUKMEventsWithSamplingOnSession,
+             "AutofillLogUKMEventsWithSamplingOnSession",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAutofillLogUKMEventsWithSamplingOnSessionRate{
+    &kAutofillLogUKMEventsWithSamplingOnSession, "sampling_rate", 10};
 
 // Autofill is experimenting with an updated set of country specific rules.
 // Controls whether we use the current country-specific address import field
