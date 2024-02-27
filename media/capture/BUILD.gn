@@ -279,6 +279,8 @@ component("capture_lib") {
       "video/chromeos/camera_device_context.h",
       "video/chromeos/camera_device_delegate.cc",
       "video/chromeos/camera_device_delegate.h",
+      "video/chromeos/camera_effects_observer.cc",
+      "video/chromeos/camera_effects_observer.h",
       "video/chromeos/camera_hal_delegate.cc",
       "video/chromeos/camera_hal_delegate.h",
       "video/chromeos/camera_hal_dispatcher_impl.cc",
