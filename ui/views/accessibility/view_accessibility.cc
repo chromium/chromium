@@ -384,6 +384,12 @@ void ViewAccessibility::SetWordEnds(const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, offsets);
 }
 
+void ViewAccessibility::ClearTextOffsets() {
+  data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
+  data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordStarts);
+  data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
+}
+
 void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
   data_.SetHasPopup(has_popup);
 }
@@ -752,14 +758,6 @@ void ViewAccessibility::OverrideWordStarts(
 void ViewAccessibility::OverrideWordEnds(const std::vector<int32_t>& offsets) {
   override_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
                                      offsets);
-}
-
-void ViewAccessibility::ClearTextOffsets() {
-  override_data_.RemoveIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets);
-  override_data_.RemoveIntListAttribute(
-      ax::mojom::IntListAttribute::kWordStarts);
-  override_data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {

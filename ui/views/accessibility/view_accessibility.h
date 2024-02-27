@@ -111,6 +111,8 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetWordEnds(const std::vector<int32_t>& offsets);
 
+  void ClearTextOffsets();
+
   void SetHasPopup(const ax::mojom::HasPopup has_popup);
 
   void SetRole(const ax::mojom::Role role);
@@ -321,8 +323,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // Deprecated. Use ViewAccessibility::SetWordEnds instead.
   // See https://crbug.com/324485311.
   void OverrideWordEnds(const std::vector<int32_t>& offsets);
-
-  void ClearTextOffsets();
 
   // Returns the accessibility object that represents the View whose
   // accessibility is managed by this instance. This may be an AXPlatformNode or
