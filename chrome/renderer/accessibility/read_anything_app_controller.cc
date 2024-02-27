@@ -1097,7 +1097,7 @@ void ReadAnythingAppController::OnConnected() {
   web_ui_connected_time_ms_ = base::TimeTicks::Now();
   base::UmaHistogramLongTimes(
       "Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected",
-      base::TimeTicks::Now() - web_ui_connected_time_ms_);
+      base::TimeTicks::Now() - renderer_load_triggered_time_ms_);
   mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_receiver =
           page_handler_factory_.BindNewPipeAndPassReceiver();
