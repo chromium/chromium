@@ -35,6 +35,9 @@ if (concurrent_links == -1) {
       # Based on measurements of linking chrome.dll and chrome_child.dll, plus
       # a little padding to account for future growth.
       _args += [ "--mem_per_link_gb=45" ]
+    } else if (is_android) {
+      # Large solink of Android official builds take 30-60GB.
+      _args += [ "--mem_per_link_gb=30" ]
     } else {
       _args += [ "--mem_per_link_gb=20" ]
     }
