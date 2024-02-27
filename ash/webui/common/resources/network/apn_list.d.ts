@@ -33,6 +33,7 @@ export class ApnList extends PolymerElement {
   portalState: PortalState;
   shouldOmitLinks: boolean;
   openApnDetailDialogInCreateMode(): void;
+  openApnSelectionDialog(): void;
   private getApns_;
   private isConnectedApnAutoDetected_: boolean;
   private isApnConnected_;

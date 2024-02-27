@@ -41,17 +41,17 @@
     color: var(--cros-text-color-positive);
   }
 
-  #createCustomApnButton {
+  .add-apn-operation {
     margin-bottom: 10px;
     margin-inline-start: 20px;
   }
 
-  #createCustomApnButton iron-icon {
+  .add-apn-operation iron-icon {
     --iron-icon-fill-color: var(--text-color);
     margin-inline-end: 8px;
   }
 
-  #createCustomApnButton[disabled] iron-icon {
+  .add-apn-operation[disabled] iron-icon {
     --iron-icon-fill-color: var(--disabled);
   }
 
@@ -157,12 +157,17 @@
           should-omit-links>
       </apn-list>
       <div id="apnButtonTitle">
+        <cr-button id="discoverMoreApnsButton"
+            on-click="onDiscoverMoreApnsClicked_"
+            class="add-apn-operation cancel-button"
+            disabled="[[isNumCustomApnsLimitReached_]]">
+          $i18n{apnPageDiscoverMoreApns}
+        </cr-button>
         <cr-button id="createCustomApnButton"
             on-click="onCreateCustomApnClicked_"
-            class="cancel-button"
+            class="add-apn-operation cancel-button"
             disabled="[[isNumCustomApnsLimitReached_]]">
-          <iron-icon icon="cr:add"></iron-icon>
-          $i18n{apnPageAddNewApn}
+          $i18n{apnPageCreateNewApn}
         </cr-button>
       </div>
       <!-- TODO(b/162365553) Add a11y support-->

@@ -732,7 +732,7 @@ export class InternetDetailDialogElement extends
   }
 
   /**
-   * Handles UI requests to add new APN.
+   * Handles UI requests to create new custom APN.
    */
   private onCreateCustomApnClicked_() {
     if (this.isNumCustomApnsLimitReached_) {
@@ -743,6 +743,20 @@ export class InternetDetailDialogElement extends
     const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
     assert(apnList);
     apnList.openApnDetailDialogInCreateMode();
+  }
+
+  /**
+   * Handles UI requests to discover known APNs.
+   */
+  private onDiscoverMoreApnsClicked_() {
+    if (this.isNumCustomApnsLimitReached_) {
+      return;
+    }
+
+    assert(!!this.guid);
+    const apnList = this.shadowRoot!.querySelector<ApnList>('#apnList');
+    assert(apnList);
+    apnList.openApnSelectionDialog();
   }
 
   private computeIsNumCustomApnsLimitReached_(): boolean {

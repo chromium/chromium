@@ -497,15 +497,20 @@ suite('internet-detail-dialog', () => {
         await init();
         getElement('cr-expand-button').click();
 
-        const getApnButton = () =>
+        const createCustomApnButton = () =>
             getElement<CrButtonElement>('#createCustomApnButton');
+
+        const discoverMoreApnsButton = () =>
+            getElement<CrButtonElement>('#discoverMoreApnsButton');
 
         const getApnTooltip = () =>
             internetDetailDialog.shadowRoot!.querySelector('#apnTooltip');
 
-        assertTrue(!!getApnButton());
+        assertTrue(!!createCustomApnButton());
         assertFalse(!!getApnTooltip());
-        assertFalse(getApnButton().disabled);
+        assertFalse(createCustomApnButton().disabled);
+        assertTrue(!!discoverMoreApnsButton());
+        assertFalse(discoverMoreApnsButton().disabled);
 
         // We're setting the list of APNs to the max number
         await setupCellularNetwork(
@@ -516,7 +521,8 @@ suite('internet-detail-dialog', () => {
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
 
-        assertTrue(getApnButton().disabled);
+        assertTrue(createCustomApnButton().disabled);
+        assertTrue(discoverMoreApnsButton().disabled);
         const apnTooltip = getApnTooltip();
         assert(apnTooltip);
         assertTrue(apnTooltip.innerHTML.includes(
@@ -529,12 +535,30 @@ suite('internet-detail-dialog', () => {
         await flushAsync();
 
         assertFalse(!!getApnTooltip());
-        assertFalse(getApnButton().disabled);
+        assertFalse(createCustomApnButton().disabled);
+        assertFalse(discoverMoreApnsButton().disabled);
 
-        getApnButton().click();
+        createCustomApnButton().click();
         await flushAsync();
-        assertTrue(!!getElement('apn-list')
-                         .shadowRoot!.querySelector('apn-detail-dialog'));
+
+        const apnDetailDialog =
+            getElement('apn-list')
+                .shadowRoot!.querySelector('apn-detail-dialog');
+        assertTrue(!!apnDetailDialog);
+
+        const apnDetailDialogCancelBtn =
+            apnDetailDialog.shadowRoot!.querySelector<CrButtonElement>(
+                '#apnDetailCancelBtn');
+        assertTrue(!!apnDetailDialogCancelBtn);
+        apnDetailDialogCancelBtn.click();
+
+        discoverMoreApnsButton().click();
+        await flushAsync();
+
+        const apnSelectionDialog =
+            getElement('apn-list')
+                .shadowRoot!.querySelector('apn-selection-dialog');
+        assertTrue(!!apnSelectionDialog);
       });
 
   [false, true].forEach(isJellyEnabled => {

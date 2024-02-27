@@ -102,6 +102,10 @@ export class ApnList extends ApnListBase {
     this.showApnDetailDialog_(ApnDetailDialogMode.CREATE, /* apn= */ undefined);
   }
 
+  openApnSelectionDialog() {
+    this.shouldShowApnSelectionDialog_ = true;
+  }
+
   /**
    * @return {boolean}
    * @private

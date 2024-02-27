@@ -5244,6 +5244,12 @@
         <message name="IDS_SETTINGS_ADD_NEW_APN" desc="Title for the button which opens the create new custom APN dialog.">
           New APN
         </message>
+        <message name="IDS_SETTINGS_CREATE_NEW_APN" desc="Title for the button which opens the create new custom APN dialog.">
+          Create new APN
+        </message>
+        <message name="IDS_SETTINGS_DISCOVER_MORE_APNS" desc="Title for the button which opens the discover more APNs dialog.">
+          Discover more APNs
+        </message>
         <message name="IDS_SETTINGS_APN_DESCRIPTION_NO_LINK" desc="Text describing APN settings menu without a link to more detailed information.">
           Manage network APN settings. APNs establish a connection between a cellular network and the internet.
         </message>

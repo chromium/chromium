@@ -328,6 +328,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"internetApnPageTitle", IDS_SETTINGS_ACCESS_POINT_NAME_APN},
       {"apn", IDS_SETTINGS_APN_INPUT_LABEL},
       {"apnPageAddNewApn", IDS_SETTINGS_ADD_NEW_APN},
+      {"apnPageCreateNewApn", IDS_SETTINGS_CREATE_NEW_APN},
+      {"apnPageDiscoverMoreApns", IDS_SETTINGS_DISCOVER_MORE_APNS},
       {"apnSettingsDescriptionNoLink", IDS_SETTINGS_APN_DESCRIPTION_NO_LINK},
       {"customApnLimitReached", IDS_SETTINGS_CUSTOM_APN_LIMIT_REACHED},
       {"apnSettingsZeroStateDescription",
