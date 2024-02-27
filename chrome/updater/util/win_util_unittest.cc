@@ -48,6 +48,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/unit_test_util_win.h"
+#include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_constants.h"
@@ -574,6 +575,20 @@ TEST(WinUtil, GetTextForSystemError) {
   EXPECT_EQ(
       GetTextForSystemError(MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x200)),
       L"0x80040200");
+}
+
+TEST(WinUtil, GetLoggedOnUserToken) {
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
+    return;
+  }
+
+  ASSERT_TRUE(::IsUserAnAdmin());
+  HResultOr<ScopedKernelHANDLE> token = GetLoggedOnUserToken();
+  ASSERT_TRUE(token.has_value());
+
+  ScopedImpersonation impersonate;
+  ASSERT_TRUE(SUCCEEDED(impersonate.Impersonate(token.value().get())));
+  ASSERT_FALSE(::IsUserAnAdmin());
 }
 
 }  // namespace updater

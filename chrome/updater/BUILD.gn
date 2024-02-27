@@ -604,6 +604,8 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/app/server/win:winver",
         "//chrome/updater/win:wrl_strict",
       ]
+
+      libs = [ "wtsapi32.lib" ]
     }
 
     if (is_linux) {

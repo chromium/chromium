@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <winhttp.h>
 #include <wrl/client.h>
+#include <wtsapi32.h>
 
 #include <algorithm>
 #include <cstdlib>
@@ -1274,6 +1275,142 @@ bool MigrateLegacyUpdaters(
   }
 
   return true;
+}
+
+namespace {
+
+struct ScopedWtsConnectStateCloseTraits {
+  static WTS_CONNECTSTATE_CLASS* InvalidValue() { return nullptr; }
+  static void Free(WTS_CONNECTSTATE_CLASS* memory) { ::WTSFreeMemory(memory); }
+};
+
+struct ScopedWtsSessionInfoCloseTraits {
+  static PWTS_SESSION_INFO InvalidValue() { return nullptr; }
+  static void Free(PWTS_SESSION_INFO memory) { ::WTSFreeMemory(memory); }
+};
+
+using ScopedWtsConnectState =
+    base::ScopedGeneric<WTS_CONNECTSTATE_CLASS*,
+                        ScopedWtsConnectStateCloseTraits>;
+using ScopedWtsSessionInfo =
+    base::ScopedGeneric<PWTS_SESSION_INFO, ScopedWtsSessionInfoCloseTraits>;
+
+// Returns `true` if there is a user logged on and active in the specified
+// session.
+bool IsSessionActive(std::optional<DWORD> session_id) {
+  if (!session_id) {
+    return false;
+  }
+
+  ScopedWtsConnectState wts_connect_state;
+  DWORD bytes_returned = 0;
+  if (::WTSQuerySessionInformation(
+          WTS_CURRENT_SERVER_HANDLE, *session_id, WTSConnectState,
+          reinterpret_cast<LPTSTR*>(
+              ScopedWtsConnectState::Receiver(wts_connect_state).get()),
+          &bytes_returned)) {
+    CHECK_EQ(bytes_returned, sizeof(WTS_CONNECTSTATE_CLASS));
+    return *wts_connect_state.get() == WTSActive;
+  }
+
+  return false;
+}
+
+// Returns the currently active session.
+// `WTSGetActiveConsoleSessionId` retrieves the Terminal Services session
+// currently attached to the physical console, so that is attempted first.
+// `WTSGetActiveConsoleSessionId` does not work for terminal servers where the
+// current active session is always the console. For those, an active session
+// is found by enumerating all the sessions that are present on the system, and
+// the first active session is returned.
+std::optional<DWORD> GetActiveSessionId() {
+  if (DWORD active_session_id = ::WTSGetActiveConsoleSessionId();
+      IsSessionActive(active_session_id)) {
+    return active_session_id;
+  }
+
+  ScopedWtsSessionInfo session_info;
+  DWORD num_sessions = 0;
+  if (::WTSEnumerateSessions(WTS_CURRENT_SERVER_HANDLE, 0, 1,
+                             ScopedWtsSessionInfo::Receiver(session_info).get(),
+                             &num_sessions)) {
+    for (size_t i = 0; i < num_sessions; ++i) {
+      if (session_info.get()[i].State == WTSActive) {
+        return session_info.get()[i].SessionId;
+      }
+    }
+  }
+
+  return {};
+}
+
+std::vector<DWORD> FindProcesses(const std::wstring& process_name) {
+  base::NamedProcessIterator iter(process_name, nullptr);
+  std::vector<DWORD> pids;
+  while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
+    pids.push_back(process_entry->pid());
+  }
+  return pids;
+}
+
+// Returns processes running under `session_id`.
+std::vector<DWORD> FindProcessesInSession(const std::wstring& process_name,
+                                          std::optional<DWORD> session_id) {
+  if (!session_id) {
+    return {};
+  }
+  std::vector<DWORD> pids;
+  for (const auto pid : FindProcesses(process_name)) {
+    DWORD process_session = 0;
+    if (::ProcessIdToSessionId(pid, &process_session) &&
+        (process_session == *session_id)) {
+      pids.push_back(pid);
+    }
+  }
+  return pids;
+}
+
+// Returns the first instance found of explorer.exe.
+std::optional<DWORD> GetExplorerPid() {
+  std::vector<DWORD> pids =
+      FindProcessesInSession(L"EXPLORER.EXE", GetActiveSessionId());
+  if (pids.empty()) {
+    return {};
+  }
+  return pids[0];
+}
+
+// Returns an impersonation token for the user running process_id.
+HResultOr<ScopedKernelHANDLE> GetImpersonationToken(
+    std::optional<DWORD> process_id) {
+  if (!process_id) {
+    return base::unexpected(E_UNEXPECTED);
+  }
+  base::win::ScopedHandle process(::OpenProcess(
+      PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, TRUE, *process_id));
+  if (!process.IsValid()) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+  ScopedKernelHANDLE process_token;
+  if (!::OpenProcessToken(process.Get(), TOKEN_DUPLICATE | TOKEN_QUERY,
+                          ScopedKernelHANDLE::Receiver(process_token).get())) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+  ScopedKernelHANDLE user_token;
+  if (!::DuplicateTokenEx(process_token.get(),
+                          TOKEN_IMPERSONATE | TOKEN_QUERY |
+                              TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE,
+                          NULL, SecurityImpersonation, TokenPrimary,
+                          ScopedKernelHANDLE::Receiver(user_token).get())) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+  return user_token;
+}
+
+}  // namespace
+
+HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken() {
+  return GetImpersonationToken(GetExplorerPid());
 }
 
 }  // namespace updater
