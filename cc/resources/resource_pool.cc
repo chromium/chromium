@@ -332,8 +332,15 @@ bool ResourcePool::PrepareForExport(
       resource->mark_avoid_reuse();
       return false;
     }
+    uint32_t texture_target =
+        gpu_backing->shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
+    // NOTE: Unittests broadly hit this code with GpuBacking instances on which
+    // they have not set the `texture_target` field, leaving it at its default
+    // value of 0.
+    CHECK(!gpu_backing->texture_target ||
+          gpu_backing->texture_target == texture_target);
     transferable = viz::TransferableResource::MakeGpu(
-        gpu_backing->shared_image->mailbox(), gpu_backing->texture_target,
+        gpu_backing->shared_image->mailbox(), texture_target,
         gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
         gpu_backing->overlay_candidate, resource_source);
     if (gpu_backing->wait_on_fence_required)

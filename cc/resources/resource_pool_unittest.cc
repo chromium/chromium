@@ -700,7 +700,6 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_NE(gfx::BufferFormat::RGBA_8888,
             viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  uint32_t target = 5;
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x123), 7);
 
@@ -712,7 +711,6 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   resource.gpu_backing()->shared_image =
       gpu::ClientSharedImage::CreateForTesting();
   resource.gpu_backing()->mailbox_sync_token = sync_token;
-  resource.gpu_backing()->texture_target = target;
   resource.gpu_backing()->wait_on_fence_required = true;
   resource.gpu_backing()->overlay_candidate = true;
 
@@ -733,7 +731,9 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_EQ(transfer[0].mailbox_holder.mailbox,
             resource.gpu_backing()->shared_image->mailbox());
   EXPECT_EQ(transfer[0].mailbox_holder.sync_token, sync_token);
-  EXPECT_EQ(transfer[0].mailbox_holder.texture_target, target);
+  EXPECT_EQ(transfer[0].mailbox_holder.texture_target,
+            resource.gpu_backing()->shared_image->GetTextureTarget(
+                gfx::BufferUsage::SCANOUT));
   EXPECT_EQ(transfer[0].format, format);
   EXPECT_EQ(
       transfer[0].synchronization_type,
