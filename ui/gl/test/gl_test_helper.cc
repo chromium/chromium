@@ -9,6 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "base/containers/heap_array.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -78,10 +79,10 @@ bool GLTestHelper::CheckPixelsWithError(int x,
                                         int error,
                                         const uint8_t expected_color[4]) {
   int size = width * height * 4;
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
+  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
   const uint8_t kCheckClearValue = 123u;
-  memset(pixels.get(), kCheckClearValue, size);
-  glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.get());
+  memset(pixels.data(), kCheckClearValue, pixels.size());
+  glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
   int bad_count = 0;
   for (int yy = 0; yy < height; ++yy) {
     for (int xx = 0; xx < width; ++xx) {
