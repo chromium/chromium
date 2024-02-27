@@ -30,6 +30,7 @@ class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
   ChromeBrowserState* GetBrowserState(const base::FilePath& path) override;
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
+  void LoadBrowserStates() override;
 
   // Adds a browser state to the list of browsers to track.
   void AddBrowserState(std::unique_ptr<ChromeBrowserState>,

@@ -42,6 +42,9 @@ class ChromeBrowserStateManager {
   // Returns the list of loaded ChromeBrowserStates.
   virtual std::vector<ChromeBrowserState*> GetLoadedBrowserStates() = 0;
 
+  // Loads the last active browser states.
+  virtual void LoadBrowserStates() = 0;
+
  protected:
   ChromeBrowserStateManager() {}
 };

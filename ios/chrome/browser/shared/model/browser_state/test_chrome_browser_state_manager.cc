@@ -66,3 +66,5 @@ TestChromeBrowserStateManager::GetLoadedBrowserStates() {
   }
   return result;
 }
+
+void TestChromeBrowserStateManager::LoadBrowserStates() {}
