@@ -49,6 +49,8 @@
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/cellular_setup/cellular_setup_impl.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
+#include "chromeos/components/in_session_auth/in_process_instances.h"
+#include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -359,6 +361,11 @@ void OSSettingsUI::BindInterface(
   auth::BindToPasswordFactorEditor(
       std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate(),
       g_browser_process->local_state());
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver) {
+  chromeos::auth::BindToInSessionAuthService(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

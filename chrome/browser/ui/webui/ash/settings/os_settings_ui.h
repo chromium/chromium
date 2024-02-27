@@ -32,6 +32,7 @@
 #include "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-forward.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
+#include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -184,6 +185,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<auth::mojom::PinFactorEditor> receiver);
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver);
+
+  // Binds to the in session auth service, for authenticating sensitive
+  // operations.
+  void BindInterface(
+      mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver);
 
   // Binds to the Jelly dynamic color Mojo
   void BindInterface(

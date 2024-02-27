@@ -1416,6 +1416,9 @@ void PopulateChromeWebUIFrameBinders(
       ash::cellular_setup::mojom::CellularSetup, ash::settings::OSSettingsUI>(
       map);
 
+  RegisterWebUIControllerInterfaceBinder<chromeos::auth::mojom::InSessionAuth,
+                                         ash::settings::OSSettingsUI>(map);
+
   RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::AuthFactorConfig,
                                          ash::settings::OSSettingsUI,
                                          ash::OobeUI>(map);

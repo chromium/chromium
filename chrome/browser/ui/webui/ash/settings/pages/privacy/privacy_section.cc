@@ -615,6 +615,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           ash::features::IsSnoopingProtectionEnabled());
   html_source->AddBoolean("isQuickDimEnabled",
                           ash::features::IsQuickDimEnabled());
+  html_source->AddBoolean("isAuthPanelEnabled",
+                          ash::features::IsUseAuthPanelInSettingsEnabled());
 
   html_source->AddBoolean(
       "isPrivacyHubHatsEnabled",

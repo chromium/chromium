@@ -61,6 +61,7 @@ if (is_chromeos_ash) {
 
   mojo_ts_files += [
     "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.ts",
+    "chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.ts",
     "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-webui.ts",
     "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.ts",
@@ -111,6 +112,7 @@ preprocess_if_expr("copy_mojo_ts") {
       "//chromeos/ash/services/connectivity/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/hotspot_config/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_ts__generator",
+      "//chromeos/components/in_session_auth/mojom:mojom_ts__generator",
       "//ui/base/accelerators/mojom:mojom_ts__generator",
       "//ui/events/mojom:mojom_ts__generator",
       "//ui/latency/mojom:mojom_ts__generator",
