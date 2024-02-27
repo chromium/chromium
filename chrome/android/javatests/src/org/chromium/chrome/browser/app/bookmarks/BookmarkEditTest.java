@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +17,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -28,12 +33,16 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelTest;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -48,6 +57,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests functionality in BookmarkEditActivity. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkEditTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -256,7 +266,9 @@ public class BookmarkEditTest {
         Assert.assertEquals(
                 "Incorrect folder.",
                 getBookmarkItem(sMobileNode).getTitle(),
-                sBookmarkEditActivity.getFolderTextView().getText());
+                sBookmarkEditActivity
+                        .getFolderSelectRowPropertyModelForTesting()
+                        .get(ImprovedBookmarkRowProperties.TITLE));
 
         int currentModelChangedCount = mModelChangedCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -273,7 +285,9 @@ public class BookmarkEditTest {
         Assert.assertEquals(
                 "Folder should change after model update.",
                 getBookmarkItem(sOtherNode).getTitle(),
-                sBookmarkEditActivity.getFolderTextView().getText());
+                sBookmarkEditActivity
+                        .getFolderSelectRowPropertyModelForTesting()
+                        .get(ImprovedBookmarkRowProperties.TITLE));
     }
 
     @Test
@@ -293,27 +307,30 @@ public class BookmarkEditTest {
     @Test
     @MediumTest
     @Feature({"Bookmark"})
-    public void testEditFolderLocation() throws ExecutionException, TimeoutException {
-        BookmarkId testFolder = addFolder(sMobileNode, 0, FOLDER_A);
+    public void testEditFolderLocation()
+            throws ExecutionException, TimeoutException, InterruptedException {
+        addFolder(sMobileNode, 0, FOLDER_A);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> sBookmarkEditActivity.getFolderTextView().performClick());
-        waitForMoveFolderActivity();
-
-        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sBookmarkEditActivity.getFolderSelectRowForTesting().performClick());
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    BookmarkFolderSelectActivity folderSelectActivity =
-                            (BookmarkFolderSelectActivity)
-                                    ApplicationStatus.getLastTrackedFocusedActivity();
-                    int pos = folderSelectActivity.getFolderPositionForTesting(testFolder);
-                    Assert.assertNotEquals("Didn't find position for test folder.", -1, pos);
-                    folderSelectActivity.performClickForTesting(pos);
+                    Criteria.checkThat(
+                            ApplicationStatus.getLastTrackedFocusedActivity(),
+                            IsInstanceOf.instanceOf(BookmarkFolderPickerActivity.class));
                 });
 
+        // This sleep allows the espresso events to actually go through. Without them, the test is
+        // very flaky.
+        Thread.sleep(200);
+        onView(withText(FOLDER_A)).perform(click());
+        onView(withText("Move here")).perform(click());
         waitForEditActivity();
         Assert.assertEquals(
                 "Folder should change after folder activity finishes.",
                 FOLDER_A,
-                sBookmarkEditActivity.getFolderTextView().getText());
+                sBookmarkEditActivity
+                        .getFolderSelectRowPropertyModelForTesting()
+                        .get(ImprovedBookmarkRowProperties.TITLE));
     }
 
     @Test
@@ -322,21 +339,19 @@ public class BookmarkEditTest {
     @RequiresRestart("tests destruction of BookmarkEditActivity")
     public void testChangeFolderWhenBookmarkRemoved() throws ExecutionException, TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> sBookmarkEditActivity.getFolderTextView().performClick());
-        waitForMoveFolderActivity();
-
-        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sBookmarkEditActivity.getFolderSelectRowForTesting().performClick());
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    Assert.assertTrue(
-                            "Expected BookmarkFolderSelectActivity.",
-                            ApplicationStatus.getLastTrackedFocusedActivity()
-                                    instanceof BookmarkFolderSelectActivity);
-                    sBookmarkModel.deleteBookmark(sBookmarkId);
+                    Criteria.checkThat(
+                            ApplicationStatus.getLastTrackedFocusedActivity(),
+                            IsInstanceOf.instanceOf(BookmarkFolderPickerActivity.class));
                 });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> sBookmarkModel.deleteBookmark(sBookmarkId));
         CriteriaHelper.pollUiThread(
                 () ->
                         !(ApplicationStatus.getLastTrackedFocusedActivity()
-                                instanceof BookmarkFolderSelectActivity),
+                                instanceof BookmarkFolderPickerActivity),
                 "Timed out waiting for BookmarkFolderSelectActivity to close");
     }
 

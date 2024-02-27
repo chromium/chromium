@@ -394,10 +394,6 @@ found in the LICENSE file.
     </style>
 
     <!-- Bookmarks -->
-    <style name="TextAppearance.BookmarkEditFolderName"
-        parent="@style/TextAppearance.AppCompat.Medium">
-        <item name="android:textColor">@color/default_icon_color_tint_list</item>
-    </style>
     <style name="BookmarkSaveFlowContainer">
         <item name="android:paddingVertical">18dp</item>
         <item name="android:paddingStart">12dp</item>

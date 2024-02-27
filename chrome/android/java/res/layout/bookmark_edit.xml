@@ -36,30 +36,6 @@
                     android:singleLine="true" />
             </org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/folder_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
-                    android:text="@string/bookmark_folder"
-                    android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
-
-                <TextView
-                    android:id="@+id/folder_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
-                    android:textAppearance="@style/TextAppearance.BookmarkEditFolderName" />
-            </LinearLayout>
-
             <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                 android:id="@+id/url_text"
                 android:layout_width="match_parent"
@@ -76,34 +52,27 @@
                     android:singleLine="true" />
             </org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/improved_folder_container"
-                android:visibility="gone"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/folder_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
-                <TextView
-                    android:id="@+id/improved_folder_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
-                    android:text="@string/bookmark_folder"
-                    android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+                android:layout_marginTop="18dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:text="@string/bookmark_folder"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 
-                <!--
-                    This row is laid out for a recycler view, so when it's embedded in the edit
-                    flow the margins need to be adjusted to be left aligned with the title.
-                -->
-                <FrameLayout
-                    android:id="@+id/improved_folder_row_container"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="@dimen/improved_bookmark_row_horizontal_negative_margin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+            <!--
+                This row is laid out for a recycler view, so when it's embedded in the edit
+                flow the margins need to be adjusted to be left aligned with the title.
+            -->
+            <FrameLayout
+                android:id="@+id/folder_row_container"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="@dimen/improved_bookmark_row_horizontal_negative_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
