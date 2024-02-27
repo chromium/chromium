@@ -64,15 +64,10 @@ void TextDecorationPainter::UpdateDecorationInfo(
     return;
   }
 
-  TextDecorationLine effective_selection_decoration_lines =
-      TextDecorationLine::kNone;
-  Color effective_selection_decoration_color;
-  if (UNLIKELY(phase_ == kSelection)) {
-    effective_selection_decoration_lines =
-        selection_->GetSelectionStyle().selection_decoration_lines;
-    effective_selection_decoration_color =
-        selection_->GetSelectionStyle().selection_decoration_color;
-  }
+  std::optional<AppliedTextDecoration> effective_selection_decoration =
+      UNLIKELY(phase_ == kSelection)
+          ? selection_->GetSelectionStyle().selection_text_decoration
+          : std::nullopt;
 
   if (text_item.IsSvgText() && paint_info_.IsRenderingResourceSubtree()) {
     // Need to recompute a scaled font and a scaling factor because they
@@ -94,17 +89,15 @@ void TextDecorationPainter::UpdateDecorationInfo(
     top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
     result.emplace(LineRelativeOffset{decoration_rect_.offset.line_left, top},
                    decoration_rect_.InlineSize(), style, inline_context_,
-                   effective_selection_decoration_lines,
-                   effective_selection_decoration_color, decoration_override,
+                   effective_selection_decoration, decoration_override,
                    &scaled_font, MinimumThickness1(false),
                    text_item.SvgScalingFactor() / scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
         decoration_rect_override.value_or(decoration_rect_);
     result.emplace(decoration_rect.offset, decoration_rect.InlineSize(), style,
-                   inline_context_, effective_selection_decoration_lines,
-                   effective_selection_decoration_color, decoration_override,
-                   &text_item.ScaledFont(),
+                   inline_context_, effective_selection_decoration,
+                   decoration_override, &text_item.ScaledFont(),
                    MinimumThickness1(!text_item.IsSvgText()));
   }
 }

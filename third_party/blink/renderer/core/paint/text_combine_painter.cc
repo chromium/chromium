@@ -77,9 +77,9 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
   std::optional<TextDecorationInfo> decoration_info;
   std::optional<TextDecorationPainter> decoration_painter;
   if (has_text_decoration) {
-    decoration_info.emplace(
-        text_frame_rect.offset, text_frame_rect.InlineSize(), style,
-        /* inline_context */ nullptr, TextDecorationLine::kNone, Color());
+    decoration_info.emplace(text_frame_rect.offset,
+                            text_frame_rect.InlineSize(), style,
+                            /* inline_context */ nullptr, std::nullopt);
     decoration_painter.emplace(text_painter, /* inline_context */ nullptr,
                                paint_info, style, text_style, text_frame_rect,
                                nullptr);

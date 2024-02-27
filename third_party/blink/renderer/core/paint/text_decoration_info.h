@@ -52,8 +52,7 @@ class CORE_EXPORT TextDecorationInfo {
       LayoutUnit width,
       const ComputedStyle& target_style,
       const InlinePaintContext* inline_context,
-      const TextDecorationLine selection_decoration_line,
-      const Color selection_decoration_color,
+      const std::optional<AppliedTextDecoration> selection_text_decoration,
       const AppliedTextDecoration* decoration_override = nullptr,
       const Font* font_override = nullptr,
       MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
@@ -184,9 +183,7 @@ class CORE_EXPORT TextDecorationInfo {
   const InlinePaintContext* const inline_context_ = nullptr;
   const DecoratingBox* decorating_box_ = nullptr;
   const AppliedTextDecoration* applied_text_decoration_ = nullptr;
-  const TextDecorationLine selection_decoration_line_ =
-      TextDecorationLine::kNone;
-  const Color selection_decoration_color_;
+  const std::optional<AppliedTextDecoration> selection_text_decoration_;
   const Font* font_ = nullptr;
   const SimpleFontData* font_data_ = nullptr;
 

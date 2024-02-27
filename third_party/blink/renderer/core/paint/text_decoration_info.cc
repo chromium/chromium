@@ -270,16 +270,14 @@ TextDecorationInfo::TextDecorationInfo(
     LayoutUnit width,
     const ComputedStyle& target_style,
     const InlinePaintContext* inline_context,
-    const TextDecorationLine selection_decoration_line,
-    const Color selection_decoration_color,
+    const std::optional<AppliedTextDecoration> selection_text_decoration,
     const AppliedTextDecoration* decoration_override,
     const Font* font_override,
     MinimumThickness1 minimum_thickness1,
     float scaling_factor)
     : target_style_(target_style),
       inline_context_(inline_context),
-      selection_decoration_line_(selection_decoration_line),
-      selection_decoration_color_(selection_decoration_color),
+      selection_text_decoration_(selection_text_decoration),
       decoration_override_(decoration_override),
       font_override_(font_override && font_override != &target_style.GetFont()
                          ? font_override
@@ -557,8 +555,10 @@ Color TextDecorationInfo::LineColor() const {
   // Find the matched normal and selection |AppliedTextDecoration|
   // and use the text-decoration-color from selection when it is.
   DCHECK(applied_text_decoration_);
-  if (applied_text_decoration_->Lines() == selection_decoration_line_) {
-    return selection_decoration_color_;
+  if (selection_text_decoration_ &&
+      applied_text_decoration_->Lines() ==
+          selection_text_decoration_.value().Lines()) {
+    return selection_text_decoration_.value().GetColor();
   }
 
   return applied_text_decoration_->GetColor();
