@@ -579,11 +579,11 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     CHECK(false) << "GPU acceleration is required on certain platforms!";
 #endif
   } else if (features::IsSkiaGraphiteEnabled(command_line)) {
-    // If Graphite is enabled, fall back to Ganesh only on platforms that do not
-    // support software compositing. Otherwise, fall back directly to software.
+    // If Graphite is enabled, fall back to Ganesh/GL on platforms that do not
+    // support software compositing or sometimes fail dawn initialization.
     // TODO(b/323953910): Eliminate this fallback on each platform once Graphite
     // stability is sufficient on that platform.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_MAC)
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
 #endif
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GRAPHITE);

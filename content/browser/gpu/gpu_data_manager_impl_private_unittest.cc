@@ -466,9 +466,9 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-// On Android and ChromeOS, Graphite should fall back to Ganesh/GL.
-TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphiteToGaneshGL) {
+// On Mac graphite should fallback to Swiftshader immediately. On other
+// platforms graphite should fallback to Ganesh/GL.
+TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
@@ -476,9 +476,12 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphiteToGaneshGL) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+#else
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
-}
 #endif
+}
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.
@@ -503,17 +506,6 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabled) {
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
 
-TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphiteToSwiftShader) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableSkiaGraphite);
-
-  ScopedGpuDataManagerImplPrivate manager;
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
-
-  manager->FallBackToNextGpuMode();
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
-}
-
 TEST_F(GpuDataManagerImplPrivateTest,
        FallbackFromGraphiteWithSwiftShaderDisabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -525,6 +517,12 @@ TEST_F(GpuDataManagerImplPrivateTest,
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+
+#if !BUILDFLAG(IS_MAC)
+  // Mac is the only platform that doesn't fallback to Ganesh/GL first.
+  manager->FallBackToNextGpuMode();
+#endif
+
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
