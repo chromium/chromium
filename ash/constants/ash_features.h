@@ -959,6 +959,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeGMSCoreWindowCloserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskTemplateSyncEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayPerformanceModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputDeviceSettingsLoggingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputDeviceSettingsSplitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralCustomizationEnabled();

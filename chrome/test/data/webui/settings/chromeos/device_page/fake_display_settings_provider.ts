@@ -29,6 +29,7 @@ export class FakeDisplaySettingsProvider implements
   private displayConfigurationObservers:
       DisplayConfigurationObserverInterface[] = [];
   private isTabletMode: boolean = false;
+  private performanceSettingEnabled: boolean = false;
   private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private displayHistogram = new Map<DisplaySettingsType, number>();
@@ -151,6 +152,15 @@ export class FakeDisplaySettingsProvider implements
            0) +
               1);
     }
+  }
+
+  // Implement DisplaySettingsProviderInterface.
+  setShinyPerformance(enabled: boolean): void {
+    this.performanceSettingEnabled = enabled;
+  }
+
+  getShinyPerformance(): boolean {
+    return this.performanceSettingEnabled;
   }
 
   getInternalDisplayHistogram(): Map<DisplaySettingsType, number> {

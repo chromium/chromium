@@ -704,6 +704,10 @@ bool IsUnifiedDesktopAvailable() {
       ::switches::kEnableUnifiedDesktop);
 }
 
+bool IsDisplayPerformanceSupported() {
+  return ash::features::IsDisplayPerformanceModeEnabled();
+}
+
 bool DoesDeviceSupportAmbientColor() {
   return ash::features::IsAllowAmbientEQEnabled();
 }
@@ -1867,6 +1871,8 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayScreenExtended", IDS_SETTINGS_DISPLAY_SCREEN_EXTENDED},
       {"displayScreenPrimary", IDS_SETTINGS_DISPLAY_SCREEN_PRIMARY},
       {"displayScreenTitle", IDS_SETTINGS_DISPLAY_SCREEN},
+      {"displayShinyPerformanceLabel",
+       IDS_SETTINGS_DISPLAY_SHINY_PERFORMANCE_LABEL},
       {"displaySizeSliderMaxLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MAXIMUM},
       {"displaySizeSliderMinLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MINIMUM},
       {"displayTitle", kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE
@@ -1927,6 +1933,9 @@ void DeviceSection::AddDeviceDisplayStrings(
   html_source->AddBoolean(
       "allowDisplayAlignmentApi",
       base::FeatureList::IsEnabled(ash::features::kDisplayAlignAssist));
+
+  html_source->AddBoolean("isDisplayPerformanceSupported",
+                          IsDisplayPerformanceSupported());
 }
 
 }  // namespace ash::settings

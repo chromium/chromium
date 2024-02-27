@@ -5588,6 +5588,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMP_SLIDER_MIN_LABEL" desc="In Device Settings > Displays, label of the minimum value settable by the color temperature slider.">
     Cooler
   </message>
+  <message name="IDS_SETTINGS_DISPLAY_SHINY_PERFORMANCE_LABEL" desc="In Device Settings > Displays, label of the toggle of enabling Shiny Performance." translateable="false">
+    Shiny Performance
+  </message>
   <message name="IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP" desc="In Device Settings > Displays, the label for the control for the unified desktop feature.">
     Allow windows to span displays
   </message>

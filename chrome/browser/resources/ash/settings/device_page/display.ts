@@ -166,6 +166,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
+      isDisplayPerformanceSupported_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isDisplayPerformanceSupported');
+        },
+      },
+
       ambientColorAvailable_: {
         type: Boolean,
         value() {
@@ -186,6 +193,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       },
 
       isTabletMode_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isDisplayPerformanceEnabled_: {
         type: Boolean,
         value: false,
       },
@@ -263,6 +275,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private displaySettingsProvider: DisplaySettingsProviderInterface;
   private displayTabNames_: string[];
   private invalidDisplayId_: string;
+  private isDisplayPerformanceEnabled_: boolean;
   private readonly isRevampWayfindingEnabled_: boolean;
   private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
@@ -1373,6 +1386,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       displayLayout.updateDisplays(
           this.displays, this.layouts, this.mirroringDestinationIds);
     }
+  }
+
+  private toggleDisplayPerformanceEnabled_(): void {
+    this.isDisplayPerformanceEnabled_ = !this.isDisplayPerformanceEnabled_;
+    // TODO(b/320526769): Create a mojom call to Ash
   }
 
   getInvalidDisplayId(): string {

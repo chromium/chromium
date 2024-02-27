@@ -3301,6 +3301,10 @@ bool IsDeskTemplateSyncEnabled() {
   return base::FeatureList::IsEnabled(kDeskTemplateSync);
 }
 
+bool IsDisplayPerformanceModeEnabled() {
+  return base::FeatureList::IsEnabled(kDisplayPerformanceMode);
+}
+
 bool IsInputDeviceSettingsLoggingEnabled() {
   return base::FeatureList::IsEnabled(kEnableInputDeviceSettingsLogging);
 }
