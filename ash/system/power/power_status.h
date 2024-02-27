@@ -263,6 +263,11 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Returns true if battery saver is active.
   bool IsBatterySaverActive() const;
 
+  // TODO(b/327054689): This pointer is needed because some power tests delete
+  // PowerStatus without the observers knowing about it, so observers have to
+  // check for its validity before using it.
+  base::WeakPtr<PowerStatus> GetWeakPtr();
+
   // Updates |proto_|. Does not notify observers.
   void SetProtoForTesting(const power_manager::PowerSupplyProperties& proto);
 

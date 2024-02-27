@@ -144,6 +144,7 @@ class DisplayConfigurationController;
 class DisplayConfigurationObserver;
 class DisplayErrorObserver;
 class DisplayHighlightController;
+class DisplayPerformanceModeController;
 class DisplayPrefs;
 class DisplayShutdownObserver;
 class DisplaySpeakerController;
@@ -520,6 +521,10 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   DisplayHighlightController* display_highlight_controller() {
     return display_highlight_controller_.get();
+  }
+
+  DisplayPerformanceModeController* display_performance_mode_controller() {
+    return display_performance_mode_controller_.get();
   }
 
   DockedMagnifierController* docked_magnifier_controller() {
@@ -1023,6 +1028,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<diagnostics::DiagnosticsLogController>
       diagnostics_log_controller_;
   std::unique_ptr<DisplayHighlightController> display_highlight_controller_;
+  std::unique_ptr<DisplayPerformanceModeController>
+      display_performance_mode_controller_;
   std::unique_ptr<DisplaySpeakerController> display_speaker_controller_;
   std::unique_ptr<DragDropController> drag_drop_controller_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;

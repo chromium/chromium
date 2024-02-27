@@ -451,6 +451,10 @@ bool PowerStatus::IsBatterySaverActive() const {
   return battery_saver_active_;
 }
 
+base::WeakPtr<PowerStatus> PowerStatus::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 PowerStatus::PowerStatus() {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
