@@ -411,8 +411,8 @@ class WebHidExtensionFeatureDisabledBrowserTest
   }
 };
 
-// TODO(crbug.com/1521554): Re-enable on linux and lacros.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1521554): Re-enable on linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
 #else
 #define MAYBE_FeatureDisabled FeatureDisabled
