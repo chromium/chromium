@@ -5,7 +5,6 @@
 #ifndef ASH_BIRCH_BIRCH_ITEM_H_
 #define ASH_BIRCH_BIRCH_ITEM_H_
 
-#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -82,8 +81,7 @@ struct ASH_EXPORT BirchAttachmentItem : public BirchItem {
 
 // A birch item which contains file path and time information.
 struct ASH_EXPORT BirchFileItem : public BirchItem {
-  BirchFileItem(const base::FilePath& file_path,
-                const std::optional<base::Time>& timestamp);
+  BirchFileItem(const base::FilePath& file_path, base::Time timestamp);
   BirchFileItem(BirchFileItem&&);
   BirchFileItem(const BirchFileItem&);
   BirchFileItem& operator=(const BirchFileItem&);
@@ -91,7 +89,7 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
   ~BirchFileItem() override;
 
   base::FilePath file_path;
-  std::optional<base::Time> timestamp;
+  base::Time timestamp;
 
   static constexpr char kItemType[] = "FileItem";
 

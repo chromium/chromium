@@ -95,7 +95,7 @@ std::string BirchAttachmentItem::ToString() const {
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
-                             const std::optional<base::Time>& timestamp)
+                             base::Time timestamp)
     : BirchItem(base::UTF8ToUTF16(file_path.BaseName().value()),
                 ui::ImageModel()),
       file_path(file_path),
@@ -118,13 +118,9 @@ const char* BirchFileItem::GetItemType() const {
 std::string BirchFileItem::ToString() const {
   std::stringstream ss;
   ss << "File item : {ranking: " << ranking
-     << ", title: " << base::UTF16ToUTF8(title) << ", file_path:" << file_path;
-  if (timestamp.has_value()) {
-    ss << ", timestamp: "
-       << base::UTF16ToUTF8(
-              base::TimeFormatShortDateAndTime(timestamp.value()));
-  }
-  ss << "}";
+     << ", title: " << base::UTF16ToUTF8(title) << ", file_path:" << file_path
+     << ", timestamp: "
+     << base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(timestamp)) << "}";
   return ss.str();
 }
 

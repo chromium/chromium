@@ -121,7 +121,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetWeatherItems({});
   model->SetCalendarItems({});
@@ -132,8 +132,8 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
 
   // Setting the file suggest items should not trigger items ready again, since
   // no data fetch was requested.
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
-  file_item_list.emplace_back(base::FilePath("test path 2"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
+  file_item_list.emplace_back(base::FilePath("test path 2"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
 
@@ -170,7 +170,7 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   task_environment()->FastForwardBy(base::Milliseconds(1000));
 
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   std::vector<BirchWeatherItem> weather_items;
@@ -217,7 +217,7 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   EXPECT_TRUE(model);
 
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
 
   // Passing time and setting data before requesting a birch data fetch will
   // not notify consumer.
@@ -277,7 +277,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
   model->SetWeatherItems({});
   model->SetCalendarItems({});
@@ -288,8 +288,8 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
 
   // Setting the file suggest items should not trigger items ready again, since
   // no data fetch was requested.
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
-  file_item_list.emplace_back(base::FilePath("test path 2"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
+  file_item_list.emplace_back(base::FilePath("test path 2"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
 
@@ -362,7 +362,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   EXPECT_FALSE(model->IsDataFresh());
 
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
@@ -417,7 +417,7 @@ TEST_F(BirchModelTest, GetAllItems) {
                              GURL("favicon"), "session");
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), std::nullopt);
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
   model->SetFileSuggestItems(std::move(file_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
