@@ -2,8 +2,6 @@ This is a testharness.js-based test.
 Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] el-dd
   assert_equals: <dd data-testname="el-dd" data-expectedrole="definition" class="ex">x</dd> expected "definition" but got "DescriptionListDetail"
-[FAIL] el-details
-  assert_equals: <details data-testname="el-details" data-expectedrole="group" class="ex"><summary>x</summary>x</details> expected "group" but got "Details"
 [FAIL] el-dt
   assert_equals: <dt data-testname="el-dt" data-expectedrole="term" class="ex">x</dt> expected "term" but got "DescriptionListTerm"
 [FAIL] el-form
