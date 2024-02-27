@@ -101,6 +101,9 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
     } else {
       DisableFeature(blink::features::kPlzDedicatedWorker);
     }
+    // Disable the feature to test eviction for dedicated worker.
+    DisableFeature(
+        blink::features::kAllowDatapipeDrainedAsBytesConsumerInBFCache);
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kLoadingTasksUnfreezable,
