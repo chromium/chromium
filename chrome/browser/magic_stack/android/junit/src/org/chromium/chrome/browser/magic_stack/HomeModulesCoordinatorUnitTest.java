@@ -89,7 +89,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private Resources mResources;
     @Mock private ModuleDelegateHost mModuleDelegateHost;
     @Mock private ViewGroup mView;
-    @Mock private RecyclerView mRecyclerView;
+    @Mock private HomeModulesRecyclerView mRecyclerView;
     @Mock private UiConfig mUiConfig;
     @Mock private Configuration mConfiguration;
     @Mock private ApplicationInfo mApplicationInfo;
