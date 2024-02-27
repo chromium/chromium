@@ -31,9 +31,10 @@
   [super setBounds:bounds];
 
   // progressPathWithEndAngle: relies on self.bounds and must be updated here.
-  // Track starts at 12 o'clock and ends at 12 o'clock.
-  self.trackLayer.path =
-      [self progressPathWithEndAngle:M_PI * 2 - M_PI_2].CGPath;
+  self.progressLayer.path = [self progressPath].CGPath;
+  self.trackLayer.path = [self progressPath].CGPath;
+  self.progressLayer.strokeStart = 0;
+  self.progressLayer.strokeEnd = self.progress;
 }
 
 - (void)willMoveToSuperview:(UIView*)newSuperview {
@@ -80,20 +81,19 @@
     return;
   }
 
-  self.progressLayer.path =
-      [self progressPathWithEndAngle:M_PI * 2 * self.progress - M_PI_2].CGPath;
+  self.progressLayer.strokeEnd = self.progress;
 }
 
 // Returns Bezier path for drawing radial progress or track. Start angle is
 // always 12 o'clock.
-- (UIBezierPath*)progressPathWithEndAngle:(CGFloat)endAngleInRadians {
+- (UIBezierPath*)progressPath {
   CGPoint center =
       CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
   CGFloat radius = CGRectGetWidth(self.bounds) / 2 - self.lineWidth;
   return [UIBezierPath bezierPathWithArcCenter:center
                                         radius:radius
                                     startAngle:-M_PI_2
-                                      endAngle:endAngleInRadians
+                                      endAngle:3 * M_PI_2
                                      clockwise:YES];
 }
 
