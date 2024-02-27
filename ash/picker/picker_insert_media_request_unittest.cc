@@ -51,8 +51,8 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_text = u"hello",
         },
         TestCase{
-            .media_to_insert =
-                PickerImageMedia(GURL("http://foo.com/fake.jpg")),
+            .media_to_insert = PickerImageMedia(GURL("http://foo.com/fake.jpg"),
+                                                gfx::Size(10, 10)),
             .expected_image_url = GURL("http://foo.com/fake.jpg"),
         },
         TestCase{
@@ -294,7 +294,8 @@ TEST(PickerInsertMediaRequestUnsupportedTest,
 
   base::test::TestFuture<void> failure_future;
   PickerInsertMediaRequest request(
-      &input_method, PickerImageMedia(GURL("http://foo.com")),
+      &input_method,
+      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)),
       /*insert_timeout=*/base::Seconds(1), failure_future.GetCallback());
   input_method.SetFocusedTextInputClient(&client);
 

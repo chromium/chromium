@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "ash/ash_export.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -23,8 +24,13 @@ struct ASH_EXPORT PickerTextMedia {
 
 struct ASH_EXPORT PickerImageMedia {
   GURL url;
+  // `dimensions` is std::nullopt if it's unknown.
+  std::optional<gfx::Size> dimensions;
+  std::u16string content_description;
 
-  explicit PickerImageMedia(GURL url);
+  explicit PickerImageMedia(GURL url,
+                            std::optional<gfx::Size> dimensions = std::nullopt,
+                            std::u16string content_description = u"");
 };
 
 struct ASH_EXPORT PickerLinkMedia {

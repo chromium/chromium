@@ -50,8 +50,8 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_text = u"hello",
         },
         TestCase{
-            .media_to_insert =
-                PickerImageMedia(GURL("http://foo.com/fake.jpg")),
+            .media_to_insert = PickerImageMedia(GURL("http://foo.com/fake.jpg"),
+                                                gfx::Size(10, 10)),
             .expected_image_url = GURL("http://foo.com/fake.jpg"),
         },
         TestCase{
@@ -63,8 +63,8 @@ TEST(PickerInsertMediaUnsupportedTest, InsertingUnsupportedImageReturnsFalse) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
-  EXPECT_FALSE(InsertMediaToInputField(PickerImageMedia(GURL("http://foo.com")),
-                                       &client));
+  EXPECT_FALSE(InsertMediaToInputField(
+      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), &client));
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 

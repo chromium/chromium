@@ -131,7 +131,10 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
             return PickerTextMedia(data.emoticon);
           },
           [](const PickerSearchResult::GifData& data) -> ReturnType {
-            return PickerImageMedia(data.full_url);
+            // TODO: b/322900073 - We should use the dimensions for the full
+            // resolution GIF, not the preview gif.
+            return PickerImageMedia(data.full_url, data.preview_dimensions,
+                                    data.content_description);
           },
           [](const PickerSearchResult::BrowsingHistoryData& data)
               -> ReturnType { return PickerLinkMedia(data.url); },

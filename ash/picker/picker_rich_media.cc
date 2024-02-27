@@ -17,7 +17,12 @@ PickerTextMedia::PickerTextMedia(std::u16string text) : text(std::move(text)) {}
 PickerTextMedia::PickerTextMedia(std::string_view text)
     : PickerTextMedia(base::UTF8ToUTF16(text)) {}
 
-PickerImageMedia::PickerImageMedia(GURL url) : url(std::move(url)) {}
+PickerImageMedia::PickerImageMedia(GURL url,
+                                   std::optional<gfx::Size> dimensions,
+                                   std::u16string content_description)
+    : url(std::move(url)),
+      dimensions(dimensions),
+      content_description(std::move(content_description)) {}
 
 PickerLinkMedia::PickerLinkMedia(GURL url) : url(std::move(url)) {}
 
