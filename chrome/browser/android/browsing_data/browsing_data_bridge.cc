@@ -102,7 +102,6 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
         remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
         break;
       case browsing_data::BrowsingDataType::COOKIES:
-        remove_mask |= BrowsingDataRemover::DATA_TYPE_COOKIES;
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         break;
       case browsing_data::BrowsingDataType::PASSWORDS:
