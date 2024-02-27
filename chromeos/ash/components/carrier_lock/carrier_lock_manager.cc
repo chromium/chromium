@@ -3,11 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
-#include "chromeos/ash/components/carrier_lock/carrier_lock.pb.h"
-#include "chromeos/ash/components/carrier_lock/fcm_topic_subscriber_impl.h"
-#include "chromeos/ash/components/carrier_lock/metrics.h"
-#include "chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.h"
-#include "chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.h"
+
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
@@ -17,6 +14,11 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock.pb.h"
+#include "chromeos/ash/components/carrier_lock/fcm_topic_subscriber_impl.h"
+#include "chromeos/ash/components/carrier_lock/metrics.h"
+#include "chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.h"
+#include "chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_3gpp_handler.h"
 #include "chromeos/ash/components/network/network_connect.h"
@@ -612,12 +614,12 @@ void CarrierLockManager::CheckState() {
     }
 
     // Overwrite oem and model if defined in VPD.
-    if (const std::optional<base::StringPiece> model =
+    if (const std::optional<std::string_view> model =
             statistics->GetMachineStatistic(kMachineModelName)) {
       model_ = model.value();
       VLOG(2) << "Model changed to " << model_ << ".";
     }
-    if (const std::optional<base::StringPiece> oem =
+    if (const std::optional<std::string_view> oem =
             statistics->GetMachineStatistic(kMachineOemName)) {
       manufacturer_ = oem.value();
       VLOG(2) << "Manufacturer changed to " << manufacturer_ << ".";
