@@ -8,6 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
@@ -211,13 +212,16 @@ GetActivationFunctionType(const MLActivation* ml_activation) {
   CHECK(ml_activation);
   const MLOperator* op = ml_activation->Operator();
   CHECK(op);
+  // TODO: crbug.com/325598628 - Activations should use
+  // webnn::mojom::blink::Activation rather than
+  // webnn::mojom::blink::Operation.
   switch (op->Kind()) {
-    case MLOperator::OperatorKind::kClamp: {
+    case webnn::mojom::blink::Operation::Tag::kClamp: {
       const auto activation_result = GetActivationTypeForClamp(op);
       RETURN_IF_ERROR(activation_result);
       return activation_result.value();
     }
-    case MLOperator::OperatorKind::kRelu:
+    case webnn::mojom::blink::Operation::Tag::kRelu:
       return tflite::ActivationFunctionType_RELU;
     default:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
@@ -522,26 +526,26 @@ OperatorOffset SerializeElementWiseBinary(
   const int32_t output_index =
       GetOperatorOutputIndex(binary, operand_to_index_map);
   tflite::BuiltinOperator operator_kind;
-  switch (binary->Kind()) {
-    case MLOperator::OperatorKind::kAdd:
+  switch (binary->SubKind<webnn::mojom::blink::ElementWiseBinary::Kind>()) {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
       operator_kind = tflite::BuiltinOperator_ADD;
       break;
-    case MLOperator::OperatorKind::kSub:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
       operator_kind = tflite::BuiltinOperator_SUB;
       break;
-    case MLOperator::OperatorKind::kMul:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
       operator_kind = tflite::BuiltinOperator_MUL;
       break;
-    case MLOperator::OperatorKind::kDiv:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
       operator_kind = tflite::BuiltinOperator_DIV;
       break;
-    case MLOperator::OperatorKind::kMin:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
       operator_kind = tflite::BuiltinOperator_MINIMUM;
       break;
-    case MLOperator::OperatorKind::kMax:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
       operator_kind = tflite::BuiltinOperator_MAXIMUM;
       break;
-    case MLOperator::OperatorKind::kPow:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
       operator_kind = tflite::BuiltinOperator_POW;
       break;
     default:
@@ -855,15 +859,15 @@ base::expected<OperatorOffset, String> SerializePool2d(
   }
 
   tflite::BuiltinOperator operator_kind;
-  switch (pool2d->Kind()) {
-    case MLOperator::OperatorKind::kAveragePool2d:
+  switch (pool2d->SubKind<webnn::mojom::blink::Pool2d::Kind>()) {
+    case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
       operator_kind = tflite::BuiltinOperator_AVERAGE_POOL_2D;
       break;
-    case MLOperator::OperatorKind::kMaxPool2d:
+    case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d:
       operator_kind = tflite::BuiltinOperator_MAX_POOL_2D;
       break;
-    default:
-      NOTREACHED_NORETURN() << "The operator is not pool2d.";
+    case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
+      return base::unexpected("L2Pool2d is not supported by tflite.");
   }
 
   const auto pool_2d_options = CreatePool2DOptions(
@@ -1228,18 +1232,18 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     const MLOperator* op) {
   OperatorOffset operator_offset;
   switch (op->Kind()) {
-    case MLOperator::OperatorKind::kClamp: {
+    case webnn::mojom::blink::Operation::Tag::kClamp: {
       const auto clamp_result =
           SerializeClamp(operand_to_index_map, op, builder_, operator_codes_);
       RETURN_IF_ERROR(clamp_result);
       operator_offset = clamp_result.value();
       break;
     }
-    case MLOperator::OperatorKind::kConcat:
+    case webnn::mojom::blink::Operation::Tag::kConcat:
       operator_offset =
           SerializeConcat(operand_to_index_map, op, builder_, operator_codes_);
       break;
-    case MLOperator::OperatorKind::kConv2d: {
+    case webnn::mojom::blink::Operation::Tag::kConv2d: {
       const auto conv2d_result =
           SerializeConv2d(operand_to_index_map, op, builder_, operator_codes_,
                           operators_, buffers_, tensors_);
@@ -1247,67 +1251,76 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = conv2d_result.value();
       break;
     }
-    case MLOperator::OperatorKind::kAdd:
-    case MLOperator::OperatorKind::kSub:
-    case MLOperator::OperatorKind::kMul:
-    case MLOperator::OperatorKind::kDiv:
-    case MLOperator::OperatorKind::kMin:
-    case MLOperator::OperatorKind::kMax:
-    case MLOperator::OperatorKind::kPow:
+    case webnn::mojom::blink::Operation::Tag::kElementWiseBinary:
       operator_offset = SerializeElementWiseBinary(operand_to_index_map, op,
                                                    builder_, operator_codes_);
       break;
-    case MLOperator::OperatorKind::kAbs:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_ABS,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
+    case webnn::mojom::blink::Operation::Tag::kElementWiseUnary: {
+      switch (op->SubKind<webnn::mojom::blink::ElementWiseUnary::Kind>()) {
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kAbs:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_ABS,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kCeil:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_CEIL,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kFloor:
+          operator_offset = SerializeUnaryOperator(
+              tflite::BuiltinOperator_FLOOR, operand_to_index_map, op, builder_,
+              operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_NEG,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kCos:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_COS,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kExp:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_EXP,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kLog:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_LOG,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_SIN,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_SQRT,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kCast:
+          operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_CAST,
+                                                   operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+          break;
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kErf:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kTan:
+          return base::unexpected(
+              MLOperator::OperatorKindToString(
+                  op->Kind(),
+                  op->SubKind<webnn::mojom::blink::ElementWiseUnary::Kind>()) +
+              " is not implemented.");
+      }
       break;
-    case MLOperator::OperatorKind::kCeil:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_CEIL,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kFloor:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_FLOOR,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kNeg:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_NEG,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kCos:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_COS,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kExp:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_EXP,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kLog:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_LOG,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kSin:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_SIN,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kSqrt:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_SQRT,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kCast:
-      operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_CAST,
-                                               operand_to_index_map, op,
-                                               builder_, operator_codes_);
-      break;
-    case MLOperator::OperatorKind::kElu: {
+    }
+    case webnn::mojom::blink::Operation::Tag::kElu: {
       const auto elu_result =
           SerializeElu(operand_to_index_map, op, builder_, operator_codes_);
       // The scalar multiplier is not supported in tflite schema.
@@ -1315,7 +1328,7 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = elu_result.value();
       break;
     }
-    case MLOperator::OperatorKind::kGemm: {
+    case webnn::mojom::blink::Operation::Tag::kGemm: {
       const auto gemm_result =
           SerializeGemm(operand_to_index_map, op, builder_, operator_codes_,
                         operators_, buffers_, tensors_);
@@ -1325,16 +1338,16 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = gemm_result.value();
       break;
     }
-    case MLOperator::OperatorKind::kHardSwish:
+    case webnn::mojom::blink::Operation::Tag::kHardSwish:
       operator_offset = SerializeUnaryOperator(
           tflite::BuiltinOperator_HARD_SWISH, operand_to_index_map, op,
           builder_, operator_codes_);
       break;
-    case blink::MLOperator::OperatorKind::kLeakyRelu:
+    case webnn::mojom::blink::Operation::Tag::kLeakyRelu:
       operator_offset = SerializeLeakyRelu(operand_to_index_map, op, builder_,
                                            operator_codes_);
       break;
-    case MLOperator::OperatorKind::kPad: {
+    case webnn::mojom::blink::Operation::Tag::kPad: {
       const auto pad_result = SerializePad(operand_to_index_map, op, builder_,
                                            operator_codes_, buffers_, tensors_);
       // The Edge padding model is not supported in tflite schema.
@@ -1342,9 +1355,7 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = pad_result.value();
       break;
     }
-    case MLOperator::OperatorKind::kAveragePool2d:
-      [[fallthrough]];
-    case MLOperator::OperatorKind::kMaxPool2d: {
+    case webnn::mojom::blink::Operation::Tag::kPool2d: {
       const auto pool2d_result =
           SerializePool2d(operand_to_index_map, op, builder_, operator_codes_,
                           operators_, buffers_, tensors_);
@@ -1353,16 +1364,16 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = pool2d_result.value();
       break;
     }
-    case MLOperator::OperatorKind::kRelu:
+    case webnn::mojom::blink::Operation::Tag::kRelu:
       operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_RELU,
                                                operand_to_index_map, op,
                                                builder_, operator_codes_);
       break;
-    case MLOperator::OperatorKind::kReshape:
+    case webnn::mojom::blink::Operation::Tag::kReshape:
       operator_offset =
           SerializeReshape(operand_to_index_map, op, builder_, operator_codes_);
       break;
-    case MLOperator::OperatorKind::kResample2d: {
+    case webnn::mojom::blink::Operation::Tag::kResample2d: {
       const auto resize_result =
           SerializeResample2d(operand_to_index_map, op, builder_,
                               operator_codes_, buffers_, tensors_);
@@ -1371,16 +1382,16 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = resize_result.value();
       break;
     }
-    case MLOperator::OperatorKind::kSigmoid:
+    case webnn::mojom::blink::Operation::Tag::kSigmoid:
       operator_offset = SerializeUnaryOperator(tflite::BuiltinOperator_LOGISTIC,
                                                operand_to_index_map, op,
                                                builder_, operator_codes_);
       break;
-    case MLOperator::OperatorKind::kSoftmax:
+    case webnn::mojom::blink::Operation::Tag::kSoftmax:
       operator_offset =
           SerializeSoftmax(operand_to_index_map, op, builder_, operator_codes_);
       break;
-    case MLOperator::OperatorKind::kTranspose: {
+    case webnn::mojom::blink::Operation::Tag::kTranspose: {
       const auto transpose_result =
           SerializeTranspose(operand_to_index_map, op, builder_,
                              operator_codes_, buffers_, tensors_);
@@ -1389,7 +1400,23 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = transpose_result.value();
       break;
     }
-    default:
+    case webnn::mojom::blink::Operation::Tag::kArgMinMax:
+    case webnn::mojom::blink::Operation::Tag::kBatchNormalization:
+    case webnn::mojom::blink::Operation::Tag::kExpand:
+    case webnn::mojom::blink::Operation::Tag::kGather:
+    case webnn::mojom::blink::Operation::Tag::kHardSigmoid:
+    case webnn::mojom::blink::Operation::Tag::kLayerNormalization:
+    case webnn::mojom::blink::Operation::Tag::kInstanceNormalization:
+    case webnn::mojom::blink::Operation::Tag::kLinear:
+    case webnn::mojom::blink::Operation::Tag::kMatmul:
+    case webnn::mojom::blink::Operation::Tag::kPrelu:
+    case webnn::mojom::blink::Operation::Tag::kReduce:
+    case webnn::mojom::blink::Operation::Tag::kSlice:
+    case webnn::mojom::blink::Operation::Tag::kSoftplus:
+    case webnn::mojom::blink::Operation::Tag::kSoftsign:
+    case webnn::mojom::blink::Operation::Tag::kSplit:
+    case webnn::mojom::blink::Operation::Tag::kTanh:
+    case webnn::mojom::blink::Operation::Tag::kWhere:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");
   }

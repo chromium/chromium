@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
@@ -18,6 +19,7 @@
 #include "base/types/fixed_array.h"
 #include "build/buildflag.h"
 #include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
@@ -567,7 +569,7 @@ XnnOutputRange GetXnnOutputRangeForActivation(const MLOperator* ml_operator) {
   XnnOutputRange output_range;
   switch (ml_operator->Kind()) {
     // TODO(crbug.com/1273291): Support clamp.
-    case MLOperator::OperatorKind::kClamp: {
+    case webnn::mojom::blink::Operation::Tag::kClamp: {
       // According to WebNN clamp spec:
       // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, clamping occurs
       // only if the lower bound or/and upper bound are provided.
@@ -580,7 +582,7 @@ XnnOutputRange GetXnnOutputRangeForActivation(const MLOperator* ml_operator) {
           options->getMaxValueOr(+std::numeric_limits<float>::infinity());
       break;
     }
-    case MLOperator::OperatorKind::kRelu:
+    case webnn::mojom::blink::Operation::Tag::kRelu:
       // Set the minimum value to 0 according to the rectified linear function,
       // y = max(0, x).
       output_range.min = 0.0f;
@@ -588,7 +590,7 @@ XnnOutputRange GetXnnOutputRangeForActivation(const MLOperator* ml_operator) {
       break;
     default:
       // Only clamp and relu are supported.
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
   return output_range;
 }
@@ -738,8 +740,8 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
                               .max = +std::numeric_limits<float>::infinity()};
   if (options->hasActivation()) {
     switch (options->activation()->Operator()->Kind()) {
-      case MLOperator::OperatorKind::kClamp:
-      case MLOperator::OperatorKind::kRelu:
+      case webnn::mojom::blink::Operation::Tag::kClamp:
+      case webnn::mojom::blink::Operation::Tag::kRelu:
         output_range =
             GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
@@ -885,8 +887,8 @@ xnn_status DefineXnnNodeForConvTranspose2d(
                               .max = +std::numeric_limits<float>::infinity()};
   if (options->hasActivation()) {
     switch (options->activation()->Operator()->Kind()) {
-      case MLOperator::OperatorKind::kClamp:
-      case MLOperator::OperatorKind::kRelu:
+      case webnn::mojom::blink::Operation::Tag::kClamp:
+      case webnn::mojom::blink::Operation::Tag::kRelu:
         output_range =
             GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
@@ -922,6 +924,9 @@ xnn_status DefineXnnNodeForElementWiseBinary(
     const MLOperator* binary,
     const OperandValueIdMap& operand_value_id_map,
     String& error_message) {
+  CHECK_EQ(binary->Kind(),
+           webnn::mojom::blink::Operation::Tag::kElementWiseBinary);
+
   const uint32_t lhs_id =
       GetOperatorInputValueId(binary, operand_value_id_map, 0);
   const uint32_t rhs_id =
@@ -931,33 +936,33 @@ xnn_status DefineXnnNodeForElementWiseBinary(
   const float output_min = -std::numeric_limits<float>::infinity();
   const float output_max = +std::numeric_limits<float>::infinity();
   const uint32_t flags = 0;
-  switch (binary->Kind()) {
-    case MLOperator::OperatorKind::kAdd: {
+  switch (binary->SubKind<webnn::mojom::blink::ElementWiseBinary::Kind>()) {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_add2(
           subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kSub: {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_subtract(
           subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kMul: {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_multiply2(
           subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kDiv: {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_divide(
           subgraph, output_min, output_max, lhs_id, rhs_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kMax: {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_maximum2(subgraph, lhs_id, rhs_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kMin: {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_minimum2(subgraph, lhs_id, rhs_id, output_id, flags));
       break;
@@ -969,7 +974,7 @@ xnn_status DefineXnnNodeForElementWiseBinary(
     // spec, we will map that to XNNPACK square root directly. And there is a
     // proposal in WG to support dedicated square root operator -
     // https://github.com/webmachinelearning/webnn/issues/438.
-    case MLOperator::OperatorKind::kPow: {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow: {
       const auto* operand_a = binary->Inputs()[0].Get();
       CHECK(operand_a);
       const auto* operand_b = binary->Inputs()[1].Get();
@@ -1009,8 +1014,12 @@ xnn_status DefineXnnNodeForElementWiseBinary(
       }
       break;
     }
-    default:
-      NOTREACHED();
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+      NOTREACHED_NORETURN() << "Unsupported element-wise binary operator.";
   }
   return xnn_status_success;
 }
@@ -1020,38 +1029,50 @@ xnn_status DefineXnnNodeForElementWiseUnary(
     const MLOperator* unary,
     const OperandValueIdMap& operand_value_id_map,
     String& error_message) {
+  CHECK_EQ(unary->Kind(),
+           webnn::mojom::blink::Operation::Tag::kElementWiseUnary);
+
   const uint32_t input_id =
       GetOperatorInputValueId(unary, operand_value_id_map);
   const uint32_t output_id =
       GetOperatorOutputValueId(unary, operand_value_id_map);
   const uint32_t flags = 0;
-  switch (unary->Kind()) {
-    case MLOperator::OperatorKind::kAbs: {
+  switch (unary->SubKind<webnn::mojom::blink::ElementWiseUnary::Kind>()) {
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kAbs: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_abs(subgraph, input_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kCeil: {
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kCeil: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_ceiling(subgraph, input_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kFloor: {
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kFloor: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_floor(subgraph, input_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kNeg: {
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_negate(subgraph, input_id, output_id, flags));
       break;
     }
-    case MLOperator::OperatorKind::kSqrt: {
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
           xnn_define_square_root(subgraph, input_id, output_id, flags));
       break;
     }
-    default:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kCos:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kExp:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kLog:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kTan:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kErf:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:
+    case webnn::mojom::blink::ElementWiseUnary::Kind::kCast:
       NOTREACHED_NORETURN() << "Unsupported element-wise unary operator.";
   }
   return xnn_status_success;
@@ -1240,6 +1261,8 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
                                   const MLOperator* pool2d,
                                   const OperandValueIdMap& operand_value_id_map,
                                   String& error_message) {
+  CHECK_EQ(pool2d->Kind(), webnn::mojom::blink::Operation::Tag::kPool2d);
+
   const uint32_t input_id =
       GetOperatorInputValueId(pool2d, operand_value_id_map);
   const uint32_t output_id =
@@ -1325,8 +1348,8 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
   const float output_min = -std::numeric_limits<float>::infinity();
   const float output_max = +std::numeric_limits<float>::infinity();
   const uint32_t flags = 0;
-  switch (pool2d->Kind()) {
-    case MLOperator::OperatorKind::kAveragePool2d: {
+  switch (pool2d->SubKind<webnn::mojom::blink::Pool2d::Kind>()) {
+    case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d: {
       if (dilation_height != 1 || dilation_width != 1) {
         error_message = "averagePool2d doesn't support dilations.";
         return xnn_status_unsupported_parameter;
@@ -1343,7 +1366,7 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
       }
       break;
     }
-    case MLOperator::OperatorKind::kMaxPool2d: {
+    case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_max_pooling_2d(
           subgraph, padding.top, padding.right, padding.bottom, padding.left,
           filter_height, filter_width, stride_height, stride_width,
@@ -1351,9 +1374,9 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
           output_id, flags));
       break;
     }
-    default:
+    case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
       // Only average and max pool2d are supported by this method.
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
   return xnn_status_success;
 }
@@ -1415,6 +1438,8 @@ xnn_status DefineXnnNodeForReduce(xnn_subgraph_t subgraph,
                                   const MLOperator* reduce,
                                   const OperandValueIdMap& operand_value_id_map,
                                   String& error_message) {
+  CHECK_EQ(reduce->Kind(), webnn::mojom::blink::Operation::Tag::kReduce);
+
   const uint32_t input_id =
       GetOperatorInputValueId(reduce, operand_value_id_map);
   const uint32_t output_id =
@@ -1436,18 +1461,25 @@ xnn_status DefineXnnNodeForReduce(xnn_subgraph_t subgraph,
   });
 
   const uint32_t flags = 0;
-  switch (reduce->Kind()) {
-    case MLOperator::OperatorKind::kReduceMean: {
+  switch (reduce->SubKind<webnn::mojom::blink::Reduce::Kind>()) {
+    case webnn::mojom::blink::Reduce::Kind::kMean: {
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_mean(
           subgraph, reduction_axes.size(), reduction_axes.data(), input_id,
           output_id, flags));
       break;
     }
-    default: {
+    case webnn::mojom::blink::Reduce::Kind::kL1:
+    case webnn::mojom::blink::Reduce::Kind::kL2:
+    case webnn::mojom::blink::Reduce::Kind::kLogSum:
+    case webnn::mojom::blink::Reduce::Kind::kLogSumExp:
+    case webnn::mojom::blink::Reduce::Kind::kMax:
+    case webnn::mojom::blink::Reduce::Kind::kMin:
+    case webnn::mojom::blink::Reduce::Kind::kProduct:
+    case webnn::mojom::blink::Reduce::Kind::kSum:
+    case webnn::mojom::blink::Reduce::Kind::kSumSquare:
       // Because this method only supports reduceMean currently, it should
       // already throw unsupported error for other operators.
       NOTREACHED_NORETURN();
-    }
   }
   return xnn_status_success;
 }
@@ -1778,133 +1810,193 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
                          const OperandValueIdMap& operand_value_id_map,
                          String& error_message) {
   switch (ml_operator->Kind()) {
-    case MLOperator::OperatorKind::kClamp:
-      XNN_CHECK_STATUS(DefineXnnNodeForClamp(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kConv2d:
-      XNN_CHECK_STATUS(DefineXnnNodeForConv2d(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kConvTranspose2d:
-      XNN_CHECK_STATUS(DefineXnnNodeForConvTranspose2d(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    // Define XNNPACK Node for element-wise binary operators.
-    case MLOperator::OperatorKind::kAdd:
-    case MLOperator::OperatorKind::kSub:
-    case MLOperator::OperatorKind::kMul:
-    case MLOperator::OperatorKind::kDiv:
-    case MLOperator::OperatorKind::kMax:
-    case MLOperator::OperatorKind::kMin:
-    case MLOperator::OperatorKind::kPow: {
-      XNN_CHECK_STATUS(DefineXnnNodeForElementWiseBinary(
-          subgraph, ml_operator, operand_value_id_map, error_message));
+    case webnn::mojom::blink::Operation::Tag::kClamp:
+      return DefineXnnNodeForClamp(subgraph, ml_operator, operand_value_id_map,
+                                   error_message);
+    case webnn::mojom::blink::Operation::Tag::kConv2d: {
+      switch (ml_operator->SubKind<webnn::mojom::blink::Conv2d::Type>()) {
+        case webnn::mojom::blink::Conv2d::Type::kDirect:
+          return DefineXnnNodeForConv2d(subgraph, ml_operator,
+                                        operand_value_id_map, error_message);
+        case webnn::mojom::blink::Conv2d::Type::kTransposed:
+          return DefineXnnNodeForConvTranspose2d(
+              subgraph, ml_operator, operand_value_id_map, error_message);
+      }
       break;
     }
-    // Define XNNPACK Node for element-wise unary operators.
-    case MLOperator::OperatorKind::kAbs:
-    case MLOperator::OperatorKind::kCeil:
-    case MLOperator::OperatorKind::kFloor:
-    case MLOperator::OperatorKind::kNeg:
-    case MLOperator::OperatorKind::kSqrt: {
-      XNN_CHECK_STATUS(DefineXnnNodeForElementWiseUnary(
-          subgraph, ml_operator, operand_value_id_map, error_message));
+    case webnn::mojom::blink::Operation::Tag::kElementWiseBinary: {
+      switch (ml_operator
+                  ->SubKind<webnn::mojom::blink::ElementWiseBinary::Kind>()) {
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
+          return DefineXnnNodeForElementWiseBinary(
+              subgraph, ml_operator, operand_value_id_map, error_message);
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+          error_message =
+              "The operator (" +
+              MLOperator::OperatorKindToString(
+                  ml_operator->Kind(),
+                  ml_operator->SubKind<
+                      webnn::mojom::blink::ElementWiseBinary::Kind>()) +
+              ") is not supported.";
+          return xnn_status_unsupported_parameter;
+      }
       break;
     }
-    case MLOperator::OperatorKind::kElu:
-      XNN_CHECK_STATUS(DefineXnnNodeForElu(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kGemm:
-      XNN_CHECK_STATUS(DefineXnnNodeForGemm(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kHardSwish:
-      XNN_CHECK_STATUS(DefineXnnNodeForHardSwish(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kMatmul:
-      XNN_CHECK_STATUS(DefineXnnNodeForMatmul(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kPad:
-      XNN_CHECK_STATUS(DefineXnnNodeForPad(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    // Define XNNPACK Node for pool2d operators.
-    case MLOperator::OperatorKind::kAveragePool2d:
-    case MLOperator::OperatorKind::kMaxPool2d: {
-      XNN_CHECK_STATUS(DefineXnnNodeForPool2d(
-          subgraph, ml_operator, operand_value_id_map, error_message));
+    case webnn::mojom::blink::Operation::Tag::kElementWiseUnary: {
+      switch (
+          ml_operator->SubKind<webnn::mojom::blink::ElementWiseUnary::Kind>()) {
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kAbs:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kCeil:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kFloor:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kNeg:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kSqrt:
+          return DefineXnnNodeForElementWiseUnary(
+              subgraph, ml_operator, operand_value_id_map, error_message);
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kCos:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kExp:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kLog:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kSin:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kTan:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kErf:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kCast:
+          error_message =
+              "The operator (" +
+              MLOperator::OperatorKindToString(
+                  ml_operator->Kind(),
+                  ml_operator->SubKind<
+                      webnn::mojom::blink::ElementWiseUnary::Kind>()) +
+              ") is not supported.";
+          return xnn_status_unsupported_parameter;
+      }
+    }
+    case webnn::mojom::blink::Operation::Tag::kElu:
+      return DefineXnnNodeForElu(subgraph, ml_operator, operand_value_id_map,
+                                 error_message);
+    case webnn::mojom::blink::Operation::Tag::kGemm:
+      return DefineXnnNodeForGemm(subgraph, ml_operator, operand_value_id_map,
+                                  error_message);
+    case webnn::mojom::blink::Operation::Tag::kHardSwish:
+      return DefineXnnNodeForHardSwish(subgraph, ml_operator,
+                                       operand_value_id_map, error_message);
+    case webnn::mojom::blink::Operation::Tag::kMatmul:
+      return DefineXnnNodeForMatmul(subgraph, ml_operator, operand_value_id_map,
+                                    error_message);
+    case webnn::mojom::blink::Operation::Tag::kPad:
+      return DefineXnnNodeForPad(subgraph, ml_operator, operand_value_id_map,
+                                 error_message);
+    case webnn::mojom::blink::Operation::Tag::kPool2d: {
+      switch (ml_operator->SubKind<webnn::mojom::blink::Pool2d::Kind>()) {
+        case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
+        case webnn::mojom::blink::Pool2d::Kind::kMaxPool2d:
+          return DefineXnnNodeForPool2d(subgraph, ml_operator,
+                                        operand_value_id_map, error_message);
+        case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
+          error_message =
+              "The operator (" +
+              MLOperator::OperatorKindToString(
+                  ml_operator->Kind(),
+                  ml_operator->SubKind<webnn::mojom::blink::Pool2d::Kind>()) +
+              ") is not supported.";
+          return xnn_status_unsupported_parameter;
+      }
       break;
     }
-    case MLOperator::OperatorKind::kLeakyRelu:
-      XNN_CHECK_STATUS(DefineXnnNodeForLeakyRelu(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kPRelu:
-      XNN_CHECK_STATUS(DefineXnnNodeForPRelu(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-      // Define XNNPACK Node for reduction operators.
-    case MLOperator::OperatorKind::kReduceMean:
-      XNN_CHECK_STATUS(DefineXnnNodeForReduce(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kRelu:
-      XNN_CHECK_STATUS(DefineXnnNodeForRelu(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kReshape:
-      XNN_CHECK_STATUS(DefineXnnNodeForReshape(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kSigmoid:
-      XNN_CHECK_STATUS(DefineXnnNodeForSigmoid(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kSlice:
-      XNN_CHECK_STATUS(DefineXnnNodeForSlice(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kSoftmax:
-      XNN_CHECK_STATUS(DefineXnnNodeForSoftmax(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    case MLOperator::OperatorKind::kResample2d: {
-      XNN_CHECK_STATUS(DefineXnnNodeForResample2d(
-          subgraph, ml_operator, operand_value_id_map, error_message));
+    case webnn::mojom::blink::Operation::Tag::kLeakyRelu:
+      return DefineXnnNodeForLeakyRelu(subgraph, ml_operator,
+                                       operand_value_id_map, error_message);
+    case webnn::mojom::blink::Operation::Tag::kPrelu:
+      return DefineXnnNodeForPRelu(subgraph, ml_operator, operand_value_id_map,
+                                   error_message);
+    case webnn::mojom::blink::Operation::Tag::kReduce: {
+      switch (ml_operator->SubKind<webnn::mojom::blink::Reduce::Kind>()) {
+        case webnn::mojom::blink::Reduce::Kind::kMean:
+          return DefineXnnNodeForReduce(subgraph, ml_operator,
+                                        operand_value_id_map, error_message);
+        case webnn::mojom::blink::Reduce::Kind::kL1:
+        case webnn::mojom::blink::Reduce::Kind::kL2:
+        case webnn::mojom::blink::Reduce::Kind::kLogSum:
+        case webnn::mojom::blink::Reduce::Kind::kLogSumExp:
+        case webnn::mojom::blink::Reduce::Kind::kMax:
+        case webnn::mojom::blink::Reduce::Kind::kMin:
+        case webnn::mojom::blink::Reduce::Kind::kProduct:
+        case webnn::mojom::blink::Reduce::Kind::kSum:
+        case webnn::mojom::blink::Reduce::Kind::kSumSquare:
+          error_message =
+              "The operator (" +
+              MLOperator::OperatorKindToString(
+                  ml_operator->Kind(),
+                  ml_operator->SubKind<webnn::mojom::blink::Reduce::Kind>()) +
+              ") is not supported.";
+          return xnn_status_unsupported_parameter;
+      }
       break;
     }
-    case MLOperator::OperatorKind::kSplit: {
-      XNN_CHECK_STATUS(DefineXnnNodeForSplit(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    }
-    case MLOperator::OperatorKind::kTranspose: {
-      XNN_CHECK_STATUS(DefineXnnNodeForTranspose(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    }
-    case MLOperator::OperatorKind::kTanh: {
-      XNN_CHECK_STATUS(DefineXnnNodeForTanh(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    }
-    case MLOperator::OperatorKind::kConcat: {
-      XNN_CHECK_STATUS(DefineXnnNodeForConcat(
-          subgraph, ml_operator, operand_value_id_map, error_message));
-      break;
-    }
-    default: {
+    case webnn::mojom::blink::Operation::Tag::kRelu:
+      return DefineXnnNodeForRelu(subgraph, ml_operator, operand_value_id_map,
+                                  error_message);
+    case webnn::mojom::blink::Operation::Tag::kReshape:
+      return DefineXnnNodeForReshape(subgraph, ml_operator,
+                                     operand_value_id_map, error_message);
+    case webnn::mojom::blink::Operation::Tag::kSigmoid:
+      return DefineXnnNodeForSigmoid(subgraph, ml_operator,
+                                     operand_value_id_map, error_message);
+    case webnn::mojom::blink::Operation::Tag::kSlice:
+      return DefineXnnNodeForSlice(subgraph, ml_operator, operand_value_id_map,
+                                   error_message);
+    case webnn::mojom::blink::Operation::Tag::kSoftmax:
+      return DefineXnnNodeForSoftmax(subgraph, ml_operator,
+                                     operand_value_id_map, error_message);
+    case webnn::mojom::blink::Operation::Tag::kResample2d:
+      return DefineXnnNodeForResample2d(subgraph, ml_operator,
+                                        operand_value_id_map, error_message);
+    case webnn::mojom::blink::Operation::Tag::kSplit:
+      return DefineXnnNodeForSplit(subgraph, ml_operator, operand_value_id_map,
+                                   error_message);
+    case webnn::mojom::blink::Operation::Tag::kTranspose:
+      return DefineXnnNodeForTranspose(subgraph, ml_operator,
+                                       operand_value_id_map, error_message);
+    case webnn::mojom::blink::Operation::Tag::kTanh:
+      return DefineXnnNodeForTanh(subgraph, ml_operator, operand_value_id_map,
+                                  error_message);
+    case webnn::mojom::blink::Operation::Tag::kConcat:
+      return DefineXnnNodeForConcat(subgraph, ml_operator, operand_value_id_map,
+                                    error_message);
+    case webnn::mojom::blink::Operation::Tag::kArgMinMax:
+      error_message =
+          "The operator (" +
+          MLOperator::OperatorKindToString(
+              ml_operator->Kind(),
+              ml_operator->SubKind<webnn::mojom::blink::ArgMinMax::Kind>()) +
+          ") is not supported.";
+      return xnn_status_unsupported_parameter;
+    case webnn::mojom::blink::Operation::Tag::kBatchNormalization:
+    case webnn::mojom::blink::Operation::Tag::kExpand:
+    case webnn::mojom::blink::Operation::Tag::kGather:
+    case webnn::mojom::blink::Operation::Tag::kHardSigmoid:
+    case webnn::mojom::blink::Operation::Tag::kLayerNormalization:
+    case webnn::mojom::blink::Operation::Tag::kInstanceNormalization:
+    case webnn::mojom::blink::Operation::Tag::kLinear:
+    case webnn::mojom::blink::Operation::Tag::kSoftplus:
+    case webnn::mojom::blink::Operation::Tag::kSoftsign:
+    case webnn::mojom::blink::Operation::Tag::kWhere:
       error_message = "The operator (" +
                       MLOperator::OperatorKindToString(ml_operator->Kind()) +
                       ") is not supported.";
       return xnn_status_unsupported_parameter;
-    }
   }
-  return xnn_status_success;
 }
 
 }  // namespace

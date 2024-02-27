@@ -383,7 +383,7 @@ struct ElementWiseUnaryTester {
         output_operand =
             builder->sqrt(input_operand, scope.GetExceptionState());
         break;
-      case webnn::mojom::ElementWiseUnary_Kind::kCast:
+      case webnn::mojom::blink::ElementWiseUnary::Kind::kCast:
         // TODO: crbug.com/325598628 - Add tests for this case.
         break;
     }

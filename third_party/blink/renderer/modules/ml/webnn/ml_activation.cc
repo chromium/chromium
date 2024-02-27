@@ -4,12 +4,19 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 
+#include <variant>
+
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+
 namespace blink {
 
 MLActivation::MLActivation(MLGraphBuilder* builder,
-                           MLOperator::OperatorKind kind,
+                           webnn::mojom::blink::Operation::Tag kind,
                            const bindings::DictionaryBase* options)
-    : operator_(MakeGarbageCollected<MLOperator>(builder, kind, options)) {}
+    : operator_(MakeGarbageCollected<MLOperator>(builder,
+                                                 kind,
+                                                 /*sub_kind=*/std::monostate{},
+                                                 options)) {}
 
 MLActivation::~MLActivation() = default;
 

@@ -497,8 +497,10 @@ TEST_P(MLGraphTestMojo, ConcatTest) {
   }
 }
 
+// TODO: crbug.com/325598628 - Consider replacing this with direct use of the
+// mojo Activation struct.
 struct Activation {
-  MLOperator::OperatorKind kind;
+  webnn::mojom::blink::Activation::Tag kind;
   std::optional<ClampTester::ClampOptions> clamp_options;
   std::optional<float> hard_sigmoid_alpha;
   std::optional<float> hard_sigmoid_beta;
@@ -513,14 +515,14 @@ MLActivation* CreateActivation(V8TestingScope& scope,
                                MLGraphBuilder* builder,
                                const Activation& activation) {
   switch (activation.kind) {
-    case MLOperator::OperatorKind::kClamp: {
+    case webnn::mojom::blink::Activation::Tag::kClamp: {
       auto* clamp_options = MLClampOptions::Create();
       CHECK(clamp_options);
       clamp_options->setMinValue(activation.clamp_options->min_value.value());
       clamp_options->setMaxValue(activation.clamp_options->max_value.value());
       return builder->clamp(clamp_options, scope.GetExceptionState());
     }
-    case MLOperator::OperatorKind::kElu: {
+    case webnn::mojom::blink::Activation::Tag::kElu: {
       auto* elu_options = MLEluOptions::Create();
       CHECK(elu_options);
       if (activation.elu_alpha.has_value()) {
@@ -528,7 +530,7 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       }
       return builder->elu(elu_options, scope.GetExceptionState());
     }
-    case MLOperator::OperatorKind::kHardSigmoid: {
+    case webnn::mojom::blink::Activation::Tag::kHardSigmoid: {
       auto* hard_sigmoid_options = MLHardSigmoidOptions::Create();
       CHECK(hard_sigmoid_options);
       if (activation.hard_sigmoid_alpha.has_value()) {
@@ -540,7 +542,7 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       return builder->hardSigmoid(hard_sigmoid_options,
                                   scope.GetExceptionState());
     }
-    case MLOperator::OperatorKind::kLeakyRelu: {
+    case webnn::mojom::blink::Activation::Tag::kLeakyRelu: {
       auto* leaky_relu_options = MLLeakyReluOptions::Create();
       CHECK(leaky_relu_options);
       if (activation.leaky_relu_alpha.has_value()) {
@@ -548,7 +550,7 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       }
       return builder->leakyRelu(leaky_relu_options, scope.GetExceptionState());
     }
-    case MLOperator::OperatorKind::kLinear: {
+    case webnn::mojom::blink::Activation::Tag::kLinear: {
       auto* linear_options = MLLinearOptions::Create();
       CHECK(linear_options);
       if (activation.linear_alpha.has_value()) {
@@ -559,13 +561,13 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       }
       return builder->linear(linear_options, scope.GetExceptionState());
     }
-    case MLOperator::OperatorKind::kRelu:
+    case webnn::mojom::blink::Activation::Tag::kRelu:
       return builder->relu(scope.GetExceptionState());
-    case MLOperator::OperatorKind::kSigmoid:
+    case webnn::mojom::blink::Activation::Tag::kSigmoid:
       return builder->sigmoid(scope.GetExceptionState());
-    case MLOperator::OperatorKind::kSoftmax:
+    case webnn::mojom::blink::Activation::Tag::kSoftmax:
       return builder->softmax(scope.GetExceptionState());
-    case MLOperator::OperatorKind::kSoftplus: {
+    case webnn::mojom::blink::Activation::Tag::kSoftplus: {
       auto* softplus_options = MLSoftplusOptions::Create();
       CHECK(softplus_options);
       if (activation.softplus_steepness.has_value()) {
@@ -573,19 +575,17 @@ MLActivation* CreateActivation(V8TestingScope& scope,
       }
       return builder->softplus(softplus_options, scope.GetExceptionState());
     }
-    case MLOperator::OperatorKind::kSoftsign:
+    case webnn::mojom::blink::Activation::Tag::kSoftsign:
       return builder->softsign(scope.GetExceptionState());
-    case MLOperator::OperatorKind::kTanh:
+    case webnn::mojom::blink::Activation::Tag::kTanh:
       return builder->tanh(scope.GetExceptionState());
-    default:
-      NOTREACHED_NORETURN();
   }
 }
 
 void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
                      const Activation& expected_activation) {
   switch (expected_activation.kind) {
-    case MLOperator::OperatorKind::kClamp: {
+    case webnn::mojom::blink::Activation::Tag::kClamp: {
       ASSERT_TRUE(mojom_activation->is_clamp());
       auto& clamp = mojom_activation->get_clamp();
       CHECK(clamp);
@@ -595,7 +595,7 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       EXPECT_EQ(clamp->max_value, clamp_options->max_value);
       break;
     }
-    case MLOperator::OperatorKind::kElu: {
+    case webnn::mojom::blink::Activation::Tag::kElu: {
       ASSERT_TRUE(mojom_activation->is_elu());
       auto& elu = mojom_activation->get_elu();
       CHECK(elu);
@@ -603,7 +603,7 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       EXPECT_EQ(elu->alpha, expected_activation.elu_alpha.value());
       break;
     }
-    case MLOperator::OperatorKind::kHardSigmoid: {
+    case webnn::mojom::blink::Activation::Tag::kHardSigmoid: {
       ASSERT_TRUE(mojom_activation->is_hard_sigmoid());
       auto& hard_sigmoid = mojom_activation->get_hard_sigmoid();
       CHECK(hard_sigmoid);
@@ -615,7 +615,7 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
                 expected_activation.hard_sigmoid_beta.value());
       break;
     }
-    case MLOperator::OperatorKind::kLeakyRelu: {
+    case webnn::mojom::blink::Activation::Tag::kLeakyRelu: {
       ASSERT_TRUE(mojom_activation->is_leaky_relu());
       auto& leaky_relu = mojom_activation->get_leaky_relu();
       CHECK(leaky_relu);
@@ -624,7 +624,7 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
                 expected_activation.leaky_relu_alpha.value());
       break;
     }
-    case MLOperator::OperatorKind::kLinear: {
+    case webnn::mojom::blink::Activation::Tag::kLinear: {
       ASSERT_TRUE(mojom_activation->is_linear());
       auto& linear = mojom_activation->get_linear();
       CHECK(linear);
@@ -634,16 +634,16 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
       EXPECT_EQ(linear->beta, expected_activation.linear_beta.value());
       break;
     }
-    case MLOperator::OperatorKind::kRelu:
+    case webnn::mojom::blink::Activation::Tag::kRelu:
       EXPECT_TRUE(mojom_activation->is_relu());
       break;
-    case MLOperator::OperatorKind::kSigmoid:
+    case webnn::mojom::blink::Activation::Tag::kSigmoid:
       EXPECT_TRUE(mojom_activation->is_sigmoid());
       break;
-    case MLOperator::OperatorKind::kSoftmax:
+    case webnn::mojom::blink::Activation::Tag::kSoftmax:
       EXPECT_TRUE(mojom_activation->is_softmax());
       break;
-    case MLOperator::OperatorKind::kSoftplus: {
+    case webnn::mojom::blink::Activation::Tag::kSoftplus: {
       ASSERT_TRUE(mojom_activation->is_softplus());
       auto& softplus = mojom_activation->get_softplus();
       CHECK(softplus);
@@ -652,14 +652,12 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
                 expected_activation.softplus_steepness.value());
       break;
     }
-    case MLOperator::OperatorKind::kSoftsign:
+    case webnn::mojom::blink::Activation::Tag::kSoftsign:
       EXPECT_TRUE(mojom_activation->is_softsign());
       break;
-    case MLOperator::OperatorKind::kTanh:
+    case webnn::mojom::blink::Activation::Tag::kTanh:
       EXPECT_TRUE(mojom_activation->is_tanh());
       break;
-    default:
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -888,7 +886,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                      .dimensions = {3}},
         .options = {.activation =
                         Activation{
-                            .kind = MLOperator::OperatorKind::kClamp,
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kClamp,
                             .clamp_options =
                                 ClampTester::ClampOptions{.min_value = 1.0,
                                                           .max_value = 6.0}}},
@@ -901,10 +900,11 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kClamp,
-                            .clamp_options =
-                                ClampTester::ClampOptions{.min_value = 1.0,
-                                                          .max_value = 6.0}}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kClamp,
+                     .clamp_options =
+                         ClampTester::ClampOptions{.min_value = 1.0,
+                                                   .max_value = 6.0}}}}
         .Test(*this, scope, builder);
   }
   {
@@ -917,18 +917,20 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kElu}},
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kElu}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.scale = std::nullopt,
-                                .bias = std::nullopt,
-                                .axis = 1,
-                                .epsilon = 1e-5,
-                                .activation =
-                                    Activation{
-                                        .kind = MLOperator::OperatorKind::kElu,
-                                        .elu_alpha = 1.0}}}
+        .expected_attributes =
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 1.0}}}
         .Test(*this, scope, builder);
   }
   {
@@ -941,19 +943,20 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kElu,
-                                   .elu_alpha = 0.5}},
+                        Activation{
+                            .kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 0.5}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.scale = std::nullopt,
-                                .bias = std::nullopt,
-                                .axis = 1,
-                                .epsilon = 1e-5,
-                                .activation =
-                                    Activation{
-                                        .kind = MLOperator::OperatorKind::kElu,
-                                        .elu_alpha = 0.5}}}
+        .expected_attributes =
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 0.5}}}
         .Test(*this, scope, builder);
   }
   {
@@ -965,9 +968,11 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                  .dimensions = {3}},
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
-        .options = {.activation =
-                        Activation{.kind =
-                                       MLOperator::OperatorKind::kHardSigmoid}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind =
+                         webnn::mojom::blink::Activation::Tag::kHardSigmoid}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -977,9 +982,10 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kHardSigmoid,
-                            .hard_sigmoid_alpha = 0.2,
-                            .hard_sigmoid_beta = 0.5}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kHardSigmoid,
+                     .hard_sigmoid_alpha = 0.2,
+                     .hard_sigmoid_beta = 0.5}}}
         .Test(*this, scope, builder);
   }
   {
@@ -991,9 +997,10 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                  .dimensions = {3}},
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
-        .options = {.activation =
-                        Activation{.kind =
-                                       MLOperator::OperatorKind::kLeakyRelu}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -1003,8 +1010,9 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
-                            .leaky_relu_alpha = 0.01}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.01}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1016,9 +1024,11 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                  .dimensions = {3}},
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
-        .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
-                                   .leaky_relu_alpha = 0.02}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.02}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -1028,8 +1038,9 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
-                            .leaky_relu_alpha = 0.02}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.02}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1042,7 +1053,9 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kRelu}},
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kRelu}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -1051,7 +1064,9 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
-             .activation = Activation{.kind = MLOperator::OperatorKind::kRelu}}}
+             .activation =
+                 Activation{.kind =
+                                webnn::mojom::blink::Activation::Tag::kRelu}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1063,8 +1078,10 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                  .dimensions = {3}},
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
-        .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kSigmoid}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSigmoid}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -1074,7 +1091,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kSigmoid}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSigmoid}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1086,8 +1104,10 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                  .dimensions = {3}},
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
-        .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kSoftmax}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftmax}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -1097,7 +1117,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftmax}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1109,21 +1130,22 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                  .dimensions = {3}},
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
-        .options = {.activation =
-                        Activation{.kind =
-                                       MLOperator::OperatorKind::kSoftplus}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftplus}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
-        .expected_attributes = {.scale = std::nullopt,
-                                .bias = std::nullopt,
-                                .axis = 1,
-                                .epsilon = 1e-5,
-                                .activation =
-                                    Activation{
-                                        .kind =
-                                            MLOperator::OperatorKind::kSoftplus,
-                                        .softplus_steepness = 1.0}}}
+        .expected_attributes =
+            {.scale = std::nullopt,
+             .bias = std::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftplus,
+                     .softplus_steepness = 1.0}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1135,9 +1157,10 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
                  .dimensions = {3}},
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
-        .options = {.activation =
-                        Activation{.kind =
-                                       MLOperator::OperatorKind::kSoftsign}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftsign}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -1147,7 +1170,8 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .axis = 1,
              .epsilon = 1e-5,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kSoftsign}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftsign}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1160,7 +1184,9 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
         .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kTanh}},
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kTanh}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
@@ -1169,7 +1195,9 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
              .bias = std::nullopt,
              .axis = 1,
              .epsilon = 1e-5,
-             .activation = Activation{.kind = MLOperator::OperatorKind::kTanh}}}
+             .activation =
+                 Activation{.kind =
+                                webnn::mojom::blink::Activation::Tag::kTanh}}}
         .Test(*this, scope, builder);
   }
 }
@@ -1404,7 +1432,8 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{
-                            .kind = MLOperator::OperatorKind::kClamp,
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kClamp,
                             .clamp_options =
                                 ClampTester::ClampOptions{.min_value = 1.0,
                                                           .max_value = 6.0}}},
@@ -1417,10 +1446,11 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kClamp,
-                            .clamp_options =
-                                ClampTester::ClampOptions{.min_value = 1.0,
-                                                          .max_value = 6.0}}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kClamp,
+                     .clamp_options =
+                         ClampTester::ClampOptions{.min_value = 1.0,
+                                                   .max_value = 6.0}}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1431,18 +1461,20 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kElu}},
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kElu}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1,
-                                .activation =
-                                    Activation{
-                                        .kind = MLOperator::OperatorKind::kElu,
-                                        .elu_alpha = 1.0}}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 1.0}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1453,19 +1485,20 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kElu,
-                                   .elu_alpha = 0.5}},
+                        Activation{
+                            .kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 0.5}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1,
-                                .activation =
-                                    Activation{
-                                        .kind = MLOperator::OperatorKind::kElu,
-                                        .elu_alpha = 0.5}}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 0.5}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1476,11 +1509,12 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
-        .options = {.activation =
-                        Activation{
-                            .kind = MLOperator::OperatorKind::kHardSigmoid,
-                            .hard_sigmoid_alpha = 0.1,
-                            .hard_sigmoid_beta = -1.0}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kHardSigmoid,
+                     .hard_sigmoid_alpha = 0.1,
+                     .hard_sigmoid_beta = -1.0}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
@@ -1490,9 +1524,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kHardSigmoid,
-                            .hard_sigmoid_alpha = 0.1,
-                            .hard_sigmoid_beta = -1.0}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kHardSigmoid,
+                     .hard_sigmoid_alpha = 0.1,
+                     .hard_sigmoid_beta = -1.0}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1502,9 +1537,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
-        .options = {.activation =
-                        Activation{.kind =
-                                       MLOperator::OperatorKind::kLeakyRelu}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
@@ -1514,8 +1550,9 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
-                            .leaky_relu_alpha = 0.01}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.01}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1525,9 +1562,11 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
-        .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
-                                   .leaky_relu_alpha = 0.02}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.02}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
@@ -1537,8 +1576,9 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
-                            .leaky_relu_alpha = 0.02}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.02}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1549,7 +1589,9 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kRelu}},
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kRelu}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
@@ -1558,7 +1600,9 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .strides = Vector<uint32_t>({1, 1}),
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
-             .activation = Activation{.kind = MLOperator::OperatorKind::kRelu}}}
+             .activation =
+                 Activation{.kind =
+                                webnn::mojom::blink::Activation::Tag::kRelu}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1568,8 +1612,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
-        .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kSigmoid}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSigmoid}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
@@ -1579,7 +1625,8 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kSigmoid}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSigmoid}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1589,8 +1636,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                   .dimensions = {1, 1, 5, 5}},
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                    .dimensions = {1, 1, 3, 3}},
-        .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kSoftmax}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftmax}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {1, 1, 3, 3}},
@@ -1600,7 +1649,8 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftmax}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1611,32 +1661,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kSoftplus,
-                                   .softplus_steepness = 2.0}},
-        .expected_operand = {.data_type =
-                                 blink_mojom::Operand::DataType::kFloat16,
-                             .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1,
-                                .activation =
-                                    Activation{
-                                        .kind =
-                                            MLOperator::OperatorKind::kSoftplus,
-                                        .softplus_steepness = 2.0}}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test conv2d with softsign activation.
-    Conv2dTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                  .dimensions = {1, 1, 5, 5}},
-        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                   .dimensions = {1, 1, 3, 3}},
-        .options = {.activation =
-                        Activation{.kind =
-                                       MLOperator::OperatorKind::kSoftsign}},
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kSoftplus,
+                            .softplus_steepness = 2.0}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {1, 1, 3, 3}},
@@ -1646,7 +1674,33 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
              .activation =
-                 Activation{.kind = MLOperator::OperatorKind::kSoftsign}}}
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftplus,
+                     .softplus_steepness = 2.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with softsign activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                   .dimensions = {1, 1, 3, 3}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftsign}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftsign}}}
         .Test(*this, scope, builder);
   }
   {
@@ -1657,7 +1711,9 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
-                        Activation{.kind = MLOperator::OperatorKind::kTanh}},
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kTanh}},
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
@@ -1666,7 +1722,9 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
              .strides = Vector<uint32_t>({1, 1}),
              .dilations = Vector<uint32_t>({1, 1}),
              .groups = 1,
-             .activation = Activation{.kind = MLOperator::OperatorKind::kTanh}}}
+             .activation =
+                 Activation{.kind =
+                                webnn::mojom::blink::Activation::Tag::kTanh}}}
         .Test(*this, scope, builder);
   }
 }

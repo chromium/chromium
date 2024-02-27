@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ACTIVATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ACTIVATION_H_
 
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -20,8 +21,9 @@ class MODULES_EXPORT MLActivation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // TODO: crbug.com/325598628 - `kind` should be an Activation kind.
   MLActivation(MLGraphBuilder* builder,
-               MLOperator::OperatorKind kind,
+               webnn::mojom::blink::Operation::Tag kind,
                const bindings::DictionaryBase* options = nullptr);
 
   MLActivation(const MLActivation&) = delete;
