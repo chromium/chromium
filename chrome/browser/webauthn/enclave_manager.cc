@@ -1013,6 +1013,8 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     state_ = State::kGeneratingKeys;
 
+    manager_->user_verifying_key_.reset();
+
     user_verifying_key_provider_ = crypto::GetUserVerifyingKeyProvider();
     std::optional<crypto::UserVerifyingKeyLabel> key_label;
     // TODO(enclave): Reusing the label makes sense on Windows because it will
@@ -1087,31 +1089,33 @@ class EnclaveManager::StateMachine {
     CHECK(absl::holds_alternative<KeyReady>(event)) << ToString(event);
 
     bool state_dirty = false;
-    user_verifying_key_ =
+    manager_->user_verifying_key_ =
         std::move(absl::get_if<KeyReady>(&event)->value().first);
-    hardware_key_ = std::move(absl::get_if<KeyReady>(&event)->value().second);
+    manager_->hardware_key_ =
+        std::move(absl::get_if<KeyReady>(&event)->value().second);
 
     EnclaveLocalState::User* const user_state = user();
-    if (user_verifying_key_) {
+    if (manager_->user_verifying_key_) {
       const std::vector<uint8_t> uv_public_key =
-          user_verifying_key_->GetPublicKey();
+          manager_->user_verifying_key_->GetPublicKey();
       const std::string uv_public_key_str = VecToString(uv_public_key);
       if (user_state->uv_public_key() != uv_public_key_str) {
         user_state->set_uv_public_key(uv_public_key_str);
-        user_state->set_wrapped_uv_private_key(
-            UserVerifyingLabelToString(user_verifying_key_->GetKeyLabel()));
+        user_state->set_wrapped_uv_private_key(UserVerifyingLabelToString(
+            manager_->user_verifying_key_->GetKeyLabel()));
         state_dirty = true;
       }
     }
 
-    const std::vector<uint8_t> spki = hardware_key_->GetSubjectPublicKeyInfo();
+    const std::vector<uint8_t> spki =
+        manager_->hardware_key_->GetSubjectPublicKeyInfo();
     const std::string spki_str = VecToString(spki);
     if (user_state->hardware_public_key() != spki_str) {
       std::array<uint8_t, crypto::kSHA256Length> device_id =
           crypto::SHA256Hash(spki);
       user_state->set_hardware_public_key(spki_str);
       user_state->set_wrapped_hardware_private_key(
-          VecToString(hardware_key_->GetWrappedKey()));
+          VecToString(manager_->hardware_key_->GetWrappedKey()));
       user_state->set_device_id(VecToString(device_id));
       state_dirty = true;
     }
@@ -1140,7 +1144,8 @@ class EnclaveManager::StateMachine {
     enclave::Transact(
         manager_->network_context_, enclave::GetEnclaveIdentity(),
         std::move(token),
-        BuildRegistrationMessage(user()->device_id(), hardware_key_.get()),
+        BuildRegistrationMessage(user()->device_id(),
+                                 manager_->hardware_key_.get()),
         enclave::SigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -1522,10 +1527,8 @@ class EnclaveManager::StateMachine {
   bool want_registration_ = false;
 
   std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
-  std::unique_ptr<crypto::UserVerifyingSigningKey> user_verifying_key_;
   std::unique_ptr<crypto::UserVerifyingKeyProvider>
       user_verifying_key_provider_;
-  std::unique_ptr<crypto::UnexportableSigningKey> hardware_key_;
   base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets_;
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request> join_request_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
@@ -1615,92 +1618,174 @@ void EnclaveManager::SetupWithPIN(std::string pin) {
   Act();
 }
 
+void EnclaveManager::GetHardwareKeyForSignature(
+    base::OnceCallback<void(crypto::UnexportableSigningKey*)>
+        signing_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!user_ || user_->wrapped_hardware_private_key().empty()) {
+    std::move(signing_callback).Run(nullptr);
+    return;
+  }
+
+  if (hardware_key_) {
+    std::move(signing_callback).Run(hardware_key_.get());
+    return;
+  }
+
+  auto key_callback = base::BindOnce(
+      [](base::WeakPtr<EnclaveManager> enclave_manager,
+         CoreAccountId account_id,
+         base::OnceCallback<void(crypto::UnexportableSigningKey*)>
+             signing_callback,
+         std::unique_ptr<crypto::UnexportableSigningKey> key) {
+        if (!enclave_manager ||
+            enclave_manager->primary_account_info_->account_id != account_id) {
+          std::move(signing_callback).Run(nullptr);
+          return;
+        }
+        DCHECK_CALLED_ON_VALID_SEQUENCE(enclave_manager->sequence_checker_);
+        if (!key) {
+          // TODO(enclave): The key is gone. Clear registration state.
+          std::move(signing_callback).Run(nullptr);
+          return;
+        }
+        enclave_manager->hardware_key_ = std::move(key);
+        std::move(signing_callback).Run(enclave_manager->hardware_key_.get());
+      },
+      weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id,
+      std::move(signing_callback));
+
+  // Retrieve the key on a non-UI thread, and post a task back to the current
+  // thread that invokes `key_callback` with the obtained key.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(
+          [](std::string wrapped_hardware_private_key)
+              -> std::unique_ptr<crypto::UnexportableSigningKey> {
+            auto provider =
+                crypto::GetSoftwareUnsecureUnexportableKeyProvider();
+            return provider->FromWrappedSigningKeySlowly(
+                ToVector(wrapped_hardware_private_key));
+          },
+          user_->wrapped_hardware_private_key()),
+      std::move(key_callback));
+}
+
 enclave::SigningCallback EnclaveManager::HardwareKeySigningCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!user_->wrapped_hardware_private_key().empty());
   CHECK(user_->registered());
 
-  scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
-      base::SingleThreadTaskRunner::GetCurrentDefault();
-
   return base::BindOnce(
-      // TODO: this callback should also take a WeakPtr to the EnclaveManager so
-      // that the EnclaveManager can hold a cache of loaded keys and so that
-      // signing errors can be signaled up and cause the registration to be
-      // erased. (TPMs sometimes lose keys in practice.)
-      [](scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-         std::string wrapped_hardware_private_key, std::string device_id,
+      [](base::WeakPtr<EnclaveManager> enclave_manager,
          enclave::SignedMessage message_to_be_signed,
          base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
              result_callback) {
-        // Post to a blocking thread for the slow operation.
-        base::ThreadPool::PostTask(
-            FROM_HERE, {base::MayBlock()},
-            base::BindOnce(
-                [](scoped_refptr<base::SingleThreadTaskRunner>
-                       caller_task_runner,
-                   std::string wrapped_hardware_private_key,
-                   std::string device_id,
-                   enclave::SignedMessage message_to_be_signed,
-                   base::OnceCallback<void(
-                       std::optional<enclave::ClientSignature>)>
-                       result_callback) {
-                  // TODO(enclave): cache the key loading. TPMs are slow.
-                  auto provider =
-                      crypto::GetSoftwareUnsecureUnexportableKeyProvider();
-                  std::unique_ptr<crypto::UnexportableSigningKey> key =
-                      provider->FromWrappedSigningKeySlowly(
-                          ToVector(wrapped_hardware_private_key));
-                  if (!key) {
-                    caller_task_runner->PostTask(
-                        FROM_HERE,
-                        base::BindOnce(
-                            [](base::OnceCallback<void(
-                                   std::optional<enclave::ClientSignature>)>
-                                   result_callback) {
-                              std::move(result_callback).Run(std::nullopt);
-                            },
-                            std::move(result_callback)));
-                    return;
-                  }
-                  std::optional<std::vector<uint8_t>> signature =
-                      key->SignSlowly(message_to_be_signed);
-                  if (!signature) {
-                    caller_task_runner->PostTask(
-                        FROM_HERE,
-                        base::BindOnce(
-                            [](base::OnceCallback<void(
-                                   std::optional<enclave::ClientSignature>)>
-                                   result_callback) {
-                              std::move(result_callback).Run(std::nullopt);
-                            },
-                            std::move(result_callback)));
-                    return;
-                  }
+        if (!enclave_manager || !enclave_manager->user_) {
+          std::move(result_callback).Run(std::nullopt);
+          return;
+        }
+        DCHECK_CALLED_ON_VALID_SEQUENCE(enclave_manager->sequence_checker_);
 
-                  enclave::ClientSignature client_signature;
-                  client_signature.device_id = ToVector(device_id);
-                  client_signature.signature = std::move(*signature);
-                  client_signature.key_type = enclave::ClientKeyType::kHardware;
-                  caller_task_runner->PostTask(
-                      FROM_HERE,
-                      base::BindOnce(
-                          [](base::OnceCallback<void(
-                                 std::optional<enclave::ClientSignature>)>
-                                 result_callback,
-                             enclave::ClientSignature client_signature) {
-                            std::move(result_callback)
-                                .Run(std::move(client_signature));
-                          },
-                          std::move(result_callback),
-                          std::move(client_signature)));
-                },
-                caller_task_runner, std::move(wrapped_hardware_private_key),
-                std::move(device_id), std::move(message_to_be_signed),
-                std::move(result_callback)));
+        auto signing_callback = base::BindOnce(
+            [](std::string device_id,
+               enclave::SignedMessage message_to_be_signed,
+               base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
+                   result_callback,
+               crypto::UnexportableSigningKey* key) {
+              if (!key) {
+                std::move(result_callback).Run(std::nullopt);
+                return;
+              }
+              base::ThreadPool::PostTaskAndReplyWithResult(
+                  FROM_HERE,
+                  {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+                  base::BindOnce(
+                      [](std::string device_id,
+                         enclave::SignedMessage message_to_be_signed,
+                         crypto::UnexportableSigningKey* key)
+                          -> std::optional<enclave::ClientSignature> {
+                        std::optional<std::vector<uint8_t>> signature =
+                            key->SignSlowly(message_to_be_signed);
+                        if (!signature) {
+                          return std::nullopt;
+                        }
+                        enclave::ClientSignature client_signature;
+                        client_signature.device_id = ToVector(device_id);
+                        client_signature.signature = std::move(*signature);
+                        client_signature.key_type =
+                            enclave::ClientKeyType::kHardware;
+                        return std::move(client_signature);
+                      },
+                      std::move(device_id), std::move(message_to_be_signed),
+                      key),
+                  std::move(result_callback));
+            },
+            enclave_manager->user_->device_id(),
+            std::move(message_to_be_signed), std::move(result_callback));
+
+        enclave_manager->GetHardwareKeyForSignature(
+            std::move(signing_callback));
       },
-      caller_task_runner, user_->wrapped_hardware_private_key(),
-      user_->device_id());
+      weak_ptr_factory_.GetWeakPtr());
+}
+
+void EnclaveManager::GetUserVerifyingKeyForSignature(
+    base::OnceCallback<void(crypto::UserVerifyingSigningKey*)>
+        signing_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!user_ || user_->wrapped_uv_private_key().empty()) {
+    std::move(signing_callback).Run(nullptr);
+    return;
+  }
+
+  if (user_verifying_key_) {
+    std::move(signing_callback).Run(user_verifying_key_.get());
+    return;
+  }
+
+  auto user_verifying_key_provider = crypto::GetUserVerifyingKeyProvider();
+  if (!user_verifying_key_provider) {
+    // This indicates the platform key provider was available, but now is not.
+    // TODO(enclave): Clear registration state.
+    std::move(signing_callback).Run(nullptr);
+    return;
+  }
+
+  crypto::UserVerifyingKeyProvider* provider_temp =
+      user_verifying_key_provider.get();
+
+  auto key_callback = base::BindOnce(
+      [](base::WeakPtr<EnclaveManager> enclave_manager,
+         CoreAccountId account_id,
+         std::unique_ptr<crypto::UserVerifyingKeyProvider> provider,
+         base::OnceCallback<void(crypto::UserVerifyingSigningKey*)>
+             signing_callback,
+         std::unique_ptr<crypto::UserVerifyingSigningKey> key) {
+        provider.reset();
+        if (!enclave_manager ||
+            enclave_manager->primary_account_info_->account_id != account_id) {
+          std::move(signing_callback).Run(nullptr);
+          return;
+        }
+        if (!key) {
+          // TODO(enclave): The key is gone. Clear registration state.
+          std::move(signing_callback).Run(nullptr);
+          return;
+        }
+        enclave_manager->user_verifying_key_ = std::move(key);
+        std::move(signing_callback)
+            .Run(enclave_manager->user_verifying_key_.get());
+      },
+      weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id,
+      std::move(user_verifying_key_provider), std::move(signing_callback));
+
+  auto key_label =
+      UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
+  CHECK(key_label);
+
+  provider_temp->GetUserVerifyingSigningKey(std::move(*key_label),
+                                            std::move(key_callback));
 }
 
 enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
@@ -1708,31 +1793,29 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
   CHECK(!user_->wrapped_uv_private_key().empty());
   CHECK(user_->registered());
 
-  auto key_label =
-      UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
-  CHECK(key_label);
-
   return base::BindOnce(
-      [](crypto::UserVerifyingKeyLabel uv_key_label, std::string device_id,
+      [](base::WeakPtr<EnclaveManager> enclave_manager,
          enclave::SignedMessage message_to_be_signed,
          base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
              result_callback) {
-        auto provider = crypto::GetUserVerifyingKeyProvider();
-        provider->GetUserVerifyingSigningKey(
-            std::move(uv_key_label),
-            base::BindOnce(
-                [](std::string device_id,
-                   enclave::SignedMessage message_to_be_signed,
-                   base::OnceCallback<void(
-                       std::optional<enclave::ClientSignature>)>
-                       result_callback,
-                   std::unique_ptr<crypto::UserVerifyingSigningKey>
-                       uv_signing_key) {
-                  if (!uv_signing_key) {
-                    std::move(result_callback).Run(std::nullopt);
-                    return;
-                  }
-                  uv_signing_key->Sign(
+        if (!enclave_manager) {
+          std::move(result_callback).Run(std::nullopt);
+          return;
+        }
+        DCHECK_CALLED_ON_VALID_SEQUENCE(enclave_manager->sequence_checker_);
+
+        auto signing_callback = base::BindOnce(
+            [](std::string device_id,
+               enclave::SignedMessage message_to_be_signed,
+               base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
+                   result_callback,
+               crypto::UserVerifyingSigningKey* uv_signing_key) {
+              if (!uv_signing_key) {
+                std::move(result_callback).Run(std::nullopt);
+                return;
+              }
+              uv_signing_key
+                  ->Sign(
                       message_to_be_signed,
                       base::BindOnce(
                           [](std::string device_id,
@@ -1753,11 +1836,14 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
                                 .Run(std::move(client_signature));
                           },
                           std::move(device_id), std::move(result_callback)));
-                },
-                std::move(device_id), std::move(message_to_be_signed),
-                std::move(result_callback)));
+            },
+            enclave_manager->user_->device_id(),
+            std::move(message_to_be_signed), std::move(result_callback));
+
+        enclave_manager->GetUserVerifyingKeyForSignature(
+            std::move(signing_callback));
       },
-      std::move(*key_label), user_->device_id());
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
@@ -2032,6 +2118,9 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     user_ = nullptr;
     primary_account_info_.reset();
   }
+
+  user_verifying_key_.reset();
+  hardware_key_.reset();
 
   const signin::AccountsInCookieJarInfo in_jar =
       identity_manager_->GetAccountsInCookieJar();
