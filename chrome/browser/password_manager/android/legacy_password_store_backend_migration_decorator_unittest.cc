@@ -57,8 +57,7 @@ class LegacyPasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 
     backend_migration_decorator_ =
         std::make_unique<LegacyPasswordStoreBackendMigrationDecorator>(
-            CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_,
-            IsAccountStore(false));
+            CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_);
   }
 
   ~LegacyPasswordStoreBackendMigrationDecoratorTest() override {

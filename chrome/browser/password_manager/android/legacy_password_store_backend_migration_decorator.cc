@@ -38,11 +38,11 @@ bool ShouldAttemptMigration(const PrefService* prefs) {
 
 }  // namespace
 
-LegacyPasswordStoreBackendMigrationDecorator::LegacyPasswordStoreBackendMigrationDecorator(
-    std::unique_ptr<PasswordStoreBackend> built_in_backend,
-    std::unique_ptr<PasswordStoreBackend> android_backend,
-    PrefService* prefs,
-    IsAccountStore is_account_store)
+LegacyPasswordStoreBackendMigrationDecorator::
+    LegacyPasswordStoreBackendMigrationDecorator(
+        std::unique_ptr<PasswordStoreBackend> built_in_backend,
+        std::unique_ptr<PasswordStoreBackend> android_backend,
+        PrefService* prefs)
     : built_in_backend_(built_in_backend.get()),
       android_backend_(android_backend.get()),
       prefs_(prefs),
@@ -51,7 +51,7 @@ LegacyPasswordStoreBackendMigrationDecorator::LegacyPasswordStoreBackendMigratio
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
       std::move(built_in_backend), std::move(android_backend), prefs_,
-      is_account_store);
+      password_manager::kProfileStore);
 }
 
 LegacyPasswordStoreBackendMigrationDecorator::

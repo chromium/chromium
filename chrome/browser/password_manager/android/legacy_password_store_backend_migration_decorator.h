@@ -31,8 +31,7 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
   LegacyPasswordStoreBackendMigrationDecorator(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
-      PrefService* prefs,
-      IsAccountStore is_account_store);
+      PrefService* prefs);
   LegacyPasswordStoreBackendMigrationDecorator(
       const LegacyPasswordStoreBackendMigrationDecorator&) = delete;
   LegacyPasswordStoreBackendMigrationDecorator(

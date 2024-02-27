@@ -65,7 +65,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
           std::move(built_in_backend),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
               prefs, affiliations_prefetcher),
-          prefs, password_manager::kProfileStore);
+          prefs);
     // UPM M2: The password store proxy backend is created. No migrations are
     // needed.
     case UseUpmLocalAndSeparateStoresState::kOn:
@@ -89,7 +89,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
           std::make_unique<
               password_manager::PasswordStoreAndroidAccountBackend>(
               prefs, affiliations_prefetcher, password_manager::kProfileStore),
-          prefs, password_manager::kProfileStore);
+          prefs);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
