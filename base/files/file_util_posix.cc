@@ -333,6 +333,44 @@ std::string AppendModeCharacter(StringPiece mode, char mode_char) {
 }
 #endif
 
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE) && \
+    !(BUILDFLAG(IS_ANDROID) && __ANDROID_API__ >= 21)
+bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
+  DCHECK_GE(max_bytes, 0);
+
+  File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
+  if (!file.IsValid()) {
+    return false;
+  }
+
+  constexpr int kBufferSize = 1024 * 1024;
+  // Ensures the buffer is deallocated at function exit.
+  std::unique_ptr<char[]> buffer_deleter(new char[kBufferSize]);
+  char* const buffer = buffer_deleter.get();
+
+  while (max_bytes > 0) {
+    // The static_cast<int> is safe because kBufferSize is int, and both values
+    // are non-negative. So, the minimum is guaranteed to fit in int.
+    const int read_size =
+        static_cast<int>(std::min<int64_t>(max_bytes, kBufferSize));
+    DCHECK_GE(read_size, 0);
+    DCHECK_LE(read_size, kBufferSize);
+
+    const int read_bytes = file.ReadAtCurrentPos(buffer, read_size);
+    if (read_bytes < 0) {
+      return false;
+    }
+    if (read_bytes == 0) {
+      break;
+    }
+
+    max_bytes -= read_bytes;
+  }
+
+  return true;
+}
+#endif
+
 }  // namespace
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
@@ -1282,7 +1320,7 @@ bool PreReadFile(const FilePath& file_path,
       .ra_offset = 0, .ra_count = base::saturated_cast<int>(max_bytes)};
   return fcntl(fd, F_RDADVISE, &read_advise_data) != -1;
 #else
-  return internal::PreReadFileSlow(file_path, max_bytes);
+  return PreReadFileSlow(file_path, max_bytes);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // (BUILDFLAG(IS_ANDROID) &&
         // __ANDROID_API__ >= 21)

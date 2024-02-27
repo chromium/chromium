@@ -737,9 +737,6 @@ BASE_EXPORT bool CopyFileContentsWithSendfile(File& infile,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
-// Used by PreReadFile() when no kernel support for prefetching is available.
-bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes);
-
 }  // namespace internal
 }  // namespace base
 
