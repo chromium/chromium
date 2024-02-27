@@ -2001,7 +2001,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.CommitSentToFirstSubresourceLoadStart"
-    units="ms" expires_after="2024-05-20">
+    units="ms" expires_after="2024-08-25">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -3123,7 +3123,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLCPLessThanLoadEnd"
-    enum="Boolean" expires_after="2024-06-23">
+    enum="Boolean" expires_after="2024-08-25">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3147,7 +3147,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTTFB"
-    enum="Boolean" expires_after="2024-06-23">
+    enum="Boolean" expires_after="2024-08-25">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3160,7 +3160,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTtfbCauses"
     enum="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses"
-    expires_after="2024-06-23">
+    expires_after="2024-08-25">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

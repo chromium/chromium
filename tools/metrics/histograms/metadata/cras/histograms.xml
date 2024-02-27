@@ -333,7 +333,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DeviceSampleRate.Input{Device}" units="bps"
-    expires_after="2024-06-23">
+    expires_after="2024-08-25">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -344,7 +344,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DeviceSampleRate.Output{Device}" units="bps"
-    expires_after="2024-06-23">
+    expires_after="2024-08-25">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
