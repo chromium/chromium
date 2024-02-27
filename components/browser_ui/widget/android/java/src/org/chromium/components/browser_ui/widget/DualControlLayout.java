@@ -69,27 +69,6 @@ public final class DualControlLayout extends ViewGroup {
     /**
      * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
      *
-     * @param isPrimary Whether or not the button is meant to act as a "Confirm" button.
-     * @param text Text to display on the button.
-     * @param listener Listener to alert when the button has been clicked.
-     * @return Button that can be used in the view.
-     * @deprecated Use the Button createButtonForLayout( Context context, @ButtonType int
-     *     buttonType, String text, OnClickListener listener) version instead.
-     */
-    @Deprecated
-    public static Button createButtonForLayout(
-            Context context, boolean isPrimary, String text, OnClickListener listener) {
-        // TODO(b/325429764): migrate clients and remove this deprecated method.
-        if (isPrimary) {
-            return createButtonForLayout(context, ButtonType.PRIMARY_FILLED, text, listener);
-        } else {
-            return createButtonForLayout(context, ButtonType.SECONDARY, text, listener);
-        }
-    }
-
-    /**
-     * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
-     *
      * @param buttonType Determines button's function and appearance.
      * @param text Text to display on the button.
      * @param listener Listener to alert when the button has been clicked.
