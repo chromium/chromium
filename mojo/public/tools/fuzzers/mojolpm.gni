@@ -4,6 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/jinja2/jinja2.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # Generate a MojoLPM-based fuzzer test.
@@ -28,6 +29,12 @@ import("//third_party/protobuf/proto_library.gni")
 #
 #   proto_deps
 #       List of additional dependencies for compiling proto_source.
+#
+#   proto_in_dir
+#       See documentation at //third_party/protobuf/proto_library.gni.
+#
+#   proto_out_dir (optional)
+#       See documentation at //third_party/protobuf/proto_library.gni.
 #
 #   testcase_proto_kind (optional, required if seed_corpus_sources provided)
 #       Name of proto message type representing a testcase.
@@ -75,14 +82,24 @@ template("mojolpm_fuzzer_test") {
 
     proto_library(proto_target_name) {
       # Work relative to src (//) instead of (by default) the BUILD file.
-      proto_in_dir = "//"
+      if (defined(invoker.proto_in_dir)) {
+        proto_in_dir = invoker.proto_in_dir
+      } else {
+        proto_in_dir = "//"
+      }
+      if (defined(invoker.proto_out_dir)) {
+        proto_out_dir = invoker.proto_out_dir
+      }
 
       sources = [ invoker.proto_source ]
       generate_python = false
 
       proto_deps = []
 
-      import_dirs = [ root_gen_dir ]
+      import_dirs = [
+        root_gen_dir,
+        "//",
+      ]
 
       link_deps = []
 
@@ -142,6 +159,131 @@ template("mojolpm_fuzzer_test") {
       }
     }
   } else {
+    not_needed(invoker, "*")
+  }
+}
+
+# Generate a MojoLPM-based fuzzer test.
+#
+# This rule will copy the proto file defining the fuzzer testcases into the
+# output directory so that it can be compiled against the generated MojoLPM
+# protos. It then adds a rule to compile that proto, and finally a fuzzer
+# test target which uses the compiled proto.
+#
+# Optionally it can also handle converting a seed corpus of text protos into
+# a binary corpus as part of the build.
+#
+# Parameters:
+#   sources
+#       List of source .cc files to compile.
+#
+#   interface
+#       The mojom interface name for which to generate the mojolpm files.
+#
+#   mojom_source
+#       The mojom source file where the interface is defined.
+#
+#   remote_type
+#       The type of remote received. Can be either Remote or AssociatedRemote.
+#
+#   deps
+#       List of dependencies to compile this target.
+#
+#   proto_deps
+#       List of additional dependencies for compiling proto_source.
+#
+#   seed_corpus_sources (optional)
+#       List of source .textproto files used to build a seed corpus.
+#
+# Example:
+#  mojolpm_generated_fuzzer("foo_mojolpm_fuzzer") {
+#    sources = [ "foo_mojolpm_fuzzer.cc" ]
+#
+#    deps = [
+#      "//content/browser/foo:foo_mojolpm_fuzzer_proto",
+#      "//content/browser:for_content_tests",
+#      "//content/public/browser:browser_sources",
+#      "//content/test:test_support",
+#      "//mojo/core/embedder",
+#      "//mojo/public/tools/fuzzers:mojolpm",
+#      "//third_party/libprotobuf-mutator",
+#    ]
+#
+#    proto_deps = [
+#      "//content/browser/bar/mojom:mojom_mojolpm","
+#    ]
+#
+#    seed_corpus_sources = [
+#      "foo_mojolpm_fuzzer_corpus/seed_one.textproto",
+#      "foo_mojolpm_fuzzer_corpus/seed_two.textproto",
+#    ]
+#  }
+template("mojolpm_generated_fuzzer") {
+  assert(defined(invoker.sources),
+         "\"sources\" must be defined for $target_name")
+  assert(
+      defined(invoker.interface) && defined(invoker.mojom_source) &&
+          defined(invoker.remote_type),
+      "\"interface\", \"mojom_source\" and \"remote_type\" must be defined for $target_name")
+
+  if (enable_mojom_fuzzer) {
+    _target_name = target_name
+    _generate_target_name = _target_name + "_mojolpm_generator_generate"
+
+    action(_generate_target_name) {
+      testonly = true
+      script = "//mojo/public/tools/fuzzers/mojolpm_generator.py"
+      inputs = jinja2_sources
+
+      deps = []
+      if (defined(invoker.proto_deps)) {
+        deps += invoker.proto_deps
+      }
+
+      args = [
+        "--input",
+        rebase_path("$root_gen_dir/" + invoker.mojom_source + "-module",
+                    root_build_dir) + ":" + invoker.interface + ":" +
+            invoker.remote_type,
+        "--output_file_format",
+        rebase_path("${target_gen_dir}/${_target_name}", root_build_dir),
+      ]
+
+      outputs = [
+        "${target_gen_dir}/${_target_name}.h",
+        "${target_gen_dir}/${_target_name}.proto",
+      ]
+    }
+
+    mojolpm_fuzzer_test(target_name) {
+      proto_deps = [ ":${_generate_target_name}" ]
+      deps = [ ":${_generate_target_name}" ]
+      proto_source = "${target_gen_dir}/${_target_name}.proto"
+      proto_in_dir = "${root_gen_dir}"
+      proto_out_dir = "."
+
+      if (defined(invoker.proto_deps)) {
+        proto_deps += invoker.proto_deps
+      }
+
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+
+      if (defined(invoker.seed_corpus_sources)) {
+        testcase_proto_kind = "mojolpmgenerator.${_target_name}.Testcase"
+      }
+
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "deps",
+                               "proto_deps",
+                               "proto_source",
+                             ])
+    }
+  } else {
+    not_needed("*")
     not_needed(invoker, "*")
   }
 }

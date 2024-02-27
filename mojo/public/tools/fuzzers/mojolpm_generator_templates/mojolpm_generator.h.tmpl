@@ -1,0 +1,93 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_MOJOLPM_GENERATOR_H_"|format(
+        filename|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+{%- set classname = "%sTestcase"|format(basename) %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "mojo/public/tools/fuzzers/mojolpm.h"
+#include "{{proto_filename}}"
+
+{% for import in imports %}
+#include "{{import}}"
+{% endfor %}
+
+namespace mojolpmgenerator {
+
+class {{classname}} :
+    public mojolpm::Testcase<{{proto_namespace}}::Testcase,
+                             {{proto_namespace}}::Action> {
+ public:
+  using ProtoTestcase = {{proto_namespace}}::Testcase;
+  using ProtoAction = {{proto_namespace}}::Action;
+
+  {{classname}}(const ProtoTestcase& testcase)
+      : mojolpm::Testcase<ProtoTestcase, ProtoAction>(testcase) {}
+
+  virtual ~{{classname}}() {}
+
+  virtual scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() = 0;
+
+  void SetUp(base::OnceClosure done_closure) override;
+
+  void TearDown(base::OnceClosure done_closure) override;
+
+  void RunAction(const ProtoAction& action,
+                 base::OnceClosure done_closure) override;
+
+ protected:
+  virtual void HandleRunThreadAction(uint32_t id,
+                                     base::OnceClosure done_closure);
+{% for action in new_actions %}
+  virtual void HandleNew{{action['cpp_name']}}Action(
+      uint32_t id,
+      base::OnceClosure done_closure) = 0;
+{% endfor %}
+};
+
+void {{classname}}::SetUp(base::OnceClosure done_closure) {
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+void {{classname}}::TearDown(base::OnceClosure done_closure) {
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+void {{classname}}::RunAction(const ProtoAction& action,
+                base::OnceClosure done_closure) {
+  switch (action.action_case()) {
+    case ProtoAction::kRunThreadAction:
+      HandleRunThreadAction(action.run_thread_action().id(), std::move(done_closure));
+      return;
+{% for action in actions %}
+    case ProtoAction::{{action['case_name']}}:
+      {{action['mojolpm_func']}}(action.{{action['mojo_name']}}());
+      break;
+{% endfor %}
+{% for action in new_actions %}
+    case ProtoAction::{{action['case_name']}}:
+      HandleNew{{action['cpp_name']}}Action(action.{{action['mojo_name']}}().id(),
+                                            std::move(done_closure));
+      return;
+{% endfor %}
+    case ProtoAction::ACTION_NOT_SET:
+      break;
+  }
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+void {{classname}}::HandleRunThreadAction(
+    uint32_t id,
+    base::OnceClosure done_closure) {
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+}  // namespace mojolpmgenerator
+
+#endif  // {{header_guard}}

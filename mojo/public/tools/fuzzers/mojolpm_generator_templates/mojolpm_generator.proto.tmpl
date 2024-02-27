@@ -1,0 +1,39 @@
+syntax = "proto2";
+
+package mojolpmgenerator.{{basename}};
+
+{% for import in imports %}
+import "{{import}}";
+{% endfor %}
+
+message RunThreadAction {
+  required uint32 id = 1;
+}
+
+{% for new_message in new_messages %}
+message {{new_message}} {
+    required uint32 id = 1;
+}
+{% endfor %}
+
+message Action {
+    oneof action {
+        RunThreadAction run_thread_action = 1;
+{% for action in actions %}
+        {{action[0]}} {{action[1]}} = {{loop.index + 1}};
+{% endfor %}
+    }
+}
+
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions.
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+}
