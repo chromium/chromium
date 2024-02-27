@@ -55,6 +55,7 @@
 #include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/test/request_matcher.h"
@@ -1337,6 +1338,31 @@ void ExpectDeviceManagementPolicyFetchRequest(
                 /*first_request=*/true, /*rotate_to_new_key=*/false,
                 DMPolicyBuilderForTesting::SigningOption::kSignNormally,
                 dm_token, GetDefaultDMStorage()->GetDeviceID(), omaha_settings);
+        return dm_response->SerializeAsString();
+      }());
+}
+
+void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
+    ScopedServer* test_server,
+    const std::string& dm_token,
+    const ::wireless_android_enterprise_devicemanagement::
+        OmahaSettingsClientProto& omaha_settings) {
+  ExpectDeviceManagementRequest(
+      test_server, "policy", "GoogleDMToken", dm_token,
+      [&dm_token, &omaha_settings] {
+        std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+            dm_response =
+                DMPolicyBuilderForTesting::CreateInstanceWithOptions(
+                    /*first_request=*/false, /*rotate_to_new_key=*/true,
+                    DMPolicyBuilderForTesting::SigningOption::kSignNormally,
+                    dm_token, GetDefaultDMStorage()->GetDeviceID())
+                    ->BuildDMResponseForPolicies(
+                        {{"a-mock-policy-type-without-new-public-key",
+                          omaha_settings.SerializeAsString()},
+                         {"google/machine-level-omaha",
+                          omaha_settings.SerializeAsString()},
+                         {"yet-another-policy-type-without-new-public-key",
+                          omaha_settings.SerializeAsString()}});
         return dm_response->SerializeAsString();
       }());
 }

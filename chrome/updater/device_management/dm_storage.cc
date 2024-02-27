@@ -151,10 +151,10 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
       CachedPolicyInfo cached_info;
       if (cached_info.Populate(policy_value) &&
           !cached_info.public_key().empty() &&
-          !WriteContentToGlobalReadableFile(policy_info_file_, policy_value)) {
-        return false;
+          WriteContentToGlobalReadableFile(policy_info_file_, policy_value)) {
+        VLOG(1) << "Public key rotated.";
+        policy_info_data_saved = true;
       }
-      policy_info_data_saved = true;
     }
 
     std::string encoded_policy_type = base::Base64Encode(policy_type);

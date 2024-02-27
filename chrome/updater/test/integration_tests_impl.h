@@ -418,6 +418,11 @@ void ExpectDeviceManagementPolicyFetchRequest(
     const std::string& dm_token,
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings);
+void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
+    ScopedServer* test_server,
+    const std::string& dm_token,
+    const ::wireless_android_enterprise_devicemanagement::
+        OmahaSettingsClientProto& omaha_settings);
 void ExpectDeviceManagementPolicyValidationRequest(ScopedServer* test_server,
                                                    const std::string& dm_token);
 

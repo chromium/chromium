@@ -103,7 +103,8 @@ class DMPolicyBuilderForTesting {
   void FillPolicyFetchResponseWithPayload(
       enterprise_management::PolicyFetchResponse* policy_response,
       const std::string& policy_type,
-      const std::string& policy_payload) const;
+      const std::string& policy_payload,
+      bool attach_new_public_key) const;
 
   // Returns serialized PolicyFetchResponse which contains the given
   // policy payload.

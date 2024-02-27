@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/ipc/ipc_support.h"
@@ -2428,6 +2429,52 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v1));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagement, PublicKeyRotation) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v2));
+
+  // Do a policy fetch to download the policy info with the initial public key.
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  OmahaSettingsClientProto omaha_settings;
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
+  std::unique_ptr<CachedPolicyInfo> cached_info =
+      dm_storage->GetCachedPolicyInfo();
+  ASSERT_NE(cached_info, nullptr);
+  int64_t initial_key_timestamp = cached_info->timestamp();
+
+  // Run a second policy fetch and verify the cached policy info is updated
+  // to the one with the new public key.
+  ApplicationSettings app;
+  app.set_app_guid(kApp1.appid);
+  app.set_target_version_prefix("1.0");
+  app.set_rollback_to_target_version(
+      enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
+  omaha_settings.mutable_application_settings()->Add(std::move(app));
+  ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
+      test_server_.get(), kDMToken, omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  cached_info = dm_storage->GetCachedPolicyInfo();
+  ASSERT_NE(cached_info, nullptr);
+  ASSERT_GT(cached_info->timestamp(), initial_key_timestamp);
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
