@@ -351,6 +351,8 @@ void WvrManager::OnWebXrFrameAvailable() {
   // This is called each time a frame that was drawn on the WebVR Surface
   // arrives on the SurfaceTexture.
 
+  is_frame_submmitted_ = true;
+
   // This event should only occur in response to a SwapBuffers from
   // an incoming SubmitFrame call.
   DCHECK(!pending_frames_.empty()) << ": Frame arrived before SubmitFrame";
@@ -709,7 +711,7 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
     return false;
   }
 
-  if (!wvr_api_->SyncState(frame_index,
+  if (!wvr_api_->SyncState(is_frame_submmitted_,
                            graphics_->webxr_texture_handle(),
                            graphics_->webxr_surface_size().width(),
                            graphics_->webxr_surface_size().height())) {
@@ -748,6 +750,7 @@ bool WvrManager::IsSubmitFrameExpected(int16_t frame_index) {
 
 void WvrManager::SubmitFrameMissing(int16_t frame_index,
                                     const gpu::SyncToken& sync_token) {
+  is_frame_submmitted_ = false;
   if (!IsSubmitFrameExpected(frame_index))
     return;
 
