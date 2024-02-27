@@ -1027,8 +1027,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
-// TODO(crbug.com/1450976): test is flaky on Mac11.
-#if BUILDFLAG(IS_MAC)
+// TODO: crbug.com/1450976 - Re-enable tests on Mac and Lacros.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WebRequestCORSWithExtraHeaders \
   DISABLED_WebRequestCORSWithExtraHeaders
 #else
