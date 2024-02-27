@@ -423,9 +423,16 @@ TextPaintStyle HighlightStyleUtils::HighlightPaintingStyle(
   TextPaintStyle highlight_style = previous_layer_text_style;
   const PaintFlags paint_flags = paint_info.GetPaintFlags();
   bool uses_text_as_clip = paint_info.phase == PaintPhase::kTextClip;
-  bool ignored_selection = pseudo == kPseudoIdSelection &&
-                           ((node && !style.IsSelectable()) ||
-                            (paint_flags & PaintFlag::kSelectionDragImageOnly));
+  bool ignored_selection = false;
+
+  if (pseudo == kPseudoIdSelection) {
+    if ((node && !style.IsSelectable()) ||
+        (paint_flags & PaintFlag::kSelectionDragImageOnly)) {
+      ignored_selection = true;
+    }
+    highlight_style.selection_decoration_lines = TextDecorationLine::kNone;
+    highlight_style.selection_decoration_color = Color::kBlack;
+  }
 
   // Each highlight overlay’s shadows are completely independent of any shadows
   // specified on the originating element (or the other highlight overlays).
@@ -465,8 +472,15 @@ TextPaintStyle HighlightStyleUtils::HighlightPaintingStyle(
       highlight_style.shadow =
           uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
     }
-    highlight_style.selection_text_decoration = SelectionTextDecoration(
-        document, style, *pseudo_style, previous_layer_current_color);
+    std::optional<AppliedTextDecoration> selection_decoration =
+        SelectionTextDecoration(document, style, *pseudo_style,
+                                previous_layer_current_color);
+    if (selection_decoration) {
+      highlight_style.selection_decoration_lines =
+          selection_decoration->Lines();
+      highlight_style.selection_decoration_color =
+          selection_decoration->GetColor();
+    }
   }
 
   // Text shadows are disabled when printing. http://crbug.com/258321
