@@ -83,7 +83,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kGifs,
       {{PickerSearchResult::Gif(
-          /*url=*/GURL(), /*preview_image_url=*/GURL(), gfx::Size(),
+          /*preview_url=*/GURL(), /*preview_image_url=*/GURL(), gfx::Size(),
           /*content_description=*/u"")}}));
 
   EXPECT_THAT(view.children(), SizeIs(1));
@@ -193,7 +193,7 @@ INSTANTIATE_TEST_SUITE_P(
         {"Emoji", PickerSearchResult::Emoji(u"😊")},
         {"Symbol", PickerSearchResult::Symbol(u"♬")},
         {"Emoticon", PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")},
-        {"Gif", PickerSearchResult::Gif(/*url=*/GURL(),
+        {"Gif", PickerSearchResult::Gif(/*preview_url=*/GURL(),
                                         /*preview_image_url=*/GURL(),
                                         gfx::Size(10, 10),
                                         u"cat gif")},

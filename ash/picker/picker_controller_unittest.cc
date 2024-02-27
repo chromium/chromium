@@ -199,7 +199,7 @@ TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
   controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
-      /*url=*/GURL("http://foo.com"), /*preview_image_url=*/GURL(),
+      /*preview_url=*/GURL("http://foo.com"), /*preview_image_url=*/GURL(),
       gfx::Size(30, 20),
       /*content_description=*/u"a gif"));
   controller.widget_for_testing()->CloseNow();

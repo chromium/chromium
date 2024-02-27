@@ -26,13 +26,13 @@ bool PickerSearchResult::SymbolData::operator==(
 bool PickerSearchResult::EmoticonData::operator==(
     const PickerSearchResult::EmoticonData&) const = default;
 
-PickerSearchResult::GifData::GifData(const GURL& url,
+PickerSearchResult::GifData::GifData(const GURL& preview_url,
                                      const GURL& preview_image_url,
-                                     const gfx::Size& dimensions,
+                                     const gfx::Size& preview_dimensions,
                                      std::u16string content_description)
-    : url(url),
+    : preview_url(preview_url),
       preview_image_url(preview_image_url),
-      dimensions(dimensions),
+      preview_dimensions(preview_dimensions),
       content_description(std::move(content_description)) {}
 
 PickerSearchResult::GifData::GifData(const PickerSearchResult::GifData&) =
@@ -75,11 +75,12 @@ PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon) {
   return PickerSearchResult(EmoticonData{.emoticon = std::u16string(emoticon)});
 }
 
-PickerSearchResult PickerSearchResult::Gif(const GURL& url,
+PickerSearchResult PickerSearchResult::Gif(const GURL& preview_url,
                                            const GURL& preview_image_url,
-                                           const gfx::Size& dimensions,
+                                           const gfx::Size& preview_dimensions,
                                            std::u16string content_description) {
-  return PickerSearchResult(GifData(url, preview_image_url, dimensions,
+  return PickerSearchResult(GifData(preview_url, preview_image_url,
+                                    preview_dimensions,
                                     std::move(content_description)));
 }
 

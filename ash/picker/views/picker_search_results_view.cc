@@ -120,11 +120,13 @@ void PickerSearchResultsView::AddResultToSection(
             // view and `asset_fetcher_` outlives `this`.
             auto gif_view = std::make_unique<PickerGifView>(
                 base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
-                                    base::Unretained(asset_fetcher_), data.url),
+                                    base::Unretained(asset_fetcher_),
+                                    data.preview_url),
                 base::BindRepeating(
                     &PickerAssetFetcher::FetchGifPreviewImageFromUrl,
                     base::Unretained(asset_fetcher_), data.preview_image_url),
-                data.dimensions, /*accessible_name=*/data.content_description);
+                data.preview_dimensions,
+                /*accessible_name=*/data.content_description);
             auto gif_item_view = std::make_unique<PickerImageItemView>(
                 std::move(select_result_callback), std::move(gif_view));
             section_view->AddImageItem(std::move(gif_item_view));

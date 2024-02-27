@@ -755,7 +755,8 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("url", &PickerSearchResult::GifData::url,
+                      Field("preview_url",
+                            &PickerSearchResult::GifData::preview_url,
                             Property("spec", &GURL::spec,
                                      "https://media.tenor.com/GOabrbLMl4AAAAAd/"
                                      "plink-cat-plink.gif")),
@@ -795,7 +796,8 @@ TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("url", &PickerSearchResult::GifData::url,
+                      Field("preview_url",
+                            &PickerSearchResult::GifData::preview_url,
                             Property("spec", &GURL::spec,
                                      "https://media.tenor.com/GOabrbLMl4AAAAAd/"
                                      "plink-cat-plink.gif")),
@@ -836,7 +838,8 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("url", &PickerSearchResult::GifData::url,
+                      Field("preview_url",
+                            &PickerSearchResult::GifData::preview_url,
                             Property("spec", &GURL::spec,
                                      "https://media.tenor.com/"
                                      "GOabrbLMl4AAAAAd/"
@@ -945,7 +948,8 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
                   Contains(Property(
                       "data", &PickerSearchResult::data,
                       VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("url", &PickerSearchResult::GifData::url,
+                          Field("preview_url",
+                                &PickerSearchResult::GifData::preview_url,
                                 Property("spec", &GURL::spec,
                                          "https://media.tenor.com/"
                                          "GOabrbLMl4AAAAAd/"
@@ -1060,7 +1064,8 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
               Contains(Property(
                   "data", &PickerSearchResult::data,
                   VariantWith<PickerSearchResult::GifData>(AllOf(
-                      Field("url", &PickerSearchResult::GifData::url,
+                      Field("preview_url",
+                            &PickerSearchResult::GifData::preview_url,
                             Property("spec", &GURL::spec,
                                      "https://media.tenor.com/"
                                      "GOabrbLMl4AAAAAd/"

@@ -131,7 +131,7 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
             return PickerTextMedia(data.emoticon);
           },
           [](const PickerSearchResult::GifData& data) -> ReturnType {
-            return PickerImageMedia(data.url);
+            return PickerImageMedia(data.preview_url);
           },
           [](const PickerSearchResult::BrowsingHistoryData& data)
               -> ReturnType { return PickerLinkMedia(data.url); },
@@ -147,8 +147,8 @@ void MaybeCopyMediaToClipboard(const PickerSearchResult& result) {
           std::get_if<PickerSearchResult::GifData>(&result.data())) {
     // TODO: b/322900073 - If we insert full resolution URLs, we should use the
     // dimensions for the full resolution GIF, not the preview gif.
-    CopyGifMediaToClipboard(gif->url, gif->content_description,
-                            gif->dimensions);
+    CopyGifMediaToClipboard(gif->preview_url, gif->content_description,
+                            gif->preview_dimensions);
   }
 }
 
