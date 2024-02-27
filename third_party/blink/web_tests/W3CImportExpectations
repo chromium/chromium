@@ -1,9 +1,11 @@
-# results: [ Skip ]
+# results: [ Pass Skip ]
 
 # This file controls which subdirectories of the w3c test repos we import.
 #
-# This file acts as a list of exclusions; directories and files not listed here
-# will automatically be found and imported.
+# Most lines in this file are exclusions marked with the `Skip` status.
+# Directories and files not listed here will automatically be found and
+# imported. It's also possible to import specific files in an excluded directory
+# by marking them as `Pass`.
 #
 # Tests that are imported but not run are listed in NeverFixTests. This can be
 # used to make it easier to work on getting them running and passing.
@@ -376,3 +378,7 @@ external/wpt/css/css-page/page-size-009.xht [ Skip ]
 external/wpt/css/css-page/page-size-010.xht [ Skip ]
 external/wpt/css/css-page/page-size-011.xht [ Skip ]
 external/wpt/css/css-page/page-size-012.xht [ Skip ]
+
+# This is a reference file for a non-denylisted test, so it should be included
+# despite a general exclusion of `css/CSS2/syntax/`.
+external/wpt/css/CSS2/syntax/character-encoding-041-ref.xht [ Pass ]
