@@ -154,6 +154,7 @@ class SharedStorageStory(
     self._RunSharedStorageSetUp(action_runner)
 
     for index in range(self._iterations):
+      self._PrintProgressBarIfNonVerbose(index)
       try:
         self._RunSharedStorageAction(action_runner, index)
       except timeout as t:
@@ -234,6 +235,22 @@ class SharedStorageStory(
     except websocket.WebSocketTimeoutException as w:
       logging.warning("%s timed out getting %s-test metadata: %s" %
                       (self.NAME, prefix, repr(w)))
+
+  def _PrintProgressBarIfNonVerbose(self, index):
+    if self._verbosity >= 1:
+      # We don't need a progress bar because we are already logging information
+      # to track each action iteration.
+      return
+
+    progress = ''.join(
+        ['[', '#' * (index + 1), ' ' * (self._iterations - 1 - index), '] '])
+    fraction = ''.join([str(index + 1), ' / ', str(self._iterations)])
+
+    # We use `print()` instead of logging so that the progress bar will print
+    # with no prefix and in spite of having `self._verbosity < 1`.
+    print(f'{progress}{fraction} iterations', end='\r')
+    if index == self._iterations - 1:
+      print()
 
 
 def IterAllSharedStorageStoryClasses():
