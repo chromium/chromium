@@ -575,15 +575,16 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
   const float start_threshold =
       is_touchpad ? OverscrollConfig::kStartTouchpadThresholdDips
                   : OverscrollConfig::kStartTouchscreenThresholdDips;
+  const float complete_percent =
+      is_touchpad ? OverscrollConfig::kCompleteTouchpadThresholdPercent
+                  : OverscrollConfig::kCompleteTouchscreenThresholdPercent;
+
   const gfx::Size size = GetDisplaySize();
   const int max_size = std::max(size.width(), size.height());
-  completion_threshold_ =
-      max_size *
-          (is_touchpad
-               ? OverscrollConfig::kCompleteTouchpadThresholdPercent
-               : OverscrollConfig::kCompleteTouchscreenThresholdPercent) -
-      start_threshold;
-  DCHECK_LE(0, completion_threshold_);
+
+  completion_threshold_ = max_size * complete_percent - start_threshold;
+  DCHECK_LE(0, completion_threshold_) << " for display size " << size.ToString()
+                                      << " and is_touchpad=" << is_touchpad;
 
   max_delta_ = max_size - start_threshold;
   DCHECK_LE(0, max_delta_);
