@@ -13,6 +13,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
@@ -216,14 +217,43 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public void setWebAuthnSupport(int support) {
-        // Currently a no-op while this functionality is built out.
+    public void setWebauthnSupport(@WebauthnSupport int support) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_SET_WEBAUTHN_SUPPORT")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_WEBAUTHN_SUPPORT);
+            switch (support) {
+                case WebauthnSupport.NONE:
+                    mAwSettings.setWebauthnSupport(WebauthnMode.NONE);
+                    break;
+                case WebauthnSupport.APP:
+                    mAwSettings.setWebauthnSupport(WebauthnMode.APP);
+                    break;
+                case WebauthnSupport.BROWSER:
+                    mAwSettings.setWebauthnSupport(WebauthnMode.BROWSER);
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "Invalid WebauthnSupport specified" + support);
+            }
+        }
     }
 
     @Override
-    public int getWebAuthnSupport() {
-        // Currently a no-op while this functionality is built out.
-        return WebAuthnSupport.NONE;
+    public @WebauthnSupport int getWebauthnSupport() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_GET_WEBAUTHN_SUPPORT")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_WEBAUTHN_SUPPORT);
+            switch (mAwSettings.getWebauthnSupport()) {
+                case WebauthnMode.NONE:
+                    return WebauthnSupport.NONE;
+                case WebauthnMode.APP:
+                    return WebauthnSupport.APP;
+                case WebauthnMode.BROWSER:
+                    return WebauthnSupport.BROWSER;
+                default:
+                    return WebauthnSupport.NONE;
+            }
+        }
     }
 
     @Override

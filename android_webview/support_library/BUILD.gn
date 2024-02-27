@@ -44,6 +44,7 @@ android_library("support_lib_glue_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//components/embedder_support/android:util_java",
+    "//components/webauthn/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
