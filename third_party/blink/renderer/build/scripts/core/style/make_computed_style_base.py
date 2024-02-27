@@ -56,6 +56,7 @@ ALIGNMENT_ORDER = [
     'NinePieceImage',
     'SVGPaint',
     'IntrinsicLength',
+    'TextBoxEdge',
     'TextDecorationThickness',
     'StyleAspectRatio',
     'StyleIntrinsicLength',

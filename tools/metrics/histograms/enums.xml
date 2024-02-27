@@ -26493,6 +26493,7 @@ Called by update_use_counter_css.py.-->
   <int value="783" label="position-try-order"/>
   <int value="784" label="position-try-options"/>
   <int value="785" label="position-try"/>
+  <int value="786" label="text-box-edge"/>
 </enum>
 
 <enum name="MediaEncryptionType">

@@ -6710,6 +6710,48 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange& range) {
   return list;
 }
 
+// Consume the `text-box-edge` production.
+CSSValue* ConsumeTextBoxEdge(CSSParserTokenRange& range) {
+  if (CSSIdentifierValue* leading = ConsumeIdent<CSSValueID::kLeading>(range)) {
+    return range.AtEnd() ? leading : nullptr;
+  }
+  CSSIdentifierValue* over_type =
+      ConsumeIdent<CSSValueID::kText, CSSValueID::kCap, CSSValueID::kEx>(range);
+  if (!over_type) {
+    return nullptr;
+  }
+  // The second parameter is optional, the first parameter will be used for
+  // both if the second parameter is not provided.
+  if (range.AtEnd()) {
+    return over_type;
+  }
+  if (CSSIdentifierValue* under_type =
+          ConsumeIdent<CSSValueID::kText, CSSValueID::kAlphabetic>(range);
+      under_type && range.AtEnd()) {
+    // Align with the CSS specification: "If only one value is specified,
+    // both edges are assigned that same keyword if possible; else 'text' is
+    // assumed as the missing value.".
+    // If the `over_type` is 'cap' or 'ex', since it does not have a
+    // corresponding line-under baseline, `text` will be used to fill the
+    // missing value. If the `over_type` is `text`, the default `under_type` is
+    // `text` to prioritize the same keyword.
+    // In all cases above, the `under_type` of `text` can be omitted for
+    // serialization.
+    if (under_type->GetValueID() == CSSValueID::kText) {
+      if (over_type->GetValueID() == CSSValueID::kText ||
+          over_type->GetValueID() == CSSValueID::kCap ||
+          over_type->GetValueID() == CSSValueID::kEx) {
+        return over_type;
+      }
+    }
+    CSSValueList* const list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*over_type);
+    list->Append(*under_type);
+    return list;
+  }
+  return nullptr;
+}
+
 // Consume the `autospace` production.
 // https://drafts.csswg.org/css-text-4/#typedef-autospace
 CSSValue* ConsumeAutospace(CSSParserTokenRange& range) {

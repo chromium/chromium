@@ -2449,6 +2449,22 @@ SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
   return paint;
 }
 
+// static
+TextBoxEdge StyleBuilderConverter::ConvertTextBoxEdge(
+    StyleResolverState& status,
+    const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    return TextBoxEdge(
+        identifier_value->ConvertTo<TextBoxEdge::TextBoxEdgeType>());
+  }
+  const auto* const list = DynamicTo<CSSValueList>(&value);
+  DCHECK_EQ(list->length(), 2u);
+  const CSSIdentifierValue& over = To<CSSIdentifierValue>(list->Item(0));
+  const CSSIdentifierValue& under = To<CSSIdentifierValue>(list->Item(1));
+  return TextBoxEdge(over.ConvertTo<TextBoxEdge::TextBoxEdgeType>(),
+                     under.ConvertTo<TextBoxEdge::TextBoxEdgeType>());
+}
+
 TextDecorationThickness StyleBuilderConverter::ConvertTextDecorationThickness(
     StyleResolverState& state,
     const CSSValue& value) {

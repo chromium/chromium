@@ -129,6 +129,7 @@ blink_core_sources_style = [
   "svg_paint.h",
   "text_decoration_thickness.cc",
   "text_decoration_thickness.h",
+  "text_box_edge.h",
   "text_size_adjust.h",
   "offset_path_operation.h",
   "unzoomed_length.h",

@@ -445,6 +445,7 @@ textAlign
 textAlignLast
 textAnchor
 textAutospace
+textBoxEdge
 textBoxTrim
 textCombineUpright
 textDecoration

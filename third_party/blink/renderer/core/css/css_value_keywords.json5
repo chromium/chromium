@@ -776,6 +776,19 @@
     "no-autospace",
 
     //
+    // text-box-edge
+    //
+    // "alphabetic",
+    // "text"
+    //
+    // not implemented
+    // "ideographic",
+    // "ideographic-ink",
+    "cap",
+    "ex",
+    "leading",
+
+    //
     // text-overflow
     //
     "clip",

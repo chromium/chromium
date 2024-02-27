@@ -8522,6 +8522,41 @@ const CSSValue* TextAutospace::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.TextAutospace());
 }
 
+const CSSValue* TextBoxEdge::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const blink::TextBoxEdge& text_box_edge = style.GetTextBoxEdge();
+  if (text_box_edge.Under() == text_box_edge.Over()) {
+    return CSSIdentifierValue::Create(text_box_edge.Over());
+  }
+  if (text_box_edge.Under() == ::blink::TextBoxEdge::TextBoxEdgeType::kText) {
+    using enum ::blink::TextBoxEdge::TextBoxEdgeType;
+    switch (text_box_edge.Over()) {
+      case kCap:
+      case kEx:
+        return CSSIdentifierValue::Create(text_box_edge.Over());
+      case kAlphabetic:
+        break;
+      case kLeading:
+      case kText:
+        NOTREACHED_NORETURN();
+    }
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSIdentifierValue::Create(text_box_edge.Over()));
+  list->Append(*CSSIdentifierValue::Create(text_box_edge.Under()));
+  return list;
+}
+
+const CSSValue* TextBoxEdge::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeTextBoxEdge(range);
+}
+
 const CSSValue* TextBoxTrim::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,

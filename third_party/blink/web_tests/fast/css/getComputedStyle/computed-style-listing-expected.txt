@@ -349,6 +349,7 @@ text-align: start
 text-align-last: auto
 text-anchor: start
 text-autospace: normal
+text-box-edge: leading
 text-box-trim: none
 text-decoration: none solid rgb(0, 0, 0)
 text-decoration-color: rgb(0, 0, 0)

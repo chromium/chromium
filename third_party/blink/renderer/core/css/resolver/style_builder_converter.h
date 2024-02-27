@@ -268,6 +268,7 @@ class StyleBuilderConverter {
   static SVGPaint ConvertSVGPaint(StyleResolverState&,
                                   const CSSValue&,
                                   bool for_visited_link);
+  static TextBoxEdge ConvertTextBoxEdge(StyleResolverState&, const CSSValue&);
   static TextDecorationThickness ConvertTextDecorationThickness(
       StyleResolverState&,
       const CSSValue&);
