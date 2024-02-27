@@ -202,7 +202,8 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    IndexedRulesetVersion::RegisterPrefs(pref_service_.registry());
+    IndexedRulesetVersion::RegisterPrefs(pref_service_.registry(),
+                                         kSafeBrowsingFilterTag);
 
     SetUpTempDir();
     ResetRulesetService();
@@ -504,7 +505,8 @@ const char SubresourceFilteringRulesetServiceDeathTest::kInheritedTempDirKey[] =
 
 TEST_F(SubresourceFilteringRulesetServiceTest, PathsAreSane) {
   IndexedRulesetVersion indexed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
 
   base::FilePath ruleset_data_path =
       GetExpectedRulesetDataFilePath(indexed_version);
@@ -530,7 +532,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest, WriteRuleset) {
   ASSERT_NO_FATAL_FAILURE(
       CreateTestLicenseFile(kTestLicenseContents, &original_license_path));
   IndexedRulesetVersion indexed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
 
   ASSERT_TRUE(
       WriteRuleset(test_ruleset_1(), indexed_version, original_license_path));
@@ -556,7 +559,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   ASSERT_NO_FATAL_FAILURE(test_ruleset_creator()->GetUniqueTemporaryPath(
       &nonexistent_license_path));
   IndexedRulesetVersion indexed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   ASSERT_TRUE(WriteRuleset(test_ruleset_1(), indexed_version,
                            nonexistent_license_path));
   EXPECT_TRUE(
@@ -566,7 +570,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
 
 TEST_F(SubresourceFilteringRulesetServiceTest, WriteRuleset_EmptyLicensePath) {
   IndexedRulesetVersion indexed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   ASSERT_TRUE(
       WriteRuleset(test_ruleset_1(), indexed_version, base::FilePath()));
   EXPECT_TRUE(
@@ -576,21 +581,27 @@ TEST_F(SubresourceFilteringRulesetServiceTest, WriteRuleset_EmptyLicensePath) {
 
 TEST_F(SubresourceFilteringRulesetServiceTest, DeleteObsoleteRulesets_Noop) {
   ASSERT_FALSE(base::DirectoryExists(base_dir()));
-  DeleteObsoleteRulesets(base_dir(), IndexedRulesetVersion());
+  DeleteObsoleteRulesets(base_dir(),
+                         IndexedRulesetVersion(kSafeBrowsingFilterTag));
   EXPECT_TRUE(base::IsDirectoryEmpty(base_dir()));
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest, DeleteObsoleteRulesets) {
   IndexedRulesetVersion legacy_format_content_version_1(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion() - 1);
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion() - 1,
+      kSafeBrowsingFilterTag);
   IndexedRulesetVersion legacy_format_content_version_2(
-      kTestContentVersion2, IndexedRulesetVersion::CurrentFormatVersion() - 1);
+      kTestContentVersion2, IndexedRulesetVersion::CurrentFormatVersion() - 1,
+      kSafeBrowsingFilterTag);
   IndexedRulesetVersion current_format_content_version_1(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   IndexedRulesetVersion current_format_content_version_2(
-      kTestContentVersion2, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion2, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   IndexedRulesetVersion current_format_content_version_3(
-      kTestContentVersion3, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion3, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
 
   WriteRuleset(test_ruleset_1(), legacy_format_content_version_1);
   WriteRuleset(test_ruleset_2(), legacy_format_content_version_2);
@@ -628,7 +639,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest, Startup_NoRulesetNotPublished) {
 TEST_F(SubresourceFilteringRulesetServiceTest,
        Startup_MissingRulesetNotPublished) {
   IndexedRulesetVersion current_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   // "Forget" to write ruleset data.
   current_version.SaveToPrefs(prefs());
 
@@ -640,8 +652,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
 TEST_F(SubresourceFilteringRulesetServiceTest,
        Startup_LegacyFormatRulesetNotPublishedButDeleted) {
   int legacy_format_version = IndexedRulesetVersion::CurrentFormatVersion() - 1;
-  IndexedRulesetVersion legacy_version(kTestContentVersion1,
-                                       legacy_format_version);
+  IndexedRulesetVersion legacy_version(
+      kTestContentVersion1, legacy_format_version, kSafeBrowsingFilterTag);
   ASSERT_TRUE(legacy_version.IsValid());
   legacy_version.SaveToPrefs(prefs());
   WriteRuleset(test_ruleset_1(), legacy_version);
@@ -654,7 +666,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
 
   SimulateStartupCompletedAndWaitForTasks();
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_FALSE(stored_version.IsValid());
   EXPECT_TRUE(base::IsDirectoryEmpty(base_dir()));
@@ -663,7 +675,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
 TEST_F(SubresourceFilteringRulesetServiceTest,
        Startup_ExistingRulesetPublishedAndNotDeleted) {
   IndexedRulesetVersion current_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   current_version.SaveToPrefs(prefs());
   WriteRuleset(test_ruleset_1(), current_version);
 
@@ -742,7 +755,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_Persisted) {
   // sure it does not get immediately deleted.
   SimulateStartupCompletedAndWaitForTasks();
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_EQ(kTestContentVersion1, stored_version.content_version);
   EXPECT_EQ(IndexedRulesetVersion::CurrentFormatVersion(),
@@ -792,13 +805,13 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   // after SimulateStartupCompleted, otherwise it gets deleted by the clean-up
   // routines, rendering this test pointless.
   IndexedRulesetVersion same_version_but_incomplete(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   WriteRuleset(test_ruleset_2(), same_version_but_incomplete);
 
   WaitForIndexAndStoreAndPublishUpdatedRuleset(test_ruleset_1(),
                                                kTestContentVersion1);
-
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_EQ(kTestContentVersion1, stored_version.content_version);
   EXPECT_EQ(IndexedRulesetVersion::CurrentFormatVersion(),
@@ -826,7 +839,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   WaitForIndexAndStoreAndPublishUpdatedRuleset(ruleset_with_unsupported_rule,
                                                kTestContentVersion1);
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_EQ(kTestContentVersion1, stored_version.content_version);
   EXPECT_EQ(IndexedRulesetVersion::CurrentFormatVersion(),
@@ -857,14 +870,15 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   RunBackgroundUntilIdle();
   RunBlockingUntilIdle();
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_FALSE(stored_version.IsValid());
 
   // Expect no sentinel file. Although it is unlikely that we will magically
   // find the file on a subsequent attempt, failing this early is cheap.
   IndexedRulesetVersion failed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   EXPECT_FALSE(base::PathExists(GetExpectedSentinelFilePath(failed_version)));
 
   ASSERT_EQ(0u, mock_publisher()->published_rulesets().size());
@@ -885,7 +899,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_ParseFailure) {
   WaitForIndexAndStoreAndPublishUpdatedRuleset(test_ruleset_1(),
                                                kTestContentVersion1);
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_FALSE(stored_version.IsValid());
 
@@ -894,7 +908,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_ParseFailure) {
   // However, as versions with sentinel files present will not be cleaned up
   // until the format version is increased, expect no ruleset file.
   IndexedRulesetVersion failed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   EXPECT_TRUE(base::PathExists(GetExpectedSentinelFilePath(failed_version)));
   EXPECT_FALSE(
       base::PathExists(GetExpectedRulesetDataFilePath(failed_version)));
@@ -931,7 +946,8 @@ TEST_F(SubresourceFilteringRulesetServiceDeathTest, NewRuleset_IndexingCrash) {
   // However, as versions with sentinel files present will not be cleaned up
   // until the format version is increased, expect no ruleset file.
   IndexedRulesetVersion crashed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   EXPECT_TRUE(base::PathExists(GetExpectedSentinelFilePath(crashed_version)));
   EXPECT_FALSE(
       base::PathExists(GetExpectedRulesetDataFilePath(crashed_version)));
@@ -946,7 +962,7 @@ TEST_F(SubresourceFilteringRulesetServiceDeathTest, NewRuleset_IndexingCrash) {
   WaitForIndexAndStoreAndPublishUpdatedRuleset(test_ruleset_1(),
                                                kTestContentVersion1);
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_FALSE(stored_version.IsValid());
 
@@ -968,7 +984,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_WriteFailure) {
   WaitForIndexAndStoreAndPublishUpdatedRuleset(test_ruleset_1(),
                                                kTestContentVersion1);
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_FALSE(stored_version.IsValid());
 
@@ -977,7 +993,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_WriteFailure) {
   // Expect that the sentinel file is already gone. Write failures are quite
   // frequent and are often transient, so it is worth attempting indexing again.
   IndexedRulesetVersion failed_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   EXPECT_FALSE(base::PathExists(GetExpectedSentinelFilePath(failed_version)));
 
   using IndexAndWriteRulesetResult = RulesetService::IndexAndWriteRulesetResult;
@@ -1008,7 +1025,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
       mock_publisher()->published_rulesets()[1].get(),
       test_ruleset_2().indexed.contents));
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_EQ(kTestContentVersion2, stored_version.content_version);
 }
@@ -1029,7 +1046,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
       mock_publisher()->published_rulesets()[0].get(),
       test_ruleset_1().indexed.contents));
 
-  IndexedRulesetVersion stored_version;
+  IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
   stored_version.ReadFromPrefs(prefs());
   EXPECT_EQ(kTestContentVersion1, stored_version.content_version);
 }
@@ -1037,7 +1054,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
 TEST_F(SubresourceFilteringRulesetServiceTest,
        MultipleNewRulesetsEarly_MostRecentIsPublishedAfterStartupIsComplete) {
   IndexedRulesetVersion current_version(
-      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion());
+      kTestContentVersion1, IndexedRulesetVersion::CurrentFormatVersion(),
+      kSafeBrowsingFilterTag);
   current_version.SaveToPrefs(prefs());
   WriteRuleset(test_ruleset_1(), current_version);
 
@@ -1110,7 +1128,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
         mock_publisher()->published_rulesets().back().get(),
         test_ruleset_2().indexed.contents));
 
-    IndexedRulesetVersion stored_version;
+    IndexedRulesetVersion stored_version(kSafeBrowsingFilterTag);
     stored_version.ReadFromPrefs(prefs());
     EXPECT_EQ(kTestContentVersion2, stored_version.content_version);
 
@@ -1118,7 +1136,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
     RunBlockingUntilIdle();
 
     EXPECT_TRUE(base::DeletePathRecursively(base_dir()));
-    IndexedRulesetVersion().SaveToPrefs(prefs());
+    IndexedRulesetVersion(kSafeBrowsingFilterTag).SaveToPrefs(prefs());
     ResetRulesetService();
   }
 }

@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_RULESET_VERSION_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_RULESET_VERSION_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_RULESET_VERSION_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_RULESET_VERSION_H_
 
 #include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
+#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 class TracedValue;
-}  // namespace trace_event
-}  // namespace base
+} // namespace base::trace_event
+
 
 namespace subresource_filter {
 
@@ -62,14 +62,24 @@ struct UnindexedRulesetInfo {
 // structures is expected to evolve over time, so the indexed ruleset is
 // identified by a pair of versions: the content version of the rules that have
 // been indexed; and the binary format version of the indexed data structures.
-// It also contains a checksum of the data, to ensure it hasn't been corrupted.
+// It also contains a checksum of the data to ensure it hasn't been corrupted
+// and a filter tag string to identify the type of filter the ruleset is used
+// for as well as the names of prefs that store the current version.
 struct IndexedRulesetVersion {
-  IndexedRulesetVersion();
-  IndexedRulesetVersion(const std::string& content_version, int format_version);
+  explicit IndexedRulesetVersion(const std::string& filter_tag);
+  IndexedRulesetVersion(
+      const std::string& content_version,
+      int format_version,
+      const std::string& filter_tag);
   ~IndexedRulesetVersion();
   IndexedRulesetVersion& operator=(const IndexedRulesetVersion&);
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterPrefs(
+      PrefRegistrySimple* registry,
+      const std::string& filter_tag);
+  // TODO(crbug.com/40280666): Change this function to consult multiple current
+  // format versions once the rest of the ruleset pipeline has been refactored
+  // to be generic.
   static int CurrentFormatVersion();
 
   bool IsValid() const;
@@ -83,8 +93,13 @@ struct IndexedRulesetVersion {
   std::string content_version;
   int format_version = 0;
   int checksum = 0;
+
+  // Unique tag identifying the type of filter this IndexedRulesetVersion
+  // is used for and thus what type of ruleset it corresponds to. Also used
+  // as the prefix for pref names that store the current version.
+  std::string filter_tag;
 };
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_RULESET_VERSION_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_RULESET_VERSION_H_

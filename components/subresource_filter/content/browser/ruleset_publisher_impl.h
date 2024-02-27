@@ -15,8 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
-#include "components/subresource_filter/content/browser/ruleset_version.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 

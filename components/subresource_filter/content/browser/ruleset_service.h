@@ -45,8 +45,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
-#include "components/subresource_filter/content/browser/ruleset_version.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/browser/ruleset_version.h"
 
 namespace base {
 class SequencedTaskRunner;

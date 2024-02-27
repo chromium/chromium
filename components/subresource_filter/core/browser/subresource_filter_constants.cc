@@ -6,6 +6,8 @@
 
 namespace subresource_filter {
 
+const char kSafeBrowsingFilterTag[] = "subresource_filter";
+
 const base::FilePath::CharType kTopLevelDirectoryName[] =
     FILE_PATH_LITERAL("Subresource Filter");
 

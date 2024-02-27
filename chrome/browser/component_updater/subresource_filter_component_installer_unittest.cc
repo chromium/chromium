@@ -115,7 +115,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
     subresource_filter::IndexedRulesetVersion::RegisterPrefs(
-        pref_service_.registry());
+        pref_service_.registry(), subresource_filter::kSafeBrowsingFilterTag);
 
     auto test_ruleset_service = std::make_unique<TestRulesetService>(
         &pref_service_, base::SingleThreadTaskRunner::GetCurrentDefault(),

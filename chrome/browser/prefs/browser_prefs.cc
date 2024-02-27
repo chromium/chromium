@@ -172,6 +172,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
+#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/pref_names.h"
@@ -1530,7 +1531,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #endif
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   SSLConfigServiceManager::RegisterPrefs(registry);
-  subresource_filter::IndexedRulesetVersion::RegisterPrefs(registry);
+  subresource_filter::IndexedRulesetVersion::RegisterPrefs(
+      registry, subresource_filter::kSafeBrowsingFilterTag);
   SystemNetworkContextManager::RegisterPrefs(registry);
   tpcd::experiment::RegisterLocalStatePrefs(registry);
   tracing::RegisterPrefs(registry);

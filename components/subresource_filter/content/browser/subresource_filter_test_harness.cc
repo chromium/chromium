@@ -59,7 +59,8 @@ void SubresourceFilterTestHarness::SetUp() {
 
   // Set up the ruleset service.
   ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
-  IndexedRulesetVersion::RegisterPrefs(pref_service_.registry());
+  IndexedRulesetVersion::RegisterPrefs(pref_service_.registry(),
+                                       kSafeBrowsingFilterTag);
   // TODO(csharrison): having separated blocking and background task runners
   // for |ContentRulesetService| and |RulesetService| would be a good idea, but
   // external unit tests code implicitly uses knowledge that blocking and

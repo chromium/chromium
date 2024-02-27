@@ -9,6 +9,10 @@
 
 namespace subresource_filter {
 
+// The tag identifying a ruleset as belonging to the original SafeBrowsing
+// filter.
+extern const char kSafeBrowsingFilterTag[];
+
 // The name of the top-level directory under the user data directory that
 // contains all files and subdirectories related to the subresource filter.
 extern const base::FilePath::CharType kTopLevelDirectoryName[];

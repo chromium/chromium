@@ -207,7 +207,7 @@ RulesetService::RulesetService(
   publisher_ = publisher ? std::move(publisher)
                          : std::make_unique<RulesetPublisherImpl>(
                                this, blocking_task_runner);
-  IndexedRulesetVersion most_recently_indexed_version;
+  IndexedRulesetVersion most_recently_indexed_version(kSafeBrowsingFilterTag);
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                "RulesetService::RulesetService", "prefs_version",
@@ -216,7 +216,7 @@ RulesetService::RulesetService(
       most_recently_indexed_version.IsCurrentFormatVersion()) {
     OpenAndPublishRuleset(most_recently_indexed_version);
   } else {
-    IndexedRulesetVersion().SaveToPrefs(local_state_);
+    IndexedRulesetVersion(kSafeBrowsingFilterTag).SaveToPrefs(local_state_);
   }
 
   DCHECK(publisher_->BestEffortTaskRunner()->BelongsToCurrentThread());
@@ -236,7 +236,7 @@ void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
   // not only be futile, but would fail on Windows due to "File System
   // Tunneling" as long as the previously stored copy of the rules is still
   // in use.
-  IndexedRulesetVersion most_recently_indexed_version;
+  IndexedRulesetVersion most_recently_indexed_version(kSafeBrowsingFilterTag);
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   if (most_recently_indexed_version.IsCurrentFormatVersion() &&
       most_recently_indexed_version.content_version ==
@@ -257,7 +257,7 @@ void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
 }
 
 IndexedRulesetVersion RulesetService::GetMostRecentlyIndexedVersion() const {
-  IndexedRulesetVersion version;
+  IndexedRulesetVersion version(kSafeBrowsingFilterTag);
   version.ReadFromPrefs(local_state_);
   return version;
 }
@@ -275,12 +275,12 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!unindexed_ruleset_stream_generator.ruleset_stream()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_OPENING_UNINDEXED_RULESET);
-    return IndexedRulesetVersion();
+    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
   }
 
   IndexedRulesetVersion indexed_version(
       unindexed_ruleset_info.content_version,
-      IndexedRulesetVersion::CurrentFormatVersion());
+      IndexedRulesetVersion::CurrentFormatVersion(), kSafeBrowsingFilterTag);
   base::FilePath indexed_ruleset_version_dir =
       IndexedRulesetLocator::GetSubdirectoryPathForVersion(
           indexed_ruleset_base_dir, indexed_version);
@@ -288,20 +288,20 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!base::CreateDirectory(indexed_ruleset_version_dir)) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_CREATING_VERSION_DIR);
-    return IndexedRulesetVersion();
+    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
   }
 
   SentinelFile sentinel_file(indexed_ruleset_version_dir);
   if (sentinel_file.IsPresent()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::ABORTED_BECAUSE_SENTINEL_FILE_PRESENT);
-    return IndexedRulesetVersion();
+    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
   }
 
   if (!sentinel_file.Create()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_CREATING_SENTINEL_FILE);
-    return IndexedRulesetVersion();
+    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
   }
 
   // --- Begin of guarded section.
@@ -313,7 +313,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!(*g_index_ruleset_func)(&unindexed_ruleset_stream_generator, &indexer)) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_PARSING_UNINDEXED_RULESET);
-    return IndexedRulesetVersion();
+    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
   }
 
   // --- End of guarded section.
@@ -321,7 +321,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!sentinel_file.Remove()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_DELETING_SENTINEL_FILE);
-    return IndexedRulesetVersion();
+    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
   }
 
   IndexAndWriteRulesetResult result =
@@ -329,7 +329,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
                    unindexed_ruleset_info.license_path, indexer.data());
   RecordIndexAndWriteRulesetResult(result);
   if (result != IndexAndWriteRulesetResult::SUCCESS)
-    return IndexedRulesetVersion();
+    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
 
   DCHECK(indexed_version.IsValid());
   return indexed_version;
@@ -418,7 +418,7 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
 void RulesetService::FinishInitialization() {
   is_initialized_ = true;
 
-  IndexedRulesetVersion most_recently_indexed_version;
+  IndexedRulesetVersion most_recently_indexed_version(kSafeBrowsingFilterTag);
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   background_task_runner_->PostTask(
       FROM_HERE,
@@ -474,7 +474,7 @@ void RulesetService::OnRulesetSet(RulesetFilePtr file) {
   // errors. Still, restore the invariant that a valid version in preferences
   // always points to an existing version of disk by invalidating the prefs.
   if (!file->IsValid()) {
-    IndexedRulesetVersion().SaveToPrefs(local_state_);
+    IndexedRulesetVersion(kSafeBrowsingFilterTag).SaveToPrefs(local_state_);
     return;
   }
 
