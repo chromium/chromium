@@ -8,7 +8,7 @@
 namespace ash::game_dashboard {
 
 // Toolbar padding from the border of the game window.
-inline constexpr int kToolbarEdgePadding = 10;
+inline constexpr int kToolbarEdgePadding = 16;
 
 // Interior margin padding around the game window for the
 // `GameDashboardWelcomeDialog`.

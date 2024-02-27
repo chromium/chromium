@@ -16,6 +16,7 @@ namespace ash {
 class GameDashboardContext;
 class IconButton;
 class ToolbarDragHandler;
+class SystemShadow;
 
 // GameDashboardToolbarView is the movable toolbar that's attached to the game
 // window. It contains various quick action tiles for users to access without
@@ -104,6 +105,8 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView {
 
   // Handles all dragging logic for the toolbar.
   std::unique_ptr<ToolbarDragHandler> drag_handler_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash
