@@ -4422,12 +4422,13 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameFillSuggestion) {
   CheckUsernameSelection(username_length, username_length);
 }
 
-// Tests that `ClearPreview` properly clears previewed single username.
+// Tests that `ClearPreview` properly clears previewed single username. The
+// original selection range should stay untouched.
 TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
   fill_data_.preferred_login.password_value.clear();
   fill_data_.password_element_renderer_id = autofill::FieldRendererId();
   ResetFieldState(&username_element_, "ali", WebAutofillState::kPreviewed);
-  username_element_.SetSelectionRange(3, 3);
+  username_element_.SetSelectionRange(0, 0);
 
   // Simulate the browser sending the login info, but set `wait_for_username`
   // to prevent the form from being immediately filled.
@@ -4442,7 +4443,7 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
 
   EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
   CheckTextFieldsDOMState("ali", true, std::string(), false);
-  CheckUsernameSelection(3, 3);
+  CheckUsernameSelection(0, 0);
 }
 
 // Fill on account select for credentials with empty usernames:

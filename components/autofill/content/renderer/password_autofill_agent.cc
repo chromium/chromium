@@ -921,10 +921,6 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
       .is_password = is_password,
   });
   input.SetSuggestedValue(WebString::FromUTF16(credential));
-  if (!is_password) {
-    form_util::PreviewSuggestion(input.SuggestedValue().Utf16(),
-                                 input.Value().Utf16(), input);
-  }
 }
 
 void PasswordAutofillAgent::FillField(WebInputElement* input,
@@ -994,11 +990,6 @@ void PasswordAutofillAgent::ClearPreviewedForm() {
     }
     element.SetSuggestedValue(WebString());
     element.SetAutofillState(preview_info.autofill_state);
-    if (!preview_info.is_password) {
-      element.SetSelectionRange(
-          base::checked_cast<unsigned>(element.Value().length()),
-          base::checked_cast<unsigned>(element.Value().length()));
-    }
   }
   previewed_elements_.clear();
 }
