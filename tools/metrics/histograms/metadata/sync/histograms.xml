@@ -887,7 +887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeClearedOnce" enum="SyncModelTypes"
-    expires_after="2024-04-04">
+    expires_after="2025-04-04">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
