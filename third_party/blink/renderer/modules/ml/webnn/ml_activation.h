@@ -21,9 +21,8 @@ class MODULES_EXPORT MLActivation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // TODO: crbug.com/325598628 - `kind` should be an Activation kind.
   MLActivation(MLGraphBuilder* builder,
-               webnn::mojom::blink::Operation::Tag kind,
+               webnn::mojom::blink::Activation::Tag kind,
                const bindings::DictionaryBase* options = nullptr);
 
   MLActivation(const MLActivation&) = delete;

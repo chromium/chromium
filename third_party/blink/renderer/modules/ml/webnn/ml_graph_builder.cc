@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <variant>
 
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -866,7 +867,7 @@ MLActivation* MLGraphBuilder::clamp(const MLClampOptions* options,
   }
   // Create the clamp operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kClamp, options);
+      this, webnn::mojom::blink::Activation::Tag::kClamp, options);
 }
 
 MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
@@ -1081,7 +1082,7 @@ MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
   // Create the elu operator that would be used as an activation
   // function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kElu, options);
+      this, webnn::mojom::blink::Activation::Tag::kElu, options);
 }
 
 MLOperand* MLGraphBuilder::expand(const MLOperand* input,
@@ -1187,10 +1188,9 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
 }
 
 MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
-  // Create the hard-swish operator that would be used as an activation
-  // function.
-  return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kHardSwish);
+  // TODO: crbug.com/40206287 - Support HardSwish as an activation function.
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
@@ -1213,7 +1213,7 @@ MLActivation* MLGraphBuilder::hardSigmoid(const MLHardSigmoidOptions* options,
   // Create the hardSigmoid operator that would be used as an activation
   // function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kHardSigmoid, options);
+      this, webnn::mojom::blink::Activation::Tag::kHardSigmoid, options);
 }
 
 MLOperand* MLGraphBuilder::instanceNormalization(
@@ -1324,7 +1324,7 @@ MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
   // Create the leakyRelu operator that would be used as an activation
   // function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kLeakyRelu, options);
+      this, webnn::mojom::blink::Activation::Tag::kLeakyRelu, options);
 }
 
 MLOperand* MLGraphBuilder::linear(const MLOperand* input,
@@ -1347,7 +1347,7 @@ MLActivation* MLGraphBuilder::linear(const MLLinearOptions* options,
   // Create the linear operator that would be used as an activation
   // function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kLinear, options);
+      this, webnn::mojom::blink::Activation::Tag::kLinear, options);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
@@ -1501,7 +1501,7 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
 MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {
   // Create the relu operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kRelu);
+      this, webnn::mojom::blink::Activation::Tag::kRelu);
 }
 
 MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
@@ -1612,7 +1612,7 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
 MLActivation* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
   // Create the sigmoid operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kSigmoid);
+      this, webnn::mojom::blink::Activation::Tag::kSigmoid);
 }
 
 MLOperand* MLGraphBuilder::slice(const MLOperand* input,
@@ -1671,7 +1671,7 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
 MLActivation* MLGraphBuilder::softmax(ExceptionState& exception_state) {
   // Create the softmax operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kSoftmax);
+      this, webnn::mojom::blink::Activation::Tag::kSoftmax);
 }
 
 MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
@@ -1693,7 +1693,7 @@ MLActivation* MLGraphBuilder::softplus(const MLSoftplusOptions* options,
                                        ExceptionState& exception_state) {
   // Create the softplus operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kSoftplus, options);
+      this, webnn::mojom::blink::Activation::Tag::kSoftplus, options);
 }
 
 MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
@@ -1714,7 +1714,7 @@ MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
 MLActivation* MLGraphBuilder::softsign(ExceptionState& exception_state) {
   // Create the softsign operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kSoftsign);
+      this, webnn::mojom::blink::Activation::Tag::kSoftsign);
 }
 
 HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
@@ -1806,7 +1806,7 @@ MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
 MLActivation* MLGraphBuilder::tanh(ExceptionState& exception_state) {
   // Create the tanh operator that would be used as an activation function.
   return MakeGarbageCollected<MLActivation>(
-      this, webnn::mojom::blink::Operation::Tag::kTanh);
+      this, webnn::mojom::blink::Activation::Tag::kTanh);
 }
 
 MLOperand* MLGraphBuilder::transpose(const MLOperand* input,

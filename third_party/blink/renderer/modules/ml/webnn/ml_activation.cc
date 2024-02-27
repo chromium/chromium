@@ -10,13 +10,46 @@
 
 namespace blink {
 
+namespace {
+
+webnn::mojom::blink::Operation::Tag ActivationKindToOperationKind(
+    webnn::mojom::blink::Activation::Tag kind) {
+  switch (kind) {
+    case webnn::mojom::blink::Activation::Tag::kClamp:
+      return webnn::mojom::blink::Operation::Tag::kClamp;
+    case webnn::mojom::blink::Activation::Tag::kElu:
+      return webnn::mojom::blink::Operation::Tag::kElu;
+    case webnn::mojom::blink::Activation::Tag::kHardSigmoid:
+      return webnn::mojom::blink::Operation::Tag::kHardSigmoid;
+    case webnn::mojom::blink::Activation::Tag::kLeakyRelu:
+      return webnn::mojom::blink::Operation::Tag::kLeakyRelu;
+    case webnn::mojom::blink::Activation::Tag::kLinear:
+      return webnn::mojom::blink::Operation::Tag::kLinear;
+    case webnn::mojom::blink::Activation::Tag::kRelu:
+      return webnn::mojom::blink::Operation::Tag::kRelu;
+    case webnn::mojom::blink::Activation::Tag::kSigmoid:
+      return webnn::mojom::blink::Operation::Tag::kSigmoid;
+    case webnn::mojom::blink::Activation::Tag::kSoftmax:
+      return webnn::mojom::blink::Operation::Tag::kSoftmax;
+    case webnn::mojom::blink::Activation::Tag::kSoftplus:
+      return webnn::mojom::blink::Operation::Tag::kSoftplus;
+    case webnn::mojom::blink::Activation::Tag::kSoftsign:
+      return webnn::mojom::blink::Operation::Tag::kSoftsign;
+    case webnn::mojom::blink::Activation::Tag::kTanh:
+      return webnn::mojom::blink::Operation::Tag::kTanh;
+  }
+}
+
+}  // namespace
+
 MLActivation::MLActivation(MLGraphBuilder* builder,
-                           webnn::mojom::blink::Operation::Tag kind,
+                           webnn::mojom::blink::Activation::Tag kind,
                            const bindings::DictionaryBase* options)
-    : operator_(MakeGarbageCollected<MLOperator>(builder,
-                                                 kind,
-                                                 /*sub_kind=*/std::monostate{},
-                                                 options)) {}
+    : operator_(
+          MakeGarbageCollected<MLOperator>(builder,
+                                           ActivationKindToOperationKind(kind),
+                                           /*sub_kind=*/std::monostate{},
+                                           options)) {}
 
 MLActivation::~MLActivation() = default;
 

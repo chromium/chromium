@@ -3299,16 +3299,6 @@ TEST_F(MLGraphBuilderTest, HardSwishTest) {
     EXPECT_EQ("The input data type must be one of the float32,float16 types.",
               scope.GetExceptionState().Message());
   }
-  {
-    // Test building hard-swish as a standalone operator.
-    auto* hard_swish = builder->hardSwish(scope.GetExceptionState());
-    ASSERT_THAT(hard_swish, testing::NotNull());
-    ASSERT_THAT(hard_swish->Operator(), testing::NotNull());
-    EXPECT_EQ(hard_swish->Operator()->Kind(),
-              webnn::mojom::blink::Operation::Tag::kHardSwish);
-    EXPECT_FALSE(hard_swish->Operator()->IsConnected());
-    EXPECT_THAT(hard_swish->Operator()->Options(), testing::IsNull());
-  }
 }
 
 MLOperand* BuildGemm(V8TestingScope& scope,

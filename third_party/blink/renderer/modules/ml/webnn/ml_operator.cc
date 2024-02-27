@@ -303,7 +303,9 @@ const Vector<uint32_t>& MLPadOperator::EndingPadding() const {
 MLSliceOperator::MLSliceOperator(MLGraphBuilder* builder,
                                  const Vector<uint32_t>& starts,
                                  const Vector<uint32_t>& sizes)
-    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kSlice),
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kSlice,
+                 /*sub_kind=*/std::monostate{}),
       starts_(starts),
       sizes_(sizes) {}
 
