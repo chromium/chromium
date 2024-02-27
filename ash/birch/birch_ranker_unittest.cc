@@ -9,6 +9,7 @@
 
 #include "ash/birch/birch_item.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/file_path.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -228,6 +229,54 @@ TEST(BirchRankerTest, RankAttachmentItems_Evening) {
 
   // The later event's item wasn't ranked, so has the default value.
   EXPECT_FLOAT_EQ(items[2].ranking, std::numeric_limits<float>::max());
+}
+
+TEST(BirchRankerTest, RankFileSuggestItems) {
+  base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
+
+  // Simulate 9 AM.
+  base::Time now = TimeFromString("22 Feb 2024 09:00 UTC");
+  BirchRanker ranker(now);
+
+  // Create a file shared in the last hour.
+  BirchFileItem item0(base::FilePath("/item0"),
+                      TimeFromString("22 Feb 2024 08:45 UTC"));
+
+  // Create a file shared in the last day.
+  BirchFileItem item1(base::FilePath("/item1"),
+                      TimeFromString("21 Feb 2024 09:15 UTC"));
+
+  // Create a file shared in the last week.
+  BirchFileItem item2(base::FilePath("/item2"),
+                      TimeFromString("15 Feb 2024 09:15 UTC"));
+
+  // Create a file shared more than a week ago.
+  BirchFileItem item3(base::FilePath("/item3"),
+                      TimeFromString("14 Feb 2024 09:15 UTC"));
+
+  // Put the items in the vector in reverse order to validate that they are
+  // still handled in the correct order (by time) inside the ranker.
+  std::vector<BirchFileItem> items = {item3, item2, item1, item0};
+
+  ranker.RankFileSuggestItems(&items);
+
+  ASSERT_EQ(4u, items.size());
+
+  // The file shared in the last hour has high priority.
+  EXPECT_EQ(items[0].file_path.MaybeAsASCII(), "/item0");
+  EXPECT_FLOAT_EQ(items[0].ranking, 19.f);
+
+  // The file shared in the last day has medium priority.
+  EXPECT_EQ(items[1].file_path.MaybeAsASCII(), "/item1");
+  EXPECT_FLOAT_EQ(items[1].ranking, 32.f);
+
+  // The file shared in the last week has low priority.
+  EXPECT_EQ(items[2].file_path.MaybeAsASCII(), "/item2");
+  EXPECT_FLOAT_EQ(items[2].ranking, 40.f);
+
+  // The file shared more than a week ago wasn't ranked.
+  EXPECT_EQ(items[3].file_path.MaybeAsASCII(), "/item3");
+  EXPECT_FLOAT_EQ(items[3].ranking, std::numeric_limits<float>::max());
 }
 
 TEST(BirchRankerTest, RankWeatherItems_Morning) {

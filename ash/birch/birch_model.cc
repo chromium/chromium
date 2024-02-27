@@ -116,6 +116,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   BirchRanker ranker(base::Time::Now());
   ranker.RankCalendarItems(&calendar_items_);
   ranker.RankAttachmentItems(&attachment_items_);
+  ranker.RankFileSuggestItems(&file_suggest_items_);
   ranker.RankWeatherItems(&weather_items_);
   // TODO(b/305094126): Rank all data types.
 

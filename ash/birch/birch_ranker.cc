@@ -94,7 +94,33 @@ void BirchRanker::RankAttachmentItems(std::vector<BirchAttachmentItem>* items) {
 }
 
 void BirchRanker::RankFileSuggestItems(std::vector<BirchFileItem>* items) {
-  // TODO(b/305094126): Rank all data types.
+  CHECK(items);
+
+  // Sort the file suggestions by their timestamp, descending.
+  std::sort(items->begin(), items->end(),
+            [](const BirchFileItem& a, const BirchFileItem& b) {
+              return b.timestamp < a.timestamp;
+            });
+
+  // TODO(b/305094126): Differentiate between modify time and share time.
+  // Currently the single timestamp represents both.
+  for (BirchFileItem& item : *items) {
+    // Items modified/shared recently have high priority.
+    if (now_ - base::Hours(1) < item.timestamp) {
+      item.ranking = 19.f;
+      continue;
+    }
+    // Items modified/shared today have medium priority.
+    if (now_ - base::Days(1) < item.timestamp) {
+      item.ranking = 32.f;
+      continue;
+    }
+    // Items modified/shared this week have low priority.
+    if (now_ - base::Days(7) < item.timestamp) {
+      item.ranking = 40.f;
+      continue;
+    }
+  }
 }
 
 void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
