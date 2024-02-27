@@ -7187,51 +7187,76 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
 
 CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
                                          const CSSParserContext& context) {
-  if (CSSValue* dashed_ident = ConsumeDashedIdent(range, context)) {
-    return dashed_ident;
-  }
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  bool flip_block = false;
-  bool flip_inline = false;
-  bool flip_start = false;
+  CSSValue* dashed_ident = nullptr;
+  CSSValue* flip_block = nullptr;
+  CSSValue* flip_inline = nullptr;
+  CSSValue* flip_start = nullptr;
+  bool has_tactic = false;
   while (!range.AtEnd()) {
-    CSSIdentifierValue* tactic =
-        ConsumeIdent<CSSValueID::kFlipBlock, CSSValueID::kFlipInline,
-                     CSSValueID::kFlipStart>(range);
-    if (!tactic) {
+    if (!dashed_ident && (dashed_ident = ConsumeDashedIdent(range, context))) {
+      continue;
+    }
+    if (has_tactic) {
       break;
     }
-    switch (tactic->GetValueID()) {
-      case CSSValueID::kFlipBlock:
-        if (flip_block) {
-          return nullptr;
-        }
-        flip_block = true;
+    while (!range.AtEnd()) {
+      CSSIdentifierValue* tactic =
+          ConsumeIdent<CSSValueID::kFlipBlock, CSSValueID::kFlipInline,
+                       CSSValueID::kFlipStart>(range);
+      if (!tactic) {
         break;
-      case CSSValueID::kFlipInline:
-        if (flip_inline) {
+      }
+      has_tactic = true;
+      switch (tactic->GetValueID()) {
+        case CSSValueID::kFlipBlock:
+          if (flip_block) {
+            return nullptr;
+          }
+          flip_block = tactic;
+          break;
+        case CSSValueID::kFlipInline:
+          if (flip_inline) {
+            return nullptr;
+          }
+          flip_inline = tactic;
+          break;
+        case CSSValueID::kFlipStart:
+          if (flip_start) {
+            return nullptr;
+          }
+          flip_start = tactic;
+          break;
+        default:
+          NOTREACHED();
           return nullptr;
-        }
-        flip_inline = true;
-        break;
-      case CSSValueID::kFlipStart:
-        if (flip_start) {
-          return nullptr;
-        }
-        flip_start = true;
-        break;
-      default:
-        NOTREACHED();
-        return nullptr;
+      }
     }
-    list->Append(*tactic);
+    if (!has_tactic) {
+      break;
+    }
   }
-  return list->length() ? list : nullptr;
+  if (!has_tactic && !dashed_ident) {
+    return nullptr;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (dashed_ident) {
+    list->Append(*dashed_ident);
+  }
+  if (flip_block) {
+    list->Append(*flip_block);
+  }
+  if (flip_inline) {
+    list->Append(*flip_inline);
+  }
+  if (flip_start) {
+    list->Append(*flip_start);
+  }
+  return list;
 }
 
 CSSValue* ConsumePositionTryOptions(CSSParserTokenRange& range,
                                     const CSSParserContext& context) {
-  // position-try-options: none | [ <dashed-ident> | <try-tactic> ]#
+  // position-try-options: none | [ <dashed-ident> || <try-tactic> ]#
   // <try-tactic> = flip-block || flip-inline || flip-start
   if (range.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(range);

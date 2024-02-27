@@ -22,9 +22,8 @@ class CORE_EXPORT PositionTryOption {
   DISALLOW_NEW();
 
  public:
-  explicit PositionTryOption(TryTacticFlags tactic) : tactic_(tactic) {}
-  explicit PositionTryOption(const ScopedCSSName* name)
-      : position_try_name_(name) {}
+  PositionTryOption(const ScopedCSSName* name, TryTacticFlags tactic)
+      : position_try_name_(name), tactic_(tactic) {}
 
   bool HasTryTactic() const {
     return tactic_ != static_cast<TryTacticFlags>(TryTactic::kNone);

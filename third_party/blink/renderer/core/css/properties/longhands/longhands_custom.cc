@@ -7069,26 +7069,26 @@ const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
           style.GetPositionTryOptions()) {
     CSSValueList* option_list = CSSValueList::CreateCommaSeparated();
     for (const auto& option : options->GetOptions()) {
+      CSSValueList* option_value = CSSValueList::CreateSpaceSeparated();
+      if (const ScopedCSSName* name = option.GetPositionTryName()) {
+        option_value->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
+      }
       if (option.HasTryTactic()) {
-        CSSValueList* tactic_list = CSSValueList::CreateSpaceSeparated();
         TryTacticFlags tactic = option.GetTryTactic();
         if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipBlock)) {
-          tactic_list->Append(
+          option_value->Append(
               *CSSIdentifierValue::Create(CSSValueID::kFlipBlock));
         }
         if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipInline)) {
-          tactic_list->Append(
+          option_value->Append(
               *CSSIdentifierValue::Create(CSSValueID::kFlipInline));
         }
         if (tactic & static_cast<TryTacticFlags>(TryTactic::kFlipStart)) {
-          tactic_list->Append(
+          option_value->Append(
               *CSSIdentifierValue::Create(CSSValueID::kFlipStart));
         }
-        option_list->Append(*tactic_list);
-      } else {
-        option_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
-            *option.GetPositionTryName()));
       }
+      option_list->Append(*option_value);
     }
     return option_list;
   }
@@ -7105,14 +7105,14 @@ void PositionTryOptions::ApplyValue(StyleResolverState& state,
   }
   HeapVector<PositionTryOption> options;
   for (const auto& option : To<CSSValueList>(value)) {
-    if (const auto* name = DynamicTo<CSSCustomIdentValue>(*option)) {
-      options.push_back(PositionTryOption(
-          StyleBuilderConverter::ConvertCustomIdent(state, *name)));
-      continue;
-    }
+    const ScopedCSSName* scoped_name = nullptr;
     TryTacticFlags try_tactics = static_cast<TryTacticFlags>(TryTactic::kNone);
-    for (const auto& tactic : To<CSSValueList>(*option)) {
-      switch (To<CSSIdentifierValue>(*tactic).GetValueID()) {
+    for (const auto& name_or_tactic : To<CSSValueList>(*option)) {
+      if (const auto* name = DynamicTo<CSSCustomIdentValue>(*name_or_tactic)) {
+        scoped_name = StyleBuilderConverter::ConvertCustomIdent(state, *name);
+        continue;
+      }
+      switch (To<CSSIdentifierValue>(*name_or_tactic).GetValueID()) {
         case CSSValueID::kFlipBlock:
           try_tactics |= static_cast<TryTacticFlags>(TryTactic::kFlipBlock);
           break;
@@ -7127,8 +7127,7 @@ void PositionTryOptions::ApplyValue(StyleResolverState& state,
           break;
       }
     }
-    DCHECK_NE(try_tactics, static_cast<TryTacticFlags>(TryTactic::kNone));
-    options.push_back(try_tactics);
+    options.push_back(PositionTryOption(scoped_name, try_tactics));
   }
   DCHECK(!options.empty());
   state.StyleBuilder().SetPositionTryOptions(
