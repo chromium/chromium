@@ -32,7 +32,9 @@ public class PwaUniversalInstallBottomSheetView {
     public void initialize(
             Context context,
             WebContents webContents,
-            int arrowId) {
+            int arrowId,
+            int installOverlayId,
+            int shortcutOverlayId) {
         mContentView =
                 LayoutInflater.from(context)
                         .inflate(
@@ -60,16 +62,14 @@ public class PwaUniversalInstallBottomSheetView {
                                         context.getResources().getDisplayMetrics())));
 
         if (arrowId != 0) {
-            ((ImageView) mContentView.findViewById(R.id.arrow_install))
-                    .setBackgroundResource(arrowId);
-            ((ImageView) mContentView.findViewById(R.id.arrow_shortcut))
-                    .setBackgroundResource(arrowId);
-
-            // TODO(finnur): Swap out the placeholders for drawables from UX.
+            ((ImageView) mContentView.findViewById(R.id.arrow_install)).setImageResource(arrowId);
+            ((ImageView) mContentView.findViewById(R.id.arrow_shortcut)).setImageResource(arrowId);
+        }
+        if (installOverlayId != 0 && shortcutOverlayId != 0) {
             ((ImageView) mContentView.findViewById(R.id.install_icon_overlay))
-                    .setBackgroundResource(arrowId);
+                    .setImageResource(installOverlayId);
             ((ImageView) mContentView.findViewById(R.id.shortcut_icon_overlay))
-                    .setBackgroundResource(arrowId);
+                    .setImageResource(shortcutOverlayId);
         }
     }
 
@@ -93,10 +93,8 @@ public class PwaUniversalInstallBottomSheetView {
         mContentView.findViewById(R.id.spinny_shortcut).setVisibility(View.GONE);
         appIconInstall.setVisibility(View.VISIBLE);
         appIconShortcut.setVisibility(View.VISIBLE);
-
-        // TODO(finnur): Show these overlays after the right drawables have been configured.
-        // mContentView.findViewById(R.id.install_icon_overlay).setVisibility(View.VISIBLE);
-        // mContentView.findViewById(R.id.shortcut_icon_overlay).setVisibility(View.VISIBLE);
+        mContentView.findViewById(R.id.install_icon_overlay).setVisibility(View.VISIBLE);
+        mContentView.findViewById(R.id.shortcut_icon_overlay).setVisibility(View.VISIBLE);
     }
 
     public View getContentView() {

@@ -124,7 +124,9 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
                                             this::onOpenAppCalled,
                                             webAppAlreadyInstalled,
                                             mBottomSheetController,
-                                            /* arrowId= */ 0);
+                                            /* arrowId= */ 0,
+                                            /* installOverlayId= */ 0,
+                                            /* shortcutOverlayId= */ 0);
                             return mPwaUniversalInstallBottomSheetCoordinator.show();
                         }));
 

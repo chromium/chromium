@@ -43,14 +43,16 @@ public class PwaUniversalInstallBottomSheetCoordinator {
             Runnable openAppCallback,
             boolean webAppAlreadyInstalled,
             BottomSheetController bottomSheetController,
-            int arrowId) {
+            int arrowId,
+            int installOverlayId,
+            int shortcutOverlayId) {
         mController = bottomSheetController;
         mInstallCallback = installCallback;
         mAddShortcutCallback = addShortcutCallback;
         mOpenAppCallback = openAppCallback;
 
         mView = new PwaUniversalInstallBottomSheetView();
-        mView.initialize(activity, webContents, arrowId);
+        mView.initialize(activity, webContents, arrowId, installOverlayId, shortcutOverlayId);
         mContent = new PwaUniversalInstallBottomSheetContent(mView);
         mMediator =
                 new PwaUniversalInstallBottomSheetMediator(
