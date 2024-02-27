@@ -135,7 +135,7 @@ void PickerClientImpl::OnGifSearchResponse(
     CHECK(urls);
     picker_results.push_back(ash::PickerSearchResult::Gif(
         urls->preview, urls->preview_image, result->preview_size, urls->full,
-        base::UTF8ToUTF16(result->content_description)));
+        result->full_size, base::UTF8ToUTF16(result->content_description)));
   }
 
   std::move(callback).Run(std::move(picker_results));

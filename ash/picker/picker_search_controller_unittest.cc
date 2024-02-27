@@ -776,7 +776,7 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchController::kGifDebouncingDelay);
 }
@@ -864,7 +864,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchController::kGifDebouncingDelay);
 }
@@ -886,7 +886,7 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsBeforeBurnIn) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.GifProvider.QueryTime",
@@ -910,7 +910,7 @@ TEST_F(PickerSearchControllerTest, RecordsGifMetricsAfterBurnIn) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
 
   histogram.ExpectUniqueTimeSample(
       "Ash.Picker.Search.GifProvider.QueryTime",
@@ -997,7 +997,7 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchController::kGifDebouncingDelay);
 }
@@ -1027,7 +1027,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod);
 }
 
@@ -1056,7 +1056,7 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
 }
 
 TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
@@ -1094,7 +1094,7 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
           gfx::Size(360, 360),
           GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          u"cat blink")});
+          gfx::Size(480, 480), u"cat blink")});
 }
 
 TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {

@@ -50,6 +50,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
             const GURL& preview_image_url,
             const gfx::Size& preview_dimensions,
             const GURL& full_url,
+            const gfx::Size& full_dimensions,
             std::u16string content_description);
     GifData(const GifData&);
     GifData& operator=(const GifData&);
@@ -66,6 +67,9 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
 
     // A url to a full-sized gif media source.
     GURL full_url;
+
+    // Width and height of the GIF at `full_url`.
+    gfx::Size full_dimensions;
 
     // A textual description of the content, primarily used for accessibility
     // features.
@@ -111,6 +115,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                 const GURL& preview_image_url,
                                 const gfx::Size& preview_dimensions,
                                 const GURL& full_url,
+                                const gfx::Size& full_dimensions,
                                 std::u16string content_description);
   static PickerSearchResult Category(PickerCategory category);
 

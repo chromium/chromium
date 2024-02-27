@@ -30,11 +30,13 @@ PickerSearchResult::GifData::GifData(const GURL& preview_url,
                                      const GURL& preview_image_url,
                                      const gfx::Size& preview_dimensions,
                                      const GURL& full_url,
+                                     const gfx::Size& full_dimensions,
                                      std::u16string content_description)
     : preview_url(preview_url),
       preview_image_url(preview_image_url),
       preview_dimensions(preview_dimensions),
       full_url(full_url),
+      full_dimensions(full_dimensions),
       content_description(std::move(content_description)) {}
 
 PickerSearchResult::GifData::GifData(const PickerSearchResult::GifData&) =
@@ -81,10 +83,11 @@ PickerSearchResult PickerSearchResult::Gif(const GURL& preview_url,
                                            const GURL& preview_image_url,
                                            const gfx::Size& preview_dimensions,
                                            const GURL& full_url,
+                                           const gfx::Size& full_dimensions,
                                            std::u16string content_description) {
-  return PickerSearchResult(GifData(preview_url, preview_image_url,
-                                    preview_dimensions, full_url,
-                                    std::move(content_description)));
+  return PickerSearchResult(
+      GifData(preview_url, preview_image_url, preview_dimensions, full_url,
+              full_dimensions, std::move(content_description)));
 }
 
 PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,

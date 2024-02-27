@@ -131,9 +131,7 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
             return PickerTextMedia(data.emoticon);
           },
           [](const PickerSearchResult::GifData& data) -> ReturnType {
-            // TODO: b/322900073 - We should use the dimensions for the full
-            // resolution GIF, not the preview gif.
-            return PickerImageMedia(data.full_url, data.preview_dimensions,
+            return PickerImageMedia(data.full_url, data.full_dimensions,
                                     data.content_description);
           },
           [](const PickerSearchResult::BrowsingHistoryData& data)
@@ -148,10 +146,8 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
 void MaybeCopyMediaToClipboard(const PickerSearchResult& result) {
   if (const auto* gif =
           std::get_if<PickerSearchResult::GifData>(&result.data())) {
-    // TODO: b/322900073 - We should use the dimensions for the full resolution
-    // GIF, not the preview gif.
     CopyGifMediaToClipboard(gif->full_url, gif->content_description,
-                            gif->preview_dimensions);
+                            gif->full_dimensions);
   }
 }
 

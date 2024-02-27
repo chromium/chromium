@@ -21,6 +21,7 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -177,11 +178,11 @@ TEST_F(PickerControllerTest, InsertImageResultInsertsIntoInputFieldAfterFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller.InsertResultOnNextFocus(
-      PickerSearchResult::Gif(GURL("http://foo.com/fake_preview.gif"),
-                              GURL("http://foo.com/fake_preview_image.png"),
-                              gfx::Size(), GURL("http://foo.com/fake.gif"),
-                              /*content_description=*/u""));
+  controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
+      GURL("http://foo.com/fake_preview.gif"),
+      GURL("http://foo.com/fake_preview_image.png"), gfx::Size(),
+      GURL("http://foo.com/fake.gif"), gfx::Size(),
+      /*content_description=*/u""));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(
       input_method,
@@ -202,7 +203,7 @@ TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
   controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
       /*preview_url=*/GURL("http://foo.com/preview"),
       /*preview_image_url=*/GURL(), gfx::Size(30, 20),
-      /*full_url=*/GURL("http://foo.com"),
+      /*full_url=*/GURL("http://foo.com"), gfx::Size(60, 40),
       /*content_description=*/u"a gif"));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(
@@ -212,7 +213,7 @@ TEST_F(PickerControllerTest, InsertUnsupportedImageResultCopiesToClipboard) {
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
-      uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif" width="30" height="20"/>)html");
+      uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif" width="60" height="40"/>)html");
   EXPECT_TRUE(
       ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
 }

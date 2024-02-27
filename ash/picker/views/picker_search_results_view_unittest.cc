@@ -21,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -88,7 +89,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
       PickerSectionType::kGifs,
       {{PickerSearchResult::Gif(
           /*preview_url=*/GURL(), /*preview_image_url=*/GURL(), gfx::Size(),
-          /*full_url=*/GURL(),
+          /*full_url=*/GURL(), gfx::Size(),
           /*content_description=*/u"")}}));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
@@ -249,6 +250,7 @@ INSTANTIATE_TEST_SUITE_P(
                                         /*preview_image_url=*/GURL(),
                                         gfx::Size(10, 10),
                                         /*full_url=*/GURL(),
+                                        gfx::Size(20, 20),
                                         u"cat gif")},
         {"Category", PickerSearchResult::Category(PickerCategory::kEmojis)},
     }),
