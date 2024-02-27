@@ -35,7 +35,7 @@ export enum PromoCardId {
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  *
- * Needs to stay in sync with PromoCardType in promo_card.cc
+ * Needs to stay in sync with PromoCardType in promo_card.h
  */
 enum PromoCardMetricId {
   CHECKUP = 0,

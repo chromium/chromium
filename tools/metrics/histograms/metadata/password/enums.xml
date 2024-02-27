@@ -918,6 +918,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Add shortcut promo"/>
   <int value="3" label="Access on any device promo"/>
   <int value="4" label="Relaunch Chrome"/>
+  <int value="5" label="Move passwords"/>
 </enum>
 
 <enum name="PasswordManagerShortcutMetric">
