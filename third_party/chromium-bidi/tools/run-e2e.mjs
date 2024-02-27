@@ -19,7 +19,7 @@
 
 import child_process from 'child_process';
 import {createWriteStream} from 'fs';
-import {Transform} from 'stream';
+import {Transform, PassThrough} from 'stream';
 
 import {packageDirectorySync} from 'pkg-dir';
 
@@ -33,7 +33,7 @@ process.chdir(packageDirectorySync());
 
 const argv = parseCommandLineArgs();
 const LOG_FILE = createLogFile('e2e');
-
+const PYTEST_PREFIX = 'PyTest';
 /**
  *
  * @param {import('child_process').ChildProcessWithoutNullStreams} process
@@ -84,21 +84,50 @@ const addPrefix = () =>
       if (line.startsWith('\n')) {
         line = line.replace('\n', '');
       }
-      this.push(Buffer.from([`\nPyTest: `, line, '\n'].join('')));
+      this.push(Buffer.from([`\n${PYTEST_PREFIX}: `, line, '\n'].join('')));
       callback(null);
     },
   });
 
+class SyncFileStreams extends Transform {
+  // Matches lines like `PyTest: XXX [ 39%]` or
+  static percentRegEx = /\[ \d+%\]/;
+  serverLogs = Buffer.from('');
+
+  _transform(chunk, _, callback) {
+    let line = String(chunk);
+    // Handles output from PyTest
+    if (line.includes(PYTEST_PREFIX)) {
+      if (SyncFileStreams.percentRegEx.test(line)) {
+        if (line.includes('FAILED')) {
+          this.push(this.serverLogs);
+        }
+        this.serverLogs = Buffer.from('');
+      }
+      this.push(chunk);
+      // Handles output from BiDi server
+    } else {
+      this.serverLogs = Buffer.concat([this.serverLogs, chunk]);
+    }
+
+    callback(null);
+  }
+}
+
 const fileWriteStream = createWriteStream(LOG_FILE);
+const syncFileStreams =
+  process.env.VERBOSE === 'true' ? new PassThrough() : new SyncFileStreams();
+syncFileStreams.pipe(fileWriteStream);
+
 const serverProcess = createBiDiServerProcess(argv);
 
 if (serverProcess.stderr) {
   serverProcess.stdout.pipe(process.stdout);
-  serverProcess.stderr.pipe(fileWriteStream);
+  serverProcess.stderr.pipe(syncFileStreams);
 }
 
 if (serverProcess.stdout) {
-  serverProcess.stdout.pipe(fileWriteStream);
+  serverProcess.stdout.pipe(syncFileStreams);
 }
 
 await matchLine(serverProcess).catch(() => {
@@ -117,12 +146,12 @@ const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
 
 if (e2eProcess.stderr) {
   e2eProcess.stderr.pipe(process.stdout);
-  e2eProcess.stderr.pipe(addPrefix()).pipe(fileWriteStream);
+  e2eProcess.stderr.pipe(addPrefix()).pipe(syncFileStreams);
 }
 
 if (e2eProcess.stdout) {
   e2eProcess.stdout.pipe(process.stdout);
-  e2eProcess.stdout.pipe(addPrefix()).pipe(fileWriteStream);
+  e2eProcess.stdout.pipe(addPrefix()).pipe(syncFileStreams);
 }
 
 e2eProcess.on('exit', (status) => {

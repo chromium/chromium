@@ -284,6 +284,12 @@ npm run e2e:headful
 npm run e2e:headless
 ```
 
+This commands will run `./tools/run-e2e.mjs`, which will log the PyTest output to console,
+Additionally the output is also recorded under `./logs/<DATE>.e2e.log`, this will contain
+both the PyTest logs and in the event of `FAILED` test all the Chromium-BiDi logs.
+
+If you need to see the logs for all test run the command with `VERBOSE=true`.
+
 Use the `PORT` environment variable to connect to another port:
 
 ```sh
