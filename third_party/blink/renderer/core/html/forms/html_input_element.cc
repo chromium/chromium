@@ -1092,18 +1092,10 @@ bool HTMLInputElement::Checked() const {
 }
 
 void HTMLInputElement::setCheckedForBinding(bool now_checked) {
-  if (!IsAutofilled()) {
-    SetChecked(now_checked);
-  } else {
-    bool old_value = this->Checked();
-    SetChecked(now_checked, TextFieldEventBehavior::kDispatchNoEvent,
-               old_value == now_checked ? WebAutofillState::kAutofilled
-                                        : WebAutofillState::kNotFilled);
-    if (Page* page = GetDocument().GetPage()) {
-      page->GetChromeClient().JavaScriptChangedAutofilledValue(
-          *this, old_value ? u"true" : u"false");
-    }
-  }
+  SetChecked(now_checked, TextFieldEventBehavior::kDispatchNoEvent,
+             IsAutofilled() && this->Checked() == now_checked
+                 ? WebAutofillState::kAutofilled
+                 : WebAutofillState::kNotFilled);
 }
 
 void HTMLInputElement::SetChecked(bool now_checked,
@@ -1280,19 +1272,17 @@ void HTMLInputElement::setValueForBinding(const String& value,
                                       "to the empty string.");
     return;
   }
-  if (!IsAutofilled()) {
-    SetValue(value);
-  } else {
-    String old_value = this->Value();
-    SetValue(value, TextFieldEventBehavior::kDispatchNoEvent,
-             TextControlSetValueSelection::kSetSelectionToEnd,
-             old_value == value && !value.empty()
-                 ? WebAutofillState::kAutofilled
-                 : WebAutofillState::kNotFilled);
-    if (Page* page = GetDocument().GetPage()) {
-      page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
-                                                               old_value);
-    }
+  String old_value = this->Value();
+  bool was_autofilled = IsAutofilled();
+  bool value_changed = old_value != value;
+  SetValue(value, TextFieldEventBehavior::kDispatchNoEvent,
+           TextControlSetValueSelection::kSetSelectionToEnd,
+           was_autofilled && !value_changed && !value.empty()
+               ? WebAutofillState::kAutofilled
+               : WebAutofillState::kNotFilled);
+  if (Page* page = GetDocument().GetPage(); page && value_changed) {
+    page->GetChromeClient().JavaScriptChangedValue(*this, old_value,
+                                                   was_autofilled);
   }
 }
 

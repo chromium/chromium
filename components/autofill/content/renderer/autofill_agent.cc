@@ -1411,10 +1411,29 @@ void AutofillAgent::AjaxSucceeded() {
   form_tracker_->AjaxSucceeded();
 }
 
-void AutofillAgent::JavaScriptChangedAutofilledValue(
-    const WebFormControlElement& element,
-    const WebString& old_value) {
-  if (old_value == element.Value()) {
+void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
+                                           const WebString& old_value,
+                                           bool was_autofilled) {
+  // The provisionally saved form must be updated on JS changes. However, it
+  // should not be changed to another form, so that only the user can set the
+  // tracked form and not JS. This call here is meant to keep the tracked form
+  // up to date with the form's most recent version.
+  if (last_interacted_.saved_state &&
+      form_util::GetFormRendererId(form_util::GetOwningForm(element)) ==
+          last_interacted_.form_id.GetId() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillImproveSubmissionDetection)) {
+    // Ideally, we re-extract the form at this moment, but to avoid performance
+    // regression, we just update what JS updated on the Blink side.
+    if (auto it = base::ranges::find(last_interacted_.saved_state->fields,
+                                     form_util::GetFieldRendererId(element),
+                                     &FormFieldData::renderer_id);
+        it != last_interacted_.saved_state->fields.end()) {
+      it->value = element.Value().Utf16();
+      it->is_autofilled = element.IsAutofilled();
+    }
+  }
+  if (!was_autofilled) {
     return;
   }
   if (std::optional<FormAndField> form_and_field =

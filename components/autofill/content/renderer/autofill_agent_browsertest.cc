@@ -630,6 +630,48 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
 }
 
+// Test that AutofillAgent::JavaScriptChangedValue updates the
+// last interacted saved state.
+TEST_F(AutofillAgentTest,
+       JavaScriptChangedValueUpdatesLastInteractedSavedState) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillImproveSubmissionDetection};
+  LoadHTML(R"(<form id="form_id"><input id="text_id"></form>)");
+
+  blink::WebFormElement form = GetMainFrame()
+                                   ->GetDocument()
+                                   .GetElementById("form_id")
+                                   .DynamicTo<blink::WebFormElement>();
+  FormRendererId form_id = form_util::GetFormRendererId(form);
+
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].value = 'js-set value';)");
+  std::optional<FormData> last_interacted_saved_state =
+      AutofillAgentTestApi(&autofill_agent()).last_interacted_saved_state();
+  // Since we do not have a tracked form yet, the JS call should not update (in
+  // this case set) the last interacted form.
+  ASSERT_FALSE(last_interacted_saved_state.has_value());
+
+  SimulateUserEditField(form, "text_id", "user-set value");
+  last_interacted_saved_state =
+      AutofillAgentTestApi(&autofill_agent()).last_interacted_saved_state();
+  ASSERT_TRUE(last_interacted_saved_state.has_value());
+  EXPECT_EQ(last_interacted_saved_state->renderer_id, form_id);
+  ASSERT_EQ(1u, last_interacted_saved_state->fields.size());
+  EXPECT_EQ(u"user-set value", last_interacted_saved_state->fields[0].value);
+
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].value = 'js-set value';)");
+  last_interacted_saved_state =
+      AutofillAgentTestApi(&autofill_agent()).last_interacted_saved_state();
+  // Since we now have a tracked form and JS modified the same form, we should
+  // see the JS modification reflected in the last interacted saved form.
+  ASSERT_TRUE(last_interacted_saved_state.has_value());
+  EXPECT_EQ(last_interacted_saved_state->renderer_id, form_id);
+  ASSERT_EQ(1u, last_interacted_saved_state->fields.size());
+  EXPECT_EQ(u"js-set value", last_interacted_saved_state->fields[0].value);
+}
+
 // Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
 // updates the last interacted saved state when the <input>s have no containing
 // <form>.

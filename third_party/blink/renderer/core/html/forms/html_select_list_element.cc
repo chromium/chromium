@@ -470,17 +470,15 @@ String HTMLSelectListElement::value() const {
 }
 
 void HTMLSelectListElement::setValueForBinding(const String& value) {
-  if (!IsAutofilled()) {
-    setValue(value);
-  } else {
-    String old_value = this->value();
-    setValue(value, /*send_events=*/false,
-             value != old_value ? WebAutofillState::kNotFilled
-                                : WebAutofillState::kAutofilled);
-    if (Page* page = GetDocument().GetPage()) {
-      page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
-                                                               old_value);
-    }
+  String old_value = this->value();
+  bool was_autofilled = IsAutofilled();
+  bool value_changed = old_value != value;
+  setValue(value, /*send_events=*/false,
+           was_autofilled && !value_changed ? WebAutofillState::kAutofilled
+                                            : WebAutofillState::kNotFilled);
+  if (Page* page = GetDocument().GetPage(); page && value_changed) {
+    page->GetChromeClient().JavaScriptChangedValue(*this, old_value,
+                                                   was_autofilled);
   }
 }
 

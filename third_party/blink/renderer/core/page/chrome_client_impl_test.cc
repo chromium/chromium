@@ -84,8 +84,9 @@ namespace blink {
 namespace {
 class FakeChromeClientForAutofill : public EmptyChromeClient {
  public:
-  void JavaScriptChangedAutofilledValue(HTMLFormControlElement& element,
-                                        const String& old_value) override {
+  void JavaScriptChangedValue(HTMLFormControlElement& element,
+                              const String& old_value,
+                              bool was_autofilled) override {
     last_notification_ = {element.GetIdAttribute().Utf8(), old_value.Utf8()};
   }
   std::vector<std::string> GetAndResetLastEvent() {
@@ -395,7 +396,7 @@ class AutofillChromeClientTest : public PageTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Validates the JavaScriptChangedAutofilledValue notification if JavaScript
+// Validates the JavaScriptChangedValue notification if JavaScript
 // overrides the autofilled content of form controls *after* the fill has been
 // concluded.
 TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesAfterFill) {
@@ -474,16 +475,17 @@ TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesAfterFill) {
   EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
               ::testing::ElementsAre("selectlist", "autofilled_selectlist"));
 
-  // Because this is not in state "autofilled", the chrome client is not
+  // Even for elements that are not in state "autofilled", the chrome client is
   // informed about the change.
   EXPECT_THAT(not_autofilled_text->Value().IsNull(), ::testing::IsTrue());
   ExecuteScript(
       "document.getElementById('not_autofilled_text').value = 'new_text';");
   EXPECT_THAT(not_autofilled_text->Value(), Eq("new_text"));
-  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(), ::testing::ElementsAre());
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
+              ::testing::ElementsAre("not_autofilled_text", ""));
 }
 
-// Validates the JavaScriptChangedAutofilledValue notification if JavaScript
+// Validates the JavaScriptChangedValue notification if JavaScript
 // overrides the autofilled content of form controls during the fill operation.
 // This is the case because a JavaScript event handler on change signals is
 // is triggered during the autofill operation.
