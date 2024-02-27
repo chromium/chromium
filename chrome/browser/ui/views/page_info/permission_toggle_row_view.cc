@@ -270,6 +270,7 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
 void PermissionToggleRowView::ResetPermission() {
   permission_.setting = CONTENT_SETTING_DEFAULT;
   permission_.is_one_time = false;
+  permission_.is_in_use = false;
   PermissionChanged();
 }
 

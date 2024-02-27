@@ -70,6 +70,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
   mixer[kColorExtensionsMenuSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
 
+  // PageInfo colors.
+  mixer[kColorPageInfoPermissionUsedIcon] = {ui::kColorSysPrimary};
+
   // Permission Prompt colors.
   mixer[kColorPermissionPromptRequestText] = {ui::kColorSysOnSurfaceSubtle};
 

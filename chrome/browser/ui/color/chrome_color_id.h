@@ -337,6 +337,7 @@
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
   E_CPONLY(kColorPageInfoIconHover) \
   E_CPONLY(kColorPageInfoIconPressed) \
+  E_CPONLY(kColorPageInfoPermissionUsedIcon) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentsFeedbackTipBackground) \
   E_CPONLY(kColorPaymentsFeedbackTipBorder) \

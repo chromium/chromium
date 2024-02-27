@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/page_info/page_info_features.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -407,6 +408,10 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     // If there is no ChromeRefreshIcon currently defined, continue to the rest
     // of the function.
     if (icon != nullptr) {
+      if (info.is_in_use && !show_blocked_badge) {
+        return ui::ImageModel::FromVectorIcon(
+            *icon, kColorPageInfoPermissionUsedIcon, GetIconSize());
+      }
       return ui::ImageModel::FromVectorIcon(*icon, ui::kColorIcon,
                                             GetIconSize());
     }

@@ -888,10 +888,12 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ALLOW);
       SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
       permission.is_one_time = false;
+      permission.is_in_use = false;
       break;
     case CONTENT_SETTING_BLOCK:
       SetTargetContentSetting(permission, opposite_to_block_setting);
       permission.is_one_time = false;
+      permission.is_in_use = false;
       break;
     case CONTENT_SETTING_DEFAULT: {
       CreateOppositeToDefaultSiteException(permission,
@@ -903,6 +905,7 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
               permission.type)) {
         permission.is_one_time = true;
       }
+      permission.is_in_use = false;
       break;
     }
     case CONTENT_SETTING_ASK:
