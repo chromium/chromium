@@ -215,6 +215,8 @@ class FullRestoreTestHelper {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
+// TODO(http://b/326982900): Remove non-forest test suites when the feature flag
+// is removed.
 class FullRestoreServiceTest : public testing::Test {
  public:
   FullRestoreServiceTest()
@@ -381,6 +383,8 @@ TEST_F(FullRestoreServiceTest, AskEveryTime) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 }
 
+// TODO(http://b/326982900): Migrate this test suite to test with forest
+// enabled.
 class FullRestoreServiceTestHavingFullRestoreFile
     : public FullRestoreServiceTest {
  public:
@@ -786,71 +790,8 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
   EXPECT_FALSE(CanPerformRestore(account_id()));
 }
 
-class ForestFullRestoreServiceTestHavingFullRestoreFile
-    : public FullRestoreServiceTestHavingFullRestoreFile {
- protected:
-  ForestFullRestoreServiceTestHavingFullRestoreFile() = default;
-  ForestFullRestoreServiceTestHavingFullRestoreFile(
-      const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
-  ForestFullRestoreServiceTestHavingFullRestoreFile& operator=(
-      const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
-  ~ForestFullRestoreServiceTestHavingFullRestoreFile() override = default;
-
-  void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-    FullRestoreServiceTestHavingFullRestoreFile::SetUp();
-  }
-
-  void TearDown() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-    FullRestoreServiceTestHavingFullRestoreFile::TearDown();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
-};
-
-// If the system is crash, the delegate is notified.
-TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
-  ExitTypeService::GetInstanceForProfile(profile())
-      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
-
-  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .WillOnce([](std::unique_ptr<PineContentsData> data) {
-        ASSERT_TRUE(data);
-        EXPECT_TRUE(data->last_session_crashed);
-      });
-  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
-
-  // The notification should not show up anymore with forest enabled.
-  VerifyNotification(/*has_crash_notification=*/false,
-                     /*has_restore_notification=*/false);
-
-  EXPECT_TRUE(CanPerformRestore(account_id()));
-  EXPECT_TRUE(allow_save());
-}
-
-TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
-       AskEveryTimeAndRestore) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kRestoreAppsAndPagesPrefName,
-      static_cast<int>(RestoreOption::kAskEveryTime));
-  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .Times(1);
-  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
-
-  // The notification should not show up anymore with forest enabled.
-  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
-  VerifyNotification(/*has_crash_notification=*/false,
-                     /*has_restore_notification=*/false);
-
-  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
-  EXPECT_TRUE(CanPerformRestore(account_id()));
-  EXPECT_TRUE(allow_save());
-}
-
+// TODO(http://b/326982900): Migrate this test suite to test with forest
+// enabled.
 class FullRestoreServiceMultipleUsersTest
     : public FullRestoreServiceTestHavingFullRestoreFile {
  protected:
@@ -1062,6 +1003,257 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
   // Simulate switch to the first user, and verify no more init process.
   full_restore_service->OnTransitionedToNewActiveUser(profile());
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
+}
+
+class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
+ protected:
+  ForestFullRestoreServiceTest() = default;
+  ForestFullRestoreServiceTest(const ForestFullRestoreServiceTest&) = delete;
+  ForestFullRestoreServiceTest& operator=(const ForestFullRestoreServiceTest&) =
+      delete;
+  ~ForestFullRestoreServiceTest() override = default;
+
+  void SetUp() override {
+    switches::SetIgnoreForestSecretKeyForTest(true);
+    FullRestoreServiceTest::SetUp();
+  }
+
+  void TearDown() override {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+    FullRestoreServiceTest::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
+};
+
+// If the system is crash, and there is no full restore file, don't show the
+// pine dialog.
+TEST_F(ForestFullRestoreServiceTest, Crash) {
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+}
+
+// If the OS restore setting is 'Ask every time', and there is no full restore
+// file, don't show the pine dialog.
+TEST_F(ForestFullRestoreServiceTest, AskEveryTime) {
+  SetRestoreOption(RestoreOption::kAskEveryTime);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+}
+
+// If the OS restore setting is 'Always', after reboot, don't show the pine
+// dialog and verify the restore flag.
+TEST_F(ForestFullRestoreServiceTest, Always) {
+  SetRestoreOption(RestoreOption::kAlways);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAlways, 1);
+  EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+}
+
+// If the OS restore setting is 'Do not restore', after reboot, don't show the
+// pine dialog and verify the restore flag.
+TEST_F(ForestFullRestoreServiceTest, NotRestore) {
+  SetRestoreOption(RestoreOption::kDoNotRestore);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+  VerifyRestoreInitSettingHistogram(RestoreOption::kDoNotRestore, 1);
+  EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
+  EXPECT_FALSE(CanPerformRestore(account_id()));
+}
+
+// For a brand new user, if sync off, set 'Ask Every Time' as the default value,
+// and don't show the pine dialog.
+TEST_F(ForestFullRestoreServiceTest, NewUserSyncOff) {
+  fake_user_manager()->SetIsCurrentUserNew(true);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 0);
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+}
+
+// For a new ChromeOS user, if the Chrome restore setting is 'Continue where
+// you left off', after sync, set 'Always' as the default value, and don't show
+// the pine dialog and don't restore.
+TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
+  fake_user_manager()->SetIsCurrentUserNew(true);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  // Set the Chrome restore setting to simulate sync for the first time.
+  SyncPreferences(SessionStartupPref::kPrefValueLast, std::nullopt);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+
+  // Update the global values to simulate sync from other device.
+  ProcessSyncChanges(SessionStartupPref::kPrefValueNewTab,
+                     RestoreOption::kDoNotRestore);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
+  EXPECT_FALSE(CanPerformRestore(account_id()));
+}
+
+// For a new ChromeOS user, if the Chrome restore setting is 'New tab', after
+// sync, set 'Ask every time' as the default value, and don't show the pine
+// dialog and don't restore.
+TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
+  fake_user_manager()->SetIsCurrentUserNew(true);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  // Set the Chrome restore setting to simulate sync for the first time.
+  SyncPreferences(SessionStartupPref::kPrefValueNewTab, std::nullopt);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+
+  // Update the global values to simulate sync from other device.
+  ProcessSyncChanges(SessionStartupPref::kPrefValueLast,
+                     RestoreOption::kDoNotRestore);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
+  EXPECT_FALSE(CanPerformRestore(account_id()));
+}
+
+// For a new ChromeOS user, keep the ChromeOS restore setting from sync, and
+// don't show the pine dialog, and don't restore.
+TEST_F(ForestFullRestoreServiceTest, ReImage) {
+  fake_user_manager()->SetIsCurrentUserNew(true);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  // Set the restore pref setting to simulate sync for the first time.
+  SyncPreferences(SessionStartupPref::kPrefValueLast,
+                  RestoreOption::kAskEveryTime);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+
+  // Update the global values to simulate sync from other device.
+  ProcessSyncChanges(SessionStartupPref::kPrefValueNewTab,
+                     RestoreOption::kAlways);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+}
+
+// For the current ChromeOS user, when it is the first time upgrading to the
+// full restore release, set the default value based on the current Chrome
+// restore setting. Don't show the pine dialog and don't restore.
+TEST_F(ForestFullRestoreServiceTest, Upgrading) {
+  profile()->GetPrefs()->SetInteger(
+      ::prefs::kRestoreOnStartup,
+      static_cast<int>(SessionStartupPref::kPrefValueNewTab));
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(0);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kDoNotRestore, 0);
+  EXPECT_FALSE(CanPerformRestore(account_id()));
+
+  // Simulate the Chrome restore setting is changed.
+  profile()->GetPrefs()->SetInteger(
+      ::prefs::kRestoreOnStartup,
+      static_cast<int>(SessionStartupPref::kPrefValueLast));
+
+  // The OS restore setting should not change.
+  EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
+  EXPECT_FALSE(CanPerformRestore(account_id()));
+}
+
+class ForestFullRestoreServiceTestHavingFullRestoreFile
+    : public FullRestoreServiceTestHavingFullRestoreFile {
+ protected:
+  ForestFullRestoreServiceTestHavingFullRestoreFile() = default;
+  ForestFullRestoreServiceTestHavingFullRestoreFile(
+      const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
+  ForestFullRestoreServiceTestHavingFullRestoreFile& operator=(
+      const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
+  ~ForestFullRestoreServiceTestHavingFullRestoreFile() override = default;
+
+  void SetUp() override {
+    switches::SetIgnoreForestSecretKeyForTest(true);
+    FullRestoreServiceTestHavingFullRestoreFile::SetUp();
+  }
+
+  void TearDown() override {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+    FullRestoreServiceTestHavingFullRestoreFile::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
+};
+
+// If the system is crash, the delegate is notified.
+TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
+
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .WillOnce([](std::unique_ptr<PineContentsData> data) {
+        ASSERT_TRUE(data);
+        EXPECT_TRUE(data->last_session_crashed);
+      });
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  // The notification should not show up anymore with forest enabled.
+  // TODO(http://b/326982900): Remove this check once non-forest cannot be
+  // enabled.
+  VerifyNotification(/*has_crash_notification=*/false,
+                     /*has_restore_notification=*/false);
+
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
+}
+
+TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
+       AskEveryTimeAndRestore) {
+  SetRestoreOption(RestoreOption::kAskEveryTime);
+  auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
+  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+      .Times(1);
+  CreateFullRestoreServiceForTesting(std::move(mock_delegate));
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+  // The notification should not show up anymore with forest enabled.
+  // TODO(http://b/326982900): Remove this check once non-forest cannot be
+  // enabled.
+  VerifyNotification(/*has_crash_notification=*/false,
+                     /*has_restore_notification=*/false);
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+  EXPECT_TRUE(CanPerformRestore(account_id()));
+  EXPECT_TRUE(allow_save());
 }
 
 }  // namespace ash::full_restore
