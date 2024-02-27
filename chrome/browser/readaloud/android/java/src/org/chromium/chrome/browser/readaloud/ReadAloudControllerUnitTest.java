@@ -214,6 +214,10 @@ public class ReadAloudControllerUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "ReadAloud.HighlightingEnabled.OnStartup", true);
 
+        mTab = mTabModelSelector.getCurrentTab();
+        mTab.setGurlOverrideForTesting(sTestGURL);
+        mTab.setWebContentsOverrideForTesting(mWebContents);
+
         mController =
                 new ReadAloudController(
                         mActivity,
@@ -226,10 +230,6 @@ public class ReadAloudControllerUnitTest {
                         mActivityWindowAndroid,
                         mActivityLifecycleDispatcher);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        mTab = mTabModelSelector.getCurrentTab();
-        mTab.setGurlOverrideForTesting(sTestGURL);
-        mTab.setWebContentsOverrideForTesting(mWebContents);
 
         when(mMetadata.languageCode()).thenReturn("en");
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
@@ -487,6 +487,7 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void checkReadabilityOnPageLoad_URLnotReadAloudSupported() {
+        reset(mHooksImpl);
         checkURLNotReadAloudSupported(new GURL("invalid"));
         checkURLNotReadAloudSupported(GURL.emptyGURL());
         checkURLNotReadAloudSupported(new GURL("chrome://history/"));
@@ -1328,24 +1329,66 @@ public class ReadAloudControllerUnitTest {
         // Play tab.
         requestAndStartPlayback();
 
-        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+        // One observer should be registered on the playing tab to stop playback if translated, and
+        // one is registered regardless of playback for refreshing the entrypoint.
+        assertEquals(2, mFakeTranslateBridge.getObserverCount());
 
-        // stopping playback should unregister a listener
+        // stopping playback should unregister the listener that stops playback
         mController.maybeStopPlayback(mTab);
-        assertEquals(0, mFakeTranslateBridge.getObserverCount());
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
     }
 
     @Test
     public void testTranslationListenerRegistration_nullWebContents() {
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+
         // Play tab.
         when(mTab.getWebContents()).thenReturn(null);
         requestAndStartPlayback();
 
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+
+        mController.maybeStopPlayback(mTab);
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+    }
+
+    @Test
+    public void testTranslationListenersUnregisteredOnTabDestroyed() {
+        // Play tab.
+        requestAndStartPlayback();
+        // One observer should be registered on the playing tab to stop playback if translated, and
+        // one is registered regardless of playback for refreshing the entrypoint.
+        assertEquals(2, mFakeTranslateBridge.getObserverCount());
+
+        // Both should be removed if the tab is destroyed.
+        mController.getTabModelTabObserverforTests().onDestroyed(mTab);
+        assertEquals(0, mFakeTranslateBridge.getObserverCount());
+    }
+
+    @Test
+    public void testTranslationListenerRegisteredOnPageLoad() {
+        // Listener should be registered already because onTabSelected() is called when
+        // TabModelTabObserver is created.
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+
+        // Destroying tab should remove the observer.
+        mController.getTabModelTabObserverforTests().onDestroyed(mTab);
         assertEquals(0, mFakeTranslateBridge.getObserverCount());
 
-        // stopping playback should not a listener
-        mController.maybeStopPlayback(mTab);
-        assertEquals(0, mFakeTranslateBridge.getObserverCount());
+        // Observer should register again on page load. To keep the test simple we'll reuse the same
+        // tab even though it was used with onDestroyed().
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, sTestGURL);
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+    }
+
+    @Test
+    public void testTranslationListenersUnregistered_nullWebContents() {
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
+
+        // If tab has null web contents, we should not try to remove translation observers.
+        doReturn(null).when(mTab).getWebContents();
+        mController.getTabModelTabObserverforTests().onDestroyed(mTab);
+        assertEquals(1, mFakeTranslateBridge.getObserverCount());
     }
 
     @Test
@@ -1393,6 +1436,19 @@ public class ReadAloudControllerUnitTest {
         // Fail to translate (status code 1). Playback should not stop.
         mController.getTranslationObserverForTest().onPageTranslated("en", "es", 1);
         verify(mPlayback, never()).release();
+    }
+
+    @Test
+    public void testPageTranslatedNotifiesReadabilityChanged() {
+        Runnable runnable = Mockito.mock(Runnable.class);
+        mController.addReadabilityUpdateListener(runnable);
+
+        var translationObserver = mController.getCurrentTabTranslationObserverForTest();
+        translationObserver.onPageTranslated("en", "es", 1);
+        verify(runnable, times(1)).run();
+
+        translationObserver.onIsPageTranslatedChanged(null);
+        verify(runnable, times(2)).run();
     }
 
     @Test
@@ -1448,13 +1504,14 @@ public class ReadAloudControllerUnitTest {
     public void testReadabilitySupplier() {
         String testUrl = "https://en.wikipedia.org/wiki/Google";
 
+        Runnable runnable = Mockito.mock(Runnable.class);
+        mController.addReadabilityUpdateListener(runnable);
         mController.maybeCheckReadability(new GURL(testUrl));
 
         verify(mHooksImpl, times(1)).isPageReadable(eq(testUrl), mCallbackCaptor.capture());
 
         mCallbackCaptor.getValue().onSuccess(testUrl, true, false);
-
-        assertEquals(mController.getReadabilitySupplier().get(), testUrl);
+        verify(runnable).run();
     }
 
     @Test
@@ -1898,6 +1955,7 @@ public class ReadAloudControllerUnitTest {
     // TODO(b/322052505): This test won't be necessary if we keep track of profile changes.
     @Test
     public void testNoRequestsIfProfileDestroyed() {
+        reset(mHooksImpl);
         doReturn(false).when(mMockProfile).isNativeInitialized();
         mController =
                 new ReadAloudController(

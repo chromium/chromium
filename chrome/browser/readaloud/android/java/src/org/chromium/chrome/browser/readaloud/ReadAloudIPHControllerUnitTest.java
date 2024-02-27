@@ -90,7 +90,7 @@ public class ReadAloudIPHControllerUnitTest {
     @Test
     @SmallTest
     public void maybeShowReadAloudAppMenuIPH() {
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
 
         IPHCommand command = mIPHCommandCaptor.getValue();
@@ -106,22 +106,16 @@ public class ReadAloudIPHControllerUnitTest {
     public void maybeShowReadAloudAppMenuIPH_false() {
         doReturn(false).when(mReadAloudController).isReadable(mTab);
 
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
 
     @Test
     @SmallTest
     public void maybeShowReadAloudAppMenuIPH_invalid() {
-        // mismatched urls
-        mController.maybeShowReadAloudAppMenuIPH("https://en.wikipedia.org/wiki/Google");
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
-        // invalid url
-        mController.maybeShowReadAloudAppMenuIPH("http://0x100.0/");
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
         // null tab
         doReturn(null).when(mMockTabProvider).get();
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
 }

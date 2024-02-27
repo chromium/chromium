@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
@@ -78,8 +79,7 @@ public class ReadAloudController
     private static final Class<RestoreState> USER_DATA_KEY = RestoreState.class;
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplierImpl<String> mReadabilitySupplier =
-            new ObservableSupplierImpl();
+    private final ObserverList<Runnable> mReadabilityUpdateObserverList = new ObserverList<>();
     private final Map<String, String> mSanitizedToFullUrlMap = new HashMap<>();
     private final Map<String, Boolean> mReadabilityMap = new HashMap<>();
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
@@ -239,9 +239,45 @@ public class ReadAloudController
     private final ObservableSupplierImpl<String> mSelectedVoiceId;
     private final ActivityWindowAndroid mActivityWindowAndroid;
 
-    private long mTranslationObserverHandle;
-    private final TranslationObserver mTranslationObserver =
-            new TranslationObserver() {
+    /**
+     * Wrapper for TranslationObserver that keeps track of the tab it is observing and the pointer
+     * to the underlying native observer so that callers don't need to manage them.
+     */
+    private static class TranslationObserverImpl implements TranslationObserver {
+        private Tab mTab;
+        private long mHandle;
+
+        void observeTab(Tab tab) {
+            if (mTab != null) {
+                stopObservingTab(mTab);
+            }
+
+            WebContents webContents = tab.getWebContents();
+            if (webContents == null) {
+                return;
+            }
+
+            mHandle = TranslateBridge.addTranslationObserver(webContents, this);
+            mTab = tab;
+        }
+
+        void stopObservingTab(Tab tab) {
+            if (mTab == null || mTab != tab) {
+                return;
+            }
+
+            WebContents webContents = tab.getWebContents();
+            if (webContents != null) {
+                TranslateBridge.removeTranslationObserver(webContents, mHandle);
+            }
+
+            mTab = null;
+            mHandle = 0L;
+        }
+    }
+
+    private final TranslationObserverImpl mPlayingTabTranslationObserver =
+            new TranslationObserverImpl() {
                 @Override
                 public void onIsPageTranslatedChanged(WebContents webContents) {
                     if (mCurrentlyPlayingTab != null) {
@@ -255,6 +291,20 @@ public class ReadAloudController
                     if (mCurrentlyPlayingTab != null && errorCode == 0) {
                         maybeStopPlayback(mCurrentlyPlayingTab);
                     }
+                }
+            };
+
+    private final TranslationObserverImpl mCurrentTabTranslationObserver =
+            new TranslationObserverImpl() {
+                @Override
+                public void onIsPageTranslatedChanged(WebContents webContents) {
+                    notifyReadabilityMayHaveChanged();
+                }
+
+                @Override
+                public void onPageTranslated(
+                        String sourceLanguage, String translatedLanguage, int errorCode) {
+                    notifyReadabilityMayHaveChanged();
                 }
             };
 
@@ -283,7 +333,7 @@ public class ReadAloudController
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);
-                    mReadabilitySupplier.set(mSanitizedToFullUrlMap.get(url));
+                    notifyReadabilityMayHaveChanged();
                 }
 
                 @Override
@@ -332,9 +382,6 @@ public class ReadAloudController
         mActivityLifecycleDispatcher.register(this);
     }
 
-    public ObservableSupplier<String> getReadabilitySupplier() {
-        return mReadabilitySupplier;
-    }
     private void onProfileAvailable(Profile profile) {
         mProfile = profile;
         mReadabilityHooks =
@@ -360,6 +407,7 @@ public class ReadAloudController
                                 ReadAloudMetrics.recordIneligibilityReason(
                                         ReadAloudFeatures.getIneligibilityReason());
                             }
+                            mCurrentTabTranslationObserver.observeTab(tab);
                         }
 
                         @Override
@@ -378,10 +426,11 @@ public class ReadAloudController
                                 tab.getUserDataHost().setUserData(USER_DATA_KEY, state);
                             }
                             maybeStopPlayback(tab);
+                            mCurrentTabTranslationObserver.stopObservingTab(tab);
                         }
 
                         @Override
-                        protected void onTabSelected(Tab tab) {
+                        public void onTabSelected(Tab tab) {
                             super.onTabSelected(tab);
                             if (tab != null && tab.getUrl() != null) {
                                 Log.d(
@@ -414,6 +463,7 @@ public class ReadAloudController
                                     updatedRestored.restore();
                                     tab.getUserDataHost().removeUserData(USER_DATA_KEY);
                                 }
+                                mCurrentTabTranslationObserver.observeTab(tab);
                             }
                         }
 
@@ -421,6 +471,14 @@ public class ReadAloudController
                         public void willCloseTab(Tab tab) {
                             Log.d(TAG, "WillCloseTab");
                             maybeStopPlayback(tab);
+                            mPlayingTabTranslationObserver.stopObservingTab(tab);
+                            mCurrentTabTranslationObserver.stopObservingTab(tab);
+                        }
+
+                        @Override
+                        public void onDestroyed(Tab tab) {
+                            mPlayingTabTranslationObserver.stopObservingTab(tab);
+                            mCurrentTabTranslationObserver.stopObservingTab(tab);
                         }
                     };
 
@@ -523,6 +581,27 @@ public class ReadAloudController
         return false;
     }
 
+    /**
+     * Add a runnable to be called when new readability information is available for any page.
+     * Listeners can then call isReadable() to check a tab's readability.
+     *
+     * @param runnable Runnable called when a readability check succeeds or when a page is
+     *     translated.
+     */
+    public void addReadabilityUpdateListener(Runnable runnable) {
+        mReadabilityUpdateObserverList.addObserver(runnable);
+    }
+
+    /**
+     * Remove a runnable previously registered with addReadabilityUpdateListener. No effect if
+     * runnable was not added.
+     *
+     * @param runnable Runnable to remove.
+     */
+    public void removeReadabilityUpdateListener(Runnable runnable) {
+        mReadabilityUpdateObserverList.removeObserver(runnable);
+    }
+
     /** Returns true if the tab's current language is supported by the available voices. */
     private boolean isTabLanguageSupported(Tab tab) {
         if (mReadabilityHooks == null) {
@@ -597,11 +676,7 @@ public class ReadAloudController
 
         resetCurrentPlayback();
         mCurrentlyPlayingTab = tab;
-        mTranslationObserverHandle =
-                mCurrentlyPlayingTab.getWebContents() != null
-                        ? TranslateBridge.addTranslationObserver(
-                                mCurrentlyPlayingTab.getWebContents(), mTranslationObserver)
-                        : 0L;
+        mPlayingTabTranslationObserver.observeTab(mCurrentlyPlayingTab);
 
         if (!mPlaybackHooks.voicesInitialized()) {
             mPlaybackHooks.initVoices();
@@ -677,12 +752,7 @@ public class ReadAloudController
             mPlayback = null;
             mPlayerCoordinator.recordPlaybackDuration();
         }
-        if (mTranslationObserverHandle != 0L) {
-            assert mCurrentlyPlayingTab != null;
-            TranslateBridge.removeTranslationObserver(
-                    mCurrentlyPlayingTab.getWebContents(), mTranslationObserverHandle);
-            mTranslationObserverHandle = 0L;
-        }
+        mPlayingTabTranslationObserver.stopObservingTab(mCurrentlyPlayingTab);
         mCurrentlyPlayingTab = null;
         mGlobalRenderFrameId = null;
         mCurrentPlaybackData = null;
@@ -1154,6 +1224,12 @@ public class ReadAloudController
         mOnUserLeaveHint = true;
     }
 
+    private void notifyReadabilityMayHaveChanged() {
+        for (Runnable observer : mReadabilityUpdateObserverList) {
+            observer.run();
+        }
+    }
+
     // Tests.
     public void setHighlighterForTests(Highlighter highighter) {
         mHighlighter = highighter;
@@ -1172,7 +1248,11 @@ public class ReadAloudController
     }
 
     public TranslationObserver getTranslationObserverForTest() {
-        return mTranslationObserver;
+        return mPlayingTabTranslationObserver;
+    }
+
+    public TranslationObserver getCurrentTabTranslationObserverForTest() {
+        return mCurrentTabTranslationObserver;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
