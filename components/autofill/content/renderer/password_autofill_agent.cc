@@ -869,11 +869,11 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
                           element.IsPasswordFieldForAutofill()) &&
       !(username.empty() && element.IsPasswordFieldForAutofill()) &&
       username_element.Value().Utf16() != username) {
-    FillField(&username_element, username);
+    DoFillField(username_element, username);
   }
 
   if (!password_element.IsNull()) {
-    FillPasswordFieldAndSave(&password_element, password);
+    FillPasswordFieldAndSave(password_element, password);
 
     // TODO(crbug.com/1319364): As Touch-To-Fill and auto-submission don't
     // currently support filling single username fields, the code below is
@@ -903,12 +903,12 @@ void PasswordAutofillAgent::FillIntoFocusedField(
     return;
   }
   if (!is_password) {
-    FillField(&focused_input_element, credential);
+    DoFillField(focused_input_element, credential);
   }
   if (!focused_input_element.IsPasswordFieldForAutofill()) {
     return;
   }
-  FillPasswordFieldAndSave(&focused_input_element, credential);
+  FillPasswordFieldAndSave(focused_input_element, credential);
 }
 
 void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
@@ -920,6 +920,18 @@ void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
   }
   DoPreviewField(input, value,
                  /*is_password=*/input.IsPasswordFieldForAutofill());
+}
+
+void PasswordAutofillAgent::FillField(FieldRendererId field_id,
+                                      const std::u16string& value) {
+  WebFormControlElement form_control =
+      form_util::GetFormControlByRendererId(field_id);
+  WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
+  if (input_element.IsNull() || input_element.IsReadOnly()) {
+    // Early return for non-input fields such as textarea.
+    return;
+  }
+  DoFillField(input_element, value);
 }
 
 void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
@@ -934,24 +946,22 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
   input.SetSuggestedValue(WebString::FromUTF16(credential));
 }
 
-void PasswordAutofillAgent::FillField(WebInputElement* input,
-                                      const std::u16string& credential) {
-  DCHECK(input);
-  DCHECK(!input->IsNull());
-  input->SetAutofillValue(WebString::FromUTF16(credential));
+void PasswordAutofillAgent::DoFillField(WebInputElement& input,
+                                        const std::u16string& credential) {
+  CHECK(!input.IsNull());
+  input.SetAutofillValue(WebString::FromUTF16(credential));
   field_data_manager().UpdateFieldDataMap(
-      form_util::GetFieldRendererId(*input), credential,
+      form_util::GetFieldRendererId(input), credential,
       FieldPropertiesFlags::kAutofilledOnUserTrigger);
-  TrackAutofilledElement(*input);
+  TrackAutofilledElement(input);
 }
 
 void PasswordAutofillAgent::FillPasswordFieldAndSave(
-    WebInputElement* password_input,
+    WebInputElement& password_input,
     const std::u16string& credential) {
-  DCHECK(password_input);
-  DCHECK(password_input->IsPasswordFieldForAutofill());
-  FillField(password_input, credential);
-  InformBrowserAboutUserInput(GetFormElement(*password_input), *password_input);
+  CHECK(password_input.IsPasswordFieldForAutofill());
+  DoFillField(password_input, credential);
+  InformBrowserAboutUserInput(GetFormElement(password_input), password_input);
 }
 
 void PasswordAutofillAgent::PreviewSuggestion(

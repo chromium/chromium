@@ -265,6 +265,8 @@ class FakePasswordAutofillAgent
                             const std::u16string& credential) override {}
   void PreviewField(autofill::FieldRendererId field_id,
                     const std::u16string& value) override {}
+  void FillField(autofill::FieldRendererId field_id,
+                 const std::u16string& value) override {}
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override {}
 

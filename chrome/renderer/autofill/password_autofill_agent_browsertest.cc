@@ -2343,6 +2343,80 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldForNonClickFocus) {
   CheckTextFieldsDOMState(std::string(), false, "TextToFill", true);
 }
 
+// Tests that `FillInfoField` doesn't fill read-only text fields.
+TEST_F(PasswordAutofillAgentTest, FillIntoReadonlyTextField) {
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+
+  // If the field is readonly, it should not be affected.
+  SetElementReadOnly(username_element_, true);
+  password_autofill_agent_->FillField(
+      form_util::GetFieldRendererId(username_element_), kAliceUsername16);
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+}
+
+// Tests that `FillInfoField` correctly fills the username field.
+TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField) {
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+
+  password_autofill_agent_->FillField(
+      form_util::GetFieldRendererId(username_element_), kAliceUsername16);
+  CheckTextFieldsDOMState(
+      /*username=*/kAliceUsername, /*username_autofilled=*/true,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+}
+
+// Tests that `FillInfoField` correctly fills the password field.
+TEST_F(PasswordAutofillAgentTest, FillIntoPasswordField) {
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+
+  password_autofill_agent_->FillField(
+      form_util::GetFieldRendererId(password_element_), kAlicePassword16);
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/kAlicePassword, /*password_autofilled=*/true);
+}
+
+// Tests that `FillInfoField` can fill into a random field.
+TEST_F(PasswordAutofillAgentTest, FillIntoRandomField) {
+  WebInputElement random_element = GetInputElementByID("random_field");
+
+  // The field should not be autocompleted.
+  EXPECT_EQ(std::string(), random_element.Value().Utf8());
+
+  password_autofill_agent_->FillField(
+      form_util::GetFieldRendererId(random_element), kAliceUsername16);
+  EXPECT_EQ(kAliceUsername, random_element.Value().Utf8());
+}
+
+// Tests that `FillInfoField` doesn't fill non-existent fields.
+TEST_F(PasswordAutofillAgentTest, FillIntoNonExistingField) {
+  WebInputElement random_element = GetInputElementByID("random_field");
+
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+  EXPECT_EQ(std::string(), random_element.Value().Utf8());
+
+  password_autofill_agent_->FillField(FieldRendererId(), kAliceUsername16);
+  // Neither field should be autocompleted.
+  CheckTextFieldsDOMState(
+      /*username=*/std::string(), /*username_autofilled=*/false,
+      /*password=*/std::string(), /*password_autofilled=*/false);
+  EXPECT_EQ(std::string(), random_element.Value().Utf8());
+}
+
 // Tests that `ClearPreview` properly clears previewed username and password
 // with neither username nor password being previously autofilled.
 TEST_F(PasswordAutofillAgentTest,

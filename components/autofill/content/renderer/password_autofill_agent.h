@@ -140,6 +140,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                             const std::u16string& credential) override;
   void PreviewField(FieldRendererId field_id,
                     const std::u16string& value) override;
+  void FillField(FieldRendererId field_id,
+                 const std::u16string& value) override;
   void SetLoggingState(bool active) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;
@@ -394,12 +396,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
-  void FillField(blink::WebInputElement* input,
-                 const std::u16string& credential);
+  void DoFillField(blink::WebInputElement& input,
+                   const std::u16string& credential);
 
   // Uses `FillField` to fill the given `credential` into the `password_input`.
   // Saves the password for its associated form.
-  void FillPasswordFieldAndSave(blink::WebInputElement* password_input,
+  void FillPasswordFieldAndSave(blink::WebInputElement& password_input,
                                 const std::u16string& credential);
 
   // `form` and `input` are the elements user has just been interacting with
