@@ -8029,7 +8029,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1821" label="PresentationRequestInsecureOrigin"/>
   <int value="1822" label="PresentationRequestSecureOrigin"/>
   <int value="1823" label="RtcpMuxPolicyNegotiate"/>
-  <int value="1824" label="DOMClobberedVariableAccessed"/>
+  <int value="1824" label="DOMClobberedWindowPropertyAccessed"/>
   <int value="1825" label="HTMLDocumentCreateProcessingInstruction"/>
   <int value="1826" label="FetchResponseConstructionWithStream"/>
   <int value="1827" label="LocationOrigin"/>
@@ -11293,6 +11293,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4869" label="SpeculationRulesRejectedLaxReferrerPolicy"/>
   <int value="4870" label="SpeculationRulesUsedLinkReferrerPolicy"/>
   <int value="4871" label="SpeculationRulesExplicitReferrerPolicy"/>
+  <int value="4872" label="DOMClobberedShadowedDocumentPropertyAccessed"/>
+  <int value="4873" label="DOMClobberedNotShadowedDocumentPropertyAccessed"/>
+  <int value="4874" label="DOMClobberedShadowedFormPropertyAccessed"/>
+  <int value="4875" label="DOMClobberedNotShadowedFormPropertyAccessed"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

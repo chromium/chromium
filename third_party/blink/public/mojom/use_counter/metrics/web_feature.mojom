@@ -1283,7 +1283,7 @@ enum WebFeature {
   kV8HTMLVideoElement_Poster_AttributeSetter = 1816,
   kNotificationPermissionRequestedIframe = 1817,
   kRtcpMuxPolicyNegotiate = 1823,
-  kDOMClobberedVariableAccessed = 1824,
+  kDOMClobberedWindowPropertyAccessed = 1824,
   kHTMLDocumentCreateProcessingInstruction = 1825,
   kFetchResponseConstructionWithStream = 1826,
   kLocationOrigin = 1827,
@@ -4234,6 +4234,10 @@ enum WebFeature {
   kSpeculationRulesRejectedLaxReferrerPolicy = 4869,
   kSpeculationRulesUsedLinkReferrerPolicy = 4870,
   kSpeculationRulesExplicitReferrerPolicy = 4871,
+  kDOMClobberedShadowedDocumentPropertyAccessed = 4872,
+  kDOMClobberedNotShadowedDocumentPropertyAccessed = 4873,
+  kDOMClobberedShadowedFormPropertyAccessed = 4874,
+  kDOMClobberedNotShadowedFormPropertyAccessed = 4875,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

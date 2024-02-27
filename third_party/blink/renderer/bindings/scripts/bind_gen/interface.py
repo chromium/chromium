@@ -3294,6 +3294,13 @@ def make_named_property_getter_callback(cg_context, function_name):
                 TextNode("return;  // Do not intercept."),
             ]),
         TextNode("""\
+% if interface.identifier == "HTMLFormElement":
+// At this point we know that the named property exists.
+// We then UseCount whether the original property was shadowed or not.
+${blink_receiver}->UseCountPropertyAccess(${v8_property_name}, ${info});
+% endif\
+"""),
+        TextNode("""\
 // "If operation was defined without an identifier, then set value to the result
 //  of performing the steps listed in the interface description to determine the
 //  value of a named property with P as the name."

@@ -134,6 +134,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                                const WTF::TextEncoding& encoding);
 
   void InvalidateListedElementsIncludingShadowTrees();
+  void UseCountPropertyAccess(v8::Local<v8::Name>&,
+                              const v8::PropertyCallbackInfo<v8::Value>&);
 
  private:
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

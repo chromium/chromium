@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
@@ -511,18 +512,29 @@ static void Getter(v8::Local<v8::Name> property,
   HTMLDocument* html_document =
       V8HTMLDocument::ToWrappableUnsafe(info.Holder());
   DCHECK(html_document);
-  v8::Local<v8::Value> result =
+  v8::Local<v8::Value> namedPropertyValue =
       GetNamedProperty(html_document, name, info.Holder(), isolate);
-  if (!result.IsEmpty()) {
-    V8SetReturnValue(info, result);
-    return;
-  }
-  v8::Local<v8::Value> value;
-  if (info.Holder()
+  bool hasNamedProperty = !namedPropertyValue.IsEmpty();
+
+  v8::Local<v8::Value> prototypeChainValue;
+  bool hasPropertyInPrototypeChain =
+      info.Holder()
           ->GetRealNamedPropertyInPrototypeChain(isolate->GetCurrentContext(),
                                                  property.As<v8::String>())
-          .ToLocal(&value)) {
-    V8SetReturnValue(info, value);
+          .ToLocal(&prototypeChainValue);
+
+  if (hasNamedProperty) {
+    V8SetReturnValue(info, namedPropertyValue);
+    UseCounter::Count(
+        html_document,
+        hasPropertyInPrototypeChain
+            ? WebFeature::kDOMClobberedShadowedDocumentPropertyAccessed
+            : WebFeature::kDOMClobberedNotShadowedDocumentPropertyAccessed);
+
+    return;
+  }
+  if (hasPropertyInPrototypeChain) {
+    V8SetReturnValue(info, prototypeChainValue);
   }
 }
 

@@ -1071,4 +1071,20 @@ void HTMLFormElement::InvalidateListedElementsIncludingShadowTrees() {
   listed_elements_including_shadow_trees_are_dirty_ = true;
 }
 
+void HTMLFormElement::UseCountPropertyAccess(
+    v8::Local<v8::Name>& v8_property_name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  bool hasPropertyInPrototypeChain =
+      !info.Holder()
+           ->GetRealNamedPropertyInPrototypeChain(
+               info.GetIsolate()->GetCurrentContext(), v8_property_name)
+           .IsEmpty();
+
+  UseCounter::Count(
+      GetDocument(),
+      hasPropertyInPrototypeChain
+          ? WebFeature::kDOMClobberedShadowedFormPropertyAccessed
+          : WebFeature::kDOMClobberedNotShadowedFormPropertyAccessed);
+}
+
 }  // namespace blink
