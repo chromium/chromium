@@ -616,11 +616,16 @@ bool IsDefaultBrowserVideoInSettingsEnabled() {
 bool HasUserInteractedWithFullscreenPromoBefore() {
   if (base::FeatureList::IsEnabled(
           feature_engagement::kDefaultBrowserEligibilitySlidingWindow)) {
-    return HasRecordedEventForKeyLessThanDelay(
-        kLastTimeUserInteractedWithFullscreenPromo,
-        base::Days(
-            feature_engagement::kDefaultBrowserEligibilitySlidingWindowParam
-                .Get()));
+    // When the total promo count is 1 it means that user has seen only the FRE
+    // promo. The cooldown from FRE will be taken care of in
+    // ```ComputeCooldown```. Here we only need to check the timestamp of the
+    // last promo if users seen more than FRE.
+    return DisplayedFullscreenPromoCount() > 1 &&
+           HasRecordedEventForKeyLessThanDelay(
+               kLastTimeUserInteractedWithFullscreenPromo,
+               base::Days(
+                   feature_engagement::
+                       kDefaultBrowserEligibilitySlidingWindowParam.Get()));
   }
 
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
