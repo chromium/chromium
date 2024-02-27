@@ -11,6 +11,8 @@ formatted version XML.
 
 import textwrap as tw
 import xml.etree.ElementTree as ET
+from typing import List
+import re
 
 import sync.model_util as util
 
@@ -86,13 +88,13 @@ class Model:
   KEY_REGEX = r"^[0-9]+$"
   MAX_REGEX = r"^[0-9]+$"
 
-  def __init__(self, xml_string: str):
+  def __init__(self, xml_string: str, platform: str):
     elem = ET.fromstring(xml_string)
     util.check_attributes(elem, set())
     util.check_children(elem, {"project"})
     util.check_child_names_unique(elem, "project")
     projects = util.get_compound_children(elem, "project")
-    self.projects = [Project(p) for p in projects]
+    self.projects = [Project(p, platform) for p in projects]
 
   def __repr__(self):
     projects = "\n\n".join(str(p) for p in self.projects)
@@ -104,6 +106,12 @@ class Model:
 
 </structured-metrics>"""
 
+
+def MergeModels(primary: Model, other: Model) -> Model:
+  primary.projects += [
+      p for p in other.projects if not re.match('Test', p.name)
+  ]
+  return primary
 
 class Project:
   """Represents a single structured metrics project.
@@ -128,7 +136,7 @@ class Project:
     Calling str(project) will return a canonically formatted XML string.
     """
 
-  def __init__(self, elem: ET.Element):
+  def __init__(self, elem: ET.Element, platform: str):
     util.check_attributes(elem, {"name"}, {"cros_events"})
     util.check_children(elem, {"id", "summary", "owner", "event"}, {"enum"})
     util.check_child_names_unique(elem, "event")
@@ -137,6 +145,7 @@ class Project:
     self.id = util.get_text_child(elem, "id", Model.ID_REGEX)
     self.summary = util.get_text_child(elem, "summary")
     self.owners = util.get_text_children(elem, "owner", Model.OWNER_REGEX)
+    self.platform = platform
 
     self.key_rotation_period = DEFAULT_KEY_ROTATION_PERIOD
     self.scope = DEFAULT_PROJECT_SCOPE

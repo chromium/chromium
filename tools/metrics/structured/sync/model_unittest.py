@@ -35,7 +35,7 @@ class ModelTest(unittest.TestCase):
   def assert_model_raises(self, xml):
     raised = False
     try:
-      model.Model(xml)
+      model.Model(xml, 'chrome')
     except ValueError:
       raised = True
     self.assertTrue(raised)
@@ -84,7 +84,7 @@ class ModelTest(unittest.TestCase):
           </project>
           </structured-metrics>"""
 
-    data = model.Model(xml)
+    data = model.Model(xml, 'chrome')
 
     self.assertEqual(len(data.projects), 2)
     project_one, project_two = data.projects

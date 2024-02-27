@@ -17,12 +17,18 @@ from sync import model
 parser = argparse.ArgumentParser(
     description='Generate structured metrics validator')
 parser.add_argument('--input', help='Path to structured.xml')
+parser.add_argument('--cros_input', help='Path to structured_chromiumos.xml')
 parser.add_argument('--output', help='Path to generated files.')
 
 
 def main():
   args = parser.parse_args()
-  structured = model.Model(open(args.input, encoding='utf-8').read())
+  structured = model.Model(open(args.input, encoding='utf-8').read(), 'chrome')
+
+  if args.cros_input is not None:
+    cros_structured = model.Model(
+        open(args.cros_input, encoding='utf-8').read(), 'cros')
+    structured = model.MergeModels(structured, cros_structured)
 
   codegen.ValidatorHeaderTemplate(
       args.output, 'structured_metrics_validator.h').write_file()

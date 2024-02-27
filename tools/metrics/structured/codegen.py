@@ -33,7 +33,7 @@ class Util:
     return struct.unpack('>Q', md5.digest()[:8])[0]
 
   @staticmethod
-  def event_name_hash(project_name, event_name):
+  def event_name_hash(project_name, event_name, platform):
     """Make the name hash for an event.
 
     This gets uploaded in the StructuredEventProto.event_name_hash field. It is
@@ -53,7 +53,8 @@ class Util:
     project_name = Util.sanitize_name(project_name)
     # TODO(crbug.com/1148168): Once the minimum python version is 3.6+, rewrite
     # this .format and others using f-strings.
-    return Util.hash_name('chrome::{}::{}'.format(project_name, event_name))
+    return Util.hash_name('{}::{}::{}'.format(platform, project_name,
+                                              event_name))
 
 
 class FileInfo:
@@ -83,6 +84,7 @@ class ProjectInfo:
     self.validator_snake_name = Util.camel_to_snake(self.validator)
     self.events = project.events
     self.enums = project.enums
+    self.platform = project.platform
 
     # Set ID type.
     if project.id == 'uma':
@@ -147,15 +149,20 @@ class EventInfo:
 
   def __init__(self, event, project_info):
     self.name = Util.sanitize_name(event.name)
-    self.name_hash = Util.event_name_hash(project_info.name, self.name)
-    self.validator_name = '{}EventValidator'.format(self.name)
-    self.validator_snake_name = Util.camel_to_snake(self.validator_name)
     self.project_name = project_info.name
+    self.platform = project_info.platform
+    self.name_hash = Util.event_name_hash(project_info.name, self.name,
+                                          project_info.platform)
+    self.validator_name = '{}_{}EventValidator'.format(self.project_name,
+                                                       self.name)
+    self.validator_snake_name = Util.camel_to_snake(self.validator_name)
     self.is_event_sequence = project_info.is_event_sequence
     self.force_record = str(event.force_record).lower()
     self.metrics = event.metrics
 
   def build_metric_hash_map(self) -> str:
+    if self.platform == 'cros':
+      return ''
     metric_infos = (MetricInfo(metric) for metric in self.metrics)
     return ',\n  '.join(
         '{{\"{}\", {{ Event::MetricType::{}, UINT64_C({})}}}}'.format(
@@ -169,8 +176,6 @@ class EventInfo:
         for metric_info in metric_infos)
 
   def build_validator_code(self) -> str:
-    # metric_hash_map = "  return std::nullopt;" if len(
-    #     self.metrics) == 0 else self.build_metric_hash_map()
     return validator_tmpl.IMPL_EVENT_VALIDATOR_TEMPLATE.format(
         event=self,
         metric_hash_map=self.build_metric_hash_map(),
@@ -205,6 +210,9 @@ class MetricInfo:
       self.setter = 'AddDoubleMetric'
       self.type_enum = 'kDouble'
       self.base_value = 'base::Value(value)'
+    elif metric.type == 'int-array':
+      # todo(andrewbregger): support int array in chromium.
+      self.type_enum = ''
     else:
       if self.is_enum:
         self.type = metric.type
@@ -258,9 +266,11 @@ class Template:
 
   def _stamp_event(self, file_info, project_info, event):
     event_info = EventInfo(event, project_info)
-    metric_code = ''.join(
-        self._stamp_metric(file_info, event_info, metric)
-        for metric in event.metrics)
+    metric_code = ''
+    if project_info.platform != 'cros':
+      metric_code = ''.join(
+          self._stamp_metric(file_info, event_info, metric)
+          for metric in event.metrics)
     return self.event_template.format(file=file_info,
                                       project=project_info,
                                       event=event_info,

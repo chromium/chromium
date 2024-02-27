@@ -23,7 +23,7 @@ parser.add_argument('--output', help='Path to generated files.')
 
 def main():
   args = parser.parse_args()
-  data = model.Model(open(args.input, encoding='utf-8').read())
+  data = model.Model(open(args.input, encoding='utf-8').read(), 'chrome')
 
   codegen.Template(data,
                    args.output,

@@ -203,6 +203,15 @@ action("gen_structured_metrics_validator") {
     "--output",
     rebase_path(outdir, root_build_dir),
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "//tools/metrics/structured/sync/structured_chromiumos.xml" ]
+
+    args += [
+      "--cros_input",
+      rebase_path(sources[1], root_build_dir),
+    ]
+  }
 }
 
 static_library("structured_metrics_validator") {
