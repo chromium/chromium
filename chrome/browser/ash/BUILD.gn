@@ -4538,6 +4538,8 @@ static_library("test_support") {
     "accessibility/caret_bounds_changed_waiter.h",
     "accessibility/dictation_test_utils.cc",
     "accessibility/dictation_test_utils.h",
+    "accessibility/facegaze_test_utils.cc",
+    "accessibility/facegaze_test_utils.h",
     "accessibility/fullscreen_magnifier_test_helper.cc",
     "accessibility/fullscreen_magnifier_test_helper.h",
     "accessibility/magnifier_animation_waiter.cc",
