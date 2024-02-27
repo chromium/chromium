@@ -3848,7 +3848,30 @@ void vpx_highbd_convolve8_horiz_neon(const uint16_t* src,
                                      int w,
                                      int h,
                                      int bd);
-#define vpx_highbd_convolve8_horiz vpx_highbd_convolve8_horiz_neon
+void vpx_highbd_convolve8_horiz_sve(const uint16_t* src,
+                                    ptrdiff_t src_stride,
+                                    uint16_t* dst,
+                                    ptrdiff_t dst_stride,
+                                    const InterpKernel* filter,
+                                    int x0_q4,
+                                    int x_step_q4,
+                                    int y0_q4,
+                                    int y_step_q4,
+                                    int w,
+                                    int h,
+                                    int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8_horiz)(const uint16_t* src,
+                                               ptrdiff_t src_stride,
+                                               uint16_t* dst,
+                                               ptrdiff_t dst_stride,
+                                               const InterpKernel* filter,
+                                               int x0_q4,
+                                               int x_step_q4,
+                                               int y0_q4,
+                                               int y_step_q4,
+                                               int w,
+                                               int h,
+                                               int bd);
 
 void vpx_highbd_convolve8_vert_c(const uint16_t* src,
                                  ptrdiff_t src_stride,
@@ -8532,6 +8555,10 @@ static void setup_rtcd_internal(void) {
   vpx_highbd_8_variance8x8 = vpx_highbd_8_variance8x8_neon;
   if (flags & HAS_SVE) {
     vpx_highbd_8_variance8x8 = vpx_highbd_8_variance8x8_sve;
+  }
+  vpx_highbd_convolve8_horiz = vpx_highbd_convolve8_horiz_neon;
+  if (flags & HAS_SVE) {
+    vpx_highbd_convolve8_horiz = vpx_highbd_convolve8_horiz_sve;
   }
   vpx_mse16x16 = vpx_mse16x16_neon;
   if (flags & HAS_NEON_DOTPROD) {

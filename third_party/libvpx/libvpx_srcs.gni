@@ -3609,6 +3609,7 @@ libvpx_srcs_arm64_highbd_neon_i8mm = [
 libvpx_srcs_arm64_highbd_sve = [
   "//third_party/libvpx/source/libvpx/vp9/encoder/arm/neon/vp9_error_sve.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/highbd_variance_sve.c",
+  "//third_party/libvpx/source/libvpx/vpx_dsp/arm/highbd_vpx_convolve8_sve.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/sum_squares_sve.c",
 ]
 libvpx_srcs_mips = [
