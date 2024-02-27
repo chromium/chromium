@@ -172,6 +172,8 @@ BirchTabItem::BirchTabItem(BirchTabItem&&) = default;
 
 BirchTabItem::BirchTabItem(const BirchTabItem&) = default;
 
+BirchTabItem& BirchTabItem::operator=(const BirchTabItem&) = default;
+
 bool BirchTabItem::operator==(const BirchTabItem& rhs) const = default;
 
 BirchTabItem::~BirchTabItem() = default;

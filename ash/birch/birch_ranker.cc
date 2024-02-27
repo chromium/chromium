@@ -8,6 +8,7 @@
 
 #include "ash/birch/birch_item.h"
 #include "base/check.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -124,7 +125,33 @@ void BirchRanker::RankFileSuggestItems(std::vector<BirchFileItem>* items) {
 }
 
 void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
-  // TODO(b/305094126): Rank all data types.
+  CHECK(items);
+
+  // Sort the recent tabs by their timestamp, descending.
+  std::sort(items->begin(), items->end(),
+            [](const BirchTabItem& a, const BirchTabItem& b) {
+              return b.timestamp < a.timestamp;
+            });
+
+  // TODO(b/305094126): Distinguish between tabs from mobile and tabs from
+  // desktop.
+  for (BirchTabItem& item : *items) {
+    // Very recent items have high priority.
+    if (now_ - base::Minutes(5) < item.timestamp) {
+      item.ranking = 14.f;
+      continue;
+    }
+    // Items from the last hour have medium priority.
+    if (now_ - base::Hours(1) < item.timestamp) {
+      item.ranking = 17.f;
+      continue;
+    }
+    // Items from the last day have low priority.
+    if (now_ - base::Days(1) < item.timestamp) {
+      item.ranking = 30.f;
+      continue;
+    }
+  }
 }
 
 void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {

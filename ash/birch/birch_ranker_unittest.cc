@@ -279,6 +279,54 @@ TEST(BirchRankerTest, RankFileSuggestItems) {
   EXPECT_FLOAT_EQ(items[3].ranking, std::numeric_limits<float>::max());
 }
 
+TEST(BirchRankerTest, RankRecentTabItems) {
+  base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
+
+  // Simulate 9 AM.
+  base::Time now = TimeFromString("22 Feb 2024 09:00 UTC");
+  BirchRanker ranker(now);
+
+  // Create tab with a timestamp in the last 5 minutes.
+  BirchTabItem item0(u"item0", GURL(), TimeFromString("22 Feb 2024 08:59 UTC"),
+                     GURL(), "");
+
+  // Create a tab with timestamp in the last hour.
+  BirchTabItem item1(u"item1", GURL(), TimeFromString("22 Feb 2024 08:30 UTC"),
+                     GURL(), "");
+
+  // Create a tab with timestamp in the last day.
+  BirchTabItem item2(u"item2", GURL(), TimeFromString("21 Feb 2024 09:01 UTC"),
+                     GURL(), "");
+
+  // Create a tab with timestamp more than a day ago.
+  BirchTabItem item3(u"item3", GURL(), TimeFromString("21 Feb 2024 08:59 UTC"),
+                     GURL(), "");
+
+  // Put the items in the vector in reverse order to validate that they are
+  // still handled in the correct order (by time) inside the ranker.
+  std::vector<BirchTabItem> items = {item3, item2, item1, item0};
+
+  ranker.RankRecentTabItems(&items);
+
+  ASSERT_EQ(4u, items.size());
+
+  // The tab with a timestamp in the last 5 minutes has high priority.
+  EXPECT_EQ(items[0].title, u"item0");
+  EXPECT_FLOAT_EQ(items[0].ranking, 14.f);
+
+  // The tab with a timestamp in the last hour has medium priority.
+  EXPECT_EQ(items[1].title, u"item1");
+  EXPECT_FLOAT_EQ(items[1].ranking, 17.f);
+
+  // The tab with a timestamp in the last day has low priority.
+  EXPECT_EQ(items[2].title, u"item2");
+  EXPECT_FLOAT_EQ(items[2].ranking, 30.f);
+
+  // The tab with a timestamp more than a day ago wasn't ranked.
+  EXPECT_EQ(items[3].title, u"item3");
+  EXPECT_FLOAT_EQ(items[3].ranking, std::numeric_limits<float>::max());
+}
+
 TEST(BirchRankerTest, RankWeatherItems_Morning) {
   base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
 
