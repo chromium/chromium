@@ -59,6 +59,12 @@ class KeyboardShortcutProvider : public SearchProvider {
   }
   std::vector<KeyboardShortcutData> shortcut_data() { return shortcut_data_; }
 
+  // Overrides `should_apply_query_filtering_` for testing purposes.
+  void set_should_apply_query_filtering_for_test(
+      bool should_apply_query_filtering) {
+    should_apply_query_filtering_ = should_apply_query_filtering;
+  }
+
  private:
   using ShortcutDataAndScores =
       std::vector<std::pair<KeyboardShortcutData, double>>;
@@ -80,6 +86,10 @@ class KeyboardShortcutProvider : public SearchProvider {
   // A check for whether the |embedding_| field of KeyboardShortcutData has been
   // set.
   bool is_embeddings_set_ = false;
+
+  // A check for whether we should apply query filtering for keyboard shortcut
+  // results.
+  bool should_apply_query_filtering_ = false;
 
   // A full collection of keyboard shortcuts, against which a query is compared
   // during a search.
