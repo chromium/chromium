@@ -4,12 +4,13 @@
 
 #include "ash/system/video_conference/effects/fake_video_conference_tray_effects_manager.h"
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
-#include "base/containers/cxx20_erase_vector.h"
 
 namespace ash {
 
@@ -26,7 +27,7 @@ void FakeVideoConferenceTrayEffectsManager::UnregisterDelegate(
   // Delete any tile UI controllers associated with any of `delegate`'s effects.
   for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
-    base::EraseIf(
+    std::erase_if(
         tile_ui_controllers_,
         [&, id](const std::unique_ptr<video_conference::VcTileUiController>&
                     controller) {

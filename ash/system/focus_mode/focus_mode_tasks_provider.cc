@@ -5,9 +5,9 @@
 #include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 
 #include <optional>
+#include <vector>
 
 #include "ash/api/tasks/tasks_types.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -144,7 +144,7 @@ void FocusModeTasksProvider::UpdateTaskTitle(const std::string& task_id,
 }
 
 void FocusModeTasksProvider::MarkAsCompleted(const std::string& task_id) {
-  base::EraseIf(tasks_data_,
+  std::erase_if(tasks_data_,
                 [task_id](const auto& task) { return task->id == task_id; });
 }
 

@@ -5,6 +5,7 @@
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 
 #include <string>
+#include <vector>
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_url_title_fetcher.h"
@@ -243,7 +244,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
 
   // If `item` was attached to a pending request, make sure it is not updated
   // when rendering finishes.
-  base::Erase(image_model_request->clipboard_history_item_ids, item.id());
+  std::erase(image_model_request->clipboard_history_item_ids, item.id());
 
   if (image_model_request->clipboard_history_item_ids.empty()) {
     // If no more items are waiting on the image model, cancel the request.

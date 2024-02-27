@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
@@ -682,7 +683,7 @@ void CaptureModeCameraController::OnFrameHandlerFatalError() {
   DCHECK(camera_preview_view_);
   DCHECK_EQ(selected_camera_, camera_preview_view_->camera_id());
 
-  base::EraseIf(available_cameras_, [&](const CameraInfo& info) {
+  std::erase_if(available_cameras_, [&](const CameraInfo& info) {
     return selected_camera_ == info.camera_id;
   });
 
@@ -947,7 +948,7 @@ gfx::Rect CaptureModeCameraController::CalculatePreviewWidgetTargetBounds(
 
   // Move `camera_preview_snap_position_` to the beginning of `snap_positions`
   // vector, since we should always try the current snap position first.
-  base::EraseIf(snap_positions,
+  std::erase_if(snap_positions,
                 [this](CameraPreviewSnapPosition snap_position) {
                   return snap_position == camera_preview_snap_position_;
                 });

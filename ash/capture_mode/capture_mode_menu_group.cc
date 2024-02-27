@@ -16,7 +16,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -418,7 +417,7 @@ void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {
     return;
 
   options_container_->RemoveChildViewT(option);
-  base::Erase(options_, option);
+  std::erase(options_, option);
 }
 
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,

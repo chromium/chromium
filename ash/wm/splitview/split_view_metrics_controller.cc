@@ -4,6 +4,8 @@
 
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 
+#include <vector>
+
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
@@ -551,7 +553,7 @@ void SplitViewMetricsController::RemoveObservedWindow(aura::Window* window) {
     }
     first_minimized_window_state_ = nullptr;
   }
-  if (base::Erase(observed_windows_, window)) {
+  if (std::erase(observed_windows_, window)) {
     WindowState::Get(window)->RemoveObserver(this);
     window->RemoveObserver(this);
   }

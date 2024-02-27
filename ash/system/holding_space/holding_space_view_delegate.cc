@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -21,7 +23,6 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -613,7 +614,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       if (!in_progress_commands.has_value()) {
         in_progress_commands = item->in_progress_commands();
       } else {
-        base::EraseIf(in_progress_commands.value(),
+        std::erase_if(in_progress_commands.value(),
                       [&](const HoldingSpaceItem::InProgressCommand&
                               in_progress_command) {
                         return !holding_space_util::SupportsInProgressCommand(

@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/input_device_notifier.h"
 
 #include <functional>
+#include <vector>
 
 #include "ash/bluetooth_devices_observer.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
@@ -16,7 +17,6 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
@@ -219,7 +219,7 @@ void GetAddedAndRemovedDevices(
   // Remove any devices marked as imposters as well.
   base::ranges::sort(updated_device_list, base::ranges::less(),
                      ExtractDeviceIdFromInputDevice);
-  base::EraseIf(updated_device_list, [&](const ui::InputDevice& device) {
+  std::erase_if(updated_device_list, [&](const ui::InputDevice& device) {
     return IsDeviceASuspectedImposter<DeviceMojomPtr>(bluetooth_observer,
                                                       device);
   });
@@ -373,7 +373,7 @@ template <>
 std::vector<ui::InputDevice>
 InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>::GetUpdatedDeviceList() {
   auto mice = ui::DeviceDataManager::GetInstance()->GetMouseDevices();
-  base::EraseIf(mice, [](const auto& mouse) {
+  std::erase_if(mice, [](const auto& mouse) {
     if (floss::features::IsFlossEnabled()) {
       if (kFlossExtraMouseVidPid ==
               VendorProductId{mouse.vendor_id, mouse.product_id} &&

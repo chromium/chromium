@@ -5,6 +5,7 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
@@ -12,7 +13,6 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -42,7 +42,7 @@ void VideoConferenceTrayEffectsManager::UnregisterDelegate(
     VcEffectsDelegate* delegate) {
   DCHECK(delegate);
   size_t num_items_erased =
-      base::EraseIf(effect_delegates_,
+      std::erase_if(effect_delegates_,
                     [delegate](VcEffectsDelegate* d) { return delegate == d; });
   DCHECK_EQ(num_items_erased, 1UL);
 

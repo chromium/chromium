@@ -455,8 +455,8 @@ void WindowCycleView::HandleWindowDestruction(aura::Window* destroying_window,
     // With no remaining child mini views contained in `preview`, we need to
     // remove `preview` and clean up the `preview` in `cycle_views_` and
     // `no_previews_list_`.
-    base::Erase(cycle_views_, preview);
-    base::Erase(no_previews_list_, preview);
+    std::erase(cycle_views_, preview);
+    std::erase(no_previews_list_, preview);
     parent->RemoveChildViewT(preview);
   }
   // With one of its children now gone, we must re-layout `mirror_container_`.

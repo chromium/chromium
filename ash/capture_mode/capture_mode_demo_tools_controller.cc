@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -18,7 +19,6 @@
 #include "ash/shell.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -380,7 +380,7 @@ void CaptureModeDemoToolsController::UpdateTextInputType(
 
 void CaptureModeDemoToolsController::OnMouseHighlightAnimationEnded(
     PointerHighlightLayer* pointer_highlight_layer_ptr) {
-  base::EraseIf(mouse_highlight_layers_,
+  std::erase_if(mouse_highlight_layers_,
                 base::MatchesUniquePtr(pointer_highlight_layer_ptr));
 
   if (on_mouse_highlight_animation_ended_callback_for_test_)

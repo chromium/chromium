@@ -6,6 +6,7 @@
 
 #include <absl/cleanup/cleanup.h>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -351,7 +352,7 @@ void Desk::OnRootWindowClosing(aura::Window* root) {
   const auto windows = windows_;
   for (aura::Window* window : windows) {
     if (window->GetRootWindow() == root)
-      base::Erase(windows_, window);
+      std::erase(windows_, window);
   }
 
   if (last_active_root_ == root) {
@@ -430,7 +431,7 @@ void Desk::AddWindowToDesk(aura::Window* window) {
 void Desk::RemoveWindowFromDesk(aura::Window* window) {
   DCHECK(base::Contains(windows_, window));
 
-  base::Erase(windows_, window);
+  std::erase(windows_, window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
   // there in the first place. Also don't refresh for visible on all desks
   // windows since they're already refreshed in OnWindowRemoved().

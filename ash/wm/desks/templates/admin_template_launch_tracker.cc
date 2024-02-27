@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 
+#include <vector>
+
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
@@ -493,7 +495,7 @@ void AdminTemplateLaunchTracker::OnObserverCreated(
 
 void AdminTemplateLaunchTracker::OnObserverDone(
     base::CheckedObserver* observer) {
-  base::EraseIf(window_observers_,
+  std::erase_if(window_observers_,
                 [&](const auto& ptr) { return ptr.get() == observer; });
 }
 

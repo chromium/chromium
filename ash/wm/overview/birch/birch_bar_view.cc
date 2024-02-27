@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/birch/birch_bar_view.h"
 
+#include <vector>
+
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -154,7 +156,7 @@ void BirchBarView::AddChip(
 void BirchBarView::RemoveChip(BirchChipButton* chip) {
   CHECK(base::Contains(chips_, chip));
 
-  base::Erase(chips_, chip);
+  std::erase(chips_, chip);
   // Remove the chip from its owner.
   if (primary_row_->Contains(chip)) {
     primary_row_->RemoveChildViewT(chip);

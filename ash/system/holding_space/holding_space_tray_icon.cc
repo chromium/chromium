@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 
+#include <vector>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
@@ -18,7 +20,6 @@
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -373,7 +374,7 @@ void HoldingSpaceTrayIcon::OnShelfConfigUpdated() {
 void HoldingSpaceTrayIcon::OnOldItemAnimatedOut(
     HoldingSpaceTrayIconPreview* preview,
     const base::RepeatingClosure& callback) {
-  base::EraseIf(removed_previews_, base::MatchesUniquePtr(preview));
+  std::erase_if(removed_previews_, base::MatchesUniquePtr(preview));
   callback.Run();
 }
 

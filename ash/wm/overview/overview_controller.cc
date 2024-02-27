@@ -5,6 +5,7 @@
 #include "ash/wm/overview/overview_controller.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -290,7 +291,7 @@ void OverviewController::AddExitAnimationObserver(
 void OverviewController::RemoveAndDestroyExitAnimationObserver(
     DelayedAnimationObserver* animation_observer) {
   const bool previous_empty = delayed_animations_.empty();
-  base::EraseIf(delayed_animations_,
+  std::erase_if(delayed_animations_,
                 base::MatchesUniquePtr(animation_observer));
 
   if (!overview_session_ && !previous_empty && delayed_animations_.empty())
@@ -306,7 +307,7 @@ void OverviewController::AddEnterAnimationObserver(
 void OverviewController::RemoveAndDestroyEnterAnimationObserver(
     DelayedAnimationObserver* animation_observer) {
   const bool previous_empty = start_animations_.empty();
-  base::EraseIf(start_animations_, base::MatchesUniquePtr(animation_observer));
+  std::erase_if(start_animations_, base::MatchesUniquePtr(animation_observer));
 
   if (!previous_empty && start_animations_.empty())
     OnStartingAnimationComplete(/*canceled=*/false);
@@ -353,7 +354,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   auto end = base::ranges::copy_if(windows, hide_windows.begin(),
                                    should_hide_for_overview);
   hide_windows.resize(end - hide_windows.begin());
-  base::EraseIf(windows, window_util::ShouldExcludeForOverview);
+  std::erase_if(windows, window_util::ShouldExcludeForOverview);
   // Overview windows will handle showing their transient related windows, so if
   // a window in |windows| has a transient root also in |windows|, we can remove
   // it as the transient root will handle showing the window.

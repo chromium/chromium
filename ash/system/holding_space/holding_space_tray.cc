@@ -5,6 +5,7 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/ash_element_identifiers.h"
@@ -36,7 +37,6 @@
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
@@ -101,7 +101,7 @@ std::vector<base::FilePath> ExtractUnpinnedFilePaths(
                                            /*fallback_to_filenames=*/true);
 
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  base::EraseIf(unpinned_file_paths, [model](const base::FilePath& file_path) {
+  std::erase_if(unpinned_file_paths, [model](const base::FilePath& file_path) {
     return model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile, file_path);
   });
 

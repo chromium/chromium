@@ -5,6 +5,7 @@
 #include "ash/shelf/window_scale_animation.h"
 
 #include <optional>
+#include <vector>
 
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -194,7 +195,7 @@ void WindowScaleAnimation::DestroyWindowAnimationObserver(
   // `animation_observer` will get deleted on the next line.
   auto* window = animation_observer->window();
 
-  base::EraseIf(window_animation_observers_,
+  std::erase_if(window_animation_observers_,
                 base::MatchesUniquePtr(animation_observer));
 
   if (window_animation_observers_.empty()) {

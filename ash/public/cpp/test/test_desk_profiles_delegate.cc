@@ -4,7 +4,8 @@
 
 #include "ash/public/cpp/test/test_desk_profiles_delegate.h"
 
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "base/ranges/algorithm.h"
 
 namespace ash {
@@ -28,7 +29,7 @@ void TestDeskProfilesDelegate::UpdateTestProfile(LacrosProfileSummary profile) {
 bool TestDeskProfilesDelegate::RemoveTestProfile(uint64_t profile_id) {
   CHECK(profile_id != primary_user_profile_id_);
 
-  if (base::EraseIf(profiles_, [&](const auto& profile) {
+  if (std::erase_if(profiles_, [&](const auto& profile) {
         return profile.profile_id == profile_id;
       })) {
     for (auto& observer : observers_) {

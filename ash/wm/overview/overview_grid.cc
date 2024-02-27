@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/app_types.h"
@@ -1030,7 +1031,7 @@ void OverviewGrid::RemoveDropTarget() {
   // Copy to a local first to avoid a dangling pointer.
   OverviewDropTarget* drop_target_ptr = std::exchange(drop_target_, nullptr);
 
-  size_t erased_count = base::EraseIf(
+  size_t erased_count = std::erase_if(
       item_list_, base::MatchesUniquePtr<OverviewItemBase>(drop_target_ptr));
   CHECK_EQ(1u, erased_count);
 

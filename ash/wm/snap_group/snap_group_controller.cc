@@ -4,6 +4,8 @@
 
 #include "ash/wm/snap_group/snap_group_controller.h"
 
+#include <vector>
+
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -114,7 +116,7 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
     observer.OnSnapGroupRemoved(snap_group);
   }
 
-  base::EraseIf(snap_groups_, base::MatchesUniquePtr(snap_group));
+  std::erase_if(snap_groups_, base::MatchesUniquePtr(snap_group));
 
   return true;
 }

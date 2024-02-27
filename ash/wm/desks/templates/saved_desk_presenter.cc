@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 
+#include <vector>
+
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/desk_template.h"
@@ -25,7 +27,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
@@ -692,7 +693,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
           Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 
       // Get rid of transient windows and all-desks windows.
-      base::EraseIf(windows, [](aura::Window* window) {
+      std::erase_if(windows, [](aura::Window* window) {
         return wm::GetTransientParent(window) != nullptr ||
                desks_util::IsWindowVisibleOnAllWorkspaces(window);
       });

@@ -41,7 +41,6 @@
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
@@ -84,7 +83,7 @@ std::vector<base::FilePath> ExtractUnpinnedFilePaths(
       holding_space_util::ExtractFilePaths(data,
                                            /*fallback_to_filenames=*/false);
 
-  base::EraseIf(unpinned_file_paths, [&](const base::FilePath& file_path) {
+  std::erase_if(unpinned_file_paths, [&](const base::FilePath& file_path) {
     return model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile, file_path);
   });
 

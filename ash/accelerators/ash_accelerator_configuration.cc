@@ -19,7 +19,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -500,7 +499,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
   CHECK(*found_id == action_id);
 
   // Remove accelerator from lookup map.
-  base::Erase(found_accelerators_iter->second, accelerator);
+  std::erase(found_accelerators_iter->second, accelerator);
 
   // Remove accelerator from reverse lookup map.
   accelerator_to_id_.Erase(accelerator);

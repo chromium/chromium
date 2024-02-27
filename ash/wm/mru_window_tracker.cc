@@ -4,6 +4,8 @@
 
 #include "ash/wm/mru_window_tracker.h"
 
+#include <vector>
+
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -301,7 +303,7 @@ void MruWindowTracker::OnWindowAlteredByWindowRestore(aura::Window* window) {
   // If nothing was erased, this is a window not currently observed so we want
   // to observe it as windows created from window restore aren't activated on
   // creation.
-  size_t num_erased = base::Erase(mru_windows_, window);
+  size_t num_erased = std::erase(mru_windows_, window);
   if (num_erased == 0u)
     window->AddObserver(this);
 
@@ -345,7 +347,7 @@ void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
   // It's possible for OnWindowActivated() to be called after
   // OnWindowDestroying(). This means we need to override OnWindowDestroyed()
   // else we may end up with a deleted window in |mru_windows_|.
-  base::Erase(mru_windows_, window);
+  std::erase(mru_windows_, window);
   window->RemoveObserver(this);
 }
 
