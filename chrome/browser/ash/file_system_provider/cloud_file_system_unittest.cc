@@ -48,7 +48,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test {
     std::unique_ptr<ProvidedFileSystemInterface> provided_file_system =
         std::make_unique<FakeProvidedFileSystem>(*file_system_info.get());
     std::unique_ptr<CacheManager> cache_manager =
-        std::make_unique<CacheManager>();
+        std::make_unique<CacheManager>(profile_->GetPath());
     return std::make_unique<CloudFileSystem>(
         std::move(provided_file_system),
         with_content_cache ? cache_manager.get() : nullptr);
