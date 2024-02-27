@@ -9,7 +9,7 @@ if (!window.testRunner) {
 
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
-await setupLCPTest(["lcp_image_id.pb"]);
+await setupLCPTest();
 </script>
 <?php
 // Do not output the HTML below this PHP block until the test is reloaded with
@@ -21,23 +21,23 @@ if ($_SERVER['QUERY_STRING'] != "start")
 <script src="/resources/testharnessreport.js"></script>
 <script>
   promise_test(async t => {
-    var lcp_callback_done = false;
-    let lcp_promise =  new Promise(async (res)=> {
+    var lcp_promise =  new Promise(async (res)=> {
       let lcp_element = await internals.LCPPrediction(document);
-      lcp_callback_done = true;
       assert_equals(lcp_element, "", "LCP prediction should be called as fallback.");
-      assert_true(img_element.complete, "image should be loaded.");
+
+      assert_false(has_lcp_occured, "No LCP should happen.");
       res();
     });
 
-    // Make sure window.onload > image.onload > prediction fallback.
-    await new Promise((res) => {window.onload = res;});
-    assert_false(lcp_callback_done, "LCP fallback should not be called before image load.");
+  var has_lcp_occured = false;
+  const observer = new PerformanceObserver((list) => {
+    has_lcp_occured |= (list.length > 0);
+  });
+  observer.observe({ type: "largest-contentful-paint", buffered: true });
 
-    var img_element = document.createElement("img");
-    img_element.src = "/resources/square.png";
-    document.body.appendChild(img_element);
+    // Make sure window.onload > prediction fallback.
+    await new Promise((res) => {window.onload = res;});
 
     return lcp_promise;
-  }, "Ensure document::RunLCPPredictedCallbacks is called if no LCP before window.onload and when the first LCP occurs after that.")
+  }, "Ensure document::RunLCPPredictedCallbacks is called even no learned LCP element locator and no LCP element at window.onload.");
 </script>

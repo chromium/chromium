@@ -104,8 +104,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   // Callbacks are called when predicted LCP is painted. Never called if
   // prediction is incorrect.
   Vector<LCPCallback> lcp_predicted_callbacks_;
-  bool called_predicted_callbacks_ = false;
-  bool is_lcp_candidate_found_ = false;
+  bool are_predicted_callbacks_called_ = false;
+  bool has_lcp_occurred_ = false;
   bool is_outermost_main_frame_document_loaded_ = false;
 };
 

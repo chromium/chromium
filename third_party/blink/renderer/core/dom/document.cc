@@ -4120,8 +4120,10 @@ bool Document::CheckCompletedInternal() {
 
   // OK, completed. Fire load completion events as needed.
   SetReadyState(kComplete);
-  if (LoadEventStillNeeded())
+  const bool load_event_needed = LoadEventStillNeeded();
+  if (load_event_needed) {
     ImplicitClose();
+  }
 
   DCHECK(fetcher_);
   fetcher_->ScheduleWarnUnusedPreloads();
@@ -4179,8 +4181,10 @@ bool Document::CheckCompletedInternal() {
     }
   }
 
-  if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
-    lcpp->OnOutermostMainFrameDocumentLoad();
+  if (load_event_needed) {
+    if (LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP()) {
+      lcpp->OnOutermostMainFrameDocumentLoad();
+    }
   }
 
   return true;
