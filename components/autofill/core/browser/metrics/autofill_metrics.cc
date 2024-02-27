@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -1185,6 +1186,23 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
       PREDICTION_SOURCE_OVERALL, field.Type().GetStorableType(),
       form_interactions_ukm_logger, form, field, metric_type,
       true /*log_rationalization_metrics*/);
+}
+
+void AutofillMetrics::LogEmailFieldPredictionMetrics(
+    const AutofillField& field) {
+  // If the field has no email prediction, there is no need to record the
+  // metric.
+  if (field.Type().GetStorableType() != EMAIL_ADDRESS || field.value.empty()) {
+    return;
+  }
+
+  EmailPredictionConfusionMatrix prediction =
+      IsValidEmailAddress(field.value)
+          ? EmailPredictionConfusionMatrix::kTruePositive
+          : EmailPredictionConfusionMatrix::kFalsePositive;
+  base::UmaHistogramEnumeration("Autofill.EmailPredictionCorrectness.Precision",
+                                prediction);
+  // TODO(b/324108545): Introduce recall metric.
 }
 
 // static

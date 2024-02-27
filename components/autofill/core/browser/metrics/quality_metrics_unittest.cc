@@ -33,6 +33,8 @@ using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::BucketsInclude;
 
+using EmailPredictionConfusionMatrix =
+    AutofillMetrics::EmailPredictionConfusionMatrix;
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 using UkmFieldTypeValidationType = ukm::builders::Autofill_FieldTypeValidation;
@@ -921,6 +923,56 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
                   "Autofill.LabelInference.InferredLabelSource.AtSubmission2"),
               BucketsAre(Bucket(name_field.label_source, 1),
                          Bucket(country_field.label_source, 1)));
+}
+
+// Tests that precision metric is recorded for email field predictions.
+TEST_F(QualityMetricsTest, EmailPredictionCorrectnessPrecisionMetric) {
+  FormData form = CreateForm(
+      {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email", "email", "buddy@gmail.com",
+                           FormControlType::kInputText)});
+
+  std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                        EMAIL_ADDRESS};
+  autofill_manager().AddSeenForm(form, field_types);
+
+  std::string precision_histogram =
+      "Autofill.EmailPredictionCorrectness.Precision";
+
+  // Check that the metric records true positive.
+  {
+    base::HistogramTester histogram_tester;
+    FillTestProfile(form);
+    SubmitForm(form);
+
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(precision_histogram),
+        BucketsAre(Bucket(EmailPredictionConfusionMatrix::kTruePositive, 1)));
+  }
+
+  // Check that the metric records false positive. (The input value is not an
+  // email).
+  {
+    base::HistogramTester histogram_tester;
+    form.fields[2].value = u"notemailtext";
+    FillTestProfile(form);
+    SubmitForm(form);
+
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(precision_histogram),
+        BucketsAre(Bucket(EmailPredictionConfusionMatrix::kFalsePositive, 1)));
+  }
+  // Check that the metric is not recorded for empty values.
+  {
+    base::HistogramTester histogram_tester;
+    form.fields[2].value = u"";
+    FillTestProfile(form);
+    SubmitForm(form);
+    histogram_tester.ExpectTotalCount(precision_histogram, 0);
+  }
 }
 
 }  // namespace autofill_metrics

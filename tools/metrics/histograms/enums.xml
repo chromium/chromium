@@ -5437,6 +5437,21 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Error"/>
 </enum>
 
+<enum name="EmailPredictionConfusionMatrix">
+  <int value="0"
+      label="TruePositive: overall_type=email, submitted text matches email
+             format"/>
+  <int value="1"
+      label="FalsePositive: overall_type=email, submitted text is non-empty
+             and does not match email"/>
+  <int value="2"
+      label="TrueNegative: overall_type=not email, submitted text is
+             non-empty and does not match email"/>
+  <int value="3"
+      label="FalseNegative: overall_type=not email, submitted text matches
+             email"/>
+</enum>
+
 <enum name="EmeApiType">
   <int value="0" label="Not expected"/>
   <int value="1" label="MediaKeySystemAccess.createMediaKeys()"/>

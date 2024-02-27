@@ -302,6 +302,19 @@ class AutofillMetrics {
     NUM_FIELD_TYPE_QUALITY_METRICS
   };
 
+  // Defines email prediction confusion matrix enums used by UMA records.
+  // Entries should not be renumbered and numeric values should never be reused.
+  // Please update "EmailPredictionConfusionMatrix" in
+  // `tools/metrics/histograms/enums.xml` when new enums are added.
+  enum class EmailPredictionConfusionMatrix {
+    kTruePositive = 0,
+    kFalsePositive = 1,
+    kTrueNegative = 2,
+    kFalseNegative = 3,
+    // Required by UMA histogram macro.
+    kMaxValue = kFalseNegative
+  };
+
   // Metrics measuring how well rationalization has performed given user's
   // actual input.
   enum RationalizationQualityMetric {
@@ -935,6 +948,7 @@ class AutofillMetrics {
       const FormStructure& form,
       const AutofillField& field,
       QualityMetricType metric_type);
+  static void LogEmailFieldPredictionMetrics(const AutofillField& field);
 
   static void LogServerQueryMetric(ServerQueryMetric metric);
 
