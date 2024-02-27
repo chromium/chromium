@@ -41,13 +41,17 @@ public class TabResumptionTileContainerView extends LinearLayout {
         removeAllViews();
     }
 
-    /** Adds all new {@link TabResumptionTileView} instances, after removing existing ones. */
-    public void renderAllTiles(
+    /**
+     * Adds all new {@link TabResumptionTileView} instances, after removing existing ones and
+     * returns the text of all instances.
+     */
+    public String renderAllTiles(
             SuggestionBundle bundle,
             UrlImageProvider urlImageProvider,
             SuggestionClickCallback suggestionClickCallback) {
         removeAllViews();
 
+        String allTilesTexts = "";
         boolean isSingle = bundle.entries.size() == 1;
         for (SuggestionEntry entry : bundle.entries) {
             // Add divider if some tile already exists.
@@ -68,15 +72,17 @@ public class TabResumptionTileContainerView extends LinearLayout {
             TabResumptionTileView tileView =
                     (TabResumptionTileView)
                             LayoutInflater.from(getContext()).inflate(layoutId, this, false);
-            loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView);
+            allTilesTexts +=
+                    loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView) + ". ";
             loadTileUrlImage(entry, urlImageProvider, tileView);
             tileView.bindSuggestionClickCallback(suggestionClickCallback, entry.url);
             addView(tileView);
         }
+        return allTilesTexts;
     }
 
-    /** Renders the texts of a {@link TabResumptionTileView}. */
-    private void loadTileTexts(
+    /** Renders and returns the texts of a {@link TabResumptionTileView}. */
+    private String loadTileTexts(
             SuggestionEntry entry,
             long referenceTimeMs,
             boolean isSingle,
@@ -94,6 +100,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                             recencyString,
                             entry.url.getHost());
             tileView.setSuggestionTextsSingle(preInfoText, entry.title, postInfoText);
+            return preInfoText + ", " + entry.title + ", " + postInfoText;
         } else {
             String infoText =
                     res.getString(
@@ -101,6 +108,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                             recencyString,
                             entry.sourceName);
             tileView.setSuggestionTextsMulti(entry.title, infoText);
+            return entry.title + ", " + infoText;
         }
     }
 
