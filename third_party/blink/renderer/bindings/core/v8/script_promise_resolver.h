@@ -67,7 +67,10 @@ class CORE_EXPORT ScriptPromiseResolver
   // Anything that can be passed to ToV8Traits can be passed to this function.
   template <typename IDLType, typename BlinkType>
   void Reject(BlinkType value) {
-    ResolveOrReject<IDLType, BlinkType>(value, kRejecting);
+    if (!PrepareToResolveOrReject<kRejecting>()) {
+      return;
+    }
+    ResolveOrReject<IDLType, BlinkType>(value);
   }
 
   // These are shorthand helpers for rejecting the promise with a common type.
@@ -81,7 +84,10 @@ class CORE_EXPORT ScriptPromiseResolver
   // Anything that can be passed to toV8 can be passed to this function.
   template <typename T>
   void Resolve(T value) {
-    ResolveOrReject(value, kResolving);
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    ResolveOrReject(value);
   }
 
   void Resolve() { Resolve(ToV8UndefinedGenerator()); }
@@ -208,16 +214,8 @@ class CORE_EXPORT ScriptPromiseResolver
   };
 
   template <typename IDLType, typename BlinkType>
-  void ResolveOrReject(BlinkType value, ResolutionState new_state) {
-    if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
-        !GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-      return;
-    }
-    DCHECK(new_state == kResolving || new_state == kRejecting);
-    state_ = new_state;
-
+  void ResolveOrReject(BlinkType value) {
     ScriptState::Scope scope(script_state_.Get());
-
     // Calling ToV8 in a ScriptForbiddenScope will trigger a CHECK and
     // cause a crash. ToV8 just invokes a constructor for wrapper creation,
     // which is safe (no author script can be run). Adding AllowUserAgentScript
@@ -232,35 +230,13 @@ class CORE_EXPORT ScriptPromiseResolver
           v8::MicrotasksScope::kDoNotRunMicrotasks);
       value_.Reset(isolate, ToV8Traits<IDLType>::ToV8(script_state_, value));
     }
-
-    if (GetExecutionContext()->IsContextPaused()) {
-      ScheduleResolveOrReject();
-      return;
-    }
-    // TODO(esprehn): This is a hack, instead we should CHECK that
-    // script is allowed, and v8 should be running the entry hooks below and
-    // crashing if script is forbidden. We should then audit all users of
-    // ScriptPromiseResolver and the related specs and switch to an async
-    // resolve.
-    // See: http://crbug.com/663476
-    if (ScriptForbiddenScope::IsScriptForbidden()) {
-      ScheduleResolveOrReject();
-      return;
-    }
-    ResolveOrRejectImmediately();
+    NotifyResolveOrReject();
   }
 
  private:
   template <typename T>
-  void ResolveOrReject(T value, ResolutionState new_state) {
-    if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
-        !GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
-      return;
-    DCHECK(new_state == kResolving || new_state == kRejecting);
-    state_ = new_state;
-
+  void ResolveOrReject(T value) {
     ScriptState::Scope scope(script_state_.Get());
-
     // Calling ToV8 in a ScriptForbiddenScope will trigger a CHECK and
     // cause a crash. ToV8 just invokes a constructor for wrapper creation,
     // which is safe (no author script can be run). Adding AllowUserAgentScript
@@ -276,24 +252,20 @@ class CORE_EXPORT ScriptPromiseResolver
       value_.Reset(isolate, ToV8(value, script_state_->GetContext()->Global(),
                                  script_state_->GetIsolate()));
     }
-
-    if (GetExecutionContext()->IsContextPaused()) {
-      ScheduleResolveOrReject();
-      return;
-    }
-    // TODO(esprehn): This is a hack, instead we should CHECK that
-    // script is allowed, and v8 should be running the entry hooks below and
-    // crashing if script is forbidden. We should then audit all users of
-    // ScriptPromiseResolver and the related specs and switch to an async
-    // resolve.
-    // See: http://crbug.com/663476
-    if (ScriptForbiddenScope::IsScriptForbidden()) {
-      ScheduleResolveOrReject();
-      return;
-    }
-    ResolveOrRejectImmediately();
+    NotifyResolveOrReject();
   }
 
+  template <ResolutionState new_state>
+  bool PrepareToResolveOrReject() {
+    if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
+        !GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+      return false;
+    }
+    static_assert(new_state == kResolving || new_state == kRejecting);
+    state_ = new_state;
+    return true;
+  }
+  void NotifyResolveOrReject();
   void ResolveOrRejectImmediately();
   void ScheduleResolveOrReject();
   void ResolveOrRejectDeferred();
@@ -388,7 +360,10 @@ class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
   // this function.
   template <typename BlinkType>
   void Resolve(BlinkType value) {
-    ResolveOrReject<IDLResolvedType, BlinkType>(value, kResolving);
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    ResolveOrReject<IDLResolvedType, BlinkType>(value);
   }
 
   // This Resolve() method allows a Promise expecting to be resolved with a
@@ -397,8 +372,11 @@ class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
   template <typename BlinkType>
     requires std::derived_from<IDLResolvedType, bindings::UnionBase>
   void Resolve(BlinkType value) {
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
     ResolveOrReject<IDLResolvedType, IDLResolvedType*>(
-        MakeGarbageCollected<IDLResolvedType>(value), kResolving);
+        MakeGarbageCollected<IDLResolvedType>(value));
   }
 
   void Resolve() { ScriptPromiseResolver::Resolve(); }

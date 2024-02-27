@@ -165,6 +165,24 @@ void ScriptPromiseResolver::KeepAliveWhilePending() {
   keep_alive_ = this;
 }
 
+void ScriptPromiseResolver::NotifyResolveOrReject() {
+  if (GetExecutionContext()->IsContextPaused()) {
+    ScheduleResolveOrReject();
+    return;
+  }
+  // TODO(esprehn): This is a hack, instead we should CHECK that
+  // script is allowed, and v8 should be running the entry hooks below and
+  // crashing if script is forbidden. We should then audit all users of
+  // ScriptPromiseResolver and the related specs and switch to an async
+  // resolve.
+  // See: http://crbug.com/663476
+  if (ScriptForbiddenScope::IsScriptForbidden()) {
+    ScheduleResolveOrReject();
+    return;
+  }
+  ResolveOrRejectImmediately();
+}
+
 void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
