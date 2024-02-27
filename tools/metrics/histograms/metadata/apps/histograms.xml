@@ -439,19 +439,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.AppLaunched{TabletOrClamshell}"
-    enum="AppListLaunchedFrom" expires_after="2023-06-19">
-  <owner>gzadina@google.com</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    The number of apps launched from different parts of the launcher (apps grid,
-    search results UI, recent apps), and the shelf. Values are incremented each
-    time the user launches an app. Each bucket represents where in the launcher
-    or shelf the app was launched from. Recorded for {TabletOrClamshell}.
-  </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
-</histogram>
-
 <histogram name="Apps.AppList.AppListSortDiscoveryDurationAfterActivation"
     units="ms" expires_after="2023-06-25">
   <owner>andrewxu@chromium.org</owner>
@@ -1410,46 +1397,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
-<histogram name="Apps.AppList.UserEvent.LaunchIndex{LauncherUISurface}"
-    units="index" expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Emitted on a usage of the launcher, and records overall impressions,
-    launches, and abandons for a launcher UI view. The bucket proportion is not
-    meaningful for this metric, because impressions are a superset of launches
-    and abandons. Instead, the ratio between buckets can be used to calculate
-    accurate overall CTR. {LauncherUISurface}
-
-    This metric stopped collecting data in November 2021, but has not yet been
-    marked obsolete because the historical data is still being used for
-    analysis.
-  </summary>
-  <token key="LauncherUISurface" variants="LauncherUISurface">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Apps.AppList.UserEvent.Overall{LauncherUISurface}"
-    enum="AppListUserEvent" expires_after="2023-07-31">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
-  <summary>
-    Emitted on a usage of the launcher, and records overall impressions,
-    launches, and abandons for a launcher UI view. The bucket proportion is not
-    meaningful for this metric, because impressions are a superset of launches
-    and abandons. Instead, the ratio between buckets can be used to calculate
-    accurate overall CTR. {LauncherUISurface}
-
-    This metric stopped collecting data in November 2021, but has not yet been
-    marked obsolete because the historical data is still being used for
-    analysis.
-  </summary>
-  <token key="LauncherUISurface" variants="LauncherUISurface">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
     expires_after="2023-07-31">
   <owner>tby@chromium.org</owner>
@@ -1923,24 +1870,6 @@ chromium-metrics-reviews@google.com.
     of times the app list is shown to the user; for that consult the user action
     AppList_WindowFocused.
   </summary>
-</histogram>
-
-<histogram name="Apps.AppListUsageByNewUsers{TabletOrClamshell}"
-    enum="AppListUsageStateByNewUsers" expires_after="2023-06-19">
-  <owner>andrewxu@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Records the launcher usage state during the session started by a new user
-    (i.e. the session completing the OOBE flow). This metric is recorded in the
-    following scenarios: (1) the launcher shows and the current user is new (2)
-    the launcher has never shown before launcher is destructed. Destruction can
-    be triggered by loging out accounts, shuting down the device or system
-    crashes and meanwhile the current user is new (3) the launcher has never
-    shown when the active user has changed and the previous active user was a
-    new user. Split depending on whether the device was in tablet or clamshell
-    mode when the metric was recorded.
-  </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.AppsCount.{AppType}" units="Apps"

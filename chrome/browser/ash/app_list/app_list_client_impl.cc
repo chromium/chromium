@@ -155,24 +155,6 @@ AppListClientImpl::~AppListClientImpl() {
   auto* user_manager = user_manager::UserManager::Get();
   user_manager->RemoveSessionStateObserver(this);
 
-  // We assume that the current user is new if `state_for_new_user_` has value.
-  if (state_for_new_user_.has_value() &&
-      !state_for_new_user_->showing_recorded) {
-    DCHECK(user_manager->IsCurrentUserNew());
-
-    // Prefer the function to the macro because the usage data is recorded no
-    // more than once per second.
-    if (display::Screen::GetScreen()->InTabletMode()) {
-      base::UmaHistogramEnumeration(
-          "Apps.AppListUsageByNewUsers.TabletMode",
-          AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
-    } else {
-      base::UmaHistogramEnumeration(
-          "Apps.AppListUsageByNewUsers.ClamshellMode",
-          AppListUsageStateByNewUsers::kNotUsedBeforeDestruction);
-    }
-  }
-
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
   DCHECK_EQ(this, g_app_list_client_instance);
@@ -413,24 +395,6 @@ void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
     RecordViewShown();
   } else if (current_model_updater_) {
     current_model_updater_->OnAppListHidden();
-
-    // Record whether user took action first time they opened the launcher.
-    // Note that this is recorded only on first user session (otherwise
-    // `state_for_new_user_` will not be set).
-    if (state_for_new_user_ && state_for_new_user_->showing_recorded &&
-        !state_for_new_user_->first_open_success_recorded) {
-      state_for_new_user_->first_open_success_recorded = true;
-
-      if (state_for_new_user_->shown_in_tablet_mode) {
-        base::UmaHistogramBoolean(
-            "Apps.AppList.SuccessfulFirstUsageByNewUsers.TabletMode",
-            state_for_new_user_->action_recorded);
-      } else {
-        base::UmaHistogramBoolean(
-            "Apps.AppList.SuccessfulFirstUsageByNewUsers.ClamshellMode",
-            state_for_new_user_->action_recorded);
-      }
-    }
     // If the user started search, record no action if a result open event has
     // not been yet recorded.
     if (state_for_new_user_ && state_for_new_user_->started_search &&
@@ -465,19 +429,6 @@ void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
     // be both new. It should not happen in the real world.
     state_for_new_user_ = StateForNewUser();
   } else if (state_for_new_user_) {
-    if (!state_for_new_user_->showing_recorded) {
-      // We assume that the previous user before switching was new if
-      // `state_for_new_user_` is not null.
-      if (display::Screen::GetScreen()->InTabletMode()) {
-        base::UmaHistogramEnumeration(
-            "Apps.AppListUsageByNewUsers.TabletMode",
-            AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
-      } else {
-        base::UmaHistogramEnumeration(
-            "Apps.AppListUsageByNewUsers.ClamshellMode",
-            AppListUsageStateByNewUsers::kNotUsedBeforeSwitchingAccounts);
-      }
-    }
     state_for_new_user_.reset();
   }
 
@@ -811,9 +762,6 @@ void AppListClientImpl::RecordViewShown() {
           "TabletMode",
           /*sample=*/opening_duration, kTimeMetricsMin, kTimeMetricsMax,
           kTimeMetricsBucketCount);
-
-      base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers.TabletMode",
-                                    AppListUsageStateByNewUsers::kUsed);
     } else {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           /*name=*/
@@ -822,9 +770,6 @@ void AppListClientImpl::RecordViewShown() {
           "ClamshellMode",
           /*sample=*/opening_duration, kTimeMetricsMin, kTimeMetricsMax,
           kTimeMetricsBucketCount);
-
-      base::UmaHistogramEnumeration("Apps.AppListUsageByNewUsers.ClamshellMode",
-                                    AppListUsageStateByNewUsers::kUsed);
     }
   }
 }

@@ -169,10 +169,6 @@ class AppListClientImpl
     // Indicates whether any launcher action has been recorded.
     bool action_recorded = false;
 
-    // Indicates whether the metric to track whether the user took action when
-    // the launcher was first shown was recorded.
-    bool first_open_success_recorded = false;
-
     // Whether the user entered a query into the search box.
     bool started_search = false;
     // Whether the result that the user launched during their first search

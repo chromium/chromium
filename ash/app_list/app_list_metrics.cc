@@ -52,12 +52,6 @@ constexpr char kSearchResultRemovalDialogDecisionHistogram[] =
 // mode AppList) and the Shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
 
-// UMA histograms that log app launches within the app list, and the shelf.
-// Split depending on whether tablet mode is active or not.
-constexpr char kAppLaunchInTablet[] = "Apps.AppList.AppLaunched.TabletMode";
-constexpr char kAppLaunchInClamshell[] =
-    "Apps.AppList.AppLaunched.ClamshellMode";
-
 // UMA histograms that log launcher workflow actions (launching an app, search
 // result, or a continue section task) in the app list UI. Split depending on
 // whether tablet mode is active or not. Note that unlike `kAppListAppLaunched`
@@ -275,13 +269,6 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                               bool is_tablet_mode,
                               bool app_list_shown) {
   UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunched, launched_from);
-
-  if (is_tablet_mode) {
-    base::UmaHistogramEnumeration(kAppLaunchInTablet, launched_from);
-
-  } else {
-    base::UmaHistogramEnumeration(kAppLaunchInClamshell, launched_from);
-  }
 
   if (!is_tablet_mode) {
     if (!app_list_shown) {
