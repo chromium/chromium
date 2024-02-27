@@ -22,6 +22,9 @@ class Widget;
 
 namespace ash {
 
+// Returns the text contents of `clipboard`.
+ASH_EXPORT std::u16string ReadTextFromClipboard(ui::Clipboard* clipboard);
+
 // Returns the HTML contents of `clipboard`.
 ASH_EXPORT std::u16string ReadHtmlFromClipboard(ui::Clipboard* clipboard);
 

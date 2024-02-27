@@ -8,17 +8,12 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
-#include "ui/gfx/geometry/size.h"
-
-class GURL;
+#include "ash/picker/picker_rich_media.h"
 
 namespace ash {
 
-// Copies a GIF into the clipboard.
-// TODO: b/322928125 - Take a PickerInsertMediaRequest::MediaData instead.
-ASH_EXPORT void CopyGifMediaToClipboard(const GURL& url,
-                                        std::u16string_view content_description,
-                                        gfx::Size size);
+// Copies rich media into the clipboard.
+ASH_EXPORT void CopyMediaToClipboard(const PickerRichMedia& media);
 
 }  // namespace ash
 

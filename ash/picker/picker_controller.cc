@@ -143,14 +143,6 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
       result.data());
 }
 
-void MaybeCopyMediaToClipboard(const PickerSearchResult& result) {
-  if (const auto* gif =
-          std::get_if<PickerSearchResult::GifData>(&result.data())) {
-    CopyGifMediaToClipboard(gif->full_url, gif->content_description,
-                            gif->full_dimensions);
-  }
-}
-
 }  // namespace
 
 PickerController::PickerController() {
@@ -273,7 +265,7 @@ void PickerController::InsertResultOnNextFocus(
   // This cancels the previous request if there was one.
   insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
       input_method, *media_to_insert, kInsertMediaTimeout,
-      base::BindOnce(&MaybeCopyMediaToClipboard, result));
+      base::BindOnce(&CopyMediaToClipboard, *media_to_insert));
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {

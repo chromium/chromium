@@ -14,6 +14,13 @@
 
 namespace ash {
 
+std::u16string ReadTextFromClipboard(ui::Clipboard* clipboard) {
+  std::u16string data;
+
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &data);
+  return data;
+}
+
 std::u16string ReadHtmlFromClipboard(ui::Clipboard* clipboard) {
   std::u16string data;
   std::string url;
