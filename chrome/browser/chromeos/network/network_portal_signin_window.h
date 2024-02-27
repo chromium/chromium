@@ -12,7 +12,6 @@
 #include "url/gurl.h"
 
 class Browser;
-class NetworkPortalSigninWindowLacrosBrowserTest;
 
 namespace chromeos {
 
@@ -35,7 +34,6 @@ class NetworkPortalSigninWindow {
 
  protected:
   friend class base::NoDestructor<NetworkPortalSigninWindow>;
-  friend class NetworkPortalSigninWindowLacrosBrowserTest;
   NetworkPortalSigninWindow();
 
  private:

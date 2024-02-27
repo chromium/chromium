@@ -23,8 +23,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/network_change.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+// TODO(b/261727502): Add crosapi call for portal detection.
 #endif
 
 namespace chromeos {
@@ -122,9 +121,7 @@ class NetworkPortalSigninWindow::WindowObserver
     ash::network_portal_detector::GetInstance()
         ->RequestCaptivePortalDetection();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::NetworkChange>()
-        ->RequestPortalDetection();
+    // TODO(b/261727502): Add crosapi call for portal detection.
 #endif
   }
 
