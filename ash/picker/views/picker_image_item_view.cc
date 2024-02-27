@@ -8,17 +8,15 @@
 #include <utility>
 
 #include "ash/picker/views/picker_item_view.h"
-#include "ash/style/style_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 namespace {
 
-constexpr auto kPickerImageItemCornerRadius = gfx::RoundedCornersF(8);
+constexpr int kPickerImageItemCornerRadius = 8;
 
 }  // namespace
 
@@ -27,12 +25,10 @@ PickerImageItemView::PickerImageItemView(
     std::unique_ptr<views::ImageView> image)
     : PickerItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
+  SetCornerRadius(kPickerImageItemCornerRadius);
 
   image_view_ = AddChildView(std::move(image));
   image_view_->SetCanProcessEventsWithinSubtree(false);
-
-  StyleUtil::InstallRoundedCornerHighlightPathGenerator(
-      this, kPickerImageItemCornerRadius);
 
   // TODO: b/316936418 - Get accessible name for image contents.
   SetAccessibleName(u"image contents");
