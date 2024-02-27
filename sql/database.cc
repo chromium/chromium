@@ -411,6 +411,12 @@ void Database::CloseInternal(bool forced) {
     DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
         << "sqlite3_close() failed in an unexpected way: "
         << sqlite3_errmsg(raw_db);
+
+    // Closing a SQLite database connection implicitly rolls back transactions.
+    // (See https://www.sqlite.org/c3ref/close.html for details.) Callers need
+    // not call `RollbackAllTransactions()`, but we still must account for the
+    // implicit rollback in our internal bookkeeping.
+    transaction_nesting_ = 0;
   }
 }
 
@@ -429,13 +435,6 @@ void Database::Close() {
   }
 
   CloseInternal(false);
-
-  // Closing a SQLite database connection implicitly rolls back transactions.
-  // (See https://www.sqlite.org/c3ref/close.html for details.) Thus, we can
-  // omit the call to `RollbackAllTransactions()`, but we still must account for
-  // the implicit rollback in our internal bookkeeping.
-  CHECK_GE(transaction_nesting_, 0);
-  transaction_nesting_ = 0;
 }
 
 void Database::Preload() {
@@ -1134,7 +1133,6 @@ void Database::Poison() {
     return;
   }
 
-  RollbackAllTransactions();
   CloseInternal(true);
 
   // Mark the database so that future API calls fail appropriately,
