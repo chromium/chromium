@@ -615,6 +615,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe"
+    enum="Boolean" expires_after="2024-07-07">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Records whether the origin was already in the provisionally unsubscribed
+    state when a tap on the `PRE_UNSUBSCRIBE` action button was processed. This
+    can happen in case the native startup takes a long time and the user hits
+    the button twice while waiting.
+  </summary>
+</histogram>
+
+<histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
     units="notifications" expires_after="2024-07-07">
   <owner>engedy@chromium.org</owner>

@@ -564,6 +564,16 @@ public class NotificationUmaTracker {
     }
 
     /**
+     * Records whether the origin was already in the provisionally unsubscribed state when
+     * processing a tap on the `PRE_UNSUBSCRIBE` action button.
+     */
+    public void recordIsDuplicatePreUnsubscribe(boolean isDuplicate) {
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe",
+                isDuplicate);
+    }
+
+    /**
      * Records a sample to indicate that the job to handle a notification intent has reached a given
      * stage.
      *

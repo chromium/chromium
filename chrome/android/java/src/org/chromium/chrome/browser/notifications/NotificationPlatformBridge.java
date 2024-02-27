@@ -1245,6 +1245,17 @@ public class NotificationPlatformBridge {
      */
     private void onNotificationPreUnsubcribe(
             NotificationIdentifyingAttributes identifyingAttributes) {
+        // The user might tap on the PRE_UNSUBSCRIBE action multiple times in case we need to do a
+        // native startup and it takes long. Record how often this happens and ignore duplicate
+        // unsubscribe actions.
+        boolean duplicatePreUnsubscribe =
+                mOriginsWithProvisionallyRevokedPermissions.contains(identifyingAttributes.origin);
+        NotificationUmaTracker.getInstance()
+                .recordIsDuplicatePreUnsubscribe(duplicatePreUnsubscribe);
+        if (duplicatePreUnsubscribe) {
+            return;
+        }
+
         // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
         NotificationSuspender suspender =
                 new NotificationSuspender(ProfileManager.getLastUsedRegularProfile());
