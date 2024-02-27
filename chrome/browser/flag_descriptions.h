@@ -1732,9 +1732,6 @@ extern const char kPrivacySandboxInternalsDescription[];
 extern const char kPrivacySandboxProactiveTopicsBlockingName[];
 extern const char kPrivacySandboxProactiveTopicsBlockingDescription[];
 
-extern const char kPrivateAggregationDeveloperModeName[];
-extern const char kPrivateAggregationDeveloperModeDescription[];
-
 extern const char kProtectedAudiencesConsentedDebugTokenName[];
 extern const char kProtectedAudiencesConsentedDebugTokenDescription[];
 

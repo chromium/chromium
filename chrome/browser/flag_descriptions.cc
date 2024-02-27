@@ -2992,13 +2992,6 @@ const char kPrivacySandboxProactiveTopicsBlockingName[] =
 const char kPrivacySandboxProactiveTopicsBlockingDescription[] =
     "Enables Privacy Sandbox Proactive Topics Blocking";
 
-const char kPrivateAggregationDeveloperModeName[] =
-    "Private Aggregation developer mode";
-const char kPrivateAggregationDeveloperModeDescription[] =
-    "Enables the developer mode for the Private Aggregation API. This removes "
-    "all reporting delays. Only works if the Private Aggregation API is "
-    "already enabled.";
-
 const char kProtectedAudiencesConsentedDebugTokenName[] =
     "Protected Audiences Consented Debug Token";
 const char kProtectedAudiencesConsentedDebugTokenDescription[] =

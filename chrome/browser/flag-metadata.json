@@ -6723,13 +6723,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "private-aggregation-developer-mode",
-    "owners": [
-      "//content/browser/private_aggregation/OWNERS"
-    ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "private-network-access-ignore-navigation-errors",
     "owners": [ "phao@chromium.org", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 130

@@ -8212,11 +8212,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAttributionReportingDebugModeDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kAttributionReportingDebugMode)},
 
-    {"private-aggregation-developer-mode",
-     flag_descriptions::kPrivateAggregationDeveloperModeName,
-     flag_descriptions::kPrivateAggregationDeveloperModeDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kPrivateAggregationDeveloperMode)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"productivity-launcher", flag_descriptions::kProductivityLauncherName,
      flag_descriptions::kProductivityLauncherDescription, kOsCrOS,
