@@ -7,6 +7,7 @@ module storage.mojom;
 import "components/services/storage/public/mojom/service_worker_database.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
@@ -122,13 +123,13 @@ interface ServiceWorkerResourceMetadataWriter {
 };
 
 // Represents an entry of user data which is stored with a service worker
-// registration. An entry of user data is an arbitrary key-vaule pair. The
+// registration. An entry of user data is an arbitrary key-value pair. The
 // lifetime of user data is tied up with the registration.
 // It will be deleted when the corresponding registration is deleted.
 struct ServiceWorkerUserData {
   int64 registration_id;
   string key;
-  string value;
+  mojo_base.mojom.ByteString value;
 };
 
 // Controls the state of service worker storage within a partition. This is a
@@ -284,7 +285,8 @@ interface ServiceWorkerStorageControl {
   // Succeeds only when all keys are found. On success, the size and the order
   // of |values| are the same as |keys|.
   GetUserData(int64 registration_id, array<string> keys) =>
-      (ServiceWorkerDatabaseStatus status, array<string> values);
+      (ServiceWorkerDatabaseStatus status,
+       array<mojo_base.mojom.ByteString> values);
   // Stores `user_data` on persistent storage.
   StoreUserData(int64 registration_id,
                 blink.mojom.StorageKey key,
@@ -297,11 +299,13 @@ interface ServiceWorkerStorageControl {
   // Gets user data values associated with the given |registration_id|
   // filtered by |key_prefix|.
   GetUserDataByKeyPrefix(int64 registration_id, string key_prefix) =>
-      (ServiceWorkerDatabaseStatus status, array<string> values);
+      (ServiceWorkerDatabaseStatus status,
+       array<mojo_base.mojom.ByteString> values);
   // Gets user data associated with the given |registration_id| filtered by
   // |key_prefix|. Returns user data as key-value pairs.
   GetUserKeysAndDataByKeyPrefix(int64 registration_id, string key_prefix) =>
-      (ServiceWorkerDatabaseStatus status, map<string, string> user_data);
+      (ServiceWorkerDatabaseStatus status,
+       map<string, mojo_base.mojom.ByteString> user_data);
   // Clears user data associated with the given |registration_id| filtered by
   // |key_prefix|.
   ClearUserDataByKeyPrefixes(int64 registratation_id,
