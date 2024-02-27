@@ -9530,29 +9530,6 @@
             ]
         }
     ],
-    "ImageServiceObserveSyncDownloadStatus": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ImageServiceObserveSyncDownloadStatus"
-                    ],
-                    "disable_features": [
-                        "SyncPollImmediatelyOnEveryStartup2"
-                    ]
-                }
-            ]
-        }
-    ],
     "ImprovedDownloadPageWarnings": [
         {
             "platforms": [
