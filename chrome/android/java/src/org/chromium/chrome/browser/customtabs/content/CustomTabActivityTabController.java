@@ -220,7 +220,9 @@ public class CustomTabActivityTabController implements InflationObserver {
      */
     public boolean dispatchBeforeUnloadIfNeeded() {
         Tab currentTab = mTabProvider.getTab();
-        if (currentTab.getWebContents().needToFireBeforeUnloadOrUnloadEvents()) {
+        assert currentTab != null;
+        if (currentTab.getWebContents() != null
+                && currentTab.getWebContents().needToFireBeforeUnloadOrUnloadEvents()) {
             currentTab.getWebContents().dispatchBeforeUnload(false);
             return true;
         }
