@@ -108,9 +108,12 @@ bool WvrApi::SyncState(bool is_frame_submmitted,
     externalRect.height = 1.0f;
   }
 
+  browser_state_.dropFame = !is_frame_submmitted;
+  uint64_t oldDroppedFrameCount = system_state_.displayState.droppedFrameCount;
   PushState(true);
-  PullState([this]() {
-    return (system_state_.displayState.lastSubmittedFrameId == sync_frame_index_) ||
+  PullState([this, oldDroppedFrameCount]() {
+    return (system_state_.displayState.lastSubmittedFrameId == sync_frame_index_ &&
+           (!browser_state_.dropFame || system_state_.displayState.droppedFrameCount != oldDroppedFrameCount)) ||
            system_state_.displayState.suppressFrames ||
            !system_state_.displayState.isConnected;
   });
