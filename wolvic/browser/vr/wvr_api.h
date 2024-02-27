@@ -25,7 +25,7 @@ class WvrApi {
   void StartWebXR();
   void ExitWebXR();
   bool PresentingGenerationChanged();
-  bool SyncState(uint64_t frame_index,
+  bool SyncState(bool is_frame_submmitted,
                  int32_t texture_handle,
                  int32_t width,
                  int32_t height);
@@ -43,6 +43,7 @@ class WvrApi {
   raw_ptr<mozilla::gfx::VRExternalShmem> shmem_;
 
   uint32_t presenting_generation_;
+  uint64_t sync_frame_index_ = 0;
 };
 
 }  // namespace wolvic

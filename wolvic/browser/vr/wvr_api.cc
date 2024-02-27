@@ -83,12 +83,16 @@ bool WvrApi::PresentingGenerationChanged() {
          system_state_.displayState.presentingGeneration;
 }
 
-bool WvrApi::SyncState(uint64_t frame_index,
+bool WvrApi::SyncState(bool is_frame_submmitted,
                        int32_t texture_handle,
                        int32_t width,
                        int32_t height) {
+  if (is_frame_submmitted) {
+    ++sync_frame_index_;
+  }
+
   auto& layer = browser_state_.layerState[0].layer_stereo_immersive;
-  layer.frameId = frame_index;
+  layer.frameId = sync_frame_index_;
   layer.textureSize.width = width;
   layer.textureSize.height = height;
   layer.textureHandle = texture_handle;
@@ -105,8 +109,8 @@ bool WvrApi::SyncState(uint64_t frame_index,
   }
 
   PushState(true);
-  PullState([this, frame_index]() {
-    return (system_state_.displayState.lastSubmittedFrameId == frame_index) ||
+  PullState([this]() {
+    return (system_state_.displayState.lastSubmittedFrameId == sync_frame_index_) ||
            system_state_.displayState.suppressFrames ||
            !system_state_.displayState.isConnected;
   });
