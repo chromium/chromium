@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_MANAGER_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_MANAGER_H_
 
+#include <set>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
