@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -917,16 +918,16 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabDrag) {
 
   // Detach.
   int src_index = browser2->tab_strip_model()->GetIndexOfWebContents(b2_tab3);
-  auto detached =
-      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(src_index);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser2->tab_strip_model()->DetachTabAtForInsertion(src_index);
 
   // Target browser window goes into foreground right before drop.
   browser1->window()->Activate();
 
   // Attach.
   int dst_index = browser1->tab_strip_model()->count();
-  browser1->tab_strip_model()->InsertWebContentsAt(
-      dst_index, std::move(detached), AddTabTypes::ADD_ACTIVE);
+  browser1->tab_strip_model()->InsertDetachedTabAt(
+      dst_index, std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
   recorder.Verify({
       // background tab in the dragged-from browser gets activated when the
       // active tab is detached

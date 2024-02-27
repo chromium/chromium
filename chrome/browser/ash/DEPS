@@ -444,6 +444,7 @@ include_rules = [
   "+chrome/browser/ui/startup/startup_browser_creator.h",
   "+chrome/browser/ui/startup/startup_tab.h",
   "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+  "+chrome/browser/ui/tabs/tab_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   "+chrome/browser/ui/tabs/tab_ukm_test_helper.h",

@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -1825,10 +1826,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                                 /*source_callback=*/base::DoNothing());
 
   // Move restricted tab from second window to shared first window.
-  std::unique_ptr<content::WebContents> moved_web_contents =
-      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  browser1->tab_strip_model()->InsertWebContentsAt(
-      0, std::move(moved_web_contents), AddTabTypes::ADD_NONE);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser2->tab_strip_model()->DetachTabAtForInsertion(0);
+  browser1->tab_strip_model()->InsertDetachedTabAt(0, std::move(detached_tab),
+                                                   AddTabTypes::ADD_NONE);
   browser1->tab_strip_model()->ActivateTabAt(0);
 
   // Cleanup and check reporting.
