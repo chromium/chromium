@@ -925,7 +925,9 @@ void DIPSWebContentsObserver::CreateAllRedirectHeuristicGrants(
     const GURL& first_party_url) {
   base::TimeDelta grant_duration =
       tpcd::experiment::kTpcdWriteRedirectHeuristicGrants.Get();
-  if (!grant_duration.is_positive()) {
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kTpcdHeuristicsGrants) ||
+      !grant_duration.is_positive()) {
     return;
   }
 

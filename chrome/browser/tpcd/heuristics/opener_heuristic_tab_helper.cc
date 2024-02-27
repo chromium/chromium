@@ -399,7 +399,9 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
 void OpenerHeuristicTabHelper::PopupObserver::MaybeCreateOpenerHeuristicGrant(
     const GURL& url,
     base::TimeDelta grant_duration) {
-  if (!grant_duration.is_positive()) {
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kTpcdHeuristicsGrants) ||
+      !grant_duration.is_positive()) {
     return;
   }
 

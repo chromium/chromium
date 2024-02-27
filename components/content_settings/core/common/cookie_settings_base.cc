@@ -411,7 +411,9 @@ bool CookieSettingsBase::IsAllowedBy3pcdHeuristicsGrantsSettings(
     const GURL& url,
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides) const {
-  return features::kTpcdReadHeuristicsGrants.Get() &&
+  return base::FeatureList::IsEnabled(
+             content_settings::features::kTpcdHeuristicsGrants) &&
+         features::kTpcdReadHeuristicsGrants.Get() &&
          MitigationsEnabledFor3pcd() &&
          !overrides.Has(net::CookieSettingOverride::kSkipTPCDHeuristicsGrant) &&
          GetContentSetting(url, first_party_url,
