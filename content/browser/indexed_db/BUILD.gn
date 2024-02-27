@@ -5,6 +5,8 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("indexed_db") {
+  public = [ "indexed_db_control_wrapper.h" ]
+
   sources = [
     "database_impl.cc",
     "database_impl.h",
@@ -34,7 +36,6 @@ source_set("indexed_db") {
     "indexed_db_context_impl.cc",
     "indexed_db_context_impl.h",
     "indexed_db_control_wrapper.cc",
-    "indexed_db_control_wrapper.h",
     "indexed_db_cursor.cc",
     "indexed_db_cursor.h",
     "indexed_db_data_format_version.cc",
@@ -95,6 +96,65 @@ source_set("indexed_db") {
   ]
 
   configs += [ "//content:content_implementation" ]
+
+  friend = [
+    ":unit_tests",
+    "//content/test/*",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # See content_unittests for justification.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "indexed_db_active_blob_registry_unittest.cc",
+    "indexed_db_backing_store_unittest.cc",
+    "indexed_db_bucket_context_unittest.cc",
+    "indexed_db_cleanup_on_io_error_unittest.cc",
+    "indexed_db_context_unittest.cc",
+    "indexed_db_database_unittest.cc",
+    "indexed_db_fake_backing_store.cc",
+    "indexed_db_fake_backing_store.h",
+    "indexed_db_leveldb_coding_unittest.cc",
+    "indexed_db_pre_close_task_queue_unittest.cc",
+    "indexed_db_quota_client_unittest.cc",
+    "indexed_db_tombstone_sweeper_unittest.cc",
+    "indexed_db_transaction_unittest.cc",
+    "indexed_db_unittest.cc",
+    "list_set_unittest.cc",
+    "mock_indexed_db_factory_client.cc",
+    "mock_indexed_db_factory_client.h",
+    "mock_mojo_indexed_db_database_callbacks.cc",
+    "mock_mojo_indexed_db_database_callbacks.h",
+    "mock_mojo_indexed_db_factory_client.cc",
+    "mock_mojo_indexed_db_factory_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/services/storage",
+    "//components/services/storage:test_support",
+    "//components/services/storage/privileged/mojom",
+    "//components/services/storage/public/cpp",
+    "//components/services/storage/public/mojom",
+
+    # This dependency is here to satisfy `gn check` given this target's includes
+    # of :indexed_db headers. This has to be done through //content/browser to
+    # avoid doubling symbols.
+    "//content/browser:for_content_tests",
+    "//storage/browser",
+    "//storage/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+    "//third_party/leveldatabase",
+  ]
 }
 
 mojom("internals_mojo_bindings") {

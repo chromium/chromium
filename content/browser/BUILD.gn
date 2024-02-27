@@ -3458,6 +3458,7 @@ if (is_android) {
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
   visibility = [
+    "//content/browser/indexed_db:unit_tests",
     "//content/public/test/android/*",
     "//content/test/*",
     "//content/web_test:web_test_browser",
