@@ -103,18 +103,3 @@ recordings from live websites, replay those to make sure they work, upload them
 to cloud storage, and finally send a CL to review with the new recordings.
 
 [wpr]: https://github.com/catapult-project/catapult/tree/master/web_page_replay_go
-
-## `soundwave`
-
-Allows to fetch data from the [Chrome Performance Dashboard][chromeperf] and
-stores it locally on a SQLite database for further analysis and processing. It
-also allows defining [studies][], pre-sets of measurements a team is interested
-in tracking, and uploads them to cloud storage to visualize with the help of
-[Looker Studio][]. This currently backs the [v8][v8_dashboard] and
-[health][health_dashboard] dashboards.
-
-[chromeperf]: https://chromeperf.appspot.com/
-[studies]: https://cs.chromium.org/chromium/src/tools/perf/cli_tools/soundwave/studies/
-[Looker Studio]: https://lookerstudio.google.com/
-[v8_dashboard]: https://lookerstudio.google.com/s/iNcXppkP3DI
-[health_dashboard]: https://lookerstudio.google.com/s/jUXfKZXXfT8
