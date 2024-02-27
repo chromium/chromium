@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/manifest/manifest_parser.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -118,7 +119,8 @@ void ManifestManager::RequestManifestForTesting(
 
 bool ManifestManager::CanFetchManifest() {
   // Do not fetch the manifest if we are on an opaque origin.
-  return !GetSupplementable()->GetSecurityOrigin()->IsOpaque();
+  return !GetSupplementable()->GetSecurityOrigin()->IsOpaque() &&
+         GetSupplementable()->Url().IsValid();
 }
 
 void ManifestManager::RequestManifestImpl(
@@ -163,13 +165,16 @@ void ManifestManager::FetchManifest() {
     return;
   }
 
+  LocalDOMWindow& window = *GetSupplementable();
   manifest_url_ = ManifestURL();
   if (manifest_url_.IsEmpty()) {
-    ResolveCallbacks(ResolveState::kFailure);
+    // The default manifest will be generated. Use the current window url as the
+    // manifest_url for resolving resources in the default manifest.
+    ParseManifestFromPage(window.Url(), /*manifest_url=*/std::nullopt,
+                          /*data=*/"{}");
     return;
   }
 
-  LocalDOMWindow& window = *GetSupplementable();
   ResourceFetcher* document_fetcher = window.document()->Fetcher();
   fetcher_ = MakeGarbageCollected<ManifestFetcher>(manifest_url_);
   fetcher_->Start(window, ManifestUseCredentials(), document_fetcher,
@@ -183,14 +188,25 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   fetcher_ = nullptr;
   if (response.IsNull() && data.empty()) {
     manifest_debug_info_ = nullptr;
+    // The only time we don't produce the default manifest is when there is a
+    // resource fetching problem of the manifest link. This allows callers to
+    // catch this error appropriately as a network issue instead of using a
+    // 'default' manifest that wasn't intended by the developer.
     ResolveCallbacks(ResolveState::kFailure);
     return;
   }
+  ParseManifestFromPage(document_url, response.CurrentRequestUrl(), data);
+}
 
+void ManifestManager::ParseManifestFromPage(const KURL& document_url,
+                                            std::optional<KURL> manifest_url,
+                                            const String& data) {
   // We are using the document as our FeatureContext for checking origin trials.
   // Note that any origin trials delivered in the manifest HTTP headers will be
   // ignored, only ones associated with the page will be used.
-  ManifestParser parser(data, response.CurrentRequestUrl(), document_url,
+  // For default manifests, the manifest_url is `std::nullopt`, so use the
+  // document_url instead for the parsing algorithm.
+  ManifestParser parser(data, manifest_url.value_or(document_url), document_url,
                         GetExecutionContext());
 
   // Monitoring whether the manifest has comments is temporary. Once
@@ -225,8 +241,16 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
     return;
   }
 
-  manifest_url_ = response.CurrentRequestUrl();
+  manifest_url_ = manifest_url.value_or(KURL());
   manifest_ = parser.TakeManifest();
+  if (document_url.IsValid() && !document_url.IsEmpty()) {
+    // As long as the document_url is valid, we should always have a start_url
+    // and manifest_id, as any errors still have fallbacks back to the
+    // document_url.
+    CHECK(!manifest_->start_url.IsEmpty() && manifest_->start_url.IsValid());
+    CHECK(!manifest_->id.IsEmpty() && manifest_->id.IsValid());
+  }
+
   RecordMetrics(*manifest_);
   ResolveCallbacks(ResolveState::kSuccess);
 }

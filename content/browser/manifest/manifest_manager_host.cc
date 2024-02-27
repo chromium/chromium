@@ -9,8 +9,10 @@
 #include "base/functional/bind.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -109,6 +111,22 @@ void ManifestManagerHost::OnRequestManifestResponse(
       &page().GetMainDocument(), manifest);
   auto callback = std::move(*callbacks_.Lookup(request_id));
   callbacks_.Remove(request_id);
+  // Note: An empty manifest signifies an error for callers. If a bad message
+  // occurs, this can be used to not drop the callback & signify an error.
+  if (!manifest) {
+    manifest = blink::mojom::Manifest::New();
+    mojo::ReportBadMessage("RequestManifest must return a non-null Manifest.");
+  } else if (!blink::IsEmptyManifest(manifest)) {
+    // `start_url`, `id`, and `scope` MUST be populated if the manifest is not
+    // empty.
+    if (!manifest->start_url.is_valid() || !manifest->id.is_valid() ||
+        !manifest->scope.is_valid()) {
+      manifest = blink::mojom::Manifest::New();
+      mojo::ReportBadMessage(
+          "RequestManifest's manifest must either be empty or populate the "
+          "the start_url, id, and scope.");
+    }
+  }
   std::move(callback).Run(url, std::move(manifest));
 }
 

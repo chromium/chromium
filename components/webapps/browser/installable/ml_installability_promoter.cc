@@ -302,7 +302,7 @@ void MLInstallabilityPromoter::EmitUKMs() {
         .SetHasIconsMaskable(has_manifest_icons_maskable);
 
     // Set Manifest start URL data in UKM.
-    if (manifest_->start_url.is_empty()) {
+    if (!manifest_->has_valid_specified_start_url) {
       manifest_builder.SetHasStartUrl(
           static_cast<int>(ManifestUrlInvalid::kEmpty));
     } else if (manifest_->start_url.is_valid()) {

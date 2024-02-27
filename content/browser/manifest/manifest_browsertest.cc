@@ -50,6 +50,15 @@ namespace {
 using ::testing::Contains;
 using ::testing::HasSubstr;
 
+bool IsDefaultManifest(const blink::mojom::Manifest& manifest,
+                       const GURL& document_url) {
+  blink::mojom::ManifestPtr expected_manifest = blink::mojom::Manifest::New();
+  expected_manifest->start_url = document_url;
+  expected_manifest->id = document_url.GetWithoutRef();
+  expected_manifest->scope = document_url.GetWithoutFilename();
+  return manifest == *expected_manifest;
+}
+
 }  // namespace
 
 class ManifestBrowserTest;
@@ -318,6 +327,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
 
     GetManifestAndWait();
     EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+    EXPECT_FALSE(IsDefaultManifest(manifest(), test_url));
     EXPECT_FALSE(manifest_url().is_empty());
     expected_manifest_urls.push_back(manifest_url());
     EXPECT_EQ(expected_manifest_urls, reported_manifest_urls());
@@ -338,7 +348,9 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
     ASSERT_TRUE(ExecJs(shell(), "clearManifest()"));
 
     GetManifestAndWait();
-    EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
+    // There is always a default manifest.
+    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+    EXPECT_TRUE(IsDefaultManifest(manifest(), test_url));
     EXPECT_TRUE(manifest_url().is_empty());
     expected_manifest_urls.push_back(manifest_url());
     EXPECT_EQ(expected_manifest_urls, reported_manifest_urls());

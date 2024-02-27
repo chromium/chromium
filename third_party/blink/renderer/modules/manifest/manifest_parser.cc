@@ -182,6 +182,7 @@ bool ManifestParser::Parse() {
 
   // TODO(crbug.com/1264024): Deprecate JSON comments here, if possible.
   JSONParseError error;
+
   bool has_comments = false;
   std::unique_ptr<JSONValue> root =
       ParseJSONWithCommentsDeprecated(data_, &error, &has_comments);
@@ -202,7 +203,11 @@ bool ManifestParser::Parse() {
   manifest_->name = ParseName(root_object.get());
   manifest_->short_name = ParseShortName(root_object.get());
   manifest_->description = ParseDescription(root_object.get());
-  manifest_->start_url = ParseStartURL(root_object.get());
+  const auto& [start_url, start_url_parse_result] =
+      ParseStartURL(root_object.get(), document_url_);
+  manifest_->start_url = start_url;
+  manifest_->has_valid_specified_start_url =
+      start_url_parse_result == ParseStartUrlResult::kParsedFromJson;
 
   const auto& [id, id_parse_result] =
       ParseId(root_object.get(), manifest_->start_url);
@@ -519,19 +524,23 @@ std::pair<KURL, ManifestParser::ParseIdResultType> ManifestParser::ParseId(
   return {id, parse_result};
 }
 
-KURL ManifestParser::ParseStartURL(const JSONObject* object) {
-  return ParseURL(object, "start_url", manifest_url_,
-                  ParseURLRestrictions::kSameOriginOnly);
+std::pair<KURL, ManifestParser::ParseStartUrlResult>
+ManifestParser::ParseStartURL(const JSONObject* object,
+                              const KURL& document_url) {
+  KURL start_url = ParseURL(object, "start_url", manifest_url_,
+                            ParseURLRestrictions::kSameOriginOnly);
+  if (start_url.IsEmpty()) {
+    return std::make_pair(document_url,
+                          ParseStartUrlResult::kDefaultDocumentUrl);
+  }
+  return std::make_pair(start_url, ParseStartUrlResult::kParsedFromJson);
 }
 
 KURL ManifestParser::ParseScope(const JSONObject* object,
                                 const KURL& start_url) {
   KURL scope = ParseURL(object, "scope", manifest_url_,
                         ParseURLRestrictions::kNoRestrictions);
-
-  // This will change to remove the |document_url_| fallback in the future.
-  // See https://github.com/w3c/manifest/issues/668.
-  const KURL& default_value = start_url.IsEmpty() ? document_url_ : start_url;
+  const KURL& default_value = start_url;
   DCHECK(default_value.IsValid());
 
   if (scope.IsEmpty())

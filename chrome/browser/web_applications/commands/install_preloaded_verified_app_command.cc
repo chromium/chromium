@@ -50,7 +50,7 @@ constexpr auto kHostAllowlist = base::MakeFixedFlatSet<base::StringPiece>(
      "127.0.0.1" /*FOR TESTING*/});
 
 bool HasRequiredManifestFields(const blink::mojom::ManifestPtr& manifest) {
-  if (manifest->start_url.is_empty()) {
+  if (!manifest->has_valid_specified_start_url) {
     return false;
   }
 

@@ -44,6 +44,8 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
     manifest->name = u"foo";
     manifest->short_name = u"bar";
     manifest->start_url = GURL("http://example.com");
+    manifest->scope = GURL("http://example.com");
+    manifest->has_valid_specified_start_url = true;
     manifest->id = manifest->start_url;
     manifest->display = blink::mojom::DisplayMode::kStandalone;
 
@@ -183,32 +185,31 @@ TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
   SetMetadata(mojom::WebPageMetadata::New());
   // Valid manifest start_url
   manifest()->start_url = GURL("https://www.example.com");
+  manifest()->has_valid_specified_start_url = true;
   TestCheckInstallability(InstallableStatusCode::NO_ERROR_DETECTED,
                           InstallableStatusCode::NO_ERROR_DETECTED,
                           InstallableStatusCode::NO_ERROR_DETECTED);
 
-  // No manifest start_url
-  manifest()->start_url = GURL();
-  TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
-                          InstallableStatusCode::START_URL_NOT_VALID,
-                          InstallableStatusCode::NO_ERROR_DETECTED);
-
-  // manifest start_url invalid
-  manifest()->start_url = GURL("/");
+  // No manifest start_url or invalid
+  manifest()->start_url = GURL("https://www.example.com");
+  manifest()->has_valid_specified_start_url = false;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
                           InstallableStatusCode::START_URL_NOT_VALID,
                           InstallableStatusCode::NO_ERROR_DETECTED);
 
   // Valid application_url
   metadata()->application_url = GURL("http://example.com");
+  manifest()->start_url = GURL("https://www.example.com");
+  manifest()->has_valid_specified_start_url = false;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
                           InstallableStatusCode::NO_ERROR_DETECTED,
                           InstallableStatusCode::NO_ERROR_DETECTED);
 
   // No start_url, root scope page
-  metadata()->application_url = GURL();
   web_contents_tester()->NavigateAndCommit(
       GURL("https://www.example.com/pageA"));
+  metadata()->application_url = GURL();
+  manifest()->has_valid_specified_start_url = false;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
                           InstallableStatusCode::START_URL_NOT_VALID,
                           InstallableStatusCode::NO_ERROR_DETECTED);
@@ -216,6 +217,8 @@ TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
   // No start_url, Not root scope page
   web_contents_tester()->NavigateAndCommit(
       GURL("https://www.example.com/path/pageB"));
+  manifest()->start_url = GURL("https://www.example.com/pageB");
+  manifest()->has_valid_specified_start_url = false;
   TestCheckInstallability(InstallableStatusCode::START_URL_NOT_VALID,
                           InstallableStatusCode::START_URL_NOT_VALID,
                           InstallableStatusCode::START_URL_NOT_VALID);
@@ -614,6 +617,11 @@ TEST_F(InstallableEvaluatorUnitTest, ValidMetadata) {
   // is installable.
   SetManifest(blink::mojom::Manifest::New());
   manifest()->display = blink::mojom::DisplayMode::kStandalone;
+  // Note: the start_url, id, and scope are all set from the document_url if
+  // they don't exist
+  manifest()->start_url = GURL("http://example.com");
+  manifest()->id = GURL("http://example.com");
+  manifest()->scope = GURL("http://example.com");
   SetMetadata(GetWebPageMetadata());
   AddFavicon();
 

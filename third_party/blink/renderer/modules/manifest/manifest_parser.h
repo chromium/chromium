@@ -176,10 +176,16 @@ class MODULES_EXPORT ManifestParser {
   // and query if there is no defined scope or if the parsing failed.
   KURL ParseScope(const JSONObject* object, const KURL& start_url);
 
+  enum class ParseStartUrlResult {
+    // The start_url was parsed from the json entry without errors.
+    kParsedFromJson,
+    // There was no start_url entry or parsing failed.
+    kDefaultDocumentUrl
+  };
   // Parses the 'start_url' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-start_url-member
-  // Returns the parsed KURL if any, an empty KURL if the parsing failed.
-  KURL ParseStartURL(const JSONObject* object);
+  std::pair<KURL, ParseStartUrlResult> ParseStartURL(const JSONObject* object,
+                                                     const KURL& document_url);
 
   // Parses the 'display' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-display-member

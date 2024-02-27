@@ -27,6 +27,16 @@ bool IsManifestEmpty(const mojom::blink::ManifestPtr& manifest) {
   return manifest == mojom::blink::Manifest::New();
 }
 
+bool IsDefaultManifest(const mojom::blink::ManifestPtr& manifest,
+                       const KURL& document_url) {
+  mojom::blink::ManifestPtr expected_manifest = mojom::blink::Manifest::New();
+  expected_manifest->start_url = document_url;
+  expected_manifest->id = document_url;
+  expected_manifest->id.RemoveFragmentIdentifier();
+  expected_manifest->scope = KURL(document_url.BaseAsString());
+  return manifest == expected_manifest;
+}
+
 class ManifestParserTest : public testing::Test {
  public:
   ManifestParserTest(const ManifestParserTest&) = delete;
@@ -49,6 +59,7 @@ class ManifestParserTest : public testing::Test {
     for (auto& error : errors)
       errors_.push_back(std::move(error->message));
     manifest_ = parser.TakeManifest();
+    EXPECT_TRUE(manifest_);
     return manifest_;
   }
 
@@ -110,28 +121,30 @@ TEST_F(ManifestParserTest, EmptyStringNull) {
   EXPECT_EQ("Line: 1, column: 1, Syntax error.", errors()[0]);
 
   // A parsing error is equivalent to an empty manifest.
-  ASSERT_TRUE(IsManifestEmpty(manifest));
+  EXPECT_TRUE(IsManifestEmpty(manifest));
+  EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
 }
 
 TEST_F(ManifestParserTest, ValidNoContentParses) {
-  auto& manifest = ParseManifest("{}");
+  auto& manifest = ParseManifestWithURLs("{}", KURL(), DefaultDocumentUrl());
 
   // Empty Manifest is not a parsing error.
   EXPECT_EQ(0u, GetErrorCount());
 
   // Check that the fields are null or set to their default values.
-  ASSERT_FALSE(IsManifestEmpty(manifest));
-  ASSERT_TRUE(manifest->name.IsNull());
-  ASSERT_TRUE(manifest->short_name.IsNull());
-  ASSERT_TRUE(manifest->start_url.IsEmpty());
-  ASSERT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
-  ASSERT_EQ(manifest->orientation,
+  EXPECT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_TRUE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+  EXPECT_TRUE(manifest->name.IsNull());
+  EXPECT_TRUE(manifest->short_name.IsNull());
+  EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+  EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+  EXPECT_EQ(manifest->orientation,
             device::mojom::ScreenOrientationLockType::DEFAULT);
-  ASSERT_FALSE(manifest->has_theme_color);
-  ASSERT_FALSE(manifest->has_background_color);
-  ASSERT_TRUE(manifest->gcm_sender_id.IsNull());
-  ASSERT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
-  ASSERT_TRUE(manifest->shortcuts.empty());
+  EXPECT_FALSE(manifest->has_theme_color);
+  EXPECT_FALSE(manifest->has_background_color);
+  EXPECT_TRUE(manifest->gcm_sender_id.IsNull());
+  EXPECT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
+  EXPECT_TRUE(manifest->shortcuts.empty());
 }
 
 TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
@@ -145,9 +158,10 @@ TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
   EXPECT_EQ(0u, GetErrorCount());
 
   // Check that subsequent fields parsed.
-  ASSERT_FALSE(IsManifestEmpty(manifest));
-  ASSERT_EQ(manifest->name, "bar");
-  ASSERT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
+  EXPECT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+  EXPECT_EQ(manifest->name, "bar");
+  EXPECT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
 }
 
 TEST_F(ManifestParserTest, MultipleErrorsReporting) {
@@ -156,62 +170,61 @@ TEST_F(ManifestParserTest, MultipleErrorsReporting) {
       "orientation": {}, "display": "foo",
       "start_url": null, "icons": {}, "theme_color": 42,
       "background_color": 42, "shortcuts": {} })");
-  ASSERT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_FALSE(IsManifestEmpty(manifest));
+  EXPECT_TRUE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
 
-  EXPECT_EQ(9u, GetErrorCount());
-
-  EXPECT_EQ("property 'name' ignored, type string expected.", errors()[0]);
-  EXPECT_EQ("property 'short_name' ignored, type string expected.",
-            errors()[1]);
-  EXPECT_EQ("property 'start_url' ignored, type string expected.", errors()[2]);
-  EXPECT_EQ("unknown 'display' value ignored.", errors()[3]);
-  EXPECT_EQ("property 'orientation' ignored, type string expected.",
-            errors()[4]);
-  EXPECT_EQ("property 'icons' ignored, type array expected.", errors()[5]);
-  EXPECT_EQ("property 'theme_color' ignored, type string expected.",
-            errors()[6]);
-  EXPECT_EQ("property 'background_color' ignored, type string expected.",
-            errors()[7]);
-  EXPECT_EQ("property 'shortcuts' ignored, type array expected.", errors()[8]);
+  EXPECT_THAT(errors(),
+              testing::UnorderedElementsAre(
+                  "property 'name' ignored, type string expected.",
+                  "property 'short_name' ignored, type string expected.",
+                  "property 'start_url' ignored, type string expected.",
+                  "property 'id' ignored, type string expected.",
+                  "unknown 'display' value ignored.",
+                  "property 'orientation' ignored, type string expected.",
+                  "property 'icons' ignored, type array expected.",
+                  "property 'theme_color' ignored, type string expected.",
+                  "property 'background_color' ignored, type string expected.",
+                  "property 'shortcuts' ignored, type array expected."));
 }
 
 TEST_F(ManifestParserTest, NameParseRules) {
   // Smoke test.
   {
     auto& manifest = ParseManifest(R"({ "name": "foo" })");
-    ASSERT_EQ(manifest->name, "foo");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(manifest->name, "foo");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Trim whitespaces.
   {
     auto& manifest = ParseManifest(R"({ "name": "  foo  " })");
-    ASSERT_EQ(manifest->name, "foo");
+    EXPECT_EQ(manifest->name, "foo");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Don't parse if name isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "name": {} })");
-    ASSERT_TRUE(manifest->name.IsNull());
-    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_TRUE(manifest->name.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' ignored, type string expected.", errors()[0]);
   }
 
   // Don't parse if name isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "name": 42 })");
-    ASSERT_TRUE(manifest->name.IsNull());
-    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_TRUE(manifest->name.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' ignored, type string expected.", errors()[0]);
   }
 
   // Test stripping out of \t \r and \n.
   {
     auto& manifest = ParseManifest("{ \"name\": \"abc\\t\\r\\ndef\" }");
-    ASSERT_EQ(manifest->name, "abcdef");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(manifest->name, "abcdef");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
@@ -221,22 +234,22 @@ TEST_F(ManifestParserTest, DescriptionParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "description": "foo is the new black" })");
-    ASSERT_EQ(manifest->description, "foo is the new black");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(manifest->description, "foo is the new black");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Trim whitespaces.
   {
     auto& manifest = ParseManifest(R"({ "description": "  foo  " })");
-    ASSERT_EQ(manifest->description, "foo");
+    EXPECT_EQ(manifest->description, "foo");
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Don't parse if description isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "description": {} })");
-    ASSERT_TRUE(manifest->description.IsNull());
+    EXPECT_TRUE(manifest->description.IsNull());
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'description' ignored, type string expected.",
               errors()[0]);
@@ -245,8 +258,8 @@ TEST_F(ManifestParserTest, DescriptionParseRules) {
   // Don't parse if description isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "description": 42 })");
-    ASSERT_TRUE(manifest->description.IsNull());
-    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_TRUE(manifest->description.IsNull());
+    EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'description' ignored, type string expected.",
               errors()[0]);
   }
@@ -299,72 +312,87 @@ TEST_F(ManifestParserTest, IdParseRules) {
   // Empty manifest.
   {
     auto& manifest = ParseManifest("{ }");
-    ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ(String(), manifest->id);
+    ASSERT_TRUE(manifest);
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_EQ(manifest->id, DefaultDocumentUrl());
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Does not contain id field.
   {
     auto& manifest = ParseManifest(R"({"start_url": "/start?query=a" })");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Invalid type.
   {
     auto& manifest =
         ParseManifest("{\"start_url\": \"/start?query=a\", \"id\": 1}");
-    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::ElementsAre(
+                              "property 'id' ignored, type string expected."));
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Empty string.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "" })");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Full url.
   {
     auto& manifest = ParseManifest(
         "{ \"start_url\": \"/start?query=a\", \"id\": \"http://foo.com/foo\" "
         "}");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/foo", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Full url with different origin.
   {
     auto& manifest = ParseManifest(
         "{ \"start_url\": \"/start?query=a\", \"id\": "
         "\"http://another.com/foo\" }");
-    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_THAT(
+        errors(),
+        testing::ElementsAre(
+            "property 'id' ignored, should be same origin as document."));
     EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
   // Relative path
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \".\" }");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Absolute path
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"/\" }");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // url with fragment
   {
     auto& manifest = ParseManifest(
         "{ \"start_url\": \"/start?query=a\", \"id\": \"/#abc\" }");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Smoke test.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "foo" })");
-    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_EQ("http://foo.com/foo", manifest->id);
+    EXPECT_TRUE(manifest->has_custom_id);
   }
   // Invalid UTF-8 character.
   {
@@ -373,12 +401,14 @@ TEST_F(ManifestParserTest, IdParseRules) {
         String("{ \"start_url\": \"/start?query=a\", \"id\": \"") +
         String(invalid_utf8_chars) + String("\" }");
 
-    ParseManifest(manifest_str);
+    auto& manifest = ParseManifest(manifest_str);
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_THAT(
         errors()[0].Utf8(),
         testing::EndsWith("Unsupported encoding. JSON and all string literals "
                           "must contain valid Unicode characters."));
+    ASSERT_TRUE(manifest);
+    EXPECT_FALSE(manifest->has_custom_id);
   }
 }
 
@@ -388,42 +418,49 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
     auto& manifest = ParseManifest(R"({ "start_url": "land.html" })");
     ASSERT_EQ(manifest->start_url, KURL(DefaultDocumentUrl(), "land.html"));
     ASSERT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
+    EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
   }
 
   // Whitespaces.
   {
     auto& manifest = ParseManifest(R"({ "start_url": "  land.html  " })");
     ASSERT_EQ(manifest->start_url, KURL(DefaultDocumentUrl(), "land.html"));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
   }
 
   // Don't parse if property isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "start_url": {} })");
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    ASSERT_EQ(String(), manifest->id);
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'start_url' ignored, type string expected.",
-              errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_EQ(DefaultDocumentUrl(), manifest->id);
+    EXPECT_THAT(errors(),
+                testing::ElementsAre(
+                    "property 'start_url' ignored, type string expected."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
+    EXPECT_TRUE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
   }
 
   // Don't parse if property isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "start_url": 42 })");
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'start_url' ignored, type string expected.",
-              errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_THAT(errors(),
+                testing::ElementsAre(
+                    "property 'start_url' ignored, type string expected."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
   }
 
   // Don't parse if property isn't a valid URL.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "http://www.google.ca:a" })");
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'start_url' ignored, URL is invalid.", errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_THAT(errors(), testing::ElementsAre(
+                              "property 'start_url' ignored, URL is invalid."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
   }
 
   // Absolute start_url, same origin with document.
@@ -432,8 +469,9 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
         ParseManifestWithURLs(R"({ "start_url": "http://foo.com/land.html" })",
                               KURL("http://foo.com/manifest.json"),
                               KURL("http://foo.com/index.html"));
-    ASSERT_EQ(manifest->start_url.GetString(), "http://foo.com/land.html");
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(manifest->start_url.GetString(), "http://foo.com/land.html");
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
   }
 
   // Absolute start_url, cross origin with document.
@@ -442,12 +480,11 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
         ParseManifestWithURLs(R"({ "start_url": "http://bar.com/land.html" })",
                               KURL("http://foo.com/manifest.json"),
                               KURL("http://foo.com/index.html"));
-    ASSERT_TRUE(manifest->start_url.IsEmpty());
-    EXPECT_EQ(1u, GetErrorCount());
-    EXPECT_EQ(
-        "property 'start_url' ignored, should "
-        "be same origin as document.",
-        errors()[0]);
+    EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
+    EXPECT_THAT(errors(),
+                testing::ElementsAre("property 'start_url' ignored, should "
+                                     "be same origin as document."));
+    EXPECT_FALSE(manifest->has_valid_specified_start_url);
   }
 
   // Resolving has to happen based on the manifest_url.
@@ -456,9 +493,10 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
         ParseManifestWithURLs(R"({ "start_url": "land.html" })",
                               KURL("http://foo.com/landing/manifest.json"),
                               KURL("http://foo.com/index.html"));
-    ASSERT_EQ(manifest->start_url.GetString(),
+    EXPECT_EQ(manifest->start_url.GetString(),
               "http://foo.com/landing/land.html");
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
+    EXPECT_TRUE(manifest->has_valid_specified_start_url);
   }
 }
 
@@ -469,7 +507,7 @@ TEST_F(ManifestParserTest, ScopeParseRules) {
         R"({ "scope": "land", "start_url": "land/landing.html" })");
     ASSERT_EQ(manifest->scope, KURL(DefaultDocumentUrl(), "land"));
     ASSERT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
   }
 
   // Whitespaces.
@@ -477,7 +515,7 @@ TEST_F(ManifestParserTest, ScopeParseRules) {
     auto& manifest = ParseManifest(
         R"({ "scope": "  land  ", "start_url": "land/landing.html" })");
     ASSERT_EQ(manifest->scope, KURL(DefaultDocumentUrl(), "land"));
-    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_THAT(errors(), testing::IsEmpty());
   }
 
   // Return the default value if the property isn't a string.

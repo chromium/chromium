@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -85,6 +86,9 @@ class MODULES_EXPORT ManifestManager
   void OnManifestFetchComplete(const KURL& document_url,
                                const ResourceResponse& response,
                                const String& data);
+  void ParseManifestFromPage(const KURL& document_url,
+                             std::optional<KURL> manifest_url,
+                             const String& data);
   void RecordMetrics(const mojom::blink::Manifest& manifest);
   void ResolveCallbacks(ResolveState state);
 

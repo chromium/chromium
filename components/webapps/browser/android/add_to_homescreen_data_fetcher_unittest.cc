@@ -51,6 +51,7 @@ const std::u16string kDefaultManifestShortName = u"Default Short Name";
 const char* kDefaultManifestUrl = "https://www.example.com/manifest.json";
 const char* kDefaultIconUrl = "https://www.example.com/icon.png";
 const char* kDefaultStartUrl = "https://www.example.com/index.html";
+const char* kDefaultScopeUrl = "https://www.example.com/";
 const blink::mojom::DisplayMode kDefaultManifestDisplayMode =
     blink::mojom::DisplayMode::kStandalone;
 const int kIconSizePx = 144;
@@ -131,6 +132,8 @@ blink::mojom::ManifestPtr BuildDefaultManifest() {
   manifest->name = kDefaultManifestName;
   manifest->short_name = kDefaultManifestShortName;
   manifest->start_url = GURL(kDefaultStartUrl);
+  manifest->scope = GURL(kDefaultScopeUrl);
+  manifest->has_valid_specified_start_url = true;
   manifest->id = GURL(kDefaultStartUrl);
   manifest->display = kDefaultManifestDisplayMode;
 

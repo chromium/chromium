@@ -96,7 +96,7 @@ void PushMessagingClient::DidGetManifest(
     mojom::blink::ManifestPtr manifest) {
   // Get the application_server_key from the manifest since it wasn't provided
   // by the caller.
-  if (manifest == mojom::blink::Manifest::New()) {
+  if (manifest_url.IsEmpty() || manifest == mojom::blink::Manifest::New()) {
     DidSubscribe(
         service_worker_registration, std::move(callbacks),
         mojom::blink::PushRegistrationStatus::MANIFEST_EMPTY_OR_MISSING,

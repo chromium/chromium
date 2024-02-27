@@ -35,12 +35,12 @@ struct Manifest {
   // Set to true if the json specified a specific value for the id.
   bool has_custom_id;
 
-  // TODO(crbug.com/1466730): Investigate if this should return the
-  // document_url_ if ManifestParser fails to parse the start_url as per
-  // the spec. This can sometimes be an empty KURL, which can be
-  // intentional so that the non existence of a start URL can be handled
-  // further down the callstack.
+  // This defaults to the document_url. See `has_valid_specified_start_url` to know if
+  // this was specified by the manifest json itself.
   url.mojom.Url start_url;
+
+  // True if the json specified a start_url.
+  bool has_valid_specified_start_url;
 
   DisplayMode display;
 

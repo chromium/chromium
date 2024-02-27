@@ -10,7 +10,8 @@ import "url/mojom/url.mojom";
 interface ManifestManager {
   // Requests the manifest URL and the Manifest of the frame's document. |url|
   // will be empty if the document specifies no manifest, and |manifest| will be
-  // empty if any other failures occurred.
+  // empty if any other failures occurred. Note that `manifest` may be the
+  // 'default' manifest if none was specified by the document.
   RequestManifest() => (url.mojom.Url url, Manifest? manifest);
 
   // Requests the manifest URL and the debug info for Manifest of the frame's
