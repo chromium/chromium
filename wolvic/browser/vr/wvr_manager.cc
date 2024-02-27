@@ -4,6 +4,7 @@
 
 #include "wolvic/browser/vr/wvr_manager.h"
 
+#include "base/task/bind_post_task.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/util/xr_standard_gamepad_builder.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
@@ -605,7 +606,9 @@ void WvrManager::DrawFrameSubmitNow(device::WebXrFrame* processing_frame) {
   webxr_.TransitionFrameProcessingToRendering();
 
   // See if we can animate a new WebXR frame.
-  WebXrTryStartAnimatingFrame();
+  if (pending_getframedata_) {
+    std::move(pending_getframedata_).Run();
+  }
 }
 
 bool WvrManager::WebVrCanAnimateFrame() {
@@ -623,22 +626,21 @@ bool WvrManager::WebVrCanAnimateFrame() {
     return false;
   }
 
-  if (get_frame_data_callback_.is_null()) {
-    DVLOG(2) << __func__ << ": waiting for get_frame_data_callback_";
-    return false;
-  }
-
   return true;
 }
 
 void WvrManager::GetFrameData(
     device::mojom::XRFrameDataRequestOptionsPtr options,
     device::mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  if (!get_frame_data_callback_.is_null()) {
-    DLOG(WARNING) << ": previous get_frame_data_callback_ was not used yet";
-    frame_data_receiver_.ReportBadMessage(
-        "Requested VSync before waiting for response to previous request.");
-    ClosePresentationBindings();
+  if (!WebVrCanAnimateFrame()) {
+    // We bind this as a post task so that whatever processing is run when we
+    // attempt to get new frame data can complete before the pending
+    // GetFrameData call actually happens.
+    DCHECK(pending_getframedata_.is_null());
+    pending_getframedata_ = base::BindPostTask(
+        task_runner_, base::BindOnce(&WvrManager::GetFrameData,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(options), std::move(callback)));
     return;
   }
 
@@ -648,10 +650,6 @@ void WvrManager::GetFrameData(
 
 void WvrManager::WebXrTryStartAnimatingFrame() {
   DCHECK(IsOnWvrThread());
-
-  if (!WebVrCanAnimateFrame()) {
-    return;
-  }
 
   device::mojom::XRFrameDataPtr frame_data = device::mojom::XRFrameData::New();
   frame_data->frame_id = webxr_.StartFrameAnimating();
@@ -762,6 +760,10 @@ void WvrManager::SubmitFrameMissing(int16_t frame_index,
   DVLOG(2) << __func__ << ": recycle unused animating frame";
   DCHECK(webxr_.HaveAnimatingFrame());
   webxr_.RecycleUnusedAnimatingFrame();
+
+  if (pending_getframedata_) {
+    std::move(pending_getframedata_).Run();
+  }
 }
 
 void WvrManager::SubmitFrame(int16_t frame_index,

@@ -120,6 +120,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
       get_frame_data_callback_;
 
+  base::OnceClosure pending_getframedata_;
+
   gfx::Transform floor_transform_;
   uint32_t stage_parameters_id_ = 0;
 
