@@ -230,6 +230,9 @@ class TabSearchPageHandler
   // Listened TabOrganization sessions.
   std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>
       listened_sessions_;
+
+  base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
+      tab_organization_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_

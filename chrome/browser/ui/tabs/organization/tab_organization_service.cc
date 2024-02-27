@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -123,6 +124,8 @@ void TabOrganizationService::OnUserInvokedFeature(const Browser* browser) {
 }
 
 bool TabOrganizationService::CanStartRequest() const {
+  CHECK(TabOrganizationUtils::GetInstance()->IsEnabled(profile_));
+
   const syncer::SyncService* const sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   if (!sync_service) {

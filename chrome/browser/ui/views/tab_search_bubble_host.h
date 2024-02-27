@@ -20,12 +20,12 @@ class Widget;
 }
 
 class Profile;
+class TabOrganizationService;
 
 // TabSearchBubbleHost assumes responsibility for configuring its button,
 // showing / hiding the tab search bubble and handling metrics collection.
 class TabSearchBubbleHost : public views::WidgetObserver,
-                            public TabOrganizationObserver,
-                            public optimization_guide::SettingsEnabledObserver {
+                            public TabOrganizationObserver {
  public:
   TabSearchBubbleHost(views::Button* button, Profile* profile);
   TabSearchBubbleHost(const TabSearchBubbleHost&) = delete;
@@ -39,9 +39,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   // views::TabOrganizationObserver:
   void OnOrganizationAccepted(const Browser* browser) override;
   void OnUserInvokedFeature(const Browser* browser) override;
-
-  // SettingsEnabledObserver
-  void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
 
   // When this is called the bubble may already be showing or be loading in.
   // This returns true if the method call results in the creation of a new Tab
@@ -92,6 +89,9 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};
+
+  base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
+      tab_organization_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_H_

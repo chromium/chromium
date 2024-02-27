@@ -32,12 +32,13 @@ std::unique_ptr<KeyedService>
 TabOrganizationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(context);
-  return std::make_unique<TabOrganizationService>(context);
+  return features::IsTabOrganization()
+             ? std::make_unique<TabOrganizationService>(context)
+             : nullptr;
 }
 
 // static
 TabOrganizationServiceFactory* TabOrganizationServiceFactory::GetInstance() {
-  CHECK(base::FeatureList::IsEnabled(features::kTabOrganization));
   static base::NoDestructor<TabOrganizationServiceFactory> instance;
   return instance.get();
 }

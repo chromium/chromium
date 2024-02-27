@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -53,67 +52,55 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
                                                     gfx::Insets()),
       this);
 
-  Profile* profile = tab_strip_controller->GetProfile();
-  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
-    tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
-        tab_strip_controller->GetProfile());
+  tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
+      tab_strip_controller->GetProfile());
+  if (tab_organization_service_) {
+    tab_organization_observation_.Observe(tab_organization_service_);
   }
 
   std::unique_ptr<TabSearchButton> tab_search_button =
-      std::make_unique<TabSearchButton>(
-          tab_strip_controller, tab_organization_service_
-                                    ? GetFlatEdge(true, before_tab_strip)
-                                    : Edge::kNone);
+      std::make_unique<TabSearchButton>(tab_strip_controller,
+                                        GetFlatEdge(true, before_tab_strip));
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
 
+  tab_search_button_ = AddChildView(std::move(tab_search_button));
+
+  int tab_search_button_index = GetIndexOf(tab_search_button_).value();
+  int index =
+      before_tab_strip ? tab_search_button_index + 1 : tab_search_button_index;
+  // TODO(1469126): Consider hiding the button when the request has started,
+  // vs. when the button as clicked.
+  tab_organization_button_ = AddChildViewAt(
+      std::make_unique<TabOrganizationButton>(
+          tab_strip_controller,
+          base::BindRepeating(&TabSearchContainer::OnOrganizeButtonClicked,
+                              base::Unretained(this)),
+          base::BindRepeating(&TabSearchContainer::OnOrganizeButtonDismissed,
+                              base::Unretained(this)),
+          GetFlatEdge(false, before_tab_strip)),
+      index);
+  tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                                        views::LayoutAlignment::kCenter);
+  const int space_between_buttons = 2;
+  gfx::Insets margin = gfx::Insets();
   if (before_tab_strip) {
-    tab_search_button_ = AddChildView(std::move(tab_search_button));
+    margin.set_left(space_between_buttons);
+  } else {
+    margin.set_right(space_between_buttons);
   }
-
-  if (tab_organization_service_) {
-    tab_organization_service_->AddObserver(this);
-    // TODO(1469126): Consider hiding the button when the request has started,
-    // vs. when the button as clicked.
-    tab_organization_button_ =
-        AddChildView(std::make_unique<TabOrganizationButton>(
-            tab_strip_controller,
-            base::BindRepeating(&TabSearchContainer::OnOrganizeButtonClicked,
-                                base::Unretained(this)),
-            base::BindRepeating(&TabSearchContainer::OnOrganizeButtonDismissed,
-                                base::Unretained(this)),
-            tab_organization_service_ ? GetFlatEdge(false, before_tab_strip)
-                                      : Edge::kNone));
-    tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
-                                          views::LayoutAlignment::kCenter);
-    const int space_between_buttons = 2;
-    gfx::Insets margin = gfx::Insets();
-    if (before_tab_strip) {
-      margin.set_left(space_between_buttons);
-    } else {
-      margin.set_right(space_between_buttons);
-    }
-    tab_organization_button_->SetProperty(views::kMarginsKey, margin);
-    tab_organization_button_->SetOpacity(0);
-
-    expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
-    opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
-  }
-
-  if (!before_tab_strip) {
-    tab_search_button_ = AddChildView(std::move(tab_search_button));
-  }
+  tab_organization_button_->SetProperty(views::kMarginsKey, margin);
+  tab_organization_button_->SetOpacity(0);
 
   browser_ = tab_strip_controller->GetBrowser();
+
+  expansion_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
+  opacity_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 }
 
-TabSearchContainer::~TabSearchContainer() {
-  if (tab_organization_service_) {
-    tab_organization_service_->RemoveObserver(this);
-  }
-}
+TabSearchContainer::~TabSearchContainer() = default;
 
 void TabSearchContainer::ShowTabOrganization() {
   if (locked_expansion_view_->IsMouseHovered()) {

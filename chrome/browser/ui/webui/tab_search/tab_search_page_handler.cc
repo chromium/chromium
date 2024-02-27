@@ -203,12 +203,9 @@ TabSearchPageHandler::TabSearchPageHandler(
       tab_search_prefs::kTabOrganizationShowFRE,
       base::BindRepeating(&TabSearchPageHandler::NotifyShowFREPrefChanged,
                           base::Unretained(this), profile));
-  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
-    organization_service_ =
-        TabOrganizationServiceFactory::GetForProfile(profile);
-    if (organization_service_) {
-      organization_service_->AddObserver(this);
-    }
+  organization_service_ = TabOrganizationServiceFactory::GetForProfile(profile);
+  if (organization_service_) {
+    tab_organization_observation_.Observe(organization_service_);
   }
   optimization_guide_keyed_service_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
@@ -225,9 +222,6 @@ TabSearchPageHandler::~TabSearchPageHandler() {
                                 called_switch_to_tab_
                                     ? TabSearchCloseAction::kTabSwitch
                                     : TabSearchCloseAction::kNoAction);
-  if (organization_service_) {
-    organization_service_->RemoveObserver(this);
-  }
   for (TabOrganizationSession* session : listened_sessions_) {
     session->RemoveObserver(this);
   }
@@ -1187,16 +1181,6 @@ void TabSearchPageHandler::OnChangeInFeatureCurrentlyEnabledState(
   // This logic is slightly more strict than is_now_enabled, may make a
   // difference in some edge cases.
   bool enabled = TabOrganizationUtils::GetInstance()->IsEnabled(profile);
-  if (enabled) {
-    organization_service_ =
-        TabOrganizationServiceFactory::GetForProfile(profile);
-    if (organization_service_ && !organization_service_->HasObserver(this)) {
-      organization_service_->AddObserver(this);
-    }
-  } else if (organization_service_) {
-    organization_service_->RemoveObserver(this);
-    organization_service_ = nullptr;
-  }
   page_->TabOrganizationEnabledChanged(enabled && organization_service_);
 }
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -24,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -90,7 +92,9 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
 
  private:
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     profile_ = std::make_unique<TestingProfile>();
     service_ = std::make_unique<TabOrganizationService>(profile_.get());
     sync_service_ = static_cast<syncer::TestSyncService*>(
