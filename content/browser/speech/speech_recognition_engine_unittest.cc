@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include "base/big_endian.h"
 #include "base/containers/queue.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -695,10 +695,11 @@ bool SpeechRecognitionEngineTest::ResultsAreEqual(
 
 void SpeechRecognitionEngineTest::ExpectFramedChunk(
     const std::string& chunk, uint32_t type) {
-  uint32_t value;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&chunk[0]), &value);
+  uint32_t value = base::numerics::U32FromBigEndian(
+      base::as_byte_span(chunk).subspan<0u, 4u>());
   EXPECT_EQ(chunk.size() - 8, value);
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&chunk[4]), &value);
+  value = base::numerics::U32FromBigEndian(
+      base::as_byte_span(chunk).subspan<4u, 4u>());
   EXPECT_EQ(type, value);
 }
 
