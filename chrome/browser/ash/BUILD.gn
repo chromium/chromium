@@ -4724,6 +4724,8 @@ static_library("test_support") {
     "login/test/dialog_window_waiter.h",
     "login/test/embedded_test_server_setup_mixin.cc",
     "login/test/embedded_test_server_setup_mixin.h",
+    "login/test/gaia_page_event_waiter.cc",
+    "login/test/gaia_page_event_waiter.h",
     "login/test/guest_session_mixin.cc",
     "login/test/guest_session_mixin.h",
     "login/test/js_checker.cc",
