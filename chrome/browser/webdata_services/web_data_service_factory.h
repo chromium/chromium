@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_WEBDATA_SERVICES_WEB_DATA_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_WEBDATA_SERVICES_WEB_DATA_SERVICE_FACTORY_H_
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -78,4 +78,4 @@ class WebDataServiceFactory
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-#endif  // CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_WEBDATA_SERVICES_WEB_DATA_SERVICE_FACTORY_H_
