@@ -79,6 +79,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   void UpdateWithMediaPosition(
       const media_session::MediaPosition& position) override {}
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
+  // This view is used before `media::kGlobalMediaControlsCrOSUpdatedUI` is
+  // enabled in the `MediaItemUIView`. So we don't need to implement this method
+  // since there's no chapter images in this view.
+  void UpdateWithChapterArtwork(int index,
+                                const gfx::ImageSkia& image) override {}
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override;
   void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) override;
   void UpdateWithMuteStatus(bool mute) override {}

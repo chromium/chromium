@@ -95,6 +95,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   void UpdateWithMediaPosition(
       const media_session::MediaPosition& position) override;
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
+  void UpdateWithChapterArtwork(int index,
+                                const gfx::ImageSkia& image) override;
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override {}
   void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) override {}
   void UpdateWithMuteStatus(bool mute) override {}

@@ -483,6 +483,13 @@ void MediaItemUIDetailedView::UpdateWithMediaArtwork(
   SchedulePaint();
 }
 
+void MediaItemUIDetailedView::UpdateWithChapterArtwork(
+    int index,
+    const gfx::ImageSkia& image) {
+  // TODO(b/325142008) Update the chapter list view, which is not implemented
+  // yet.
+}
+
 void MediaItemUIDetailedView::UpdateDeviceSelectorAvailability(
     bool has_devices) {
   CHECK(start_casting_button_);

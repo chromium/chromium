@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -180,6 +181,19 @@ void MediaSessionNotificationItem::MediaControllerImageChanged(
     MaybeUnfreeze();
 }
 
+void MediaSessionNotificationItem::MediaControllerChapterImageChanged(
+    int chapter_index,
+    const SkBitmap& bitmap) {
+  chapter_artwork_[chapter_index] = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+
+  if (view_ && !frozen_) {
+    view_->UpdateWithChapterArtwork(chapter_index,
+                                    chapter_artwork_[chapter_index]);
+  } else if (frozen_with_chapter_artwork_[chapter_index]) {
+    MaybeUnfreeze();
+  }
+}
+
 void MediaSessionNotificationItem::SetView(
     media_message_center::MediaNotificationView* view) {
   DCHECK(view_ || view);
@@ -193,6 +207,9 @@ void MediaSessionNotificationItem::SetView(
       view_->UpdateWithMediaPosition(*session_position_);
     if (session_artwork_.has_value())
       view_->UpdateWithMediaArtwork(*session_artwork_);
+    for (auto& item : chapter_artwork_) {
+      view_->UpdateWithChapterArtwork(item.first, item.second);
+    }
     if (session_favicon_.has_value())
       view_->UpdateWithFavicon(*session_favicon_);
   } else {
@@ -300,6 +317,9 @@ void MediaSessionNotificationItem::Freeze(base::OnceClosure unfrozen_callback) {
   frozen_ = true;
   frozen_with_actions_ = HasActions();
   frozen_with_artwork_ = HasArtwork();
+  for (auto& item : chapter_artwork_) {
+    frozen_with_chapter_artwork_[item.first] = HasChapterArtwork(item.first);
+  }
 
   freeze_timer_.Start(
       FROM_HERE, kFreezeTimerDelay,
@@ -390,8 +410,9 @@ bool MediaSessionNotificationItem::ShouldShowNotification() const {
 }
 
 void MediaSessionNotificationItem::MaybeUnfreeze() {
-  if (!frozen_ && !frozen_with_artwork_)
+  if (!frozen_ && !frozen_with_artwork_ && !FrozenWithChapterArtwork()) {
     return;
+  }
 
   if (waiting_for_actions_ && !HasActions())
     return;
@@ -417,6 +438,13 @@ void MediaSessionNotificationItem::MaybeUnfreeze() {
     return;
   }
 
+  for (auto& item : chapter_artwork_) {
+    if (frozen_with_chapter_artwork_[item.first] &&
+        !HasChapterArtwork(item.first)) {
+      return;
+    }
+  }
+
   UnfreezeArtwork();
 }
 
@@ -424,8 +452,9 @@ void MediaSessionNotificationItem::UnfreezeNonArtwork() {
   frozen_ = false;
   waiting_for_actions_ = false;
   frozen_with_actions_ = false;
-  if (!frozen_with_artwork_)
+  if (!frozen_with_artwork_ && !FrozenWithChapterArtwork()) {
     freeze_timer_.Stop();
+  }
 
   // When we unfreeze, we want to fully update |view_| with any changes that
   // we've avoided sending during the freeze.
@@ -445,12 +474,18 @@ void MediaSessionNotificationItem::UnfreezeNonArtwork() {
 // would be slow and unresponsive when trying to skip ahead multiple tracks.
 void MediaSessionNotificationItem::UnfreezeArtwork() {
   frozen_with_artwork_ = false;
+  for (auto& item : chapter_artwork_) {
+    frozen_with_chapter_artwork_[item.first] = false;
+  }
   freeze_timer_.Stop();
   if (view_) {
     if (session_artwork_.has_value())
       view_->UpdateWithMediaArtwork(*session_artwork_);
     if (session_favicon_.has_value())
       view_->UpdateWithFavicon(*session_favicon_);
+    for (auto& item : chapter_artwork_) {
+      view_->UpdateWithChapterArtwork(item.first, item.second);
+    }
   }
 }
 
@@ -462,8 +497,13 @@ bool MediaSessionNotificationItem::HasArtwork() const {
   return session_artwork_.has_value() && !session_artwork_->isNull();
 }
 
+bool MediaSessionNotificationItem::HasChapterArtwork(int index) const {
+  auto it = chapter_artwork_.find(index);
+  return it != chapter_artwork_.end() && !it->second.isNull();
+}
+
 void MediaSessionNotificationItem::OnFreezeTimerFired() {
-  DCHECK(frozen_ || frozen_with_artwork_);
+  DCHECK(frozen_ || frozen_with_artwork_ || FrozenWithChapterArtwork());
 
   // If we've just been waiting for actions or artwork, stop waiting and just
   // show what we have.
@@ -471,8 +511,9 @@ void MediaSessionNotificationItem::OnFreezeTimerFired() {
     if (frozen_)
       UnfreezeNonArtwork();
 
-    if (frozen_with_artwork_)
+    if (frozen_with_artwork_ || FrozenWithChapterArtwork()) {
       UnfreezeArtwork();
+    }
 
     return;
   }
@@ -510,4 +551,10 @@ void MediaSessionNotificationItem::UpdateViewCommon() {
                                            : nullptr);
 }
 
+bool MediaSessionNotificationItem::FrozenWithChapterArtwork() {
+  auto it =
+      base::ranges::find_if(frozen_with_chapter_artwork_,
+                            [](const auto& it) { return it.second == true; });
+  return it != frozen_with_chapter_artwork_.end();
+}
 }  // namespace global_media_controls

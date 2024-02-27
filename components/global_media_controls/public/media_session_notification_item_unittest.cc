@@ -84,6 +84,15 @@ TEST_F(MediaSessionNotificationItemTest, Freezing_DoNotUpdateMetadata) {
   metadata.artist = u"artist2";
   metadata.album = u"album";
 
+  std::vector<media_session::ChapterInformation> expected_chapters;
+  media_session::MediaImage test_image_1;
+  test_image_1.src = GURL("https://www.google.com");
+  media_session::ChapterInformation test_chapter_1(
+      /*title=*/u"chapter1", /*start_time=*/base::Seconds(10),
+      /*artwork=*/{test_image_1});
+  expected_chapters.push_back(test_chapter_1);
+  metadata.chapters = expected_chapters;
+
   EXPECT_CALL(view(), UpdateWithMediaMetadata(_)).Times(0);
   item().Freeze(base::DoNothing());
   item().MediaSessionMetadataChanged(metadata);
@@ -123,6 +132,16 @@ TEST_F(MediaSessionNotificationItemTest, Freezing_DoNotUpdateImage) {
   item().Freeze(base::DoNothing());
   item().MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, image);
+}
+
+TEST_F(MediaSessionNotificationItemTest, Freezing_DoNotUpdateChapterImage) {
+  SkBitmap image;
+  image.allocN32Pixels(10, 10);
+  image.eraseColor(SK_ColorMAGENTA);
+
+  EXPECT_CALL(view(), UpdateWithChapterArtwork(_, _)).Times(0);
+  item().Freeze(base::DoNothing());
+  item().MediaControllerChapterImageChanged(0, image);
 }
 
 TEST_F(MediaSessionNotificationItemTest, Freezing_DoNotUpdatePlaybackState) {
@@ -228,17 +247,27 @@ TEST_F(MediaSessionNotificationItemTest, SemiUnfreezesWithoutArtwork_Timeout) {
       media_session::mojom::MediaSessionImageType::kArtwork, initial_image);
   testing::Mock::VerifyAndClearExpectations(&view());
 
+  // Set an chapter image before freezing.
+  EXPECT_CALL(view(), UpdateWithChapterArtwork(_, _));
+  SkBitmap initial_chapter_image;
+  initial_chapter_image.allocN32Pixels(10, 10);
+  initial_chapter_image.eraseColor(SK_ColorMAGENTA);
+  item().MediaControllerChapterImageChanged(0, initial_chapter_image);
+  testing::Mock::VerifyAndClearExpectations(&view());
+
   // Freeze the item and clear the metadata.
   base::MockOnceClosure unfrozen_callback;
   EXPECT_CALL(unfrozen_callback, Run).Times(0);
   EXPECT_CALL(view(), UpdateWithMediaSessionInfo(_)).Times(0);
   EXPECT_CALL(view(), UpdateWithMediaMetadata(_)).Times(0);
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
+  EXPECT_CALL(view(), UpdateWithChapterArtwork(_, _)).Times(0);
   item().Freeze(unfrozen_callback.Get());
   item().MediaSessionInfoChanged(nullptr);
   item().MediaSessionMetadataChanged(std::nullopt);
   item().MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
+  item().MediaControllerChapterImageChanged(0, SkBitmap());
 
   // The item should be frozen and the view should contain the old data.
   EXPECT_TRUE(item().frozen());
@@ -264,6 +293,7 @@ TEST_F(MediaSessionNotificationItemTest, SemiUnfreezesWithoutArtwork_Timeout) {
   EXPECT_CALL(view(), UpdateWithMediaSessionInfo(_));
   EXPECT_CALL(view(), UpdateWithMediaMetadata(_));
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_)).Times(0);
+  EXPECT_CALL(view(), UpdateWithChapterArtwork(_, _)).Times(0);
   media_session::MediaMetadata metadata;
   metadata.title = u"title2";
   metadata.artist = u"artist2";
