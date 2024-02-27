@@ -20,9 +20,6 @@ constexpr base::TimeDelta kCheckDailyEventInternal = base::Seconds(60);
 
 }  // namespace
 
-const char PowerMetricsReporter::kDailyEventIntervalName[] =
-    "Power.MetricsDailyEventInterval";
-
 // static
 void PowerMetricsReporter::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
@@ -37,7 +34,7 @@ PowerMetricsReporter::PowerMetricsReporter(
       daily_event_(
           std::make_unique<metrics::DailyEvent>(pref_service_,
                                                 prefs::kPowerMetricsDailySample,
-                                                kDailyEventIntervalName)) {
+                                                std::string())) {
   power_manager_client_->AddObserver(this);
 
   daily_event_->CheckInterval();

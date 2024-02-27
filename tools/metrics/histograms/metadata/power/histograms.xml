@@ -1580,16 +1580,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.MetricsDailyEventInterval" enum="DailyEventIntervalType"
-    expires_after="M100">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Reasons why power-management-related daily metrics were reported. Chrome OS
-    only.
-  </summary>
-</histogram>
-
 <histogram name="Power.PC10inS0ixRuntimeResidencyRate" units="%"
     expires_after="2024-07-21">
   <owner>skardach@google.com</owner>
