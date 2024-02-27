@@ -52,9 +52,8 @@ class CRYPTO_EXPORT AppleKeychainV2 {
   // ItemDelete wraps the |SecItemDelete| function.
   virtual OSStatus ItemDelete(CFDictionaryRef query);
   // ItemDelete wraps the |SecItemUpdate| function.
-  virtual OSStatus ItemUpdate(
-      CFDictionaryRef query,
-      base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data);
+  virtual OSStatus ItemUpdate(CFDictionaryRef query,
+                              CFDictionaryRef keychain_data);
 
  protected:
   AppleKeychainV2();

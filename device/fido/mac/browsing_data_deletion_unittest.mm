@@ -8,6 +8,7 @@
 #include <Foundation/Foundation.h>
 #include <Security/Security.h>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -35,6 +36,9 @@ extern "C" {
 extern const CFStringRef kSecAttrNoLegacy;
 }
 
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
+
 namespace device {
 
 using test::TestCallbackReceiver;
@@ -53,20 +57,15 @@ const std::vector<uint8_t> kUserId = {10, 11, 12, 13, 14, 15};
 // Returns a query to use with Keychain instance methods that returns all
 // credentials in the non-legacy keychain that are tagged with the keychain
 // access group used in this test.
-base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> query(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query.get(), kSecClass, kSecClassKey);
-  base::apple::ScopedCFTypeRef<CFStringRef> access_group_ref(
-      base::SysUTF8ToCFStringRef(kKeychainAccessGroup));
-  CFDictionarySetValue(query.get(), kSecAttrAccessGroup,
-                       access_group_ref.get());
-  CFDictionarySetValue(query.get(), kSecAttrNoLegacy, kCFBooleanTrue);
-  CFDictionarySetValue(query.get(), kSecReturnAttributes, kCFBooleanTrue);
-  CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
-  return query;
+NSDictionary* BaseQuery() {
+  return @{
+    CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
+    CFToNSPtrCast(kSecAttrAccessGroup) :
+        base::SysUTF8ToNSString(kKeychainAccessGroup),
+    CFToNSPtrCast(kSecAttrNoLegacy) : @YES,
+    CFToNSPtrCast(kSecReturnAttributes) : @YES,
+    CFToNSPtrCast(kSecMatchLimit) : CFToNSPtrCast(kSecMatchLimitAll),
+  };
 }
 
 // Returns all WebAuthn credentials stored in the keychain, regardless of which
@@ -75,7 +74,8 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
 base::apple::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
   base::apple::ScopedCFTypeRef<CFArrayRef> items;
   OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemCopyMatching(
-      BaseQuery().get(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
+      NSToCFPtrCast(BaseQuery()),
+      reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
   if (status == errSecItemNotFound) {
     // The API returns null, but we should return an empty array instead to
     // distinguish from real errors.
@@ -95,8 +95,8 @@ ssize_t KeychainItemCount() {
 }
 
 bool ResetKeychain() {
-  OSStatus status =
-      crypto::AppleKeychainV2::GetInstance().ItemDelete(BaseQuery().get());
+  OSStatus status = crypto::AppleKeychainV2::GetInstance().ItemDelete(
+      NSToCFPtrCast(BaseQuery()));
   if (status != errSecSuccess && status != errSecItemNotFound) {
     OSSTATUS_DLOG(ERROR, status);
     return false;

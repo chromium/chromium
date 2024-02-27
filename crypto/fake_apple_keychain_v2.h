@@ -40,8 +40,7 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
   OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result) override;
   OSStatus ItemDelete(CFDictionaryRef query) override;
   OSStatus ItemUpdate(CFDictionaryRef query,
-                      base::apple::ScopedCFTypeRef<CFMutableDictionaryRef>
-                          keychain_data) override;
+                      CFDictionaryRef keychain_data) override;
 
  private:
   // items_ contains the keychain items created by `KeyCreateRandomKey`.

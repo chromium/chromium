@@ -225,9 +225,8 @@ OSStatus FakeAppleKeychainV2::ItemDelete(CFDictionaryRef query) {
   return errSecItemNotFound;
 }
 
-OSStatus FakeAppleKeychainV2::ItemUpdate(
-    CFDictionaryRef query,
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update) {
+OSStatus FakeAppleKeychainV2::ItemUpdate(CFDictionaryRef query,
+                                         CFDictionaryRef attributes_to_update) {
   DCHECK_EQ(base::apple::GetValueFromDictionary<CFStringRef>(query, kSecClass),
             kSecClassKey);
   DCHECK(CFEqual(base::apple::GetValueFromDictionary<CFStringRef>(
@@ -249,10 +248,10 @@ OSStatus FakeAppleKeychainV2::ItemUpdate(
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> item_copy(
         CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
                                       item.get()));
-    size_t size = CFDictionaryGetCount(attributes_to_update.get());
+    size_t size = CFDictionaryGetCount(attributes_to_update);
     std::vector<CFStringRef> keys(size, nullptr);
     std::vector<CFDictionaryRef> values(size, nullptr);
-    CFDictionaryGetKeysAndValues(attributes_to_update.get(),
+    CFDictionaryGetKeysAndValues(attributes_to_update,
                                  reinterpret_cast<const void**>(keys.data()),
                                  reinterpret_cast<const void**>(values.data()));
     for (size_t i = 0; i < size; ++i) {

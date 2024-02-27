@@ -24,6 +24,9 @@
 #include "crypto/apple_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
+
 namespace device::fido::mac {
 
 namespace {
@@ -62,22 +65,19 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> params(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(params.get(), kSecAttrKeyType,
-                       kSecAttrKeyTypeECSECPrimeRandom);
-  CFDictionarySetValue(params.get(), kSecAttrKeySizeInBits,
-                       base::apple::NSToCFPtrCast(@256));
-  CFDictionarySetValue(params.get(), kSecAttrTokenID,
-                       kSecAttrTokenIDSecureEnclave);
-  CFDictionarySetValue(params.get(), kSecAttrIsPermanent, kCFBooleanFalse);
+  NSDictionary* params = @{
+    CFToNSPtrCast(kSecAttrKeyType) :
+        CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
+    CFToNSPtrCast(kSecAttrKeySizeInBits) : @256,
+    CFToNSPtrCast(kSecAttrTokenID) :
+        CFToNSPtrCast(kSecAttrTokenIDSecureEnclave),
+    CFToNSPtrCast(kSecAttrIsPermanent) : @NO,
+  };
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key(
       crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
-          params.get(), cferr.InitializeInto()));
+          NSToCFPtrCast(params), cferr.InitializeInto()));
   return !!private_key;
 }
 

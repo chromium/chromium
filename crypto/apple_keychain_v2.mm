@@ -80,10 +80,9 @@ OSStatus AppleKeychainV2::ItemDelete(CFDictionaryRef query) {
   return SecItemDelete(query);
 }
 
-OSStatus AppleKeychainV2::ItemUpdate(
-    CFDictionaryRef query,
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data) {
-  return SecItemUpdate(query, keychain_data.get());
+OSStatus AppleKeychainV2::ItemUpdate(CFDictionaryRef query,
+                                     CFDictionaryRef keychain_data) {
+  return SecItemUpdate(query, keychain_data);
 }
 
 }  // namespace crypto
