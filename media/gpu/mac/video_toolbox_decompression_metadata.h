@@ -45,6 +45,9 @@ struct MEDIA_GPU_EXPORT VideoToolboxDecodeMetadata {
   gfx::ColorSpace color_space;
   std::optional<gfx::HDRMetadata> hdr_metadata;
 
+  // The frame should be dropped after decoding. Used to implement Reset().
+  bool discard = false;
+
   // Session metadata is included in case the decoder needs to be reconfigured.
   // TODO(crbug.com/1331597): Pass separately, maybe even independently.
   VideoToolboxDecompressionSessionMetadata session_metadata;

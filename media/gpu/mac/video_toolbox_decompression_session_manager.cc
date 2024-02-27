@@ -66,12 +66,17 @@ void VideoToolboxDecompressionSessionManager::Reset() {
 
   pending_decodes_ = {};
 
-  DestroySession();
+  for (auto& it : active_decodes_) {
+    it.second->discard = true;
+  }
+
+  draining_ = false;
 }
 
 size_t VideoToolboxDecompressionSessionManager::NumDecodes() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  // Note: This counts frames that will be discarded due to a Reset().
   return pending_decodes_.size() + active_decodes_.size();
 }
 
@@ -80,9 +85,9 @@ void VideoToolboxDecompressionSessionManager::NotifyError(DecoderStatus status) 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!has_error_);
 
-  Reset();
-
   has_error_ = true;
+  pending_decodes_ = {};
+  DestroySession();
 
   // We may still be executing inside Decode() and don't want to make a
   // re-entrant call.
@@ -176,7 +181,6 @@ bool VideoToolboxDecompressionSessionManager::CreateSession(
       decoder_config.get(),
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
-  // TODO(crbug.com/1331597): Use session_metadata.allow_software_decoding.
   CFDictionarySetValue(
       decoder_config.get(),
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
@@ -306,8 +310,10 @@ void VideoToolboxDecompressionSessionManager::OnOutput(
     }
   }
 
-  // OnOutput() was posted, so this is never re-entrant.
-  output_cb_.Run(std::move(image), std::move(metadata));
+  if (!metadata->discard) {
+    // OnOutput() was posted, so this is never re-entrant.
+    output_cb_.Run(std::move(image), std::move(metadata));
+  }
 }
 
 void VideoToolboxDecompressionSessionManager::SetDecompressionSessionForTesting(
