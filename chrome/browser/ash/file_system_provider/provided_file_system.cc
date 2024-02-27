@@ -872,12 +872,13 @@ void ProvidedFileSystem::OnRemoveWatcherInQueueCompleted(
 
   it->second.subscribers.erase(origin);
 
-  for (auto& observer : observers_)
-    observer.OnWatcherListChanged(file_system_info_, watchers_);
-
   // If there are no more subscribers, then remove the watcher.
   if (it->second.subscribers.empty())
     watchers_.erase(it);
+
+  for (auto& observer : observers_) {
+    observer.OnWatcherListChanged(file_system_info_, watchers_);
+  }
 
   std::move(callback).Run(base::File::FILE_OK);
   watcher_queue_.Complete(token);

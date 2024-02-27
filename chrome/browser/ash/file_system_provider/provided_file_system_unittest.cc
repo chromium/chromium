@@ -145,7 +145,7 @@ class Observer : public ProvidedFileSystemObserver {
     const ProvidedFileSystemObserver::Changes changes_;
   };
 
-  Observer() : list_changed_counter_(0), tag_updated_counter_(0) {}
+  Observer() = default;
 
   Observer(const Observer&) = delete;
   Observer& operator=(const Observer&) = delete;
@@ -172,6 +172,7 @@ class Observer : public ProvidedFileSystemObserver {
                             const Watchers& watchers) override {
     EXPECT_EQ(kFileSystemId, file_system_info.file_system_id());
     ++list_changed_counter_;
+    last_watchers_size_ = watchers.size();
   }
 
   // Completes handling the OnWatcherChanged event.
@@ -186,11 +187,13 @@ class Observer : public ProvidedFileSystemObserver {
     return change_events_;
   }
   int tag_updated_counter() const { return tag_updated_counter_; }
+  int last_watchers_size() const { return last_watchers_size_; }
 
  private:
   std::vector<std::unique_ptr<ChangeEvent>> change_events_;
-  int list_changed_counter_;
-  int tag_updated_counter_;
+  int list_changed_counter_ = 0;
+  int tag_updated_counter_ = 0;
+  int last_watchers_size_ = 0;
   base::OnceClosure complete_callback_;
 };
 
@@ -745,6 +748,43 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, RemoveWatcher) {
 
     Watchers* const watchers = provided_file_system_->GetWatchers();
     EXPECT_EQ(0u, watchers->size());
+  }
+
+  provided_file_system_->RemoveObserver(&observer);
+}
+
+TEST_F(FileSystemProviderProvidedFileSystemTest,
+       RemoveWatcher_NotifiedAfterWatchersRemoved) {
+  Observer observer;
+  provided_file_system_->AddObserver(&observer);
+
+  {
+    // Watch a directory not recursively.
+    Log log;
+    NotificationLog notification_log;
+
+    provided_file_system_->AddWatcher(
+        GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
+        false /* persistent */,
+        base::BindOnce(&LogStatus, base::Unretained(&log)),
+        base::BindRepeating(&LogNotification,
+                            base::Unretained(&notification_log)));
+    base::RunLoop().RunUntilIdle();
+
+    Watchers* const watchers = provided_file_system_->GetWatchers();
+    EXPECT_EQ(1u, watchers->size());
+  }
+
+  {
+    Log log;
+    provided_file_system_->RemoveWatcher(
+        GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
+        base::BindOnce(&LogStatus, base::Unretained(&log)));
+    base::RunLoop().RunUntilIdle();
+
+    // The observer should be notified after the watchers list was modified, so
+    // it should see 0 watchers.
+    EXPECT_EQ(0, observer.last_watchers_size());
   }
 
   provided_file_system_->RemoveObserver(&observer);

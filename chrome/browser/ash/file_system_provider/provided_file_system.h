@@ -214,7 +214,7 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
   // Notifies about a notifier even within |watcher_queue_|.
   AbortCallback NotifyInQueue(std::unique_ptr<NotifyInQueueArgs> args);
 
-  // Called when adding a watcher is completed with either success or en error.
+  // Called when adding a watcher is completed with either success or an error.
   void OnAddWatcherInQueueCompleted(
       size_t token,
       const base::FilePath& entry_path,
@@ -223,7 +223,7 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
       storage::AsyncFileUtil::StatusCallback callback,
       base::File::Error result);
 
-  // Called when adding a watcher is completed with either a success or an
+  // Called when removing a watcher is completed with either a success or an
   // error.
   void OnRemoveWatcherInQueueCompleted(
       size_t token,
