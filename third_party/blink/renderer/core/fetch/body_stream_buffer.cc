@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
-#include "third_party/blink/renderer/core/fetch/body_stream_buffer_underlying_byte_source.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 #include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
@@ -142,11 +141,7 @@ BodyStreamBuffer::BodyStreamBuffer(
 void BodyStreamBuffer::Init() {
   DCHECK(consumer_);
 
-  underlying_byte_source_ =
-      MakeGarbageCollected<BodyStreamBufferUnderlyingByteSource>(script_state_,
-                                                                 this);
-  stream_ =
-      ReadableStream::CreateByteStream(script_state_, underlying_byte_source_);
+  stream_ = ReadableStream::CreateByteStream(script_state_, this);
   stream_broken_ = !stream_;
 
   // ContextDestroyed() can be called inside the ReadableStream constructor when
@@ -332,17 +327,43 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
                                       cached_metadata_handler, side_data_blob);
 }
 
-ScriptPromise BodyStreamBuffer::Cancel(ScriptState* script_state,
-                                       ScriptValue reason,
-                                       ExceptionState& exception_state) {
-  ScriptPromise cancel_promise =
-      underlying_byte_source_->Cancel(reason.V8Value(), exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
-    return ScriptPromise::CastUndefined(script_state);
-  } else {
-    return cancel_promise;
+ScriptPromise BodyStreamBuffer::Pull(ReadableByteStreamController* controller,
+                                     ExceptionState& exception_state) {
+  if (!consumer_) {
+    // This is a speculative workaround for a crash. See
+    // https://crbug.com/773525.
+    // TODO(yhirano): Remove this branch or have a better comment.
+    return ScriptPromise::CastUndefined(GetScriptState());
   }
+
+  if (stream_needs_more_) {
+    return ScriptPromise::CastUndefined(GetScriptState());
+  }
+  stream_needs_more_ = true;
+  if (!in_process_data_) {
+    ProcessData(exception_state);
+  }
+  return ScriptPromise::CastUndefined(GetScriptState());
+}
+
+ScriptPromise BodyStreamBuffer::Cancel(ExceptionState& exception_state) {
+  return Cancel(v8::Undefined(GetScriptState()->GetIsolate()), exception_state);
+}
+
+ScriptPromise BodyStreamBuffer::Cancel(v8::Local<v8::Value> reason,
+                                       ExceptionState& exception_state) {
+  ReadableStreamController* controller = Stream()->GetController();
+  DCHECK(controller->IsByteStreamController());
+  ReadableByteStreamController* byte_controller =
+      To<ReadableByteStreamController>(controller);
+  byte_controller->Close(GetScriptState(), byte_controller, exception_state);
+  DCHECK(!exception_state.HadException());
+  CancelConsumer();
+  return ScriptPromise::CastUndefined(GetScriptState());
+}
+
+ScriptState* BodyStreamBuffer::GetScriptState() {
+  return script_state_.Get();
 }
 
 void BodyStreamBuffer::OnStateChange() {
@@ -418,7 +439,6 @@ scoped_refptr<BlobDataHandle> BodyStreamBuffer::TakeSideDataBlob() {
 void BodyStreamBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(stream_);
-  visitor->Trace(underlying_byte_source_);
   visitor->Trace(stream_uploader_);
   visitor->Trace(consumer_);
   visitor->Trace(loader_);
@@ -426,6 +446,7 @@ void BodyStreamBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(stream_buffer_abort_handle_);
   visitor->Trace(loader_client_abort_handle_);
   visitor->Trace(cached_metadata_handler_);
+  UnderlyingByteSourceBase::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -446,9 +467,9 @@ void BodyStreamBuffer::Abort() {
 }
 
 void BodyStreamBuffer::Close(ExceptionState& exception_state) {
-  // Close() can be called during construction, in which case Controller()
+  // Close() can be called during construction, in which case `stream_`
   // will not be set yet.
-  if (underlying_byte_source_) {
+  if (stream_) {
     if (script_state_->ContextIsValid()) {
       ScriptState::Scope scope(script_state_);
       stream_->CloseStream(script_state_, exception_state);

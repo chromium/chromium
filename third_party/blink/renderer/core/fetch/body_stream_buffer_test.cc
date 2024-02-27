@@ -630,7 +630,7 @@ TEST_F(BodyStreamBufferTest, SourceShouldBeCanceledWhenCanceled) {
   ScriptValue reason(scope.GetIsolate(),
                      V8String(scope.GetIsolate(), "reason"));
   EXPECT_FALSE(consumer->IsCancelled());
-  buffer->Cancel(scope.GetScriptState(), reason, ASSERT_NO_EXCEPTION);
+  buffer->Cancel(reason.V8Value(), ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(consumer->IsCancelled());
 }
 
