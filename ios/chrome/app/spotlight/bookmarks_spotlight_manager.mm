@@ -344,6 +344,11 @@ class SpotlightBookmarkModelBridge;
     return;
   }
 
+  if (self.isAppInBackground) {
+    // The next batch will auto resume on foreground.
+    return;
+  }
+
   for (int i = 0; i < kBatchSize; i++) {
     if (_indexingStack.empty() || _nodesIndexed > kMaxInitialIndexSize) {
       self.modelUpdatesShouldCauseFullReindex = NO;
@@ -392,7 +397,12 @@ class SpotlightBookmarkModelBridge;
 
 - (void)appWillEnterForeground {
   [super appWillEnterForeground];
-  [self clearAndReindexModelIfNeeded];
+
+  if (self.needsClearAndReindex) {
+    [self clearAndReindexModelIfNeeded];
+  } else {
+    [self indexNextBatchInStack];
+  }
 }
 
 - (void)clearAndReindexModel {
@@ -409,6 +419,9 @@ class SpotlightBookmarkModelBridge;
   if (self.isAppInBackground || !self.needsClearAndReindex) {
     return;
   }
+
+  [self stopIndexing];
+  self.needsClearAndReindex = NO;
 
   __weak BookmarksSpotlightManager* weakSelf = self;
   [self.spotlightInterface
@@ -428,6 +441,7 @@ class SpotlightBookmarkModelBridge;
   if (self.isShuttingDown) {
     return;
   }
+
   // If the app is in background at this point, avoid accessing the spotlight
   // index and schedule a full reindex on foreground.
   if (self.isAppInBackground) {
@@ -442,7 +456,6 @@ class SpotlightBookmarkModelBridge;
   // operations.
   DCHECK(_indexingStack.empty());
   DCHECK(!self.nextBatchOperation);
-  DCHECK(self.modelUpdatesShouldCauseFullReindex);
 
   // If this method is called before bookmark model loaded, or after it
   // unloaded, reindexing won't be possible. The latter should happen at
