@@ -209,6 +209,8 @@ import org.chromium.chrome.browser.tasks.JourneyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
 import org.chromium.chrome.browser.tasks.TasksUma;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
@@ -2300,6 +2302,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         mTabModelSelector,
                         this::getSnackbarManager,
                         dialogVisibilitySupplier);
+
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            TabModelUtils.runOnTabStateInitialized(
+                    getTabModelSelectorSupplier().get(),
+                    (tabModelSelectorReturn) -> {
+                        TabGroupColorUtils.assignTabGroupColorsIfApplicable(
+                                (TabGroupModelFilter)
+                                        tabModelSelectorReturn
+                                                .getTabModelFilterProvider()
+                                                .getCurrentTabModelFilter());
+                    });
+        } else {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, TabGroupColorUtils::clearTabGroupColorInfo);
+        }
 
         mInactivityTracker =
                 new ChromeInactivityTracker(
