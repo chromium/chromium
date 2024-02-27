@@ -190,6 +190,7 @@
       # Does not currently work on Lacros configurations.
       'linux-lacros-asan-lsan-rel',
       'linux-lacros-code-coverage',
+      'linux-lacros-rel-dangling-ptr-fyi',
       'linux-lacros-tester-rel',
       'linux-lacros-tester-fyi-rel',
       'linux-lacros-dbg-tests-fyi',
@@ -1215,6 +1216,15 @@
         'args': [
           '--gtest_filter=-All/MultiActionAPITest.SessionStorageDoesNotPersistBetweenOpenings/*:All/MultiActionAPITest.PopupCreation/*'
         ],
+      },
+      'linux-lacros-rel-dangling-ptr-fyi': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1473501
+        'retry_only_failed_tests': True,
+        'swarming': {
+          'shards': 20,
+        },
       },
       'linux-lacros-tester-rel': {
         # Only retry the individual failed tests instead of rerunning entire
@@ -2719,6 +2729,11 @@
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
         ],
       },
+      'linux-lacros-rel-dangling-ptr-fyi': {
+        'args': [
+          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
+        ],
+      },
       'linux-lacros-tester-rel': {
         'args': [
           '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
@@ -2762,6 +2777,12 @@
         ],
       },
       'linux-lacros-dbg-tests-fyi': {
+        'args': [
+          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
+          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
+        ],
+      },
+      'linux-lacros-rel-dangling-ptr-fyi': {
         'args': [
           '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
           'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
@@ -4015,6 +4036,7 @@
       # pthreadpool is not built for ChromeOS currently.
       'linux-chromeos-dbg',
       'linux-chromeos-rel',
+      'linux-lacros-rel-dangling-ptr-fyi',
       'linux-lacros-tester-rel',
     ],
   },
@@ -4688,6 +4710,16 @@
       'linux-lacros-dbg-tests-fyi': {
         'args': [
           '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
+          'TextfieldTest*:'
+        ],
+      },
+      'linux-lacros-rel-dangling-ptr-fyi': {
+        'args': [
+          '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
+          'DesktopWidgetTest*:'
+          'DesktopWindowTreeHostPlatformTest*:'
+          'EditableComboboxTest*:'
+          'MenuRunnerTest*:'
           'TextfieldTest*:'
         ],
       },

@@ -42208,23 +42208,6 @@
       {
         "isolate_profile_data": true,
         "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "angle_unittests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
-        "use_isolated_scripts_api": true
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "app_shell_unittests",
@@ -42380,13 +42363,14 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "browser_tests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 20
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -42685,6 +42669,9 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -42701,6 +42688,9 @@
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"
       },
       {
+        "args": [
+          "--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -43379,23 +43369,6 @@
         "test_id_prefix": "ninja://printing:printing_unittests/"
       },
       {
-        "ci_only": true,
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "pthreadpool_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "pthreadpool_unittests",
-        "test_id_prefix": "ninja://third_party/pthreadpool:pthreadpool_unittests/"
-      },
-      {
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -43621,6 +43594,9 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:DesktopWidgetTest*:DesktopWindowTreeHostPlatformTest*:EditableComboboxTest*:MenuRunnerTest*:TextfieldTest*:"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
