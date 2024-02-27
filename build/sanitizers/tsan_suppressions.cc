@@ -42,6 +42,9 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/476529
     "deadlock:cc::VideoLayerImpl::WillDraw\n"
 
+    // http://crbug.com/328826
+    "race:skia::(anonymous namespace)::g_pixel_geometry\n"
+
     // http://crbug.com/328868
     "race:PR_Lock\n"
 
