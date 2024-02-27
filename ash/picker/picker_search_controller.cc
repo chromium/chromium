@@ -87,7 +87,7 @@ void PickerSearchController::StartSearch(
                                 category == PickerCategory::kOpenTabs)) {
     cros_search_start_ = base::TimeTicks::Now();
     client_->StartCrosSearch(
-        query,
+        query, category,
         base::BindRepeating(&PickerSearchController::HandleCrosSearchResults,
                             weak_ptr_factory_.GetWeakPtr()));
   }

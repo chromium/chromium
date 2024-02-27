@@ -79,7 +79,7 @@ class MockPickerClient : public PickerClient {
     // Set default behaviours. These can be overridden with `WillOnce` and
     // `WillRepeatedly`.
     ON_CALL(*this, StartCrosSearch)
-        .WillByDefault(SaveArg<1>(cros_search_callback()));
+        .WillByDefault(SaveArg<2>(cros_search_callback()));
     ON_CALL(*this, FetchGifSearch)
         .WillByDefault(
             Invoke(this, &MockPickerClient::FetchGifSearchToSetCallback));
@@ -105,7 +105,9 @@ class MockPickerClient : public PickerClient {
   MOCK_METHOD(void, StopGifSearch, (), (override));
   MOCK_METHOD(void,
               StartCrosSearch,
-              (const std::u16string& query, CrosSearchResultsCallback callback),
+              (const std::u16string& query,
+               std::optional<PickerCategory> category,
+               CrosSearchResultsCallback callback),
               (override));
   MOCK_METHOD(void, StopCrosQuery, (), (override));
 
@@ -167,7 +169,7 @@ TEST_F(PickerSearchControllerTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _)).Times(1);
+  EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _, _)).Times(1);
 
   controller.StartSearch(
       u"cat", std::nullopt,
@@ -252,6 +254,7 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
   ON_CALL(client, StartCrosSearch)
       .WillByDefault([&search_started, &client](
                          const std::u16string& query,
+                         std::optional<PickerCategory> category,
                          PickerClient::CrosSearchResultsCallback callback) {
         client.StopCrosQuery();
         search_started = true;
@@ -360,6 +363,7 @@ TEST_F(PickerSearchControllerTest,
       .Times(2)
       .WillRepeatedly([&search_started, &client](
                           const std::u16string& query,
+                          std::optional<PickerCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client.StopCrosQuery();
         search_started = true;
@@ -399,6 +403,7 @@ TEST_F(PickerSearchControllerTest,
       .Times(2)
       .WillRepeatedly([&search_started, &client](
                           const std::u16string& query,
+                          std::optional<PickerCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client.StopCrosQuery();
         search_started = true;
@@ -505,6 +510,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordFileMetricsIfNoFileResponse) {
       .Times(2)
       .WillRepeatedly([&search_started, &client](
                           const std::u16string& query,
+                          std::optional<PickerCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client.StopCrosQuery();
         search_started = true;
@@ -544,6 +550,7 @@ TEST_F(PickerSearchControllerTest,
       .Times(2)
       .WillRepeatedly([&search_started, &client](
                           const std::u16string& query,
+                          std::optional<PickerCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client.StopCrosQuery();
         search_started = true;
@@ -652,6 +659,7 @@ TEST_F(PickerSearchControllerTest, DoesNotRecordDriveMetricsIfNoFileResponse) {
       .Times(2)
       .WillRepeatedly([&search_started, &client](
                           const std::u16string& query,
+                          std::optional<PickerCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client.StopCrosQuery();
         search_started = true;
@@ -691,6 +699,7 @@ TEST_F(PickerSearchControllerTest,
       .Times(2)
       .WillRepeatedly([&search_started, &client](
                           const std::u16string& query,
+                          std::optional<PickerCategory> category,
                           PickerClient::CrosSearchResultsCallback callback) {
         client.StopCrosQuery();
         search_started = true;
@@ -1100,15 +1109,21 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
 TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
-  EXPECT_CALL(client, StartCrosSearch(Eq(u"ant"), _)).Times(1);
-  EXPECT_CALL(client, StartCrosSearch(Eq(u"bat"), _)).Times(1);
-  EXPECT_CALL(client, StartCrosSearch(Eq(u"cat"), _)).Times(1);
+  EXPECT_CALL(client,
+              StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kBookmarks), _))
+      .Times(1);
+  EXPECT_CALL(client, StartCrosSearch(Eq(u"bat"),
+                                      Eq(PickerCategory::kBrowsingHistory), _))
+      .Times(1);
+  EXPECT_CALL(client,
+              StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kOpenTabs), _))
+      .Times(1);
   EXPECT_CALL(client, FetchGifSearch(_, _)).Times(0);
 
-  controller.StartSearch(u"cat", PickerCategory::kBookmarks, base::DoNothing());
-  controller.StartSearch(u"ant", PickerCategory::kBrowsingHistory,
+  controller.StartSearch(u"ant", PickerCategory::kBookmarks, base::DoNothing());
+  controller.StartSearch(u"bat", PickerCategory::kBrowsingHistory,
                          base::DoNothing());
-  controller.StartSearch(u"bat", PickerCategory::kOpenTabs, base::DoNothing());
+  controller.StartSearch(u"cat", PickerCategory::kOpenTabs, base::DoNothing());
 }
 
 }  // namespace

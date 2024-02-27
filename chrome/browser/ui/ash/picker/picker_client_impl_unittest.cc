@@ -35,9 +35,12 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyNumber;
+using ::testing::Contains;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::NiceMock;
+using ::testing::Not;
 using ::testing::Property;
 using ::testing::VariantWith;
 
@@ -62,11 +65,14 @@ void AddSearchToHistory(TestingProfile* profile, GURL url) {
   profile->BlockUntilHistoryProcessesPendingRequests();
 }
 
-void AddBookmarks(TestingProfile* profile, std::u16string title, GURL url) {
+void AddBookmarks(TestingProfile* profile,
+                  std::u16string_view title,
+                  GURL url) {
   auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, title, url);
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0,
+                         std::u16string(title), url);
 }
 
 class PickerClientImplTest : public testing::Test {
@@ -183,8 +189,65 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
       .WillOnce([&]() { test_done.SetValue(); });
 
   client.StartCrosSearch(
-      u"foo", base::BindRepeating(&MockSearchResultsCallback::Call,
-                                  base::Unretained(&mock_search_callback)));
+      u"foo", /*category=*/std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&mock_search_callback)));
+
+  ASSERT_TRUE(test_done.Wait());
+}
+
+TEST_F(PickerClientImplTest, StartCrosSearchFilteredByBrowsingHistory) {
+  ash::PickerController controller;
+  LoginState login = LogInAsFakeUser();
+  PickerClientImpl client(&controller, login.user_manager);
+  AddSearchToHistory(login.profile, GURL("http://foo.com/history"));
+  AddBookmarks(login.profile, u"Foobaz", GURL("http://foo.com/bookmarks"));
+  base::test::TestFuture<void> test_done;
+
+  NiceMock<MockSearchResultsCallback> mock_search_callback;
+  EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
+  EXPECT_CALL(
+      mock_search_callback,
+      Call(ash::AppListSearchResultType::kOmnibox,
+           Not(Contains(Property(
+               "data", &ash::PickerSearchResult::data,
+               VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
+                   "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
+                   GURL("http://foo.com/bookmarks"))))))))
+      .WillOnce([&]() { test_done.SetValue(); });
+
+  client.StartCrosSearch(
+      u"foo", /*category=*/ash::PickerCategory::kBrowsingHistory,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&mock_search_callback)));
+
+  ASSERT_TRUE(test_done.Wait());
+}
+
+TEST_F(PickerClientImplTest, StartCrosSearchFilteredByBookmarks) {
+  ash::PickerController controller;
+  LoginState login = LogInAsFakeUser();
+  PickerClientImpl client(&controller, login.user_manager);
+  AddSearchToHistory(login.profile, GURL("http://foo.com/history"));
+  AddBookmarks(login.profile, u"Foobaz", GURL("http://foo.com/bookmarks"));
+  base::test::TestFuture<void> test_done;
+
+  NiceMock<MockSearchResultsCallback> mock_search_callback;
+  EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
+  EXPECT_CALL(
+      mock_search_callback,
+      Call(ash::AppListSearchResultType::kOmnibox,
+           Not(Contains(Property(
+               "data", &ash::PickerSearchResult::data,
+               VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
+                   "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
+                   GURL("http://foo.com/history"))))))))
+      .WillOnce([&]() { test_done.SetValue(); });
+
+  client.StartCrosSearch(
+      u"foo", /*category=*/ash::PickerCategory::kBookmarks,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&mock_search_callback)));
 
   ASSERT_TRUE(test_done.Wait());
 }

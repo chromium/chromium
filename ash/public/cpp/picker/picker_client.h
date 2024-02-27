@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -52,6 +53,7 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // Starts a search using the CrOS Search API
   // (`app_list::SearchEngine::StartSearch`).
   virtual void StartCrosSearch(const std::u16string& query,
+                               std::optional<PickerCategory> category,
                                CrosSearchResultsCallback callback) = 0;
   // Stops a search using the CrOS Search API
   // (`app_list::SearchEngine::StopQuery`).

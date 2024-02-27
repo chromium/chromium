@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -29,6 +30,7 @@ class ChromeSearchResult;
 
 namespace app_list {
 class SearchEngine;
+class SearchProvider;
 }
 
 namespace ash {
@@ -66,6 +68,7 @@ class PickerClientImpl
                       FetchGifsCallback callback) override;
   void StopGifSearch() override;
   void StartCrosSearch(const std::u16string& query,
+                       std::optional<ash::PickerCategory> category,
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
 
@@ -116,11 +119,18 @@ class PickerClientImpl
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
+  std::unique_ptr<app_list::SearchProvider> CreateOmniboxProvider(
+      int provider_types);
+
   raw_ptr<ash::PickerController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<app_list::SearchEngine> search_engine_;
   PickerAppListControllerDelegate app_list_controller_delegate_;
+
+  // A dedicated cros search engine for filtered searches.
+  std::unique_ptr<app_list::SearchEngine> filtered_search_engine_;
+  std::optional<ash::PickerCategory> current_filter_category_;
 
   ash::GifTenorApiFetcher gif_tenor_api_fetcher_;
   std::optional<std::string> current_gif_search_query_;

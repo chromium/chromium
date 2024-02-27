@@ -68,6 +68,7 @@ class TestPickerClient : public PickerClient {
                       FetchGifsCallback callback) override {}
   void StopGifSearch() override {}
   void StartCrosSearch(const std::u16string& query,
+                       std::optional<PickerCategory> category,
                        CrosSearchResultsCallback callback) override {}
   void StopCrosQuery() override {}
 

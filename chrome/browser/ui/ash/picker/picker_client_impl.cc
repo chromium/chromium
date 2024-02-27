@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,13 +58,30 @@ constexpr int kMaxGifsToSearch = 4;
 constexpr base::span<std::string_view> kImageExtensions = {
     (std::string_view[]){".jpg", ".jpeg", ".png", ".gif", ".webp"}};
 
-int AutocompleteProviderTypes() {
-  return AutocompleteProvider::TYPE_BOOKMARK |
-         AutocompleteProvider::TYPE_HISTORY_QUICK |
-         AutocompleteProvider::TYPE_HISTORY_URL |
-         AutocompleteProvider::TYPE_HISTORY_FUZZY |
-         AutocompleteProvider::TYPE_OPEN_TAB |
-         AutocompleteProvider::TYPE_BOOKMARK;
+int GetAutocompleteProviderTypes(ash::PickerCategory category) {
+  switch (category) {
+    case ash::PickerCategory::kEmojis:
+    case ash::PickerCategory::kSymbols:
+    case ash::PickerCategory::kEmoticons:
+    case ash::PickerCategory::kGifs:
+      DLOG(FATAL) << "Unexpected category for autocomplete: "
+                  << static_cast<int>(category);
+      return 0;
+    case ash::PickerCategory::kBookmarks:
+      return AutocompleteProvider::TYPE_BOOKMARK;
+    case ash::PickerCategory::kBrowsingHistory:
+      return AutocompleteProvider::TYPE_HISTORY_QUICK |
+             AutocompleteProvider::TYPE_HISTORY_URL |
+             AutocompleteProvider::TYPE_HISTORY_FUZZY;
+    case ash::PickerCategory::kOpenTabs:
+      return AutocompleteProvider::TYPE_OPEN_TAB;
+  }
+}
+
+int GetAllAutocompleteProviderTypes() {
+  return GetAutocompleteProviderTypes(ash::PickerCategory::kBookmarks) |
+         GetAutocompleteProviderTypes(ash::PickerCategory::kBrowsingHistory) |
+         GetAutocompleteProviderTypes(ash::PickerCategory::kOpenTabs);
 }
 
 }  // namespace
@@ -146,13 +163,45 @@ void PickerClientImpl::StopGifSearch() {
   current_gif_search_query_.reset();
 }
 
-void PickerClientImpl::StartCrosSearch(const std::u16string& query,
-                                       CrosSearchResultsCallback callback) {
-  CHECK(search_engine_);
-  search_engine_->StartSearch(
-      query, app_list::SearchOptions(),
-      base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
-                          weak_factory_.GetWeakPtr(), std::move(callback)));
+void PickerClientImpl::StartCrosSearch(
+    const std::u16string& query,
+    std::optional<ash::PickerCategory> category,
+    CrosSearchResultsCallback callback) {
+  if (!category.has_value()) {
+    CHECK(search_engine_);
+    search_engine_->StartSearch(
+        query, app_list::SearchOptions(),
+        base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
+                            weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  switch (*category) {
+    case ash::PickerCategory::kEmojis:
+    case ash::PickerCategory::kSymbols:
+    case ash::PickerCategory::kEmoticons:
+    case ash::PickerCategory::kGifs:
+      DLOG(FATAL) << "Unexpected category for StartCrosSearch: "
+                  << static_cast<int>(*category);
+      break;
+    case ash::PickerCategory::kBookmarks:
+    case ash::PickerCategory::kBrowsingHistory:
+    case ash::PickerCategory::kOpenTabs: {
+      if (filtered_search_engine_ == nullptr ||
+          current_filter_category_ != category) {
+        filtered_search_engine_ =
+            std::make_unique<app_list::SearchEngine>(profile_);
+        filtered_search_engine_->AddProvider(
+            CreateOmniboxProvider(GetAutocompleteProviderTypes(*category)));
+        current_filter_category_ = category;
+      }
+
+      filtered_search_engine_->StartSearch(
+          query, app_list::SearchOptions(),
+          base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
+                              weak_factory_.GetWeakPtr(), std::move(callback)));
+    }
+  }
 }
 
 void PickerClientImpl::OnCrosSearchResultsUpdated(
@@ -245,22 +294,26 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   profile_ = profile;
 
   search_engine_ = std::make_unique<app_list::SearchEngine>(profile_);
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    // TODO: b/326147929 - Add autocomplete provider types for the Lacros
-    // provider.
-    search_engine_->AddProvider(
-        std::make_unique<app_list::OmniboxLacrosProvider>(
-            profile_, &app_list_controller_delegate_,
-            crosapi::CrosapiManager::Get()));
-  } else {
-    search_engine_->AddProvider(std::make_unique<app_list::OmniboxProvider>(
-        profile_, &app_list_controller_delegate_, AutocompleteProviderTypes()));
-  }
-
+  search_engine_->AddProvider(
+      CreateOmniboxProvider(GetAllAutocompleteProviderTypes()));
   search_engine_->AddProvider(std::make_unique<app_list::FileSearchProvider>(
       profile_, base::FileEnumerator::FileType::FILES));
   search_engine_->AddProvider(
       std::make_unique<app_list::DriveSearchProvider>(profile_));
+}
+
+std::unique_ptr<app_list::SearchProvider>
+PickerClientImpl::CreateOmniboxProvider(int provider_types) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    // TODO: b/326147929 - Add autocomplete provider types for the Lacros
+    // provider.
+    return std::make_unique<app_list::OmniboxLacrosProvider>(
+        profile_, &app_list_controller_delegate_,
+        crosapi::CrosapiManager::Get());
+  } else {
+    return std::make_unique<app_list::OmniboxProvider>(
+        profile_, &app_list_controller_delegate_, provider_types);
+  }
 }
 
 PickerClientImpl::PickerAppListControllerDelegate::
