@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/containers/span.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace qr_code_generator {

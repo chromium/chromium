@@ -22,11 +22,17 @@ using base::android::ScopedJavaLocalRef;
 static ScopedJavaLocalRef<jobject> JNI_QRCodeGenerator_GenerateBitmap(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_data_string) {
+  // TODO(https://crbug.com/325664342): Audit if `QuietZone::kIncluded`
+  // can/should be used instead (this may require testing if the different image
+  // size works well with surrounding UI elements).  Note that the absence of a
+  // quiet zone may interfere with decoding of QR codes even for small codes
+  // (for examples see #comment8, #comment9 and #comment6 in the bug).
   std::string url_string(ConvertJavaStringToUTF8(env, j_data_string));
   auto qr_image = qr_code_generator::GenerateBitmap(
       base::as_byte_span(url_string), qr_code_generator::ModuleStyle::kCircles,
       qr_code_generator::LocatorStyle::kRounded,
-      qr_code_generator::CenterImage::kDino);
+      qr_code_generator::CenterImage::kDino,
+      qr_code_generator::QuietZone::kWillBeAddedByClient);
 
   ScopedJavaLocalRef<jobject> java_bitmap;
   if (qr_image.has_value()) {

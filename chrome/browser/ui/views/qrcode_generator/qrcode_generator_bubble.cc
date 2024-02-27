@@ -67,10 +67,6 @@ constexpr gfx::Size GetQRCodeImageSize() {
   return gfx::Size(kQRImageSizePx, kQRImageSizePx);
 }
 
-constexpr bool IsSquare(gfx::Size size) {
-  return size.width() == size.height();
-}
-
 gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size.width(), size.height());
@@ -145,7 +141,8 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
     qr_code = qr_code_generator::GenerateBitmap(
         base::as_byte_span(input), qr_code_generator::ModuleStyle::kCircles,
         qr_code_generator::LocatorStyle::kRounded,
-        qr_code_generator::CenterImage::kDino);
+        qr_code_generator::CenterImage::kDino,
+        qr_code_generator::QuietZone::kIncluded);
   }
 
   if (!qr_code.has_value()) {
@@ -154,9 +151,7 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
   }
 
   HideErrors(true);
-  UpdateQRImage(
-      AddQRCodeQuietZone(gfx::ImageSkia::CreateFrom1xBitmap(qr_code.value()),
-                         GetColorProvider()->GetColor(kColorQrCodeBackground)));
+  UpdateQRImage(gfx::ImageSkia::CreateFrom1xBitmap(qr_code.value()));
 }
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
@@ -396,24 +391,6 @@ const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
     return u"qrcode_chrome.png";
 
   return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
-}
-
-// static
-gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
-    const gfx::ImageSkia& image,
-    SkColor background_color) {
-  const gfx::Size image_size(image.width(), image.height());
-
-  DCHECK(IsSquare(image_size));
-
-  const gfx::Size background_size =
-      image_size + gfx::Size(qr_code_generator::kQuietZoneSizePixels * 2,
-                             qr_code_generator::kQuietZoneSizePixels * 2);
-
-  auto final_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      CreateBackgroundImageSkia(background_size, background_color), image);
-  DCHECK(IsSquare(gfx::Size(final_image.width(), final_image.height())));
-  return final_image;
 }
 
 void QRCodeGeneratorBubble::SetQRCodeErrorForTesting(

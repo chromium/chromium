@@ -25,10 +25,8 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
                   const qr_code_generator::LocatorStyle& locator_style) {
     base::HistogramTester histograms;
     auto response = qr_code_generator::GenerateBitmap(
-        base::as_byte_span(data),
-        module_style,
-        locator_style,
-        center_image);
+        base::as_byte_span(data), module_style, locator_style, center_image,
+        qr_code_generator::QuietZone::kIncluded);
 
     // Verify that we got a successful response.
     ASSERT_TRUE(response.has_value());

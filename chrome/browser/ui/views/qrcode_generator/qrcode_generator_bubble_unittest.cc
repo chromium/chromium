@@ -40,35 +40,6 @@ TEST_F(QRCodeGeneratorBubbleTest, SuggestedDownloadURLNoIP) {
       u"qrcode_chrome.png");
 }
 
-TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
-  const int kBaseSizeDip = 16;
-  const int kQuietZoneDip = qr_code_generator::kQuietZoneSizePixels;
-
-  SkBitmap base_bitmap;
-  base_bitmap.allocN32Pixels(kBaseSizeDip, kBaseSizeDip);
-  base_bitmap.eraseColor(SK_ColorRED);
-  auto base_image = gfx::ImageSkia::CreateFrom1xBitmap(base_bitmap);
-
-  auto image = QRCodeGeneratorBubble::AddQRCodeQuietZone(
-      base_image,
-      SK_ColorTRANSPARENT);
-
-  EXPECT_EQ(base_image.width(), kBaseSizeDip);
-  EXPECT_EQ(base_image.height(), kBaseSizeDip);
-  EXPECT_EQ(image.width(), kBaseSizeDip + kQuietZoneDip * 2);
-  EXPECT_EQ(image.height(), kBaseSizeDip + kQuietZoneDip * 2);
-
-  EXPECT_EQ(SK_ColorRED, base_image.bitmap()->getColor(0, 0));
-
-  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(0, 0));
-  EXPECT_EQ(SK_ColorTRANSPARENT,
-            image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip - 1));
-  EXPECT_EQ(SK_ColorTRANSPARENT,
-            image.bitmap()->getColor(kQuietZoneDip - 1, kQuietZoneDip));
-  EXPECT_EQ(SK_ColorRED,
-            image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip));
-}
-
 class VisibilityChangedWaiter : public views::ViewObserver {
  public:
   explicit VisibilityChangedWaiter(views::View* view) {

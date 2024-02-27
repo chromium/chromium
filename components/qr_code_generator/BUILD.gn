@@ -61,8 +61,12 @@ rust_static_library("qr_code_generator_ffi_glue") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "qr_code_generator_unittest.cc" ]
+  sources = [
+    "bitmap_generator_unittest.cc",
+    "qr_code_generator_unittest.cc",
+  ]
   deps = [
+    ":bitmap_generator",
     ":qr_code_generator",
     "//base",
     "//base/test:test_support",
