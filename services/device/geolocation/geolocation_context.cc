@@ -5,8 +5,8 @@
 #include "services/device/geolocation/geolocation_context.h"
 
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/geolocation/geolocation_impl.h"
@@ -39,7 +39,7 @@ void GeolocationContext::BindGeolocation(
 }
 
 void GeolocationContext::OnPermissionRevoked(const url::Origin& origin) {
-  base::EraseIf(impls_, [&origin](const auto& impl) {
+  std::erase_if(impls_, [&origin](const auto& impl) {
     if (!origin.IsSameOriginWith(impl->url())) {
       return false;
     }

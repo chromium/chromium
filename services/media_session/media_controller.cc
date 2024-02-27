@@ -7,9 +7,9 @@
 #include <optional>
 #include <set>
 #include <variant>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -520,7 +520,7 @@ void MediaController::FlushForTesting() {
 }
 
 void MediaController::CleanupImageObservers() {
-  base::EraseIf(image_observers_,
+  std::erase_if(image_observers_,
                 [](const auto& holder) { return !holder->is_valid(); });
 }
 

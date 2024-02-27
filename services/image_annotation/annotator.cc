@@ -6,10 +6,10 @@
 
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -389,7 +389,7 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     // Remove any description OCR data (which is lower quality) if we have
     // specialized OCR results.
     if (!ocr_annotation.is_null()) {
-      base::EraseIf(annotations, [](const mojom::AnnotationPtr& a) {
+      std::erase_if(annotations, [](const mojom::AnnotationPtr& a) {
         return a->type == mojom::AnnotationType::kOcr;
       });
       annotations.push_back(std::move(ocr_annotation));
@@ -401,7 +401,7 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     // TODO(accessibility): consider filtering some icon types here e.g.
     // information.
     if (!icon_annotation.is_null()) {
-      base::EraseIf(annotations, [](const mojom::AnnotationPtr& a) {
+      std::erase_if(annotations, [](const mojom::AnnotationPtr& a) {
         return a->type == mojom::AnnotationType::kLabel ||
                a->type == mojom::AnnotationType::kCaption;
       });

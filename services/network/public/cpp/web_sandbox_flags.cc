@@ -5,8 +5,8 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 
 #include <set>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
@@ -82,7 +82,7 @@ WebSandboxFlagsParsingResult ParseWebSandboxPolicy(
     // removing the duplicates:
     // See /fast/frames/sandboxed-iframe-attribute-parsing-03.html
     std::set<std::string_view> set;
-    base::EraseIf(error_tokens, [&](auto x) { return !set.insert(x).second; });
+    std::erase_if(error_tokens, [&](auto x) { return !set.insert(x).second; });
 
     out.error_message =
         "'" + base::JoinString(error_tokens, "', '") +
