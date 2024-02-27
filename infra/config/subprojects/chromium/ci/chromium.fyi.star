@@ -155,6 +155,113 @@ ci.builder(
     notifies = ["Site Isolation Android"],
 )
 
+# TODO(b/299215988): Move to chromium.chromiumos.star.
+ci.builder(
+    name = "chromeos-jacuzzi-rel-skylab",
+    description_html = """\
+This builder builds public image and runs tests on DUTs in the lab.
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "checkout_lacros_sdk",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "jacuzzi",
+                "arm64-generic",
+            ],
+        ),
+        skylab_upload_location = builder_config.skylab_upload_location(
+            # Both CI and try use the same `chromium-skylab-try` bucket.
+            gs_bucket = "chromium-skylab-try",
+            gs_extra = "ash",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "ozone_headless",
+            "dcheck_off",
+            "reclient",
+            "jacuzzi",
+            "include_unwind_tables",
+            "also_build_lacros_chrome_for_architecture_arm64",
+            "is_skylab",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "ash",
+        short_name = "jcz",
+    ),
+    contact_team_email = "chromeos-velocity@google.com",
+)
+
+# TODO(b/299215988): Move to chromium.chromiumos.star.
+ci.builder(
+    name = "chromeos-octopus-rel-skylab",
+    description_html = """\
+This builder builds public image and runs tests on octopus DUTs in the lab.
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "checkout_lacros_sdk",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "octopus",
+                "amd64-generic",
+            ],
+        ),
+        skylab_upload_location = builder_config.skylab_upload_location(
+            # Both CI and try use the same `chromium-skylab-try` bucket.
+            gs_bucket = "chromium-skylab-try",
+            gs_extra = "ash",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "also_build_lacros_chrome_for_architecture_amd64",
+            "chromeos_device",
+            "include_unwind_tables",
+            "is_skylab",
+            "octopus",
+            "ozone_headless",
+            "reclient",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "ash",
+        short_name = "oct",
+    ),
+    contact_team_email = "chromeos-velocity@google.com",
+)
+
 ci.builder(
     name = "linux-annotator-rel",
     builder_spec = builder_config.builder_spec(

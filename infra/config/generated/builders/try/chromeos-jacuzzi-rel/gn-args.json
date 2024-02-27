@@ -1,11 +1,8 @@
 {
   "args_file": "//build/args/chromeos/jacuzzi.gni",
   "gn_args": {
-    "also_build_lacros_chrome_for_architecture": "arm64",
-    "dcheck_always_on": false,
-    "exclude_unwind_tables": false,
+    "dcheck_always_on": true,
     "is_chromeos_device": true,
-    "is_skylab": true,
     "ozone_platform_headless": true,
     "use_remoteexec": true
   }

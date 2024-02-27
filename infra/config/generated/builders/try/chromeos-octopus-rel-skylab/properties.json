@@ -2,19 +2,18 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/chromeos-jacuzzi-rel/gn-args.json"
+        "infra/config/generated/builders/try/chromeos-octopus-rel-skylab/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "chromeos-jacuzzi-rel",
+              "builder": "chromeos-octopus-rel-skylab",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
-              "builder_group": "chromium.chromiumos",
+              "builder_group": "chromium.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -22,19 +21,24 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_arch": "arm",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_cros_boards": [
-                  "jacuzzi"
+                  "octopus",
+                  "amd64-generic"
                 ],
                 "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "arm64",
-                  "chromeos"
+                  "chromeos",
+                  "checkout_lacros_sdk"
                 ],
                 "config": "chromium"
+              },
+              "skylab_upload_location": {
+                "gs_bucket": "chromium-skylab-try",
+                "gs_extra": "ash"
               }
             }
           }
@@ -43,21 +47,15 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "chromeos-jacuzzi-rel",
+          "builder": "chromeos-octopus-rel-skylab",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "chromeos-jacuzzi-rel",
-          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -68,6 +66,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
 }
