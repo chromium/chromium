@@ -36,6 +36,7 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
+#include "ui/events/ozone/evdev/heatmap_palm_detector.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/false_touch_finder.h"
 #include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"
@@ -200,6 +201,31 @@ struct GenericEventParams {
     MouseButtonEventParams mouse_button;
     TouchEventParams touch;
   };
+};
+
+class FakeHeatmapPalmDetector : public HeatmapPalmDetector {
+ public:
+  FakeHeatmapPalmDetector() { palm_tracking_ids_.clear(); }
+
+  void Start(ModelId model_id, std::string_view hidraw_path) override {}
+
+  bool IsPalm(int tracking_id) const override {
+    return palm_tracking_ids_.find(tracking_id) != palm_tracking_ids_.end();
+  }
+
+  bool IsReady() const override { return true; }
+
+  void AddTouchRecord(base::Time timestamp,
+                      const std::vector<int>& tracking_ids) override {}
+
+  void RemoveTouch(int tracking_id) override {
+    palm_tracking_ids_.erase(tracking_id);
+  }
+
+  void SetPalm(int tracking_id) { palm_tracking_ids_.insert(tracking_id); }
+
+ private:
+  std::unordered_set<int> palm_tracking_ids_;
 };
 
 }  // namespace
@@ -2914,6 +2940,60 @@ TEST_F(TouchEventConverterEvdevTest, ChangeTouchLogging) {
   log = LogSubst(log, "touch_logging_enabled", "0");
 
   EXPECT_EQ(output.str(), log);
+}
+
+TEST_F(TouchEventConverterEvdevTest, HeatmapPalmRejection) {
+  auto heatmap_palm_detector = std::make_unique<FakeHeatmapPalmDetector>();
+  auto* heatmap_palm_detector_ptr = heatmap_palm_detector.get();
+  HeatmapPalmDetector::SetInstance(std::move(heatmap_palm_detector));
+  TearDownDevice();
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list_->InitWithFeatures(
+      {kEnableHeatmapPalmDetection},
+      {kEnablePalmOnMaxTouchMajor, kEnablePalmOnToolTypePalm,
+       kEnableSingleCancelTouch});
+  SetUpDevice();
+
+  ui::MockTouchEventConverterEvdev* dev = device();
+
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kRexHeatmapTouchScreen, &devinfo));
+  dev->Initialize(devinfo);
+
+  timeval time0 = {0, 0};
+  struct input_event mock_kernel_queue_press[] = {
+      {time0, EV_ABS, ABS_MT_TRACKING_ID, 3},
+      {time0, EV_ABS, ABS_MT_POSITION_X, 12},
+      {time0, EV_ABS, ABS_MT_POSITION_Y, 34},
+      {time0, EV_ABS, ABS_MT_PRESSURE, 56},
+      {time0, EV_ABS, ABS_MT_TOUCH_MAJOR, 5},
+      {time0, EV_SYN, SYN_REPORT, 0},
+  };
+  SetTestNowTime(time0);
+  dev->ConfigureReadMock(mock_kernel_queue_press,
+                         std::size(mock_kernel_queue_press), 0);
+  dev->ReadNow();
+  EXPECT_EQ(1u, size());
+  ui::TouchEventParams event = dispatched_touch_event(0);
+  EXPECT_EQ(ui::ET_TOUCH_PRESSED, event.type);
+
+  heatmap_palm_detector_ptr->SetPalm(3);
+  timeval time1 = {2, 0};
+  struct input_event mock_kernel_queue_move[] = {
+      {time1, EV_ABS, ABS_MT_TRACKING_ID, 3},
+      {time1, EV_ABS, ABS_MT_POSITION_X, 50},
+      {time1, EV_ABS, ABS_MT_POSITION_Y, 60},
+      {time1, EV_ABS, ABS_MT_PRESSURE, 56},
+      {time1, EV_ABS, ABS_MT_TOUCH_MAJOR, 5},
+      {time1, EV_SYN, SYN_REPORT, 0},
+  };
+  SetTestNowTime(time1);
+  dev->ConfigureReadMock(mock_kernel_queue_move,
+                         std::size(mock_kernel_queue_move), 0);
+  dev->ReadNow();
+  EXPECT_EQ(2u, size());
+  event = dispatched_touch_event(1);
+  EXPECT_EQ(ui::ET_TOUCH_CANCELLED, event.type);
 }
 
 TEST_F(TouchEventConverterEvdevTest, RecordFingerSessionMetrics) {

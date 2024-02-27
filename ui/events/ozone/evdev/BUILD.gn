@@ -59,6 +59,8 @@ component("evdev") {
     "event_thread_evdev.h",
     "gamepad_event_converter_evdev.cc",
     "gamepad_event_converter_evdev.h",
+    "heatmap_palm_detector.cc",
+    "heatmap_palm_detector.h",
     "imposter_checker_evdev.cc",
     "imposter_checker_evdev.h",
     "input_controller_evdev.cc",
@@ -145,8 +147,6 @@ component("evdev") {
     sources += [
       "fake_keyboard_heuristic_metrics.cc",
       "fake_keyboard_heuristic_metrics.h",
-      "heatmap_palm_detector.cc",
-      "heatmap_palm_detector.h",
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]

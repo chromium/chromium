@@ -14,6 +14,18 @@ HeatmapPalmDetector::HeatmapPalmDetector() = default;
 
 HeatmapPalmDetector::~HeatmapPalmDetector() = default;
 
+HeatmapPalmDetector::TouchRecord::TouchRecord(
+    base::Time timestamp,
+    const std::vector<int>& tracking_ids) {
+  this->timestamp = timestamp;
+  this->tracking_ids = tracking_ids;
+}
+
+HeatmapPalmDetector::TouchRecord::TouchRecord(
+    const HeatmapPalmDetector::TouchRecord& t) = default;
+
+HeatmapPalmDetector::TouchRecord::~TouchRecord() = default;
+
 void HeatmapPalmDetector::SetInstance(
     std::unique_ptr<HeatmapPalmDetector> detector) {
   g_instance = std::move(detector);

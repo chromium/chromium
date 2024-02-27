@@ -16,6 +16,7 @@ using ::chromeos::machine_learning::mojom::LoadHeatmapPalmRejectionResult;
 namespace {
 
 constexpr char kSystemModelDir[] = "/opt/google/chrome/ml_models/";
+constexpr int kTimestampDiffThresholdInMicros = 20000;
 
 struct HeatmapModelMetadata {
   std::string model_file;
@@ -37,6 +38,11 @@ MetadataMap GetHeatmapModelMetadata() {
                .output_node = 23,
                .palm_threshold = 0.6,
            }}};
+}
+
+bool CanBeMatched(base::Time t1, base::Time t2) {
+  return (t1 - t2).magnitude().InMicroseconds() <
+         kTimestampDiffThresholdInMicros;
 }
 }  // namespace
 
@@ -77,28 +83,75 @@ void HeatmapPalmDetectorImpl::OnConnectionError() {
   ml_service_.reset();
   client_.reset();
   is_ready_ = false;
-  is_palm_ = false;
+  std::queue<TouchRecord>().swap(touch_records_);
+  palm_tracking_ids_.clear();
 }
 
 void HeatmapPalmDetectorImpl::OnLoadHeatmapPalmRejection(
     LoadHeatmapPalmRejectionResult result) {
   if (result == LoadHeatmapPalmRejectionResult::OK) {
+    std::queue<TouchRecord>().swap(touch_records_);
+    palm_tracking_ids_.clear();
     is_ready_ = true;
   }
 }
 
 void HeatmapPalmDetectorImpl::OnHeatmapProcessedEvent(
     HeatmapProcessedEventPtr event) {
-  is_palm_ = event->is_palm;
+  if (touch_records_.empty()) {
+    return;
+  }
+  TouchRecord best_match = touch_records_.front();
+  if (best_match.timestamp > event->timestamp) {
+    if (CanBeMatched(best_match.timestamp, event->timestamp)) {
+      touch_records_.pop();
+    } else {
+      // Cannot find a matching record.
+      return;
+    }
+  } else {
+    // Find the last record which is before the heatmap data.
+    while (!touch_records_.empty() &&
+           touch_records_.front().timestamp < event->timestamp) {
+      best_match = touch_records_.front();
+      touch_records_.pop();
+    }
+    // Check if the next record is a better match.
+    if (!touch_records_.empty() &&
+        touch_records_.front().timestamp - event->timestamp <
+            event->timestamp - best_match.timestamp &&
+        CanBeMatched(touch_records_.front().timestamp, event->timestamp)) {
+      best_match = touch_records_.front();
+      touch_records_.pop();
+    }
+    if (!CanBeMatched(best_match.timestamp, event->timestamp)) {
+      // Cannot find a matching record.
+      return;
+    }
+  }
+  if (event->is_palm) {
+    for (int id : best_match.tracking_ids) {
+      palm_tracking_ids_.insert(id);
+    }
+  }
 }
 
-HeatmapPalmDetectorImpl::DetectionResult HeatmapPalmDetectorImpl::GetDetectionResult()
-    const {
-  return is_palm_ ? DetectionResult::kPalm : DetectionResult::kNoPalm;
+bool HeatmapPalmDetectorImpl::IsPalm(int tracking_id) const {
+  return palm_tracking_ids_.find(tracking_id) != palm_tracking_ids_.end();
 }
 
 bool HeatmapPalmDetectorImpl::IsReady() const {
   return is_ready_;
+}
+
+void HeatmapPalmDetectorImpl::AddTouchRecord(
+    base::Time timestamp,
+    const std::vector<int>& tracking_ids) {
+  touch_records_.push(TouchRecord(timestamp, tracking_ids));
+}
+
+void HeatmapPalmDetectorImpl::RemoveTouch(int tracking_id) {
+  palm_tracking_ids_.erase(tracking_id);
 }
 
 }  // namespace ash
