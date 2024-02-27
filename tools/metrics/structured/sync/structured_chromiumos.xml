@@ -584,6 +584,205 @@
   </event>
 </project>
 
+<project name="CrashReporting">
+  <owner>chromeos-data-eng@google.com</owner>
+  <id>none</id>
+  <summary>
+    Project for the crash reporting system to provide metrics on how well
+    crash reporting is working and whether or not we are losing crashes.
+  </summary>
+  <event name="CrashpadDetect">
+    <summary>
+      Chrome's crashpad has detected a crash.
+    </summary>
+    <metric name="Dummy" type="int">
+      <summary>
+        Dummy metric to work around b/326452906 (events must have at least one
+        metric).
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashReporterStart">
+    <summary>
+      A crash reporter collector has started Collect()ing a crash. Usually
+      recorded once per invocation, other than --init invocations; may be
+      recorded twice for "crash reporter failure" results.
+    </summary>
+    <metric name="Collector" type="int">
+      <summary>
+        Value from the CrashReporterCollector enum, indicating the collector
+        that is running.
+      </summary>
+    </metric>
+    <metric name="IsCrashLoop" type="int">
+      <summary>
+        Boolean: 1 if using crash-loop mode.
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashReporterStatus">
+    <summary>
+      A crash reporter collector has finished Collect()ing a crash, successfully
+      or otherwise. Usually recorded once per invocation, other than --init
+      invocations; may be recorded twice for "crash reporter failure" results.
+    </summary>
+    <metric name="Status" type="int">
+      <summary>
+        Value from CrashReporterStatus enum, indicating the final result of the
+        collection attempt.
+      </summary>
+    </metric>
+    <metric name="Collector" type="int">
+      <summary>
+        Value from the CrashReporterCollector enum, indicating the collector
+        that is running.
+      </summary>
+    </metric>
+    <metric name="IsCrashLoop" type="int">
+      <summary>
+        Boolean: 1 if using crash-loop mode.
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashReporterInitializationStart">
+    <summary>
+      crash_reporter --init started. Recorded twice per boot (once early and
+      once late).
+    </summary>
+    <metric name="IsEarly" type="int">
+      <summary>
+        Boolean: 1 for early init, 0 for late init
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashReporterInitializationStatus">
+    <summary>
+      Result of crash_reporter --init. Recorded twice per boot (once early and
+      once late).
+    </summary>
+    <metric name="IsEarly" type="int">
+      <summary>
+        Boolean: 1 for early init, 0 for late init
+      </summary>
+    </metric>
+    <metric name="Status" type="int">
+      <summary>
+        Value from CrashReporterInitStatus enum, indicating the final result of
+        the initialization attempt.
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashSenderStart">
+    <summary>
+      crash_sender has started processing a new crash file. Recorded once per
+      crash send attempt. Not recorded in dry run mode.
+    </summary>
+    <metric name="IsCrashLoop" type="int">
+      <summary>
+        Boolean: 1 if crash_sender was invoked by crash_reporter using
+        crash-loop mode.
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashSenderStartPerCollector">
+    <summary>
+      crash_sender has started processing a new crash file and has parsed the
+      .meta file enough to know what collector the crash came from. Recorded
+      once per crash send attempt, unless we can't parse the .meta file. Not
+      recorded in dry run mode.
+    </summary>
+    <metric name="Collector" type="int">
+      <summary>
+        Value from the CrashReporterCollector enum, indicating the collector
+        that produced the .meta file.
+      </summary>
+    </metric>
+    <metric name="IsCrashLoop" type="int">
+      <summary>
+        Boolean: 1 if crash_sender was invoked by crash_reporter using
+        crash-loop mode.
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashSenderRemovalReason">
+    <summary>
+      If crash_sender removes a crash, records the reason it was removed.
+      Recorded at most once per crash send attempt. Not recorded in dry run
+      mode.
+    </summary>
+    <metric name="Collector" type="int">
+      <summary>
+        Value from the CrashReporterCollector enum, indicating the collector
+        that produced the .meta file. kUnknownCollector if we couldn't parse the
+        .meta file.
+      </summary>
+    </metric>
+    <metric name="Reason" type="int">
+      <summary>
+        Value from CrashRemoveReason enum, indicating the reason crash_sender
+        removed the crash record.
+      </summary>
+    </metric>
+    <metric name="IsCrashLoop" type="int">
+      <summary>
+        Boolean: 1 if crash_sender was invoked by crash_reporter using
+        crash-loop mode.
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashSenderComplete">
+    <summary>
+      crash_sender is finished with a crash send attempt, whether successfully
+      or otherwise. Recorded once per crash send attempt. Not recorded in dry
+      run mode.
+    </summary>
+    <metric name="Collector" type="int">
+      <summary>
+        Value from the CrashReporterCollector enum, indicating the collector
+        that produced the .meta file. kUnknownCollector if we couldn't parse the
+        .meta  file.
+      </summary>
+    </metric>
+    <metric name="Removed" type="int">
+      <summary>
+        Boolean: 1 if the crash record was removed, 0 if the crash record was
+        left for the next time.
+      </summary>
+    </metric>
+    <metric name="IsCrashLoop" type="int">
+      <summary>
+        Boolean: 1 if crash_sender was invoked by crash_reporter using
+        crash-loop mode.
+      </summary>
+    </metric>
+  </event>
+  <event name="CrashSenderOrphanFileRemoved">
+    <summary>
+      crash_sender found an old orphaned crash file (a file in the crash
+      directory that does not correspond to a .meta file and is over 24 hours
+      old) and attempted to remove it. Recorded once per orphan removal attempt.
+    </summary>
+    <metric name="Removed" type="int">
+      <summary>
+        Boolean: 1 if the orphan file was successfully removed, 0 if the orphan
+        file could not be removed.
+      </summary>
+    </metric>
+    <metric name="IsCrashLoop" type="int">
+      <summary>
+        Boolean: 1 if crash_sender was invoked by crash_reporter using
+        crash-loop mode.
+      </summary>
+    </metric>
+    <metric name="SeemingCrashFile" type="int">
+      <summary>
+        Boolean: 1 if the removed file matched crash_reporter's normal naming
+        pattern (execname.date.time.random.pid.extention), 0 otherwise.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="HardwareVerifier">
   <owner>kevinptt@chromium.org</owner>
   <id>per-project</id>
