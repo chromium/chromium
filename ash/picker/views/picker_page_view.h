@@ -6,7 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_PAGE_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/picker/views/picker_key_event_target.h"
+#include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -14,7 +14,7 @@ namespace ash {
 
 // View for a page that can act as the main contents of the Picker.
 class ASH_EXPORT PickerPageView : public views::View,
-                                  public PickerKeyEventTarget {
+                                  public PickerPseudoFocusHandler {
   METADATA_HEADER(PickerPageView, views::View)
 };
 

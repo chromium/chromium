@@ -4,7 +4,7 @@
 
 #include "ash/picker/views/picker_key_event_handler.h"
 
-#include "ash/picker/views/picker_key_event_target.h"
+#include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -15,20 +15,37 @@ PickerKeyEventHandler::PickerKeyEventHandler() = default;
 PickerKeyEventHandler::~PickerKeyEventHandler() = default;
 
 bool PickerKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
-  if (active_key_event_target_ == nullptr) {
+  if (active_pseudo_focus_handler_ == nullptr || event.handled() ||
+      event.type() != ui::ET_KEY_PRESSED) {
     return false;
   }
 
-  if (event.key_code() == ui::VKEY_RETURN) {
-    return active_key_event_target_->OnEnterKeyPressed();
+  const bool has_modifier =
+      event.IsShiftDown() || event.IsControlDown() || event.IsAltDown();
+  switch (event.key_code()) {
+    case ui::VKEY_RETURN:
+      return active_pseudo_focus_handler_->DoPseudoFocusedAction();
+    case ui::VKEY_UP:
+      return has_modifier ? false
+                          : active_pseudo_focus_handler_->MovePseudoFocusUp();
+    case ui::VKEY_DOWN:
+      return has_modifier ? false
+                          : active_pseudo_focus_handler_->MovePseudoFocusDown();
+    case ui::VKEY_LEFT:
+      return has_modifier ? false
+                          : active_pseudo_focus_handler_->MovePseudoFocusLeft();
+    case ui::VKEY_RIGHT:
+      return has_modifier
+                 ? false
+                 : active_pseudo_focus_handler_->MovePseudoFocusRight();
+    default:
+      return false;
   }
-
-  return false;
 }
 
-void PickerKeyEventHandler::SetActiveKeyEventTarget(
-    PickerKeyEventTarget* active_key_event_target) {
-  active_key_event_target_ = active_key_event_target;
+void PickerKeyEventHandler::SetActivePseudoFocusHandler(
+    PickerPseudoFocusHandler* active_pseudo_focus_handler) {
+  active_pseudo_focus_handler_ = active_pseudo_focus_handler;
 }
 
 }  // namespace ash

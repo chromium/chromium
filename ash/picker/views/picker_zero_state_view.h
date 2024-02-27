@@ -19,6 +19,8 @@
 
 namespace ash {
 
+class PickerItemView;
+class PickerSectionListView;
 class PickerSectionView;
 
 class ASH_EXPORT PickerZeroStateView : public PickerPageView {
@@ -36,7 +38,11 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   ~PickerZeroStateView() override;
 
   // PickerPageView:
-  bool OnEnterKeyPressed() override;
+  bool DoPseudoFocusedAction() override;
+  bool MovePseudoFocusUp() override;
+  bool MovePseudoFocusDown() override;
+  bool MovePseudoFocusLeft() override;
+  bool MovePseudoFocusRight() override;
 
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
   section_views_for_testing() const {
@@ -47,11 +53,19 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // Gets or creates the section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 
-  // Width of the containing PickerView.
-  int picker_view_width_ = 0;
+  void SetPseudoFocusedItem(PickerItemView* item);
 
-  // The views for each section of categories.
+  void ScrollPseudoFocusedItemToVisible();
+
+  // The section list view, contains the section views.
+  raw_ptr<PickerSectionListView> section_list_view_ = nullptr;
+
+  // Used to track the section view for each category type.
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>> section_views_;
+
+  // The currently pseudo focused item, which responds to user actions that
+  // trigger `DoPseudoFocusedAction`.
+  raw_ptr<PickerItemView> pseudo_focused_item_ = nullptr;
 };
 
 }  // namespace ash

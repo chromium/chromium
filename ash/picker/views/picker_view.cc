@@ -312,7 +312,7 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
   contents_view_->SetActivePage(page_view);
-  key_event_handler_.SetActiveKeyEventTarget(page_view);
+  key_event_handler_.SetActivePseudoFocusHandler(page_view);
 }
 
 BEGIN_METADATA(PickerView)

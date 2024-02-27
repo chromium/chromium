@@ -30,7 +30,11 @@ class ASH_EXPORT PickerCategoryView : public PickerPageView {
   ~PickerCategoryView() override;
 
   // PickerPageView:
-  bool OnEnterKeyPressed() override;
+  bool DoPseudoFocusedAction() override;
+  bool MovePseudoFocusUp() override;
+  bool MovePseudoFocusDown() override;
+  bool MovePseudoFocusLeft() override;
+  bool MovePseudoFocusRight() override;
 
   // Replaces the current results with `sections`.
   void SetResults(std::vector<PickerSearchResultsSection> sections);

@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_view.h"
 
 #include <optional>
+#include <string>
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -14,11 +15,13 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
+#include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_widget.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view.h"
@@ -32,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -43,6 +47,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -359,7 +364,9 @@ TEST_F(PickerViewTest, SearchingShowEmptyResultsWhenNoResultsArriveYet) {
 
   // Results page should be empty until results arrive.
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(picker_view->search_results_view_for_testing().children(),
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_list_view_for_testing()
+                  ->children(),
               IsEmpty());
 }
 
@@ -491,7 +498,9 @@ TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
 
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(picker_view->search_results_view_for_testing().children(),
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_list_view_for_testing()
+                  ->children(),
               IsEmpty());
 }
 
@@ -754,14 +763,15 @@ TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
   EXPECT_EQ(delegate.last_inserted_result(), std::nullopt);
 }
 
-TEST_F(PickerViewTest, PressingEnterSelectsSearchResult) {
+TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         future.SetValue();
         callback.Run({
             PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                       {{PickerSearchResult::Text(u"result")}}),
+                                       {{PickerSearchResult::Emoji(u"😊"),
+                                         PickerSearchResult::Symbol(u"♬")}}),
         });
       }));
   auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
@@ -772,7 +782,57 @@ TEST_F(PickerViewTest, PressingEnterSelectsSearchResult) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
   EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(PickerSearchResult::Text(u"result")));
+              Optional(PickerSearchResult::Emoji(u"😊")));
+}
+
+TEST_F(PickerViewTest, RightArrowKeyNavigatesSearchResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        future.SetValue();
+        callback.Run({
+            PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                       {{PickerSearchResult::Emoji(u"😊"),
+                                         PickerSearchResult::Symbol(u"♬")}}),
+        });
+      }));
+  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
+                                     kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(PickerSearchResult::Symbol(u"♬")));
+}
+
+TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+        future.SetValue();
+        callback.Run({
+            PickerSearchResultsSection(
+                PickerSectionType::kCategories,
+                {{PickerSearchResult::BrowsingHistory(GURL("http://foo.com"),
+                                                      u"Foo", ui::ImageModel()),
+                  PickerSearchResult::BrowsingHistory(
+                      GURL("http://bar.com"), u"Bar", ui::ImageModel())}}),
+        });
+      }));
+  auto widget = PickerWidget::Create(kDefaultCaretBounds, kDefaultCursorPoint,
+                                     kDefaultFocusedWindowBounds, &delegate);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(PickerSearchResult::BrowsingHistory(
+                  GURL("http://bar.com"), u"Bar", ui::ImageModel())));
 }
 
 }  // namespace

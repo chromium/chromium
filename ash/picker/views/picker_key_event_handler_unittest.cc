@@ -4,7 +4,7 @@
 
 #include "ash/picker/views/picker_key_event_handler.h"
 
-#include "ash/picker/views/picker_key_event_target.h"
+#include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -16,36 +16,59 @@
 namespace ash {
 namespace {
 
-ui::KeyEvent CreateKeyEvent(ui::KeyboardCode key_code) {
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, key_code, ui::DomCode::NONE,
-                      ui::EF_NONE, ui::EventTimeForNow());
+ui::KeyEvent CreateKeyEvent(ui::KeyboardCode key_code,
+                            int flags = ui::EF_NONE) {
+  return ui::KeyEvent(ui::ET_KEY_PRESSED, key_code, ui::DomCode::NONE, flags,
+                      ui::EventTimeForNow());
 }
 
-class MockPickerKeyEventTarget : public PickerKeyEventTarget {
+class MockPseudoFocusHandler : public PickerPseudoFocusHandler {
  public:
-  MockPickerKeyEventTarget() = default;
-  MockPickerKeyEventTarget(const MockPickerKeyEventTarget&) = delete;
-  MockPickerKeyEventTarget& operator=(const MockPickerKeyEventTarget&) = delete;
-  ~MockPickerKeyEventTarget() override = default;
+  MockPseudoFocusHandler() = default;
+  MockPseudoFocusHandler(const MockPseudoFocusHandler&) = delete;
+  MockPseudoFocusHandler& operator=(const MockPseudoFocusHandler&) = delete;
+  ~MockPseudoFocusHandler() override = default;
 
-  // PickerKeyEventTarget:
-  bool OnEnterKeyPressed() override { return true; }
+  // PickerPseudoFocusHandler:
+  bool DoPseudoFocusedAction() override { return true; }
+  bool MovePseudoFocusUp() override { return true; }
+  bool MovePseudoFocusDown() override { return true; }
+  bool MovePseudoFocusLeft() override { return true; }
+  bool MovePseudoFocusRight() override { return true; }
 };
 
-TEST(PickerKeyEventHandlerTest, DoesNotHandleEnterKeyWithoutKeyEventTarget) {
+TEST(PickerKeyEventHandlerTest,
+     DoesNotHandleKeyEventyWithoutPseudoFocusHandler) {
   PickerKeyEventHandler key_event_handler;
 
   EXPECT_FALSE(
       key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_RETURN)));
 }
 
-TEST(PickerKeyEventHandlerTest, HandlesEnterKeyWithKeyEventTarget) {
+TEST(PickerKeyEventHandlerTest, HandlesKeyEventWithPseudoFocusHandler) {
   PickerKeyEventHandler key_event_handler;
-  MockPickerKeyEventTarget key_event_target;
-  key_event_handler.SetActiveKeyEventTarget(&key_event_target);
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
 
   EXPECT_TRUE(
       key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_RETURN)));
+}
+
+TEST(PickerKeyEventHandlerTest, HandlesUnmodifedArrowKeyEvent) {
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_UP)));
+}
+
+TEST(PickerKeyEventHandlerTest, DoesNotHandleModifiedArrowKeyEvent) {
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_FALSE(key_event_handler.HandleKeyEvent(
+      CreateKeyEvent(ui::VKEY_UP, ui::EF_SHIFT_DOWN)));
 }
 
 }  // namespace

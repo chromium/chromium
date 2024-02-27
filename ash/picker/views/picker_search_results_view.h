@@ -16,7 +16,9 @@
 namespace ash {
 
 class PickerAssetFetcher;
+class PickerItemView;
 class PickerSearchResult;
+class PickerSectionListView;
 class PickerSectionView;
 
 class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
@@ -37,7 +39,11 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   ~PickerSearchResultsView() override;
 
   // PickerPageView:
-  bool OnEnterKeyPressed() override;
+  bool DoPseudoFocusedAction() override;
+  bool MovePseudoFocusUp() override;
+  bool MovePseudoFocusDown() override;
+  bool MovePseudoFocusLeft() override;
+  bool MovePseudoFocusRight() override;
 
   // Clears the search results.
   void ClearSearchResults();
@@ -45,6 +51,10 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Append `section` to the current set of search results.
   // TODO: b/325840864 - Merge with existing sections if needed.
   void AppendSearchResults(PickerSearchResultsSection section);
+
+  const PickerSectionListView* section_list_view_for_testing() const {
+    return section_list_view_;
+  }
 
   base::span<const raw_ptr<PickerSectionView>> section_views_for_testing()
       const {
@@ -61,16 +71,24 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void AddResultToSection(const PickerSearchResult& result,
                           PickerSectionView* section_view);
 
-  // Width of the containing PickerView.
-  int picker_view_width_ = 0;
+  void SetPseudoFocusedItem(PickerItemView* item);
+
+  void ScrollPseudoFocusedItemToVisible();
 
   SelectSearchResultCallback select_search_result_callback_;
 
   // `asset_fetcher` outlives `this`.
   raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
 
-  // The views for each section of results.
+  // The section list view, contains the section views.
+  raw_ptr<PickerSectionListView> section_list_view_ = nullptr;
+
+  // Used to track the views for each section of results.
   std::vector<raw_ptr<PickerSectionView>> section_views_;
+
+  // The currently pseudo focused item, which responds to user actions that
+  // trigger `DoPseudoFocusedAction`.
+  raw_ptr<PickerItemView> pseudo_focused_item_ = nullptr;
 };
 
 }  // namespace ash

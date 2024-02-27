@@ -19,6 +19,7 @@
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
@@ -40,41 +41,102 @@ PickerSearchResultsView::PickerSearchResultsView(
     int picker_view_width,
     SelectSearchResultCallback select_search_result_callback,
     PickerAssetFetcher* asset_fetcher)
-    : picker_view_width_(picker_view_width),
-      select_search_result_callback_(std::move(select_search_result_callback)),
+    : select_search_result_callback_(std::move(select_search_result_callback)),
       asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
+
+  section_list_view_ =
+      AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
 
-bool PickerSearchResultsView::OnEnterKeyPressed() {
-  // TODO: b/322900302 - Select the currently highlighted item instead of the
-  // first item.
-  if (section_views_.empty() || section_views_[0]->item_views().empty()) {
+bool PickerSearchResultsView::DoPseudoFocusedAction() {
+  if (pseudo_focused_item_ == nullptr) {
     return false;
   }
-  section_views_[0]->item_views()[0]->SelectItem();
+
+  pseudo_focused_item_->SelectItem();
+  return true;
+}
+
+bool PickerSearchResultsView::MovePseudoFocusUp() {
+  if (pseudo_focused_item_ == nullptr) {
+    return false;
+  }
+
+  PickerItemView* item = section_list_view_->GetItemAbove(pseudo_focused_item_);
+  if (item == nullptr) {
+    // If there's no item above, move pseudo focus to the bottom item.
+    item = section_list_view_->GetBottomItem();
+  }
+  SetPseudoFocusedItem(item);
+  return true;
+}
+
+bool PickerSearchResultsView::MovePseudoFocusDown() {
+  if (pseudo_focused_item_ == nullptr) {
+    return false;
+  }
+
+  PickerItemView* item = section_list_view_->GetItemBelow(pseudo_focused_item_);
+  if (item == nullptr) {
+    // If there's no item below, move pseudo focus to the top item.
+    item = section_list_view_->GetTopItem();
+  }
+  SetPseudoFocusedItem(item);
+  return true;
+}
+
+bool PickerSearchResultsView::MovePseudoFocusLeft() {
+  if (pseudo_focused_item_ == nullptr) {
+    return false;
+  }
+
+  PickerItemView* item =
+      section_list_view_->GetItemLeftOf(pseudo_focused_item_);
+  if (item == nullptr) {
+    return false;
+  }
+  SetPseudoFocusedItem(item);
+  return true;
+}
+
+bool PickerSearchResultsView::MovePseudoFocusRight() {
+  if (pseudo_focused_item_ == nullptr) {
+    return false;
+  }
+
+  PickerItemView* item =
+      section_list_view_->GetItemRightOf(pseudo_focused_item_);
+  if (item == nullptr) {
+    return false;
+  }
+  SetPseudoFocusedItem(item);
   return true;
 }
 
 void PickerSearchResultsView::ClearSearchResults() {
+  pseudo_focused_item_ = nullptr;
   section_views_.clear();
-  RemoveAllChildViews();
+  section_list_view_->ClearSectionList();
 }
 
 void PickerSearchResultsView::AppendSearchResults(
     PickerSearchResultsSection section) {
-  auto* section_view =
-      AddChildView(std::make_unique<PickerSectionView>(picker_view_width_));
+  auto* section_view = section_list_view_->AddSection();
   section_view->AddTitleLabel(
       GetSectionTitleForPickerSectionType(section.type()));
   for (const auto& result : section.results()) {
     AddResultToSection(result, section_view);
   }
   section_views_.push_back(section_view);
+
+  if (pseudo_focused_item_ == nullptr) {
+    SetPseudoFocusedItem(section_list_view_->GetTopItem());
+  }
 }
 
 void PickerSearchResultsView::SelectSearchResult(
@@ -148,6 +210,44 @@ void PickerSearchResultsView::AddResultToSection(
           },
       },
       result.data());
+}
+
+void PickerSearchResultsView::SetPseudoFocusedItem(PickerItemView* item) {
+  if (pseudo_focused_item_ == item) {
+    return;
+  }
+
+  if (pseudo_focused_item_ != nullptr) {
+    pseudo_focused_item_->SetItemState(PickerItemView::ItemState::kNormal);
+  }
+
+  pseudo_focused_item_ = item;
+
+  if (pseudo_focused_item_ != nullptr) {
+    pseudo_focused_item_->SetItemState(
+        PickerItemView::ItemState::kPseudoFocused);
+    ScrollPseudoFocusedItemToVisible();
+  }
+}
+
+void PickerSearchResultsView::ScrollPseudoFocusedItemToVisible() {
+  if (pseudo_focused_item_ == nullptr) {
+    return;
+  }
+
+  if (section_list_view_->GetItemAbove(pseudo_focused_item_) == nullptr) {
+    // For items at the top, scroll all the way up to let users see that they
+    // have reached the top of the zero state view.
+    ScrollRectToVisible(gfx::Rect(GetLocalBounds().origin(), gfx::Size()));
+  } else if (section_list_view_->GetItemBelow(pseudo_focused_item_) ==
+             nullptr) {
+    // For items at the bottom, scroll all the way down to let users see that
+    // they have reached the bottom of the zero state view.
+    ScrollRectToVisible(gfx::Rect(GetLocalBounds().bottom_left(), gfx::Size()));
+  } else {
+    // Otherwise, just ensure the item is visible.
+    pseudo_focused_item_->ScrollViewToVisible();
+  }
 }
 
 BEGIN_METADATA(PickerSearchResultsView)

@@ -31,8 +31,24 @@ PickerCategoryView::PickerCategoryView(
 
 PickerCategoryView::~PickerCategoryView() = default;
 
-bool PickerCategoryView::OnEnterKeyPressed() {
-  return search_results_view_->OnEnterKeyPressed();
+bool PickerCategoryView::DoPseudoFocusedAction() {
+  return search_results_view_->DoPseudoFocusedAction();
+}
+
+bool PickerCategoryView::MovePseudoFocusUp() {
+  return search_results_view_->MovePseudoFocusUp();
+}
+
+bool PickerCategoryView::MovePseudoFocusDown() {
+  return search_results_view_->MovePseudoFocusDown();
+}
+
+bool PickerCategoryView::MovePseudoFocusLeft() {
+  return search_results_view_->MovePseudoFocusLeft();
+}
+
+bool PickerCategoryView::MovePseudoFocusRight() {
+  return search_results_view_->MovePseudoFocusRight();
 }
 
 void PickerCategoryView::SetResults(
