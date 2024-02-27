@@ -448,3 +448,24 @@ component extension, which is only run on ChromeOS:
 separately via DLC)
 - vision_bundle.mjs, used to run the Face Landmarker API and supporting code
 - vision.d.ts, used during TypeScript compilation
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Type Definitions for Dom View Transitions API
+Short Name: @types/dom-view-transitions
+URL: https://www.npmjs.com/package/@types/dom-view-transitions
+Version: 1.0.4
+Revision: N/A
+License: MIT
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+This package contains type definitions for dom-view-transitions
+(https://drafts.csswg.org/css-view-transitions-1/).
+
+The types are only used when type checking the Dom View Transitions API.
+
+Local Modifications:
+(none)

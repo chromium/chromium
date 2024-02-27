@@ -22,6 +22,7 @@
 @types/dom-mediacapture-record/*.d.ts
 @types/dom-mediacapture-transform/index.d.ts
 @types/dom-speech-recognition/index.d.ts
+@types/dom-view-transitions/index.d.ts
 @types/dom-webcodecs
 @types/dom-webcodecs/*.d.ts
 @types/emscripten/index.d.ts

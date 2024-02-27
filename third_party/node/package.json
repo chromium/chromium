@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
   "dependencies": {
-    "@mediapipe/tasks-vision" : "0.10.9",
+    "@mediapipe/tasks-vision": "0.10.9",
     "@types/chai": "4.2.22",
     "@types/d3": "7.4.0",
     "@types/dom-mediacapture-transform": "0.1.7",
     "@types/dom-speech-recognition": "0.0.1",
+    "@types/dom-view-transitions": "1.0.4",
     "@types/dom-webcodecs": "0.1.8",
     "@types/emscripten": "1.39.6",
     "@types/filesystem": "0.0.32",
