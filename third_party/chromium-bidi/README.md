@@ -290,6 +290,9 @@ both the PyTest logs and in the event of `FAILED` test all the Chromium-BiDi log
 
 If you need to see the logs for all test run the command with `VERBOSE=true`.
 
+Simply pass `npm run e2e -- tests/<PathOrFile>` and the e2e will run only the selected one.
+You run a specific test by running `npm run e2e -- -k <TestName>`.
+
 Use the `PORT` environment variable to connect to another port:
 
 ```sh

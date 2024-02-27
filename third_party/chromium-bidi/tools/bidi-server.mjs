@@ -50,13 +50,24 @@ export function createLogFile(suffix) {
 export function parseCommandLineArgs() {
   return yargs(hideBin(process.argv))
     .usage(
-      `[CHANNEL=<stable | beta | canary | dev>] [DEBUG=*] [DEBUG_COLORS=<yes | no>] [HEADLESS=<true | false>] [LOG_DIR=logs] [NODE_OPTIONS=--unhandled-rejections=strict] [PORT=8080] $0`
+      `$0 [fileOrFolder]`,
+      `[CHANNEL=<stable | beta | canary | dev>] [DEBUG=*] [DEBUG_COLORS=<yes | no>] [HEADLESS=<true | false>] [LOG_DIR=logs] [NODE_OPTIONS=--unhandled-rejections=strict] [PORT=8080]`,
+      (yargs) => {
+        yargs.positional('fileOrFolder', {
+          describe: 'Provide a sub E2E file or folder to filter by',
+          type: 'string',
+        });
+      }
     )
     .option('headless', {
       describe:
         'Whether to start the server in headless or headful mode. The --headless flag takes precedence over the HEADLESS environment variable.',
       type: 'boolean',
       default: process.env.HEADLESS === 'true',
+    })
+    .option('k', {
+      describe: 'Provide a test name to filter by',
+      type: 'string',
     })
     .parse();
 }
