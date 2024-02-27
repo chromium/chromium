@@ -20,8 +20,8 @@ from connector import ChromeReportingConnectorTestCase
 @environment(file="../policy_test.asset.textpb")
 class ReportCbcmEvents(ChromeReportingConnectorTestCase):
   """
-  This test verifies that CBCM enrolled browsers can send events
-  to the encrypted reporting server.
+  This test verifies that chrome browsers that are commercially managed
+  (CBCM browsers) can send events to the ChromeOS encrypted reporting server.
   """
 
   @before_all
@@ -69,7 +69,7 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     return url
 
   @test
-  def test_ReportExtensionInstallEvent(self):
+  def test_ReportCbcmEvent(self):
     test_start_time_in_microseconds = round(time.time() * 1000000)
 
     # Enroll browser to managedchrome.com domain
