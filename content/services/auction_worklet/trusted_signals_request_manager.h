@@ -5,6 +5,8 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_TRUSTED_SIGNALS_REQUEST_MANAGER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_TRUSTED_SIGNALS_REQUEST_MANAGER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -114,6 +116,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   std::unique_ptr<Request> RequestBiddingSignals(
       const std::string& interest_group_name,
       const std::optional<std::vector<std::string>>& keys,
+      int32_t max_trusted_bidding_signals_url_length,
       LoadSignalsCallback load_signals_callback);
 
   // Queues a scoring signals request. Does not start a network request until
@@ -126,9 +129,11 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   std::unique_ptr<Request> RequestScoringSignals(
       const GURL& render_url,
       const std::vector<std::string>& ad_component_render_urls,
+      int32_t max_trusted_scoring_signals_url_length,
       LoadSignalsCallback load_signals_callback);
 
-  // Starts a single TrustedSignals request for all currently queued Requests.
+  // Starts a single TrustedSignals request for all currently queued
+  // Requests.
   void StartBatchedTrustedSignalsRequest();
 
   const GURL& trusted_signals_url() const { return trusted_signals_url_; }
@@ -141,11 +146,13 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
                 const std::string& interest_group_name,
                 std::set<std::string> bidder_keys,
+                int32_t max_trusted_bidding_signals_url_length,
                 LoadSignalsCallback load_signals_callback);
 
     RequestImpl(TrustedSignalsRequestManager* trusted_signals_request_manager,
                 const GURL& render_url,
                 std::set<std::string> ad_component_render_urls,
+                int32_t max_trusted_scoring_signals_url_length,
                 LoadSignalsCallback load_signals_callback);
 
     RequestImpl(RequestImpl&) = delete;
@@ -168,6 +175,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // Stored as a std::set for simpler
     std::optional<std::set<std::string>> ad_component_render_urls_;
 
+    size_t max_trusted_signals_url_length_;
+
     LoadSignalsCallback load_signals_callback_;
 
     // The TrustedSignalsRequestManager that created `this`. Cleared on
@@ -178,6 +187,12 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     // If this request is currently assigned to a batched request, points to
     // that request. nullptr otherwise.
     raw_ptr<BatchedTrustedSignalsRequest> batched_request_ = nullptr;
+  };
+
+  // Use interest group name or render url as customized comparator for bidding
+  // or scoring requests.
+  struct CompareRequestImpl {
+    bool operator()(const RequestImpl* r1, const RequestImpl* r2) const;
   };
 
   // Manages a single TrustedSignals object, which is associated with one or
@@ -195,7 +210,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
     std::unique_ptr<TrustedSignals> trusted_signals;
 
     // The batched Requests this is for.
-    std::set<raw_ptr<RequestImpl, SetExperimental>> requests;
+    std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>
+        requests;
   };
 
   // Adds `request` to `queued_requests_`, and starts `timer_` if needed.
@@ -210,6 +226,13 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // request with it, cancelling the request if it's no longer needed.
   void OnRequestDestroyed(RequestImpl* request);
 
+  bool RequestsURLSizeIsTooBig(std::set<raw_ptr<RequestImpl, SetExperimental>,
+                                        CompareRequestImpl> requests,
+                               size_t limit);
+
+  void IssueRequests(std::set<raw_ptr<RequestImpl, SetExperimental>,
+                              CompareRequestImpl> requests);
+
   const Type type_;
   const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   const bool automatically_send_requests_;
@@ -221,7 +244,8 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   // All live requests that haven't yet been assigned to a
   // BatchedTrustedSignalsRequest.
-  std::set<raw_ptr<RequestImpl, SetExperimental>> queued_requests_;
+  std::set<raw_ptr<RequestImpl, SetExperimental>, CompareRequestImpl>
+      queued_requests_;
 
   std::set<std::unique_ptr<BatchedTrustedSignalsRequest>,
            base::UniquePtrComparator>
