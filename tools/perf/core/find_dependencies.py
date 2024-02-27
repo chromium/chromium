@@ -214,25 +214,31 @@ def ZipDependencies(target_paths, dependencies, options):
       zip_file.writestr(link_info, link_script)
 
 
-class FindDependenciesCommand(command_line.OptparseCommand):
+class FindDependenciesCommand(command_line.Command):
   """Prints all dependencies"""
 
   @classmethod
-  def AddCommandLineArgs(cls, parser, _):
-    parser.add_option(
-        '-v', '--verbose', action='count', dest='verbosity', default=0,
-        help='Increase verbosity level (repeat as needed).')
+  def AddCommandLineArgs(cls, parser):
+    parser.add_argument('-v',
+                        '--verbose',
+                        action='count',
+                        dest='verbosity',
+                        default=0,
+                        help='Increase verbosity level (repeat as needed).')
 
-    parser.add_option(
-        '-e', '--exclude', action='append', default=[],
+    parser.add_argument(
+        '-e',
+        '--exclude',
+        action='append',
+        default=[],
         help='Exclude paths matching EXCLUDE. Can be used multiple times.')
 
-    parser.add_option(
-        '-z', '--zip',
-        help='Store files in a zip archive at ZIP.')
+    parser.add_argument('-z',
+                        '--zip',
+                        help='Store files in a zip archive at ZIP.')
 
   @classmethod
-  def ProcessCommandLineArgs(cls, parser, args, _):
+  def ProcessCommandLineArgs(cls, parser, args):
     if args.verbosity >= 2:
       logging.getLogger().setLevel(logging.DEBUG)
     elif args.verbosity:
