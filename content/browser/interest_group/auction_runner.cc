@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
@@ -79,7 +80,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
-    AdAuctionPageData* ad_auction_page_data,
+    AdAuctionPageDataCallback ad_auction_page_data_callback,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
     const blink::AuctionConfig& auction_config,
@@ -94,7 +95,8 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, auction_nonce_manager, interest_group_manager,
-      browser_context, private_aggregation_manager, ad_auction_page_data,
+      browser_context, private_aggregation_manager,
+      std::move(ad_auction_page_data_callback),
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
       frame_origin, ukm_source_id, std::move(client_security_state),
@@ -330,17 +332,19 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
     return;
   }
 
-  AdAuctionPageData* page_data = ad_auction_page_data_.get();
-  // The `page_data` shouldn't be null (since we create it before starting the
-  // auction), but if it is, the auction will just pass default-constructed
-  // signals to worklets.
+  AdAuctionPageData* page_data = ad_auction_page_data_callback_.Run();
+  if (!page_data) {
+    // Page is in process of being torn down, so just abort.
+    FailAuction(false);
+    return;
+  }
 
   if (auction_id->is_main_auction()) {
     auction_.NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
-        page_data, std::move(direct_from_seller_signals_header_ad_slot));
+        *page_data, std::move(direct_from_seller_signals_header_ad_slot));
   } else {
     auction_.NotifyComponentDirectFromSellerSignalsHeaderAdSlotConfig(
-        auction_id->get_component_auction(), page_data,
+        auction_id->get_component_auction(), *page_data,
         std::move(direct_from_seller_signals_header_ad_slot));
   }
 
@@ -369,7 +373,7 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
     return;
   }
   config->server_response->got_response = true;
-  AdAuctionPageData* page_data = ad_auction_page_data_.get();
+  AdAuctionPageData* page_data = ad_auction_page_data_callback_.Run();
   if (!page_data) {
     // There's no page data attached so we can't decode the response. There's
     // no way the auction can proceed.
@@ -378,10 +382,10 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
   }
 
   if (auction_id->is_main_auction()) {
-    auction_.HandleServerResponse(std::move(response), page_data);
+    auction_.HandleServerResponse(std::move(response), *page_data);
   } else {
     auction_.HandleComponentServerResponse(auction_id->get_component_auction(),
-                                           std::move(response), page_data);
+                                           std::move(response), *page_data);
   }
 }
 
@@ -412,12 +416,18 @@ void AuctionRunner::ResolvedAdditionalBids(
 
   config->expects_additional_bids = false;
 
-  AdAuctionPageData* page_data = ad_auction_page_data_.get();
+  AdAuctionPageData* page_data = ad_auction_page_data_callback_.Run();
+  if (!page_data) {
+    // Page is in process of being torn down, so just abort.
+    FailAuction(false);
+    return;
+  }
+
   if (auction_id->is_main_auction()) {
-    auction_.NotifyAdditionalBidsConfig(page_data);
+    auction_.NotifyAdditionalBidsConfig(*page_data);
   } else {
     auction_.NotifyComponentAdditionalBidsConfig(
-        auction_id->get_component_auction(), page_data);
+        auction_id->get_component_auction(), *page_data);
   }
 
   NotifyPromiseResolved(auction_id.get(), config);
@@ -481,7 +491,7 @@ AuctionRunner::AuctionRunner(
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
-    AdAuctionPageData* ad_auction_page_data,
+    AdAuctionPageDataCallback ad_auction_page_data_callback,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
@@ -504,7 +514,7 @@ AuctionRunner::AuctionRunner(
       url_loader_factory_(std::move(url_loader_factory)),
       is_interest_group_api_allowed_callback_(
           std::move(is_interest_group_api_allowed_callback)),
-      ad_auction_page_data_(ad_auction_page_data),
+      ad_auction_page_data_callback_(std::move(ad_auction_page_data_callback)),
       attestation_callback_(attestation_callback),
       abort_receiver_(this, std::move(abort_receiver)),
       kanon_mode_(kanon_mode),
@@ -520,7 +530,9 @@ AuctionRunner::AuctionRunner(
                auction_nonce_manager,
                interest_group_manager,
                &auction_metrics_recorder_,
-               ad_auction_page_data,
+               base::BindRepeating(&AuctionRunner::GetDataDecoder,
+                                   // `this` owns `auction_`.
+                                   base::Unretained(this)),
                /*auction_start_time=*/base::Time::Now(),
                is_interest_group_api_allowed_callback_,
                std::move(log_private_aggregation_requests_callback)) {}
@@ -671,6 +683,15 @@ void AuctionRunner::NotifyPromiseResolved(
   if (promise_fields_in_auction_config_ == 0) {
     auction_.NotifyConfigPromisesResolved();
   }
+}
+
+data_decoder::DataDecoder* AuctionRunner::GetDataDecoder(
+    const url::Origin& origin) {
+  AdAuctionPageData* page_data = ad_auction_page_data_callback_.Run();
+  if (!page_data) {
+    return nullptr;
+  }
+  return page_data->GetDecoderFor(origin);
 }
 
 }  // namespace content

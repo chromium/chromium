@@ -22103,6 +22103,101 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAdComponentLimitBrowserTest,
   EXPECT_EQ(45, EvalJs(shell(), kTestExpression));
 }
 
+class InterestGroupOOPIFBrowserTest : public InterestGroupBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolateAllSitesForTesting(command_line);
+    InterestGroupBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Test to make sure we don't crash when Page changes with DFSS ad slot pending.
+// https://crbug.com/326085515
+IN_PROC_BROWSER_TEST_F(InterestGroupOOPIFBrowserTest,
+                       PageImplChangeDirectFromSellerSignals) {
+  GURL initial_url(embedded_https_test_server().GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test(b.test{allow-join-ad-interest-"
+      "group;run-ad-auction})"));
+  GURL next_url(
+      embedded_https_test_server().GetURL("login.a.test", "/title1.html"));
+
+  url::Origin frame_origin =
+      url::Origin::Create(embedded_https_test_server().GetURL("b.test", "/"));
+
+  // 1) Navigate on a page with an OOPIF.
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  FrameTreeNode* root_ftn = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* child_rfh = root_ftn->child_at(0)->current_frame_host();
+
+  // Join an interest group on the iframe.
+  blink::InterestGroup interest_group =
+      blink::TestInterestGroupBuilder(frame_origin, "cars")
+          .SetBiddingUrl(embedded_https_test_server().GetURL(
+              frame_origin.GetURL().host(), "/interest_group/bidding_logic.js"))
+          .SetAds({{{GURL("https://example.com/render"), "null"}}})
+          .Build();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(interest_group, child_rfh));
+
+  // 2) Act as if there was an infinite unload handler in the OOPIF.
+  child_rfh->DoNotDeleteForTesting();
+
+  // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
+  // fire before we call OnDetach().
+  child_rfh->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
+
+  // With BackForwardCache, old document doesn't fire unload handlers as the
+  // page is stored in BackForwardCache on navigation.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_USES_UNLOAD_EVENT);
+
+  // 3) Start an auction in the child frame. This is done by hand here so the
+  // test can easily produce an RPC with bad timing, rather than trying to get
+  // JS on something that's being shut down produce this effect.
+  blink::AuctionConfig auction_config;
+  GURL seller_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+  auction_config.seller = url::Origin::Create(seller_url);
+  auction_config.decision_logic_url = seller_url;
+  auction_config.non_shared_params.interest_group_buyers = {frame_origin};
+  auction_config.expects_direct_from_seller_signals_header_ad_slot = true;
+
+  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
+  mojo::Remote<blink::mojom::AbortableAdAuction> abortable_auction;
+  AdAuctionServiceImpl::CreateMojoService(
+      child_rfh, ad_auction_service.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  std::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+  ad_auction_service->RunAdAuction(
+      auction_config, abortable_auction.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&run_loop, &maybe_config](
+              bool aborted_by_script,
+              const std::optional<
+                  blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+            EXPECT_FALSE(aborted_by_script);
+            maybe_config = config;
+            run_loop.Quit();
+          }));
+  // Progress to as far as it can get without the DFSS promise being resolved.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+
+  // 4) Navigate the main frame to a same-site url. The unload handler of the
+  // OOPIF is running.
+  EXPECT_TRUE(NavigateToURL(shell(), next_url));
+  EXPECT_TRUE(child_rfh->IsPendingDeletion());
+
+  // 5) Complete the auction, which should fail cleanly.
+  abortable_auction->ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
+
+  run_loop.Run();
+  EXPECT_FALSE(maybe_config.has_value());
+}
+
 }  // namespace
 
 }  // namespace content
