@@ -78,11 +78,9 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         assert model.get(ScrimProperties.ANCHOR_VIEW) != null
                 : "The anchor for the scrim cannot be null.";
 
-        // Make sure alpha is reset to 0 since the model may be reused. If the model is being
-        // switched, this is needed before assigning the new model, as this call will clean up our
-        // observer on the old model.
-        setAlphaInternal(0);
-
+        if (mModel != null && mSystemUiScrimDelegate != null) {
+            mModel.removeObserver(mOnModelChange);
+        }
         mModel = model;
         mIsHidingOrHidden = false;
         int fadeDurationMs = getAnimationDuration(animDurationMs);
@@ -94,6 +92,9 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             mSystemUiScrimDelegate.setScrimColor(color);
             mModel.addObserver(mOnModelChange);
         }
+
+        // Make sure alpha is reset to 0 since the model may be reused.
+        setAlphaInternal(0);
 
         if (mOverlayFadeInAnimator == null) {
             mOverlayFadeInAnimator = ValueAnimator.ofFloat(0, 1);
