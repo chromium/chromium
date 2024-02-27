@@ -869,8 +869,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests the Add to Bookmarks action on a tab grid item's context menu.
-// TODO(crbug.com/1519535): Test is failing on iPhone and iPad.
-- (void)DISABLED_testTabGridItemContextMenuAddToBookmarks {
+- (void)testTabGridItemContextMenuAddToBookmarks {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -883,6 +882,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, 1));
   [self waitForSnackBarMessageText:snackbarMessage
       triggeredByTappingItemWithMatcher:AddToBookmarksButton()];
+
+  // The snackbar disappearance might have been faster than the context menu
+  // disappearance. Wait for it to disappear.
+  [self waitForContextMenuToDisappear];
 
   [self longPressTabWithTitle:kTitle1];
 
@@ -2298,8 +2301,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that add to bookmarks action works successfully from the long press
 // context menu on search results.
-// TODO(crbug.com/1519535): Test is failing on iPhone and iPad.
-- (void)DISABLED_testSearchOpenTabsContextMenuAddToBookmarks {
+- (void)testSearchOpenTabsContextMenuAddToBookmarks {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -3085,6 +3087,22 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)waitForSnackBarMessageText:(NSString*)snackBarLabel
     triggeredByTappingItemWithMatcher:(id<GREYMatcher>)matcher {
   WaitForSnackbarTriggeredByTappingItem(snackBarLabel, matcher);
+}
+
+- (void)waitForContextMenuToDisappear {
+  ConditionBlock wait_for_disappearance = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
+                                                @"_UIContextMenuContainerView"),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kWaitForUIElementTimeout, wait_for_disappearance),
+             @"Context menu did not disappear.");
 }
 
 // Verifies that the tab grid has exactly `expectedCount` tabs.

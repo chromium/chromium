@@ -90,6 +90,12 @@ void WaitForSnackbarTriggeredByTappingItem(NSString* snackbarLabel,
                @"Snackbar did not appear.");
   }
 
+  // Tap the snackbar to make it disappear. (It used to be that snackbars all
+  // disappeared after a delay, but not anymore: snackbars with an action now
+  // stay on-screen until interacted with).
+  [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+      performAction:grey_tap()];
+
   // Wait for the snackbar to disappear.
   ConditionBlock wait_for_disappearance = ^{
     NSError* error = nil;
