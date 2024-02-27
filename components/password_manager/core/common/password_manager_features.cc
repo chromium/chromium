@@ -91,11 +91,6 @@ BASE_FEATURE(kNoPasswordSuggestionFiltering,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Use GMS AccountSettings to manage passkeys when UPM is not available.
-BASE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid,
-             "PasskeyManagementUsingAccountSettingsAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Password generation bottom sheet.
 BASE_FEATURE(kPasswordGenerationBottomSheet,
              "PasswordGenerationBottomSheet",

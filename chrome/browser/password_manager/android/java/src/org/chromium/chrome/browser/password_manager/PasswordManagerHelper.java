@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -29,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -225,8 +222,7 @@ public class PasswordManagerHelper {
      * @return True if the AccountSettings intent is available for use, false otherwise.
      */
     public static boolean canUseAccountSettings() {
-        return ChromeFeatureList.isEnabled(PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
-                && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
+        return PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
     /**

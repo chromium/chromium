@@ -52,10 +52,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -1877,7 +1875,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
     public void testUseAccountSettings() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
 
@@ -1885,7 +1882,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
     public void testCannotUseAccountSettingsWithNoBackend() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
 
