@@ -18,7 +18,6 @@ class TestTaskGraphRunner;
 
 namespace viz {
 class CompositorFrame;
-class ContextProvider;
 class TestGpuMemoryBufferManager;
 }
 
@@ -38,8 +37,6 @@ class FakeContextFactory : public ui::ContextFactory {
   // ui::ContextFactory:
   void CreateLayerTreeFrameSink(
       base::WeakPtr<ui::Compositor> compositor) override;
-  scoped_refptr<viz::ContextProvider> SharedMainThreadContextProvider()
-      override;
   scoped_refptr<viz::RasterContextProvider>
   SharedMainThreadRasterContextProvider() override;
   void RemoveCompositor(ui::Compositor* compositor) override;

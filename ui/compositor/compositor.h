@@ -89,7 +89,6 @@ namespace mojom {
 class DisplayPrivate;
 class ExternalBeginFrameController;
 }  // namespace mojom
-class ContextProvider;
 class HostFrameSinkManager;
 class LocalSurfaceId;
 class RasterContextProvider;
@@ -116,11 +115,6 @@ class COMPOSITOR_EXPORT ContextFactory {
   // by calling RemoveCompositor when the compositor gets destroyed.
   virtual void CreateLayerTreeFrameSink(
       base::WeakPtr<Compositor> compositor) = 0;
-
-  // Return a reference to a shared offscreen context provider usable from the
-  // main thread.
-  virtual scoped_refptr<viz::ContextProvider>
-  SharedMainThreadContextProvider() = 0;
 
   // Return a reference to a shared offscreen context provider usable from the
   // main thread.

@@ -53,12 +53,6 @@ void TestImageTransportFactory::CreateLayerTreeFrameSink(
       mojo::AssociatedRemote<viz::mojom::DisplayPrivate>());
 }
 
-scoped_refptr<viz::ContextProvider>
-TestImageTransportFactory::SharedMainThreadContextProvider() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 scoped_refptr<viz::RasterContextProvider>
 TestImageTransportFactory::SharedMainThreadRasterContextProvider() {
   NOTIMPLEMENTED();

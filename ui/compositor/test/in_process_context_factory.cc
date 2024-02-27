@@ -297,11 +297,6 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   data->Resize(compositor->size());
 }
 
-scoped_refptr<viz::ContextProvider>
-InProcessContextFactory::SharedMainThreadContextProvider() {
-  return nullptr;
-}
-
 scoped_refptr<viz::RasterContextProvider>
 InProcessContextFactory::SharedMainThreadRasterContextProvider() {
   if (shared_main_thread_contexts_ &&

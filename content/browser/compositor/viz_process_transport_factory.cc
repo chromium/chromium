@@ -204,11 +204,6 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
                      weak_ptr_factory_.GetWeakPtr(), compositor));
 }
 
-scoped_refptr<viz::ContextProvider>
-VizProcessTransportFactory::SharedMainThreadContextProvider() {
-  return nullptr;
-}
-
 scoped_refptr<viz::RasterContextProvider>
 VizProcessTransportFactory::SharedMainThreadRasterContextProvider() {
   if (is_gpu_compositing_disabled_) {

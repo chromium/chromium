@@ -45,11 +45,6 @@ void FakeContextFactory::CreateLayerTreeFrameSink(
       mojo::AssociatedRemote<viz::mojom::DisplayPrivate>());
 }
 
-scoped_refptr<viz::ContextProvider>
-FakeContextFactory::SharedMainThreadContextProvider() {
-  return nullptr;
-}
-
 scoped_refptr<viz::RasterContextProvider>
 FakeContextFactory::SharedMainThreadRasterContextProvider() {
   return nullptr;
