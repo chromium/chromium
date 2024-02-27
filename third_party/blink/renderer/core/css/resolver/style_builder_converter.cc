@@ -2384,14 +2384,19 @@ StyleColor ResolveColorValue(const CSSValue& value,
                             color_mix_value->HueInterpolationMethod(), c1, c2,
                             mix_amount, alpha_multiplier));
   }
-
-  auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
-  const CSSValue& color_value =
-      used_color_scheme == mojom::blink::ColorScheme::kLight
-          ? light_dark_pair.First()
-          : light_dark_pair.Second();
-  return ResolveColorValue(color_value, text_link_colors, used_color_scheme,
-                           color_provider, for_visited_link);
+  if (auto* light_dark_pair = DynamicTo<CSSLightDarkValuePair>(value)) {
+    const CSSValue& color_value =
+        used_color_scheme == mojom::blink::ColorScheme::kLight
+            ? light_dark_pair->First()
+            : light_dark_pair->Second();
+    return ResolveColorValue(color_value, text_link_colors, used_color_scheme,
+                             color_provider, for_visited_link);
+  }
+#if DCHECK_IS_ON()
+  // https://crbug.com/325819913
+  DCHECK(false) << "Unexpected CSSValue: " << value.ClassTypeToString();
+#endif  // DCHECK_IS_ON()
+  return StyleColor(Color::kBlack);
 }
 
 StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
