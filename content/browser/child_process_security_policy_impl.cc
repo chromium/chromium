@@ -1998,11 +1998,54 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
           if (url_is_precursor_of_opaque_origin) {
             failure_reason += "for_precursor ";
           }
+
+          // TODO(crbug.com/326251583): Log additional information for
+          // diagnosing the bug. Remove once the investigation is complete.
+          if (site_info.RequiresDedicatedProcess(isolation_context)) {
+            failure_reason += "dedicated ";
+            if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+              failure_reason += "spp ";
+            }
+            if (site_info.does_site_request_dedicated_process_for_coop()) {
+              failure_reason += "coop ";
+            }
+            if (site_info.requires_origin_keyed_process()) {
+              failure_reason += "oac ";
+            }
+            if (site_info.is_sandboxed()) {
+              failure_reason += "sandbox ";
+            }
+            if (site_info.is_error_page()) {
+              failure_reason += "error ";
+            }
+            if (site_info.is_pdf()) {
+              failure_reason += "pdf ";
+            }
+            if (IsIsolatedOrigin(isolation_context,
+                                 url::Origin::Create(site_info.site_url()),
+                                 site_info.requires_origin_keyed_process())) {
+              failure_reason += "io ";
+            }
+          }
+          failure_reason +=
+              "site=" + site_info.site_url().possibly_invalid_spec();
+          failure_reason +=
+              " next_bi=" +
+              base::NumberToString(
+                  SiteInstanceImpl::NextBrowsingInstanceId().GetUnsafeValue());
+          failure_reason +=
+              " dis_oac=" +
+              base::NumberToString(
+                  default_isolation_state.is_origin_agent_cluster());
+          failure_reason +=
+              " dis_rokp=" +
+              base::NumberToString(
+                  default_isolation_state.requires_origin_keyed_process()) +
+              " ";
         }
       }
     }
   }
-
   // Record the duration of KeepAlive requests to include in the crash keys.
   std::string keep_alive_durations;
   std::string shutdown_delay_ref_count;
