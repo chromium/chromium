@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+class LensOverlayController;
 class TabStripModel;
 
 namespace tabs {
@@ -62,6 +63,10 @@ class TabModel final : public SupportsHandles<const TabModel> {
     return contents;
   }
 
+  LensOverlayController* lens_overlay_controller() {
+    return lens_overlay_controller_.get();
+  }
+
  private:
   std::unique_ptr<content::WebContents> contents_;
   // A back reference to the TabStripModel that contains this TabModel.
@@ -71,6 +76,9 @@ class TabModel final : public SupportsHandles<const TabModel> {
   bool pinned_ = false;
   bool blocked_ = false;
   std::optional<tab_groups::TabGroupId> group_ = std::nullopt;
+
+  // Features that are per-tab will each have a controller.
+  std::unique_ptr<LensOverlayController> lens_overlay_controller_;
 };
 
 using TabHandle = TabModel::Handle;

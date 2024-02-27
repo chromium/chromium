@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace tabs {
@@ -12,6 +13,7 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
                    TabStripModel* owning_model)
     : contents_(std::move(contents)), owning_model_(owning_model) {
   CHECK(owning_model);
+  lens_overlay_controller_ = std::make_unique<LensOverlayController>(this);
 }
 
 TabModel::~TabModel() = default;

@@ -4092,6 +4092,8 @@ static_library("ui") {
       "frame/window_frame_util.cc",
       "frame/window_frame_util.h",
       "incognito_clear_browsing_data_dialog_interface.h",
+      "lens/lens_overlay_controller.cc",
+      "lens/lens_overlay_controller.h",
       "signin/signin_modal_dialog.cc",
       "signin/signin_modal_dialog.h",
       "signin/signin_modal_dialog_impl.cc",
