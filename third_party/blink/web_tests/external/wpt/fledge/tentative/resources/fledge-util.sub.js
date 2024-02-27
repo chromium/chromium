@@ -118,23 +118,29 @@ async function fetchTrackedData(uuid) {
 // Elements of `expectedRequests` should either be URLs, in the case of GET
 // requests, or "<URL>, body: <body>" in the case of POST requests.
 //
+// `filter` will be applied to the array of tracked requests.
+//
 // If any other strings are received from the tracking script, or the tracker
 // script reports an error, fails the test.
-async function waitForObservedRequests(uuid, expectedRequests) {
+async function waitForObservedRequests(uuid, expectedRequests, filter) {
   // Sort array for easier comparison, as observed request order does not
   // matter, and replace UUID to print consistent errors on failure.
-  expectedRequests = expectedRequests.sort().map((url) => url.replace(uuid, '<uuid>'));
+  expectedRequests = expectedRequests.map((url) => url.replace(uuid, '<uuid>')).sort();
 
   while (true) {
     let trackedData = await fetchTrackedData(uuid);
 
     // Clean up "trackedRequests" in same manner as "expectedRequests".
-    let trackedRequests = trackedData.trackedRequests.sort().map(
-                              (url) => url.replace(uuid, '<uuid>'));
+    let trackedRequests = trackedData.trackedRequests.map(
+                              (url) => url.replace(uuid, '<uuid>')).sort();
+
+    if (filter) {
+      trackedRequests = trackedRequests.filter(filter);
+    }
 
     // If expected number of requests have been observed, compare with list of
     // all expected requests and exit.
-    if (trackedRequests.length == expectedRequests.length) {
+    if (trackedRequests.length >= expectedRequests.length) {
       assert_array_equals(trackedRequests, expectedRequests);
       break;
     }
@@ -151,30 +157,11 @@ async function waitForObservedRequests(uuid, expectedRequests) {
 
 // Similar to waitForObservedRequests, but ignore forDebuggingOnly reports.
 async function waitForObservedRequestsIgnoreDebugOnlyReports(
-  uuid, expectedRequests) {
-  // Sort array for easier comparison, as observed request order does not
-  // matter, and replace UUID to print consistent errors on failure.
-  expectedRequests =
-      expectedRequests.sort().map((url) => url.replace(uuid, '<uuid>'));
-
-  while (true) {
-    let numTrackedRequest = 0;
-    let trackedData = await fetchTrackedData(uuid);
-
-    // Clean up "trackedRequests" in same manner as "expectedRequests".
-    let trackedRequests = trackedData.trackedRequests.sort().map(
-        (url) => url.replace(uuid, '<uuid>'));
-
-    for (const trackedRequest of trackedRequests) {
-      // Ignore forDebuggingOnly reports, since their appearance is random.
-      if (!trackedRequest.includes('forDebuggingOnly')) {
-        assert_in_array(trackedRequest, expectedRequests);
-        numTrackedRequest++;
-      }
-    }
-
-    if (numTrackedRequest == expectedRequests.length) break;
-  }
+    uuid, expectedRequests) {
+  return waitForObservedRequests(
+      uuid,
+      expectedRequests,
+      request => !request.includes('forDebuggingOnly'));
 }
 
 // Creates a bidding script with the provided code in the method bodies. The
