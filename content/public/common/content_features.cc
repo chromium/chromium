@@ -952,7 +952,7 @@ constexpr base::FeatureParam<int>
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 BASE_FEATURE(kServiceWorkerStaticRouter,
              "ServiceWorkerStaticRouter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process
