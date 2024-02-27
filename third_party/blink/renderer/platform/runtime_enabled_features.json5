@@ -3031,7 +3031,7 @@
     },
     {
       name: "ReduceCookieIPCs",
-      status: "stable",
+      status: "test",
     },
     {
       // If enabled, the deviceModel will be reduced to "K" and the
