@@ -2504,6 +2504,7 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
 std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
     const CalculationExpressionNode& query,
     const CSSLengthResolver& length_resolver) const {
+  length_resolver.ReferenceAnchor();
   if (Length::AnchorEvaluator* anchor_evaluator =
           length_resolver.AnchorEvaluator()) {
     return anchor_evaluator->Evaluate(query);

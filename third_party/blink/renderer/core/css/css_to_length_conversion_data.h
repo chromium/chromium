@@ -277,6 +277,9 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kTreeScopedReference = 1u << 7,
     // vi, vb, cqi, cqb, etc
     kLogicalDirectionRelative = 1u << 8,
+    // anchor(), anchor-size()
+    // https://drafts.csswg.org/css-anchor-position-1
+    kAnchorRelative = 1u << 9,
     // Adjust the Flags type above if adding more bits below.
   };
 
@@ -339,6 +342,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   void SetLineHeightSize(const LineHeightSize& line_height_size) {
     line_height_size_ = line_height_size;
   }
+
+  void ReferenceAnchor() const override;
 
   Length::AnchorEvaluator* AnchorEvaluator() const override {
     return anchor_data_.GetEvaluator();

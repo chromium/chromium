@@ -464,4 +464,8 @@ void CSSToLengthConversionData::ReferenceTreeScope() const {
   SetFlag(Flag::kTreeScopedReference);
 }
 
+void CSSToLengthConversionData::ReferenceAnchor() const {
+  SetFlag(Flag::kAnchorRelative);
+}
+
 }  // namespace blink

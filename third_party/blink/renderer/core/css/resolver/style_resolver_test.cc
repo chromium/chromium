@@ -3647,6 +3647,101 @@ TEST_P(ParameterizedStyleResolverTest, ScopedAnchorSizeFunction) {
                                 GetMaxHeight(max_height->ComputedStyleRef())));
 }
 
+TEST_P(ParameterizedStyleResolverTest, NoAnchorFunction) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        left: 10px;
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  ASSERT_TRUE(div);
+  EXPECT_FALSE(div->ComputedStyleRef().HasAnchorFunctions());
+}
+
+TEST_P(ParameterizedStyleResolverTest, HasAnchorFunction) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        left: anchor(--a left);
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  ASSERT_TRUE(div);
+  EXPECT_TRUE(div->ComputedStyleRef().HasAnchorFunctions());
+}
+
+TEST_P(ParameterizedStyleResolverTest, HasAnchorFunctionImplicit) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        left: anchor(left);
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  ASSERT_TRUE(div);
+  EXPECT_TRUE(div->ComputedStyleRef().HasAnchorFunctions());
+}
+
+TEST_P(ParameterizedStyleResolverTest, HasAnchorSizeFunction) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        width: anchor-size(--a width);
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  ASSERT_TRUE(div);
+  EXPECT_TRUE(div->ComputedStyleRef().HasAnchorFunctions());
+}
+
+TEST_P(ParameterizedStyleResolverTest, HasAnchorSizeFunctionImplicit) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        width: anchor-size(width);
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  ASSERT_TRUE(div);
+  EXPECT_TRUE(div->ComputedStyleRef().HasAnchorFunctions());
+}
+
 TEST_P(StyleResolverTestCQ, CanAffectAnimationsMPC) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>

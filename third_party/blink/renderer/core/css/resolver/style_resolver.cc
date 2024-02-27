@@ -393,6 +393,9 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kTreeScopedReference)) {
     state.SetHasTreeScopedReference();
   }
+  if (flags & static_cast<Flags>(Flag::kAnchorRelative)) {
+    builder.SetHasAnchorFunctions();
+  }
   if (flags & static_cast<Flags>(Flag::kLogicalDirectionRelative)) {
     builder.SetHasLogicalDirectionRelativeUnits();
   }
