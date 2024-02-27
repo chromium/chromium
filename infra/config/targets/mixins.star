@@ -500,6 +500,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chromium-tests-oslogin",
+    swarming = targets.swarming(
+        dimensions = {
+            "pool": "chromium.tests.oslogin",
+        },
+    ),
+)
+
+targets.mixin(
     name = "dawn_end2end_gpu_test",
     args = [
         "--use-gpu-in-tests",

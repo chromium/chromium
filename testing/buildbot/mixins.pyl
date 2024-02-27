@@ -399,6 +399,13 @@
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
+  'chromium-tests-oslogin': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.tests.oslogin',
+      },
+    },
+  },
   'ci_only': {
     'ci_only': True,
   },

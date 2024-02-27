@@ -3572,6 +3572,17 @@
           'scripts': 'test_traffic_annotation_auditor_script'
         },
       },
+      'linux-chromeos-dbg-oslogin': {
+        'mixins': [
+          'x86-64',
+          'linux-jammy',
+          'chromium-tests-oslogin',
+        ],
+        'test_suites': {
+          'gtest_tests': 'linux_chromeos_gtests',
+          'isolated_scripts': 'linux_chromeos_isolated_scripts',
+        },
+      },
       'linux-fieldtrial-rel': {
         'mixins': [
           'linux-jammy',
