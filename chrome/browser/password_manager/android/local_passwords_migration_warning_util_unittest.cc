@@ -61,28 +61,27 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
 }
 
-TEST_F(LocalPasswordsMigrationWarningUtilTest,
-       TestShouldShowWhenMoreThanAMonth) {
+TEST_F(LocalPasswordsMigrationWarningUtilTest, TestShouldShowWhenMoreThanADay) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   pref_service()->SetTime(
       password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
       base::Time::Now());
-  task_env()->FastForwardBy(base::Days(31));
+  task_env()->FastForwardBy(base::Hours(25));
   sync_service()->SetHasSyncConsent(false);
   EXPECT_TRUE(local_password_migration::ShouldShowWarning(profile()));
 }
 
 TEST_F(LocalPasswordsMigrationWarningUtilTest,
-       TestShouldNotShowWhenLessThanAMonth) {
+       TestShouldNotShowWhenLessThanADay) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   pref_service()->SetTime(
       password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
       base::Time::Now());
-  task_env()->FastForwardBy(base::Days(29));
+  task_env()->FastForwardBy(base::Hours(23));
   sync_service()->SetHasSyncConsent(false);
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
 }

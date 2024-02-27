@@ -25,7 +25,7 @@ using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 namespace local_password_migration {
 
-constexpr base::TimeDelta kMinIntervalBetweenWarnings = base::Days(30);
+constexpr base::TimeDelta kMinIntervalBetweenWarnings = base::Days(1);
 
 void SaveWarningShownTimestamp(PrefService* pref_service) {
   pref_service->SetTime(
