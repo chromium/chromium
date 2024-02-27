@@ -67,7 +67,7 @@ class BASE_I18N_EXPORT FixedPatternStringSearch {
 
  private:
   std::u16string find_this_;
-  raw_ptr<UStringSearch, DanglingUntriaged> search_;
+  raw_ptr<UStringSearch> search_;
 };
 
 // This class is for speeding up multiple StringSearchIgnoringCaseAndAccents()
