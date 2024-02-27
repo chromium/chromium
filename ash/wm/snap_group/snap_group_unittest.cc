@@ -33,6 +33,7 @@
 #include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_group_item.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
@@ -130,11 +131,10 @@ void ExitTabletMode() {
 
 gfx::Rect GetOverviewGridBounds() {
   OverviewSession* overview_session = GetOverviewSession();
-  if (!overview_session) {
-    return gfx::Rect();
-  }
-
-  return overview_session->grid_list()[0]->bounds_for_testing();
+  return overview_session
+             ? OverviewGridTestApi(overview_session->grid_list()[0].get())
+                   .bounds()
+             : gfx::Rect();
 }
 
 void SnapOneTestWindow(

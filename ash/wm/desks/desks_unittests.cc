@@ -81,6 +81,7 @@
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -6212,7 +6213,7 @@ TEST_P(DesksTest, ClickingOverviewGridUnfocusesDeskNameView) {
   // and should remove focus from the focused `desk_name_view`.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(
-      overview_grid->bounds_for_testing().CenterPoint());
+      OverviewGridTestApi(overview_grid).bounds().CenterPoint());
   event_generator->ClickLeftButton();
   EXPECT_FALSE(desk_name_view->HasFocus());
   EXPECT_TRUE(overview_controller->InOverviewSession());

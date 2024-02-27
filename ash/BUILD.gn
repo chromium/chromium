@@ -4736,6 +4736,8 @@ static_library("test_support") {
     "wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h",
     "wm/lock_state_controller_test_api.cc",
     "wm/lock_state_controller_test_api.h",
+    "wm/overview/overview_grid_test_api.cc",
+    "wm/overview/overview_grid_test_api.h",
     "wm/overview/overview_test_util.cc",
     "wm/overview/overview_test_util.h",
     "wm/tablet_mode/tablet_mode_controller_test_api.cc",

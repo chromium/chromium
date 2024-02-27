@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
@@ -111,7 +112,7 @@ TEST_F(PineContextMenuModelTest, ShowContextMenuOnSettingsButtonClicked) {
   // Get the active Pine widget.
   OverviewGrid* grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(grid);
-  auto* pine_widget = grid->pine_widget_for_testing();
+  auto* pine_widget = OverviewGridTestApi(grid).pine_widget();
   ASSERT_TRUE(pine_widget);
 
   // The context menu should not be open.

@@ -494,21 +494,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   int num_unsupported_windows() const { return num_unsupported_windows_; }
 
-  const gfx::Rect bounds_for_testing() const { return bounds_; }
-  float scroll_offset_for_testing() const { return scroll_offset_; }
-  views::Widget* pine_widget_for_testing() { return pine_widget_.get(); }
-
-  const views::Widget* birch_bar_widget_for_testing() const {
-    return birch_bar_widget_.get();
-  }
-
-  const BirchBarView* birch_bar_view_for_testing() const {
-    return birch_bar_view_;
-  }
-  BirchBarView* birch_bar_view_for_testing() { return birch_bar_view_; }
-
  private:
   friend class DesksTemplatesTest;
+  friend class OverviewGridTestApi;
   friend class OverviewTestBase;
 
   // Struct which holds data required to perform nudges. Nudge in the context of

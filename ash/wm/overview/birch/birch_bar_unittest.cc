@@ -14,6 +14,7 @@
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -40,7 +41,6 @@ void AddOneChipToBirchBar(BirchBarView* birch_bar_view) {
 class BirchBarTest : public AshTestBase {
  public:
   BirchBarTest() { switches::SetIgnoreForestSecretKeyForTest(true); }
-
   BirchBarTest(const BirchBarTest&) = delete;
   BirchBarTest& operator=(const BirchBarTest&) = delete;
   ~BirchBarTest() override { switches::SetIgnoreForestSecretKeyForTest(false); }
@@ -52,8 +52,8 @@ class BirchBarTest : public AshTestBase {
 // Tests that the birch bar will be shown in the normal Overview.
 TEST_F(BirchBarTest, ShowBirchBar) {
   EnterOverview();
-  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                  ->birch_bar_view_for_testing());
+  EXPECT_TRUE(
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
 }
 
 // Tests that the birch bar will be hidden in the partial Overview with a split
@@ -69,17 +69,16 @@ TEST_F(BirchBarTest, HideBirchBarInPartialSplitScreen) {
 
   // The birch bar should be shown in the normal Overview.
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
-  OverviewGrid* overview_grid = GetOverviewGridForRoot(root_window);
-  EXPECT_TRUE(overview_grid->birch_bar_view_for_testing());
+  EXPECT_TRUE(OverviewGridTestApi(root_window).birch_bar_view());
 
   // Snap window 1 to create a split screen and the birch bar should be hidden.
   SplitViewController::Get(root_window)
       ->SnapWindow(window_1.get(), SnapPosition::kPrimary);
-  EXPECT_FALSE(overview_grid->birch_bar_view_for_testing());
+  EXPECT_FALSE(OverviewGridTestApi(root_window).birch_bar_view());
 
   // Dismiss the split screen, the birch bar should be shown.
   window_1.reset();
-  EXPECT_TRUE(overview_grid->birch_bar_view_for_testing());
+  EXPECT_TRUE(OverviewGridTestApi(root_window).birch_bar_view());
 }
 
 // Tests that the birch bar will be hidden in the Tablet mode.
@@ -89,18 +88,17 @@ TEST_F(BirchBarTest, HideBirchBarInTabletMode) {
   EnterOverview();
 
   // The birch bar should be shown in the normal Overview.
-  OverviewGrid* overview_grid =
-      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(overview_grid->birch_bar_view_for_testing());
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  EXPECT_TRUE(OverviewGridTestApi(root).birch_bar_view());
 
   // Convert to Tablet mode, the birch bar should be hidden.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_FALSE(overview_grid->birch_bar_view_for_testing());
+  EXPECT_FALSE(OverviewGridTestApi(root).birch_bar_view());
 
   // Convert to Clamshell mode, the birch bar should be shown.
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_TRUE(overview_grid->birch_bar_view_for_testing());
+  EXPECT_TRUE(OverviewGridTestApi(root).birch_bar_view());
 }
 
 // The parameter structure for birch bar responsive layout tests.
@@ -228,13 +226,13 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
   EnterOverview();
 
-  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  BirchBarView* birch_bar_view = overview_grid->birch_bar_view_for_testing();
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  BirchBarView* birch_bar_view = OverviewGridTestApi(root).birch_bar_view();
   ASSERT_TRUE(birch_bar_view);
 
   const LayoutTestParams& params = GetParam();
   const views::Widget* birch_bar_widget =
-      overview_grid->birch_bar_widget_for_testing();
+      OverviewGridTestApi(root).birch_bar_widget();
 
   // Add chips to the bar in landscape mode.
   for (int i = 0; i < 4; i++) {

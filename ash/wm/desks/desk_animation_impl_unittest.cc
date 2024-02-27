@@ -17,6 +17,7 @@
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/barrier_closure.h"
 #include "base/test/scoped_feature_list.h"
@@ -309,8 +310,7 @@ TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
   auto* overview_controller = Shell::Get()->overview_controller();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   const gfx::Rect initial_overview_grid_bounds =
-      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-          ->bounds_for_testing();
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).bounds();
 
   // Start a swipe animation, but only swipe to show 1/10 of the next desk. This
   // will cause the animation to animate back to the starting desk.
@@ -349,8 +349,7 @@ TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
   // specifically use `OverviewEnterExitType::kImmediateEnter` to enter overview
   // in these cases.
   EXPECT_EQ(initial_overview_grid_bounds,
-            GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                ->bounds_for_testing());
+            OverviewGridTestApi(Shell::GetPrimaryRootWindow()).bounds());
 }
 
 // Tests that inputs to exit overview are ignored during the desk switch

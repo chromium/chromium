@@ -59,6 +59,7 @@
 #include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
@@ -6314,7 +6315,7 @@ TEST_F(OverviewSessionFlingTest, BasicFling) {
   // there may not be enough time passed to decay the velocity so the scroll
   // offset will not change, but the overall change should be substantial.
   constexpr int kMaxLoops = 10;
-  const float initial_scroll_offset = grid->scroll_offset_for_testing();
+  const float initial_scroll_offset = OverviewGridTestApi(grid).scroll_offset();
   float previous_scroll_offset = initial_scroll_offset;
   for (int i = 0;
        i < kMaxLoops && grid_event_handler->IsFlingInProgressForTesting();
@@ -6322,12 +6323,13 @@ TEST_F(OverviewSessionFlingTest, BasicFling) {
     task_environment()->FastForwardBy(base::Milliseconds(50));
     ui::DrawWaiterForTest::WaitForCompositingStarted(compositor);
 
-    float scroll_offset = grid->scroll_offset_for_testing();
+    float scroll_offset = OverviewGridTestApi(grid).scroll_offset();
     EXPECT_LE(scroll_offset, previous_scroll_offset);
     previous_scroll_offset = scroll_offset;
   }
 
-  EXPECT_LT(grid->scroll_offset_for_testing(), initial_scroll_offset - 100.f);
+  EXPECT_LT(OverviewGridTestApi(grid).scroll_offset(),
+            initial_scroll_offset - 100.f);
 }
 
 // Tests that a vertical scroll sequence will close the window it is scrolled
@@ -8597,8 +8599,9 @@ TEST_F(SplitViewOverviewSessionTest,
   // Tests that near the right edge, the grid bounds are fixed at 200 and are
   // partially off screen to the right.
   generator->MoveMouseTo(580, 0);
-  EXPECT_EQ(200, grid->bounds_for_testing().width());
-  EXPECT_GT(grid->bounds_for_testing().right(), 600);
+  gfx::Rect grid_bounds = OverviewGridTestApi(grid).bounds();
+  EXPECT_EQ(200, grid_bounds.width());
+  EXPECT_GT(grid_bounds.right(), 600);
   generator->ReleaseLeftButton();
   SkipDividerSnapAnimation();
 
@@ -8620,8 +8623,9 @@ TEST_F(SplitViewOverviewSessionTest,
   generator->MoveMouseTo(20, 0);
   // Tests that near the left edge, the grid bounds are fixed at 200 and are
   // partially off screen to the left.
-  EXPECT_EQ(200, grid->bounds_for_testing().width());
-  EXPECT_LT(grid->bounds_for_testing().x(), 0);
+  grid_bounds = OverviewGridTestApi(grid).bounds();
+  EXPECT_EQ(200, grid_bounds.width());
+  EXPECT_LT(grid_bounds.x(), 0);
   generator->ReleaseLeftButton();
   SkipDividerSnapAnimation();
 }
@@ -10099,7 +10103,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
                                            /*window_for_minimum_size=*/nullptr,
                                            chromeos::kDefaultSnapRatio),
-      grid_on_root2->bounds_for_testing());
+      OverviewGridTestApi(grid_on_root2).bounds());
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller->state());
@@ -10162,11 +10166,11 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
-            grid_on_root1->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(display_with_root2.work_area(),
-            grid_on_root2->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root1_left_snap_point(0, 300);
   event_generator->MoveMouseTo(root1_left_snap_point);
@@ -10177,22 +10181,22 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
                                            /*window_for_minimum_size=*/nullptr,
                                            chromeos::kDefaultSnapRatio),
-      grid_on_root1->bounds_for_testing());
+      OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(display_with_root2.work_area(),
-            grid_on_root2->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root1_middle_point(400, 300);
   event_generator->MoveMouseTo(root1_middle_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
-            grid_on_root1->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(display_with_root2.work_area(),
-            grid_on_root2->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root1_right_snap_point(799, 300);
   event_generator->MoveMouseTo(root1_right_snap_point);
@@ -10203,18 +10207,18 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
                                            /*window_for_minimum_size=*/nullptr,
                                            chromeos::kDefaultSnapRatio),
-      grid_on_root1->bounds_for_testing());
+      OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(display_with_root2.work_area(),
-            grid_on_root2->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root2_left_snap_point(800, 300);
   event_generator->MoveMouseTo(root2_left_snap_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
-            grid_on_root1->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(
@@ -10222,14 +10226,14 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
                                            /*window_for_minimum_size=*/nullptr,
                                            chromeos::kDefaultSnapRatio),
-      grid_on_root2->bounds_for_testing());
+      OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root2_left_snap_point_away_from_edge(816, 300);
   event_generator->MoveMouseTo(root2_left_snap_point_away_from_edge);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
-            grid_on_root1->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(
@@ -10237,14 +10241,14 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
                                            /*window_for_minimum_size=*/nullptr,
                                            chromeos::kDefaultSnapRatio),
-      grid_on_root2->bounds_for_testing());
+      OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root2_right_snap_point(1599, 300);
   event_generator->MoveMouseTo(root2_right_snap_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
-            grid_on_root1->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(
@@ -10252,28 +10256,28 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
                                            /*window_for_minimum_size=*/nullptr,
                                            chromeos::kDefaultSnapRatio),
-      grid_on_root2->bounds_for_testing());
+      OverviewGridTestApi(grid_on_root2).bounds());
 
   const gfx::Point root2_middle_point(1200, 300);
   event_generator->MoveMouseTo(root2_middle_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
-            grid_on_root1->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(display_with_root2.work_area(),
-            grid_on_root2->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root2).bounds());
 
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root1->current_window_dragging_state());
   EXPECT_EQ(display_with_root1.work_area(),
-            grid_on_root1->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root1).bounds());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(display_with_root2.work_area(),
-            grid_on_root2->bounds_for_testing());
+            OverviewGridTestApi(grid_on_root2).bounds());
 }
 
 // Verify the drop target positions for multi-display dragging.

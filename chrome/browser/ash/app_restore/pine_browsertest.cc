@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -40,7 +41,7 @@ const PillButton* GetPineDialogRestoreButton() {
   }
 
   // Retrieve the "Restore" button from the pine dialog.
-  views::Widget* pine_widget = overview_grid->pine_widget_for_testing();
+  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
   if (!pine_widget) {
     return nullptr;
   }
