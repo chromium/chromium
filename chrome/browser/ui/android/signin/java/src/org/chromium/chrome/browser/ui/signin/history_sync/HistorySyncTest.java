@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,28 +53,6 @@ import org.chromium.ui.test.util.ViewUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "This test relies on native initialization")
 public class HistorySyncTest {
-    /** Stub implementation of the {@link HistorySyncDelegate} for testing */
-    public class HistorySyncTestDelegate implements HistorySyncCoordinator.HistorySyncDelegate {
-        private HistorySyncCoordinator mCoordinator;
-
-        @Override
-        public void dismiss() {
-            if (isCoordinatorDestroyed()) {
-                return;
-            }
-            mCoordinator.destroy();
-            mCoordinator = null;
-        }
-
-        public void setCoordinator(HistorySyncCoordinator coordinator) {
-            mCoordinator = coordinator;
-        }
-
-        public boolean isCoordinatorDestroyed() {
-            return mCoordinator == null;
-        }
-    }
-
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -88,9 +65,9 @@ public class HistorySyncTest {
     private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.UNKNOWN;
 
     @Mock private SyncService mSyncServiceMock;
+    @Mock private HistorySyncCoordinator.HistorySyncDelegate mHistorySyncDelegateMock;
 
     private HistorySyncCoordinator mHistorySyncCoordinator;
-    private HistorySyncTestDelegate mDelegate;
 
     @Before
     public void setUp() {
@@ -102,13 +79,6 @@ public class HistorySyncTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (mDelegate.isCoordinatorDestroyed()) {
-                        mDelegate.dismiss();
-                    }
-                });
-
         mSigninTestRule.forceSignOut();
     }
 
@@ -144,7 +114,7 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
-        Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
+        verify(mHistorySyncDelegateMock).dismiss();
     }
 
     @Test
@@ -159,7 +129,7 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
-        Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
+        verify(mHistorySyncDelegateMock).dismiss();
     }
 
     @Test
@@ -175,24 +145,22 @@ public class HistorySyncTest {
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
 
         histogramWatcher.assertExpected();
-        Assert.assertTrue(mDelegate.isCoordinatorDestroyed());
+        verify(mHistorySyncDelegateMock).dismiss();
     }
 
     private void buildHistorySyncCoordinator() {
-        mDelegate = new HistorySyncTestDelegate();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncCoordinator =
                             new HistorySyncCoordinator(
                                     LayoutInflater.from(mActivityTestRule.getActivity()),
-                                    mDelegate,
+                                    mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
                                     SIGNIN_ACCESS_POINT);
                     mActivityTestRule
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());
                 });
-        mDelegate.setCoordinator(mHistorySyncCoordinator);
         ViewUtils.waitForVisibleView(allOf(withId(R.id.sync_consent_title), isDisplayed()));
     }
 }
