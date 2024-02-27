@@ -13,6 +13,9 @@ class WithOpt : public GarbageCollected<WithOpt> {
  private:
   absl::optional<Base> optional_field_;  // Optional fields are disallowed.
   std::optional<Base> optional_field2_;
+  absl::optional<Traceable>
+      optional_field3_;  // Optional fields are disallowed.
+  std::optional<Traceable> optional_field4_;
 };
 
 void DisallowedUseOfOptional() {
@@ -23,8 +26,14 @@ void DisallowedUseOfOptional() {
     absl::optional<Derived> optional_derived;  // Must also be okay.
     (void)optional_derived;
 
+    absl::optional<Traceable> optional_traceable;  // Must also be okay.
+    (void)optional_traceable;
+
     new absl::optional<Base>;  // New expression with gced optionals are not
                                // allowed.
+
+    new absl::optional<Traceable>;  // New expression with traceable optionals
+                                    // are not allowed.
   }
 
   {
@@ -34,9 +43,34 @@ void DisallowedUseOfOptional() {
     std::optional<Derived> optional_derived;  // Must also be okay.
     (void)optional_derived;
 
+    std::optional<Traceable> optional_traceable;  // Must also be okay.
+    (void)optional_traceable;
+
     new std::optional<Base>;  // New expression with gced optionals are not
                                // allowed.
+
+    new std::optional<Traceable>;  // New expression with traceable optionals
+                                   // are not allowed.
   }
 }
+
+class OnStack {
+  STACK_ALLOCATED();
+
+ public:
+  OnStack() {
+    (void)optional_field_;
+    (void)optional_field2_;
+    (void)optional_field3_;
+    (void)optional_field4_;
+  }
+
+ private:
+  // All fields are ok since the class is stack allocated.
+  absl::optional<Base> optional_field_;
+  std::optional<Base> optional_field2_;
+  absl::optional<Traceable> optional_field3_;
+  std::optional<Traceable> optional_field4_;
+};
 
 }  // namespace blink

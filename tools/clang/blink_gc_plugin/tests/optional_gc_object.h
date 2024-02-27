@@ -24,6 +24,13 @@ class Mixin : public GarbageCollectedMixin {
   void Trace(Visitor*) const {}
 };
 
+class Traceable {
+  DISALLOW_NEW();
+
+ public:
+  void Trace(Visitor*) const {}
+};
+
 }  // namespace blink
 
 #endif  // OPTIONAL_GC_OBJECT_H_

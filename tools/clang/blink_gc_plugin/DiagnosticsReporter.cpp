@@ -197,13 +197,13 @@ const char kUniquePtrUsedWithGC[] =
 
 const char kOptionalFieldUsedWithGC[] =
     "[blink-gc] Disallowed optional field of %0 found; %1 is a "
-    "garbage-collected "
-    "type. Optional fields cannot hold garbage-collected objects.";
+    "garbage-collected or traceable "
+    "type. Optional fields cannot hold garbage-collected or traceable objects.";
 
 const char kOptionalNewExprUsedWithGC[] =
     "[blink-gc] Disallowed new-expression of %0 found; %1 is a "
-    "garbage-collected "
-    "type. GCed types cannot be created with new.";
+    "garbage-collected or traceable "
+    "type. Optional fields cannot hold garbage-collected or traceable objects.";
 
 const char kVariantUsedWithGC[] =
     "[blink-gc] Disallowed construction of %0 found; %1 is a garbage-collected "

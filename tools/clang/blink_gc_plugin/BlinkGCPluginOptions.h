@@ -44,6 +44,10 @@ struct BlinkGCPluginOptions {
   // GCed objects and in stl and WTF collections.
   bool enable_off_heap_collections_of_gced_check = true;
 
+  // Enables checks for std::optional and absl::optional of non-GCed traceable
+  // type.
+  bool enable_optional_of_traceable_check = false;
+
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;

@@ -95,7 +95,11 @@ struct CORE_EXPORT InlineItemResult {
   // PositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
-  GC_PLUGIN_IGNORE("crbug.com/1146383")
+  GC_PLUGIN_IGNORE(
+      "InlineItemResult is used only either on stack or in a HeapVector (see "
+      "InlineItemResults below). Concurrent marking of InlineItemResult in "
+      "HeapVector is not enabled via VectorTraits, so this std::optional is "
+      "currently safe")
   std::optional<PositionedFloat> positioned_float;
   ExclusionSpace exclusion_space_before_position_float;
 

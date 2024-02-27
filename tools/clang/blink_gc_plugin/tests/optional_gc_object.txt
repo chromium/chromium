@@ -1,13 +1,25 @@
-optional_gc_object.cpp:14:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. Optional fields cannot hold garbage-collected objects.
+optional_gc_object.cpp:14:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
   absl::optional<Base> optional_field_;  // Optional fields are disallowed.
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:15:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. Optional fields cannot hold garbage-collected objects.
+optional_gc_object.cpp:15:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
   std::optional<Base> optional_field2_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:26:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. GCed types cannot be created with new.
+optional_gc_object.cpp:16:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+  absl::optional<Traceable>
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:18:3: warning: [blink-gc] Disallowed optional field of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+  std::optional<Traceable> optional_field4_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:32:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
     new absl::optional<Base>;  // New expression with gced optionals are not
     ^~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:37:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected type. GCed types cannot be created with new.
+optional_gc_object.cpp:35:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+    new absl::optional<Traceable>;  // New expression with traceable optionals
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:49:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
     new std::optional<Base>;  // New expression with gced optionals are not
     ^~~~~~~~~~~~~~~~~~~~~~~
-4 warnings generated.
+optional_gc_object.cpp:52:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+    new std::optional<Traceable>;  // New expression with traceable optionals
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+8 warnings generated.
