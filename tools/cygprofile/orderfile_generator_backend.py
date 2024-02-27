@@ -259,7 +259,7 @@ class ClankCompiler:
     if options.ninja_path:
       self._ninja_command = [options.ninja_path]
     if self._options.ninja_j:
-      self._ninja_command += ['-j', ninja_j]
+      self._ninja_command += ['-j', options.ninja_j]
     self._ninja_command += ['-C']
 
     # WebView targets
