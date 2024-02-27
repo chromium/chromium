@@ -174,7 +174,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed: Chrome already run locally"/>
   <int value="3" label="Failed: Chrome startup failed"/>
   <int value="4" label="Failed: Cannot sign in as previous user"/>
-  <int value="5" label="Failed: Sign-in timed-out or interrupted"/>
+  <int value="5" label="DEPRECATED: Failed: Sign-in timed-out or interrupted"/>
+  <int value="6"
+      label="DEPRECATED: Restore status histogram sent (never recorded)"/>
+  <int value="7" label="Failed: Sign-in timed-out or interrupted"/>
 </enum>
 
 <enum name="AndroidSearchEngineChoiceEvents">

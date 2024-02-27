@@ -77,8 +77,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         RestoreStatus.RESTORE_AFTER_FIRST_RUN,
         RestoreStatus.BROWSER_STARTUP_FAILED,
         RestoreStatus.NOT_SIGNED_IN,
+        RestoreStatus.DEPRECATED_SIGNIN_TIMED_OUT,
+        RestoreStatus.DEPRECATED_RESTORE_STATUS_RECORDED,
         RestoreStatus.SIGNIN_TIMED_OUT,
-        RestoreStatus.RESTORE_STATUS_RECORDED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RestoreStatus {
@@ -88,16 +89,21 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         int RESTORE_AFTER_FIRST_RUN = 2;
         int BROWSER_STARTUP_FAILED = 3;
         int NOT_SIGNED_IN = 4;
-        int SIGNIN_TIMED_OUT = 5;
+        // This enum value has taken the previous value indicating that the histogram has been
+        // recorded, when it was introduced. Deprecating since the metric is polluted consequently.
+        int DEPRECATED_SIGNIN_TIMED_OUT = 5;
+        // Previously, DEPRECATED_RESTORE_STATUS_RECORDED was set when the histogram has been
+        // recorded, to prevent additional histogram record. This magic value is being replaced by
+        // the boolean pref RESTORE_STATUS_RECORDED.
+        // This value is kept for legacy pref support.
+        int DEPRECATED_RESTORE_STATUS_RECORDED = 6;
+        int SIGNIN_TIMED_OUT = 7;
 
-        int NUM_ENTRIES = 6;
-
-        // Set RESTORE_STATUS_RECORDED when the histogram has been recorded; so that it is only
-        // recorded once.
-        int RESTORE_STATUS_RECORDED = 6;
+        int NUM_ENTRIES = 7;
     }
 
-    private static final String RESTORE_STATUS = "android_restore_status";
+    @VisibleForTesting static final String RESTORE_STATUS = "android_restore_status";
+    private static final String RESTORE_STATUS_RECORDED = "android_restore_status_recorded";
 
     // Keep track of backup failures, so that we give up in the end on persistent problems.
     @VisibleForTesting static final String BACKUP_FAILURE_COUNT = "android_backup_failure_count";
@@ -664,24 +670,60 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     }
 
     /**
-     * Save the restore status for later transfer to a histogram.
+     * Save the restore status for later transfer to a histogram, and reset histogram recorded
+     * status if needed.
      *
      * @param status the status.
      */
     @VisibleForTesting
     static void setRestoreStatus(@RestoreStatus int status) {
+        assert status != RestoreStatus.DEPRECATED_RESTORE_STATUS_RECORDED
+                && status != RestoreStatus.DEPRECATED_SIGNIN_TIMED_OUT;
+
         ContextUtils.getAppSharedPreferences().edit().putInt(RESTORE_STATUS, status).apply();
+        if (isRestoreStatusRecorded()) {
+            setRestoreStatusRecorded(false);
+        }
+    }
+
+    /**
+     * Get from the saved values whether the restore status histogram has been recorded.
+     *
+     * @return Whether the restore status has been recorded.
+     */
+    @VisibleForTesting
+    static boolean isRestoreStatusRecorded() {
+        return ContextUtils.getAppSharedPreferences().getBoolean(RESTORE_STATUS_RECORDED, false);
+    }
+
+    /**
+     * Save the value indicating whether the restore status histogram has been recorded.
+     *
+     * @param isRecorded Whether the restore status is recorded.
+     */
+    @VisibleForTesting
+    static void setRestoreStatusRecorded(boolean isRecorded) {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(RESTORE_STATUS_RECORDED, isRecorded)
+                .apply();
     }
 
     /** Record the restore histogram. To be called from Chrome itself once it is running. */
     public static void recordRestoreHistogram() {
+        boolean isStatusRecorded = isRestoreStatusRecorded();
+        // Ensure restore status is only recorded once.
+        if (isStatusRecorded) {
+            return;
+        }
+
         @RestoreStatus int restoreStatus = getRestoreStatus();
-        // Ensure restore status is only recorded once
-        if (restoreStatus != RestoreStatus.RESTORE_STATUS_RECORDED) {
+        if (restoreStatus != RestoreStatus.DEPRECATED_RESTORE_STATUS_RECORDED
+                && restoreStatus != RestoreStatus.DEPRECATED_SIGNIN_TIMED_OUT) {
             RecordHistogram.recordEnumeratedHistogram(
                     HISTOGRAM_ANDROID_RESTORE_RESULT, restoreStatus, RestoreStatus.NUM_ENTRIES);
-            setRestoreStatus(RestoreStatus.RESTORE_STATUS_RECORDED);
         }
+        setRestoreStatusRecorded(true);
     }
 
     @NativeMethods

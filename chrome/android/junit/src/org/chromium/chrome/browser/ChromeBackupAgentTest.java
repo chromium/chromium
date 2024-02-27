@@ -1032,10 +1032,10 @@ public class ChromeBackupAgentTest {
                 ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
         ChromeBackupAgentImpl.setRestoreStatus(
-                ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED);
+                ChromeBackupAgentImpl.RestoreStatus.SIGNIN_TIMED_OUT);
         assertThat(
                 ChromeBackupAgentImpl.getRestoreStatus(),
-                equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED));
+                equalTo(ChromeBackupAgentImpl.RestoreStatus.SIGNIN_TIMED_OUT));
     }
 
     /**
