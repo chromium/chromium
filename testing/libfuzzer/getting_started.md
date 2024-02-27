@@ -14,6 +14,23 @@ You should fuzz any function which takes input from any
 untrusted source, such as the internet. If the code parses, decodes, or
 otherwise manipulates that input, it definitely should be fuzzed!
 
+To decide how best to fuzz it, you should decide which of these two situations
+best matches your input:
+
+* *Binary data*: the input is a single buffer of contiguous bytes, for example
+  an image or some binary format which your code decodes.
+* *Function arguments*: the input is multiple different chunks of data, for
+  example the arguments to a function.
+
+In the latter case, go ahead and read this guide - it will show you how to use
+our latest fuzzing technology, FuzzTest.
+
+If however your input more closely matches the former description - just a
+single binary blob of data - then instead use our older fuzzing technology
+[libfuzzer] - click that link for a separate getting started guide. (libfuzzer
+will work a little better in these cases because if the fuzzer finds a problem,
+the test case will exactly match the binary format.)
+
 ## How to fuzz
 
 1. Find your existing unit test target. Create a new similar target
@@ -222,6 +239,7 @@ There are some situations where FuzzTests may not work. For example:
 * You need to run on platforms not currently supported by FuzzTest
 * You need more structured input
 * You need to mutate the input in a more precise way
+* Your fuzzer input is a single binary blob
 
 In these cases, you may be best off creating a standalone fuzzer using our
 older fuzzing technology, [libfuzzer]. There are further options beyond
