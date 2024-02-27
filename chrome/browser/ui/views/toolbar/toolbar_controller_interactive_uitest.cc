@@ -613,7 +613,14 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ExtensionHasNoAnimationLoop) {
                    ->is_animating());
 }
 
-IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, DoNotShowIphWhenOverflowed) {
+// TODO(crbug.com/41495158): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoNotShowIphWhenOverflowed DISABLED_DoNotShowIphWhenOverflowed
+#else
+#define MAYBE_DoNotShowIphWhenOverflowed DoNotShowIphWhenOverflowed
+#endif
+IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
+                       MAYBE_DoNotShowIphWhenOverflowed) {
   RunTestSequence(
       ResizeRelativeToOverflow(-1),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
