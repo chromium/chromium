@@ -2295,7 +2295,7 @@ TEST_F(PasswordAutofillManagerTest, ManualFallback_InvokesFlow) {
                                     /*autofill_client=*/nullptr);
   const gfx::RectF bounds(1, 1, 2, 2);
   EXPECT_CALL(manual_fallback_flow(),
-              RunFlow(bounds, base::i18n::LEFT_TO_RIGHT));
+              RunFlow(kElementId, bounds, base::i18n::LEFT_TO_RIGHT));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId,
       autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords,

@@ -234,6 +234,14 @@ void ContentPasswordManagerDriver::TriggerFormSubmission() {
 }
 #endif
 
+void ContentPasswordManagerDriver::PreviewField(
+    autofill::FieldRendererId field_id,
+    const std::u16string& value) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->PreviewField(field_id, value);
+  }
+}
+
 void ContentPasswordManagerDriver::PreviewSuggestion(
     const std::u16string& username,
     const std::u16string& password) {

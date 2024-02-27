@@ -78,6 +78,8 @@ class ContentPasswordManagerDriver final
       ToShowVirtualKeyboard show_virtual_keyboard) override;
   void TriggerFormSubmission() override;
 #endif
+  void PreviewField(autofill::FieldRendererId field_id,
+                    const std::u16string& value) override;
   void PreviewSuggestion(const std::u16string& username,
                          const std::u16string& password) override;
   void PreviewGenerationSuggestion(const std::u16string& password) override;

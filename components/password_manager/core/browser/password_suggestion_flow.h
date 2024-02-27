@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SUGGESTION_FLOW_H_
 
 #include "base/i18n/rtl.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace password_manager {
@@ -21,7 +22,8 @@ class PasswordSuggestionFlow {
 
   // Invokes the flow by collecting necessary data and displaying password
   // suggestions to the user.
-  virtual void RunFlow(const gfx::RectF& bounds,
+  virtual void RunFlow(autofill::FieldRendererId field_id,
+                       const gfx::RectF& bounds,
                        base::i18n::TextDirection text_direction) = 0;
 };
 

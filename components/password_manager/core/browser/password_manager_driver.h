@@ -106,6 +106,11 @@ class PasswordManagerDriver {
   virtual void TriggerFormSubmission() {}
 #endif
 
+  // Tells the renderer to preview the given `value` into the field identified
+  // by the `field_id`.
+  virtual void PreviewField(autofill::FieldRendererId field_id,
+                            const std::u16string& value) {}
+
   // Tells the driver to preview filling form with the `username` and
   // `password`.
   virtual void PreviewSuggestion(const std::u16string& username,

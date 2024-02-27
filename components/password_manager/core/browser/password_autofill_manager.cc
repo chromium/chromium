@@ -404,7 +404,7 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
               password_client_->GetProfilePasswordStore(),
               password_client_->GetAccountPasswordStore()));
     }
-    manual_fallback_flow_->RunFlow(bounds, text_direction);
+    manual_fallback_flow_->RunFlow(element_id, bounds, text_direction);
     return;
   }
   bool autofill_available =

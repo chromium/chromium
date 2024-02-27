@@ -45,7 +45,8 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // Generates suggestions and shows the Autofill popup if the passwords were
   // already read from disk. Otherwise, saves the input parameters to run the
   // flow when the passwords are read from disk.
-  void RunFlow(const gfx::RectF& bounds,
+  void RunFlow(autofill::FieldRendererId field_id,
+               const gfx::RectF& bounds,
                base::i18n::TextDirection text_direction) override;
 
   // AutofillPopupDelegate:
@@ -95,6 +96,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // * it is changed to `kPasswordsAvailable` when the passwords are read from
   // disk by the `SavedPasswordsPresenter`.
   FlowState flow_state_ = FlowState::kCreated;
+  autofill::FieldRendererId saved_field_id_;
   std::optional<gfx::RectF> saved_bounds_;
   std::optional<base::i18n::TextDirection> saved_text_direction_;
   // Reads passwords from disk and

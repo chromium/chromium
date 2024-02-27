@@ -22,8 +22,13 @@
 namespace password_manager {
 
 using autofill::AutofillClient;
+using autofill::AutofillPopupDelegate;
 using autofill::AutofillSuggestionTriggerSource;
+using autofill::FieldRendererId;
+using autofill::PopupItemId;
 using autofill::TestAutofillClient;
+using autofill::test::AutofillUnitTestEnvironment;
+using autofill::test::MakeFieldRendererId;
 using base::i18n::TextDirection;
 using testing::_;
 using testing::AllOf;
@@ -37,7 +42,17 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               ShowAutofillPopup,
               (const AutofillClient::PopupOpenArgs&,
-               base::WeakPtr<autofill::AutofillPopupDelegate>),
+               base::WeakPtr<AutofillPopupDelegate>),
+              (override));
+};
+
+class MockPasswordManagerDriver : public StubPasswordManagerDriver {
+ public:
+  MockPasswordManagerDriver() = default;
+  ~MockPasswordManagerDriver() override = default;
+  MOCK_METHOD(void,
+              PreviewField,
+              (FieldRendererId, const std::u16string&),
               (override));
 };
 
@@ -67,7 +82,7 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
 
   PasswordManualFallbackFlow& flow() { return *flow_; }
 
-  StubPasswordManagerDriver& driver() { return *driver_; }
+  MockPasswordManagerDriver& driver() { return *driver_; }
 
   MockAutofillClient& autofill_client() { return *autofill_client_; }
 
@@ -89,8 +104,9 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<StubPasswordManagerDriver> driver_ =
-      std::make_unique<StubPasswordManagerDriver>();
+  AutofillUnitTestEnvironment autofill_test_environment_;
+  std::unique_ptr<NiceMock<MockPasswordManagerDriver>> driver_ =
+      std::make_unique<NiceMock<MockPasswordManagerDriver>>();
   std::unique_ptr<NiceMock<MockAutofillClient>> autofill_client_ =
       std::make_unique<NiceMock<MockAutofillClient>>();
   std::unique_ptr<StubPasswordManagerClient> password_manager_client_ =
@@ -106,7 +122,8 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
 TEST_F(PasswordManualFallbackFlowTest, RunFlow_NoSuggestionsReturned) {
   EXPECT_CALL(autofill_client(), ShowAutofillPopup).Times(0);
 
-  flow().RunFlow(gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
 }
 
 // Test that the suggestions are not shown when the `SavedPasswordsPresenter`
@@ -137,14 +154,14 @@ TEST_F(PasswordManualFallbackFlowTest, ReturnSuggestions_InvokeFlow) {
                     AutofillSuggestionTriggerSource::kManualFallbackPasswords)),
           _));
 
-  flow().RunFlow(bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
 }
 
 // Test that the suggestions are shown when the flow is invoked before the
 // suggestions were read from disk.
 TEST_F(PasswordManualFallbackFlowTest, InvokeFlow_ReturnSuggestions) {
   const gfx::RectF bounds(1, 1, 2, 2);
-  flow().RunFlow(bounds, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(
       autofill_client(),
@@ -169,8 +186,8 @@ TEST_F(PasswordManualFallbackFlowTest, InvokeFlow_ReturnSuggestions) {
 TEST_F(PasswordManualFallbackFlowTest, LastRunParametersAreUsed) {
   const gfx::RectF bounds_1(1, 1, 2, 2);
   const gfx::RectF bounds_2(2, 2, 4, 4);
-  flow().RunFlow(bounds_1, TextDirection::LEFT_TO_RIGHT);
-  flow().RunFlow(bounds_2, TextDirection::RIGHT_TO_LEFT);
+  flow().RunFlow(MakeFieldRendererId(), bounds_1, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldRendererId(), bounds_2, TextDirection::RIGHT_TO_LEFT);
 
   EXPECT_CALL(
       autofill_client(),
@@ -209,7 +226,7 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlowMultipleTimes) {
                     &AutofillClient::PopupOpenArgs::trigger_source,
                     AutofillSuggestionTriggerSource::kManualFallbackPasswords)),
           _));
-  flow().RunFlow(bounds_1, TextDirection::LEFT_TO_RIGHT);
+  flow().RunFlow(MakeFieldRendererId(), bounds_1, TextDirection::LEFT_TO_RIGHT);
 
   EXPECT_CALL(
       autofill_client(),
@@ -224,7 +241,21 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlowMultipleTimes) {
                     &AutofillClient::PopupOpenArgs::trigger_source,
                     AutofillSuggestionTriggerSource::kManualFallbackPasswords)),
           _));
-  flow().RunFlow(bounds_2, TextDirection::RIGHT_TO_LEFT);
+  flow().RunFlow(MakeFieldRendererId(), bounds_2, TextDirection::RIGHT_TO_LEFT);
+}
+
+// Test that username field-by-field suggestion is previewed into the correct
+// field by the manual fallback flow.
+TEST_F(PasswordManualFallbackFlowTest, SelectUsernameFieldByFieldSuggestion) {
+  ProcessPasswordStoreUpdates();
+
+  const FieldRendererId field_id = MakeFieldRendererId();
+  flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(),
+              PreviewField(field_id, std::u16string(u"username@example.com")));
+  flow().DidSelectSuggestion(autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordFieldByFieldFilling, u"username@example.com"));
 }
 
 }  // namespace password_manager

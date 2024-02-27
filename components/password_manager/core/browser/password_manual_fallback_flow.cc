@@ -59,8 +59,10 @@ void PasswordManualFallbackFlow::OnSavedPasswordsChanged(
 }
 
 void PasswordManualFallbackFlow::RunFlow(
+    autofill::FieldRendererId field_id,
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
+  saved_field_id_ = field_id;
   if (flow_state_ != FlowState::kPasswordsRetrived) {
     flow_state_ = FlowState::kInvokedWithoutPasswords;
     saved_bounds_ = bounds;
@@ -83,7 +85,8 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
       // suggestions.
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
-      // TODO(b/321678448): Implement username preview.
+      password_manager_driver_->PreviewField(saved_field_id_,
+                                             suggestion.main_text.value);
       break;
     case autofill::PopupItemId::kFillPassword:
     case autofill::PopupItemId::kViewPasswordDetails:
