@@ -64,15 +64,6 @@ public class PageZoomUtils {
     private static final double DEFAULT_ZOOM_LEVEL_SNAP_RANGE = 0.03;
 
     /**
-     * Returns whether the Accessibility Settings page should include the 'Zoom' UI. The page
-     * should always display the UI if the feature is enabled.
-     * @return boolean
-     */
-    public static boolean shouldShowSettingsUI() {
-        return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM);
-    }
-
-    /**
      * Seekbars have values 0 to 100 by default. For simplicity, we will keep these values and
      * convert to the correct zoom factor under-the-hood. See comment at top of class.
      *
@@ -221,7 +212,7 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldShowZoomMenuItem() {
-        if (!shouldShowSettingsUI()) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
             return false;
         }
 

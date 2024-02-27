@@ -84,7 +84,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mPageZoomIncludeOSAdjustment =
                 (ChromeSwitchPreference) findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
 
-        if (mDelegate.showPageZoomSettingsUI()) {
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
             mTextScalePref.setVisible(false);
             // Set the initial values for the page zoom settings, and set change listeners.
             mPageZoomDefaultZoomPref.setInitialValue(
@@ -143,7 +143,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                 });
 
         Preference zoomInfo = findPreference(PREF_ZOOM_INFO);
-        if (mDelegate.showPageZoomSettingsUI()
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
                 && ContentFeatureMap.isEnabled(
                         ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS)) {
             zoomInfo.setVisible(true);

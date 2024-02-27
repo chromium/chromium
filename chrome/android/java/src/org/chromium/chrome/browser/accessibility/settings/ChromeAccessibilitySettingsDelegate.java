@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
-import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -94,11 +93,6 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
         if (ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem()) {
             fragment.addPreferencesFromResource(R.xml.image_descriptions_settings_preference);
         }
-    }
-
-    @Override
-    public boolean showPageZoomSettingsUI() {
-        return PageZoomUtils.shouldShowSettingsUI();
     }
 
     @Override

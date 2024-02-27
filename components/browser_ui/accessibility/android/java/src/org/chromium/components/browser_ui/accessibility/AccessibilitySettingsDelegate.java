@@ -59,9 +59,6 @@ public interface AccessibilitySettingsDelegate {
      */
     void addExtraPreferences(@NonNull PreferenceFragmentCompat fragment);
 
-    /** Returns whether or not the 'Zoom' feature specific UI should be shown in Settings. */
-    boolean showPageZoomSettingsUI();
-
     /**
      * Launches a site settings category that displays zoom levels for each website.
      *
