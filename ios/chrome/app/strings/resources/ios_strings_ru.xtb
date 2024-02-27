@@ -99,7 +99,7 @@
 <translation id="1491277525950327607">Для переключения нажмите дважды</translation>
 <translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
 <translation id="1497590942294823549">Меню → Менеджер паролей</translation>
-<translation id="1498283581832036924">Данные аккаунта для сайта <ph name="WEBSITE" /> удалены не будут.</translation>
+<translation id="1498283581832036924">Ваш аккаунт <ph name="WEBSITE" /> удален не будет.</translation>
 <translation id="1506063256525392513">Это нужно, чтобы делать снимки, загружать фотографии и сканировать QR-коды.</translation>
 <translation id="1509486075633541495">Войдите в аккаунт</translation>
 <translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
@@ -114,7 +114,7 @@
 <translation id="1563071802032385236">Включите параметр "Спрашивать, открывать ли ссылки из других приложений в режиме инкогнито".</translation>
 <translation id="1565371473877914088">Новая вкладка инкогнито</translation>
 <translation id="1565395699240341063">Скрытые</translation>
-<translation id="1580715474678097352">Защищает от опасных сайтов</translation>
+<translation id="1580715474678097352">Защита от опасных сайтов</translation>
 <translation id="1580783302095112590">Сообщение отправлено.</translation>
 <translation id="1582732959743469162">Скачивание файлов будет приостановлено.</translation>
 <translation id="158591023028013564">{count,plural, =1{Страница добавлена в список для чтения.}one{{count} страница добавлена в список для чтения.}few{{count} страницы добавлены в список для чтения.}many{{count} страниц добавлено в список для чтения.}other{{count} страницы добавлено в список для чтения.}}</translation>
@@ -204,7 +204,7 @@
 <translation id="2021670401941426298">Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="202292859882676807">Доступ к микрофону разрешен</translation>
 <translation id="20485545164632846">новый продукт</translation>
-<translation id="2049727122989709386">В нескольких аккаунтах (<ph name="COUNT" />) используется одинаковый пароль</translation>
+<translation id="2049727122989709386">В нескольких аккаунтах (<ph name="COUNT" />) используется один и тот же пароль.</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} сохраненный способ оплаты показан над клавиатурой.}one{{count} сохраненный способ оплаты показан над клавиатурой.}few{{count} сохраненных способа оплаты показаны над клавиатурой.}many{{count} сохраненных способов оплаты показаны над клавиатурой.}other{{count} сохраненного способа оплаты показаны над клавиатурой.}}</translation>
 <translation id="2055515971416882518">Откройте приложение "Настройки".</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
@@ -287,6 +287,7 @@
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Не выбрано</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
+<translation id="2480445180439820402">История</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484459871750294497">Как включить эту функцию?</translation>
 <translation id="2496626742194544812">Перейти к первой вкладке</translation>
@@ -550,7 +551,7 @@
 <translation id="3832419617903252251">Пароль сохранен только на этом устройстве</translation>
 <translation id="3835964409414434850">Перейти на следующую вкладку</translation>
 <translation id="383781833195845844">Продолжить просмотр этой вкладки</translation>
-<translation id="3838691874161539578">Чтобы надежнее защитить аккаунт, проверьте безопасность сохраненных паролей</translation>
+<translation id="3838691874161539578">Чтобы надежнее защитить свои данные в интернете, проверьте безопасность сохраненных паролей</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Пароли для <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и ещё нескольких сайтов (<ph name="NUMBER_OF_ACCOUNTS" />) будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
 <translation id="3858860766373142691">Название</translation>
@@ -577,6 +578,7 @@
 <translation id="3962326069546168954">Сохранить</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3968505803272650567">Настроить интересы</translation>
+<translation id="3976922811715736829">Недавние вкладки</translation>
 <translation id="3989635538409502728">Выйти</translation>
 <translation id="3994422733891749358">Выберите уведомления, которые вы хотите получать</translation>
 <translation id="3995521777587992544">Индикатор загрузки страницы: выполнено <ph name="EMAIL" />.</translation>
@@ -635,6 +637,7 @@
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4282944936010261425">Нет проблем с безопасностью, и от вас не требуется действий.</translation>
 <translation id="4286718549648564014">Адрес перемещен в ваш аккаунт <ph name="USER_EMAIL" />.</translation>
+<translation id="428768789042547925">Что нового</translation>
 <translation id="4293080268407233932">Поиск</translation>
 <translation id="4302248187517737842">Имя пользователя не указано ••••••••</translation>
 <translation id="4302415908542657649">Предоставление доступа к паролю</translation>
@@ -689,6 +692,7 @@
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4588014171431912783">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. <ph name="BEGIN_LINK" />Какие данные можно синхронизировать<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавиатура</translation>
+<translation id="4596899661486753028">Список для чтения</translation>
 <translation id="4601095002996233687">Выполняет тщательную проверку подозрительных файлов, которые вы скачали.</translation>
 <translation id="4606247758155004938">Этим браузером управляет ваша организация.</translation>
 <translation id="4607887340472970274">Отслеживание цен</translation>
@@ -908,7 +912,7 @@
 <translation id="5669617676038747374">Создать QR-код</translation>
 <translation id="567881659373499783">Версия <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Чтобы использовать и сохранять пароли в аккаунте Google, подтвердите свою личность.</translation>
-<translation id="5684761169742812828">Пароль был раскрыт в результате утечки данных в интернете. Если вы не можете заменить его прямо сейчас, Google рекомендует оставить предупреждение, чтобы вы не забыли сделать это позже.</translation>
+<translation id="5684761169742812828">Пароль был раскрыт в результате утечки данных в интернете. Если у вас сейчас нет времени сменить его, Google рекомендует оставить предупреждение, чтобы вы не забыли сделать это позже.</translation>
 <translation id="5694848685995373177">Сохранено на Диске пользователя <ph name="USER_EMAIL" />.</translation>
 <translation id="5701270923492462699">Доступ к камере разрешен</translation>
 <translation id="5702108177581350218">Если вы поделитесь копией имени пользователя и пароля, участники семейной группы смогут автоматически подставлять их с помощью Google Менеджера паролей</translation>
@@ -1155,6 +1159,7 @@
 <translation id="6807889908376551050">Показать все…</translation>
 <translation id="681368974849482173">Сохранено</translation>
 <translation id="6822587385560699678">Если эта функция включена, пароли сохраняются в аккаунте <ph name="ACCOUNT" />. Иначе они сохраняются только на этом устройстве.</translation>
+<translation id="6824350924364057989">Настройки</translation>
 <translation id="6831043979455480757">Перевести</translation>
 <translation id="6842136130964845393">Чтобы всегда иметь доступ к сохраненным паролям, подтвердите свою личность.</translation>
 <translation id="6851516051005285358">Версия для ПК</translation>
@@ -1193,6 +1198,7 @@
 <translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7006788746334555276">Настройки контента</translation>
 <translation id="7016070607649558507">У вас есть простой пароль. Устраните проблему.</translation>
+<translation id="7022197654033719543">Информация о сайте</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="704692552158601232">Приложение браузера по умолчанию</translation>
 <translation id="7062545763355031412">Принять и переключиться</translation>
@@ -1292,6 +1298,7 @@
 <translation id="7603852183842204213">Заблок. вспл. окон: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7606639338662398635">Группы вкладок</translation>
 <translation id="7607521702806708809">Удалить пароль</translation>
+<translation id="7609559547731036746">Закладки</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
 <translation id="7640669552036055091">Вкладки из Android</translation>
 <translation id="7646263789464975852">Меню → Настройки → Проверка безопасности</translation>
@@ -1329,8 +1336,10 @@
 <translation id="7781069478569868053">Страница быстрого доступа</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Через 1 день}one{Через {COUNT} день}few{Через {COUNT} дня}many{Через {COUNT} дней}other{Через {COUNT} дня}}</translation>
+<translation id="7788868432173225918">Свернуть раздел</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7792549458069452436">УСТАНОВИТЬ ПРИЛОЖЕНИЕ</translation>
+<translation id="7800723706644914607">Менеджер паролей</translation>
 <translation id="7807060072011926525">Данные от Google</translation>
 <translation id="7812377703891978671">Чтобы открыть историю браузера, выберите "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Скачанные файлы</translation>
@@ -1403,6 +1412,7 @@
 <translation id="81313319706244542">2. Выберите "Пароли".</translation>
 <translation id="8132598642024322408">Новая цена: <ph name="PRICE" />, старая цена: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Используйте разные пароли для каждого сайта или приложения. В противном случае злоумышленники, узнав один пароль, смогут получить доступ к другим вашим аккаунтам. Нажмите, чтобы перейти на сайт и изменить пароли.</translation>
+<translation id="814463369662540460">Отслеживать цены</translation>
 <translation id="8156478151976189188">Синхронизация паролей не работает</translation>
 <translation id="8157532349231307196">Аккаунты: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8159358225423560600">только что</translation>
@@ -1510,6 +1520,7 @@
 <translation id="8703536910991780768">Нет простых паролей</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8709409604518538305">Вкладки были закрыты.</translation>
+<translation id="8709773186849937451">Скачанные файлы</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Скопировать ссылку</translation>
 <translation id="8721297211384281569">Меню "Инструменты"</translation>

@@ -835,7 +835,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1618268899808219593">Trung tâm trợ g&amp;iúp</translation>
 <translation id="1619879934359211038">Không thể kết nối với Google Play. Hãy kiểm tra kết nối mạng của bạn rồi thử lại. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620307519959413822">Mật khẩu không chính xác. Hãy thử lại hoặc nhấp vào "Bạn quên mật khẩu" để đặt lại.</translation>
-<translation id="1620510694547887537">Máy ảnh</translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="1621382140075772850">Công cụ văn bản</translation>
 <translation id="1621485112342885423">Giỏ hàng của bạn</translation>
 <translation id="1621729191093924223">Các tính năng cần dùng micrô sẽ không hoạt động</translation>
@@ -3894,7 +3894,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Kích thước văn bản và kích thước hiển thị <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Gửi URL để tính năng Duyệt web an toàn kiểm tra. Ngoài ra, gửi một mẫu nhỏ hoạt động trên các trang, tệp đã tải xuống, tiện ích và thông tin hệ thống để giúp phát hiện các mối đe dọa mới. Tạm thời liên kết dữ liệu này với Tài khoản Google của bạn sau khi bạn đăng nhập để bảo vệ bạn trên các ứng dụng Google.</translation>
-<translation id="3925573269917483990">Máy ảnh:</translation>
+<translation id="3925573269917483990">Camera:</translation>
 <translation id="3925926055063465902">Những người dùng khác trên thiết bị này cũng có thể sử dụng mạng này</translation>
 <translation id="3926002189479431949">Đã thay đổi điện thoại Smart Lock</translation>
 <translation id="3926410220776569451">Không cho phép truy cập vào camera</translation>
@@ -4642,7 +4642,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4515872537870654449">Hãy liên hệ với Dell để được bảo dưỡng. Đế sạc sẽ tắt nếu quạt không hoạt động.</translation>
 <translation id="4518840066030486079">Kiểu chế độ phím Shift</translation>
-<translation id="4519331665958994620">Các trang web có thể yêu cầu sử dụng máy ảnh của bạn</translation>
+<translation id="4519331665958994620">Các trang web có thể yêu cầu sử dụng camera của bạn</translation>
 <translation id="4519605771716872386">Tính năng đồng bộ hoá tệp đã bật</translation>
 <translation id="4519935350946509010">Lỗi kết nối.</translation>
 <translation id="4520385623207007473">Các cookie đang được sử dụng</translation>
