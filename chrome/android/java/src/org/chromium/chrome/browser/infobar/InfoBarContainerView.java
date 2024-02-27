@@ -16,9 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.banners.SwipableOverlayView;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarContainerLayout;
@@ -28,7 +33,7 @@ import org.chromium.ui.display.DisplayUtil;
 
 /** The {@link View} for the {@link InfoBarContainer}. */
 public class InfoBarContainerView extends SwipableOverlayView
-        implements BrowserControlsStateProvider.Observer {
+        implements BrowserControlsStateProvider.Observer, InsetObserver.WindowInsetObserver {
     /** Observes container view changes. */
     public interface ContainerViewObserver extends InfoBarAnimationListener {
         /**
@@ -66,18 +71,42 @@ public class InfoBarContainerView extends SwipableOverlayView
     /** Tracks the previous event's scroll offset to determine if a scroll is up or down. */
     private int mLastScrollOffsetY;
 
+    @Nullable private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    @Nullable private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+
     /**
      * @param context The {@link Context} that this view is attached to.
      * @param containerViewObserver The {@link ContainerViewObserver} that gets notified on
-     *                              container view changes.
+     *     container view changes.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} that provides
-     *                                browser control offsets.
+     *     browser control offsets.
+     * @param isTablet Whether this view is displayed on tablet or not.
+     * @deprecated Please use the constructor with the EdgeToEdgeSupplier.
+     */
+    @Deprecated
+    InfoBarContainerView(
+            @NonNull Context context,
+            @NonNull ContainerViewObserver containerViewObserver,
+            @Nullable BrowserControlsStateProvider browserControlsStateProvider,
+            boolean isTablet) {
+        this(context, containerViewObserver, browserControlsStateProvider, null, isTablet);
+    }
+
+    /**
+     * @param context The {@link Context} that this view is attached to.
+     * @param containerViewObserver The {@link ContainerViewObserver} that gets notified on
+     *     container view changes.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} that provides
+     *     browser control offsets.
+     * @param edgeToEdgeSupplier The supplier publishes the changes of the edge-to-edge state and
+     *     the expected bottom paddings when edge-to-edge is on.
      * @param isTablet Whether this view is displayed on tablet or not.
      */
     InfoBarContainerView(
             @NonNull Context context,
             @NonNull ContainerViewObserver containerViewObserver,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
+            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             boolean isTablet) {
         super(context, null, false);
         mContainerViewObserver = containerViewObserver;
@@ -85,6 +114,7 @@ public class InfoBarContainerView extends SwipableOverlayView
         if (mBrowserControlsStateProvider != null) {
             mBrowserControlsStateProvider.addObserver(this);
         }
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
 
         // TODO(newt): move this workaround into the infobar views if/when they're scrollable.
         // Workaround for http://crbug.com/407149. See explanation in onMeasure() below.
@@ -239,8 +269,13 @@ public class InfoBarContainerView extends SwipableOverlayView
      * @param infoBar The {@link InfoBar} to be added.
      */
     void addInfoBar(InfoBar infoBar) {
-        infoBar.createView();
+        View infoBarView = infoBar.createView();
         mLayout.addInfoBar(infoBar);
+
+        if (mEdgeToEdgeSupplier != null && mEdgeToEdgeSupplier.get() != null) {
+            mEdgeToEdgePadAdjuster = EdgeToEdgeControllerFactory.createForView(infoBarView);
+            mEdgeToEdgeSupplier.get().registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     /**
@@ -249,6 +284,10 @@ public class InfoBarContainerView extends SwipableOverlayView
      */
     void removeInfoBar(InfoBar infoBar) {
         mLayout.removeInfoBar(infoBar);
+        if (mEdgeToEdgeSupplier != null && mEdgeToEdgeSupplier.get() != null) {
+            assert (mEdgeToEdgePadAdjuster != null);
+            mEdgeToEdgeSupplier.get().unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     /**

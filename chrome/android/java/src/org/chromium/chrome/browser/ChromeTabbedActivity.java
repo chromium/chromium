@@ -2190,7 +2190,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getCompositorViewHolderSupplier(),
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
-                getEdgeToEdgeSupplier(),
+                mEdgeToEdgeControllerSupplier,
                 getActivityType(),
                 this::isInOverviewMode,
                 this::isWarmOnResume,

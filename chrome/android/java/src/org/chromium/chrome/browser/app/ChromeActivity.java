@@ -292,7 +292,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private final UnownedUserDataSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
             new TabCreatorManagerSupplier();
 
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
+    protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
             new ObservableSupplierImpl<>();
 
     private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
@@ -1978,10 +1978,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
+     * TODO: remove this method after InfoBar is deprecated.
+     *
      * @return a supplier for the {@link EdgeToEdgeController} that supports drawing to the edge of
      *     the screen.
      */
-    protected final ObservableSupplierImpl<EdgeToEdgeController> getEdgeToEdgeSupplier() {
+    public final ObservableSupplier<EdgeToEdgeController> getEdgeToEdgeSupplier() {
         return mEdgeToEdgeControllerSupplier;
     }
 
