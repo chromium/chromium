@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -72,6 +73,8 @@ SummaryOutlinesSection::SummaryOutlinesSection() {
                                         *summary_label);
   summary_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   summary_label->SetID(mahi_constants::ViewId::kSummaryLabel);
+  summary_label->SetMultiLine(true);
+  summary_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   auto* manager = chromeos::MahiManager::Get();
   if (manager) {

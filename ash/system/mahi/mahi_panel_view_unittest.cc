@@ -15,6 +15,7 @@
 #include "chromeos/components/mahi/public/cpp/fake_mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/widget/widget.h"
@@ -102,6 +103,11 @@ TEST_F(MahiPanelViewTest, SummaryText) {
   auto* summary_label2 = static_cast<views::Label*>(
       mahi_view2->GetViewByID(mahi_constants::ViewId::kSummaryLabel));
   EXPECT_EQ(test_text2, summary_label2->GetText());
+
+  // Make sure the text is multiline and aligned correctly.
+  EXPECT_TRUE(summary_label2->GetMultiLine());
+  EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_LEFT,
+            summary_label2->GetHorizontalAlignment());
 }
 
 TEST_F(MahiPanelViewTest, FeedbackButtons) {
