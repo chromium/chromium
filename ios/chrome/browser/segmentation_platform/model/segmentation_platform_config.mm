@@ -51,7 +51,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
 
   // Add new configs here.
-  base::EraseIf(configs, [](const auto& config) { return !config.get(); });
+  std::erase_if(configs, [](const auto& config) { return !config.get(); });
   return configs;
 }
 

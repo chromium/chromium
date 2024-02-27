@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -922,7 +921,7 @@ void FakeGaia::HandleFakeRemoveLocalAccount(
   std::string gaia_id;
   GetQueryParameter(request.GetURL().query(), "gaia_id", &gaia_id);
 
-  if (!base::Erase(configuration_.signed_out_gaia_ids, gaia_id)) {
+  if (!std::erase(configuration_.signed_out_gaia_ids, gaia_id)) {
     http_response->set_code(net::HTTP_BAD_REQUEST);
     return;
   }

@@ -19,9 +19,9 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/cpu.h"
 #include "base/environment.h"
@@ -3378,7 +3378,7 @@ void VaapiWrapper::DestroySurfaces(std::vector<VASurfaceID> va_surfaces) {
   DVLOG(2) << "Destroying " << va_surfaces.size() << " surfaces";
 
   // vaDestroySurfaces() makes no guarantees about VA_INVALID_SURFACE.
-  base::Erase(va_surfaces, VA_INVALID_SURFACE);
+  std::erase(va_surfaces, VA_INVALID_SURFACE);
   if (va_surfaces.empty())
     return;
 

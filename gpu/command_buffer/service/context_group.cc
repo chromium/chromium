@@ -10,9 +10,9 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
@@ -569,7 +569,7 @@ class WeakPtrEquals {
 }  // namespace anonymous
 
 bool ContextGroup::HaveContexts() {
-  base::EraseIf(decoders_, IsNull);
+  std::erase_if(decoders_, IsNull);
   return !decoders_.empty();
 }
 
@@ -579,7 +579,7 @@ void ContextGroup::ReportProgress() {
 }
 
 void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
-  base::EraseIf(decoders_, WeakPtrEquals<DecoderContext>(decoder));
+  std::erase_if(decoders_, WeakPtrEquals<DecoderContext>(decoder));
 
   // If we still have contexts do nothing.
   if (HaveContexts()) {

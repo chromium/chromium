@@ -6,8 +6,9 @@
 
 #include "base/logging.h"
 
+#include <vector>
+
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -243,7 +244,7 @@ bool FrameBufferPool::IsUsedLocked(const FrameBuffer* buf) {
 
 void FrameBufferPool::EraseUnusedResourcesLocked() {
   lock_.AssertAcquired();
-  base::EraseIf(frame_buffers_, [](const std::unique_ptr<FrameBuffer>& buf) {
+  std::erase_if(frame_buffers_, [](const std::unique_ptr<FrameBuffer>& buf) {
     return !IsUsedLocked(buf.get());
   });
 }
@@ -264,7 +265,7 @@ void FrameBufferPool::OnVideoFrameDestroyed(FrameBuffer* frame_buffer) {
     frame_buffer->last_use_time = now;
   }
 
-  base::EraseIf(frame_buffers_, [now](const std::unique_ptr<FrameBuffer>& buf) {
+  std::erase_if(frame_buffers_, [now](const std::unique_ptr<FrameBuffer>& buf) {
     return !IsUsedLocked(buf.get()) &&
            now - buf->last_use_time > base::Seconds(kStaleFrameLimitSecs);
   });

@@ -5,8 +5,8 @@
 #include "gpu/vulkan/vulkan_image.h"
 
 #include <tuple>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -152,7 +152,7 @@ bool VulkanImage::InitializeWithExternalMemoryAndModifiers(
 
   // Call GetImageFormatProperties with every modifier and filter the list
   // down to those that we know work.
-  base::EraseIf(props_vector, [&](const VkDrmFormatModifierPropertiesEXT& p) {
+  std::erase_if(props_vector, [&](const VkDrmFormatModifierPropertiesEXT& p) {
     VkPhysicalDeviceImageDrmFormatModifierInfoEXT mod_info = {
         .sType =
             VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
@@ -179,7 +179,7 @@ bool VulkanImage::InitializeWithExternalMemoryAndModifiers(
     return false;
 
   // Find compatible modifiers.
-  base::EraseIf(modifiers, [&props_vector](uint64_t modifier) {
+  std::erase_if(modifiers, [&props_vector](uint64_t modifier) {
     for (const auto& modifier_props : props_vector) {
       if (modifier == modifier_props.drmFormatModifier)
         return false;

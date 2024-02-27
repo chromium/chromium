@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -222,27 +221,27 @@ GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
 #endif
 
   if (gpu_workarounds.disable_accelerated_av1_encode) {
-    base::EraseIf(profiles, [](const auto& vea_profile) {
+    std::erase_if(profiles, [](const auto& vea_profile) {
       return vea_profile.profile >= AV1PROFILE_PROFILE_MAIN &&
              vea_profile.profile <= AV1PROFILE_PROFILE_PRO;
     });
   }
 
   if (gpu_workarounds.disable_accelerated_vp8_encode) {
-    base::EraseIf(profiles, [](const auto& vea_profile) {
+    std::erase_if(profiles, [](const auto& vea_profile) {
       return vea_profile.profile == VP8PROFILE_ANY;
     });
   }
 
   if (gpu_workarounds.disable_accelerated_vp9_encode) {
-    base::EraseIf(profiles, [](const auto& vea_profile) {
+    std::erase_if(profiles, [](const auto& vea_profile) {
       return vea_profile.profile >= VP9PROFILE_PROFILE0 &&
              vea_profile.profile <= VP9PROFILE_PROFILE3;
     });
   }
 
   if (gpu_workarounds.disable_accelerated_h264_encode) {
-    base::EraseIf(profiles, [](const auto& vea_profile) {
+    std::erase_if(profiles, [](const auto& vea_profile) {
       return vea_profile.profile >= H264PROFILE_MIN &&
              vea_profile.profile <= H264PROFILE_MAX;
     });

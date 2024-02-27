@@ -4,8 +4,9 @@
 
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -937,7 +938,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     retried_with_new_version_ = true;
     DCHECK(original_supported_versions_.empty());
     original_supported_versions_ = supported_versions_;
-    base::EraseIf(
+    std::erase_if(
         supported_versions_, [this](const quic::ParsedQuicVersion& version) {
           return !base::Contains(
               session_->connection()->server_supported_versions(), version);

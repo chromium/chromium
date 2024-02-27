@@ -4,8 +4,9 @@
 
 #include "remoting/host/linux/wayland_display.h"
 
+#include <vector>
+
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/hash/hash.h"
 #include "remoting/base/logging.h"
 
@@ -63,7 +64,7 @@ void WaylandDisplay::HandleGlobalDisplayEvent(struct wl_registry* registry,
 }
 
 bool WaylandDisplay::HandleGlobalRemoveDisplayEvent(uint32_t name) {
-  size_t num_removed = base::EraseIf(
+  size_t num_removed = std::erase_if(
       display_info_,
       [name](const auto& display_info) { return display_info.id == name; });
   DCHECK(num_removed <= 1)

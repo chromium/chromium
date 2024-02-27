@@ -5,8 +5,8 @@
 #include <math.h>
 
 #include <numbers>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -194,7 +194,7 @@ void VROrientationDevice::ShutdownSession(
 
 void VROrientationDevice::EndMagicWindowSession(VROrientationSession* session) {
   DVLOG(2) << __func__;
-  base::EraseIf(magic_window_sessions_,
+  std::erase_if(magic_window_sessions_,
                 [session](const std::unique_ptr<VROrientationSession>& item) {
                   return item.get() == session;
                 });

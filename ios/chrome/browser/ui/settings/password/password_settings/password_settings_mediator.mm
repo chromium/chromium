@@ -215,7 +215,7 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   // example.com"), so those must be filtered before passing to the exporter.
   std::vector<CredentialUIEntry> passwords =
       _savedPasswordsPresenter->GetSavedCredentials();
-  base::EraseIf(passwords, [](const auto& credential) {
+  std::erase_if(passwords, [](const auto& credential) {
     return credential.blocked_by_user;
   });
   [self.passwordExporter startExportFlow:passwords];

@@ -232,7 +232,7 @@ bool ShouldDisplayCredentialAsMuted(
     return;
   }
 
-  // Use the iterator before base::Erase() makes it invalid.
+  // Use the iterator before std::erase() makes it invalid.
   self.savedPasswordsPresenter->RemoveCredential(*it);
   // TODO(crbug.com/1359392). Once kPasswordsGrouping launches, the mediator
   // should update the passwords model and receive the updates via
@@ -241,7 +241,7 @@ bool ShouldDisplayCredentialAsMuted(
   // flag is disabled and the password is edited, it's impossible to identify
   // the new object to show (sign-on realm can't be used as an id, there might
   // be multiple credentials; nor username/password since the values changed).
-  base::Erase(_credentials, *it);
+  std::erase(_credentials, *it);
   [self providePasswordsToConsumer];
 
   // Update form managers so the list of password suggestions shown to the user
@@ -420,7 +420,7 @@ bool ShouldDisplayCredentialAsMuted(
   CHECK(self.credentials.size() == 1);
   password_manager::CredentialUIEntry credential = self.credentials[0];
   _manager->UnmuteCredential(credential);
-  base::Erase(_credentials, credential);
+  std::erase(_credentials, credential);
   [self providePasswordsToConsumer];
 }
 

@@ -4,9 +4,9 @@
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 
 #include <set>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -757,7 +757,7 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
       }
     }
     for (uint8_t p_diff : vp9.p_diffs) {
-      if (!base::Erase(expected_pdiffs, p_diff)) {
+      if (!std::erase(expected_pdiffs, p_diff)) {
         LOG(ERROR)
             << "Frame is referencing buffer not contained in the p_diff.";
         return false;
@@ -925,7 +925,7 @@ bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
       expected_pdiffs.push_back(new_buffer_state.picture_id - ref.picture_id);
     }
     for (uint8_t p_diff : vp9.p_diffs) {
-      if (!base::Erase(expected_pdiffs, p_diff)) {
+      if (!std::erase(expected_pdiffs, p_diff)) {
         LOG(ERROR)
             << "Frame is referencing buffer not contained in the p_diff.";
         return false;

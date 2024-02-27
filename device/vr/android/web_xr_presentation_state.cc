@@ -6,8 +6,8 @@
 
 #include <iomanip>
 #include <sstream>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -200,7 +200,7 @@ void WebXrPresentationState::EndFrameRendering(WebXrFrame* frame) {
   // Remove it from the list, and then recycle the frame.
   DVLOG(3) << DebugState() << __func__;
   DCHECK_EQ(state_machine_type_, StateMachineType::kVizComposited);
-  auto erased = base::EraseIf(rendering_frames_,
+  auto erased = std::erase_if(rendering_frames_,
                               [frame](const WebXrFrame* rendering_frame) {
                                 return frame == rendering_frame;
                               });

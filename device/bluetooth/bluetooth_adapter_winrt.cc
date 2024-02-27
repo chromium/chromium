@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1369,7 +1368,7 @@ void BluetoothAdapterWinrt::OnRegisterAdvertisement(
     CreateAdvertisementCallback callback) {
   DCHECK(base::Contains(pending_advertisements_, advertisement));
   auto wrapped_advertisement = base::WrapRefCounted(advertisement);
-  base::Erase(pending_advertisements_, advertisement);
+  std::erase(pending_advertisements_, advertisement);
   std::move(callback).Run(std::move(wrapped_advertisement));
 }
 
@@ -1379,7 +1378,7 @@ void BluetoothAdapterWinrt::OnRegisterAdvertisementError(
     BluetoothAdvertisement::ErrorCode error_code) {
   // Note: We are not DCHECKing that |pending_advertisements_| contains
   // |advertisement|, as this method might be invoked during destruction.
-  base::Erase(pending_advertisements_, advertisement);
+  std::erase(pending_advertisements_, advertisement);
   std::move(error_callback).Run(error_code);
 }
 

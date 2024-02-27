@@ -6,8 +6,8 @@
 
 #include <tuple>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -501,7 +501,7 @@ void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
       reader.Materialize().value_or(cbor::Value::ArrayValue());
 
   if (credential->large_blob_key) {
-    base::EraseIf(
+    std::erase_if(
         large_blob_array, [&credential](const cbor::Value& blob_cbor) {
           std::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
           return blob && blob->Decrypt(*credential->large_blob_key).has_value();

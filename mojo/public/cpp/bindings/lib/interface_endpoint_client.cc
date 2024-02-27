@@ -9,10 +9,10 @@
 #include <optional>
 #include <string_view>
 #include <tuple>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -443,7 +443,7 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
 
   {
     base::AutoLock l(sync_calls->lock);
-    base::Erase(sync_calls->pending_responses, response.get());
+    std::erase(sync_calls->pending_responses, response.get());
   }
 
   if (response->received)

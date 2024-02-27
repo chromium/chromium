@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -290,35 +291,35 @@ VideoDecoderPipeline::GetSupportedConfigs(
     return std::nullopt;
 
   if (workarounds.disable_accelerated_vp8_decode) {
-    base::EraseIf(configs.value(), [](const auto& config) {
+    std::erase_if(configs.value(), [](const auto& config) {
       return config.profile_min >= VP8PROFILE_MIN &&
              config.profile_max <= VP8PROFILE_MAX;
     });
   }
 
   if (workarounds.disable_accelerated_vp9_decode) {
-    base::EraseIf(configs.value(), [](const auto& config) {
+    std::erase_if(configs.value(), [](const auto& config) {
       return config.profile_min >= VP9PROFILE_PROFILE0 &&
              config.profile_max <= VP9PROFILE_PROFILE0;
     });
   }
 
   if (workarounds.disable_accelerated_vp9_profile2_decode) {
-    base::EraseIf(configs.value(), [](const auto& config) {
+    std::erase_if(configs.value(), [](const auto& config) {
       return config.profile_min >= VP9PROFILE_PROFILE2 &&
              config.profile_max <= VP9PROFILE_PROFILE2;
     });
   }
 
   if (workarounds.disable_accelerated_h264_decode) {
-    base::EraseIf(configs.value(), [](const auto& config) {
+    std::erase_if(configs.value(), [](const auto& config) {
       return config.profile_min >= H264PROFILE_MIN &&
              config.profile_max <= H264PROFILE_MAX;
     });
   }
 
   if (workarounds.disable_accelerated_hevc_decode) {
-    base::EraseIf(configs.value(), [](const auto& config) {
+    std::erase_if(configs.value(), [](const auto& config) {
       return config.profile_min >= HEVCPROFILE_MIN &&
              config.profile_max <= HEVCPROFILE_MAX;
     });

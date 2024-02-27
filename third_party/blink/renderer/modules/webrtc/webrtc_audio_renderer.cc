@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_renderer.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -788,7 +788,7 @@ void WebRtcAudioRenderer::OnPlayStateRemoved(PlayingState* state) {
        it != source_playing_states_.end();) {
     PlayingStates& states = it->second;
     // We cannot use RemovePlayingState as it might invalidate |it|.
-    base::Erase(states, state);
+    std::erase(states, state);
     if (states.empty())
       it = source_playing_states_.erase(it);
     else

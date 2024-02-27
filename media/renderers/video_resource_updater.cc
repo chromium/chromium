@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -1848,7 +1848,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
                     subplane_si_format.value_or(output_si_format)) ||
                !base::Contains(outplane_plane_sizes, resource->resource_size());
       };
-  base::EraseIf(all_resources_, can_delete_resource_fn);
+  std::erase_if(all_resources_, can_delete_resource_fn);
 
   // Recycle or allocate resources for each video plane.
   std::vector<PlaneResource*> plane_resources;

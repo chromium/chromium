@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <numeric>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -1318,7 +1318,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
       }
     }
   }
-  bool did_erase = base::EraseIf(
+  bool did_erase = std::erase_if(
       *large_blob_array, [&large_blob_keys](const cbor::Value& blob_cbor) {
         std::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
         return blob &&

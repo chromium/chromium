@@ -11,10 +11,10 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <vector>
 
 #include "base/atomicops.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -32,7 +32,7 @@ QuerySyncManager::Bucket::Bucket(QuerySync* sync_mem,
 QuerySyncManager::Bucket::~Bucket() = default;
 
 void QuerySyncManager::Bucket::FreePendingSyncs() {
-  base::EraseIf(pending_syncs, [this](const PendingSync& pending) {
+  std::erase_if(pending_syncs, [this](const PendingSync& pending) {
     QuerySync* sync = this->syncs + pending.index;
     if (base::subtle::Acquire_Load(&sync->process_count) ==
         pending.submit_count) {

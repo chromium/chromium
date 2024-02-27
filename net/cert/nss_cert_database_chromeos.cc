@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -73,7 +73,7 @@ void NSSCertDatabaseChromeOS::ListModules(
   NSSCertDatabase::ListModules(modules, need_rw);
 
   const NSSProfileFilterChromeOS& profile_filter = profile_filter_;
-  base::EraseIf(*modules, [&profile_filter](crypto::ScopedPK11Slot& module) {
+  std::erase_if(*modules, [&profile_filter](crypto::ScopedPK11Slot& module) {
     return !profile_filter.IsModuleAllowed(module.get());
   });
 }
@@ -130,7 +130,7 @@ NSSCertDatabase::CertInfoList NSSCertDatabaseChromeOS::ListCertsInfoImpl(
       crypto::ScopedPK11Slot(), add_certs_info, nss_roots_handling));
 
   // Filter certificate information according to user profile.
-  base::EraseIf(certs_info, [&profile_filter](CertInfo& cert_info) {
+  std::erase_if(certs_info, [&profile_filter](CertInfo& cert_info) {
     return !profile_filter.IsCertAllowed(cert_info.cert.get());
   });
 
