@@ -367,19 +367,24 @@ function hasPreviousElement(formName: string, fieldName: string): boolean {
              currentElement, document.querySelectorAll('*')) !== null;
 }
 
+declare interface PreviousNextElements {
+  previous: boolean;
+  next: boolean;
+}
+
 /**
  * @param formName The name of the form containing the element.
  * @param fieldName The name of the field containing the element.
  * @return Whether there is an element in the sequential navigation before and
- *     after currently active element. The result is returned as a comma
- *     separated string of the strings `true` and `false`.
- *     TODO(crbug.com/893368): Return a dictionary with the values instead.
+ *     after currently active element. The result is returned as an object with
+ *     a boolean value for the keys `previous` and `next`.
  */
-function hasPreviousNextElements(formName: string, fieldName: string): string {
-  return [
-    hasPreviousElement(formName, fieldName),
-    hasNextElement(formName, fieldName),
-  ].toString();
+function hasPreviousNextElements(
+    formName: string, fieldName: string): PreviousNextElements {
+  return {
+    previous: hasPreviousElement(formName, fieldName),
+    next: hasNextElement(formName, fieldName),
+  };
 }
 
 gCrWeb.suggestion = {
