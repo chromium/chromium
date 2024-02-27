@@ -207,6 +207,10 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
 }
 
 void AddressDataManager::RemoveProfile(const std::string& guid) {
+  if (!webdata_service_) {
+    return;
+  }
+
   // Find the profile to remove.
   // TODO(crbug.com/1420547): This shouldn't be necessary. Providing a `guid`
   // to the `AutofillProfileChange()` should suffice for removals.

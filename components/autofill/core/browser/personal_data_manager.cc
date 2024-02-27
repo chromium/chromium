@@ -107,47 +107,6 @@ enum class MigrateUserOptedInWalletSyncType {
   kMaxValue = kNotMigratedUnexpectedPrimaryAccountIdWithEmail,
 };
 
-template <typename T>
-const T& Deref(T* x) {
-  return *x;
-}
-
-template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
-const T& Deref(const raw_ptr<T, Traits>& x) {
-  return *x;
-}
-
-template <typename T>
-const T& Deref(const std::unique_ptr<T>& x) {
-  return *x;
-}
-
-template <typename T>
-const T& Deref(const T& x) {
-  return x;
-}
-
-template <typename T>
-typename std::vector<T>::const_iterator FindElementByGUID(
-    const std::vector<T>& container,
-    std::string_view guid) {
-  return base::ranges::find(container, guid, [](const auto& element) {
-    return Deref(element).guid();
-  });
-}
-
-template <typename C>
-bool FindByGUID(const C& container, std::string_view guid) {
-  return FindElementByGUID(container, guid) != container.end();
-}
-
-template <typename C, typename T>
-bool FindByContents(const C& container, const T& needle) {
-  return base::ranges::any_of(container, [&needle](const auto& element) {
-    return element->Compare(needle) == 0;
-  });
-}
-
 }  // namespace
 
 PersonalDataManager::PersonalDataManager(
@@ -182,7 +141,7 @@ void PersonalDataManager::Init(
   if (!payments_data_manager_) {
     payments_data_manager_ = std::make_unique<PaymentsDataManager>(
         profile_database, account_database, image_fetcher,
-        std::move(shared_storage_handler), this);
+        std::move(shared_storage_handler), app_locale_, this);
   }
 
   SetPrefService(pref_service);
@@ -511,255 +470,67 @@ std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
   // IBANs from the settings page using this pref.
   SetAutofillHasSeenIban();
 
-  if (!payments_data_manager_->GetLocalDatabase()) {
-    return std::string();
-  }
-
-  // Set the GUID as this IBAN will be saved locally.
-  iban.set_identifier(
-      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  iban.set_record_type(Iban::kLocalIban);
-  // Search through `local_ibans_` to ensure no IBAN that already saved has the
-  // same value and nickname as `iban`, because we do not want to add two IBANs
-  // with the exact same data.
-  if (base::ranges::any_of(payments_data_manager_->local_ibans_,
-                           [&iban](const std::unique_ptr<Iban>& local_iban) {
-                             return iban.value() == local_iban->value() &&
-                                    iban.nickname() == local_iban->nickname();
-                           })) {
-    return std::string();
-  }
-
-  // Add the new IBAN to the web database.
-  payments_data_manager_->GetLocalDatabase()->AddLocalIban(iban);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
-  return iban.guid();
+  return payments_data_manager_->AddAsLocalIban(std::move(iban));
 }
 
 std::string PersonalDataManager::UpdateIban(const Iban& iban) {
-  if (!payments_data_manager_->GetLocalDatabase()) {
-    return std::string();
-  }
-
-  // Make the update.
-  payments_data_manager_->GetLocalDatabase()->UpdateLocalIban(iban);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
-  return iban.guid();
+  return payments_data_manager_->UpdateIban(iban);
 }
 
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   if (!IsAutofillPaymentMethodsEnabled()) {
     return;
   }
-
-  if (credit_card.IsEmpty(app_locale_))
-    return;
-
-  if (FindByGUID(payments_data_manager_->local_credit_cards_,
-                 credit_card.guid())) {
-    return;
-  }
-
-  if (!payments_data_manager_->GetLocalDatabase()) {
-    return;
-  }
-
-  // Don't add a duplicate.
-  if (FindByContents(payments_data_manager_->local_credit_cards_,
-                     credit_card)) {
-    return;
-  }
-
-  // Add the new credit card to the web database.
-  payments_data_manager_->GetLocalDatabase()->AddCreditCard(credit_card);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->AddCreditCard(credit_card);
 }
 
 void PersonalDataManager::DeleteLocalCreditCards(
     const std::vector<CreditCard>& cards) {
-  DCHECK(payments_data_manager_->database_helper_);
-  DCHECK(payments_data_manager_->GetLocalDatabase())
-      << "Use of local card without local storage.";
-
-  for (const auto& card : cards)
-    payments_data_manager_->GetLocalDatabase()->RemoveCreditCard(card.guid());
-
-  // Refresh the database, so latest state is reflected in all consumers.
-  if (!cards.empty())
-    Refresh();
+  payments_data_manager_->DeleteLocalCreditCards(cards);
 }
 
 void PersonalDataManager::DeleteAllLocalCreditCards() {
-  std::vector<CreditCard*> credit_cards = GetLocalCreditCards();
-
-  std::vector<CreditCard> cards_to_delete;
-  cards_to_delete.reserve(credit_cards.size());
-  for (const CreditCard* card : credit_cards) {
-    cards_to_delete.push_back(*card);
-  }
-
-  DeleteLocalCreditCards(cards_to_delete);
+  payments_data_manager_->DeleteAllLocalCreditCards();
 }
 
 void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
-  DCHECK_EQ(CreditCard::RecordType::kLocalCard, credit_card.record_type());
-  CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
-  if (!existing_credit_card)
-    return;
-
-  // Don't overwrite the origin for a credit card that is already stored.
-  if (existing_credit_card->Compare(credit_card) == 0)
-    return;
-
-  if (credit_card.IsEmpty(app_locale_)) {
-    RemoveByGUID(credit_card.guid());
-    return;
-  }
-
-  // Update the cached version.
-  *existing_credit_card = credit_card;
-
-  if (!payments_data_manager_->GetLocalDatabase()) {
-    return;
-  }
-
-  // Make the update.
-  payments_data_manager_->GetLocalDatabase()->UpdateCreditCard(credit_card);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->UpdateCreditCard(credit_card);
 }
 
 void PersonalDataManager::UpdateLocalCvc(const std::string& guid,
                                          const std::u16string& cvc) {
-  if (!payments_data_manager_->GetLocalDatabase()) {
-    return;
-  }
-
-  CreditCard* existing_credit_card = GetCreditCardByGUID(guid);
-  if (!existing_credit_card) {
-    return;
-  }
-
-  payments_data_manager_->GetLocalDatabase()->UpdateLocalCvc(guid, cvc);
-  Refresh();
+  payments_data_manager_->UpdateLocalCvc(guid, cvc);
 }
 
 void PersonalDataManager::UpdateServerCardsMetadata(
     const std::vector<CreditCard>& credit_cards) {
-  DCHECK(payments_data_manager_->GetServerDatabase())
-      << "Updating server card metadata without server storage.";
-
-  for (const auto& credit_card : credit_cards) {
-    DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
-    payments_data_manager_->GetServerDatabase()->UpdateServerCardMetadata(
-        credit_card);
-  }
-
-  Refresh();
+  payments_data_manager_->UpdateServerCardsMetadata(credit_cards);
 }
 
 void PersonalDataManager::AddServerCvc(int64_t instrument_id,
                                        const std::u16string& cvc) {
-  // We don't check the validity of the instrument_id.
-  // When a user saves a new card along with the CVC, we first save the card and
-  // wait for the instrument id passed back from the UploadResponse. Then this
-  // function is triggered to save server cvc. At this time, a new card should
-  // theoretically be synced down via Chrome Sync but it can be delayed. As a
-  // result, this Chrome client does not have the instrument id yet in the card
-  // table but it should invoke the AddServerCvc.
-  CHECK(!cvc.empty());
-  CHECK(payments_data_manager_->GetServerDatabase())
-      << "Adding Server cvc without server storage.";
-
-  // Add the new server cvc to the web database.
-  payments_data_manager_->GetServerDatabase()->AddServerCvc(instrument_id, cvc);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->AddServerCvc(instrument_id, cvc);
 }
 
 void PersonalDataManager::UpdateServerCvc(int64_t instrument_id,
                                           const std::u16string& cvc) {
-  CHECK(GetCreditCardByInstrumentId(instrument_id));
-  CHECK(!cvc.empty());
-  CHECK(payments_data_manager_->GetServerDatabase())
-      << "Updating Server cvc without server storage.";
-
-  // Update the new server cvc to the web database.
-  payments_data_manager_->GetServerDatabase()->UpdateServerCvc(instrument_id,
-                                                               cvc);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->UpdateServerCvc(instrument_id, cvc);
 }
 
 void PersonalDataManager::RemoveServerCvc(int64_t instrument_id) {
-  // We don't check the validity of the instrument_id.
-  // This is only called in cvc sync bridge's ApplyIncrementalSyncChanges()
-  // call. If the card sync finishes before cvc sync, the card is gone before
-  // removing cvc.
-  CHECK(payments_data_manager_->GetServerDatabase())
-      << "Removing Server cvc without server storage.";
-
-  // Remove the server cvc in the web database.
-  payments_data_manager_->GetServerDatabase()->RemoveServerCvc(instrument_id);
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->RemoveServerCvc(instrument_id);
 }
 
 void PersonalDataManager::ClearServerCvcs() {
-  CHECK(payments_data_manager_->GetServerDatabase())
-      << "Removing Server cvc without server storage.";
-
-  // Clear the server cvc in the web database.
-  payments_data_manager_->GetServerDatabase()->ClearServerCvcs();
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->ClearServerCvcs();
 }
 
 void PersonalDataManager::ClearLocalCvcs() {
-  CHECK(payments_data_manager_->GetLocalDatabase())
-      << "Removing Local cvcs without local storage.";
-
-  // Clear the local CVCs in the web database.
-  payments_data_manager_->GetLocalDatabase()->ClearLocalCvcs();
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->ClearLocalCvcs();
 }
 
 void PersonalDataManager::ClearAllServerDataForTesting() {
-  // This could theoretically be called before we get the data back from the
-  // database on startup, and it could get called when the wallet pref is
-  // off (meaning this class won't even query for the server data) so don't
-  // check the server_credit_cards_/profiles_ before posting to the DB.
-
-  // TODO(crbug.com/864519): Move this null check logic to the database helper.
-  // The server database can be null for a limited amount of time before the
-  // sync service gets initialized. Not clearing it does not matter in that case
-  // since it will not have been created yet (nothing to clear).
-  if (payments_data_manager_->GetServerDatabase()) {
-    payments_data_manager_->GetServerDatabase()->ClearAllServerData();
-  }
-
-  // The above call will eventually clear our server data by notifying us
-  // that the data changed and then this class will re-fetch. Preemptively
-  // clear so that tests can synchronously verify that this data was cleared.
-  payments_data_manager_->server_credit_cards_.clear();
-  payments_data_manager_->server_ibans_.clear();
-  payments_data_manager_->payments_customer_data_.reset();
-  payments_data_manager_->server_credit_card_cloud_token_data_.clear();
-  payments_data_manager_->autofill_offer_data_.clear();
-  payments_data_manager_->credit_card_art_images_.clear();
+  payments_data_manager_->ClearAllServerDataForTesting();  // IN-TEST
 }
 
 void PersonalDataManager::ClearAllLocalData() {
@@ -795,19 +566,7 @@ void PersonalDataManager::SetSyncServiceForTest(
 }
 
 void PersonalDataManager::RemoveByGUID(const std::string& guid) {
-  if (!payments_data_manager_->GetLocalDatabase()) {
-    return;
-  }
-
-  if (FindByGUID(payments_data_manager_->local_credit_cards_, guid)) {
-    payments_data_manager_->GetLocalDatabase()->RemoveCreditCard(guid);
-    // Refresh our local cache and send notifications to observers.
-    Refresh();
-  } else if (FindByGUID(payments_data_manager_->local_ibans_, guid)) {
-    payments_data_manager_->GetLocalDatabase()->RemoveLocalIban(guid);
-    // Refresh our local cache and send notifications to observers.
-    Refresh();
-  } else {
+  if (!payments_data_manager_->RemoveByGUID(guid)) {
     address_data_manager_->RemoveProfile(guid);
   }
 }
@@ -1372,10 +1131,14 @@ void PersonalDataManager::AddFullServerCreditCardForTesting(
       << "Adding server card without server storage.";
 
   // Don't add a duplicate.
-  if (FindByGUID(payments_data_manager_->server_credit_cards_,
-                 credit_card.guid()) ||
-      FindByContents(payments_data_manager_->server_credit_cards_,
-                     credit_card)) {
+  if (base::ranges::any_of(payments_data_manager_->server_credit_cards_,
+                           [&](const auto& element) {
+                             return element->guid() == credit_card.guid();
+                           }) ||
+      base::ranges::any_of(payments_data_manager_->server_credit_cards_,
+                           [&](const auto& element) {
+                             return element->Compare(credit_card) == 0;
+                           })) {
     return;
   }
 
@@ -1429,46 +1192,7 @@ PersonalDataManager::GetProfileUpdateStrikeDatabase() const {
 
 void PersonalDataManager::SetCreditCards(
     std::vector<CreditCard>* credit_cards) {
-  // Remove empty credit cards from input.
-  std::erase_if(*credit_cards, [this](const CreditCard& credit_card) {
-    return credit_card.IsEmpty(app_locale_);
-  });
-
-  if (!payments_data_manager_->GetLocalDatabase()) {
-    return;
-  }
-
-  // Any credit cards that are not in the new credit card list should be
-  // removed.
-  for (const auto& card : payments_data_manager_->local_credit_cards_) {
-    if (!FindByGUID(*credit_cards, card->guid()))
-      payments_data_manager_->GetLocalDatabase()->RemoveCreditCard(
-          card->guid());
-  }
-
-  // Update the web database with the existing credit cards.
-  for (const CreditCard& card : *credit_cards) {
-    if (FindByGUID(payments_data_manager_->local_credit_cards_, card.guid())) {
-      payments_data_manager_->GetLocalDatabase()->UpdateCreditCard(card);
-    }
-  }
-
-  // Add the new credit cards to the web database.  Don't add a duplicate.
-  for (const CreditCard& card : *credit_cards) {
-    if (!FindByGUID(payments_data_manager_->local_credit_cards_, card.guid()) &&
-        !FindByContents(payments_data_manager_->local_credit_cards_, card)) {
-      payments_data_manager_->GetLocalDatabase()->AddCreditCard(card);
-    }
-  }
-
-  // Copy in the new credit cards.
-  payments_data_manager_->local_credit_cards_.clear();
-  for (const CreditCard& card : *credit_cards)
-    payments_data_manager_->local_credit_cards_.push_back(
-        std::make_unique<CreditCard>(card));
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
+  payments_data_manager_->SetCreditCards(credit_cards);
 }
 
 void PersonalDataManager::LoadCreditCards() {

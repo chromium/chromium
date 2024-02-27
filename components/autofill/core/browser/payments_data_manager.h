@@ -43,6 +43,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       scoped_refptr<AutofillWebDataService> account_database,
       AutofillImageFetcherBase* image_fetcher,
       std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
+      const std::string& app_locale,
       PersonalDataManager* pdm);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
@@ -154,6 +155,64 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // and ordered by frecency with the expired cards put at the end of the
   // vector.
   const std::vector<CreditCard*> GetCreditCardsToSuggest() const;
+
+  // Adds `iban` to the web database as a local IBAN. Returns the guid of
+  // `iban` if the add is successful, or an empty string otherwise.
+  // Below conditions should be met before adding `iban` to the database:
+  // 1) IBAN saving must be enabled.
+  // 2) No IBAN exists in `local_ibans_` which has the same guid as`iban`.
+  // 3) Local database is available.
+  virtual std::string AddAsLocalIban(Iban iban);
+
+  // Updates `iban` which already exists in the web database. This can only
+  // be used on local ibans. Returns the guid of `iban` if the update is
+  // successful, or an empty string otherwise.
+  // This method assumes an IBAN exists; if not, it will be handled gracefully
+  // by webdata backend.
+  virtual std::string UpdateIban(const Iban& iban);
+
+  // Adds |credit_card| to the web database as a local card.
+  virtual void AddCreditCard(const CreditCard& credit_card);
+
+  // Delete list of provided credit cards.
+  virtual void DeleteLocalCreditCards(const std::vector<CreditCard>& cards);
+
+  // Delete all local credit cards.
+  virtual void DeleteAllLocalCreditCards();
+
+  // Updates |credit_card| which already exists in the web database. This
+  // can only be used on local credit cards.
+  virtual void UpdateCreditCard(const CreditCard& credit_card);
+
+  // Updates a local CVC in the web database.
+  virtual void UpdateLocalCvc(const std::string& guid,
+                              const std::u16string& cvc);
+
+  // Updates the use stats and billing address id for the server |credit_cards|.
+  // Looks up the cards by server_id.
+  virtual void UpdateServerCardsMetadata(
+      const std::vector<CreditCard>& credit_cards);
+
+  // Methods to add, update, remove, or clear server CVC in the web database.
+  virtual void AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  virtual void UpdateServerCvc(int64_t instrument_id,
+                               const std::u16string& cvc);
+  void RemoveServerCvc(int64_t instrument_id);
+  virtual void ClearServerCvcs();
+
+  // Method to clear all local CVCs from the local web database.
+  virtual void ClearLocalCvcs();
+
+  // Deletes all server cards (both masked and unmasked).
+  void ClearAllServerDataForTesting();
+
+  // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
+  // database by adding, updating and removing credit cards.
+  void SetCreditCards(std::vector<CreditCard>* credit_cards);
+
+  // Removes the credit card or IBAN identified by `guid`.
+  // Returns true if something was removed.
+  virtual bool RemoveByGUID(const std::string& guid);
 
   // De-dupe credit card to suggest. Full server cards are preferred over their
   // local duplicates, and local cards are preferred over their masked server
@@ -308,6 +367,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The shared storage handler this instance uses.
   std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler_;
+
+  // Stores the |app_locale| supplied on construction.
+  const std::string app_locale_;
 
   base::WeakPtrFactory<PaymentsDataManager> weak_factory_{this};
 };

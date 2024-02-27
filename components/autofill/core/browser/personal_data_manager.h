@@ -310,7 +310,7 @@ class PersonalDataManager : public KeyedService,
   // Method to clear all local CVCs from the local web database.
   virtual void ClearLocalCvcs();
 
-  // Deletes all server profiles and cards (both masked and unmasked).
+  // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
 
   // Deletes all local profiles and cards.
