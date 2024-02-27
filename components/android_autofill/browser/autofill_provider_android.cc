@@ -679,6 +679,10 @@ void AutofillProviderAndroid::Reset() {
 }
 
 void AutofillProviderAndroid::CancelSession() {
+  cached_data_ = std::nullopt;
+  has_used_cached_form_ = false;
+  was_bottom_sheet_just_shown_ = false;
+  was_shown_bottom_sheet_timer_.Stop();
   bridge_->CancelSession();
 }
 
