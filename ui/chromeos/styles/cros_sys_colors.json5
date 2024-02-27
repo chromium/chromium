@@ -677,6 +677,7 @@
     'illo.elevated.color1.2': '$cros.sys.illo.color1.2',
     'illo.elevated.base': '$cros.sys.illo.base',
     'illo.elevated.secondary': '$cros.sys.illo.secondary',
+    'illo.on-primary-container': '$cros.sys.on-primary-container',
 
     /*
      * Gaming colors
@@ -691,6 +692,10 @@
     'gaming-control-button-hover': '#c900eb',
     /* Primary 80 Vibrant */
     'gaming-control-button-border-hover': '#f9acff',
+    'gaming.window-button-border': {
+      light: 'rgba($cros.sys.black.rgb, .08)',
+      dark: 'rgba($cros.sys.white.rgb, .08)',
+    },
 
     /* Icon colors. */
     'file-ms-excel': '#16a765',
