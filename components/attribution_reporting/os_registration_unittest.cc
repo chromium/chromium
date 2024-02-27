@@ -7,6 +7,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -92,6 +93,16 @@ TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
               test_case.expected)
         << test_case.description;
   }
+}
+
+TEST(OsRegistration, EmitItemsPerHeaderHistogram) {
+  base::HistogramTester histogram;
+
+  ParseOsSourceOrTriggerHeader(
+      R"(123, "https://d.test", "", "https://e.test")");
+
+  histogram.ExpectUniqueSample("Conversions.OsRegistrationItemsPerHeader", 2,
+                               1);
 }
 
 }  // namespace

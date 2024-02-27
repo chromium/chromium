@@ -3255,6 +3255,11 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
                                /*sample=*/0, /*expected_count=*/1);
   histograms.ExpectBucketCount("Conversions.OsRegistrationsBufferFlushReason",
                                /*sample=*/1, /*expected_count=*/4);
+
+  histograms.ExpectBucketCount("Conversions.OsRegistrationItemsPerBatch", 20,
+                               /*expected_count=*/4);
+  histograms.ExpectBucketCount("Conversions.OsRegistrationItemsPerBatch",
+                               /*sample=*/2, /*expected_count=*/1);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,

@@ -1939,6 +1939,9 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
     const RegistrationContext& registration_context,
     RegistrationType type) {
   std::optional<AttributionInputEvent> input_event;
+  base::UmaHistogramCounts100("Conversions.OsRegistrationItemsPerBatch",
+                              items.size());
+
   if (type == RegistrationType::kSource) {
     // The OsRegistration uses the optional to determine if its a source or a
     // trigger. However, we want to send an actual input event only when the
@@ -1947,6 +1950,7 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
                             ? registration_context.last_input_event()
                             : AttributionInputEvent());
   }
+
   attribution_manager_->HandleOsRegistration(OsRegistration(
       std::move(items),
       /*top_level_origin=*/registration_context.context_origin(),

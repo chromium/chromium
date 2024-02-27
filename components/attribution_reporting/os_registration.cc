@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 
@@ -61,6 +62,9 @@ std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(
         .debug_reporting = debug_reporting,
     });
   }
+
+  base::UmaHistogramCounts100("Conversions.OsRegistrationItemsPerHeader",
+                              items.size());
 
   return items;
 }

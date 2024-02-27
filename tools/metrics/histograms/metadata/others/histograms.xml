@@ -3447,6 +3447,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.OsRegistrationItemsPerBatch" units="count"
+    expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of registration items submitted to the OS per batch (or
+    registration chain).
+
+    A registration chain might record more than one event if the chain records
+    more than 20 registration items.
+
+    Emitted when submitting OS registrations to the AttributionManager.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationItemsPerHeader" units="count"
+    expires_after="2024-06-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of registration items per OS attribution header.
+
+    Emitted when parsing an OS attribution header.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.OsRegistrationResult.{Type}"
     enum="ConversionOsRegistrationResult" expires_after="never">
 <!-- expires-never: critical system health metric for monitoring -->
@@ -3471,8 +3497,9 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.OsRegistrationsBufferFlushAfterTimeout"
-    enum="Boolean" expires_after="2024-06-12">
+<histogram name="Conversions.OsRegistrationsBufferFlushReason"
+    enum="ConversionOsRegistrationsBufferFlushReason"
+    expires_after="2024-06-12">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
