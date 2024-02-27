@@ -5,9 +5,9 @@
 #include "ui/message_center/views/message_popup_collection.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -676,7 +676,7 @@ void MessagePopupCollection::ClosePopupsOutsideWorkArea() {
 }
 
 void MessagePopupCollection::RemoveClosedPopupItems() {
-  base::EraseIf(popup_items_, [](const auto& item) { return !item.popup; });
+  std::erase_if(popup_items_, [](const auto& item) { return !item.popup; });
 }
 
 bool MessagePopupCollection::CollapseAllPopups() {

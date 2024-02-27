@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/rtl.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -89,7 +88,7 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
       focused_view_->parent()->GetViewsInGroup(focused_view_->GetGroup(),
                                                &views);
       // Remove any views except current, which are disabled or hidden.
-      base::EraseIf(views, [this](View* v) {
+      std::erase_if(views, [this](View* v) {
         return v != focused_view_ && !v->IsAccessibilityFocusable();
       });
       View::Views::const_iterator i = base::ranges::find(views, focused_view_);

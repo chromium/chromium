@@ -4,9 +4,10 @@
 
 #include "ui/gfx/x/window_cache.h"
 
+#include <vector>
+
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -228,7 +229,7 @@ void WindowCache::OnEvent(const Event& event) {
   } else if (auto* destroy = event.As<DestroyNotifyEvent>()) {
     if (auto* info = GetInfo(destroy->window)) {
       if (auto* siblings = GetChildren(info->parent)) {
-        base::Erase(*siblings, destroy->window);
+        std::erase(*siblings, destroy->window);
       }
       windows_.erase(destroy->window);
     }
@@ -243,7 +244,7 @@ void WindowCache::OnEvent(const Event& event) {
   } else if (auto* reparent = event.As<ReparentNotifyEvent>()) {
     if (auto* info = GetInfo(reparent->window)) {
       if (auto* old_siblings = GetChildren(info->parent)) {
-        base::Erase(*old_siblings, reparent->window);
+        std::erase(*old_siblings, reparent->window);
       }
       if (auto* new_siblings = GetChildren(reparent->parent)) {
         new_siblings->push_back(reparent->window);
@@ -258,7 +259,7 @@ void WindowCache::OnEvent(const Event& event) {
   } else if (auto* circulate = event.As<CirculateEvent>()) {
     if (auto* info = GetInfo(circulate->window)) {
       if (auto* siblings = GetChildren(info->parent)) {
-        base::Erase(*siblings, circulate->window);
+        std::erase(*siblings, circulate->window);
         if (circulate->place == Place::OnTop) {
           siblings->push_back(circulate->window);
         } else {

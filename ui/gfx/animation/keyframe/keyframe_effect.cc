@@ -5,8 +5,8 @@
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
 
 #include <algorithm>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
@@ -227,7 +227,7 @@ bool KeyframeEffect::TickInternal(base::TimeTicks monotonic_time,
   }
 
   // Remove finished keyframe_models.
-  base::EraseIf(
+  std::erase_if(
       keyframe_models_,
       [monotonic_time](const std::unique_ptr<KeyframeModel>& keyframe_model) {
         return !keyframe_model->is_finished() &&

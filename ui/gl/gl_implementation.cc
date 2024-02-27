@@ -9,12 +9,12 @@
 #include <cstdlib>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -426,7 +426,7 @@ std::string FilterGLExtensionList(
   auto is_disabled = [&disabled_extensions](const base::StringPiece& ext) {
     return base::Contains(disabled_extensions, ext);
   };
-  base::EraseIf(extension_vec, is_disabled);
+  std::erase_if(extension_vec, is_disabled);
 
   return base::JoinString(extension_vec, " ");
 }

@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <map>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -402,9 +402,8 @@ void TestAXNodeWrapper::ReplaceIntAttribute(int32_t node_id,
   std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>& attributes =
       new_data.int_attributes;
 
-  base::EraseIf(attributes, [attribute](auto& pair) {
-    return pair.first == attribute;
-  });
+  std::erase_if(attributes,
+                [attribute](auto& pair) { return pair.first == attribute; });
 
   new_data.AddIntAttribute(attribute, value);
   node->SetData(new_data);
@@ -417,7 +416,7 @@ void TestAXNodeWrapper::ReplaceFloatAttribute(
   std::vector<std::pair<ax::mojom::FloatAttribute, float>>& attributes =
       new_data.float_attributes;
 
-  base::EraseIf(attributes,
+  std::erase_if(attributes,
                 [attribute](auto& pair) { return pair.first == attribute; });
 
   new_data.AddFloatAttribute(attribute, value);
@@ -430,7 +429,7 @@ void TestAXNodeWrapper::ReplaceBoolAttribute(ax::mojom::BoolAttribute attribute,
   std::vector<std::pair<ax::mojom::BoolAttribute, bool>>& attributes =
       new_data.bool_attributes;
 
-  base::EraseIf(attributes,
+  std::erase_if(attributes,
                 [attribute](auto& pair) { return pair.first == attribute; });
 
   new_data.AddBoolAttribute(attribute, value);
@@ -444,7 +443,7 @@ void TestAXNodeWrapper::ReplaceStringAttribute(
   std::vector<std::pair<ax::mojom::StringAttribute, std::string>>& attributes =
       new_data.string_attributes;
 
-  base::EraseIf(attributes,
+  std::erase_if(attributes,
                 [attribute](auto& pair) { return pair.first == attribute; });
 
   new_data.AddStringAttribute(attribute, value);

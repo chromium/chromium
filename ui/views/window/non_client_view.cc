@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -135,8 +135,9 @@ View::Views NonClientFrameView::GetChildrenInZOrder() {
 
   // Move the client view to the beginning of the Z-order to ensure that the
   // other children of the frame view draw on top of it.
-  if (client_view && base::Erase(paint_order, client_view))
+  if (client_view && std::erase(paint_order, client_view)) {
     paint_order.insert(paint_order.begin(), client_view);
+  }
 
   return paint_order;
 }

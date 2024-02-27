@@ -9,10 +9,10 @@
 #include <set>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -52,7 +52,7 @@ std::vector<MIV*> GetMenuItemsFromChildren(const View::Views& children) {
   base::ranges::transform(
       children, std::back_inserter(menu_items),
       static_cast<MIV* (*)(V*)>(&AsViewClass<MenuItemView>));
-  base::EraseIf(menu_items, [](MIV* item) {
+  std::erase_if(menu_items, [](MIV* item) {
     return !item || IsViewClass<EmptyMenuMenuItem>(item);
   });
   return menu_items;

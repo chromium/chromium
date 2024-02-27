@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
@@ -458,13 +457,13 @@ AnimatingLayoutManager::GetChildViewsInPaintOrder(const View* host) const {
 
 bool AnimatingLayoutManager::OnViewRemoved(View* host, View* view) {
   // Remove any fade infos corresponding to the removed view.
-  base::EraseIf(fade_infos_, [view](const LayoutFadeInfo& fade_info) {
+  std::erase_if(fade_infos_, [view](const LayoutFadeInfo& fade_info) {
     return fade_info.child_view == view;
   });
 
   // Remove any elements in the current layout corresponding to the removed
   // view.
-  base::EraseIf(current_layout_.child_layouts,
+  std::erase_if(current_layout_.child_layouts,
                 [view](const ChildLayout& child_layout) {
                   return child_layout.child_view == view;
                 });
