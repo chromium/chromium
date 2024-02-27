@@ -1205,12 +1205,6 @@ BASE_FEATURE(kMediaDrmPreprovisioningAtStartup,
              "MediaDrmPreprovisioningAtStartup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables MediaDrmBridge to call into MediaDrm API to query HDCP Status to
-// support the CDM API GetStatusForPolicy.
-BASE_FEATURE(kMediaDrmGetStatusForPolicy,
-             "MediaDrmGetStatusForPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables CanPlayType() (and other queries) for HLS MIME types. Note that
 // disabling this also causes navigation to .m3u8 files to trigger downloading
 // instead of playback.
