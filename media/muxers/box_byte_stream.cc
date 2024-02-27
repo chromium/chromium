@@ -131,6 +131,8 @@ void BoxByteStream::FlushCurrentOffset() {
 
 void BoxByteStream::GrowWriter() {
   CHECK(!buffer_.empty());
+  // Reset before resize to fix dangling pointer inside `writer_`.
+  writer_.reset();
   buffer_.resize(buffer_.size() * 1.5);
   writer_.emplace(reinterpret_cast<char*>(buffer_.data()), buffer_.size());
   writer_->Skip(position_);

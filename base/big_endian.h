@@ -211,7 +211,7 @@ class BASE_EXPORT BigEndianWriter {
   }
 
  private:
-  raw_span<uint8_t, DanglingUntriaged> buffer_;
+  raw_span<uint8_t> buffer_;
 };
 
 }  // namespace base

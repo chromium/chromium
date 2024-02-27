@@ -116,10 +116,13 @@ void RtpPacketizer::SendFrameAsPackets(const EncodedFrame& frame) {
     packet->data.push_back(frame.frame_id.lower_8_bits());
     size_t start_size = packet->data.size();
     packet->data.resize(start_size + 4);
-    base::BigEndianWriter big_endian_writer(
-        reinterpret_cast<char*>(&(packet->data[start_size])), 4);
-    big_endian_writer.WriteU16(packet_id);
-    big_endian_writer.WriteU16(static_cast<uint16_t>(num_packets - 1));
+    {
+      base::BigEndianWriter big_endian_writer(
+          reinterpret_cast<char*>(&(packet->data[start_size])), 4);
+      big_endian_writer.WriteU16(packet_id);
+      big_endian_writer.WriteU16(static_cast<uint16_t>(num_packets - 1));
+      // `big_endian_writer` will be invalid when `packet->data` is resized.
+    }
     packet->data.push_back(frame.referenced_frame_id.lower_8_bits());
 
     // Add extension details only on the first packet of the frame.
