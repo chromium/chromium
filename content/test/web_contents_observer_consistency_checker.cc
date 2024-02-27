@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/test/web_contents_observer_consistency_checker.h"
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "base/pending_task.h"
 #include "base/strings/stringprintf.h"
@@ -354,7 +354,7 @@ void WebContentsObserverConsistencyChecker::MediaStoppedPlaying(
     WebContentsObserver::MediaStoppedReason reason) {
   CHECK(!web_contents_destroyed_);
   CHECK(base::Contains(active_media_players_, id));
-  base::Erase(active_media_players_, id);
+  std::erase(active_media_players_, id);
 }
 
 bool WebContentsObserverConsistencyChecker::OnMessageReceived(

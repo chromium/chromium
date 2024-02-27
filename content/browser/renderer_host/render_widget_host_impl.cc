@@ -18,7 +18,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -1872,7 +1871,7 @@ void RenderWidgetHostImpl::AddKeyPressEventCallback(
 
 void RenderWidgetHostImpl::RemoveKeyPressEventCallback(
     const KeyPressEventCallback& callback) {
-  base::Erase(key_press_event_callbacks_, callback);
+  std::erase(key_press_event_callbacks_, callback);
 }
 
 void RenderWidgetHostImpl::AddMouseEventCallback(
@@ -1883,7 +1882,7 @@ void RenderWidgetHostImpl::AddMouseEventCallback(
 
 void RenderWidgetHostImpl::RemoveMouseEventCallback(
     const MouseEventCallback& callback) {
-  base::Erase(mouse_event_callbacks_, callback);
+  std::erase(mouse_event_callbacks_, callback);
 }
 
 void RenderWidgetHostImpl::AddSuppressShowingImeCallback(
@@ -1894,7 +1893,7 @@ void RenderWidgetHostImpl::AddSuppressShowingImeCallback(
 
 void RenderWidgetHostImpl::RemoveSuppressShowingImeCallback(
     const SuppressShowingImeCallback& callback) {
-  base::Erase(suppress_showing_ime_callbacks_, callback);
+  std::erase(suppress_showing_ime_callbacks_, callback);
 }
 
 void RenderWidgetHostImpl::AddInputEventObserver(

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
@@ -244,7 +243,7 @@ void PrefetchDocumentManager::ProcessCandidates(
         return true;
       };
 
-  base::EraseIf(candidates, should_process_entry);
+  std::erase_if(candidates, should_process_entry);
 
   for (auto& [prefetch_url, prefetch_type, referrer, no_vary_search_expected] :
        prefetches) {

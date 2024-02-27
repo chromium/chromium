@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/preloading_decider.h"
 
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
@@ -370,7 +372,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // The candidates remaining after this call will be all eager candidates,
   // and all non-eager candidates whose (url, action) pair has already been
   // processed.
-  base::EraseIf(candidates, should_mark_as_on_standby);
+  std::erase_if(candidates, should_mark_as_on_standby);
 
   prefetcher_.ProcessCandidatesForPrefetch(candidates);
 

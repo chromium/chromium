@@ -6,10 +6,10 @@
 
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -2301,7 +2301,7 @@ void ChildProcessSecurityPolicyImpl::RemoveStateForBrowserContext(
     base::AutoLock isolated_origins_lock(isolated_origins_lock_);
 
     for (auto& iter : isolated_origins_) {
-      base::EraseIf(iter.second,
+      std::erase_if(iter.second,
                     [&browser_context](const IsolatedOriginEntry& entry) {
                       // Remove if BrowserContext matches.
                       return (entry.browser_context() == &browser_context);
@@ -2702,7 +2702,7 @@ void ChildProcessSecurityPolicyImpl::
   {
     base::AutoLock isolated_origins_lock(isolated_origins_lock_);
     for (auto& iter : isolated_origins_) {
-      base::EraseIf(iter.second, [&browsing_instance_id](
+      std::erase_if(iter.second, [&browsing_instance_id](
                                      const IsolatedOriginEntry& entry) {
         // Remove entries that are specific to `browsing_instance_id` and
         // do not apply to future BrowsingInstances.
@@ -2828,7 +2828,7 @@ void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginForTesting(
     const url::Origin& origin) {
   GURL key(SiteInfo::GetSiteForOrigin(origin));
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
-  base::EraseIf(isolated_origins_[key],
+  std::erase_if(isolated_origins_[key],
                 [&origin](const IsolatedOriginEntry& entry) {
                   // Remove if origin matches.
                   return (entry.origin() == origin);

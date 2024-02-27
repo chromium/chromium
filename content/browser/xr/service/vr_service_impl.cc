@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -540,7 +539,7 @@ void VRServiceImpl::RequestSession(
   // features, but we don't need to block creation if an optional feature is
   // not supported. Remove all unsupported optional features from the
   // optional_features collection before handing it off.
-  base::EraseIf(options->optional_features, [runtime](auto& feature) {
+  std::erase_if(options->optional_features, [runtime](auto& feature) {
     return !runtime->SupportsFeature(feature);
   });
 

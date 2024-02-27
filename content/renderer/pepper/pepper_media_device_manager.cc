@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/renderer/pepper/pepper_media_device_manager.h"
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -144,7 +144,7 @@ void PepperMediaDeviceManager::StopMonitoringDevices(PP_DeviceType_Dev type,
   SubscriptionList& subscriptions =
       device_change_subscriptions_[static_cast<size_t>(
           ToMediaDeviceType(type))];
-  base::EraseIf(subscriptions,
+  std::erase_if(subscriptions,
                 [subscription_id](const Subscription& subscription) {
                   return subscription.first == subscription_id;
                 });

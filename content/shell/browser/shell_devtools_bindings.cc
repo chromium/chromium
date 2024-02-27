@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -186,7 +186,7 @@ ShellDevToolsBindings::~ShellDevToolsBindings() {
 
   auto* bindings = GetShellDevtoolsBindingsInstances();
   DCHECK(base::Contains(*bindings, this));
-  base::Erase(*bindings, this);
+  std::erase(*bindings, this);
 }
 
 // static

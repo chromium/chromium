@@ -5,6 +5,7 @@
 #include "content/browser/bluetooth/advertisement_client.h"
 
 #include <utility>
+#include <vector>
 
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 #include "content/browser/bluetooth/bluetooth_metrics.h"
@@ -62,7 +63,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsClient::SendEvent(
   }
 
   auto filtered_event = event.Clone();
-  base::EraseIf(filtered_event->uuids, [this](const BluetoothUUID& uuid) {
+  std::erase_if(filtered_event->uuids, [this](const BluetoothUUID& uuid) {
     return !service_->IsAllowedToAccessService(device_id_, uuid);
   });
   base::EraseIf(

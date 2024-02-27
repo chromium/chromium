@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prerenderer_impl.h"
 
+#include <vector>
+
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
@@ -175,7 +177,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     // requests rejected by PrerenderHostRegistry can be filtered out. But
     // ideally PrerenderHostRegistry should implement the history management
     // mechanism by itself.
-    base::EraseIf(started_prerenders_, [&](const PrerenderInfo& x) {
+    std::erase_if(started_prerenders_, [&](const PrerenderInfo& x) {
       return base::Contains(removed_prerender_rules_set, x.prerender_host_id);
     });
   }

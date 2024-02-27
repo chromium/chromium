@@ -348,14 +348,14 @@ class ParseContext {
 
     // Erase invalid members/primaries, and collect primary sites that might
     // become singletons.
-    base::EraseIf(
+    std::erase_if(
         sets,
         [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair)
             -> bool { return IsInvalidEntry(pair, &possible_singletons); });
 
     // Erase invalid aliases, and collect canonical sites that are primaries and
     // might become singletons.
-    base::EraseIf(
+    std::erase_if(
         aliases,
         [&](const std::pair<net::SchemefulSite, net::SchemefulSite>& pair)
             -> bool {
@@ -390,7 +390,7 @@ class ParseContext {
       return;
     }
 
-    base::EraseIf(
+    std::erase_if(
         sets,
         [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair)
             -> bool { return possible_singletons.contains(pair.first); });
@@ -425,8 +425,8 @@ class ParseContext {
     const auto is_singleton = [](const SingleSet& set) {
       return set.size() <= 1;
     };
-    base::EraseIf(lists.additions, is_singleton);
-    base::EraseIf(lists.replacements, is_singleton);
+    std::erase_if(lists.additions, is_singleton);
+    std::erase_if(lists.replacements, is_singleton);
   }
 
   std::vector<ParseWarning>& warnings() { return warnings_; }

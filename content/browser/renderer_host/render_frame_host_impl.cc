@@ -12,11 +12,11 @@
 #include <tuple>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -6674,7 +6674,7 @@ void RenderFrameHostImpl::AddDocumentService(
 void RenderFrameHostImpl::RemoveDocumentService(
     internal::DocumentServiceBase* document_service,
     base::PassKey<internal::DocumentServiceBase>) {
-  base::Erase(document_associated_data_->services(), document_service);
+  std::erase(document_associated_data_->services(), document_service);
 }
 
 FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChild(

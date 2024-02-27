@@ -703,7 +703,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
 
   // To avoid spurious reordering, don't remove headers that will be updated
   // anyway.
-  base::EraseIf(headers_to_remove, [&](const std::string& header) {
+  std::erase_if(headers_to_remove, [&](const std::string& header) {
     return updated_headers.HasHeader(header);
   });
 

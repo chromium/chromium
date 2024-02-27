@@ -14,7 +14,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -346,7 +345,7 @@ ShellContentBrowserClient::ShellContentBrowserClient() {
 }
 
 ShellContentBrowserClient::~ShellContentBrowserClient() {
-  base::Erase(GetShellContentBrowserClientInstancesImpl(), this);
+  std::erase(GetShellContentBrowserClientInstancesImpl(), this);
 }
 
 std::unique_ptr<BrowserMainParts>

@@ -5,10 +5,10 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include <random>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
@@ -369,7 +369,7 @@ void FilterAccountsWithLoginHint(
   auto filter = [&login_hint](const IdentityRequestAccount& account) {
     return !base::Contains(account.login_hints, login_hint);
   };
-  base::EraseIf(accounts, filter);
+  std::erase_if(accounts, filter);
   FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
   base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
                                 num_matching);
@@ -386,12 +386,12 @@ void FilterAccountsWithDomainHint(
     auto filter = [](const IdentityRequestAccount& account) {
       return account.domain_hints.empty();
     };
-    base::EraseIf(accounts, filter);
+    std::erase_if(accounts, filter);
   } else {
     auto filter = [&domain_hint](const IdentityRequestAccount& account) {
       return !base::Contains(account.domain_hints, domain_hint);
     };
-    base::EraseIf(accounts, filter);
+    std::erase_if(accounts, filter);
   }
   FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
   base::UmaHistogramEnumeration("Blink.FedCm.DomainHint.NumMatchingAccounts",

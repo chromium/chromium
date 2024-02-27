@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_functions.h"
@@ -185,7 +184,7 @@ void BiddingAndAuctionSerializer::AddGroups(
     scoped_refptr<StorageInterestGroups> groups) {
   std::vector<SingleStorageInterestGroup> groups_to_add =
       groups->GetInterestGroups();
-  base::EraseIf(groups_to_add, [](const SingleStorageInterestGroup& group) {
+  std::erase_if(groups_to_add, [](const SingleStorageInterestGroup& group) {
     return (!group->interest_group.ads) ||
            (group->interest_group.ads->size() == 0);
   });

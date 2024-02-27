@@ -7,9 +7,9 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "content/browser/background_fetch/storage/image_helpers.h"
@@ -474,7 +474,7 @@ void ContentIndexDatabase::DidGetEntries(
 
   if (!corrupted_sw_ids.empty()) {
     // Remove soon-to-be-deleted entries.
-    base::EraseIf(entries, [&corrupted_sw_ids](const auto& entry) {
+    std::erase_if(entries, [&corrupted_sw_ids](const auto& entry) {
       return corrupted_sw_ids.count(entry.service_worker_registration_id);
     });
 

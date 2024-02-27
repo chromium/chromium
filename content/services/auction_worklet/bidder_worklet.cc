@@ -995,7 +995,7 @@ void BidderWorklet::V8State::GenerateBid(
       if (kanon_mode == mojom::KAnonymityBidMode::kEnforce) {
         PrivateAggregationRequests non_kanon_pa_requests =
             std::move(result->pa_requests);
-        base::EraseIf(
+        std::erase_if(
             non_kanon_pa_requests,
             [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
                    request) { return !HasKAnonFailureComponent(request); });

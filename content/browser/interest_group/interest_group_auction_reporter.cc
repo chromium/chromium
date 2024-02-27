@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -1146,7 +1145,7 @@ bool InterestGroupAuctionReporter::CheckReportUrl(const GURL& url) {
 
 void InterestGroupAuctionReporter::EnforceAttestationsReportUrls(
     std::vector<GURL>& urls) {
-  base::EraseIf(urls, [this](const GURL& url) { return !CheckReportUrl(url); });
+  std::erase_if(urls, [this](const GURL& url) { return !CheckReportUrl(url); });
 }
 
 }  // namespace content

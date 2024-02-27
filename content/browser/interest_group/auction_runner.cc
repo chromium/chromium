@@ -650,7 +650,7 @@ void AuctionRunner::UpdateInterestGroupsPostAuction() {
                       update_owners.end());
 
   // Filter owners not allowed to update.
-  base::EraseIf(update_owners, [this](const url::Origin& owner) {
+  std::erase_if(update_owners, [this](const url::Origin& owner) {
     return !is_interest_group_api_allowed_callback_.Run(
         ContentBrowserClient::InterestGroupApiOperation::kUpdate, owner);
   });

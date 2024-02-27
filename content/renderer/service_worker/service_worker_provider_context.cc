@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -361,7 +360,7 @@ const blink::WebString ServiceWorkerProviderContext::client_id() const {
 void ServiceWorkerProviderContext::UnregisterWorkerFetchContext(
     blink::mojom::ServiceWorkerWorkerClient* client) {
   CHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  base::EraseIf(
+  std::erase_if(
       worker_clients_,
       [client](const mojo::Remote<blink::mojom::ServiceWorkerWorkerClient>&
                    remote_client) { return remote_client.get() == client; });

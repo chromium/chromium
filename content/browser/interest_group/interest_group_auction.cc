@@ -3891,14 +3891,14 @@ void InterestGroupAuction::OnInterestGroupRead(
   }
 
   // Ignore interest groups with no bidding script or no ads.
-  base::EraseIf(interest_groups, [](const SingleStorageInterestGroup& bidder) {
+  std::erase_if(interest_groups, [](const SingleStorageInterestGroup& bidder) {
     return !bidder->interest_group.bidding_url || !bidder->interest_group.ads ||
            bidder->interest_group.ads->empty();
   });
 
   // Ignore interest groups that don't provide the requested seller
   // capabilities.
-  base::EraseIf(interest_groups,
+  std::erase_if(interest_groups,
                 [this](const SingleStorageInterestGroup& bidder) {
                   return !GroupSatisfiesAllCapabilities(
                       bidder->interest_group,
