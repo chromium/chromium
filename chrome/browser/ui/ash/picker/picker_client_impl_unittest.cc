@@ -5,16 +5,20 @@
 #include "chrome/browser/ui/ash/picker/picker_client_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/picker/picker_controller.h"
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
@@ -29,9 +33,10 @@
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AnyNumber;
-using ::testing::Contains;
 using ::testing::Field;
+using ::testing::IsSupersetOf;
 using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::VariantWith;
@@ -55,6 +60,13 @@ void AddSearchToHistory(TestingProfile* profile, GURL url) {
                               /*last_visit=*/base::Time::Now(),
                               /*hidden=*/false, history::SOURCE_BROWSED);
   profile->BlockUntilHistoryProcessesPendingRequests();
+}
+
+void AddBookmarks(TestingProfile* profile, std::u16string title, GURL url) {
+  auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile);
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, title, url);
 }
 
 class PickerClientImplTest : public testing::Test {
@@ -109,6 +121,8 @@ class PickerClientImplTest : public testing::Test {
         account_id.GetUserEmail(),
         {{HistoryServiceFactory::GetInstance(),
           base::BindRepeating(&BuildTestHistoryService, temp_dir_.GetPath())},
+         {BookmarkModelFactory::GetInstance(),
+          BookmarkModelFactory::GetDefaultFactory()},
          {TemplateURLServiceFactory::GetInstance(),
           base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}},
         /*is_main_profile=*/false, test_shared_url_loader_factory_);
@@ -138,7 +152,8 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   ash::PickerController controller;
   LoginState login = LogInAsFakeUser();
   PickerClientImpl client(&controller, login.user_manager);
-  AddSearchToHistory(login.profile, GURL("http://foo.com/bar"));
+  AddSearchToHistory(login.profile, GURL("http://foo.com/history"));
+  AddBookmarks(login.profile, u"Foobaz", GURL("http://foo.com/bookmarks"));
   base::test::TestFuture<void> test_done;
 
   NiceMock<MockSearchResultsCallback> mock_search_callback;
@@ -146,11 +161,25 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   EXPECT_CALL(
       mock_search_callback,
       Call(ash::AppListSearchResultType::kOmnibox,
-           Contains(Property(
-               "data", &ash::PickerSearchResult::data,
-               VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
-                   "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
-                   GURL("http://foo.com/bar")))))))
+           IsSupersetOf({
+               Property(
+                   "data", &ash::PickerSearchResult::data,
+                   VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(
+                       Field("url",
+                             &ash::PickerSearchResult::BrowsingHistoryData::url,
+                             GURL("http://foo.com/history")))),
+               Property(
+                   "data", &ash::PickerSearchResult::data,
+                   VariantWith<
+                       ash::PickerSearchResult::BrowsingHistoryData>(AllOf(
+                       Field(
+                           "title",
+                           &ash::PickerSearchResult::BrowsingHistoryData::title,
+                           u"Foobaz"),
+                       Field("url",
+                             &ash::PickerSearchResult::BrowsingHistoryData::url,
+                             GURL("http://foo.com/bookmarks"))))),
+           })))
       .WillOnce([&]() { test_done.SetValue(); });
 
   client.StartCrosSearch(

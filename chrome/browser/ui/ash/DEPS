@@ -38,6 +38,8 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
+  # Used by launcher and //ash/picker, will be removed post-Lacros.
+  "+chrome/browser/bookmarks/bookmark_model_factory.h",
   "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/content_settings/host_content_settings_map_factory.h",
   "+chrome/browser/download/chrome_download_manager_delegate.h",
