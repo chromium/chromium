@@ -132,8 +132,8 @@ void TestHarness::InstallStringListPolicy(
     const std::string& policy_name,
     const base::Value::List& policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
-  base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
-      ValueToProperty(base::Value(policy_value.Clone())));
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> value =
+      ValueToProperty(base::Value(policy_value.Clone()));
 
   if (encode_complex_data_as_json_) {
     // Convert |policy_value| to a JSON-encoded string.
@@ -160,8 +160,8 @@ void TestHarness::InstallDictionaryPolicy(
 
     AddPolicies(@{key : base::SysUTF8ToNSString(json_string)});
   } else {
-    base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
-        ValueToProperty(base::Value(policy_value.Clone())));
+    base::apple::ScopedCFTypeRef<CFPropertyListRef> value =
+        ValueToProperty(base::Value(policy_value.Clone()));
     AddPolicies(@{key : (__bridge NSDictionary*)(value.get())});
   }
 }
