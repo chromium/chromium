@@ -28,7 +28,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -592,17 +591,7 @@ class SafetyCheckMediator {
                         return true;
                     };
         } else {
-            listener =
-                    (p) -> {
-                        PasswordManagerHelper.showPasswordSettings(
-                                p.getContext(),
-                                ManagePasswordsReferrer.SAFETY_CHECK,
-                                mSettingsLauncher,
-                                mSyncService,
-                                mModalDialogManagerSupplier,
-                                /* managePasskeys= */ false);
-                        return true;
-                    };
+            listener = null;
         }
         passwordsCheckModel.set(
                 PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER, listener);

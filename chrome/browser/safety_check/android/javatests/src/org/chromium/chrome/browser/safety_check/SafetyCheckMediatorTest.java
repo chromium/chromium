@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_check;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -765,6 +766,26 @@ public class SafetyCheckMediatorTest {
         verify(mPasswordCheckupHelper, times(mUseGmsApi ? 1 : 0))
                 .getPasswordCheckupIntent(
                         eq(SAFETY_CHECK), eq(Optional.of(TEST_EMAIL_ADDRESS)), any(), any());
+    }
+
+    @Test
+    public void testClickListenerDontLeadToPasswordCheckupIfThereWasError() {
+        // Order: initial state -> safety check triggered -> check done -> load completed.
+        mMediator.setInitialState();
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
+
+        mMediator.performSafetyCheck();
+        setUpPasswordCheckToReturnError(
+                PasswordStorageType.ACCOUNT_STORAGE, new Exception("Test exception"));
+
+        assertEquals(PasswordsState.ERROR, mPasswordCheckModel.get(PASSWORDS_STATE));
+
+        Preference.OnPreferenceClickListener listener =
+                (Preference.OnPreferenceClickListener)
+                        mPasswordCheckModel.get(
+                                PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER);
+
+        assertNull(listener);
     }
 
     @Test
