@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/i18n/time_formatting.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -52,17 +53,22 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   UIView* _primaryTitle;
   // The blur background.
   UIVisualEffectView* _blurView;
+  // Currently displayed group.
+  const TabGroup* _tabGroup;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
-                     lightTheme:(BOOL)lightTheme {
+                     lightTheme:(BOOL)lightTheme
+                       tabGroup:(const TabGroup*)tabGroup {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group view controller outside "
          "the Tab Groups experiment.";
+  CHECK(tabGroup);
   if (self = [super init]) {
     _handler = handler;
+    _tabGroup = tabGroup;
     _gridViewController = [[BaseGridViewController alloc] init];
     if (lightTheme) {
       _gridViewController.theme = GridThemeLight;
@@ -423,10 +429,21 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   return subTitleView;
 }
 
+// Displays the menu to rename and change the color of the currently displayed
+// group.
+- (void)displayEditionMenu {
+  [_handler showTabGroupEditionForGroup:_tabGroup];
+}
+
 // Returns the tab group menu.
 - (UIMenu*)configuredTabGroupMenu {
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramTabGroupViewEntry];
+
+  __weak TabGroupViewController* weakSelf = self;
+  UIAction* renameGroup = [actionFactory actionToRenameTabGroupWithBlock:^{
+    [weakSelf displayEditionMenu];
+  }];
 
   UIAction* newTabAction = [actionFactory actionToAddNewTabInGroupWithBlock:^{
       // TODO(crbug.com/1501837): Add new tab in current group and open it.
@@ -446,7 +463,9 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 
   return
       [UIMenu menuWithTitle:@""
-                   children:@[ newTabAction, ungroupAction, closeGroupAction ]];
+                   children:@[
+                     renameGroup, newTabAction, ungroupAction, closeGroupAction
+                   ]];
 }
 
 @end

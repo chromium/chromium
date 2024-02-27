@@ -20,6 +20,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -490,20 +491,25 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
-  // TODO(crbug.com/1501837): Adapt the condition to open a tab group UI only
-  // when `itemID` match a group.
-  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-    // TODO(crbug.com/1501837): Set the group ID when it will be available.
-    [self.dispatcher showTabGroupWithID];
-    return;
-  }
-
   WebStateSearchCriteria searchCriteria{
       .identifier = itemID,
       .pinned_state = pinned ? PinnedState::kPinned : PinnedState::kNonPinned,
   };
 
   int index = GetWebStateIndex(self.webStateList, searchCriteria);
+  // TODO(crbug.com/1501837): Adapt the condition to open a tab group UI only
+  // when `itemID` match a group.
+  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    // TODO(crbug.com/1501837): This should be move in the function (when
+    // available) which handle when a user tab on a group cell. This should also
+    // get the real group and not create one.
+    tab_groups::TabGroupVisualData temporaryVisualData(
+        u"To remove", tab_groups::TabGroupColorId::kCyan);
+    [self.dispatcher showTabGroup:self.webStateList->CreateGroup(
+                                      {index}, temporaryVisualData)];
+    return;
+  }
+
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
     if (pinned) {

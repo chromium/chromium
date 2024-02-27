@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -68,9 +69,12 @@ constexpr CGFloat kContainersMaxWidth = 400;
   NSArray<UIImage*>* _favicons;
   // Snapshots views container.
   UIView* _snapshotsContainer;
+  // Tab group to edit.
+  const TabGroup* _tabGroup;
 }
 
-- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler {
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
+                       tabGroup:(const TabGroup*)tabGroup {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
@@ -78,6 +82,7 @@ constexpr CGFloat kContainersMaxWidth = 400;
   if (self) {
     CHECK(handler);
     _tabGroupsHandler = handler;
+    _tabGroup = tabGroup;
 
     // TODO(crbug.com/1501837): Get the color ID list from helper to ensure to
     // always have the correct values.
@@ -309,8 +314,10 @@ constexpr CGFloat kContainersMaxWidth = 400;
   };
   NSMutableAttributedString* attributedString =
       [[NSMutableAttributedString alloc]
-          initWithString:l10n_util::GetNSString(
-                             IDS_IOS_TAB_GROUP_CREATION_BUTTON)
+          initWithString:_tabGroup ? l10n_util::GetNSString(
+                                         IDS_IOS_TAB_GROUP_CREATION_DONE)
+                                   : l10n_util::GetNSString(
+                                         IDS_IOS_TAB_GROUP_CREATION_BUTTON)
               attributes:attributes];
   buttonConfiguration.attributedTitle = attributedString;
 

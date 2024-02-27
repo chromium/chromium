@@ -8,20 +8,39 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+// Fake WebStateList delegate that attaches the required tab helper.
+class TabGroupCoordinatorFakeWebStateListDelegate
+    : public FakeWebStateListDelegate {
+ public:
+  TabGroupCoordinatorFakeWebStateListDelegate() {}
+  ~TabGroupCoordinatorFakeWebStateListDelegate() override {}
+
+  // WebStateListDelegate implementation.
+  void WillAddWebState(web::WebState* web_state) override {
+    SnapshotTabHelper::CreateForWebState(web_state);
+  }
+};
 
 class TabGroupCoordinatorTest : public PlatformTest {
  protected:
   TabGroupCoordinatorTest() {
     feature_list_.InitWithFeatures({kTabGroupsInGrid}, {});
     browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(
+        browser_state_.get(),
+        std::make_unique<TabGroupCoordinatorFakeWebStateListDelegate>());
 
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
 
@@ -33,9 +52,20 @@ class TabGroupCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(TabGroupsCommands)];
 
     base_view_controller_ = [[UIViewController alloc] init];
+
+    tab_groups::TabGroupVisualData temporaryVisualData(
+        u"Test group", tab_groups::TabGroupColorId::kCyan);
+    WebStateList* web_state_list = browser_->GetWebStateList();
+    web_state_list->InsertWebState(
+        std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique()),
+        WebStateList::InsertionParams::Automatic().Activate());
+    const TabGroup* group =
+        web_state_list->CreateGroup({0}, temporaryVisualData);
+
     coordinator_ = [[TabGroupCoordinator alloc]
         initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()];
+                           browser:browser_.get()
+                          tabGroup:group];
 
     [coordinator_ start];
   }

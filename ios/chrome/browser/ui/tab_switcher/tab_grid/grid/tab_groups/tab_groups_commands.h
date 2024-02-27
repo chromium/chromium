@@ -7,16 +7,15 @@
 
 #import <set>
 
+class TabGroup;
 namespace web {
 class WebStateID;
 }  // namespace web
 
 @protocol TabGroupsCommands
 
-// Shows tab group UI for group ID `groupID`.
-// TODO(crbug.com/1501837): Add the group ID in parameter when group ID will be
-// available.
-- (void)showTabGroupWithID;
+// Shows tab group UI for group `tabGroup`.
+- (void)showTabGroup:(const TabGroup*)tabGroup;
 
 // Hides the currently displayed tab group.
 - (void)hideTabGroup;
@@ -27,6 +26,9 @@ class WebStateID;
 
 // Hides the tab group creation view.
 - (void)hideTabGroupCreation;
+
+// Shows tab group edition view.
+- (void)showTabGroupEditionForGroup:(const TabGroup*)tabGroup;
 
 @end
 

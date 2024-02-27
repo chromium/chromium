@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
 
 @class BaseGridViewController;
+class TabGroup;
 @protocol TabGroupsCommands;
 @protocol TabGroupMutator;
 
@@ -23,9 +24,11 @@
 @property(nonatomic, readonly) BaseGridViewController* gridViewController;
 
 // Initiates a TabGroupViewController with `handler` to handle user action,
-// `lightTheme` to YES to have a light theme.
+// `lightTheme` to YES to have a light theme, `tabGroup` to get tab group
+// information.
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
-                     lightTheme:(BOOL)lightTheme;
+                     lightTheme:(BOOL)lightTheme
+                       tabGroup:(const TabGroup*)tabGroup;
 
 // Methods handling the presentation animation of this view controller.
 - (void)prepareForPresentation;

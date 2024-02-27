@@ -14,11 +14,13 @@ source_set("grid") {
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups:tab_group_creation",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups:tab_groups_commands",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups:tab_groups_ui",
     "//ios/web/public",
   ]
 }
@@ -41,6 +43,7 @@ source_set("grid_mediator") {
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
     "//components/prefs",
+    "//components/tab_groups",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/default_browser/model:utils",

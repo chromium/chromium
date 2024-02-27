@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_consumer.h"
@@ -25,11 +26,14 @@
   NSMutableArray* _snapshots;
   // List of favicons.
   NSMutableArray* _favicons;
+  // Tab group to edit.
+  const TabGroup* _tabGroup;
 }
 
-- (instancetype)initWithConsumer:(id<TabGroupCreationConsumer>)consumer
-                    selectedTabs:(std::set<web::WebStateID>&)identifiers
-                    webStateList:(WebStateList*)webStateList {
+- (instancetype)
+    initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
+                        selectedTabs:(std::set<web::WebStateID>&)identifiers
+                        webStateList:(WebStateList*)webStateList {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
@@ -71,6 +75,27 @@
 
       numberOfRequestedImages++;
     }
+  }
+  return self;
+}
+
+- (instancetype)initTabGroupEditionWithConsumer:
+                    (id<TabGroupCreationConsumer>)consumer
+                                       tabGroup:(const TabGroup*)tabGroup
+                                   webStateList:(WebStateList*)webStateList {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to create a tab group outside the Tab Groups "
+         "experiment.";
+  self = [super init];
+  if (self) {
+    CHECK(consumer);
+    CHECK(tabGroup);
+    _consumer = consumer;
+    _tabGroup = tabGroup;
+    // TODO(crbug.com/1501837): Get list of web states from the group, and fetch
+    // snapshots and favicons and send it to the consumer.
+    [_consumer setDefaultGroupColor:_tabGroup->visual_data().color()];
+    // TODO(crbug.com/1501837): Set title with current value.
   }
   return self;
 }

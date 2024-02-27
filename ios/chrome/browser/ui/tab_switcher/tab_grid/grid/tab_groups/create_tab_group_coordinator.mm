@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_mediator.h"
@@ -20,14 +21,18 @@
   CreateTabGroupViewController* _viewController;
   // List of tabs to add to the tab group.
   std::set<web::WebStateID> _identifiers;
+  // Tab group to edit.
+  const TabGroup* _tabGroup;
 }
 
-#pragma mark - ChromeCoordinator
+#pragma mark - Public
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                              selectedTabs:(const std::set<web::WebStateID>&)
-                                               identifiers {
+- (instancetype)
+    initTabGroupCreationWithBaseViewController:(UIViewController*)viewController
+                                       browser:(Browser*)browser
+                                  selectedTabs:
+                                      (const std::set<web::WebStateID>&)
+                                          identifiers {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups experiment.";
   CHECK(!identifiers.empty()) << "Cannot create an empty tab group.";
@@ -38,16 +43,41 @@
   return self;
 }
 
+- (instancetype)
+    initTabGroupEditionWithBaseViewController:(UIViewController*)viewController
+                                      browser:(Browser*)browser
+                                     tabGroup:(const TabGroup*)tabGroup {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to edit a tab group outside the Tab Groups "
+         "experiment.";
+  CHECK(tabGroup) << "You need to pass a tab group in order to edit it.";
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _tabGroup = tabGroup;
+  }
+  return self;
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   id<TabGroupsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController =
-      [[CreateTabGroupViewController alloc] initWithHandler:handler];
+      [[CreateTabGroupViewController alloc] initWithHandler:handler
+                                                   tabGroup:_tabGroup];
 
-  _mediator = [[CreateTabGroupMediator alloc]
-      initWithConsumer:_viewController
-          selectedTabs:_identifiers
-          webStateList:self.browser->GetWebStateList()];
+  if (_tabGroup) {
+    _mediator = [[CreateTabGroupMediator alloc]
+        initTabGroupEditionWithConsumer:_viewController
+                               tabGroup:_tabGroup
+                           webStateList:self.browser->GetWebStateList()];
+  } else {
+    _mediator = [[CreateTabGroupMediator alloc]
+        initTabGroupCreationWithConsumer:_viewController
+                            selectedTabs:_identifiers
+                            webStateList:self.browser->GetWebStateList()];
+  }
   _viewController.mutator = _mediator;
 
   // TODO(crbug.com/1501837): Add the create tab group animation.

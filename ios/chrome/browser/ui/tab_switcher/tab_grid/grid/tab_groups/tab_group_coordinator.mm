@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
@@ -22,24 +23,39 @@
   TabGroupViewController* _viewController;
   // Transition delegate for the animation to show/hide a Tab Group.
   TabGroupTransitionDelegate* _transitionDelegate;
+  // Tab group to display.
+  const TabGroup* _tabGroup;
 }
 
-#pragma mark - ChromeCoordinator
+#pragma mark - Public
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+                                  tabGroup:(const TabGroup*)tabGroup {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group coordinator outside the "
          "Tab Groups experiment.";
-  return [super initWithBaseViewController:viewController browser:browser];
+  CHECK(tabGroup) << "You need to pass a tab group in order to display it.";
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _tabGroup = tabGroup;
+  }
+  return self;
 }
+
+- (UIViewController*)viewController {
+  return _viewController;
+}
+
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   id<TabGroupsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController = [[TabGroupViewController alloc]
       initWithHandler:handler
-           lightTheme:!self.browser->GetBrowserState()->IsOffTheRecord()];
+           lightTheme:!self.browser->GetBrowserState()->IsOffTheRecord()
+             tabGroup:_tabGroup];
 
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
