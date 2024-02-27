@@ -34,6 +34,7 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchLinkElement) {
   ContextMenuJavaScriptFeature::FromBrowserState(GetBrowserState())
       ->GetElementAtPoint(
           web_state(), request_id, CGPointMake(10.0, 10.0),
+          CGSizeMake(100.0, 100.0),
           base::BindOnce(^(const std::string& callback_request_id,
                            const web::ContextMenuParams& params) {
             EXPECT_EQ(request_id, callback_request_id);
@@ -67,6 +68,7 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchImageElement) {
   ContextMenuJavaScriptFeature::FromBrowserState(GetBrowserState())
       ->GetElementAtPoint(
           web_state(), request_id, CGPointMake(10.0, 10.0),
+          CGSizeMake(100.0, 100.0),
           base::BindOnce(^(const std::string& callback_request_id,
                            const web::ContextMenuParams& params) {
             EXPECT_EQ(request_id, callback_request_id);

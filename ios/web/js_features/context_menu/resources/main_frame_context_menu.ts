@@ -21,9 +21,24 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  * @param y - vertical center of the selected point in web view
  *                 coordinates.
  */
-function findElementAtPoint(requestId: string, x: number, y: number) {
+function findElementAtPoint(
+    requestId: string, x: number, y: number, webViewWidth: number,
+    _webViewHeight: number) {
+  const scale = getPageWidth() / webViewWidth;
   gCrWeb.contextMenuAllFrames.findElementAtPointInPageCoordinates(
-      requestId, x, y);
+      requestId, x * scale, y * scale);
+}
+
+/**
+ * Returns maximum width of the web page.
+ */
+function getPageWidth(): number {
+  const documentElement = document.documentElement;
+  const documentBody = document.body;
+  return Math.max(
+      documentElement.clientWidth, documentElement.scrollWidth,
+      documentElement.offsetWidth, documentBody.scrollWidth,
+      documentBody.offsetWidth);
 }
 
 gCrWeb.contextMenu = {findElementAtPoint};

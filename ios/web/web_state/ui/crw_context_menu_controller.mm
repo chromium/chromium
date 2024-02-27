@@ -94,9 +94,6 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   CGPoint locationInWebView =
       [self.webView.scrollView convertPoint:location fromView:interaction.view];
 
-  locationInWebView.x /= self.webView.scrollView.zoomScale;
-  locationInWebView.y /= self.webView.scrollView.zoomScale;
-
   std::optional<web::ContextMenuParams> optionalParams =
       [self fetchContextMenuParamsAtLocation:locationInWebView];
 

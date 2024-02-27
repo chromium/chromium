@@ -60,6 +60,7 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
     WebState* web_state,
     std::string requestID,
     CGPoint point,
+    CGSize web_content_size,
     ElementDetailsCallback callback) {
   callbacks_[requestID] = std::move(callback);
 
@@ -68,6 +69,8 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
   parameters.Append(requestID);
   parameters.Append(point.x);
   parameters.Append(point.y);
+  parameters.Append(web_content_size.width);
+  parameters.Append(web_content_size.height);
   CallJavaScriptFunction(main_frame, "contextMenu.findElementAtPoint",
                          parameters);
 }
