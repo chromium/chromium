@@ -25,7 +25,6 @@
 namespace blink {
 
 class BodyStreamBufferUnderlyingByteSource;
-class BodyStreamBufferUnderlyingSource;
 class EncodedFormData;
 class ExceptionState;
 class ReadableStream;
@@ -152,7 +151,6 @@ class CORE_EXPORT BodyStreamBuffer final
   Member<ScriptState> script_state_;
   Member<ReadableStream> stream_;
   Member<BodyStreamBufferUnderlyingByteSource> underlying_byte_source_;
-  Member<BodyStreamBufferUnderlyingSource> underlying_source_;
   Member<BytesUploader> stream_uploader_;
   Member<BytesConsumer> consumer_;
   // We need this member to keep it alive while loading.

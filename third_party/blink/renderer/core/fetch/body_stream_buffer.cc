@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer_underlying_byte_source.h"
-#include "third_party/blink/renderer/core/fetch/body_stream_buffer_underlying_source.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 #include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
@@ -143,19 +142,11 @@ BodyStreamBuffer::BodyStreamBuffer(
 void BodyStreamBuffer::Init() {
   DCHECK(consumer_);
 
-  if (RuntimeEnabledFeatures::ByobFetchEnabled()) {
-    underlying_byte_source_ =
-        MakeGarbageCollected<BodyStreamBufferUnderlyingByteSource>(
-            script_state_, this);
-    stream_ = ReadableStream::CreateByteStream(script_state_,
-                                               underlying_byte_source_);
-  } else {
-    underlying_source_ = MakeGarbageCollected<BodyStreamBufferUnderlyingSource>(
-        script_state_, this);
-
-    stream_ = ReadableStream::CreateWithCountQueueingStrategy(
-        script_state_, underlying_source_, 0);
-  }
+  underlying_byte_source_ =
+      MakeGarbageCollected<BodyStreamBufferUnderlyingByteSource>(script_state_,
+                                                                 this);
+  stream_ =
+      ReadableStream::CreateByteStream(script_state_, underlying_byte_source_);
   stream_broken_ = !stream_;
 
   // ContextDestroyed() can be called inside the ReadableStream constructor when
@@ -308,8 +299,7 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
 
     // IsByteStreamController() can be false if the stream was constructed from
     // a user-defined stream.
-    if (RuntimeEnabledFeatures::ByobFetchEnabled() &&
-        stream_->GetController()->IsByteStreamController()) {
+    if (stream_->GetController()->IsByteStreamController()) {
       stream_->ByteStreamTee(script_state_, &stream1, &stream2,
                              exception_state);
     } else {
@@ -345,18 +335,13 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
 ScriptPromise BodyStreamBuffer::Cancel(ScriptState* script_state,
                                        ScriptValue reason,
                                        ExceptionState& exception_state) {
-  if (underlying_byte_source_) {
-    ScriptPromise cancel_promise =
-        underlying_byte_source_->Cancel(reason.V8Value(), exception_state);
-    if (exception_state.HadException()) {
-      exception_state.ClearException();
-      return ScriptPromise::CastUndefined(script_state);
-    } else {
-      return cancel_promise;
-    }
+  ScriptPromise cancel_promise =
+      underlying_byte_source_->Cancel(reason.V8Value(), exception_state);
+  if (exception_state.HadException()) {
+    exception_state.ClearException();
+    return ScriptPromise::CastUndefined(script_state);
   } else {
-    CHECK(underlying_source_);
-    return underlying_source_->Cancel(script_state, reason, exception_state);
+    return cancel_promise;
   }
 }
 
@@ -434,7 +419,6 @@ void BodyStreamBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(stream_);
   visitor->Trace(underlying_byte_source_);
-  visitor->Trace(underlying_source_);
   visitor->Trace(stream_uploader_);
   visitor->Trace(consumer_);
   visitor->Trace(loader_);
@@ -450,20 +434,14 @@ void BodyStreamBuffer::Abort() {
     DCHECK(!consumer_);
     return;
   }
-  if (underlying_byte_source_) {
-    auto* byte_controller =
-        To<ReadableByteStreamController>(stream_->GetController());
-    v8::Local<v8::Value> dom_exception = V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kAbortError,
-        "BodyStreamBuffer was aborted");
-    CHECK(!dom_exception.IsEmpty());
-    ReadableByteStreamController::Error(script_state_, byte_controller,
-                                        dom_exception);
-  } else {
-    CHECK(underlying_source_);
-    underlying_source_->Controller()->Error(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
-  }
+  auto* byte_controller =
+      To<ReadableByteStreamController>(stream_->GetController());
+  v8::Local<v8::Value> dom_exception = V8ThrowDOMException::CreateOrEmpty(
+      script_state_->GetIsolate(), DOMExceptionCode::kAbortError,
+      "BodyStreamBuffer was aborted");
+  CHECK(!dom_exception.IsEmpty());
+  ReadableByteStreamController::Error(script_state_, byte_controller,
+                                      dom_exception);
   CancelConsumer();
 }
 
@@ -486,8 +464,6 @@ void BodyStreamBuffer::Close(ExceptionState& exception_state) {
       exception_state.ClearException();
       return;
     }
-  } else if (underlying_source_->Controller()) {
-    underlying_source_->Controller()->Close();
   }
   CancelConsumer();
 }
@@ -495,17 +471,12 @@ void BodyStreamBuffer::Close(ExceptionState& exception_state) {
 void BodyStreamBuffer::GetError() {
   {
     ScriptState::Scope scope(script_state_);
-    auto error = V8ThrowException::CreateTypeError(script_state_->GetIsolate(),
-                                                   "network error");
-    if (underlying_byte_source_) {
-      auto* byte_controller =
-          To<ReadableByteStreamController>(stream_->GetController());
-      ReadableByteStreamController::Error(script_state_, byte_controller,
-                                          error);
-    } else {
-      CHECK(underlying_source_);
-      underlying_source_->Controller()->Error(error);
-    }
+    auto* byte_controller =
+        To<ReadableByteStreamController>(stream_->GetController());
+    ReadableByteStreamController::Error(
+        script_state_, byte_controller,
+        V8ThrowException::CreateTypeError(script_state_->GetIsolate(),
+                                          "network error"));
   }
   CancelConsumer();
 }
@@ -513,17 +484,12 @@ void BodyStreamBuffer::GetError() {
 void BodyStreamBuffer::RaiseOOMError() {
   {
     ScriptState::Scope scope(script_state_);
-    auto error = V8ThrowException::CreateRangeError(
-        script_state_->GetIsolate(), "Array buffer allocation failed");
-    if (underlying_byte_source_) {
-      auto* byte_controller =
-          To<ReadableByteStreamController>(stream_->GetController());
-      ReadableByteStreamController::Error(script_state_, byte_controller,
-                                          error);
-    } else {
-      CHECK(underlying_source_);
-      underlying_source_->Controller()->Error(error);
-    }
+    auto* byte_controller =
+        To<ReadableByteStreamController>(stream_->GetController());
+    ReadableByteStreamController::Error(
+        script_state_, byte_controller,
+        V8ThrowException::CreateRangeError(script_state_->GetIsolate(),
+                                           "Array buffer allocation failed"));
   }
   CancelConsumer();
 }
@@ -582,27 +548,21 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         if (array || byob_view) {
           // Clear |stream_needs_more_| in order to detect a pull call.
           stream_needs_more_ = false;
-          if (underlying_byte_source_) {
-            ScriptState::Scope scope(script_state_);
-            auto* byte_controller =
-                To<ReadableByteStreamController>(stream_->GetController());
-            if (byob_view) {
-              ReadableByteStreamController::Respond(
-                  script_state_, byte_controller, available, exception_state);
-            } else {
-              CHECK(array);
-              ReadableByteStreamController::Enqueue(
-                  script_state_, byte_controller, NotShared(array),
-                  exception_state);
-            }
-            if (exception_state.HadException()) {
-              exception_state.ClearException();
-              return;
-            }
+          ScriptState::Scope scope(script_state_);
+          auto* byte_controller =
+              To<ReadableByteStreamController>(stream_->GetController());
+          if (byob_view) {
+            ReadableByteStreamController::Respond(
+                script_state_, byte_controller, available, exception_state);
           } else {
-            CHECK(underlying_source_);
             CHECK(array);
-            underlying_source_->Controller()->Enqueue(array);
+            ReadableByteStreamController::Enqueue(
+                script_state_, byte_controller, NotShared(array),
+                exception_state);
+          }
+          if (exception_state.HadException()) {
+            exception_state.ClearException();
+            return;
           }
         }
         if (result == BytesConsumer::Result::kDone) {
@@ -613,18 +573,12 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         // the stream needs more data even if the desired size is not
         // positive.
         if (!stream_needs_more_) {
-          if (underlying_byte_source_) {
-            auto* byte_controller =
-                To<ReadableByteStreamController>(stream_->GetController());
-            std::optional<double> desired_size =
-                ReadableByteStreamController::GetDesiredSize(byte_controller);
-            DCHECK(desired_size.has_value());
-            stream_needs_more_ = desired_size.value() > 0;
-          } else {
-            CHECK(underlying_source_);
-            stream_needs_more_ =
-                underlying_source_->Controller()->DesiredSize() > 0;
-          }
+          auto* byte_controller =
+              To<ReadableByteStreamController>(stream_->GetController());
+          std::optional<double> desired_size =
+              ReadableByteStreamController::GetDesiredSize(byte_controller);
+          DCHECK(desired_size.has_value());
+          stream_needs_more_ = desired_size.value() > 0;
         }
         break;
       case BytesConsumer::Result::kShouldWait:
