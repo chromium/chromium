@@ -84,6 +84,13 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   const base::TimeTicks generate_start = base::TimeTicks::Now();
   std::unique_ptr<crypto::UnexportableSigningKey> key =
       provider->GenerateSigningKeySlowly(algorithms);
+  if (algo == crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256) {
+    if (!key) {
+      GTEST_SKIP()
+          << "Workaround for https://issues.chromium.org/issues/41494935";
+    }
+  }
+
   ASSERT_TRUE(key);
   LOG(INFO) << "Generation took " << (base::TimeTicks::Now() - generate_start);
 
