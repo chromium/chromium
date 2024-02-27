@@ -60,7 +60,7 @@ interface MenuButton {
 interface ToggleButton {
   id: string;
   icon: string;
-  ariaLabel: string;
+  title: string;
   callback: (event: DomRepeatEvent<ToggleButton>) => void;
 }
 
@@ -221,9 +221,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       id: LINK_TOGGLE_BUTTON_ID,
       icon: chrome.readingMode.linksEnabled?
       LINKS_ENABLED_ICON: LINKS_DISABLED_ICON,
-      ariaLabel: chrome.readingMode.linksEnabled?
-               loadTimeData.getString('disableLinksLabel'):
-                   loadTimeData.getString('enableLinksLabel'),
+      title: chrome.readingMode.linksEnabled?
+           loadTimeData.getString('disableLinksLabel'):
+               loadTimeData.getString('enableLinksLabel'),
       callback: this.onToggleLinksClick_.bind(this),
     },
   ];
@@ -675,7 +675,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (button) {
       button.ironIcon = chrome.readingMode.linksEnabled ? LINKS_ENABLED_ICON :
                                                           LINKS_DISABLED_ICON;
-      button.ariaLabel = chrome.readingMode.linksEnabled ?
+      button.title = chrome.readingMode.linksEnabled ?
           loadTimeData.getString('disableLinksLabel') :
           loadTimeData.getString('enableLinksLabel');
     }
