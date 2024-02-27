@@ -160,7 +160,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Pinned) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/pinned")) << message_;
 }
 
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// Flakes reported on Linux debug and Mac, see crbug.com/40936001.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_MAC)
 #define MAYBE_Move DISABLED_Move
 #else
 #define MAYBE_Move Move
