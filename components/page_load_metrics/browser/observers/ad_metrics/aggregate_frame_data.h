@@ -6,6 +6,7 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_AGGREGATE_FRAME_DATA_H_
 
 #include <stdint.h>
+#include <optional>
 
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
