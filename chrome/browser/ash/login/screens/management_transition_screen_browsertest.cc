@@ -159,7 +159,9 @@ IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest, SuccessfulTransition) {
+// TODO(https://crbug.com/316993299) disabled due to flake.
+IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
+                       DISABLED_SuccessfulTransition) {
   OobeScreenWaiter(ManagementTransitionScreenView::kScreenId).Wait();
 
   test::OobeJS().ExpectVisiblePath(kManagementDialog);
