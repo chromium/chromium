@@ -418,7 +418,8 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Delete(
   if (!statement.Run())
     return OperationResult::kSqlError;
 
-  int64_t delta_bytes = -2 * static_cast<int64_t>(current_value->size());
+  int64_t delta_bytes = -2 * (static_cast<int64_t>(key.size()) +
+                              static_cast<int64_t>(current_value->size()));
   if (!UpdateLength(origin_str, /*delta_length=*/-1,
                     /*delta_bytes=*/delta_bytes)) {
     return OperationResult::kSqlError;

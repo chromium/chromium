@@ -948,9 +948,17 @@ TEST_P(SharedStorageDatabaseParamTest, BytesUsed) {
   EXPECT_EQ(8 + 12 + 2 + 2,
             db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
 
+  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin2, u"key2", u"val2"));
+  EXPECT_EQ(8 + 8 + 10 + 8 + 8, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(8 + 8 + 10 + 8 + 8,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+  EXPECT_EQ(8 + 12 + 2 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
   EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin2, u"key1"));
-  EXPECT_EQ(0L, db_->BytesUsed(kOrigin2));
-  EXPECT_EQ(0L, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+  EXPECT_EQ(8 + 8, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(8 + 8, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
   EXPECT_EQ(8 + 12 + 2 + 2, db_->BytesUsed(kOrigin1));
   EXPECT_EQ(8 + 12 + 2 + 2,
             db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
@@ -959,8 +967,8 @@ TEST_P(SharedStorageDatabaseParamTest, BytesUsed) {
   EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2, db_->BytesUsed(kOrigin1));
   EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2,
             db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
-  EXPECT_EQ(0L, db_->BytesUsed(kOrigin2));
-  EXPECT_EQ(0L, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+  EXPECT_EQ(8 + 8, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(8 + 8, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
 
   // Advance the clock halfway towards expiration of the keys.
   clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
@@ -979,6 +987,16 @@ TEST_P(SharedStorageDatabaseParamTest, BytesUsed) {
   EXPECT_EQ(8 + 12, db_->BytesUsed(kOrigin1));
   EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2,
             db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  // 1 key for `kOrigin2` has expired, so `BytesUsed()` will not count it even
+  // though it has not been purged yet.
+  EXPECT_EQ(0L, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(8 + 8, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+
+  // Deleting an expired key will cause no error, and will purge its bytes.
+  EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin2, u"key2"));
+  EXPECT_EQ(0L, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(0L, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Keys) {
