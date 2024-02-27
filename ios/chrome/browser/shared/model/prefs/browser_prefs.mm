@@ -294,6 +294,23 @@ void MigrateArrayOfDatesPreferenceFromUserDefaults(std::string_view pref_name,
   [defaults removeObjectForKey:key];
 }
 
+// Helper function migrating the `list` preference from LocalState prefs to
+// BrowserState prefs.
+void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
+    std::string_view pref_name,
+    PrefService* pref_service) {
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* legacy_pref =
+      local_pref_service->FindPreference(pref_name.data());
+  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
+    pref_service->SetList(
+        pref_name.data(),
+        local_pref_service->GetList(pref_name.data()).Clone());
+    local_pref_service->ClearPref(pref_name.data());
+  }
+}
+
 // Helper function migrating the `string` preference from LocalState prefs to
 // BrowserState prefs.
 void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
@@ -459,10 +476,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
 
-  // Pref used to store the latest Most Visited Sites to detect changes
-  // to the top Most Visited Sites.
-  registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
-                             PrefRegistry::LOSSY_PREF);
   // Pref used to store the number of impressions of the Most Visited Sites
   // since a freshness signal of the Most Visited Sites.
   registry->RegisterIntegerPref(
@@ -773,6 +786,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
   registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
                                std::string());
+
+  // Pref used to store the latest Most Visited Sites to detect changes
+  // to the top Most Visited Sites.
+  registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
+                             PrefRegistry::LOSSY_PREF);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -979,6 +997,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 02/2024.
   MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kTabPickupLastDisplayedURL, prefs);
+
+  // Added 02/2024.
+  MigrateListPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosLatestMostVisitedSites, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

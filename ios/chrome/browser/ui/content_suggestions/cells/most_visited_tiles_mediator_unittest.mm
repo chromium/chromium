@@ -33,12 +33,12 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
 
-    favicon::LargeIconService* largeIconService =
+    favicon::LargeIconService* large_icon_service =
         IOSChromeLargeIconServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
     LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
         chrome_browser_state_.get());
-    std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedSites =
+    std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
             &pref_service_, /*top_sites*/ nullptr, /*popular_sites*/ nullptr,
             /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
@@ -51,9 +51,9 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
     mediator_ = [[MostVisitedTilesMediator alloc]
-        initWithMostVisitedSite:std::move(mostVisitedSites)
+        initWithMostVisitedSite:std::move(most_visited_sites)
                     prefService:&pref_service_
-               largeIconService:largeIconService
+               largeIconService:large_icon_service
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_];
 

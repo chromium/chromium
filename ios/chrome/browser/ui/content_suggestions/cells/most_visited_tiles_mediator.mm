@@ -328,8 +328,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 - (void)useFreshMostVisited {
   if (IsMagicStackEnabled()) {
     const base::Value::List& oldMostVisitedSites =
-        GetApplicationContext()->GetLocalState()->GetList(
-            prefs::kIosLatestMostVisitedSites);
+        _prefService->GetList(prefs::kIosLatestMostVisitedSites);
     base::Value::List freshMostVisitedSites;
     for (ContentSuggestionsMostVisitedItem* item in _freshMostVisitedItems) {
       freshMostVisitedSites.Append(item.URL.spec());
@@ -342,8 +341,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       [self lookForNewMostVisitedSite:freshMostVisitedSites
                   oldMostVisitedSites:oldMostVisitedSites];
     }
-    GetApplicationContext()->GetLocalState()->SetList(
-        prefs::kIosLatestMostVisitedSites, std::move(freshMostVisitedSites));
+    _prefService->SetList(prefs::kIosLatestMostVisitedSites,
+                          std::move(freshMostVisitedSites));
   }
 
   _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
