@@ -104,7 +104,7 @@ scoped_refptr<VideoFrame> VideoFrameConverter::CreateTempFrame(
   if (tmp_frame) {
     tmp_frame->AddDestructionObserver(frame_pool_->CreateFrameCallback(fb_id));
   }
-
+  frame_pool_->ReleaseFrameBuffer(fb_id);
   return tmp_frame;
 }
 
@@ -155,7 +155,7 @@ scoped_refptr<VideoFrame> VideoFrameConverter::WrapNV12xFrameInI420xFrame(
     wrapped_frame->AddDestructionObserver(
         frame_pool_->CreateFrameCallback(fb_id));
   }
-
+  frame_pool_->ReleaseFrameBuffer(fb_id);
   return wrapped_frame;
 }
 

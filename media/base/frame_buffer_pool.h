@@ -36,6 +36,10 @@ class MEDIA_EXPORT FrameBufferPool
   // Called when a frame buffer allocation is needed. Upon return |fb_priv| will
   // be set to a private value used to identify the buffer in future calls and a
   // buffer of at least |min_size| will be returned.
+  //
+  // WARNING: To release the FrameBuffer, clients must either call Shutdown() or
+  // ReleaseFrameBuffer() in addition to any callbacks returned by
+  // CreateFrameCallback() (if any are created).
   uint8_t* GetFrameBuffer(size_t min_size, void** fb_priv);
 
   // Called when a frame buffer allocation is no longer needed.
