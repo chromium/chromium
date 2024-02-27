@@ -645,9 +645,10 @@ bool RenderAccessibilityImpl::AXReadyCallback() {
       document, root, updates_and_events->events, updates_and_events->updates,
       mark_plugin_subtree_dirty);
   if (updates_and_events->updates.empty()) {
-    // This method should never be called unless there are updates to be made.
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
     // Do not send a serialization if there are no updates.
+    // This can occur because the serializer will already toss unincluded nodes,
+    // which could have become unincluded after they were added to the dirty
+    // object queue.
     DCHECK(updates_and_events->events.empty())
         << "If there are no updates, there also shouldn't be any events, "
            "because events always mark an object dirty.";
