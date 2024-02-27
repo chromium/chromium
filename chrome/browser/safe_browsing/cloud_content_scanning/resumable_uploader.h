@@ -89,11 +89,28 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // Set the headers for the given metadata `request`.
   void SetMetadataRequestHeaders(network::ResourceRequest* request);
 
- private:
+  // Send the metadata information about the file/page to the server.
   void SendMetadataRequest();
 
-  static ResumableUploadRequestFactory* factory_;
+ private:
+  // Called whenever a metadata request finishes (on success or failure).
+  void OnMetadataUploadComplete(std::optional<std::string> response_body);
 
+  // Returns true if all of the following conditions are met:
+  //    1. The HTTP status is OK.
+  //    2. The `headers` have `upload_status` and `upload_url`.
+  //    3. The `upload_status` is "active".
+  bool CanUploadContent(const scoped_refptr<net::HttpResponseHeaders>& headers);
+
+  // Called whenever a net request finishes (on success or failure).
+  void Finish(int net_error,
+              int response_code,
+              std::optional<std::string> response_body);
+
+  static ResumableUploadRequestFactory* factory_;
+  // Retrieved from metadata response to be used in upload content to the
+  // server.
+  std::string upload_url_;
   base::WeakPtrFactory<ResumableUploadRequest> weak_factory_{this};
 };
 
