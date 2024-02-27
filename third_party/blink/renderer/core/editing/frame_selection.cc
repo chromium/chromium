@@ -91,7 +91,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -358,13 +357,6 @@ void FrameSelection::DidSetSelectionDeprecated(
   NotifyAccessibilityForSelectionChange();
   NotifyCompositorForSelectionChange();
   NotifyEventHandlerForSelectionChange();
-
-  // Skip this kSelectionchange event if the selection range is not changed
-  if (options.ShouldSkipSelectionChangeEvent() &&
-      RuntimeEnabledFeatures::SkipSelectionChangeEventEnabled()) {
-    return;
-  }
-
   // The task source should be kDOMManipulation, but the spec doesn't say
   // anything about this.
   frame_->DomWindow()->EnqueueDocumentEvent(

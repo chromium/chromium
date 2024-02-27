@@ -76,13 +76,6 @@ SetSelectionOptions::Builder::SetShouldShrinkNextTap(bool new_value) {
   return *this;
 }
 
-SetSelectionOptions::Builder&
-SetSelectionOptions::Builder::SetShouldSkipSelectionChangeEvent(
-    bool new_value) {
-  data_.should_skip_selectionchange_event_ = new_value;
-  return *this;
-}
-
 SetSelectionOptions::Builder& SetSelectionOptions::Builder::SetIsDirectional(
     bool new_value) {
   data_.is_directional_ = new_value;
