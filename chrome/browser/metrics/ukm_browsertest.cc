@@ -232,8 +232,6 @@ class MetricsConsentOverride {
 class UkmBrowserTestBase : public SyncTest {
  public:
   UkmBrowserTestBase() : SyncTest(SINGLE_CLIENT) {
-    // TODO(crbug.com/1068796): Replace kMetricsReportingFeature with a more
-    // apt name.
     // Explicitly enable UKM and disable metrics reporting. Disabling metrics
     // reporting should affect only UMA--not UKM.
     scoped_feature_list_.InitWithFeatures({ukm::kUkmFeature},
