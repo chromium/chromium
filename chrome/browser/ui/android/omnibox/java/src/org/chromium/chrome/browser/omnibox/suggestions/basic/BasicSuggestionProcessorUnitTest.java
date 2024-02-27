@@ -353,6 +353,15 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
+    public void refineIcon_notShownForQueryTiles() {
+        createSearchSuggestion(OmniboxSuggestionType.TILE_SUGGESTION, "Music");
+        PropertyModel model = mProcessor.createModel();
+        mProcessor.populateModel(mSuggestion, model, 0);
+        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
+    }
+
+    @Test
+    @SmallTest
     public void switchTabIconShownForSwitchToTabSuggestions() {
         final String tabMatch = "tab match";
         createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, tabMatch);
