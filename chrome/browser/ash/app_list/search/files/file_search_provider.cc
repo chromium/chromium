@@ -95,12 +95,12 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
     const base::FilePath& root_path,
     const std::u16string& query,
     const base::TimeTicks& query_start_time,
-    const std::vector<base::FilePath> trash_paths) {
+    const std::vector<base::FilePath> trash_paths,
+    const int file_type) {
   base::FileEnumerator enumerator(
       root_path,
-      /*recursive=*/true,
-      base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES,
-      CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
+      /*recursive=*/true, file_type, CreateFnmatchQuery(query),
+      base::FileEnumerator::FolderSearchPolicy::ALL);
 
   const auto time_limit = base::Milliseconds(kSearchTimeoutMs);
   bool timed_out = false;
@@ -132,11 +132,12 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
 
 }  // namespace
 
-FileSearchProvider::FileSearchProvider(Profile* profile)
+FileSearchProvider::FileSearchProvider(Profile* profile, int file_type)
     : SearchProvider(SearchCategory::kFiles),
       profile_(profile),
       thumbnail_loader_(profile),
-      root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)) {
+      root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)),
+      file_type_(file_type) {
   DCHECK(profile_);
   DCHECK(!root_path_.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -175,7 +176,8 @@ void FileSearchProvider::Start(const std::u16string& query) {
       base::BindOnce(SearchFilesByPattern, root_path_, query, query_start_time_,
                      (file_manager::trash::IsTrashEnabledForProfile(profile_)
                           ? trash_paths_
-                          : std::vector<base::FilePath>())),
+                          : std::vector<base::FilePath>()),
+                     file_type_),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }

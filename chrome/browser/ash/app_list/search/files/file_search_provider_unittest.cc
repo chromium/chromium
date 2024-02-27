@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -26,9 +27,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list::test {
+
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
 MATCHER_P(Title, title, "") {
@@ -54,7 +57,9 @@ class FileSearchProviderTest : public testing::Test,
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
-    auto provider = std::make_unique<FileSearchProvider>(profile_.get());
+    auto provider = std::make_unique<FileSearchProvider>(
+        profile_.get(), base::FileEnumerator::FileType::FILES |
+                            base::FileEnumerator::FileType::DIRECTORIES);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
 
@@ -173,6 +178,16 @@ TEST_P(FileSearchProviderTest, SearchDirectories) {
   Wait();
 
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("my_folder")));
+}
+
+TEST_P(FileSearchProviderTest, DoesNotSearchDirectoriesIfTurnedOff) {
+  provider_->SetFileTypeForTesting(base::FileEnumerator::FileType::FILES);
+  CreateDirectory("my_folder");
+
+  StartSearch(u"my_folder");
+  Wait();
+
+  EXPECT_THAT(LastResults(), IsEmpty());
 }
 
 TEST_P(FileSearchProviderTest, ResultMetadataTest) {

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
+#include "base/files/file_enumerator.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -100,7 +101,9 @@ std::unique_ptr<SearchController> CreateSearchController(
   // File search providers are added only when not in guest session and running
   // on Chrome OS.
   if (!profile->IsGuestSession()) {
-    controller->AddProvider(std::make_unique<FileSearchProvider>(profile));
+    controller->AddProvider(std::make_unique<FileSearchProvider>(
+        profile, base::FileEnumerator::FileType::FILES |
+                     base::FileEnumerator::FileType::DIRECTORIES));
     controller->AddProvider(std::make_unique<DriveSearchProvider>(profile));
     if (search_features::isLauncherSystemInfoAnswerCardsEnabled()) {
       controller->AddProvider(

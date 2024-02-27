@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -256,8 +257,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
         profile_, &app_list_controller_delegate_, AutocompleteProviderTypes()));
   }
 
-  search_engine_->AddProvider(
-      std::make_unique<app_list::FileSearchProvider>(profile_));
+  search_engine_->AddProvider(std::make_unique<app_list::FileSearchProvider>(
+      profile_, base::FileEnumerator::FileType::FILES));
   search_engine_->AddProvider(
       std::make_unique<app_list::DriveSearchProvider>(profile_));
 }
