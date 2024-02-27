@@ -204,7 +204,8 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                                 SnoozeAction:
                                     (feature_engagement::Tracker::SnoozeAction)
                                         snoozeAction {
-  if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView) {
+  if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView ||
+      IPHDismissalReasonType == IPHDismissalReasonType::kTimedOut) {
     self.inSessionWithHistoryMenuItemIPH = YES;
   }
   [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
