@@ -766,6 +766,9 @@ class EnclaveManager::StateMachine {
   void Process(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    CHECK(!processing_) << ToString(state_);
+    processing_ = true;
+
     const State initial_state = state_;
     const std::string event_str = ToString(event);
 
@@ -849,6 +852,7 @@ class EnclaveManager::StateMachine {
     // The only internal state transition (i.e. where one state moves to another
     // without waiting for an external event) allowed is to `kNextAction`.
     if (state_ != State::kNextAction) {
+      processing_ = false;
       return;
     }
 
@@ -859,7 +863,10 @@ class EnclaveManager::StateMachine {
     if (state_ == State::kStop) {
       manager_->Stopped();
       // `this` has been deleted now.
+      return;
     }
+
+    processing_ = false;
   }
 
   static std::string ToString(State state) {
@@ -1522,6 +1529,7 @@ class EnclaveManager::StateMachine {
   const std::unique_ptr<CoreAccountInfo> primary_account_info_;
 
   State state_ = State::kInit;
+  bool processing_ = false;
 
   std::unique_ptr<StoreKeysArgs> store_keys_args_;
   std::string pending_pin_;
