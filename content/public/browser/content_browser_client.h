@@ -224,6 +224,7 @@ class BrowserURLHandler;
 class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
+class DipsDelegate;
 class DirectSocketsDelegate;
 class FeatureObserverClient;
 class FontAccessDelegate;
@@ -2811,6 +2812,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       GlobalRenderFrameHostId capturer_rfh_id,
       const std::string& label,
       MultiCaptureChanged state);
+
+  // Allows the embedder to return a delegate for DIPS (Bounce Tracking
+  // Mitigations). The default implementation returns nullptr, resulting in
+  // default behavior.
+  virtual std::unique_ptr<DipsDelegate> CreateDipsDelegate();
 };
 
 }  // namespace content

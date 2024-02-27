@@ -24,6 +24,7 @@ class Profile;
 
 namespace content {
 class BrowserContext;
+class DipsDelegate;
 }
 
 namespace content_settings {
@@ -196,6 +197,7 @@ class DIPSService : public KeyedService {
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
   std::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;
+  std::unique_ptr<content::DipsDelegate> dips_delegate_;
 
   std::map<std::string, int> open_sites_;
 

@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
@@ -1684,5 +1685,9 @@ void ContentBrowserClient::NotifyMultiCaptureStateChanged(
     GlobalRenderFrameHostId capturer_rfh_id,
     const std::string& label,
     MultiCaptureChanged state) {}
+
+std::unique_ptr<DipsDelegate> ContentBrowserClient::CreateDipsDelegate() {
+  return nullptr;
+}
 
 }  // namespace content

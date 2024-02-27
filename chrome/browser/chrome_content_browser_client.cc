@@ -67,6 +67,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/device_api/managed_configuration_service.h"
+#include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -8213,3 +8214,8 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+std::unique_ptr<content::DipsDelegate>
+ChromeContentBrowserClient::CreateDipsDelegate() {
+  return std::make_unique<ChromeDipsDelegate>();
+}

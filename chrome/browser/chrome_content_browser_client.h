@@ -1004,6 +1004,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       MultiCaptureChanged state) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  std::unique_ptr<content::DipsDelegate> CreateDipsDelegate() override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

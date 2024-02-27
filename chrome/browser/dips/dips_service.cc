@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
@@ -32,8 +32,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
-#include "components/site_engagement/content/site_engagement_service.h"
-#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -49,27 +47,6 @@ namespace {
 
 // Controls whether UKM metrics are collected for DIPS.
 BASE_FEATURE(kDipsUkm, "DipsUkm", base::FEATURE_ENABLED_BY_DEFAULT);
-
-std::vector<std::string> GetEngagedSitesInBackground(
-    base::Time now,
-    scoped_refptr<HostContentSettingsMap> map) {
-  std::set<std::string> unique_sites;
-  auto details =
-      site_engagement::SiteEngagementService::GetAllDetailsInBackground(now,
-                                                                        map);
-  for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    if (!detail.origin.SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-    if (!site_engagement::SiteEngagementService::IsEngagementAtLeast(
-            detail.total_score, blink::mojom::EngagementLevel::MINIMAL)) {
-      continue;
-    }
-    unique_sites.insert(GetSiteForDIPS(detail.origin));
-  }
-
-  return std::vector(unique_sites.begin(), unique_sites.end());
-}
 
 RedirectCategory ClassifyRedirect(SiteDataAccessType access,
                                   bool has_interaction) {
@@ -187,7 +164,8 @@ DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
-      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
+      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))),
+      dips_delegate_(ChromeDipsDelegate::Create()) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   std::optional<base::FilePath> path_to_use;
   base::FilePath dips_path = GetDIPSFilePath(browser_context_);
@@ -289,16 +267,11 @@ void DIPSService::InitializeStorageWithEngagedSites(bool prepopulated) {
     return;
   }
   base::Time now = base::Time::Now();
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(
-          &GetEngagedSitesInBackground, now,
-          base::WrapRefCounted(
-              HostContentSettingsMapFactory::GetForProfile(browser_context_))),
-      base::BindOnce(&DIPSService::InitializeStorage,
-                     weak_factory_.GetWeakPtr(), now));
+  dips_delegate_->GetEngagedSites(
+      browser_context_, base::BindOnce(&DIPSService::InitializeStorage,
+                                       weak_factory_.GetWeakPtr(), now)
+
+  );
 }
 
 void DIPSService::InitializeStorage(base::Time time,

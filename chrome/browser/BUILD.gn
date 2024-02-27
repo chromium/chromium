@@ -381,6 +381,8 @@ static_library("browser") {
     "data_sharing/data_sharing_service_factory.h",
     "defaults.cc",
     "defaults.h",
+    "dips/chrome_dips_delegate.cc",
+    "dips/chrome_dips_delegate.h",
     "dips/cookie_access_filter.cc",
     "dips/cookie_access_filter.h",
     "dips/dips_bounce_detector.cc",
