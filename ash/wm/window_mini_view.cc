@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
@@ -15,6 +18,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -294,7 +298,15 @@ void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   node_data->role = ax::mojom::Role::kWindow;
-  node_data->SetName(wm::GetTransientRoot(source_window_)->GetTitle());
+  const std::u16string& accessible_name =
+      wm::GetTransientRoot(source_window_)->GetTitle();
+
+  if (accessible_name.empty()) {
+    node_data->SetName(
+        l10n_util::GetStringUTF8(IDS_WM_WINDOW_CYCLER_UNTITLED_WINDOW));
+  } else {
+    node_data->SetName(accessible_name);
+  }
 }
 
 void WindowMiniView::OnWindowPropertyChanged(aura::Window* window,

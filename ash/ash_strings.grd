@@ -7038,6 +7038,9 @@ New install
       <message name="IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT" desc="Accessibility text read by chromevox when restore a snapped window through shortcut alt+[ or alt+].">
         Active window undocked.
       </message>
+      <message name="IDS_WM_WINDOW_CYCLER_UNTITLED_WINDOW" desc="Accessibility text read by chromevox when highlighting an untitled window in the window cycler.">
+        Window
+      </message>
 
       <!-- Firmware UI notifications -->
       <message name="IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_AVAILABLE_TITLE" desc="Notification title to indicate to users that firmware updates are available.">
