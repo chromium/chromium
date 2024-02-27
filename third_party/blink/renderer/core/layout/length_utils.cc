@@ -40,8 +40,9 @@ bool InlineLengthUnresolvable(const ConstraintSpace& constraint_space,
   // TODO(https://crbug.com/313072): calc-size() doesn't work correctly
   // when this function returns true.
 
-  if (length.IsPercentOrCalc())
+  if (length.HasPercent()) {
     return constraint_space.PercentageResolutionInlineSize() == kIndefiniteSize;
+  }
 
   if (length.IsFillAvailable())
     return constraint_space.AvailableSize().inline_size == kIndefiniteSize;
@@ -72,7 +73,7 @@ bool BlockLengthUnresolvable(
   if (length.IsAuto() || length.IsMinContent() || length.IsMaxContent() ||
       length.IsMinIntrinsic() || length.IsFitContent() || length.IsNone())
     return true;
-  if (length.IsPercentOrCalc()) {
+  if (length.HasPercent()) {
     const LayoutUnit percentage_resolution_size =
         override_percentage_resolution_size
             ? *override_percentage_resolution_size
@@ -112,7 +113,8 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kCalculated: {
       const LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
-      DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize)
+      DCHECK(!length.HasPercent() ||
+             percentage_resolution_size != kIndefiniteSize)
           << length.ToString();
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
@@ -190,7 +192,8 @@ LayoutUnit ResolveBlockLengthInternal(
           override_percentage_resolution_size
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
-      DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize);
+      DCHECK(!length.HasPercent() ||
+             percentage_resolution_size != kIndefiniteSize);
       LayoutUnit value = MinimumValueForLength(
           length, percentage_resolution_size,
           {.anchor_evaluator = anchor_evaluator,

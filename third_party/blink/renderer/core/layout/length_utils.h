@@ -221,10 +221,11 @@ inline LayoutUnit ResolveMainBlockLength(
     const LayoutUnit* override_percentage_resolution_size = nullptr,
     const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
-  if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
+  if (UNLIKELY((length.HasPercent() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(constraint_space, length,
-                                       override_percentage_resolution_size)))
+                                       override_percentage_resolution_size))) {
     return intrinsic_size;
+  }
 
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, intrinsic_size,
@@ -242,9 +243,10 @@ inline LayoutUnit ResolveMainBlockLength(
     LayoutUnit override_available_size = kIndefiniteSize,
     const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
-  if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
-               BlockLengthUnresolvable(constraint_space, length)))
+  if (UNLIKELY((length.HasPercent() || length.IsFillAvailable()) &&
+               BlockLengthUnresolvable(constraint_space, length))) {
     return intrinsic_block_size_func();
+  }
 
   LayoutUnit intrinsic_block_size = kIndefiniteSize;
   if (length.HasContentOrIntrinsic()) {

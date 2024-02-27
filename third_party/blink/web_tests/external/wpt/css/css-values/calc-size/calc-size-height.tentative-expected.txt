@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] resolved height for height in auto height container: calc-size(any, 31%)
+  assert_equals: expected "0px" but got "10px"
+[FAIL] resolved height for height in auto height container: calc-size(max-content, 31%)
+  assert_equals: expected "0px" but got "10px"
+Harness: the test ran to completion.
+
