@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
@@ -230,6 +231,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(MakeEcheAppUIConfig());
   map.AddWebUIConfig(std::make_unique<SensorInfoUIConfig>());
   map.AddWebUIConfig(std::make_unique<EmojiUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<extended_updates::ExtendedUpdatesUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<FilesInternalsUIConfig, FilesInternalsUI,
                                       ChromeFilesInternalsUIDelegate>());
