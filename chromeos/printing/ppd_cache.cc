@@ -4,6 +4,7 @@
 
 #include "chromeos/printing/ppd_cache.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -71,9 +72,9 @@ PpdCache::FindResult FindImpl(const base::FilePath& cache_dir,
   if (file.ReadAtCurrentPos(buf.data(), info.size) != info.size)
     return result;
 
-  base::StringPiece contents(buf.data(), info.size - crypto::kSHA256Length);
-  base::StringPiece checksum(buf.data() + info.size - crypto::kSHA256Length,
-                             crypto::kSHA256Length);
+  std::string_view contents(buf.data(), info.size - crypto::kSHA256Length);
+  std::string_view checksum(buf.data() + info.size - crypto::kSHA256Length,
+                            crypto::kSHA256Length);
   if (crypto::SHA256HashString(contents) != checksum) {
     LOG(ERROR) << "Bad checksum for cache key " << key;
     return result;

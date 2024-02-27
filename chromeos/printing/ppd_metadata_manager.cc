@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -69,7 +69,7 @@ class ForwardIndexSearchContext {
 
   // The effective-make-and-model string currently being sought in the
   // forward index search tracked by this struct.
-  base::StringPiece CurrentEmm() const {
+  std::string_view CurrentEmm() const {
     DCHECK_LT(current_index_, emms_.size());
     return emms_[current_index_];
   }
@@ -180,7 +180,7 @@ using CachedParsedMetadataMap =
 // |expiration|.
 template <typename T>
 bool MapHasValueFresherThan(const CachedParsedMetadataMap<T>& metadata_map,
-                            base::StringPiece key,
+                            std::string_view key,
                             base::Time expiration) {
   if (!metadata_map.contains(key)) {
     return false;
@@ -190,7 +190,7 @@ bool MapHasValueFresherThan(const CachedParsedMetadataMap<T>& metadata_map,
 }
 
 // Calculates the shard number of |key| inside sharded metadata.
-int IndexShard(base::StringPiece key) {
+int IndexShard(std::string_view key) {
   unsigned int hash = 5381;
   for (char c : key) {
     hash = hash * 33 + c;
@@ -221,7 +221,7 @@ class MetadataLocaleFinder {
 
   // Finds and returns the best-fit metadata locale from |locales|.
   // Returns the empty string if no best candidate was found.
-  base::StringPiece BestCandidate(base::span<const std::string> locales) {
+  std::string_view BestCandidate(base::span<const std::string> locales) {
     AnalyzeCandidates(locales);
 
     if (!best_parent_locale_.empty()) {
@@ -231,13 +231,13 @@ class MetadataLocaleFinder {
     } else if (is_english_available_) {
       return "en";
     }
-    return base::StringPiece();
+    return std::string_view();
   }
 
  private:
   // Returns whether or not |locale| appears to be a parent of our
   // |browser_locale_|. For example, "en-GB" is a parent of "en-GB-foo."
-  bool IsParentOfBrowserLocale(base::StringPiece locale) const {
+  bool IsParentOfBrowserLocale(std::string_view locale) const {
     const std::string locale_with_trailing_hyphen = base::StrCat({locale, "-"});
     return base::StartsWith(browser_locale_, locale_with_trailing_hyphen);
   }
@@ -250,8 +250,8 @@ class MetadataLocaleFinder {
   // *  has the shortest piecewise length.
   // So given a |browser_locale_| "es," the better distant relative
   // locale between "es-GB" and "es-GB-foo" is "es-GB."
-  void AnalyzeCandidateAsDistantRelative(base::StringPiece locale) {
-    const std::vector<base::StringPiece> locale_pieces = base::SplitStringPiece(
+  void AnalyzeCandidateAsDistantRelative(std::string_view locale) {
+    const std::vector<std::string_view> locale_pieces = base::SplitStringPiece(
         locale, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
     const size_t locale_piecewise_length = locale_pieces.size();
@@ -283,7 +283,7 @@ class MetadataLocaleFinder {
 
   // Reads |locale| and updates our members as necessary.
   // For example, |locale| could reveal support for the "en" locale.
-  void AnalyzeCandidate(base::StringPiece locale) {
+  void AnalyzeCandidate(std::string_view locale) {
     if (locale == "en") {
       is_english_available_ = true;
     }
@@ -301,7 +301,7 @@ class MetadataLocaleFinder {
   // Analyzes all candidate locales in |locales|, updating our
   // private members with best-fit locale(s).
   void AnalyzeCandidates(base::span<const std::string> locales) {
-    for (base::StringPiece locale : locales) {
+    for (std::string_view locale : locales) {
       // The serving root indicates direct support for our browser
       // locale; there's no need to analyze anything else, since this
       // is definitely the best match we're going to get.
@@ -313,8 +313,8 @@ class MetadataLocaleFinder {
     }
   }
 
-  const base::StringPiece browser_locale_;
-  const std::vector<base::StringPiece> browser_locale_pieces_;
+  const std::string_view browser_locale_;
+  const std::vector<std::string_view> browser_locale_pieces_;
 
   // See IsParentOfBrowserLocale().
   std::string best_parent_locale_;
@@ -384,13 +384,13 @@ class PpdMetadataPathSpecifier {
 
       case Type::kManufacturers:
         DCHECK(metadata_locale_);
-        DCHECK(!base::StringPiece(metadata_locale_).empty());
+        DCHECK(!std::string_view(metadata_locale_).empty());
         return base::StringPrintf("%s/manufacturers-%s.json",
                                   MetadataParentDirectory(), metadata_locale_);
 
       case Type::kPrinters:
         DCHECK(printers_basename_);
-        DCHECK(!base::StringPiece(printers_basename_).empty());
+        DCHECK(!std::string_view(printers_basename_).empty());
         return base::StringPrintf("%s/%s", MetadataParentDirectory(),
                                   printers_basename_);
 
@@ -401,7 +401,7 @@ class PpdMetadataPathSpecifier {
 
       case Type::kReverseIndex:
         DCHECK(metadata_locale_);
-        DCHECK(!base::StringPiece(metadata_locale_).empty());
+        DCHECK(!std::string_view(metadata_locale_).empty());
         DCHECK(shard_ >= 0 && shard_ < kNumShards);
         return base::StringPrintf("%s/reverse_index-%s-%02d.json",
                                   MetadataParentDirectory(), metadata_locale_,
@@ -466,7 +466,7 @@ class PpdMetadataPathSpecifier {
 // 3. answer query with appropriate metadata [call On*Available()].
 class PpdMetadataManagerImpl : public PpdMetadataManager {
  public:
-  PpdMetadataManagerImpl(base::StringPiece browser_locale,
+  PpdMetadataManagerImpl(std::string_view browser_locale,
                          PpdIndexChannel channel,
                          base::Clock* clock,
                          std::unique_ptr<PrinterConfigCache> config_cache)
@@ -530,7 +530,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     config_cache_->Fetch(metadata_name, age, std::move(fetch_cb));
   }
 
-  void GetPrinters(base::StringPiece manufacturer,
+  void GetPrinters(std::string_view manufacturer,
                    base::TimeDelta age,
                    GetPrintersCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -626,7 +626,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     config_cache_->Fetch(metadata_name, age, std::move(fetch_cb));
   }
 
-  void SplitMakeAndModel(base::StringPiece effective_make_and_model,
+  void SplitMakeAndModel(std::string_view effective_make_and_model,
                          base::TimeDelta age,
                          PpdProvider::ReverseLookupCallback cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -656,13 +656,13 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     return config_cache_.get();
   }
 
-  void SetLocaleForTesting(base::StringPiece locale) override {
+  void SetLocaleForTesting(std::string_view locale) override {
     metadata_locale_ = std::string(locale);
   }
 
   // This method should read much the same as OnManufacturersFetched().
   bool SetManufacturersForTesting(
-      base::StringPiece manufacturers_json) override {
+      std::string_view manufacturers_json) override {
     DCHECK(!metadata_locale_.empty());
 
     const auto parsed = ParseManufacturers(manufacturers_json);
@@ -682,7 +682,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     return true;
   }
 
-  base::StringPiece ExposeMetadataLocaleForTesting() const override {
+  std::string_view ExposeMetadataLocaleForTesting() const override {
     return metadata_locale_;
   }
 
@@ -750,7 +750,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   //
   // Invokes |cb| with success, providing it with a list of
   // manufacturers.
-  void OnManufacturersAvailable(base::StringPiece metadata_name,
+  void OnManufacturersAvailable(std::string_view metadata_name,
                                 PpdProvider::ResolveManufacturersCallback cb) {
     const auto& parsed_manufacturers = cached_manufacturers_.at(metadata_name);
     std::vector<std::string> manufacturers_for_cb;
@@ -802,7 +802,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   // Returns the known name for the Printers metadata named by
   // |manufacturer|.
   std::optional<std::string> GetPrintersMetadataName(
-      base::StringPiece manufacturer) {
+      std::string_view manufacturer) {
     PpdMetadataPathSpecifier manufacturers_path(
         PpdMetadataPathSpecifier::Type::kManufacturers, channel_);
     manufacturers_path.SetMetadataLocale(metadata_locale_.c_str());
@@ -834,7 +834,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   // Continues a prior call to GetPrinters().
   //
   // Invokes |cb| with success, providing it a map of printers.
-  void OnPrintersAvailable(base::StringPiece metadata_name,
+  void OnPrintersAvailable(std::string_view metadata_name,
                            GetPrintersCallback cb) {
     const auto& parsed_printers = cached_printers_.at(metadata_name);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -872,7 +872,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   // Called when one unit of sufficiently fresh forward index metadata
   // is available. Seeks out the current effective-make-and-model string
   // in said metadata.
-  void FindEmmInForwardIndex(base::StringPiece metadata_name) {
+  void FindEmmInForwardIndex(std::string_view metadata_name) {
     // Caller must have verified that this index is already present (and
     // sufficiently fresh) before entering this method.
     DCHECK(cached_forward_indices_.contains(metadata_name));
@@ -979,7 +979,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   // *  OnUsbIndexFetched().
   // Searches the now-available USB index metadata with |metadata_name|
   // for a device with given |product_id|, calling |cb| appropriately.
-  void OnUsbIndexAvailable(base::StringPiece metadata_name,
+  void OnUsbIndexAvailable(std::string_view metadata_name,
                            int product_id,
                            FindDeviceInUsbIndexCallback cb) {
     DCHECK(cached_usb_indices_.contains(metadata_name));
@@ -1032,7 +1032,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   //
   // Searches the available USB vendor ID map (named by |metadata_name|)
   // for |vendor_id| and invokes |cb| accordingly.
-  void OnUsbVendorIdMapAvailable(base::StringPiece metadata_name,
+  void OnUsbVendorIdMapAvailable(std::string_view metadata_name,
                                  int vendor_id,
                                  GetUsbManufacturerNameCallback cb) {
     DCHECK(cached_usb_vendor_id_map_.contains(metadata_name));
@@ -1091,8 +1091,8 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   // Looks for |effective_make_and_model| in the reverse index named by
   // |metadata_name|, and tries to invoke |cb| with the split make and
   // model.
-  void OnReverseIndexAvailable(base::StringPiece metadata_name,
-                               base::StringPiece effective_make_and_model,
+  void OnReverseIndexAvailable(std::string_view metadata_name,
+                               std::string_view effective_make_and_model,
                                PpdProvider::ReverseLookupCallback cb) {
     const auto& parsed_reverse_index =
         cached_reverse_indices_.at(metadata_name);
@@ -1184,7 +1184,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
 
 // static
 std::unique_ptr<PpdMetadataManager> PpdMetadataManager::Create(
-    base::StringPiece browser_locale,
+    std::string_view browser_locale,
     PpdIndexChannel channel,
     base::Clock* clock,
     std::unique_ptr<PrinterConfigCache> config_cache) {

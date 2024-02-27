@@ -7,10 +7,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -218,7 +218,7 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
 
 std::unique_ptr<Printer> ManagedPrinterToPrinter(
     const base::Value::Dict& managed_printer) {
-  static auto LogRequiredFieldMissing = [](base::StringPiece field) {
+  static auto LogRequiredFieldMissing = [](std::string_view field) {
     LOG(WARNING) << "Managed printer is missing required field: " << field;
   };
 

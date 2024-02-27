@@ -6,13 +6,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace chromeos {
@@ -27,8 +27,8 @@ namespace {
 // *  this function never returns empty Value objects and
 // *  |target_type| must appear in the switch statement below.
 std::optional<base::Value> ParseJsonAndUnnestKey(
-    base::StringPiece input,
-    base::StringPiece key,
+    std::string_view input,
+    std::string_view key,
     base::Value::Type target_type) {
   std::optional<base::Value> parsed = base::JSONReader::Read(input);
   if (!parsed || !parsed->is_dict()) {
@@ -182,7 +182,7 @@ ParsedIndexValues& ParsedIndexValues::operator=(const ParsedIndexValues&) =
     default;
 
 std::optional<std::vector<std::string>> ParseLocales(
-    base::StringPiece locales_json) {
+    std::string_view locales_json) {
   const auto as_value =
       ParseJsonAndUnnestKey(locales_json, "locales", base::Value::Type::LIST);
   if (!as_value.has_value()) {
@@ -203,7 +203,7 @@ std::optional<std::vector<std::string>> ParseLocales(
 }
 
 std::optional<ParsedManufacturers> ParseManufacturers(
-    base::StringPiece manufacturers_json) {
+    std::string_view manufacturers_json) {
   const auto as_value = ParseJsonAndUnnestKey(manufacturers_json, "filesMap",
                                               base::Value::Type::DICT);
   if (!as_value.has_value()) {
@@ -221,7 +221,7 @@ std::optional<ParsedManufacturers> ParseManufacturers(
 }
 
 std::optional<ParsedIndex> ParseForwardIndex(
-    base::StringPiece forward_index_json) {
+    std::string_view forward_index_json) {
   // Firstly, we unnest the dictionary keyed by "ppdIndex."
   std::optional<base::Value> ppd_index = ParseJsonAndUnnestKey(
       forward_index_json, "ppdIndex", base::Value::Type::DICT);
@@ -246,7 +246,7 @@ std::optional<ParsedIndex> ParseForwardIndex(
   return parsed_index;
 }
 
-std::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
+std::optional<ParsedUsbIndex> ParseUsbIndex(std::string_view usb_index_json) {
   std::optional<base::Value> usb_index = ParseJsonAndUnnestKey(
       usb_index_json, "usbIndex", base::Value::Type::DICT);
   if (!usb_index.has_value()) {
@@ -278,7 +278,7 @@ std::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
 }
 
 std::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
-    base::StringPiece usb_vendor_id_map_json) {
+    std::string_view usb_vendor_id_map_json) {
   std::optional<base::Value> as_value = ParseJsonAndUnnestKey(
       usb_vendor_id_map_json, "entries", base::Value::Type::LIST);
   if (!as_value.has_value()) {
@@ -307,7 +307,7 @@ std::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
   return usb_vendor_ids;
 }
 
-std::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
+std::optional<ParsedPrinters> ParsePrinters(std::string_view printers_json) {
   const auto as_value =
       ParseJsonAndUnnestKey(printers_json, "printers", base::Value::Type::LIST);
   if (!as_value.has_value()) {
@@ -333,7 +333,7 @@ std::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
 }
 
 std::optional<ParsedReverseIndex> ParseReverseIndex(
-    base::StringPiece reverse_index_json) {
+    std::string_view reverse_index_json) {
   const std::optional<base::Value> makes_and_models = ParseJsonAndUnnestKey(
       reverse_index_json, "reverseIndex", base::Value::Type::DICT);
   if (!makes_and_models.has_value()) {

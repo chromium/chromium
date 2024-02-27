@@ -6,11 +6,11 @@
 #define CHROMEOS_PRINTING_FAKE_PRINTER_CONFIG_CACHE_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "chromeos/printing/printer_config_cache.h"
 
@@ -40,8 +40,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) FakePrinterConfigCache
   // Sets internal state of |this| s.t. future Fetch() calls for
   // |key| get called back with |value|.
   // Subsequent calls to this method override the canned |value|.
-  void SetFetchResponseForTesting(base::StringPiece key,
-                                  base::StringPiece value);
+  void SetFetchResponseForTesting(std::string_view key, std::string_view value);
 
   // Sets internal state of |this| s.t. future Fetch() calls for
   // |key| are consumed (i.e. delayed indefinitely and never called
@@ -51,7 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) FakePrinterConfigCache
   // This method is useful for simulating a slow server: one that
   // doesn't immediately respond to a Fetch() request (in fact, it
   // never responds at all, so use this carefully).
-  void DiscardFetchRequestFor(base::StringPiece key);
+  void DiscardFetchRequestFor(std::string_view key);
 
  private:
   base::flat_map<std::string, std::string> contents_;

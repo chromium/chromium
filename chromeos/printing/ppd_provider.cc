@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -78,7 +79,7 @@ bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
   return filled_fields == 1;
 }
 
-std::string PpdPathInServingRoot(base::StringPiece ppd_basename) {
+std::string PpdPathInServingRoot(std::string_view ppd_basename) {
   return base::StrCat({"ppds_for_metadata_v3/", ppd_basename});
 }
 
@@ -352,7 +353,7 @@ class PpdProviderImpl : public PpdProvider {
 
   // This method depends on forward indices, which are not
   // locale-sensitive.
-  void ResolvePpdLicense(base::StringPiece effective_make_and_model,
+  void ResolvePpdLicense(std::string_view effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
     // In v3 metadata, effective-make-and-model strings are only
     // expressed in lowercased ASCII.
@@ -502,7 +503,7 @@ class PpdProviderImpl : public PpdProvider {
   // Note that |forward_index_subset| has the type returned by
   // PpdMetadataManager::FindAllEmmsAvailableInIndexCallback.
   const ParsedIndexLeaf* FirstAllowableParsedIndexLeaf(
-      base::StringPiece effective_make_and_model,
+      std::string_view effective_make_and_model,
       const base::flat_map<std::string, ParsedIndexValues>&
           forward_index_subset) const {
     const auto& iter = forward_index_subset.find(effective_make_and_model);
@@ -520,7 +521,7 @@ class PpdProviderImpl : public PpdProvider {
   }
 
   static void SuccessfullyResolvePpdReferenceWithEmm(
-      base::StringPiece effective_make_and_model,
+      std::string_view effective_make_and_model,
       ResolvePpdReferenceCallback cb) {
     Printer::PpdReference reference;
     reference.effective_make_and_model = std::string(effective_make_and_model);
@@ -673,7 +674,7 @@ class PpdProviderImpl : public PpdProvider {
     // Sweeps through the results of the forward index metadata search.
     // If any effective-make-and-model string advertises an available
     // PPD, we use that result to post |cb|.
-    for (base::StringPiece effective_make_and_model :
+    for (std::string_view effective_make_and_model :
          context.search_data.make_and_model) {
       const ParsedIndexLeaf* const index_leaf = FirstAllowableParsedIndexLeaf(
           effective_make_and_model, forward_index_results);
@@ -1068,7 +1069,7 @@ std::string PpdProvider::PpdReferenceToCacheKey(
 // static
 //
 // Used in production but also exposed for testing.
-std::string PpdProvider::PpdBasenameToCacheKey(base::StringPiece ppd_basename) {
+std::string PpdProvider::PpdBasenameToCacheKey(std::string_view ppd_basename) {
   return base::StrCat({"ppd_basename_for_metadata_v3:", ppd_basename});
 }
 
