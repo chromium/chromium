@@ -32337,6 +32337,7 @@ Called by update_net_error_codes.py.-->
   <int value="59" label="UMA_CREATOR_UNFOLLOW_FAILURE"/>
   <int value="60" label="UMA_QUICK_DELETE"/>
   <int value="61" label="UMA_AUTO_TRANSLATE"/>
+  <int value="63" label="UMA_CLEAR_BROWSING_DATA"/>
 </enum>
 
 <enum name="SnapshotItemId">

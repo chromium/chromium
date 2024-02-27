@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
@@ -43,9 +44,12 @@ import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -234,6 +238,9 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     // important domains from being cleared.
     private ConfirmImportantSitesDialogFragment mConfirmImportantSitesDialog;
 
+    private @TimePeriod int mLastSelectedTimePeriod;
+    private boolean mShouldShowSnackbar;
+
     /**
      * @return All available {@link DialogOption} entries.
      */
@@ -404,21 +411,21 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
-        @TimePeriod int timePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
+        mLastSelectedTimePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
         int[] dataTypesArray = CollectionUtil.integerCollectionToIntArray(dataTypes);
         if (excludedDomains != null && excludedDomains.length != 0) {
             BrowsingDataBridge.getForProfile(mProfile)
                     .clearBrowsingDataExcludingDomains(
                             this,
                             dataTypesArray,
-                            timePeriod,
+                            mLastSelectedTimePeriod,
                             excludedDomains,
                             excludedDomainReasons,
                             ignoredDomains,
                             ignoredDomainReasons);
         } else {
             BrowsingDataBridge.getForProfile(mProfile)
-                    .clearBrowsingData(this, dataTypesArray, timePeriod);
+                    .clearBrowsingData(this, dataTypesArray, mLastSelectedTimePeriod);
         }
 
         // Clear all reported entities.
@@ -457,6 +464,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     @Override
     public void onBrowsingDataCleared() {
         if (getActivity() == null) return;
+        mShouldShowSnackbar = QuickDeleteController.isQuickDeleteFollowupEnabled();
 
         // If the user deleted their browsing history, the dialog about other forms of history
         // is enabled, and it has never been shown before, show it. Note that opening a new
@@ -698,6 +706,9 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             item.destroy();
         }
         mSigninManager.removeSignInStateObserver(this);
+        if (mShouldShowSnackbar) {
+            showSnackbar();
+        }
     }
 
     // We either show the dialog, or modify the current one to display our messages.  This avoids
@@ -870,5 +881,48 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     @Override
     public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    }
+
+    /** Get the last focused activity that has not been destroyed. */
+    private Activity getLastFocusedActivity() {
+        if (ApplicationStatus.hasVisibleActivities()) {
+            return ApplicationStatus.getLastTrackedFocusedActivity();
+        } else {
+            return null;
+        }
+    }
+
+    public SnackbarManager getSnackbarManager() {
+        Activity activity = getLastFocusedActivity();
+        if (activity instanceof SnackbarManager.SnackbarManageable) {
+            return ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+        }
+        return null;
+    }
+
+    /** A method to show the post-delete snack-bar confirmation. */
+    private void showSnackbar() {
+        SnackbarManager snackbarManager = getSnackbarManager();
+        if (snackbarManager == null) return;
+
+        String snackbarMessage;
+        if (mLastSelectedTimePeriod == TimePeriod.ALL_TIME) {
+            snackbarMessage =
+                    getActivity().getString(R.string.quick_delete_snackbar_all_time_message);
+        } else {
+            snackbarMessage =
+                    getActivity()
+                            .getString(
+                                    R.string.quick_delete_snackbar_message,
+                                    TimePeriodUtils.getTimePeriodString(
+                                            getActivity(), mLastSelectedTimePeriod));
+        }
+        Snackbar snackbar =
+                Snackbar.make(
+                        snackbarMessage,
+                        /* controller= */ null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_CLEAR_BROWSING_DATA);
+        snackbarManager.showSnackbar(snackbar);
     }
 }
