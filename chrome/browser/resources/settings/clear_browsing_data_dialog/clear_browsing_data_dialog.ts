@@ -537,18 +537,6 @@ export class SettingsClearBrowsingDataDialogElement extends
   private async clearBrowsingData_() {
     this.clearingInProgress_ = true;
     this.clearingDataAlertString_ = loadTimeData.getString('clearingData');
-    const tab = this.$.tabs.selectedItem as HTMLElement;
-    const dataTypes = this.getSelectedDataTypes_(tab);
-    const dropdownMenu =
-        tab.querySelector<SettingsDropdownMenuElement>('.time-range-select');
-    assert(dropdownMenu);
-    const timePeriod = dropdownMenu.pref!.value;
-
-    if (tab.id === 'basic-tab') {
-      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
-    } else {
-      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
-    }
 
     this.setPrefValue(
         'browser.last_clear_browsing_data_tab', this.selectedTabIndex_);
@@ -562,6 +550,19 @@ export class SettingsClearBrowsingDataDialogElement extends
         .querySelectorAll<SettingsDropdownMenuElement>(
             'settings-dropdown-menu[no-set-pref]')
         .forEach(dropdown => dropdown.sendPrefChange());
+
+    const tab = this.$.tabs.selectedItem as HTMLElement;
+    const dataTypes = this.getSelectedDataTypes_(tab);
+    const dropdownMenu =
+        tab.querySelector<SettingsDropdownMenuElement>('.time-range-select');
+    assert(dropdownMenu);
+    const timePeriod = dropdownMenu.pref!.value;
+
+    if (tab.id === 'basic-tab') {
+      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_BasicTab');
+    } else {
+      chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
+    }
 
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(dataTypes, timePeriod);

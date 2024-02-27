@@ -429,8 +429,13 @@ suite('ClearBrowsingDataAllPlatforms', function() {
   });
 
   async function assertDropdownSelectionPersisted(
-      tabName: string, prefName: string) {
+      tabIndex: number, tabName: string, prefName: string) {
     assertTrue(element.$.clearBrowsingDataDialog.open);
+    // The user selects the tab of interest.
+    const crTabs = element.shadowRoot!.querySelector('cr-tabs');
+    assertTrue(!!crTabs);
+    crTabs.selected = tabIndex;
+
     const timePeriodDropdown = getTimePeriodDropdown(tabName, element);
     const selectElement =
         timePeriodDropdown.shadowRoot!.querySelector('select');
@@ -452,22 +457,26 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
-    // Confirming the deletion persists the dropdown selection to the pref.
+    // Confirming the deletion persists the dropdown selection to the pref and
+    // sends the time range for clearing.
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!actionButton);
     actionButton.click();
     assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
+    const args = await testBrowserProxy.whenCalled('clearBrowsingData');
+    const timeRange = args[1];
+    assertEquals(TimePeriod.LAST_WEEK, timeRange);
   }
 
   test('dropdownSelectionPersisted_Basic', function() {
     return assertDropdownSelectionPersisted(
-        'basic-tab', 'browser.clear_data.time_period_basic');
+        /*tabIndex*/ 0, 'basic-tab', 'browser.clear_data.time_period_basic');
   });
 
   test('dropdownSelectionPersisted_Advanced', function() {
     return assertDropdownSelectionPersisted(
-        'advanced-tab', 'browser.clear_data.time_period');
+        /*tabIndex*/ 1, 'advanced-tab', 'browser.clear_data.time_period');
   });
 
   test('tabSelection', async function() {
