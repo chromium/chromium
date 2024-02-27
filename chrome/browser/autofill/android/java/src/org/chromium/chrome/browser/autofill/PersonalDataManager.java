@@ -821,11 +821,6 @@ public class PersonalDataManager {
         PersonalDataManagerJni.get().deleteAllLocalCreditCards(mPersonalDataManagerAndroid);
     }
 
-    public void clearUnmaskedCache(String guid) {
-        PersonalDataManagerJni.get()
-                .clearUnmaskedCache(mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
-    }
-
     public String getShippingAddressLabelWithCountryForPaymentRequest(AutofillProfile profile) {
         return PersonalDataManagerJni.get()
                 .getShippingAddressLabelForPaymentRequest(
@@ -1295,9 +1290,6 @@ public class PersonalDataManager {
 
         void clearServerDataForTesting(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
-
-        void clearUnmaskedCache(
-                long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
 
         boolean hasProfiles(long nativePersonalDataManagerAndroid);
 

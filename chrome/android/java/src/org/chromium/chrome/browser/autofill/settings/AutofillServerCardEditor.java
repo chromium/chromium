@@ -48,8 +48,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
             "Autofill.VirtualCard.SettingsPageEnrollment";
 
     private Profile mProfile;
-    private View mLocalCopyLabel;
-    private View mClearLocalCopy;
     private TextView mVirtualCardEnrollmentButton;
     private boolean mVirtualCardEnrollmentButtonShowsUnenroll;
     private AutofillPaymentMethodsDelegate mDelegate;
@@ -222,22 +220,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
             virtualCardContainerLayout.setVisibility(View.GONE);
         }
 
-        mLocalCopyLabel = v.findViewById(R.id.local_copy_label);
-        mClearLocalCopy = v.findViewById(R.id.clear_local_copy);
-
-        if (mCard.getIsCached()) {
-            mClearLocalCopy.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            PersonalDataManager.getInstance().clearUnmaskedCache(mGUID);
-                            removeLocalCopyViews();
-                        }
-                    });
-        } else {
-            removeLocalCopyViews();
-        }
-
         initializeButtons(v);
         return v;
     }
@@ -316,14 +298,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
                             }
                         });
         dialog.show();
-    }
-
-    private void removeLocalCopyViews() {
-        ViewGroup parent = (ViewGroup) mClearLocalCopy.getParent();
-        if (parent == null) return;
-
-        parent.removeView(mLocalCopyLabel);
-        parent.removeView(mClearLocalCopy);
     }
 
     private boolean showVirtualCardEnrollmentButton() {

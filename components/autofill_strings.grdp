@@ -23,7 +23,7 @@
     </message>
   </if>
 
-  <if expr="is_android or is_ios">
+  <if expr="is_ios">
     <message name="IDS_AUTOFILL_REMOVE_LOCAL_COPY_BUTTON" desc="The label of the button that removes the local copy of a Wallet Credit Card." formatter_data="android_java">
       Remove copy
     </message>

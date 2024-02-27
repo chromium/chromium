@@ -448,13 +448,6 @@ void PersonalDataManagerAndroid::DeleteAllLocalCreditCards(JNIEnv* env) {
   personal_data_manager_->DeleteAllLocalCreditCards();
 }
 
-void PersonalDataManagerAndroid::ClearUnmaskedCache(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
-    const JavaParamRef<jstring>& guid) {
-  // TODO(crbug.com/1497734): Remove this method.
-}
-
 void PersonalDataManagerAndroid::OnPersonalDataChanged() {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto java_obj = weak_java_obj_.get(env);

@@ -90,30 +90,6 @@ found in the LICENSE file.
             android:paddingBottom="@dimen/pref_autofill_touch_target_padding"
             style="@style/PreferenceTitle"
             android:text="@string/autofill_from_google_account_long" />
-
-        <TextView
-            android:id="@+id/clear_local_copy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/server_card_label"
-            android:paddingStart="@dimen/pref_autofill_touch_target_padding"
-            android:paddingTop="@dimen/pref_autofill_touch_target_padding"
-            android:paddingBottom="@dimen/pref_autofill_touch_target_padding"
-            android:textAppearance="@style/TextAppearance.TextMedium.Link"
-            android:text="@string/autofill_remove_local_copy_button" />
-
-        <TextView
-            android:id="@+id/local_copy_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/server_card_label"
-            android:layout_toStartOf="@id/clear_local_copy"
-            android:paddingTop="@dimen/pref_autofill_touch_target_padding"
-            android:paddingBottom="@dimen/pref_autofill_touch_target_padding"
-            style="@style/PreferenceTitle"
-            android:text="@string/autofill_describe_local_copy" />
     </RelativeLayout>
 
     <LinearLayout

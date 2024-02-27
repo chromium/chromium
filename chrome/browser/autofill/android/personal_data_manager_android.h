@@ -204,12 +204,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Delete all local credit cards.
   void DeleteAllLocalCreditCards(JNIEnv* env);
 
-  // Resets the given unmasked card back to the masked state.
-  void ClearUnmaskedCache(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jstring>& jguid);
-
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
 
