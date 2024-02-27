@@ -147,6 +147,9 @@ public class LegacyIncognitoDescriptionView extends LinearLayout
         TextView view = (TextView) findViewById(element);
         String text = getContext().getResources().getString(content);
 
+        // Some translations don't have a line break between list entries.
+        text = text.replaceAll("([^\n ]) *(<li>|</?ul>)", "$1\n$2");
+
         // TODO(msramek): Unfortunately, our strings are missing the closing "</li>" tag, which
         // is not a problem when they're used in the Desktop WebUI (omitting the tag is valid in
         // HTML5), but it is a problem for SpanApplier. Update the strings and remove this regex.
@@ -239,14 +242,11 @@ public class LegacyIncognitoDescriptionView extends LinearLayout
         }
 
         // Set up paddings and margins.
-        int paddingTop;
-        int paddingBottom;
-        paddingTop = paddingBottom = dpToPx(getContext(), paddingVerticalDp);
         mContainer.setPadding(
                 dpToPx(getContext(), paddingHorizontalDp),
-                paddingTop,
+                dpToPx(getContext(), paddingVerticalDp),
                 dpToPx(getContext(), paddingHorizontalDp),
-                paddingBottom);
+                dpToPx(getContext(), paddingVerticalDp));
 
         // Total space between adjacent paragraphs (Including margins, paddings, etc.)
         int totalSpaceBetweenViews =
