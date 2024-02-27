@@ -219,7 +219,7 @@ public class JavascriptTabModalDialogTest {
         final JavascriptTabModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
-        onView(withId(R.id.modal_dialog_scroll_view))
+        onView(withId(R.id.modal_dialog_title_scroll_view))
                 .check(matches(expectedFocusability ? isFocusable() : not(isFocusable())));
 
         onView(withText(R.string.ok)).perform(click());

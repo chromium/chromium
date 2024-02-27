@@ -20,7 +20,7 @@ found in the LICENSE file.
         android:id="@+id/title_container" />
 
     <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
-        android:id="@+id/modal_dialog_scroll_view"
+        android:id="@+id/modal_dialog_title_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -54,23 +54,40 @@ found in the LICENSE file.
     </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
     <FrameLayout
-        android:id="@+id/custom"
+        android:id="@+id/custom_view_not_in_scrollable"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/button_group"
+    <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+        android:id="@+id/modal_dialog_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:paddingBottom="24dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:visibility="gone"
-        android:orientation="vertical">
-    </LinearLayout>
+        android:fadeScrollbars="false">
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <FrameLayout android:id="@+id/custom_view_in_scrollable"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:visibility="gone" />
+            <LinearLayout
+                android:id="@+id/button_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingBottom="24dp"
+                android:visibility="gone"
+                android:orientation="vertical">
+            </LinearLayout>
+        </LinearLayout>
+    </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/button_bar"

@@ -223,6 +223,13 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey TITLE_SCROLLABLE =
             new WritableBooleanPropertyKey();
 
+    /**
+     * Whether the custom view should be wrapped in a ScrollView. The custom view must not be a
+     * ScrollView itself if this is set.
+     */
+    public static final WritableBooleanPropertyKey WRAP_CUSTOM_VIEW_IN_SCROLLABLE =
+            new WritableBooleanPropertyKey();
+
     /** Whether the primary (positive) or negative button should be a filled button */
     public static final ReadableIntPropertyKey BUTTON_STYLES = new ReadableIntPropertyKey();
 
@@ -269,6 +276,7 @@ public class ModalDialogProperties {
                 BUTTON_GROUP_BUTTON_SPEC_LIST,
                 TOUCH_FILTERED_CALLBACK,
                 FILTER_TOUCH_FOR_SECURITY,
+                WRAP_CUSTOM_VIEW_IN_SCROLLABLE,
                 TITLE_SCROLLABLE,
                 BUTTON_STYLES,
                 DIALOG_STYLES,
