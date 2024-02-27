@@ -109,7 +109,7 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
     let referenceContext: BrowsingContextImpl | undefined;
-    let userContext = params.userContext ?? 'default';
+    let userContext = 'default';
     if (params.referenceContext !== undefined) {
       referenceContext = this.#browsingContextStorage.getContext(
         params.referenceContext
@@ -120,6 +120,10 @@ export class BrowsingContextProcessor {
         );
       }
       userContext = referenceContext.userContext;
+    }
+
+    if (params.userContext !== undefined) {
+      userContext = params.userContext;
     }
 
     let newWindow = false;
