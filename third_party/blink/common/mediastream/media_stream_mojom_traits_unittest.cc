@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/mediastream/media_stream_mojom_traits.h"
 
+#include "base/base64.h"
 #include "base/rand_util.h"
 #include "media/audio/audio_device_description.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -20,8 +21,21 @@ std::string GetRandomDeviceId() {
 }
 
 std::string GetRandomOtherId() {
-  const auto rand_vector = base::RandBytesAsVector(500);
-  return std::string(rand_vector.begin(), rand_vector.end());
+  // A valid UTF-8 string, but not a valid 32-byte value encoded as hex.
+  static constexpr char kLetters[] =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz"
+      "01234567890"
+      "`~!@#$%^&*()_-=+[]{}\\|<>,./?'\"";
+
+  // The generated string should be kMaxDeviceIdSize bytes long, from
+  // //third_party/blink/common/mediastream/media_stream_mojom_traits.cc,
+  // so that adding a letter to it makes it too long.
+  std::vector<char> result(500);
+  for (char& c : result) {
+    c = kLetters[base::RandInt(0, sizeof(kLetters) - 1)];
+  }
+  return std::string(result.begin(), result.end());
 }
 }  // namespace
 
