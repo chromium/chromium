@@ -269,12 +269,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
       aura::Window* window_for_minimum_size,
       float snap_ratio);
 
-  // Calculates the new divider position to move `divider_position_` to, such
-  // that the primary window will occupy `snap_ratio` of the screen, and the
-  // secondary window will occupy the rest.
-  int CalculateDividerPosition(SnapPosition snap_position,
-                               float snap_ratio) const;
-
   // Returns true if we should consider the width of the split view divider.
   bool ShouldConsiderDivider() const;
 
@@ -456,10 +450,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Gets the position where the black scrim should show.
   SnapPosition GetBlackScrimPosition(const gfx::Point& location_in_screen);
 
-  // Updates |divider_position_| according to the current event location during
-  // resizing.
-  void UpdateDividerPosition(const gfx::Point& location_in_screen);
-
   // Returns the closest fixed location to `divider_position`.
   int GetClosestFixedDividerPosition(int divider_position);
 
@@ -467,7 +457,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // position change.
   void StopAndShoveAnimatedDivider();
 
-  // Stops the divider animation and updates the `divider_position_`.
+  // Stops the divider animation and `SetDividerPosition()`.
   void StopSnapAnimation();
 
   // Returns true if we should end split view after resizing, i.e. the
@@ -613,8 +603,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // The closest position ratio of divider among kFixedPositionRatios,
   // kOneThirdSnapRatio and kTwoThirdSnapRatio based on current
-  // `divider_position_`. Used to update `divider_position_` on work area
-  // changes.
+  // `SplitViewDivider::divider_position_`. Used to update
+  // `SplitViewDivider::divider_position_` on work area changes.
+  // TODO(sophiewen | michelefan): Move this variable to `SplitViewDivider`.
   float divider_closest_ratio_ = std::numeric_limits<float>::quiet_NaN();
 
   // The animation that animates the divider to a fixed position after resizing.

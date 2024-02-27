@@ -221,10 +221,10 @@ int GetDividerPositionUpperLimit(aura::Window* root_window);
 int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 
 // Returns the target divider position for `root_window` for `snap_ratio` at
-// `snap_position`. If `account_for_divider_width` is true, it will subtract the
-// split view divider width.
-int CalculateDividerPosition(SnapPosition snap_position,
-                             aura::Window* root_window,
+// `snap_position`. `account_for_divider_width` will decide whether the divider
+// shorter side width will be subtracted or not.
+int CalculateDividerPosition(aura::Window* root_window,
+                             SnapPosition snap_position,
                              float snap_ratio,
                              bool account_for_divider_width);
 
@@ -233,22 +233,23 @@ int CalculateDividerPosition(SnapPosition snap_position,
 // the work area length - window length if it is physically right or bottom. If
 // `account_for_divider_width` is true, it will also subtract
 // `kSplitviewDividerShortSideLength / 2` from the window length if is
-// physically left or top, or add `kSplitviewDividerShortSideLength / 2` to the
-// window length if it is physically right or bottom.
+// physically left or top, or `kSplitviewDividerShortSideLength` to `window`
+// length if it is physically right or bottom.
 int GetEquivalentDividerPosition(aura::Window* window,
                                  bool account_for_divider_width);
 
 // Returns the bounds of a snapped window at `snap_position`, where
-// `divider_position` is the end of the primary window width, `divider_width` is
-// the width of the split view divider if any exists, and
-// `is_resizing_with_divider`, if true and in tablet mode, will determine the
-// bounds based on the window's minimum size.
+// `divider_position` is the end of the primary window width.
+// `account_for_divider_width` will decide whether the window bounds need to
+// shrink to make room for the divider or not. `window_for_minimum_size` will be
+// taken into consideration for the calculation while `is_resizing_with_divider`
+// is false.
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
     aura::Window* root_window,
     aura::Window* window_for_minimum_size,
+    bool account_for_divider_width,
     int divider_position,
-    int divider_width,
     bool is_resizing_with_divider);
 
 // Returns the opposite snap type of a snapped `window`. This will be

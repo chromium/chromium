@@ -811,14 +811,16 @@ void SplitViewController::AttachToBeSnappedWindow(
       split_view_divider_.divider_widget() ? GetDividerPosition() : -1;
   if (std::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
       snap_ratio) {
-    divider_position = CalculateDividerPosition(snap_position, *snap_ratio);
+    divider_position = CalculateDividerPosition(
+        root_window_, snap_position, *snap_ratio, ShouldConsiderDivider());
     // If `other_window` can't fit in the requested snap ratio, show a snap
     // animation below.
     do_snap_animation =
         other_window && !CanSnapWindow(other_window, 1.f - *snap_ratio);
   } else if (divider_position < 0) {
-    divider_position =
-        CalculateDividerPosition(snap_position, chromeos::kDefaultSnapRatio);
+    divider_position = CalculateDividerPosition(root_window_, snap_position,
+                                                chromeos::kDefaultSnapRatio,
+                                                ShouldConsiderDivider());
   }
 
   if (InTabletMode()) {
@@ -923,12 +925,6 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInParent(
   return bounds;
 }
 
-int SplitViewController::CalculateDividerPosition(SnapPosition snap_position,
-                                                  float snap_ratio) const {
-  return ash::CalculateDividerPosition(snap_position, root_window_, snap_ratio,
-                                       ShouldConsiderDivider());
-}
-
 bool SplitViewController::ShouldConsiderDivider() const {
   // The divider may be visible in tablet mode, or between two windows in a
   // snap group in clamshell mode.
@@ -936,7 +932,7 @@ bool SplitViewController::ShouldConsiderDivider() const {
   // `split_view_divider_` is not initialized yet because
   // `ClientControlledState` may need to know the snapped bounds before
   // actually snapping the windows.
-  // TODO(b/309856199): Currently need to pipe `should_consider_divider` since
+  // TODO(b/309856199): Currently need to pipe `account_for_divider_width` since
   // the divider is still created in `SplitViewController` for Snap Groups.
   // Refactor this when `split_view_divider_` is moved out.
   return split_view_divider_.HasDividerWidget() || InTabletMode();
@@ -1111,9 +1107,11 @@ void SplitViewController::OnWindowDragCanceled() {
 SnapPosition SplitViewController::ComputeSnapPosition(
     const gfx::Point& last_location_in_screen) {
   const int divider_position =
-      InSplitViewMode() ? GetDividerPosition()
-                        : CalculateDividerPosition(SnapPosition::kPrimary,
-                                                   chromeos::kDefaultSnapRatio);
+      InSplitViewMode()
+          ? GetDividerPosition()
+          : CalculateDividerPosition(root_window_, SnapPosition::kPrimary,
+                                     chromeos::kDefaultSnapRatio,
+                                     ShouldConsiderDivider());
   const int position = IsLayoutHorizontal(root_window_)
                            ? last_location_in_screen.x()
                            : last_location_in_screen.y();
@@ -1675,8 +1673,6 @@ void SplitViewController::UpdateResizeWithDivider(
   // This updates `tablet_resize_mode_` based on drag speed.
   UpdateTabletResizeMode(base::TimeTicks::Now(), location_in_screen);
 
-  // The divider position will have already been updated in
-  // `SplitViewDivider::UpdateDividerPosition()`.
   NotifyDividerPositionChanged();
   UpdateSnappedWindowsAndDividerBounds();
 
@@ -1744,11 +1740,9 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
     aura::Window* window_for_minimum_size,
     float snap_ratio) const {
-  const gfx::Rect work_area_bounds_in_screen =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          root_window_);
   if (snap_position == SnapPosition::kNone) {
-    return work_area_bounds_in_screen;
+    return screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+        root_window_);
   }
 
   const bool should_use_window_bounds_in_fast_resize =
@@ -1757,15 +1751,15 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     return window_for_minimum_size->GetBoundsInScreen();
   }
 
+  const bool account_for_divider_width = ShouldConsiderDivider();
   const int divider_position =
       split_view_divider_.HasDividerWidget()
           ? GetDividerPosition()
-          : CalculateDividerPosition(snap_position, snap_ratio);
-  const int divider_width =
-      ShouldConsiderDivider() ? kSplitviewDividerShortSideLength : 0;
+          : CalculateDividerPosition(root_window_, snap_position, snap_ratio,
+                                     account_for_divider_width);
   return CalculateSnappedWindowBoundsInScreen(
-      snap_position, root_window_, window_for_minimum_size, divider_position,
-      divider_width, IsResizingWithDivider());
+      snap_position, root_window_, window_for_minimum_size,
+      account_for_divider_width, divider_position, IsResizingWithDivider());
 }
 
 aura::Window::Windows SplitViewController::GetLayoutWindows() const {
@@ -1895,12 +1889,16 @@ void SplitViewController::RefreshSplitViewDividerInClamshell() {
     // the divider in `SplitViewController`, will be removed in b/309856199.
     return;
   }
+
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   CHECK(snap_group_controller);
   CHECK(primary_window_ && secondary_window_);
-  const int divider_position = ash::GetEquivalentDividerPosition(
-      primary_window_, /*should_consider_divider=*/false);
-  split_view_divider_.ShowFor(divider_position);
+
+  // The divider will show for all snap groups in clamshell, we should take the
+  // divider width into consideration.
+  split_view_divider_.ShowFor(
+      GetEquivalentDividerPosition(primary_window_,
+                                   /*account_for_divider_width=*/true));
 }
 
 void SplitViewController::UpdateBlackScrim(
@@ -2215,8 +2213,6 @@ void SplitViewController::OnWindowSnapped(
     return;
   }
 
-  // TODO(b/322576687): Consolidate the snapped bounds calculation between
-  // clamshell and tablet mode.
   UpdateSnappedWindowsAndDividerBounds();
 }
 
@@ -2418,13 +2414,12 @@ void SplitViewController::SetTransformWithAnimation(
       // the |window| snap animation as one of the animations to be completed
       // before |OverviewController::OnEndingAnimationComplete| should be called
       // to unpause occlusion tracking, unblur the wallpaper, etc.
-      OverviewController* overview_controller =
-          Shell::Get()->overview_controller();
+      OverviewController* overview_controller = OverviewController::Get();
+      OverviewSession* overview_session =
+          overview_controller->overview_session();
       if (overview_controller->IsCompletingShutdownAnimations() ||
-          (overview_controller->overview_session() &&
-           overview_controller->overview_session()->is_shutting_down() &&
-           overview_controller->overview_session()
-                   ->enter_exit_overview_type() !=
+          (overview_session && overview_session->is_shutting_down() &&
+           overview_session->enter_exit_overview_type() !=
                OverviewEnterExitType::kImmediateExit)) {
         auto overview_exit_animation_observer =
             std::make_unique<ExitAnimationObserver>();
@@ -2518,15 +2513,14 @@ void SplitViewController::OnTabletModeStarted() {
     // The windows would already have been attached before transition, in
     // `TabletModeWindowManager::ArrangeWindowsForTabletMode()`.
     CHECK(primary_window_ || secondary_window_);
-    // Tablet mode only supports the fixed divider positions in
-    // `kFixedPositionRatios`, so push `divider_position_` to the closest
-    // fixed ratio.
-    // TODO(b/308819668): Remove this when `divider_position` is saved in
-    // `SplitViewDivider`.
+    // Take divider width into calculation since divider will always be
+    // available for tablet split view. Tablet mode only supports the fixed
+    // divider positions in `kFixedPositionRatios`, so push `divider_position_`
+    // to the closest fixed ratio.
     const int divider_position =
-        GetClosestFixedDividerPosition(ash::GetEquivalentDividerPosition(
+        GetClosestFixedDividerPosition(GetEquivalentDividerPosition(
             primary_window_ ? primary_window_ : secondary_window_,
-            /*account_for_divider_width=*/false));
+            /*account_for_divider_width=*/true));
     split_view_divider_.ShowFor(divider_position);
 
     UpdateSnappedWindowsAndDividerBounds();

@@ -255,10 +255,10 @@ float AdjustCurrentSnapRatio(aura::Window* window,
       ShouldConsiderDivider(window) ? kSplitviewDividerShortSideLength / 2 : 0;
   if (IsLayoutHorizontal(window)) {
     return static_cast<float>(target_bounds.width() + divider_delta) /
-           static_cast<float>(maximized_bounds.width());
+           maximized_bounds.width();
   }
   return static_cast<float>(target_bounds.height() + divider_delta) /
-         static_cast<float>(maximized_bounds.height());
+         maximized_bounds.height();
 }
 
 // Move all transient children to |dst_root|, including the ones in the child

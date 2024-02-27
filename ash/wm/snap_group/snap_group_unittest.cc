@@ -1939,12 +1939,10 @@ class SnapGroupTest : public FasterSplitScreenTest {
     // The split view divider will show on two windows snapped.
     EXPECT_TRUE(split_view_divider()->divider_widget());
 
-    // TODO(b/322576687): Change the comparison back to `EXPECT_EQ` after
-    // consolidating the snapped window bounds and divider position calculation.
-    EXPECT_NEAR(chromeos::kDefaultSnapRatio,
-                *WindowState::Get(window1)->snap_ratio(), /*abs_error=*/0.05);
-    EXPECT_NEAR(chromeos::kDefaultSnapRatio,
-                *WindowState::Get(window2)->snap_ratio(), /*abs_error=*/0.05);
+    EXPECT_EQ(chromeos::kDefaultSnapRatio,
+              *WindowState::Get(window1)->snap_ratio());
+    EXPECT_EQ(chromeos::kDefaultSnapRatio,
+              *WindowState::Get(window2)->snap_ratio());
 
     // Now that two windows are snapped, the divider is between them.
     gfx::Rect divider_bounds(
@@ -1953,12 +1951,8 @@ class SnapGroupTest : public FasterSplitScreenTest {
     right_bounds.set_x(right_bounds.x() + divider_bounds.width() / 2);
     right_bounds.set_width(right_bounds.width() - divider_bounds.width() / 2);
 
-    // TODO(b/322576687): Change the comparison back to `EXPECT_EQ` after
-    // consolidating the snapped window bounds and divider position calculation.
-    EXPECT_NEAR(left_bounds.width(), window1->GetBoundsInScreen().width(),
-                /*abs_error=*/kSplitviewDividerShortSideLength / 2);
-    EXPECT_NEAR(right_bounds.width(), window2->GetBoundsInScreen().width(),
-                /*abs_error=*/kSplitviewDividerShortSideLength / 2);
+    EXPECT_EQ(left_bounds.width(), window1->GetBoundsInScreen().width());
+    EXPECT_EQ(right_bounds.width(), window2->GetBoundsInScreen().width());
   }
 
   void CompleteWindowCycling() {
@@ -2223,9 +2217,11 @@ TEST_F(SnapGroupTest, SnapRatioTest) {
   split_view_divider()->ResizeWithDivider(end_point);
   split_view_divider()->EndResizeWithDivider(end_point);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_NEAR(0.33f, WindowState::Get(w1.get())->snap_ratio().value(),
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
+              WindowState::Get(w1.get())->snap_ratio().value(),
               /*abs_error=*/0.1);
-  EXPECT_NEAR(0.67f, WindowState::Get(w2.get())->snap_ratio().value(),
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio,
+              WindowState::Get(w2.get())->snap_ratio().value(),
               /*abs_error=*/0.1);
 }
 
@@ -2658,9 +2654,11 @@ TEST_F(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem) {
   split_view_divider()->ResizeWithDivider(end_point);
   split_view_divider()->EndResizeWithDivider(end_point);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_NEAR(0.33f, WindowState::Get(w1.get())->snap_ratio().value(),
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
+              WindowState::Get(w1.get())->snap_ratio().value(),
               /*abs_error=*/0.01);
-  EXPECT_NEAR(0.67f, WindowState::Get(w2.get())->snap_ratio().value(),
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio,
+              WindowState::Get(w2.get())->snap_ratio().value(),
               /*abs_error=*/0.01);
 
   OverviewController* overview_controller = OverviewController::Get();
@@ -3865,25 +3863,18 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionWithOneSnapGroup) {
   EXPECT_EQ(window1.get(), observed_windows.front());
   EXPECT_EQ(window2.get(), observed_windows.back());
 
-  // TODO(b/322576687): Change the comparison back to `EXPECT_EQ` after
-  // consolidating the snapped window bounds and divider position calculation.
-  EXPECT_NEAR(chromeos::kDefaultSnapRatio,
-              *WindowState::Get(window1.get())->snap_ratio(),
-              /*abs_error=*/0.05);
-  EXPECT_NEAR(chromeos::kDefaultSnapRatio,
-              *WindowState::Get(window2.get())->snap_ratio(),
-              /*abs_error=*/0.05);
+  EXPECT_EQ(chromeos::kDefaultSnapRatio,
+            *WindowState::Get(window1.get())->snap_ratio());
+  EXPECT_EQ(chromeos::kDefaultSnapRatio,
+            *WindowState::Get(window2.get())->snap_ratio());
 
   ExitTabletMode();
   EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
                                                                 window2.get()));
-  // TODO(b/322576687): Consolidate the bounds update / calculation with the
-  // existence of divider between clamshell and tablet mode. Change
-  // `EXPECT_NEAR` back to `EXPECT_EQ`.
-  EXPECT_NEAR(0.5f, *WindowState::Get(window1.get())->snap_ratio(),
-              /*abs_error=*/0.01);
-  EXPECT_NEAR(0.5f, *WindowState::Get(window2.get())->snap_ratio(),
-              /*abs_error=*/0.01);
+  EXPECT_EQ(chromeos::kDefaultSnapRatio,
+            *WindowState::Get(window1.get())->snap_ratio());
+  EXPECT_EQ(chromeos::kDefaultSnapRatio,
+            *WindowState::Get(window2.get())->snap_ratio());
   EXPECT_TRUE(split_view_divider()->divider_widget());
 }
 
@@ -3897,10 +3888,8 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionGetClosestFixedRatio) {
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
   SnapTwoTestWindows(window1.get(), window2.get(), /*horizontal=*/true);
   ASSERT_TRUE(split_view_divider()->divider_widget());
-  // TODO(b/322576687): Change the comparison back to `EXPECT_EQ` after
-  // consolidating the snapped window bounds and divider position calculation.
-  EXPECT_NEAR(*WindowState::Get(window1.get())->snap_ratio(),
-              chromeos::kDefaultSnapRatio, /*abs_error=*/0.05);
+  EXPECT_EQ(*WindowState::Get(window1.get())->snap_ratio(),
+            chromeos::kDefaultSnapRatio);
 
   // Build test cases to be used for divider dragging, with expected fixed ratio
   // and corresponding pixels shown in the ASCII diagram below:
