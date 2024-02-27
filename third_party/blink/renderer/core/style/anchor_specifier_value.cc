@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 
 namespace blink {
 
@@ -38,6 +39,13 @@ AnchorSpecifierValue::AnchorSpecifierValue(const ScopedCSSName& name)
 
 bool AnchorSpecifierValue::operator==(const AnchorSpecifierValue& other) const {
   return type_ == other.type_ && base::ValuesEquivalent(name_, other.name_);
+}
+
+unsigned AnchorSpecifierValue::GetHash() const {
+  unsigned hash = 0;
+  WTF::AddIntToHash(hash, WTF::HashInt(type_));
+  WTF::AddIntToHash(hash, name_ ? name_->GetHash() : 0);
+  return hash;
 }
 
 void AnchorSpecifierValue::Trace(Visitor* visitor) const {

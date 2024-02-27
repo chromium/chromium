@@ -85,7 +85,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
         GetDocument().documentElement()->GetComputedStyle(),
         CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(),
-        CSSToLengthConversionData::AnchorData(options.anchor_evaluator),
+        CSSToLengthConversionData::AnchorData(div, options.anchor_evaluator),
         options.data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()),
         options.flags ? *options.flags : ignored_flags_);
   }

@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
+#include "third_party/blink/renderer/core/css/result_caching_anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/shadow_tree_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
@@ -3486,15 +3487,25 @@ void StyleEngine::UpdateStyleForOutOfFlow(
     needs_update = true;
   }
   if (element.ComputedStyleRef().HasAnchorFunctions()) {
-    CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled());
-    // TODO(crbug.com/41483417): Store results on OutOfFlowData, and check
-    // if we actually need an update.
-    needs_update = true;
+    AnchorResults& anchor_results =
+        element.EnsureOutOfFlowData().GetAnchorResults();
+    if (anchor_results.IsEmpty() ||
+        anchor_results.IsAnyResultDifferent(anchor_evaluator)) {
+      needs_update = true;
+    }
   }
 
   if (!needs_update) {
     return;
   }
+
+  // Creating a ResultCachingAnchorEvaluator means that:
+  //
+  // - The existing AnchorResults are immediately cleared, and
+  // - The result of any Evaluate() call made will be stored
+  //   in the AnchorResults.
+  ResultCachingAnchorEvaluator result_caching_anchor_evaluator(
+      anchor_evaluator, element.EnsureOutOfFlowData().GetAnchorResults());
 
   // The last seen `try_set` is persisted on Element, such that subsequent
   // regular style recalcs can continue to include this set.
@@ -3507,7 +3518,7 @@ void StyleEngine::UpdateStyleForOutOfFlow(
   StyleRecalcContext style_recalc_context =
       StyleRecalcContext::FromAncestors(element);
   style_recalc_context.is_interleaved_oof = true;
-  style_recalc_context.anchor_evaluator = anchor_evaluator;
+  style_recalc_context.anchor_evaluator = &result_caching_anchor_evaluator;
 
   StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
 

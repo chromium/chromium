@@ -1775,6 +1775,58 @@ TEST_P(ParameterizedStyleResolverTest, AnchorQueryBaseComputedStyle) {
   EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
 
+TEST_P(ParameterizedStyleResolverTest, AnchorQueryResults) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #anchor {
+        position: absolute;
+        width: 100px;
+        height: 150px;
+        left: 200px;
+        top: 300px;
+        anchor-name: --a;
+      }
+      #anchored {
+        position: absolute;
+        left: anchor(--a right);
+        top: anchor(--a bottom);
+        width: anchor-size(--a height);
+        height: anchor-size(--a width);
+      }
+    </style>
+    <div id=anchor>Anchor</div>
+    <div id=anchored>Anchored</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* anchored = GetDocument().getElementById(AtomicString("anchored"));
+  ASSERT_TRUE(anchored);
+
+  EXPECT_EQ("300px", ComputedValue("left", anchored->ComputedStyleRef()));
+  EXPECT_EQ("450px", ComputedValue("top", anchored->ComputedStyleRef()));
+  EXPECT_EQ("150px", ComputedValue("width", anchored->ComputedStyleRef()));
+  EXPECT_EQ("100px", ComputedValue("height", anchored->ComputedStyleRef()));
+
+  // The call to UpdateAllLifecyclePhasesForTest should have populated
+  // the AnchorResults.
+  OutOfFlowData* out_of_flow_data = anchored->GetOutOfFlowData();
+  ASSERT_TRUE(out_of_flow_data);
+  EXPECT_FALSE(out_of_flow_data->GetAnchorResults().IsEmpty());
+
+  // Calls StyleResolver::ResolveStyle with a nullptr AnchorEvaluator.
+  const ComputedStyle* non_interleaved_style = StyleForId("anchored");
+  ASSERT_TRUE(non_interleaved_style);
+
+  // Results should be the same as before, because we're fetching them
+  // from the AnchorResults on OutOfFlowData.
+  EXPECT_EQ("300px", ComputedValue("left", *non_interleaved_style));
+  EXPECT_EQ("450px", ComputedValue("top", *non_interleaved_style));
+  EXPECT_EQ("150px", ComputedValue("width", *non_interleaved_style));
+  EXPECT_EQ("100px", ComputedValue("height", *non_interleaved_style));
+}
+
 TEST_P(ParameterizedStyleResolverTest, NoCascadeLayers) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>

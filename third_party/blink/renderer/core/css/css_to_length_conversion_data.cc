@@ -268,10 +268,14 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
 }
 
 CSSToLengthConversionData::AnchorData::AnchorData(
+    Element* anchored,
     Length::AnchorEvaluator* evaluator)
     : evaluator_(evaluator) {
-  // TODO(crbug.com/41483417): Note that this will become something more
-  // than a simple wrapper over Length::AnchorEvaluator* in the future.
+  if (!evaluator_ && anchored) {
+    if (OutOfFlowData* out_of_flow_data = anchored->GetOutOfFlowData()) {
+      evaluator_ = &out_of_flow_data->GetAnchorResults();
+    }
+  }
 }
 
 CSSToLengthConversionData::CSSToLengthConversionData(

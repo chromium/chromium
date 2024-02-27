@@ -165,7 +165,7 @@ void StyleResolverState::UpdateLengthConversionData() {
       *style_builder_, ParentStyle(), RootElementStyle(),
       GetDocument().GetStyleEngine().GetViewportSize(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
-      CSSToLengthConversionData::AnchorData(anchor_evaluator_),
+      CSSToLengthConversionData::AnchorData(styled_element_, anchor_evaluator_),
       StyleBuilder().EffectiveZoom(), length_conversion_flags_);
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
@@ -184,7 +184,8 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
       GetDocument().GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes(
       container_unit_context_);
-  CSSToLengthConversionData::AnchorData anchor_data(anchor_evaluator_);
+  CSSToLengthConversionData::AnchorData anchor_data(styled_element_,
+                                                    anchor_evaluator_);
   return CSSToLengthConversionData(
       StyleBuilder().GetWritingMode(), font_sizes, line_height_size,
       viewport_size, container_sizes, anchor_data, 1, length_conversion_flags_);

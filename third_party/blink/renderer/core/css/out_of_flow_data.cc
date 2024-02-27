@@ -10,6 +10,7 @@ namespace blink {
 
 void OutOfFlowData::Trace(Visitor* visitor) const {
   visitor->Trace(try_set_);
+  visitor->Trace(anchor_results_);
   ElementRareDataField::Trace(visitor);
 }
 

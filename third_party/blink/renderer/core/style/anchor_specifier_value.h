@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_ANCHOR_SPECIFIER_VALUE_H_
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -15,7 +16,8 @@ class ScopedCSSName;
 
 // Represents an anchor specifier: default | implicit | <dashed-ident>
 // https://drafts4.csswg.org/css-anchor-1/#target-anchor-element
-class AnchorSpecifierValue : public GarbageCollected<AnchorSpecifierValue> {
+class CORE_EXPORT AnchorSpecifierValue
+    : public GarbageCollected<AnchorSpecifierValue> {
  public:
   enum class Type {
     kDefault,
@@ -46,6 +48,8 @@ class AnchorSpecifierValue : public GarbageCollected<AnchorSpecifierValue> {
   bool operator!=(const AnchorSpecifierValue& other) const {
     return !operator==(other);
   }
+
+  unsigned GetHash() const;
 
   void Trace(Visitor*) const;
 

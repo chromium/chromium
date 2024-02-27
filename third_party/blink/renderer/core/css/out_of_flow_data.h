@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_OUT_OF_FLOW_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/anchor_results.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -33,6 +34,9 @@ class CORE_EXPORT OutOfFlowData final
 
   const CSSPropertyValueSet* GetTryPropertyValueSet() const { return try_set_; }
 
+  AnchorResults& GetAnchorResults() { return anchor_results_; }
+  const AnchorResults& GetAnchorResults() const { return anchor_results_; }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -45,6 +49,13 @@ class CORE_EXPORT OutOfFlowData final
   // See also StyleEngine::UpdateStyleForOutOfFlow,
   // which sets this value.
   Member<const CSSPropertyValueSet> try_set_;
+
+  // During interleaved style updates for out-of-flow elements,
+  // the result of any anchor() or anchor-size() functions are stored here,
+  // by an instance of ResultCachingAnchorEvaluator. The AnchorResults object
+  // is then used directly as an AnchorEvaluator during regular
+  // (non-interleaved) style recalcs.
+  AnchorResults anchor_results_;
 };
 
 }  // namespace blink

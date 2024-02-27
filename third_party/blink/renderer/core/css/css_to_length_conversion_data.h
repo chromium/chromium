@@ -245,7 +245,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    public:
     AnchorData() = default;
-    explicit AnchorData(Length::AnchorEvaluator*);
+    AnchorData(Element* anchored, Length::AnchorEvaluator*);
     Length::AnchorEvaluator* GetEvaluator() const { return evaluator_; }
 
    private:
