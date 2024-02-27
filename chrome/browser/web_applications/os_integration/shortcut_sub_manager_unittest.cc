@@ -292,8 +292,8 @@ class ShortcutSubManagerExecuteTest
     info->icon_bitmaps.any = std::move(icon_map);
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
-    // InstallFromInfo() does not trigger OS integration.
-    provider().scheduler().InstallFromInfo(
+    // InstallFromInfoNoIntegrationForTesting() does not trigger OS integration.
+    provider().scheduler().InstallFromInfoNoIntegrationForTesting(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         result.GetCallback());

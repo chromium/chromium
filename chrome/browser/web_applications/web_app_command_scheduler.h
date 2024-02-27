@@ -114,11 +114,12 @@ class WebAppCommandScheduler {
   // manifest.
   // `InstallFromInfo` doesn't install OS hooks. `InstallFromInfoWithParams`
   // install OS hooks when they are set in `install_params`.
-  void InstallFromInfo(std::unique_ptr<WebAppInstallInfo> install_info,
-                       bool overwrite_existing_manifest_fields,
-                       webapps::WebappInstallSource install_surface,
-                       OnceInstallCallback install_callback,
-                       const base::Location& location = FROM_HERE);
+  void InstallFromInfoNoIntegrationForTesting(
+      std::unique_ptr<WebAppInstallInfo> install_info,
+      bool overwrite_existing_manifest_fields,
+      webapps::WebappInstallSource install_surface,
+      OnceInstallCallback install_callback,
+      const base::Location& location = FROM_HERE);
 
   void InstallFromInfoWithParams(
       std::unique_ptr<WebAppInstallInfo> install_info,

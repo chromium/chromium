@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -122,12 +123,13 @@ void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
           std::move(parent_manifest_id), std::move(callback)));
 }
 
-void WebAppCommandScheduler::InstallFromInfo(
+void WebAppCommandScheduler::InstallFromInfoNoIntegrationForTesting(
     std::unique_ptr<WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
     const base::Location& location) {
+  CHECK_IS_TEST();
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
           &profile_.get(), std::move(install_info),

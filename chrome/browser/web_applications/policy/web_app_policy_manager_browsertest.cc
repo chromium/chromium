@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
                                install_info.get());
 
   auto* provider = WebAppProvider::GetForTest(profile());
-  provider->scheduler().InstallFromInfo(
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
       std::move(install_info),
       /*overwrite_existing_manifest_fields=*/true,
       webapps::WebappInstallSource::EXTERNAL_POLICY, base::DoNothing());

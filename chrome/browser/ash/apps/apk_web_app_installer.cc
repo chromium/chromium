@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -209,12 +210,13 @@ void ApkWebAppInstaller::DoInstall() {
     // Doesn't overwrite already existing web app with manifest fields from the
     // apk.
     GURL start_url = web_app_install_info_->start_url;
-    provider->scheduler().InstallFromInfo(
+    provider->scheduler().InstallFromInfoWithParams(
         std::move(web_app_install_info_),
         /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::ARC,
         base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
-                       base::Unretained(this), std::move(start_url)));
+                       base::Unretained(this), std::move(start_url)),
+        web_app::WebAppInstallParams());
   }
 }
 

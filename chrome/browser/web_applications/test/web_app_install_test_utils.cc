@@ -114,9 +114,9 @@ webapps::AppId InstallWebApp(Profile* profile,
   // In unit tests, we do not have Browser or WebContents instances. Hence we
   // use `InstallFromInfoCommand` instead of `FetchManifestAndInstallCommand` or
   // `WebAppInstallCommand` to install the web app.
-  provider->scheduler().InstallFromInfo(std::move(web_app_info),
-                                        overwrite_existing_manifest_fields,
-                                        install_source, future.GetCallback());
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
+      std::move(web_app_info), overwrite_existing_manifest_fields,
+      install_source, future.GetCallback());
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             future.Get<webapps::InstallResultCode>());
@@ -155,7 +155,7 @@ webapps::AppId InstallShortcut(Profile* profile,
   // In unit tests, we do not have Browser or WebContents instances. Hence we
   // use `InstallFromInfoCommand` instead of `FetchManifestAndInstallCommand` or
   // `WebAppInstallCommand` to install the web app.
-  provider->scheduler().InstallFromInfo(
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
       std::move(web_app_info), /*overwrite_existing_manifest_fields =*/true,
       is_policy_install ? webapps::WebappInstallSource::EXTERNAL_POLICY
                         : webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,

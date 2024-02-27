@@ -236,12 +236,13 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
 
-    provider->scheduler().InstallFromInfo(
+    provider->scheduler().InstallFromInfoWithParams(
         std::move(web_app_info),
         /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::MANAGEMENT_API,
         base::BindOnce(OnGenerateAppForLinkCompleted,
-                       base::RetainedRef(function)));
+                       base::RetainedRef(function)),
+        web_app::WebAppInstallParams());
   }
 
   extensions::api::management::ExtensionInfo CreateExtensionInfoFromWebApp(

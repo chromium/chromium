@@ -516,6 +516,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_install_finalizer.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
+  "+chrome/browser/web_applications/web_app_install_params.h",
   "+chrome/browser/web_applications/web_app_install_utils.h",
   "+chrome/browser/web_applications/web_app_launch_queue.h",
   "+chrome/browser/web_applications/web_app_provider.h",

@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -433,7 +434,7 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
   base::ConcurrentCallbacks<SubAppInstallResult> concurrent;
   for (auto& install_info : add_call_info.install_infos) {
     webapps::ManifestId manifest_id = install_info->manifest_id;
-    provider->scheduler().InstallFromInfo(
+    provider->scheduler().InstallFromInfoWithParams(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::SUB_APP,
         base::BindOnce(
@@ -442,7 +443,8 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
               return SubAppInstallResult(manifest_id, app_id, result_code);
             },
             manifest_id)
-            .Then(concurrent.CreateCallback()));
+            .Then(concurrent.CreateCallback()),
+        WebAppInstallParams());
   }
   std::move(concurrent)
       .Done(base::BindOnce(&SubAppsServiceImpl::FinishAddCall,

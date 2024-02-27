@@ -165,7 +165,7 @@ void StandaloneBrowserTestController::InstallWebApp(
   info->user_display_mode = WindowModeToUserDisplayMode(window_mode);
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  provider->scheduler().InstallFromInfo(
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::SYNC,
@@ -291,7 +291,7 @@ void StandaloneBrowserTestController::InstallSubApp(
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  provider->scheduler().InstallFromInfo(
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::SUB_APP,

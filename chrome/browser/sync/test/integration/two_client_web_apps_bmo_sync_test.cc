@@ -149,7 +149,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     base::RunLoop run_loop;
     webapps::AppId app_id;
     auto* provider = WebAppProvider::GetForTest(profile);
-    provider->scheduler().InstallFromInfo(
+    provider->scheduler().InstallFromInfoNoIntegrationForTesting(
         std::make_unique<web_app::WebAppInstallInfo>(info.Clone()),
         /*overwrite_existing_manifest_fields=*/true, source,
         base::BindLambdaForTesting(

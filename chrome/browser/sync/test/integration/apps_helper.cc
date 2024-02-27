@@ -250,7 +250,7 @@ webapps::AppId InstallWebApp(Profile* profile,
   base::RunLoop run_loop;
   webapps::AppId app_id;
   auto* provider = web_app::WebAppProvider::GetForTest(profile);
-  provider->scheduler().InstallFromInfo(
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
       std::make_unique<web_app::WebAppInstallInfo>(info.Clone()),
       /*overwrite_existing_manifest_fields=*/true,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,

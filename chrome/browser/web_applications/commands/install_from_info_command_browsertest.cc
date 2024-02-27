@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
 
   base::RunLoop loop;
   webapps::AppId result_app_id;
-  provider().scheduler().InstallFromInfo(
+  provider().scheduler().InstallFromInfoNoIntegrationForTesting(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false, install_source,
       base::BindLambdaForTesting(

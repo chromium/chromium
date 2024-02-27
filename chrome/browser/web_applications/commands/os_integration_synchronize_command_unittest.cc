@@ -87,7 +87,7 @@ class OsIntegrationSynchronizeCommandTest
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON) {
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
-    provider()->scheduler().InstallFromInfo(
+    provider()->scheduler().InstallFromInfoNoIntegrationForTesting(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/true,
         source, result.GetCallback());
     bool success = result.Wait();
