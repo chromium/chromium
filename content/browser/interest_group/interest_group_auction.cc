@@ -1571,6 +1571,7 @@ class InterestGroupAuction::BuyerHelper
             interest_group.priority_vector, interest_group.execution_mode,
             interest_group.update_url,
             interest_group.trusted_bidding_signals_keys,
+            interest_group.max_trusted_bidding_signals_url_length,
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components,
             KAnonKeysToMojom(bid_state->kanon_keys)),

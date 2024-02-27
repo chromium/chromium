@@ -759,12 +759,12 @@ void SellerWorklet::ScoreAd(
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
   // signals URL which needs to be fetched before the auction can be run.
   if (trusted_signals_request_manager_) {
-    // Pass 0 as hardcoded `max_trusted_scoring_signals_url_length` for feature
-    // initializing.
     score_ad_task->trusted_scoring_signals_request =
         trusted_signals_request_manager_->RequestScoringSignals(
             browser_signal_render_url,
-            score_ad_task->browser_signal_ad_components, 0,
+            score_ad_task->browser_signal_ad_components,
+            score_ad_task->auction_ad_config_non_shared_params
+                .max_trusted_scoring_signals_url_length,
             base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
                            base::Unretained(this), score_ad_task));
     return;

@@ -1776,6 +1776,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     auction_config.non_shared_params.auction_nonce = auction_nonce_;
 
+    auction_config.non_shared_params.max_trusted_scoring_signals_url_length =
+        max_trusted_scoring_signals_url_length_;
+
     auction_config.expects_additional_bids = pass_promise_for_additional_bids_;
 
     return auction_config;
@@ -3134,6 +3137,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   std::optional<std::vector<blink::AdSize>> all_slots_requested_sizes_;
 
   std::optional<base::Uuid> auction_nonce_;
+  int32_t max_trusted_scoring_signals_url_length_ = 0;
 
   std::optional<std::vector<absl::uint128>> auction_report_buyer_keys_;
   std::optional<base::flat_map<
@@ -9654,7 +9658,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateAdditionalBidsFeatureOff) {
 // Trying to update directFromSellerSignalsHeaderAdSlot twice.
 TEST_F(AuctionRunnerDfssAdSlotTest,
        PromiseSignalsUpdateNonPromiseDirectFromSellerSignalsHeaderAdSlot) {
-
   // Have two kind of promises so we don't just finish after first
   // directFromSellerSignalsHeaderAdSlot update
   use_promise_for_per_buyer_signals_ = true;
@@ -21584,6 +21587,190 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGroupingNoSizes) {
                   kBidder1TrustedSignalsUrl.spec() +
                   "?hostname=publisher1.com&keys=k1,k2,k3,k4,k5,k6"
                   "&interestGroupNames=name1,name2,name3,name4,name5,name6")));
+
+  // No need to finish the auction.
+}
+
+TEST_F(AuctionRunnerTest, TrustedBiddingSignalsJointBatchedRequests) {
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeConstBidScript(1, "https://ad1.com/"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kMinimumDecisionScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{"k1"}, GURL("https://ad1.com")));
+  bidders[0].interest_group.priority = 2;
+  bidders[0].interest_group.priority_vector = {{"browserSignals.one", 1}};
+  bidders[0].interest_group.max_trusted_bidding_signals_url_length = 0;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{"k2"}, GURL("https://ad2.com")));
+  bidders[1].interest_group.priority = 1;
+  bidders[1].interest_group.priority_vector = {{"browserSignals.one", 2}};
+  bidders[1].interest_group.max_trusted_bidding_signals_url_length = 0;
+  bidders[1].interest_group.enable_bidding_signals_prioritization = true;
+
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Wait for bidding signals network requests to be made.
+  task_environment()->RunUntilIdle();
+
+  std::vector<GURL> pending_request_urls;
+  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
+    pending_request_urls.push_back(pending_request.request.url);
+  }
+
+  EXPECT_THAT(
+      pending_request_urls,
+      testing::UnorderedElementsAre(GURL(kBidder1TrustedSignalsUrl.spec() +
+                                         "?hostname=publisher1.com&keys=k1,k2"
+                                         "&interestGroupNames=1,2")));
+
+  // No need to finish the auction.
+}
+
+TEST_F(AuctionRunnerTest, TrustedBiddingSignalsSplitBatchedRequests) {
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
+
+  url_loader_factory_.ClearResponses();
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeConstBidScript(1, "https://ad1.com/"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kMinimumDecisionScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"1", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{"k1"}, GURL("https://ad1.com")));
+  bidders[0].interest_group.priority = 2;
+  bidders[0].interest_group.priority_vector = {{"browserSignals.one", 1}};
+  bidders[0].interest_group.max_trusted_bidding_signals_url_length = 10;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, /*name=*/"2", kBidder1Url, kBidder1TrustedSignalsUrl,
+      /*trusted_bidding_signals_keys=*/{"k2"}, GURL("https://ad2.com")));
+  bidders[1].interest_group.priority = 1;
+  bidders[1].interest_group.priority_vector = {{"browserSignals.one", 2}};
+  bidders[1].interest_group.max_trusted_bidding_signals_url_length = 10;
+  bidders[1].interest_group.enable_bidding_signals_prioritization = true;
+
+  StartAuction(kSellerUrl, std::move(bidders));
+
+  // Wait for bidding signals network requests to be made.
+  task_environment()->RunUntilIdle();
+
+  std::vector<GURL> pending_request_urls;
+  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
+    pending_request_urls.push_back(pending_request.request.url);
+  }
+
+  EXPECT_THAT(pending_request_urls, testing::UnorderedElementsAre(
+                                        GURL(kBidder1TrustedSignalsUrl.spec() +
+                                             "?hostname=publisher1.com&keys=k1"
+                                             "&interestGroupNames=1"),
+                                        GURL(kBidder1TrustedSignalsUrl.spec() +
+                                             "?hostname=publisher1.com&keys=k2"
+                                             "&interestGroupNames=2")));
+
+  // No need to finish the auction.
+}
+
+TEST_F(AuctionRunnerTest, TrustedScoringSignalsJointBatchedRequests) {
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
+
+  url_loader_factory_.ClearResponses();
+  trusted_scoring_signals_url_ =
+      GURL("https://adstuff.publisher1.com/seller_signals");
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b"));
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kMinimumDecisionScript);
+
+  max_trusted_scoring_signals_url_length_ = 0;
+  RunStandardAuction(false);
+  // Wait for scoring signals network requests to be made.
+  task_environment()->RunUntilIdle();
+
+  std::vector<GURL> pending_request_urls;
+  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
+    pending_request_urls.push_back(pending_request.request.url);
+  }
+
+  EXPECT_THAT(
+      pending_request_urls,
+      testing::UnorderedElementsAre(GURL(
+          trusted_scoring_signals_url_->spec() +
+          "?hostname=publisher1.com&renderUrls=https%3A%2F%2Fad1.com%2F,https%"
+          "3A%2F%2Fad2.com%2F&adComponentRenderUrls=https%3A%2F%2Fad1.com-"
+          "component1.com%2F,https%3A%2F%2Fad2.com-component1.com%2F")));
+
+  // No need to finish the auction.
+}
+
+TEST_F(AuctionRunnerTest, TrustedScoringSignalsSplitBatchedRequests) {
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
+
+  url_loader_factory_.ClearResponses();
+  trusted_scoring_signals_url_ =
+      GURL("https://adstuff.publisher1.com/seller_signals");
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kMinimumDecisionScript);
+
+  max_trusted_scoring_signals_url_length_ = 10;
+  RunStandardAuction(false);
+  // Wait for scoring signals network requests to be made.
+  task_environment()->RunUntilIdle();
+
+  std::vector<GURL> pending_request_urls;
+  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
+    pending_request_urls.push_back(pending_request.request.url);
+  }
+
+  EXPECT_THAT(
+      pending_request_urls,
+      testing::UnorderedElementsAre(
+          GURL(trusted_scoring_signals_url_->spec() +
+               "?hostname=publisher1.com&renderUrls=https%3A%2F%2Fad1.com%2F&"
+               "adComponentRenderUrls=https%3A%2F%2Fad1.com-component1.com%2F"),
+          GURL(trusted_scoring_signals_url_->spec() +
+               "?hostname=publisher1.com&renderUrls=https%3A%2F%2Fad2.com%2F&"
+               "adComponentRenderUrls=https%3A%2F%2Fad2.com-component1.com%"
+               "2F")));
 
   // No need to finish the auction.
 }

@@ -72,6 +72,7 @@ struct BidderWorkletNonSharedParams {
 
   url.mojom.Url? update_url;
   array<string>? trusted_bidding_signals_keys;
+  int32 max_trusted_bidding_signals_url_length;
   string? user_bidding_signals;
   array<blink.mojom.InterestGroupAd>? ads;
   array<blink.mojom.InterestGroupAd>? ad_components;
