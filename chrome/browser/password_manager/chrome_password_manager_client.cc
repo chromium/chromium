@@ -1415,8 +1415,13 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
     tried_launching_warning_on_startup = true;
     TryToShowLocalPasswordMigrationWarning();
   }
-
-  TryToShowPostPasswordMigrationSheet();
+  // This prevents the post migration sheet from trying to show on opening new
+  // tabs after the initial attempt to show the sheet on startup.
+  static bool tried_launching_post_migration_sheet_on_startup = false;
+  if (!tried_launching_post_migration_sheet_on_startup) {
+    tried_launching_post_migration_sheet_on_startup = true;
+    TryToShowPostPasswordMigrationSheet();
+  }
 #endif
 }
 
