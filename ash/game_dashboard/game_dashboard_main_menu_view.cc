@@ -623,7 +623,8 @@ void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
 void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
   Shell::Get()->shell_delegate()->OpenFeedbackDialog(
       ShellDelegate::FeedbackSource::kGameDashboard,
-      /*description_template=*/"#GameDashboard\n\n");
+      /*description_template=*/"#GameDashboard\n\n",
+      /*category_tag=*/std::string());
 }
 
 void GameDashboardMainMenuView::OnHelpButtonPressed() {

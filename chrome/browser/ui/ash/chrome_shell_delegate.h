@@ -79,7 +79,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackDialog(ShellDelegate::FeedbackSource source,
-                          const std::string& description_template) override;
+                          const std::string& description_template,
+                          const std::string& category_tag) override;
   void OpenProfileManager() override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();

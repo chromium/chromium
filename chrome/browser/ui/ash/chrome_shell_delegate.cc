@@ -127,6 +127,8 @@ chrome::FeedbackSource ToChromeFeedbackSource(
       return chrome::FeedbackSource::kFeedbackSourceFocusMode;
     case ash::ShellDelegate::FeedbackSource::kGameDashboard:
       return chrome::FeedbackSource::kFeedbackSourceGameDashboard;
+    case ash::ShellDelegate::FeedbackSource::kOverview:
+      return chrome::FeedbackSource::kFeedbackSourceOverview;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
       return chrome::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
   }
@@ -395,10 +397,11 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
 
 void ChromeShellDelegate::OpenFeedbackDialog(
     ShellDelegate::FeedbackSource source,
-    const std::string& description_template) {
+    const std::string& description_template,
+    const std::string& category_tag) {
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
                              ToChromeFeedbackSource(source),
-                             description_template);
+                             description_template, category_tag);
 }
 
 void ChromeShellDelegate::OpenProfileManager() {

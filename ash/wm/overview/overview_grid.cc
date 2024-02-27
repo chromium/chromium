@@ -3186,8 +3186,10 @@ void OverviewGrid::UpdateFeedbackButton() {
   if (!feedback_widget_) {
     auto contents_view = std::make_unique<PillButton>(
         // TODO(hewer): Add callback to open a feedback page.
-        views::Button::PressedCallback(), u"Send Feedback",
-        PillButton::Type::kDefaultWithIconLeading, &kFeedbackIcon);
+        base::BindRepeating(&OverviewGrid::ShowFeedbackPage,
+                            base::Unretained(this)),
+        u"Send Feedback", PillButton::Type::kDefaultWithIconLeading,
+        &kFeedbackIcon);
 
     views::Widget::InitParams params;
     params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
@@ -3212,6 +3214,13 @@ void OverviewGrid::UpdateFeedbackButton() {
                 grid_bounds.bottom_left().y() - kFeedbackCornerSpacing -
                     contents_size.height(),
                 contents_size.width(), contents_size.height()));
+}
+
+void OverviewGrid::ShowFeedbackPage() {
+  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
+      ShellDelegate::FeedbackSource::kOverview,
+      /*description_template=*/std::string(),
+      /*category_tag=*/"FromForest");
 }
 
 }  // namespace ash

@@ -841,7 +841,8 @@ void FocusModeDetailedView::CreateFeedbackButton() {
 void FocusModeDetailedView::OnFeedbackButtonPressed() {
   Shell::Get()->shell_delegate()->OpenFeedbackDialog(
       ShellDelegate::FeedbackSource::kFocusMode,
-      /*description_template=*/"#FocusMode");
+      /*description_template=*/"#FocusMode",
+      /*category_tag=*/std::string());
 }
 
 void FocusModeDetailedView::OnClockMinutePassed() {

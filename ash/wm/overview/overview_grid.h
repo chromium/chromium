@@ -632,6 +632,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // feedback page when clicked. The widget will not show in partial overview.
   void UpdateFeedbackButton();
 
+  // Shows the feedback page with preset information for overview.
+  void ShowFeedbackPage();
+
   // The drop target is created when a window or overview item is being dragged,
   // and is destroyed when the drag ends or overview mode is ended. The drop
   // target is hidden when a snap preview area is shown. You can drop a window
