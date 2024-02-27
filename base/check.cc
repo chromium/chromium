@@ -344,7 +344,9 @@ CheckError::~CheckError() {
   // Note: This function ends up in crash stack traces. If its full name
   // changes, the crash server's magic signature logic needs to be updated.
   // See cl/306632920.
-  delete log_message_;
+
+  // Reset before `ImmediateCrash()` to ensure the message is flushed.
+  log_message_.reset();
 
   // Make sure we crash even if LOG(FATAL) has been overridden.
   // TODO(crbug.com/1409729): Remove severity checking in the destructor when
@@ -353,6 +355,8 @@ CheckError::~CheckError() {
     base::ImmediateCrash();
   }
 }
+
+CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
 
 NotReachedError NotReachedError::NotReached(base::NotFatalUntil fatal_milestone,
                                             const base::Location& location) {
@@ -387,7 +391,8 @@ NotReachedNoreturnError::NotReachedNoreturnError(const base::Location& location)
 // the crash server's magic signature logic needs to be updated. See
 // cl/306632920.
 NotReachedNoreturnError::~NotReachedNoreturnError() {
-  delete log_message_;
+  // Reset before `ImmediateCrash()` to ensure the message is flushed.
+  log_message_.reset();
 
   // Make sure we die if we haven't.
   // TODO(crbug.com/1409729): Replace this with NOTREACHED_NORETURN() once

@@ -6,6 +6,7 @@
 #define BASE_CHECK_H_
 
 #include <iosfwd>
+#include <memory>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -140,9 +141,9 @@ class BASE_EXPORT CheckError {
 
  protected:
   // Takes ownership of `log_message`.
-  explicit CheckError(LogMessage* log_message) : log_message_(log_message) {}
+  explicit CheckError(LogMessage* log_message);
 
-  const raw_ptr<LogMessage, DanglingUntriaged> log_message_;
+  std::unique_ptr<LogMessage> log_message_;
 };
 
 class BASE_EXPORT NotReachedError : public CheckError {
