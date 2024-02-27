@@ -284,7 +284,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element,
   // * Send the blur event.
   // * For each other element, focus -> clear -> blur.
   // * Send the focus event.
-  WebFormElement form_element = element.Form();
+  WebFormElement form_element = form_util::GetOwningForm(element);
   std::vector<WebFormControlElement> control_elements =
       form_util::GetAutofillableFormControlElements(element.GetDocument(),
                                                     form_element);
