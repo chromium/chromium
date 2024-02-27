@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 2 , harness_status.message = 
-[NOTRUN] Wait for fullscreenchange
-[FAIL] DOM Overlay in iframe - webgl
-  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
-[FAIL] DOM Overlay in iframe - webgl2
-  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
-Harness: the test ran to completion.

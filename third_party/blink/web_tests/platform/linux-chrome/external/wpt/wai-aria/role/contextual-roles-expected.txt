@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
 [FAIL] footer element scoped to main element is generic
   assert_false: Computed Role: "FooterAsNonLandmark" does not match any of the acceptable role strings in ["generic", "", "none"]: <footer data-testname="footer element scoped to main element is generic" class="ex-generic">x</footer> expected false got true
-[FAIL] contentinfo region scoped to main element is generic
-  assert_false: Computed Role: "contentinfo" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="contentinfo" data-testname="contentinfo region scoped to main element is generic" class="ex-generic">x</div> expected false got true
 Harness: the test ran to completion.

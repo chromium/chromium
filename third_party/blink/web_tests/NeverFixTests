@@ -2055,10 +2055,6 @@ external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h265_hevc [ Skip ]
 [ Mac10.15 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_annexb [ Skip ]
 [ Mac10.15 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_hevc [ Skip ]
 [ Mac10.15 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Skip ]
-[ Chrome ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_annexb [ Skip ]
-[ Chrome ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_annexb [ Skip ]
-[ Chrome ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h265_hevc [ Skip ]
-[ Chrome ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Skip ]
 
 # This test is Mac specific, it checks default monospace font-family on Mac.
 crbug.com/1449469 [ Linux ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
@@ -2073,10 +2069,10 @@ crbug.com/1476305 external/wpt/subapps/* [ Skip ]
 # can be problematic on debug builds.
 crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/finished.html [ Skip ]
 
-# Chrome only runs nonvirtual WPT tests at the moment.
-# wpt_internal tests are all skipped for Chrome, but feature teams can choose to opt-in their directories.
+# only run WPTs that can not run in content_shell in the new headless mode. This includes webdriver tests
+# and some roles related accessibility tests.
 [ Chrome ] * [ Skip ]
-[ Chrome ] external/wpt/* [ Pass ]
+[ Chrome ] external/wpt/webdriver/tests/* [ Pass ]
 [ Chrome ] wpt_internal/infrastructure/fail-before-timeout.html [ Pass ]
 [ Chrome ] wpt_internal/infrastructure/fail-with-nonexistent-subtest.html [ Pass ]
 
@@ -2084,49 +2080,6 @@ crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/fin
 # Linux due to resource constraints.
 [ Mac ] external/wpt/webdriver/tests/* [ Skip ]
 [ Win ] external/wpt/webdriver/tests/* [ Skip ]
-
-# Bluetooth tests do not work on Chrome
-[ Chrome ] external/wpt/bluetooth/* [ Skip ]
-[ Chrome ] external/wpt/fledge/* [ Skip ]
-
-# bfcache related tests does not work on headless_shell, see crbug.com/1510549
-crbug.com/1510549 [ Chrome ] external/wpt/performance-timeline/not-restored-reasons/* [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/html/semantics/embedded-content/bfcache/* [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/* [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/IndexedDB/back-forward-cache-* [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/webrtc/back-forward-cache-* [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/websockets/back-forward-cache-* [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/webtransport/back-forward-cache-* [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/fs/FileSystemFileHandle-sync-access-handle-back-forward-cache.https.tentative.window.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/fs/FileSystemFileHandle-writable-file-stream-back-forward-cache.https.tentative.window.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-activation/activation-after-bfcache-cross-origin.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-activation/activation-after-bfcache.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache-in-iframe.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/navigation-history-entry/entries-after-bfcache.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/navigation-api/per-entry-events/dispose-after-bfcache.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/webaudio/the-audio-api/the-audiocontext-interface/suspend-with-navigation.html [ Skip ]
-crbug.com/1510549 [ Chrome ] external/wpt/webmessaging/message-channels/close-event/entangled-after-back-forward-cache-restore.https.tentative.window.html [ Skip ]
-
-# many failures in the folders below, skip for now
-crbug.com/1499775 [ Chrome ] external/wpt/html/cross-origin-opener-policy/* [ Skip ]
-crbug.com/1499775 [ Chrome ] external/wpt/attribution-reporting/* [ Skip ]
-crbug.com/1499775 [ Chrome ] external/wpt/css/css-ui/compute-kind-widget-generated/* [ Skip ]
-
-# Most Prerender tests do not work on Chrome
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/* [ Skip ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/credentialed-prerender-not-opt-in.html [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_self [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/csp-script-src-self.html?target_hint=_blank [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html?2-last [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/remove-script-element.html [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=204 [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=205 [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=402 [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-non-successful.html?code=500 [ Pass ]
-crbug.com/1509302 [ Chrome ] external/wpt/speculation-rules/prerender/response-code-successful.html?code=202 [ Pass ]
-
-crbug.com/1499775 [ Chrome ] external/wpt/notifications/getnotifications-across-processes.https.window.html [ Skip ]
-crbug.com/1499775 [ Chrome ] external/wpt/screen-orientation/lock-sandboxed-iframe.html [ Skip ]
 
 # get_computed_role not implemented in vendored testdriver
 crbug.com/1517744 external/wpt/dpub-aam/role/roles.html [ Skip ]
@@ -2159,9 +2112,6 @@ crbug.com/1517744 external/wpt/wai-aria/role/synonym-roles.html [ Skip ]
 crbug.com/1517744 external/wpt/wai-aria/role/tab-roles.html [ Skip ]
 crbug.com/1517744 external/wpt/wai-aria/role/table-roles.html [ Skip ]
 crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Skip ]
-
-# Skip one flaky test
-crbug.com/1508175 [ Chrome ] external/wpt/soft-navigation-heuristics/image-lcp-before-detection.tentative.html [ Skip ]
 
 # WebNN GPU backend is supported on Win11 by default.
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-enabled/external/wpt/webnn/gpu/* [ Skip ]
