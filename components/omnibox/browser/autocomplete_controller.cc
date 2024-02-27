@@ -234,7 +234,7 @@ AutocompleteController::OldResult::OldResult(UpdateType update_type,
 
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass) {
-    matches_to_transfer.Swap(result);
+    matches_to_transfer.SwapMatchesWith(result);
   } else {
     result->ClearMatches();
   }
@@ -469,6 +469,12 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // Providers assume synchronous inputs (`omit_asynchronous_matches() ==
   // true`) are not zero-suggest ones. See crbug.com/1339425.
   DCHECK(!input.omit_asynchronous_matches() || !input.IsZeroSuggest());
+
+  // Use a zero-suggest input as the signal that zero-prefix suggestions could
+  // have been shown in the autocomplete session.
+  if (input.IsZeroSuggest()) {
+    internal_result_.set_zero_prefix_enabled_in_session(true);
+  }
 
   triggered_feature_service_->ResetInput();
 
@@ -1430,8 +1436,7 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
     ExtendMatchSubtypes(*match, &subtypes);
 
     if (input_.IsZeroSuggest()) {
-      result->set_zero_prefix_enabled_in_session(true);
-      // Count any suggestions that constitute zero-prefix suggestions.
+      // Count the zero-prefix suggestions in the result set.
       if (subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY) ||
           subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS) ||
           subtypes.contains(
@@ -1563,8 +1568,13 @@ void AutocompleteController::NotifyChanged() {
   metrics_.OnNotifyChanged(last_result_for_logging_,
                            internal_result_.GetMatchDedupComparators());
 
-  published_result_.Swap(&internal_result_);
-  internal_result_.CopyFrom(published_result_);
+  // Swap matches from `internal_result_` to `published_result_` and copy them
+  // back from `published_result_` to `internal_result_`. This allows
+  // `published_result_` to retain `java_match_` and the computed
+  // `matching_java_tab_` which otherwise would have been lost if
+  // `internal_result_` simply copied matches from `internal_result_`.
+  published_result_.SwapMatchesWith(&internal_result_);
+  internal_result_.CopyMatchesFrom(published_result_);
 
   last_result_for_logging_ = internal_result_.GetMatchDedupComparators();
 

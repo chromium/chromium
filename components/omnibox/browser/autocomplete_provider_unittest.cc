@@ -667,9 +667,10 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
     match.subtypes = sbs_test_data[i].subtypes;
     matches.push_back(match);
   }
-  result_.ClearMatches();
+  result_.Reset();
   result_.AppendMatches(matches);
   result_.MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
+  result_.set_zero_prefix_enabled_in_session(input_is_zero_suggest);
 
   // Update Searchbox stats.
   controller_->UpdateSearchboxStats(&result_);
@@ -735,7 +736,7 @@ void AutocompleteProviderTest::RunExactKeymatchTest(
 }
 
 void AutocompleteProviderTest::CopyResults() {
-  result_.CopyFrom(controller_->result());
+  result_.CopyMatchesFrom(controller_->result());
 }
 
 GURL AutocompleteProviderTest::GetDestinationURL(

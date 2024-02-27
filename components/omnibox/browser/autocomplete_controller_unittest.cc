@@ -90,6 +90,8 @@ class AutocompleteControllerTest : public testing::Test {
                                 allowed_to_be_default_match, false,
                                 traditional_relevance, std::nullopt);
     match.keyword = u"keyword";
+    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
+        base::UTF8ToUTF16(name));
     return match;
   }
 
@@ -100,6 +102,8 @@ class AutocompleteControllerTest : public testing::Test {
         name, AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, false, false,
         traditional_relevance, std::nullopt);
     match.keyword = u"keyword";
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
     match.suggestion_group_id = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
     match.subtypes.emplace(omnibox::SUBTYPE_PERSONAL);
     match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX);
@@ -629,6 +633,15 @@ TEST_F(AutocompleteControllerTest, UpdateResult_Ranking) {
 }
 
 TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
+  // Populate TemplateURLService with a keyword.
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"Keyword");
+  turl_data.SetKeyword(u"keyword");
+  turl_data.SetURL("https://google.com/search?q={searchTerms}");
+  controller_.template_url_service_->Add(
+      std::make_unique<TemplateURL>(turl_data));
+
+  // Create a zero-suggest input.
   auto zps_input = FakeAutocompleteController::CreateInput(u"");
   zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
 
@@ -645,11 +658,24 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
                     "zps_1",
                     "zps_2",
                 }));
-    // Whether zero-prefix suggestions were enabled in the session is updated.
-    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
-    // The count of zero-prefix suggestions offered in the session is updated.
+    // Whether zero-suggest was enabled and the number of zero-prefix
+    // suggestions shown in the session are updated in the internal result set.
+    EXPECT_TRUE(controller_.internal_result_.zero_prefix_enabled_in_session());
+    EXPECT_EQ(controller_.internal_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              2u);
+    // Published result set does not get the session data.
+    EXPECT_FALSE(
+        controller_.published_result_.zero_prefix_enabled_in_session());
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
+              0u);
+    // Published matches contain the relevant session data in searchboxstats.
+    EXPECT_TRUE(controller_.published_result_.match_at(0)
+                    ->search_terms_args->searchbox_stats.zero_prefix_enabled());
+    EXPECT_EQ(controller_.published_result_.match_at(0)
+                  ->search_terms_args->searchbox_stats
+                  .num_zero_prefix_suggestions_shown(),
               2u);
   }
   {
@@ -669,24 +695,52 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
                     "zps_3",
                     "zps_4",
                 }));
-    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
     // If zero-prefix suggestions are offered multiple times in the session, the
     // most recent count is logged.
+    EXPECT_TRUE(controller_.internal_result_.zero_prefix_enabled_in_session());
+    EXPECT_EQ(controller_.internal_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+    // Published result set does not get the session data.
+    EXPECT_FALSE(
+        controller_.published_result_.zero_prefix_enabled_in_session());
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
+              0u);
+    // Published matches contain the relevant session data in searchboxstats.
+    EXPECT_TRUE(controller_.published_result_.match_at(0)
+                    ->search_terms_args->searchbox_stats.zero_prefix_enabled());
+    EXPECT_EQ(controller_.published_result_.match_at(0)
+                  ->search_terms_args->searchbox_stats
+                  .num_zero_prefix_suggestions_shown(),
               4u);
   }
   {
     SCOPED_TRACE("Stop with clear_result=false is called due to user idleness");
     controller_.Stop(/*clear_result=*/false);
-    // Stop with clear_result=false does not clear the result set or notify
-    // `OnResultChanged()`.
+    // Stop with clear_result=false does not clear the internal result set and
+    // does not notify `OnResultChanged()`.
+    EXPECT_FALSE(controller_.internal_result_.empty());
     EXPECT_FALSE(controller_.published_result_.empty());
-    // Whether zero-prefix suggestions were enabled in the session is unchanged.
-    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
-    // The count of zero-prefix suggestions offered in the session is unchanged.
+    // Whether zero-suggest was enabled and the number of zero-prefix
+    // suggestions shown in the session are unchanged in the internal result
+    // set.
+    EXPECT_TRUE(controller_.internal_result_.zero_prefix_enabled_in_session());
+    EXPECT_EQ(controller_.internal_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+    // Published result set does not get the session data.
+    EXPECT_FALSE(
+        controller_.published_result_.zero_prefix_enabled_in_session());
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
+              0u);
+    // Published matches contain the relevant session data in searchboxstats.
+    EXPECT_TRUE(controller_.published_result_.match_at(0)
+                    ->search_terms_args->searchbox_stats.zero_prefix_enabled());
+    EXPECT_EQ(controller_.published_result_.match_at(0)
+                  ->search_terms_args->searchbox_stats
+                  .num_zero_prefix_suggestions_shown(),
               4u);
   }
   {
@@ -699,20 +753,41 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
                 testing::ElementsAreArray({
                     "search_1",
                 }));
-    // Whether zero-prefix suggestions were enabled in the session is unchanged.
-    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
-    // The count of zero-prefix suggestions offered in the session is unchanged.
+    // Whether zero-suggest was enabled and the number of zero-prefix
+    // suggestions shown in the session are unchanged in the internal result
+    // set.
+    EXPECT_TRUE(controller_.internal_result_.zero_prefix_enabled_in_session());
+    EXPECT_EQ(controller_.internal_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+    // Published result set does not get the session data.
+    EXPECT_FALSE(
+        controller_.published_result_.zero_prefix_enabled_in_session());
     EXPECT_EQ(controller_.published_result_
                   .num_zero_prefix_suggestions_shown_in_session(),
+              0u);
+    // Published matches contain the relevant session data in searchboxstats.
+    EXPECT_TRUE(controller_.published_result_.match_at(0)
+                    ->search_terms_args->searchbox_stats.zero_prefix_enabled());
+    EXPECT_EQ(controller_.published_result_.match_at(0)
+                  ->search_terms_args->searchbox_stats
+                  .num_zero_prefix_suggestions_shown(),
               4u);
   }
   {
     SCOPED_TRACE("Stop with clear_result=true is called due to popup closing");
     controller_.Stop(/*clear_result=*/true);
-    // Stop with clear_result=true clears the result set and notifies
-    // `OnResultChanged()`. Whether zero-prefix suggestions were enabled and the
-    // count of zero-prefix suggestions offered in the session is also reset.
+    // Stop with clear_result=true clears the internal result set and notifies
+    // `OnResultChanged()`.
+    EXPECT_TRUE(controller_.internal_result_.empty());
     EXPECT_TRUE(controller_.published_result_.empty());
+    // Whether zero-suggest was enabled and the number of zero-prefix
+    // suggestions shown in the session are reset in the internal result set.
+    EXPECT_FALSE(controller_.internal_result_.zero_prefix_enabled_in_session());
+    EXPECT_EQ(controller_.internal_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              0u);
+    // Published result set does not get the session data.
     EXPECT_FALSE(
         controller_.published_result_.zero_prefix_enabled_in_session());
     EXPECT_EQ(controller_.published_result_

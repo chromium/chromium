@@ -366,13 +366,13 @@ void AutocompleteResultTest::SortMatchesAndVerifyOrder(
   }
 }
 
-// Assertion testing for AutocompleteResult::Swap.
-TEST_F(AutocompleteResultTest, Swap) {
+// Assertion testing for AutocompleteResult::SwapMatchesWith.
+TEST_F(AutocompleteResultTest, SwapMatches) {
   AutocompleteResult r1;
   AutocompleteResult r2;
 
   // Swap with empty shouldn't do anything interesting.
-  r1.Swap(&r2);
+  r1.SwapMatchesWith(&r2);
   EXPECT_FALSE(r1.default_match());
   EXPECT_FALSE(r2.default_match());
 
@@ -390,7 +390,7 @@ TEST_F(AutocompleteResultTest, Swap) {
   EXPECT_TRUE(r1.default_match());
   EXPECT_EQ(&*r1.begin(), r1.default_match());
 
-  r1.Swap(&r2);
+  r1.SwapMatchesWith(&r2);
   EXPECT_TRUE(r1.empty());
   EXPECT_FALSE(r1.default_match());
   ASSERT_FALSE(r2.empty());
@@ -3107,7 +3107,7 @@ TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
     }
 
     AutocompleteResult typed_result;
-    typed_result.CopyFrom(zps_result);
+    typed_result.CopyMatchesFrom(zps_result);
 
     auto check_results =
         [&](AutocompleteResult& result,
