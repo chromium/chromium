@@ -58,6 +58,7 @@ struct GifResponse {
   string content_description;
   GifUrls url;
   gfx.mojom.Size preview_size;
+  gfx.mojom.Size full_size;
 };
 
 struct GifUrls {

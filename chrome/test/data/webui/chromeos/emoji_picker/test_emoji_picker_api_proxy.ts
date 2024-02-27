@@ -40,6 +40,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
               width: 1,
               height: 2,
             },
+            fullSize: {
+              width: 2,
+              height: 4,
+            },
           },
           {
             id: '2',
@@ -58,6 +62,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             previewSize: {
               width: 1,
               height: 1,
+            },
+            fullSize: {
+              width: 2,
+              height: 2,
             },
           },
           {
@@ -78,6 +86,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
               width: 1,
               height: 2,
             },
+            fullSize: {
+              width: 2,
+              height: 4,
+            },
           },
           {
             id: '4',
@@ -96,6 +108,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             previewSize: {
               width: 1,
               height: 2,
+            },
+            fullSize: {
+              width: 2,
+              height: 4,
             },
           },
           {
@@ -116,6 +132,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
               width: 1,
               height: 2,
             },
+            fullSize: {
+              width: 2,
+              height: 4,
+            },
           },
           {
             id: '6',
@@ -134,6 +154,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             previewSize: {
               width: 1,
               height: 2,
+            },
+            fullSize: {
+              width: 2,
+              height: 4,
             },
           },
         ],
@@ -161,6 +185,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
               width: 1,
               height: 2,
             },
+            fullSize: {
+              width: 2,
+              height: 4,
+            },
           },
           {
             id: '8',
@@ -179,6 +207,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             previewSize: {
               width: 1,
               height: 2,
+            },
+            fullSize: {
+              width: 2,
+              height: 4,
             },
           },
           {
@@ -199,6 +231,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
               width: 1,
               height: 2,
             },
+            fullSize: {
+              width: 2,
+              height: 4,
+            },
           },
           {
             id: '10',
@@ -217,6 +253,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             previewSize: {
               width: 1,
               height: 2,
+            },
+            fullSize: {
+              width: 2,
+              height: 4,
             },
           },
           {
@@ -237,6 +277,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
               width: 1,
               height: 2,
             },
+            fullSize: {
+              width: 2,
+              height: 4,
+            },
           },
           {
             id: '12',
@@ -256,6 +300,10 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
               width: 1,
               height: 2,
             },
+            fullSize: {
+              width: 2,
+              height: 4,
+            },
           },
         ],
   };
@@ -274,16 +322,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
     return {
       next: gifResults.next,
       results: gifResults.results.map(
-          ({
-            id,
-            url,
-            previewSize,
-            contentDescription,
-          }) => ({
-            id,
-            url,
-            previewSize,
-            contentDescription: query + ' ' + contentDescription,
+          (result) => ({
+            ...result,
+            contentDescription: query + ' ' + result.contentDescription,
           })),
     };
   }
