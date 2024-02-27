@@ -263,12 +263,15 @@ class MockFileSystem(object):
                         directories.append(directory)
                 else:
                     files.append(remaining)
-        file_system_tuples = [(top[:-1], directories, files)]
+        # The real `os.walk(...)` [0] gives the caller a chance to modify which
+        # subdirectories to traverse by mutating the `directories` list, so we
+        # should yield here instead of returning a precomputed list.
+        #
+        # [0]: https://docs.python.org/3/library/os.html#os.walk
+        yield (top[:-1], directories, files)
         for directory in directories:
             directory = top + directory
-            tuples_from_subdirs = self.walk(directory)
-            file_system_tuples += tuples_from_subdirs
-        return file_system_tuples
+            yield from self.walk(directory)
 
     def mtime(self, path):
         if self.exists(path):

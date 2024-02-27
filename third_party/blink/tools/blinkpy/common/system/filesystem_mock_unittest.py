@@ -113,9 +113,10 @@ class MockFileSystemTest(unittest.TestCase,
         mock_files = {'foo/bar/baz': '', 'foo/a': '', 'foo/b': '', 'foo/c': ''}
         host = MockHost()
         host.filesystem = MockFileSystem(files=mock_files)
-        self.assertEquals(
-            host.filesystem.walk(mock_dir), [('foo', ['bar'], ['a', 'b', 'c']),
-                                             ('foo/bar', [], ['baz'])])
+        self.assertEquals(list(host.filesystem.walk(mock_dir)), [
+            ('foo', ['bar'], ['a', 'b', 'c']),
+            ('foo/bar', [], ['baz']),
+        ])
 
     def test_filesystem_walk_deeply_nested(self):
         mock_dir = 'foo'
@@ -131,11 +132,12 @@ class MockFileSystemTest(unittest.TestCase,
         mock_files_ordered = OrderedDict(sorted(mock_files.items()))
         host = MockHost()
         host.filesystem = MockFileSystem(files=mock_files_ordered)
-        self.assertEquals(host.filesystem.walk(mock_dir),
-                          [('foo', ['a', 'bar'], ['b', 'c']),
-                           ('foo/a', ['z'], ['x', 'y']),
-                           ('foo/a/z', [], ['lyrics']),
-                           ('foo/bar', [], ['baz', 'quux'])])
+        self.assertEquals(list(host.filesystem.walk(mock_dir)), [
+            ('foo', ['a', 'bar'], ['b', 'c']),
+            ('foo/a', ['z'], ['x', 'y']),
+            ('foo/a/z', [], ['lyrics']),
+            ('foo/bar', [], ['baz', 'quux']),
+        ])
 
     def test_relpath_win32(self):
         # This unit test inherits tests from GenericFileSystemTests, but
