@@ -378,19 +378,16 @@ const CGFloat kModuleMinMargin = 16;
                       }];
 }
 
-- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
-              withTransitionCoordinator:
-                  (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super willTransitionToTraitCollection:newCollection
-               withTransitionCoordinator:coordinator];
-  if (IsMagicStackEnabled()) {
-    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
-              newCollection.userInterfaceStyle];
-  }
-}
-
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    if (IsMagicStackEnabled()) {
+      [self updateModularHomeBackgroundColorForUserInterfaceStyle:
+                self.traitCollection.userInterfaceStyle];
+    }
+  }
 
   if (previousTraitCollection.horizontalSizeClass !=
       self.traitCollection.horizontalSizeClass) {
