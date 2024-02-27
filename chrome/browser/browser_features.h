@@ -36,6 +36,7 @@ extern const base::FeatureParam<std::string>
     kDevToolsConsoleInsightsAidaEndpoint;
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
+BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);

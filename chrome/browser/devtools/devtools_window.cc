@@ -25,7 +25,9 @@
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
+#include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,6 +46,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -161,7 +164,7 @@ class DevToolsToolboxDelegate
       public content::WebContentsDelegate {
  public:
   DevToolsToolboxDelegate(WebContents* toolbox_contents,
-                          base::WeakPtr<WebContents> inspected_web_contents);
+                          WebContents* inspected_web_contents);
 
   DevToolsToolboxDelegate(const DevToolsToolboxDelegate&) = delete;
   DevToolsToolboxDelegate& operator=(const DevToolsToolboxDelegate&) = delete;
@@ -184,11 +187,11 @@ class DevToolsToolboxDelegate
   base::WeakPtr<content::WebContents> inspected_web_contents_;
 };
 
-DevToolsToolboxDelegate::DevToolsToolboxDelegate(
-    WebContents* toolbox_contents,
-    base::WeakPtr<WebContents> web_contents)
+DevToolsToolboxDelegate::DevToolsToolboxDelegate(WebContents* toolbox_contents,
+                                                 WebContents* web_contents)
     : WebContentsObserver(toolbox_contents),
-      inspected_web_contents_(web_contents) {}
+      inspected_web_contents_(web_contents ? web_contents->GetWeakPtr()
+                                           : nullptr) {}
 
 DevToolsToolboxDelegate::~DevToolsToolboxDelegate() {
 }
@@ -948,7 +951,7 @@ void DevToolsWindow::UpdateInspectedWebContents(
   DCHECK(!reattach_complete_callback_);
   reattach_complete_callback_ = std::move(callback);
 
-  inspected_web_contents_ = new_web_contents->GetWeakPtr();
+  Observe(new_web_contents);
   bindings_->AttachTo(
       content::DevToolsAgentHost::GetOrCreateFor(new_web_contents));
   bindings_->CallClientMethod(
@@ -1012,6 +1015,8 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     PrefsTabHelper::CreateForWebContents(main_web_contents_);
     OverrideAndSyncDevToolsRendererPrefs();
 
+    MaybeShowSharedProcessInfobar();
+
     DoAction(action);
     return;
   }
@@ -1029,6 +1034,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     return;
 
   RegisterModalDialogManager(browser_);
+  MaybeShowSharedProcessInfobar();
 
   if (should_show_window) {
     browser_->window()->Show();
@@ -1151,8 +1157,9 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
   g_devtools_window_instances.Get().push_back(this);
 
   // There is no inspected_web_contents in case of various workers.
-  if (inspected_web_contents)
-    inspected_web_contents_ = inspected_web_contents->GetWeakPtr();
+  if (inspected_web_contents) {
+    Observe(inspected_web_contents);
+  }
 
   // Initialize docked page to be of the right size.
   if (can_dock_ && inspected_web_contents) {
@@ -1394,8 +1401,8 @@ void DevToolsWindow::AddNewContents(
     owned_toolbox_web_contents_ = std::move(new_contents);
     owned_toolbox_web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
-    toolbox_web_contents_->SetDelegate(new DevToolsToolboxDelegate(
-        toolbox_web_contents_, inspected_web_contents_));
+    toolbox_web_contents_->SetDelegate(
+        new DevToolsToolboxDelegate(toolbox_web_contents_, web_contents()));
     if (main_web_contents_->GetRenderWidgetHostView() &&
         toolbox_web_contents_->GetRenderWidgetHostView()) {
       gfx::Size size =
@@ -1557,6 +1564,12 @@ void DevToolsWindow::Close(DevToolsClosedByAction closed_by) {
   life_stage_ = kClosing;
   main_web_contents_->DispatchBeforeUnload(false /* auto_cancel */);
   closed_by_ = closed_by;
+
+  if (sharing_infobar_) {
+    sharing_infobar_->RemoveSelf();
+    sharing_infobar_ = nullptr;
+    checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
+  }
 }
 
 void DevToolsWindow::Inspect(scoped_refptr<content::DevToolsAgentHost> host) {
@@ -1899,7 +1912,7 @@ void DevToolsWindow::UpdateBrowserWindow() {
 }
 
 WebContents* DevToolsWindow::GetInspectedWebContents() {
-  return inspected_web_contents_.get();
+  return web_contents();
 }
 
 void DevToolsWindow::LoadCompleted() {
@@ -1954,4 +1967,52 @@ void DevToolsWindow::OverrideAndSyncDevToolsRendererPrefs() {
   main_web_contents_->GetMutableRendererPrefs()->accept_languages =
       g_browser_process->GetApplicationLocale();
   main_web_contents_->SyncRendererPrefs();
+}
+
+void DevToolsWindow::MaybeShowSharedProcessInfobar() {
+  WebContents* inspected_web_contents = GetInspectedWebContents();
+  if (!inspected_web_contents) {
+    return;
+  }
+
+  // Only show the infobar only if the RenderProcessHost id changes.
+  int rph_id =
+      inspected_web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  if (checked_sharing_process_id_ == rph_id) {
+    return;
+  }
+  checked_sharing_process_id_ = rph_id;
+
+  if (!base::FeatureList::IsEnabled(
+          ::features::kDevToolsSharedProcessInfobar)) {
+    return;
+  }
+
+  size_t primary_main_frame_count = 0;
+  inspected_web_contents->GetPrimaryMainFrame()
+      ->GetProcess()
+      ->ForEachRenderFrameHost(
+          [&primary_main_frame_count](
+              content::RenderFrameHost* render_frame_host) {
+            if (render_frame_host->IsInPrimaryMainFrame()) {
+              ++primary_main_frame_count;
+            }
+          });
+
+  if (primary_main_frame_count > 1) {
+    sharing_infobar_ = GetInfoBarManager()->AddInfoBar(
+        CreateConfirmInfoBar(std::make_unique<ProcessSharingInfobarDelegate>(
+            inspected_web_contents)));
+  } else if (sharing_infobar_) {
+    sharing_infobar_->RemoveSelf();
+    sharing_infobar_ = nullptr;
+  }
+}
+
+void DevToolsWindow::InfobarClosed() {
+  sharing_infobar_ = nullptr;
+}
+
+void DevToolsWindow::PrimaryPageChanged(content::Page& page) {
+  MaybeShowSharedProcessInfobar();
 }

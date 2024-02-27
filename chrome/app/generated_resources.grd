@@ -4646,6 +4646,11 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
+      <!-- DevTools shared process infobar -->
+      <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR" desc="Label displayed in an infobar when the tab being debugged is run in a process that hosts multiple tabs. The label does not disappear until the user dismisses it or closes the debugger.">
+        Other tabs share a process with this tab, which may result in an unexpected DevTools experience.
+      </message>
+
       <!-- DevTools attached infobar -->
       <message name="IDS_DEV_TOOLS_INFOBAR_LABEL" desc="Label displayed in an infobar when external debugger is attached to the browser.  The label does not disappear until the user dismisses it, even if the debugger is detached, and so should not imply that the debugger must still be debugging the browser, only that it was, and could still be.">
         "<ph name="CLIENT_NAME">$1<ex>Extension Foo</ex></ph>" started debugging this browser

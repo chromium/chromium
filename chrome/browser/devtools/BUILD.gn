@@ -231,6 +231,8 @@ static_library("devtools") {
       "devtools_window.h",
       "global_confirm_info_bar.cc",
       "global_confirm_info_bar.h",
+      "process_sharing_infobar_delegate.cc",
+      "process_sharing_infobar_delegate.h",
       "remote_debugging_server.cc",
       "remote_debugging_server.h",
       "serialize_host_descriptions.cc",

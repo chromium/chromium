@@ -81,6 +81,9 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -3759,6 +3762,62 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
 
   ASSERT_NE(webcontents->GetPrimaryMainFrame()->GetProcess(),
             webcontents2->GetPrimaryMainFrame()->GetProcess());
+}
+
+class DevToolsProcessPerSiteTest : public DevToolsTest {
+ public:
+  DevToolsProcessPerSiteTest() = default;
+
+  ~DevToolsProcessPerSiteTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kProcessPerSite);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest,
+                       DevToolsSharedProcessInfobar) {
+  const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
+
+  Browser* browser1 = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, url));
+
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
+
+  ASSERT_EQ(browser1->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame()
+                ->GetProcess(),
+            browser2->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame()
+                ->GetProcess());
+
+  auto* window = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser1->tab_strip_model()->GetActiveWebContents(), true);
+  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+      browser1->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(infobar_manager->infobars().size(), 1u);
+  ASSERT_EQ(infobar_manager->infobars()[0]->GetIdentifier(),
+            infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+  ASSERT_EQ(infobar_manager->infobars().size(), 0u);
+
+  // Now try in the undocked case.
+  window = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser1->tab_strip_model()->GetActiveWebContents(), false);
+
+  // The infobar should appear in the undocked window.
+  ASSERT_EQ(infobar_manager->infobars().size(), 0u);
+
+  // Retrieve the infobar manager from the devtools window, this is different
+  // than `infobar_maanger` when undocked.
+  auto* undocked_infobar_manager =
+      static_cast<DevToolsUIBindings::Delegate*>(window)->GetInfoBarManager();
+  ASSERT_EQ(undocked_infobar_manager->infobars().size(), 1u);
+  ASSERT_EQ(undocked_infobar_manager->infobars()[0]->GetIdentifier(),
+            infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
 }
 
 class DevToolsConsoleInsightsTest : public DevToolsTest {

@@ -82,6 +82,11 @@ const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
     &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
 
+// Whether an infobar is shown when the process is shared.
+BASE_FEATURE(kDevToolsSharedProcessInfobar,
+             "DevToolsSharedProcessInfobar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables AES keys support in the chrome.enterprise.platformKeys and
 // chrome.platformKeys APIs. The new operations include `sign`, `encrypt` and
