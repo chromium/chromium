@@ -57,7 +57,8 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
           [](GetManagedConfigurationCallback callback,
              std::optional<base::Value::Dict> result) {
             if (!result) {
-              return std::move(callback).Run(std::nullopt);
+              std::move(callback).Run(std::nullopt);
+              return;
             }
             std::move(callback).Run(base::MakeFlatMap<std::string, std::string>(
                 *result, {},
@@ -83,6 +84,6 @@ ManagedConfigurationServiceImpl::managed_configuration_api() {
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
 }
 
-const url::Origin& ManagedConfigurationServiceImpl::GetOrigin() {
+const url::Origin& ManagedConfigurationServiceImpl::GetOrigin() const {
   return origin();
 }

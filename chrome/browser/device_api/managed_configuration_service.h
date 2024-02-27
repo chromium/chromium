@@ -48,7 +48,7 @@ class ManagedConfigurationServiceImpl
 
   // ManagedConfigurationAPI::Observer:
   void OnManagedConfigurationChanged() override;
-  const url::Origin& GetOrigin() override;
+  const url::Origin& GetOrigin() const override;
 
   mojo::Remote<blink::mojom::ManagedConfigurationObserver>
       configuration_subscription_;

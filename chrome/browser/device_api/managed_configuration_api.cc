@@ -146,11 +146,13 @@ void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     const std::vector<std::string>& keys,
     base::OnceCallback<void(std::optional<base::Value::Dict>)> callback) {
   if (!CanHaveManagedStore(origin)) {
-    return std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   if (!base::Contains(store_map_, origin)) {
-    return std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   store_map_[origin]

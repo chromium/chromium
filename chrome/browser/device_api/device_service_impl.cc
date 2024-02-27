@@ -93,7 +93,7 @@ bool IsAffiliatedUser() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  return user && user->IsAffiliated();
+  return (user != nullptr) && user->IsAffiliated();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return policy::PolicyLoaderLacros::IsMainUserAffiliated();
 #else
