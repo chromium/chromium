@@ -135,12 +135,13 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // position-fallback, we can fall back to the default behavior (in
   // CSSAnimations) of using the current style on Element as the old style.
   //
-  // TODO(crbug.com/1502666): We also need to check whether we are a descendant
+  // TODO(crbug.com/40943044): We also need to check whether we are a descendant
   // of an element with position-fallback to cover the case where the descendant
   // explicitly inherits insets or other valid @try properties from the element
-  // with position-fallback.
+  // with position-fallback. This applies to descendants of elements with
+  // anchor queries as well.
   return (style_recalc_context.container ||
-          style_recalc_context.is_interleaved_oof ||
+          state.StyleBuilder().HasAnchorFunctions() ||
           (RuntimeEnabledFeatures::
                CSSAnchorPositioningCascadeFallbackEnabled() &&
            state.StyleBuilder().PositionFallback())) &&
@@ -2371,8 +2372,17 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
   }
 
+  // TODO(crbug.com/40943044): If we need to disable the optimization for
+  // elements with position-fallback/anchor(), we probably need to disable
+  // for descendants of such elements as well.
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
       base_data->GetBaseComputedStyle()->PositionFallback()) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled() &&
+      base_data->GetBaseComputedStyle()->HasAnchorFunctions()) {
+    // TODO(crbug.com/41483417): Enable this optimization for styles with
+    // anchor queries.
     return false;
   }
 

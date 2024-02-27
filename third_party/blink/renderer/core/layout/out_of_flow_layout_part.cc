@@ -135,8 +135,11 @@ class OOFCandidateStyleIterator {
   STACK_ALLOCATED();
 
  public:
-  explicit OOFCandidateStyleIterator(const LayoutObject& object)
-      : element_(DynamicTo<Element>(object.GetNode())), style_(object.Style()) {
+  explicit OOFCandidateStyleIterator(const LayoutObject& object,
+                                     Length::AnchorEvaluator* anchor_evaluator)
+      : element_(DynamicTo<Element>(object.GetNode())),
+        style_(object.Style()),
+        anchor_evaluator_(anchor_evaluator) {
     Initialize();
   }
 
@@ -249,7 +252,12 @@ class OOFCandidateStyleIterator {
     CHECK(element_);
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
       StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
-      style_engine.UpdateStyleForOutOfFlow(*element_, try_set);
+      Length::AnchorEvaluator* anchor_evaluator =
+          RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()
+              ? anchor_evaluator_
+              : nullptr;
+      style_engine.UpdateStyleForOutOfFlow(*element_, try_set,
+                                           anchor_evaluator);
     }
     CHECK(element_->GetLayoutObject());
     // Returns LayoutObject ComputedStyle instead of element style for layout
@@ -263,6 +271,11 @@ class OOFCandidateStyleIterator {
   // The current candidate style if no auto anchor fallback is triggered.
   // Otherwise, the base style for generating auto anchor fallbacks.
   const ComputedStyle* style_ = nullptr;
+
+  // When CSSAnchorPositioningComputeAnchor is enabled, this evaluator is
+  // passed to StyleEngine::UpdateStyleForOutOfFlow to evaluate anchor queries
+  // on the computed style.
+  Length::AnchorEvaluator* anchor_evaluator_ = nullptr;
 
   // If the current style is created from an `@try` rule, this holds
   // the parent rule. Otherwise nullptr.
@@ -1825,7 +1838,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
   // result fits the available space.
-  OOFCandidateStyleIterator iter(*node_info.node.GetLayoutBox());
+  OOFCandidateStyleIterator iter(*node_info.node.GetLayoutBox(),
+                                 anchor_evaluator);
   std::optional<OffsetInfo> offset_info;
   while (!offset_info) {
     const bool has_next_fallback_style = iter.HasNextStyle();

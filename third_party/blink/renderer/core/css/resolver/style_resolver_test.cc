@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -117,8 +118,13 @@ class StyleResolverTest : public PageTestBase {
         GetStyleEngine().GetPositionFallbackRule(*name);
     if (rule) {
       const CSSPropertyValueSet* set = rule->TryPropertyValueSetAt(index);
-      GetStyleEngine().UpdateStyleForOutOfFlow(element, set);
+      GetStyleEngine().UpdateStyleForOutOfFlow(element, set,
+                                               /* anchor_evaluator */ nullptr);
     }
+  }
+
+  size_t GetCurrentOldStylesCount() {
+    return PostStyleUpdateScope::CurrentAnimationData()->old_styles_.size();
   }
 };
 
@@ -1656,6 +1662,117 @@ TEST_P(StyleResolverTestCQ, DependsOnStyleContainerQueries) {
   EXPECT_FALSE(c->ComputedStyleRef().DependsOnSizeContainerQueries());
   EXPECT_FALSE(d->ComputedStyleRef().DependsOnSizeContainerQueries());
   EXPECT_FALSE(e->ComputedStyleRef().DependsOnSizeContainerQueries());
+}
+
+TEST_P(ParameterizedStyleResolverTest, AnchorQueriesMPC) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      .anchor {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+      }
+      #anchor1 { left: 100px; }
+      #anchor2 { left: 150px; }
+      .anchored {
+        position: absolute;
+        left: anchor(left);
+      }
+    </style>
+    <div class=anchor id=anchor1>X</div>
+    <div class=anchor id=anchor2>Y</div>
+    <div class=anchored id=a anchor=anchor1>A</div>
+    <div class=anchored id=b anchor=anchor2>B</div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // #a and #b have identical styles, but the implicit anchor makes
+  // the anchor() queries give two different answers.
+
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_EQ("100px", ComputedValue("left", a->ComputedStyleRef()));
+  EXPECT_EQ("150px", ComputedValue("left", b->ComputedStyleRef()));
+}
+
+TEST_P(ParameterizedStyleResolverTest, AnchorQueryNoOldStyle) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  // This captures any calls to StoreOldStyleIfNeeded made during
+  // StyleResolver::ResolveStyle.
+  PostStyleUpdateScope post_style_update_scope(GetDocument());
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #anchored {
+        position: absolute;
+        left: anchor(--a left, 42px);
+      }
+    </style>
+    <div id=anchored>A</div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(0u, GetCurrentOldStylesCount());
+}
+
+TEST_P(ParameterizedStyleResolverTest, AnchorQueryStoreOldStyle) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  // This captures any calls to StoreOldStyleIfNeeded made during
+  // StyleResolver::ResolveStyle.
+  PostStyleUpdateScope post_style_update_scope(GetDocument());
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #anchored {
+        position: absolute;
+        left: anchor(--a left, 42px);
+        transition: left 1s;
+      }
+    </style>
+    <div id=anchored>A</div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, GetCurrentOldStylesCount());
+}
+
+TEST_P(ParameterizedStyleResolverTest, AnchorQueryBaseComputedStyle) {
+  ScopedCSSAnchorPositioningComputeAnchorForTest scoped_feature(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #div {
+        position: absolute;
+        left: anchor(--a left, 42px);
+      }
+    </style>
+    <div id=div>A</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* div = GetDocument().getElementById(AtomicString("div"));
+
+  // Create a situation where the base computed style optimization
+  // would normally be used.
+  auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kWidth,
+                                                   "50px", "100px");
+  GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ("50px", ComputedValue("width", *StyleForId("div")));
+  div->SetNeedsAnimationStyleRecalc();
+
+  // TODO(crbug.com/41483417): Enable this optimization for styles with
+  // anchor queries.
+  StyleResolverState state(GetDocument(), *div);
+  EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
 
 TEST_P(ParameterizedStyleResolverTest, NoCascadeLayers) {

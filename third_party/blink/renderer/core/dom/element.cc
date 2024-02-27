@@ -3354,8 +3354,8 @@ const ComputedStyle* Element::StyleForLayoutObject(
     style = context->AdjustElementStyle(style);
   }
 
-  // TODO(crbug.com/1502666): Descendants can also depend on position-fallback.
-  if (style->DependsOnSizeContainerQueries() || style->PositionFallback()) {
+  if (style->DependsOnSizeContainerQueries() || style->PositionFallback() ||
+      style->HasAnchorFunctions()) {
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
   }
 
@@ -3541,6 +3541,11 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
   child_recalc_context.is_interleaved_oof = false;
+  // If we're in StyleEngine::UpdateStyleForOutOfFlow, then anchor_evaluator
+  // may be non-nullptr to allow evaluation of anchor() and anchor-size()
+  // queries. Descendants of the current out-of-flow element must not be
+  // allowed to evaluate such queries, however.
+  child_recalc_context.anchor_evaluator = nullptr;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {

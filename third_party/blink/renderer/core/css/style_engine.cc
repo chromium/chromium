@@ -3466,8 +3466,10 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       container.GetLayoutObject());
 }
 
-void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
-                                          const CSSPropertyValueSet* try_set) {
+void StyleEngine::UpdateStyleForOutOfFlow(
+    Element& element,
+    const CSSPropertyValueSet* try_set,
+    Length::AnchorEvaluator* anchor_evaluator) {
   // Note that we enter this function for any OOF element, not just those that
   // use position-fallback. Therefore, it's important to return immediately
   // without doing any work when `try_set` and `existing_try_set` both are
@@ -3476,8 +3478,21 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
   OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData();
   const CSSPropertyValueSet* existing_try_set =
       out_of_flow_data ? out_of_flow_data->GetTryPropertyValueSet() : nullptr;
-  if (existing_try_set == try_set) {
-    // No need to update style, the try set is the one we already used.
+
+  bool needs_update = false;
+
+  if (existing_try_set != try_set) {
+    element.EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
+    needs_update = true;
+  }
+  if (element.ComputedStyleRef().HasAnchorFunctions()) {
+    CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled());
+    // TODO(crbug.com/41483417): Store results on OutOfFlowData, and check
+    // if we actually need an update.
+    needs_update = true;
+  }
+
+  if (!needs_update) {
     return;
   }
 
@@ -3492,6 +3507,7 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
   StyleRecalcContext style_recalc_context =
       StyleRecalcContext::FromAncestors(element);
   style_recalc_context.is_interleaved_oof = true;
+  style_recalc_context.anchor_evaluator = anchor_evaluator;
 
   StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
 
