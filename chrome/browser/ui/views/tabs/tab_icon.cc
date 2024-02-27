@@ -404,10 +404,9 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
 
   std::unique_ptr<gfx::ScopedCanvas> scoped_canvas;
   bool use_scale_filter = false;
-  bool show_discard_ring_treatment = was_discard_indicator_shown_;
 
   if (GetShowingLoadingAnimation() || favicon_size_animation_.is_animating() ||
-      show_discard_ring_treatment) {
+      was_discard_indicator_shown_) {
     scoped_canvas = std::make_unique<gfx::ScopedCanvas>(canvas);
     use_scale_filter = true;
     // The favicon is initially inset with the width of the loading-animation
@@ -420,7 +419,8 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
     const float kFinalFaviconDiameterDp = sqrt(2) * gfx::kFaviconSize;
 
     SkScalar diameter = kInitialFaviconDiameterDp;
-    if (show_discard_ring_treatment || favicon_size_animation_.is_animating()) {
+    if (was_discard_indicator_shown_ ||
+        favicon_size_animation_.is_animating()) {
       // Animate the icon based on the favicon size animation.
       diameter = gfx::Tween::FloatValueBetween(
           gfx::Tween::CalculateValue(gfx::Tween::EASE_IN,
@@ -449,15 +449,11 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
   }
 
   cc::PaintFlags opacity_flag;
-  if (show_discard_ring_treatment) {
+  if (was_discard_indicator_shown_) {
     opacity_flag.setAlphaf(gfx::Tween::FloatValueBetween(
         gfx::Tween::CalculateValue(gfx::Tween::EASE_OUT,
                                    tab_discard_animation_.GetCurrentValue()),
         1.0, kDiscardedIconFinalOpacity));
-  } else if (was_discard_indicator_shown_) {
-    opacity_flag.setAlphaf(
-        gfx::Tween::FloatValueBetween(tab_discard_animation_.GetCurrentValue(),
-                                      1.0, kDiscardedIconFinalOpacity));
   }
 
   canvas->DrawImageInt(icon, 0, 0, bounds.width(), bounds.height(), bounds.x(),
