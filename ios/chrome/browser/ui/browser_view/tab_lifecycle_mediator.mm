@@ -123,8 +123,12 @@
       webContentsHandler);
 
   DCHECK(_baseViewController);
-  AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
-      _baseViewController);
+  AutofillTabHelper* autofillTabHelper =
+      AutofillTabHelper::FromWebState(webState);
+  autofillTabHelper->SetBaseViewController(_baseViewController);
+  id<AutofillBottomSheetCommands> autofillHandler =
+      HandlerForProtocol(_commandDispatcher, AutofillBottomSheetCommands);
+  autofillTabHelper->SetCommandsHandler(autofillHandler);
 
   DCHECK(_printCoordinator);
   PrintTabHelper::FromWebState(webState)->set_printer(_printCoordinator);
@@ -199,7 +203,10 @@
 
   NetExportTabHelper::FromWebState(webState)->SetDelegate(nil);
 
-  AutofillTabHelper::FromWebState(webState)->SetBaseViewController(nil);
+  AutofillTabHelper* autofillTabHelper =
+      AutofillTabHelper::FromWebState(webState);
+  autofillTabHelper->SetBaseViewController(nil);
+  autofillTabHelper->SetCommandsHandler(nil);
 
   PrintTabHelper::FromWebState(webState)->set_printer(nil);
 

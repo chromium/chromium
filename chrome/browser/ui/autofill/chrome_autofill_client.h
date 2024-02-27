@@ -248,8 +248,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void DismissOfferNotification() override;
   void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options) override;
-  void ShowAutofillErrorDialog(
-      const AutofillErrorDialogContext& context) override;
+  void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
   void TriggerUserPerceptionOfAutofillSurvey(
       const std::map<std::string, std::string>& field_filling_stats_data)
       override;
@@ -344,7 +343,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       autofill_cvc_save_message_delegate_;
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
-  AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
+  std::unique_ptr<AutofillErrorDialogControllerImpl>
+      autofill_error_dialog_controller_;
   std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
       card_unmask_otp_input_dialog_controller_;
 };

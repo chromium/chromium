@@ -8,11 +8,14 @@
 #import "components/plus_addresses/plus_address_types.h"
 
 namespace autofill {
+struct AutofillErrorDialogContext;
 struct FormActivityParams;
 struct VirtualCardEnrollUiModel;
 }  // namespace autofill
 
-// Commands related to the passwords bottom sheet.
+// TODO(b/303715684): Update the class name to a general name like
+// AutofillCommands. Commands related to the Autofill flows (passwords,
+// addresses, payments etc).
 @protocol AutofillBottomSheetCommands
 
 // Shows the password suggestion view controller.
@@ -27,6 +30,11 @@ struct VirtualCardEnrollUiModel;
 // Shows a command to show the VCN enrollment Bottom Sheet.
 - (void)showVirtualCardEnrollmentBottomSheet:
     (const autofill::VirtualCardEnrollUiModel&)model;
+
+// Commands to manage the Autofill error dialog.
+- (void)showAutofillErrorDialog:
+    (autofill::AutofillErrorDialogContext)errorContext;
+- (void)dismissAutofillErrorDialog;
 
 @end
 

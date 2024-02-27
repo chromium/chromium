@@ -257,8 +257,7 @@ void AutofillClient::OnVirtualCardDataAvailable(
 }
 
 void AutofillClient::ShowAutofillErrorDialog(
-    const AutofillErrorDialogContext& context) {
-}
+    AutofillErrorDialogContext context) {}
 
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;

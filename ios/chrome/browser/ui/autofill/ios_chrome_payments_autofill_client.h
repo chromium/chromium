@@ -7,14 +7,23 @@
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
-namespace autofill::payments {
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+
+namespace autofill {
+
+class ChromeAutofillClientIOS;
+struct AutofillErrorDialogContext;
+
+namespace payments {
 
 // Chrome iOS implementation of PaymentsAutofillClient. Owned by the
 // ChromeAutofillClientIOS. Created lazily in the ChromeAutofillClientIOS when
 // it is needed.
 class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
  public:
-  IOSChromePaymentsAutofillClient();
+  explicit IOSChromePaymentsAutofillClient(
+      autofill::ChromeAutofillClientIOS* client);
   IOSChromePaymentsAutofillClient(const IOSChromePaymentsAutofillClient&) =
       delete;
   IOSChromePaymentsAutofillClient& operator=(
@@ -27,8 +36,15 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   // PaymentsAutofillClient:
   void CreditCardUploadCompleted(bool card_saved) override;
+
+  void ShowAutofillErrorDialog(AutofillErrorDialogContext error_context);
+
+ private:
+  const raw_ref<autofill::ChromeAutofillClientIOS> client_;
 };
 
-}  // namespace autofill::payments
+}  // namespace payments
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
+}  // namespace autofill
+
+#endif  //  IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_

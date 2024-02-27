@@ -41,16 +41,11 @@ class AutofillErrorDialogControllerImplTest
  public:
   AutofillErrorDialogControllerImplTest() = default;
 
-  void SetUp() override {
-    controller_ = std::make_unique<AutofillErrorDialogControllerImpl>();
-  }
-
   void ShowPrompt(const AutofillErrorDialogContext& context) {
-    controller()->Show(
-        context,
-        base::BindOnce(
-            &AutofillErrorDialogControllerImplTest::CreateErrorDialogView,
-            base::Unretained(this)));
+    controller_ = std::make_unique<AutofillErrorDialogControllerImpl>(context);
+    controller_->Show(base::BindOnce(
+        &AutofillErrorDialogControllerImplTest::CreateErrorDialogView,
+        base::Unretained(this)));
   }
 
   base::WeakPtr<AutofillErrorDialogView> CreateErrorDialogView() {

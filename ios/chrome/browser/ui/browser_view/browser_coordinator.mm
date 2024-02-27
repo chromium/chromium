@@ -10,9 +10,11 @@
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -717,6 +719,8 @@ enum class ToolbarKind {
   [self.virtualCardEnrollmentBottomSheetCoordinator stop];
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 
+  [self dismissAutofillErrorDialog];
+
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
 
@@ -1370,6 +1374,8 @@ enum class ToolbarKind {
   [self.virtualCardEnrollmentBottomSheetCoordinator stop];
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
 
+  [self dismissAutofillErrorDialog];
+
   [self.printCoordinator stop];
   self.printCoordinator = nil;
 
@@ -1661,6 +1667,13 @@ enum class ToolbarKind {
           baseViewController:self.viewController
                      browser:self.browser];
   [self.virtualCardEnrollmentBottomSheetCoordinator start];
+}
+
+- (void)showAutofillErrorDialog:
+    (autofill::AutofillErrorDialogContext)errorContext {
+}
+
+- (void)dismissAutofillErrorDialog {
 }
 
 #pragma mark - BrowserCoordinatorCommands

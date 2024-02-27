@@ -1211,11 +1211,12 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
 }
 
 void ChromeAutofillClient::ShowAutofillErrorDialog(
-    const AutofillErrorDialogContext& context) {
-  autofill_error_dialog_controller_.Show(
-      context,
+    AutofillErrorDialogContext context) {
+  autofill_error_dialog_controller_ =
+      std::make_unique<AutofillErrorDialogControllerImpl>(std::move(context));
+  autofill_error_dialog_controller_->Show(
       base::BindOnce(&CreateAndShowAutofillErrorDialog,
-                     base::Unretained(&autofill_error_dialog_controller_),
+                     base::Unretained(autofill_error_dialog_controller_.get()),
                      base::Unretained(web_contents())));
 }
 

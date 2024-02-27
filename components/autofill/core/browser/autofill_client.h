@@ -801,8 +801,7 @@ class AutofillClient {
   // `server_returned_title` and `server_returned_description` in `context` are
   // both set, the error dialog that is displayed will have these fields
   // displayed for the title and description, respectively.
-  virtual void ShowAutofillErrorDialog(
-      const AutofillErrorDialogContext& context);
+  virtual void ShowAutofillErrorDialog(AutofillErrorDialogContext context);
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill. When triggering happens, the survey dialog will be displayed with

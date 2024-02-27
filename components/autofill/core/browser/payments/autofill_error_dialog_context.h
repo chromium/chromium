@@ -48,8 +48,12 @@ struct AutofillErrorDialogContext {
 
   AutofillErrorDialogContext();
   AutofillErrorDialogContext(const AutofillErrorDialogContext& other);
+  AutofillErrorDialogContext(AutofillErrorDialogContext&& other);
   AutofillErrorDialogContext& operator=(const AutofillErrorDialogContext&);
+  AutofillErrorDialogContext& operator=(AutofillErrorDialogContext&&);
   ~AutofillErrorDialogContext();
+
+  bool operator==(const AutofillErrorDialogContext& other_context) const;
 
   // The type of autofill error dialog that will be displayed.
   AutofillErrorDialogType type = AutofillErrorDialogType::kTypeUnknown;

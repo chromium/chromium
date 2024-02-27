@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 
 AutofillTabHelper::~AutofillTabHelper() = default;
@@ -19,6 +20,11 @@ AutofillTabHelper::~AutofillTabHelper() = default;
 void AutofillTabHelper::SetBaseViewController(
     UIViewController* base_view_controller) {
   autofill_client_->SetBaseViewController(base_view_controller);
+}
+
+void AutofillTabHelper::SetCommandsHandler(
+    id<AutofillBottomSheetCommands> commands_handler) {
+  autofill_client_->set_commands_handler(commands_handler);
 }
 
 id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {

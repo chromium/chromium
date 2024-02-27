@@ -467,10 +467,9 @@ class TestAutofillClientTemplate : public T {
 
   PopupHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
-  void ShowAutofillErrorDialog(
-      const AutofillErrorDialogContext& context) override {
+  void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override {
     autofill_error_dialog_shown_ = true;
-    autofill_error_dialog_context_ = context;
+    autofill_error_dialog_context_ = std::move(context);
   }
 
   bool IsAutocompleteEnabled() const override { return true; }
