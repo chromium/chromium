@@ -219,7 +219,9 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                                 ChromeChannelDefinitions.ChannelId.BROWSER,
                                 new NotificationMetadata(
                                         NotificationUmaTracker.SystemNotificationType.SYNC,
-                                        null,
+                                        // TODO(crbug.com/41489615): Investigate why passing null
+                                        // leads to no notifications.
+                                        TAG,
                                         NotificationConstants.NOTIFICATION_ID_SYNC))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
