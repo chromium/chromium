@@ -48,7 +48,7 @@ const CGFloat kStatusBarViewSpacing = 6.0f;
 const CGFloat kStatusBarWidth = 61.0f;
 const CGFloat kStatusBarHeight = 6.0f;
 const CGFloat kStatusBarCornerRadius = 3.0f;
-const CGFloat kStatusBarMarginFromBottom = 5.0f;
+const CGFloat kStatusBarBottomMarginViewHeight = .01f;
 
 }  // namespace
 
@@ -203,9 +203,17 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
   UIView* emptySpaceFiller = [[UIView alloc] init];
   [emptySpaceFiller setContentHuggingPriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
+  // Add empty view to trigger spacing between status bars and bottom alignment
+  // with the image.
+  UIView* statusBarBottomMarginView = [[UIView alloc] init];
+  [NSLayoutConstraint activateConstraints:@[
+    [statusBarBottomMarginView.heightAnchor
+        constraintEqualToConstant:kStatusBarBottomMarginViewHeight]
+  ]];
   UIStackView* rightVerticalStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        _titleLabel, _subtitleLabel, emptySpaceFiller, statusBarStackView
+        _titleLabel, _subtitleLabel, emptySpaceFiller, statusBarStackView,
+        statusBarBottomMarginView
       ]];
   rightVerticalStackView.axis = UILayoutConstraintAxisVertical;
   rightVerticalStackView.alignment = UIStackViewAlignmentLeading;
@@ -217,6 +225,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
 
   // Container allows for margins between icon a border.
   _imageContainer = [[UIView alloc] init];
+  _imageContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _imageContainer.layer.cornerRadius = kIconContainerCornerRadius;
   _imageContainer.layer.masksToBounds = YES;
   _imageContainer.layer.borderColor =
@@ -236,23 +245,14 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
   horizontalStackView.alignment = UIStackViewAlignmentTrailing;
   horizontalStackView.spacing = kIconContainerTextSpacing;
   [self addSubview:horizontalStackView];
+  AddSameConstraints(horizontalStackView, self);
 
   [NSLayoutConstraint activateConstraints:@[
     [_imageContainer.widthAnchor constraintEqualToConstant:kIconContainerWidth],
     [_imageContainer.heightAnchor
         constraintEqualToAnchor:_imageContainer.widthAnchor],
-    [rightVerticalStackView.bottomAnchor
-        constraintEqualToAnchor:_imageContainer.bottomAnchor
-                       constant:-kStatusBarMarginFromBottom],
     [rightVerticalStackView.topAnchor
         constraintLessThanOrEqualToAnchor:_imageContainer.topAnchor],
-    [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [horizontalStackView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
-    [horizontalStackView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
-    [horizontalStackView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
   ]];
 
   // Set up the tap gesture recognizer.
