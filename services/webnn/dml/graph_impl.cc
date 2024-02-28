@@ -1189,19 +1189,37 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       break;
     }
     case mojom::Pool2d::Kind::kMaxPool2d: {
-      DML_MAX_POOLING2_OPERATOR_DESC max_pooling_desc = {
-          .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-          .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-          .OutputIndicesTensor = nullptr,
-          .DimensionCount =
-              base::checked_cast<uint32_t>(window_dimensions.size()),
-          .Strides = strides.data(),
-          .WindowSize = window_dimensions.data(),
-          .StartPadding = start_padding.data(),
-          .EndPadding = end_padding.data(),
-          .Dilations = dilations.data()};
-      pool2d_node = graph_builder.CreateOperatorNode(DML_OPERATOR_MAX_POOLING2,
-                                                     &max_pooling_desc, inputs);
+      // If the dilations are { 1, 1 } by default, prefer using
+      // `DML_MAX_POOLING_OPERATOR_DESC` without dilations supported for best
+      // compatibility.
+      // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling_operator_desc.
+      if (dilations[0] == 1 && dilations[1] == 1) {
+        DML_MAX_POOLING_OPERATOR_DESC max_pooling_desc = {
+            .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+            .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+            .DimensionCount =
+                base::checked_cast<uint32_t>(window_dimensions.size()),
+            .Strides = strides.data(),
+            .WindowSize = window_dimensions.data(),
+            .StartPadding = start_padding.data(),
+            .EndPadding = end_padding.data()};
+        pool2d_node = graph_builder.CreateOperatorNode(
+            DML_OPERATOR_MAX_POOLING, &max_pooling_desc, inputs);
+      } else {
+        DML_MAX_POOLING2_OPERATOR_DESC max_pooling2_desc = {
+            .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+            .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+            .OutputIndicesTensor = nullptr,
+            .DimensionCount =
+                base::checked_cast<uint32_t>(window_dimensions.size()),
+            .Strides = strides.data(),
+            .WindowSize = window_dimensions.data(),
+            .StartPadding = start_padding.data(),
+            .EndPadding = end_padding.data(),
+            .Dilations = dilations.data()};
+        pool2d_node = graph_builder.CreateOperatorNode(
+            DML_OPERATOR_MAX_POOLING2, &max_pooling2_desc, inputs);
+      }
       break;
     }
     default:

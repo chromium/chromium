@@ -2888,23 +2888,44 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorL2Pool2d) {
 // Test building and computing a graph with single operator max pool2d
 // with nchw layout.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorMaxPool2d) {
-  // Test max pool2d with nchw layout, strides=1, padding=0, and floor
-  // rounding.
-  Pool2dTester<float>{
-      .input = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {1, 2, 3, 3},
-                .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                           16, 17, 18}},
-      .attributes = {.window_dimensions = {2, 2},
-                     .padding = {0, 0, 0, 0},
-                     .strides = {1, 1},
-                     .dilations = {1, 1},
-                     .layout = mojom::InputOperandLayout::kChannelsFirst},
-      .kind = mojom::Pool2d::Kind::kMaxPool2d,
-      .output = {.type = mojom::Operand::DataType::kFloat32,
-                 .dimensions = {1, 2, 2, 2},
-                 .values = {5, 6, 8, 9, 14, 15, 17, 18}}}
-      .Test();
+  {
+    // Test max pool2d with nchw layout, strides=1, padding=0, dilations={1,1}
+    // and floor rounding.
+    Pool2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                             16, 17, 18}},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {1, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst},
+        .kind = mojom::Pool2d::Kind::kMaxPool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 2},
+                   .values = {5, 6, 8, 9, 14, 15, 17, 18}}}
+        .Test();
+  }
+  {
+    // Test max pool2d with nchw layout, strides=1, padding=0, dilations={2,2}
+    // and floor rounding.
+    Pool2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 4, 4},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                             16}},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {1, 1},
+                       .dilations = {2, 2},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst},
+        .kind = mojom::Pool2d::Kind::kMaxPool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {11, 12, 15, 16}}}
+        .Test();
+  }
 }
 
 template <typename T>
