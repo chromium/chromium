@@ -1924,7 +1924,7 @@ BASE_FEATURE(kPausePagesPerBrowsingContextGroup,
 
 BASE_FEATURE(kShowHudDisplayForPausedPages,
              "ShowHudDisplayForPausedPages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls script streaming.
 BASE_FEATURE(kScriptStreaming,
