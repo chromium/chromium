@@ -1443,12 +1443,20 @@ inline constexpr char kUseCustomChromeFrame[] = "browser.custom_chrome_frame";
 
 // Double that indicates the default zoom level.
 inline constexpr char kPartitionDefaultZoomLevel[] =
+#if !BUILDFLAG(IS_ANDROID)
     "partition.default_zoom_level";
+#else
+    "partition.default_zoom_level.android";
+#endif
 
 // Dictionary that maps hostnames to zoom levels.  Hosts not in this pref will
 // be displayed at the default zoom level.
 inline constexpr char kPartitionPerHostZoomLevels[] =
+#if !BUILDFLAG(IS_ANDROID)
     "partition.per_host_zoom_levels";
+#else
+    "partition.per_host_zoom_levels.android";
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 inline constexpr char kPinnedTabs[] = "pinned_tabs";
