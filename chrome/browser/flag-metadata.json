@@ -595,6 +595,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "autofill-enable-card-benefits-sync",
+    "owners": [ "alexandertekle@chromium.org", "yishuil@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "autofill-enable-card-product-name",
     "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org", "alexandertekle@chromium.org" ],
     "expiry_milestone": 125

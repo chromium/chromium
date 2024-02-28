@@ -482,6 +482,12 @@ const char kAutofillEnableCardBenefitsForCapitalOneDescription[] =
     "When enabled, card benefits offered by Capital One will be shown in "
     "Autofill suggestions.";
 
+const char kAutofillEnableCardBenefitsSyncName[] =
+    "Enable syncing card benefits";
+const char kAutofillEnableCardBenefitsSyncDescription[] =
+    "When enabled, card benefits offered by issuers will be synced from the "
+    "Payments server.";
+
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =
