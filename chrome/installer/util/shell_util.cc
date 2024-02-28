@@ -2090,7 +2090,7 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
           base::StrCat({L"ms-settings:defaultapps?",
                         is_per_user_install ? L"registeredAppUser="
                                             : L"registeredAppMachine=",
-                        ShellUtil::GetBrowserModelId(is_per_user_install)});
+                        GetApplicationName(chrome_exe)});
       succeeded = reinterpret_cast<intptr_t>(
                       ShellExecute(nullptr, L"open", settings_url.c_str(),
                                    nullptr, nullptr, SW_SHOWNORMAL)) > 32;
