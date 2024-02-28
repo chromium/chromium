@@ -3085,8 +3085,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @return whether to show tab outline.
      */
     protected boolean shouldShowTabOutline(StripLayoutTab stripLayoutTab) {
+        // Placeholder tabs on startup have invalid tab id, resulting in a null tab, if so, return
+        // early.
+        Tab tab = getTabById(stripLayoutTab.getId());
+        if (tab == null) {
+            return false;
+        }
         return ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
-                && mTabGroupModelFilter.isTabInTabGroup(getTabById(stripLayoutTab.getId()))
+                && mTabGroupModelFilter.isTabInTabGroup(tab)
                 && getSelectedStripTab() == stripLayoutTab
                 && !mInReorderMode;
     }
