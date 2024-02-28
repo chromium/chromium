@@ -762,4 +762,54 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamPropagatesOnce) {
+  auto rendition1 = std::make_unique<MockHlsRendition>();
+  auto rendition2 = std::make_unique<MockHlsRendition>();
+  EXPECT_CALL(*rendition1, Stop());
+  EXPECT_CALL(*rendition2, Stop());
+
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
+  EXPECT_CALL(*mock_mdeh_,
+              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+
+  // Start with one rendition, to demonstrate that when it ends/starts, that
+  // event always bubbles up.
+  EXPECT_CALL(*rendition1, GetDuration()).WillOnce(Return(std::nullopt));
+  engine_->AddRenditionForTesting("primary", std::move(rendition1));
+
+  EXPECT_CALL(*mock_mdeh_, SetEndOfStream());
+  engine_->SetEndOfStream(true);
+
+  EXPECT_CALL(*mock_mdeh_, UnsetEndOfStream());
+  engine_->SetEndOfStream(false);
+
+  // Add a second rendition, to demonstrate seeks and reaching end state. Both
+  // are currently in the "unended" state.
+  EXPECT_CALL(*rendition2, GetDuration()).WillOnce(Return(std::nullopt));
+  engine_->AddRenditionForTesting("audio", std::move(rendition2));
+
+  // One rendition reaches end, nothing happens.
+  EXPECT_CALL(*mock_mdeh_, SetEndOfStream()).Times(0);
+  engine_->SetEndOfStream(true);
+
+  // Once all are ended, host gets notified.
+  EXPECT_CALL(*mock_mdeh_, SetEndOfStream());
+  engine_->SetEndOfStream(true);
+
+  // during seek, the first rendition goes unended - this notifies the host.
+  EXPECT_CALL(*mock_mdeh_, UnsetEndOfStream());
+  engine_->SetEndOfStream(false);
+
+  // during seek, the second rendition goes unended - this does nothing, as
+  // the host already knows the stream is unended.
+  EXPECT_CALL(*mock_mdeh_, UnsetEndOfStream()).Times(0);
+  engine_->SetEndOfStream(false);
+
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace media

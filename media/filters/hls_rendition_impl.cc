@@ -105,7 +105,7 @@ void HlsRenditionImpl::CheckState(
   if (segments_->Exhausted() && duration_.has_value()) {
     if (!set_stream_end_) {
       set_stream_end_ = true;
-      engine_host_->SetEndOfStream();
+      rendition_host_->SetEndOfStream(true);
     }
     std::move(time_remaining_cb).Run(kNoTimestamp);
     return;
@@ -255,7 +255,7 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
 
   if (set_stream_end_) {
     set_stream_end_ = false;
-    engine_host_->UnsetEndOfStream();
+    rendition_host_->SetEndOfStream(false);
   }
 
   auto ranges = engine_host_->GetBufferedRanges(role_);

@@ -58,6 +58,11 @@ class MEDIA_EXPORT HlsRenditionHost {
 
   // Used to set network speed (bits per second) for the adaptation selector.
   virtual void UpdateNetworkSpeed(uint64_t bps) = 0;
+
+  // Notifies the rendition host that this rendition's ended state has changed.
+  // When all renditions are ended, the rendition host can notify the engine
+  // host as well.
+  virtual void SetEndOfStream(bool ended);
 };
 
 class MEDIA_EXPORT HlsRendition {

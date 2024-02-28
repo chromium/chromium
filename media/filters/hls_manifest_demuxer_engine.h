@@ -64,6 +64,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void UpdateRenditionManifestUri(std::string role,
                                   GURL uri,
                                   base::OnceCallback<void(bool)> cb) override;
+  void SetEndOfStream(bool ended) override;
 
   // Test helpers.
   void AddRenditionForTesting(std::string role,
@@ -278,6 +279,11 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // empty, `pending_time_check_response_cb_` is posted if it is set.
   base::queue<base::OnceCallback<void(base::OnceClosure)>> pending_action_queue_
       GUARDED_BY_CONTEXT(media_sequence_checker_);
+
+  // The count of ended streams. When this count reaches the length of
+  // `renditions_`, all streams are ended. When this count drops to one below
+  // the length, then the playback is considered un-ended.
+  size_t ended_stream_count_ GUARDED_BY_CONTEXT(media_sequence_checker_) = 0;
 
   // Is an action currently running?
   bool action_in_progress_ GUARDED_BY_CONTEXT(media_sequence_checker_) = false;

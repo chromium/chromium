@@ -119,6 +119,8 @@ class MockHlsRenditionHost : public HlsRenditionHost {
               (override));
 
   MOCK_METHOD(void, UpdateNetworkSpeed, (uint64_t), (override));
+
+  MOCK_METHOD(void, SetEndOfStream, (bool), (override));
 };
 
 class MockHlsRendition : public HlsRendition {

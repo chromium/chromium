@@ -668,6 +668,18 @@ HlsManifestDemuxerEngine::ParseMediaPlaylistFromStringSource(
                                    multivariant_root_.get());
 }
 
+void HlsManifestDemuxerEngine::SetEndOfStream(bool ended) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  // If we receive a notice that the stream is no longer ended, assert that
+  // the ended stream count is at least greater than zero for sanity checking.
+  CHECK(ended || ended_stream_count_);
+  if (ended && (++ended_stream_count_ == renditions_.size())) {
+    host_->SetEndOfStream();
+  }
+  if (!ended && (--ended_stream_count_ == renditions_.size() - 1)) {
+    host_->UnsetEndOfStream();
+  }
+}
 void HlsManifestDemuxerEngine::AddRenditionForTesting(
     std::string role,
     std::unique_ptr<HlsRendition> test_rendition) {
