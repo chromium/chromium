@@ -403,7 +403,8 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
             change.cookie, url_, site_for_cookies_, top_frame_origin_,
             restricted_cookie_manager_->first_party_set_metadata_,
             restricted_cookie_manager_->GetCookieSettingOverrides(
-                has_storage_access_, /*is_ad_tagged=*/false),
+                has_storage_access_, /*is_ad_tagged=*/false,
+                /*force_disable_third_party_cookies=*/false),
             /*cookie_inclusion_status=*/nullptr)) {
       return;
     }
@@ -583,6 +584,7 @@ void RestrictedCookieManager::GetAllForUrl(
     bool has_storage_access,
     mojom::CookieManagerGetOptionsPtr options,
     bool is_ad_tagged,
+    bool force_disable_third_party_cookies,
     GetAllForUrlCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -607,7 +609,8 @@ void RestrictedCookieManager::GetAllForUrl(
           top_frame_origin,
           isolation_info_.top_frame_origin().value_or(url::Origin()),
           is_ad_tagged,
-          GetCookieSettingOverrides(has_storage_access, is_ad_tagged),
+          GetCookieSettingOverrides(has_storage_access, is_ad_tagged,
+                                    force_disable_third_party_cookies),
           net_options, std::move(options), std::move(callback)));
 }
 
@@ -750,7 +753,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   bool blocked = !cookie_settings_->IsCookieAccessible(
       cookie, url, site_for_cookies, top_frame_origin,
       first_party_set_metadata_,
-      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false),
+      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false,
+                                /*force_disable_third_party_cookies=*/false),
       &status);
 
   if (blocked) {
@@ -775,7 +779,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   url::Origin isolated_top_frame_origin =
       isolation_info_.top_frame_origin().value_or(url::Origin());
   net::CookieSettingOverrides cookie_setting_overrides =
-      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false);
+      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false,
+                                /*force_disable_third_party_cookies=*/false);
   if (!status.IsInclude()) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
@@ -981,8 +986,10 @@ void RestrictedCookieManager::SetCookieFromString(
           site_for_cookies, std::move(result_with_access_result), std::nullopt,
           /*count=*/1,
           /*is_ad_tagged=*/false,
-          GetCookieSettingOverrides(has_storage_access,
-                                    /*is_ad_tagged=*/false)));
+          GetCookieSettingOverrides(
+              has_storage_access,
+              /*is_ad_tagged=*/false,
+              /*force_disable_third_party_cookies=*/false)));
     }
     return;
   }
@@ -1001,6 +1008,7 @@ void RestrictedCookieManager::GetCookiesString(
     bool has_storage_access,
     bool get_version_shared_memory,
     bool is_ad_tagged,
+    bool force_disable_third_party_cookies,
     GetCookiesStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Checks done by GetAllForUrl
@@ -1045,6 +1053,7 @@ void RestrictedCookieManager::GetCookiesString(
   match_options->match_type = mojom::CookieMatchType::STARTS_WITH;
   GetAllForUrl(url, site_for_cookies, top_frame_origin, has_storage_access,
                std::move(match_options), is_ad_tagged,
+               force_disable_third_party_cookies,
                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
                                      cookies) {
                  return net::CanonicalCookie::BuildCookieLine(cookies);
@@ -1064,7 +1073,8 @@ void RestrictedCookieManager::CookiesEnabledFor(
 
   std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
-      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false)));
+      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false,
+                                /*force_disable_third_party_cookies=*/false)));
 }
 
 void RestrictedCookieManager::InstallReceiver(
@@ -1123,10 +1133,14 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
     bool has_storage_access,
-    bool is_ad_tagged) const {
+    bool is_ad_tagged,
+    bool force_disable_third_party_cookies) const {
   net::CookieSettingOverrides overrides = cookie_setting_overrides_;
   if (has_storage_access) {
     overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  }
+  if (force_disable_third_party_cookies) {
+    overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
   }
   AddAdsHeuristicCookieSettingOverrides(is_ad_tagged, overrides);
   return overrides;

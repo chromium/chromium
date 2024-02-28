@@ -101,7 +101,8 @@ String CookieJar::Cookies() {
             cookie_url, document_->SiteForCookies(),
             document_->TopFrameOrigin(),
             document_->GetExecutionContext()->HasStorageAccess(),
-            get_version_shared_memory, is_ad_tagged, &new_version,
+            get_version_shared_memory, is_ad_tagged,
+            /*force_disable_third_party_cookies=*/false, &new_version,
             &new_mapped_region, &value)) {
       // On IPC failure invalidate cached values and return empty string since
       // there is no guarantee the client can still validly access cookies in

@@ -37,8 +37,13 @@ enum class CookieSettingOverride {
   // One example are subresource requests that are same-site with the top-level
   // site but originate from a cross-site embed.
   kCrossSiteCredentialedWithCORS = 6,
+  // When specified, third party cookies should be forced disabled.
+  // Other cookie exceptions like the storage access API could result in
+  // third party cookies still being used when this is forced disabled.
+  // Used by WebView.
+  kForceDisableThirdPartyCookies = 7,
 
-  kMaxValue = kCrossSiteCredentialedWithCORS,
+  kMaxValue = kForceDisableThirdPartyCookies,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,

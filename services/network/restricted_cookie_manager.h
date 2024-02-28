@@ -135,6 +135,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                     bool has_storage_access,
                     mojom::CookieManagerGetOptionsPtr options,
                     bool is_ad_tagged,
+                    bool force_disable_third_party_cookies,
                     GetAllForUrlCallback callback) override;
 
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
@@ -166,6 +167,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                         bool has_storage_access,
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
+                        bool force_disable_third_party_cookies,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,
@@ -288,7 +290,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // Computes the CookieSettingOverrides to be used by this instance.
   net::CookieSettingOverrides GetCookieSettingOverrides(
       bool has_storage_access,
-      bool is_ad_tagged) const;
+      bool is_ad_tagged,
+      bool force_disable_third_party_cookies) const;
 
   void OnCookiesAccessed(network::mojom::CookieAccessDetailsPtr details);
 

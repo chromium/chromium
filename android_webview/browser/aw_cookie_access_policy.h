@@ -9,6 +9,7 @@
 #include "base/synchronization/lock.h"
 #include "base/types/optional_ref.h"
 #include "content/public/browser/global_routing_id.h"
+#include "net/base/network_delegate.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -44,7 +45,7 @@ class AwCookieAccessPolicy {
       int frame_tree_node_id);
 
   // Whether or not to allow cookies for requests with these parameters.
-  bool AllowCookies(
+  net::NetworkDelegate::PrivacySetting AllowCookies(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       base::optional_ref<const content::GlobalRenderFrameHostToken>
@@ -58,11 +59,13 @@ class AwCookieAccessPolicy {
   AwCookieAccessPolicy();
   ~AwCookieAccessPolicy();
 
-  bool CanAccessCookies(const GURL& url,
-                        const net::SiteForCookies& site_for_cookies,
-                        bool accept_third_party_cookies,
-                        bool has_storage_access);
-  bool accept_cookies_;
+  net::NetworkDelegate::PrivacySetting CanAccessCookies(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      bool accept_third_party_cookies,
+      bool has_storage_access);
+
+  bool accept_cookies_ = true;
   base::Lock lock_;
 };
 

@@ -24,11 +24,15 @@ using content::WebSocketHandshakeRequestInfo;
 
 namespace android_webview {
 
+namespace {
+
+using PrivacySetting = net::NetworkDelegate::PrivacySetting;
+
+}  // namespace
+
 AwCookieAccessPolicy::~AwCookieAccessPolicy() = default;
 
-AwCookieAccessPolicy::AwCookieAccessPolicy()
-    : accept_cookies_(true) {
-}
+AwCookieAccessPolicy::AwCookieAccessPolicy() = default;
 
 AwCookieAccessPolicy* AwCookieAccessPolicy::GetInstance() {
   static base::NoDestructor<AwCookieAccessPolicy> instance;
@@ -64,7 +68,7 @@ bool AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies(
   return io_thread_client->ShouldAcceptThirdPartyCookies();
 }
 
-bool AwCookieAccessPolicy::AllowCookies(
+PrivacySetting AwCookieAccessPolicy::AllowCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     base::optional_ref<const content::GlobalRenderFrameHostToken>
@@ -77,32 +81,36 @@ bool AwCookieAccessPolicy::AllowCookies(
                           has_storage_access);
 }
 
-bool AwCookieAccessPolicy::CanAccessCookies(
+PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     bool accept_third_party_cookies,
     bool has_storage_access) {
   if (!accept_cookies_)
-    return false;
+    return PrivacySetting::kStateDisallowed;
 
   if (accept_third_party_cookies)
-    return true;
+    return PrivacySetting::kStateAllowed;
 
   // File URLs are a special case. We want file URLs to be able to set cookies
   // but (for the purpose of cookies) Chrome considers different file URLs to
   // come from different origins so we use the 'allow all' cookie policy for
   // file URLs.
   if (url.SchemeIsFile())
-    return true;
+    return PrivacySetting::kStateAllowed;
 
   if (has_storage_access) {
-    return true;
+    return PrivacySetting::kStateAllowed;
   }
 
   // Otherwise, block third-party cookies.
-  return net::StaticCookiePolicy(
-             net::StaticCookiePolicy::BLOCK_ALL_THIRD_PARTY_COOKIES)
-             .CanAccessCookies(url, site_for_cookies) == net::OK;
+  bool should_allow_3pcs =
+      net::StaticCookiePolicy(
+          net::StaticCookiePolicy::BLOCK_ALL_THIRD_PARTY_COOKIES)
+          .CanAccessCookies(url, site_for_cookies) == net::OK;
+
+  return should_allow_3pcs ? PrivacySetting::kStateAllowed
+                           : PrivacySetting::kPartitionedStateAllowedOnly;
 }
 
 }  // namespace android_webview

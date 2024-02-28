@@ -462,6 +462,7 @@ void CookieStore::DoRead(ScriptState* script_state,
   backend_->GetAllForUrl(cookie_url, default_site_for_cookies_,
                          default_top_frame_origin_, context->HasStorageAccess(),
                          std::move(backend_options), is_ad_tagged,
+                         /*force_disable_third_party_cookies=*/false,
                          std::move(backend_result_converter));
 }
 

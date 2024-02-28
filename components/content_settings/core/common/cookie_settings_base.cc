@@ -433,6 +433,12 @@ bool CookieSettingsBase::IsAllowedByTopLevel3pcdTrialSettings(
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }
 
+bool CookieSettingsBase::Are3pcsForceDisabledByOverride(
+    net::CookieSettingOverrides overrides) const {
+  return overrides.Has(
+      net::CookieSettingOverride::kForceDisableThirdPartyCookies);
+}
+
 bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings(
     net::CookieSettingOverrides overrides) const {
   return base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants) &&
@@ -517,7 +523,8 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   if (!is_third_party_request) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
   }
-  if (!ShouldBlockThirdPartyCookies()) {
+  if (!ShouldBlockThirdPartyCookies() &&
+      !Are3pcsForceDisabledByOverride(overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting};
   }

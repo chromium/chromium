@@ -79,7 +79,14 @@ interface RestrictedCookieManager {
       url.mojom.Origin top_frame_origin,
       bool has_storage_access,
       CookieManagerGetOptions options,
-      bool is_ad_tagged) => (
+      bool is_ad_tagged,
+      // Proxied restricted cookie managers need a way to signal to the
+      // restricted cookie manager that we need to filter out 3PCs.
+      // This is because we know of at least one case where this can
+      // be configured _per_ aw contents and the standard way of
+      // configuring this per cookie settings (from each browser
+      // context), is not sufficient.
+      bool force_disable_third_party_cookies) => (
       array<CookieWithAccessResult> cookies);
 
   // Sets a canonical cookie. |status| must be an inclusion status as defined
@@ -138,7 +145,15 @@ interface RestrictedCookieManager {
                    SiteForCookies site_for_cookies,
                    url.mojom.Origin top_frame_origin,
                    bool has_storage_access, bool get_version_shared_memory,
-                   bool is_ad_tagged) => (
+                   bool is_ad_tagged,
+                   // Proxied restricted cookie managers need a way to signal to
+                   // the restricted cookie manager that we need to filter out
+                   // 3PCs.
+                   // This is because we know of at least one case where this
+                   // can be configured _per_ aw contents and the standard way
+                   // of configuring this per cookie settings (from each
+                   // browser context), is not sufficient.
+                   bool force_disable_third_party_cookies) => (
                    uint64 version,
                    mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer,
                    string cookies);

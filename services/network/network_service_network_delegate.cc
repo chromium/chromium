@@ -206,18 +206,34 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
   URLLoader* url_loader = URLLoader::ForRequest(request);
   if (url_loader) {
     allowed =
-        url_loader->AllowCookies(request.url(), request.site_for_cookies());
+        url_loader->AllowFullCookies(request.url(), request.site_for_cookies());
+    if (!allowed) {
+      // AllowFullCookies returns false if "all" cookies are not allowed by a
+      // URL but it could still be the case that cookies are allowed, but it was
+      // 3PCs that were not allowed. If that is the case, we should still
+      // preserve partitioned cookies.
+      if (url_loader->CookiesDisabled()) {
+        ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                          maybe_included_cookies, excluded_cookies);
+      } else {
+        ExcludeAllCookiesExceptPartitioned(
+            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+            maybe_included_cookies, excluded_cookies);
+      }
+    }
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
   } else {
     WebSocket* web_socket = WebSocket::ForRequest(request);
     if (web_socket) {
       allowed = web_socket->AllowCookies(request.url());
+      // TODO(crbug/324211435): Fix partitioned cookies for web sockets.
+      if (!allowed) {
+        ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                          maybe_included_cookies, excluded_cookies);
+      }
     }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   }
-  if (!allowed)
-    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
 
   return allowed;
 }
@@ -238,8 +254,10 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
   // The remaining checks do not consider setting overrides since they enforce
   // explicit disablement via Android Webview APIs.
   URLLoader* url_loader = URLLoader::ForRequest(request);
-  if (url_loader)
-    return url_loader->AllowCookies(request.url(), request.site_for_cookies());
+  if (url_loader) {
+    return url_loader->AllowCookie(cookie, request.url(),
+                                   request.site_for_cookies());
+  }
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
   WebSocket* web_socket = WebSocket::ForRequest(request);
   if (web_socket)

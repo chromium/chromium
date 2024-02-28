@@ -363,6 +363,12 @@ class CookieSettingsBase {
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
+  // Proxies of the restricted cookie manager can override if third party
+  // cookies should be allowed.
+  // Used by WebView.
+  bool Are3pcsForceDisabledByOverride(
+      net::CookieSettingOverrides overrides) const;
+
   bool IsAllowedBy3pcdHeuristicsGrantsSettings(
       const GURL& url,
       const GURL& first_party_url,

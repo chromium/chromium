@@ -130,6 +130,14 @@ class NET_EXPORT NetworkDelegate {
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies);
 
+  // Does the same as ExcludeAllCookies but will still include
+  // cookies that are partitioned if cookies are not disabled
+  // globally.
+  static void ExcludeAllCookiesExceptPartitioned(
+      net::CookieInclusionStatus::ExclusionReason reason,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies);
+
   // Moves any cookie in `maybe_included_cookies` that has an ExclusionReason
   // into `excluded_cookies`.
   static void MoveExcludedCookies(
