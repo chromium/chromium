@@ -663,7 +663,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
       connection_->RegisterAuthenticationFactor(
           *primary_account_, GetAllVaultKeys(*per_user_vault),
           per_user_vault->last_vault_key_version(), *imported_public_key,
-          AuthenticationFactorType::kUnspecified, method_type_hint,
+          UnspecifiedAuthenticationFactorType(method_type_hint),
           base::IgnoreArgs<TrustedVaultRegistrationStatus, int>(base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
               base::Unretained(this), std::move(cb))));
@@ -824,8 +824,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
         connection_->RegisterAuthenticationFactor(
             *primary_account_, GetAllVaultKeys(*per_user_vault),
             per_user_vault->last_vault_key_version(), key_pair->public_key(),
-            AuthenticationFactorType::kPhysicalDevice,
-            /*authentication_factor_type_hint=*/std::nullopt,
+            PhysicalDevice(),
             base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                            base::Unretained(this)));
   } else {

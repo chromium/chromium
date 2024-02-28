@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/types/strong_alias.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 struct CoreAccountInfo;
 
@@ -93,7 +95,17 @@ enum class DownloadAuthenticationFactorsRegistrationStateResult {
   kMaxValue = kIrrecoverable,
 };
 
-enum class AuthenticationFactorType { kPhysicalDevice, kGpmPin, kUnspecified };
+// Authentication factor types:
+using PhysicalDevice =
+    base::StrongAlias<class PhysicalDeviceTag, absl::monostate>;
+// UnspecifiedAuthenticationFactorType carries a type hint for the backend.
+using UnspecifiedAuthenticationFactorType =
+    base::StrongAlias<class UnspecifiedAuthenticationFactorTypeTag, int>;
+// GPM PINs carry a bytestring of opaque metadata.
+using GpmPin = base::StrongAlias<class GpmPinTag, std::string>;
+
+using AuthenticationFactorType =
+    absl::variant<PhysicalDevice, UnspecifiedAuthenticationFactorType, GpmPin>;
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);
@@ -153,7 +165,6 @@ class TrustedVaultConnection {
       int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
-      std::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) = 0;
 
   // Special version of the above for the case where the caller has no local

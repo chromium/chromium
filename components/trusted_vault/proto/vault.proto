@@ -38,6 +38,10 @@ message SecurityDomain {
   SecurityDomainDetails security_domain_details = 3;
 }
 
+message GooglePasswordManagerPinMetadata {
+  bytes encrypted_pin_hash = 2;
+}
+
 message SecurityDomainMember {
   string name = 1;
   bytes public_key = 2;
@@ -60,6 +64,9 @@ message SecurityDomainMember {
 
   message MemberMetadata {
     bool usable_for_retrieval = 1;
+    oneof member_metadata_variant {
+      GooglePasswordManagerPinMetadata google_password_manager_pin_metadata = 5;
+    }
   }
   MemberMetadata member_metadata = 6;
 }
