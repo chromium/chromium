@@ -307,8 +307,12 @@ auto RunTracing(
 auto RunVideoCapture(
     mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  content::UtilityThread::Get()->BindHostReceiver(
-      GetContentClient()->utility()->InitMojoServiceManager());
+  auto service_manager_receiver =
+      GetContentClient()->utility()->InitMojoServiceManager();
+  if (service_manager_receiver.is_valid()) {
+    content::UtilityThread::Get()->BindHostReceiver(
+        std::move(service_manager_receiver));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto service = std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
       std::move(receiver), base::SingleThreadTaskRunner::GetCurrentDefault());
