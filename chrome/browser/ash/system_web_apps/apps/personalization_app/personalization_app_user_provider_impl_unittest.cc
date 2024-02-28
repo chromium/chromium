@@ -63,19 +63,6 @@ constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kFakeTestName[] = "Fake Name";
 constexpr char kTestGaiaId[] = "1234567890";
 
-void AddAndLoginUser(const AccountId& account_id,
-                     const std::string& display_name) {
-  ash::FakeChromeUserManager* user_manager =
-      static_cast<ash::FakeChromeUserManager*>(
-          user_manager::UserManager::Get());
-
-  user_manager->AddUser(account_id);
-  user_manager->SaveUserDisplayName(account_id,
-                                    base::UTF8ToUTF16(display_name));
-  user_manager->LoginUser(account_id);
-  user_manager->SwitchActiveUser(account_id);
-}
-
 mojo_base::BigBuffer FakeEncodedPngBuffer() {
   return mojo_base::BigBuffer({0, 1});
 }
@@ -170,9 +157,7 @@ class TestCameraImageDecoder
 
 class PersonalizationAppUserProviderImplTest : public testing::Test {
  public:
-  PersonalizationAppUserProviderImplTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  PersonalizationAppUserProviderImplTest() = default;
   PersonalizationAppUserProviderImplTest(
       const PersonalizationAppUserProviderImplTest&) = delete;
   PersonalizationAppUserProviderImplTest& operator=(
@@ -183,11 +168,22 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
-
     ASSERT_TRUE(profile_manager_.SetUp());
+
+    // Add a User then log in.
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+    user_manager_->AddUser(account_id);
+    user_manager_->SaveUserDisplayName(
+        account_id, base::UTF8ToUTF16(std::string(kFakeTestName)));
+    user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false, /*is_child=*/false);
+
+    // Create a profile and set it as User profile.
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
-    AddAndLoginUser(AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-                    kFakeTestName);
+    user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -200,6 +196,11 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
     user_provider_->BindInterface(
         user_provider_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    user_manager_->OnUserProfileWillBeDestroyed(
+        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId));
   }
 
   TestingProfile* profile() { return profile_; }
@@ -227,11 +228,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     return static_cast<ash::UserImageManagerImpl*>(
         ash::UserImageManagerRegistry::Get()->GetManager(
             GetAccountId(profile_)));
-  }
-
-  ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
   }
 
   void SetUserImageObserver() {
@@ -276,10 +272,10 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager scoped_user_manager_;
-  UserImageManagerRegistry user_image_manager_registry_{
-      user_manager::UserManager::Get()};
-  TestingProfileManager profile_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  UserImageManagerRegistry user_image_manager_registry_{user_manager_.Get()};
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   data_decoder::test::InProcessDataDecoder data_decoder_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;

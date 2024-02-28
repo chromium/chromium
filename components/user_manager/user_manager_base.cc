@@ -1185,7 +1185,9 @@ void UserManagerBase::NotifyOnLogin() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   DCHECK(active_user_);
 
-  // TODO(b/278643115): Call Observer::OnUserLoggedIn() from here.
+  for (auto& observer : observer_list_) {
+    observer.OnUserLoggedIn(*active_user_);
+  }
 
   NotifyActiveUserChanged(active_user_);
   NotifyLoginStateUpdated();

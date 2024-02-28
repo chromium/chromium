@@ -618,7 +618,9 @@ void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
     if (!user_is_local) {
       SetInitialUserImage();
       is_random_image_set_ = true;
-      DownloadProfileImage();
+      // We should download the user image in this case, but at this moment the
+      // user Profile instance is not yet ready. The actual downloading will be
+      // handled in UserProfileCreated().
     }
   } else {
     // Although UserImage.LoggedIn3 is an enumerated histogram, we intentionally
@@ -1030,10 +1032,10 @@ bool UserImageManagerImpl::IsUserLoggedInAndHasGaiaAccount() const {
 
 bool UserImageManagerImpl::IsCustomizationSelectorsPrefEnabled() const {
   const user_manager::User* user = GetUser();
-  content::BrowserContext* browser_context =
-      BrowserContextHelper::Get()->GetBrowserContextByUser(user);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return user_image::prefs::IsCustomizationSelectorsPrefEnabled(profile);
+  // When this method is called, user Profile must be initialized already.
+  auto* prefs = user->GetProfilePrefs();
+  CHECK(prefs);
+  return user_image::prefs::IsCustomizationSelectorsPrefEnabled(prefs);
 }
 
 }  // namespace ash

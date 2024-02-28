@@ -745,10 +745,6 @@ void ChromeUserManagerImpl::RegularUserLoggedIn(
 
   MaybeStartBluetoothLogging(account_id);
 
-  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
-  for (auto& observer : observer_list_) {
-    observer.OnUserLoggedIn(*active_user_);
-  }
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 
   // Make sure that new data is persisted to Local State.
@@ -760,11 +756,6 @@ void ChromeUserManagerImpl::RegularUserLoggedInAsEphemeral(
     const user_manager::UserType user_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   UserManagerBase::RegularUserLoggedInAsEphemeral(account_id, user_type);
-
-  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
-  for (auto& observer : observer_list_) {
-    observer.OnUserLoggedIn(*active_user_);
-  }
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
@@ -783,11 +774,6 @@ void ChromeUserManagerImpl::PublicAccountUserLoggedIn(
     user_manager::User* user) {
   SetIsCurrentUserNew(true);
   active_user_ = user;
-
-  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
-  for (auto& observer : observer_list_) {
-    observer.OnUserLoggedIn(*active_user_);
-  }
 
   // For public account, it's possible that the user-policy controlled wallpaper
   // was fetched/cleared at the login screen (while for a regular user it was

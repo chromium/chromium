@@ -405,7 +405,8 @@ void PersonalizationAppUserProviderImpl::OnExternalUserImageEncoded(
 }
 
 bool PersonalizationAppUserProviderImpl::IsCustomizationSelectorsPrefEnabled() {
-  return user_image::prefs::IsCustomizationSelectorsPrefEnabled(profile_);
+  return user_image::prefs::IsCustomizationSelectorsPrefEnabled(
+      profile_->GetPrefs());
 }
 
 void PersonalizationAppUserProviderImpl::UpdateUserImageObserver(
