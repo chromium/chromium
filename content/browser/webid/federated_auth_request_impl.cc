@@ -745,9 +745,10 @@ void FederatedAuthRequestImpl::RequestToken(
       render_frame_host().HasTransientUserActivation();
 
   if (HasPendingRequest()) {
-    RpMode pending_request_rp_mode = GetPageData(&render_frame_host())
-                                         ->PendingWebIdentityRequest()
-                                         ->GetRpMode();
+    FederatedAuthRequestImpl* pending_request =
+        GetPageData(&render_frame_host())->PendingWebIdentityRequest();
+
+    RpMode pending_request_rp_mode = pending_request->GetRpMode();
     bool can_replace_pending_request =
         IsFedCmButtonModeEnabled() &&
         idp_get_params_ptrs[0]->mode == RpMode::kButton &&
@@ -770,16 +771,21 @@ void FederatedAuthRequestImpl::RequestToken(
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                               std::nullopt, "", /*error=*/nullptr,
                               /*is_auto_selected=*/false);
+      if (pending_request != this) {
+        // fedcm_metrics_ is the only member that's initialized at this point so
+        // we should reset it.
+        fedcm_metrics_.reset();
+      }
       return;
     }
     // Cancel the pending request before starting the new button flow request.
     // TODO(crbug.com/326587232): Use specific error type.
-    GetPageData(&render_frame_host())
-        ->PendingWebIdentityRequest()
-        ->CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                   /*token_status=*/std::nullopt,
-                                   /*token_error=*/std::nullopt,
-                                   /*should_delay_callback=*/false);
+    pending_request->CompleteRequestWithError(
+        FederatedAuthRequestResult::kError,
+        /*token_status=*/std::nullopt,
+        /*token_error=*/std::nullopt,
+        /*should_delay_callback=*/false);
+    CHECK(!auth_request_token_callback_);
 
     // This was reset to false during CleanUp when replacing a widget flow
     // from the same frame so we need to change it back to true.
