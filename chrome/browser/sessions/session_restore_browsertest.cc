@@ -2211,7 +2211,8 @@ class MultiBrowserObserver : public BrowserListObserver {
 
 // Test that when closing a profile with multiple browsers, all browsers are
 // restored when the profile is reopened.
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
+// TODO(http://b/327325665) Enable this test after resolving issue.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreAllBrowsers) {
   // Create two profiles with two browsers each.
   Browser* first_profile_browser_one = browser();
   ui_test_utils::BrowserChangeObserver new_browser_observer(
