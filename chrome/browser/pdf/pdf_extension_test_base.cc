@@ -116,6 +116,13 @@ testing::AssertionResult PDFExtensionTestBase::LoadPdfInNewTab(
   return EnsureFullPagePDFHasLoadedWithValidFrameTree(GetActiveWebContents());
 }
 
+testing::AssertionResult PDFExtensionTestBase::LoadPdfInFirstChild(
+    const GURL& url) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  return EnsurePDFHasLoadedInFirstChildWithValidFrameTree(
+      GetActiveWebContents());
+}
+
 // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
 // for the loaded PDF. Returns nullptr if the load fails.
 MimeHandlerViewGuest* PDFExtensionTestBase::LoadPdfGetMimeHandlerView(
@@ -144,6 +151,22 @@ content::RenderFrameHost* PDFExtensionTestBase::LoadPdfGetExtensionHost(
   }
 
   return GetOnlyPdfExtensionHostEnsureValid();
+}
+
+content::RenderFrameHost*
+PDFExtensionTestBase::LoadPdfInFirstChildGetExtensionHost(const GURL& url) {
+  if (!LoadPdfInFirstChild(url)) {
+    ADD_FAILURE() << "Failed to load PDF";
+    return nullptr;
+  }
+
+  std::vector<content::RenderFrameHost*> extension_hosts =
+      pdf_extension_test_util::GetPdfExtensionHosts(GetActiveWebContents());
+  if (extension_hosts.empty()) {
+    return nullptr;
+  }
+
+  return extension_hosts[0];
 }
 
 void PDFExtensionTestBase::TestGetSelectedTextReply(const GURL& url,

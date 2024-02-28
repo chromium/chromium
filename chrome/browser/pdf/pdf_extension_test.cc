@@ -1103,11 +1103,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
   }
 
   // Load page with embedded PDF and make sure it succeeds.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
   WebContents* web_contents = GetActiveWebContents();
-
-  ASSERT_TRUE(EnsurePDFHasLoadedInFirstChildWithValidFrameTree(web_contents));
 
   EXPECT_EQ(u"TabWithEmbeddedPdf", web_contents->GetTitle());
 }
@@ -1591,8 +1589,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"));
+  content::RenderFrameHost* extension_host =
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"));
+  ASSERT_TRUE(extension_host);
 
   // The PDF plugin frame and the extension main frame should not share renderer
   // processes even though the extension triggers a data: navigation when
@@ -1600,8 +1600,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
   std::vector<content::RenderFrameHost*> plugin_frames =
       GetPdfPluginFrames(GetActiveWebContents());
   ASSERT_EQ(plugin_frames.size(), 1u);
-  EXPECT_NE(plugin_frames[0]->GetProcess(),
-            guest->GetGuestMainFrame()->GetProcess());
+  EXPECT_NE(plugin_frames[0]->GetProcess(), extension_host->GetProcess());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
@@ -2609,16 +2608,12 @@ using PDFExtensionHitTestTest = PDFExtensionTest;
 // Flaky in nearly all configurations; see https://crbug.com/856169.
 IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   // Load page with embedded PDF and make sure it succeeds.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-  WebContents* embedder_contents = GetActiveWebContents();
-
-  ASSERT_TRUE(
-      EnsurePDFHasLoadedInFirstChildWithValidFrameTree(embedder_contents));
-
   content::RenderFrameHost* extension_host =
-      GetOnlyPdfExtensionHostEnsureValid();
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   ASSERT_TRUE(extension_host);
+
+  WebContents* embedder_contents = GetActiveWebContents();
 
   content::WaitForHitTestData(extension_host);
 
@@ -2657,16 +2652,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   // Load page with embedded PDF and make sure it succeeds.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-  WebContents* embedder_contents = GetActiveWebContents();
-
-  ASSERT_TRUE(
-      EnsurePDFHasLoadedInFirstChildWithValidFrameTree(embedder_contents));
-
   content::RenderFrameHost* extension_host =
-      GetOnlyPdfExtensionHostEnsureValid();
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   ASSERT_TRUE(extension_host);
+
+  WebContents* embedder_contents = GetActiveWebContents();
 
   content::WaitForHitTestData(extension_host);
 
@@ -2737,12 +2728,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  ASSERT_TRUE(guest);
-
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
+  content::RenderFrameHost* extension_host =
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
+  ASSERT_TRUE(extension_host);
 
   // Verify that current focus state is body element.
   const std::string script =
@@ -2750,7 +2739,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
       "document.body;"
       "is_plugin_focused;";
 
-  ASSERT_EQ(true, content::EvalJs(guest_mainframe, script));
+  ASSERT_EQ(true, content::EvalJs(extension_host, script));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
@@ -3517,10 +3506,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
   {
     // Load page with embedded PDF and make sure it succeeds.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
-                    ->WaitUntilPdfLoadedInFirstChild());
+    ASSERT_TRUE(LoadPdfInFirstChild(
+        embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
 
     // Verify that there is no full-page pdf extension host on embedded PDF.
     EXPECT_FALSE(pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
@@ -3639,29 +3626,21 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesFullPage) {
 // Test that the inner frames in an embed-embedded PDF can't be accessed.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesEmbed) {
   // Load the HTML containing an embed embedding a PDF.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
 
-  auto* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
-                  ->WaitUntilPdfLoadedInFirstChild());
-
-  EXPECT_EQ(true,
-            content::EvalJs(web_contents, kNestedWindowFramesUndefinedCheck));
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(),
+                                  kNestedWindowFramesUndefinedCheck));
 }
 
 // Test that the inner frames in an iframe-embedded PDF can't be accessed.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesIframe) {
   // Load the HTML containing an iframe embedding a PDF.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("/pdf/test-iframe.html")));
 
-  auto* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
-                  ->WaitUntilPdfLoadedInFirstChild());
-
-  EXPECT_EQ(true,
-            content::EvalJs(web_contents, kNestedWindowFramesUndefinedCheck));
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(),
+                                  kNestedWindowFramesUndefinedCheck));
 }
 
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer

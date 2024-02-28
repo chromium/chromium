@@ -57,6 +57,11 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // Same as LoadPDF(), but loads into a new tab.
   testing::AssertionResult LoadPdfInNewTab(const GURL& url);
 
+  // Same as `LoadPdf()` but loads URLs where the first child of the primary
+  // main frame should be the embedder. This is a common case where an HTML page
+  // only embeds a single PDF.
+  testing::AssertionResult LoadPdfInFirstChild(const GURL& url);
+
   // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
   // for the loaded PDF. Returns nullptr if the load fails.
   extensions::MimeHandlerViewGuest* LoadPdfGetMimeHandlerView(const GURL& url);
@@ -70,6 +75,12 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // the loaded PDF. Returns nullptr if the load fails or getting the extension
   // host fails. The test will fail if the load fails.
   content::RenderFrameHost* LoadPdfGetExtensionHost(const GURL& url);
+
+  // Same as `LoadPdfInFirstChild()`, but also returns a pointer to the
+  // extension host for the loaded PDF. Returns nullptr if the load fails or
+  // getting the extension host fails. The test will fail if the load fails.
+  content::RenderFrameHost* LoadPdfInFirstChildGetExtensionHost(
+      const GURL& url);
 
   void TestGetSelectedTextReply(const GURL& url, bool expect_success);
 
