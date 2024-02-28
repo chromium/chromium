@@ -2391,11 +2391,6 @@ BASE_FEATURE(kProjectorTranscriptChapterTitle,
              "ProjectorTranscriptChapterTitle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to show toast notification when account switches.
-BASE_FEATURE(kProjectorAccountSwitchNotification,
-             "ProjectorAccountSwitchNotification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to use USM for serverside speech recognition for projector.
 BASE_FEATURE(kProjectorUseUSMForS3,
              "ProjectorUseUSMForS3",
@@ -4184,10 +4179,6 @@ bool IsProjectorShowShortPseudoTranscript() {
 
 bool IsProjectorUpdateIndexableTextEnabled() {
   return base::FeatureList::IsEnabled(kProjectorUpdateIndexableText);
-}
-
-bool IsProjectorAccountSwitchNotificationEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorAccountSwitchNotification);
 }
 
 bool IsProjectorServerSideRecognitionFallbackImplEnabled() {

@@ -716,8 +716,6 @@ BASE_DECLARE_FEATURE(kProjectorUpdateIndexableText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorBleedingEdgeExperience);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kProjectorAccountSwitchNotification);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorServerSideRecognitionFallbackImpl);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorMuting);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorRedirectToPwa);
@@ -1211,8 +1209,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorShowShortPseudoTranscript();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorUpdateIndexableTextEnabled();
 // TODO(b/288273641): Clean up the server speech recognition related flags.
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsProjectorAccountSwitchNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorServerSideRecognitionFallbackImplEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorMutingEnabled();

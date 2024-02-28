@@ -30,9 +30,6 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "isLocalPlaybackEnabled",
       base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI));
-  source->AddBoolean(
-      "isAccountSwitchNotificationEnabled",
-      ash::features::IsProjectorAccountSwitchNotificationEnabled());
   source->AddBoolean("isMutingEnabled",
                      ash::features::IsProjectorMutingEnabled());
   source->AddBoolean("isPwaRedirectEnabled",
