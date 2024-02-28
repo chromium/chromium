@@ -253,7 +253,8 @@ CSSComputedStyleDeclaration::GetVariables() const {
   }
   DCHECK(StyledElement());
   return ComputedStyleCSSValueMapping::GetVariables(
-      *style, StyledElement()->GetDocument().GetPropertyRegistry());
+      *style, StyledElement()->GetDocument().GetPropertyRegistry(),
+      CSSValuePhase::kResolvedValue);
 }
 
 void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
@@ -377,7 +378,8 @@ const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValue(
   }
 
   const CSSValue* value = property_class.CSSValueFromComputedStyle(
-      *style, StyledLayoutObject(), allow_visited_style_);
+      *style, StyledLayoutObject(), allow_visited_style_,
+      CSSValuePhase::kResolvedValue);
   if (value) {
     return value;
   }

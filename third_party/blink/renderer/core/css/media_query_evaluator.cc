@@ -1754,9 +1754,9 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
 
   const CSSValue* computed_value =
       CustomProperty(property_name, *media_values_->GetDocument())
-          .CSSValueFromComputedStyle(container->ComputedStyleRef(),
-                                     nullptr /* layout_object */,
-                                     false /* allow_visited_style */);
+          .CSSValueFromComputedStyle(
+              container->ComputedStyleRef(), nullptr /* layout_object */,
+              false /* allow_visited_style */, CSSValuePhase::kComputedValue);
   if (base::ValuesEquivalent(query_value, computed_value) == explicit_value) {
     return KleeneValue::kTrue;
   }

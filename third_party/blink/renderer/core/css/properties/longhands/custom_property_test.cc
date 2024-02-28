@@ -38,9 +38,9 @@ class CustomPropertyTest : public PageTestBase {
   }
 
   const CSSValue* GetComputedValue(const CustomProperty& property) {
-    return property.CSSValueFromComputedStyle(GetComputedStyle(),
-                                              nullptr /* layout_object */,
-                                              false /* allow_visited_style */);
+    return property.CSSValueFromComputedStyle(
+        GetComputedStyle(), nullptr /* layout_object */,
+        false /* allow_visited_style */, CSSValuePhase::kComputedValue);
   }
 
   const CSSValue* ParseValue(const CustomProperty& property,

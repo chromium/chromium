@@ -14,6 +14,7 @@ namespace blink {
 
 class ComputedStyle;
 class PropertyRegistry;
+enum class CSSValuePhase;
 
 class CORE_EXPORT ComputedStyleCSSValueMapping {
   STATIC_ONLY(ComputedStyleCSSValueMapping);
@@ -21,12 +22,14 @@ class CORE_EXPORT ComputedStyleCSSValueMapping {
  public:
   static HeapHashMap<AtomicString, Member<const CSSValue>> GetVariables(
       const ComputedStyle& style,
-      const PropertyRegistry*);
+      const PropertyRegistry*,
+      CSSValuePhase value_phase);
 
  private:
   static const CSSValue* Get(const AtomicString& custom_property_name,
                              const ComputedStyle&,
-                             const PropertyRegistry*);
+                             const PropertyRegistry*,
+                             CSSValuePhase value_phase);
 };
 
 }  // namespace blink

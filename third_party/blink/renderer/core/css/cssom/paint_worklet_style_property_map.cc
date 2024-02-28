@@ -71,7 +71,7 @@ bool BuildNativeValues(const ComputedStyle& style,
         CSSProperty::Get(property_id)
             .CrossThreadStyleValueFromComputedStyle(
                 style, /* layout_object */ nullptr,
-                /* allow_visited_style */ false);
+                /* allow_visited_style */ false, CSSValuePhase::kComputedValue);
     if (value->GetType() ==
         CrossThreadStyleValue::StyleValueType::kUnknownType) {
       return false;
@@ -95,7 +95,7 @@ bool BuildCustomValues(
     std::unique_ptr<CrossThreadStyleValue> value =
         ref.GetProperty().CrossThreadStyleValueFromComputedStyle(
             style, /* layout_object */ nullptr,
-            /* allow_visited_style */ false);
+            /* allow_visited_style */ false, CSSValuePhase::kComputedValue);
     if (value->GetType() ==
         CrossThreadStyleValue::StyleValueType::kUnknownType) {
       return false;

@@ -1148,7 +1148,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
           CSSProperty::Get(id).CSSValueFromComputedStyle(
               layout_object->StyleRef(),
               /*layout_object=*/nullptr,
-              /*allow_visited_style=*/false);
+              /*allow_visited_style=*/false, CSSValuePhase::kComputedValue);
 
       if (!css_value) {
         continue;

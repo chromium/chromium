@@ -66,7 +66,8 @@ class StyleResolverTest : public PageTestBase {
     CSSPropertyRef ref(name, GetDocument());
     DCHECK(ref.IsValid());
     return ref.GetProperty()
-        .CSSValueFromComputedStyle(style, nullptr, false)
+        .CSSValueFromComputedStyle(style, nullptr, false,
+                                   CSSValuePhase::kComputedValue)
         ->CssText();
   }
 

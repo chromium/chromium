@@ -69,7 +69,7 @@ String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   if (!style)
     return "";
   const CSSValue* value = CSSProperty::Get(id).CSSValueFromComputedStyle(
-      *style, element->GetLayoutObject(), false);
+      *style, element->GetLayoutObject(), false, CSSValuePhase::kResolvedValue);
   return value ? value->CssText() : "";
 }
 

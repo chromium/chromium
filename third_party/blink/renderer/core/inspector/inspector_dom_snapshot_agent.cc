@@ -761,7 +761,8 @@ InspectorDOMSnapshotAgent::BuildStylesForNode(Node* node) {
   result->reserve(css_property_filter_->size());
   for (const auto* property : *css_property_filter_) {
     const CSSValue* value = property->CSSValueFromComputedStyle(
-        *style, layout_object, /* allow_visited_style= */ true);
+        *style, layout_object, /* allow_visited_style= */ true,
+        CSSValuePhase::kResolvedValue);
     if (!value) {
       result->emplace_back(-1);
       continue;

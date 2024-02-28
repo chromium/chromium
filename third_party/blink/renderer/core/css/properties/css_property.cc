@@ -39,9 +39,10 @@ std::unique_ptr<CrossThreadStyleValue>
 CSSProperty::CrossThreadStyleValueFromComputedStyle(
     const ComputedStyle& computed_style,
     const LayoutObject* layout_object,
-    bool allow_visited_style) const {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
   const CSSValue* css_value = CSSValueFromComputedStyle(
-      computed_style, layout_object, allow_visited_style);
+      computed_style, layout_object, allow_visited_style, value_phase);
   if (!css_value) {
     return std::make_unique<CrossThreadUnsupportedValue>("");
   }
@@ -57,11 +58,12 @@ CSSProperty::CrossThreadStyleValueFromComputedStyle(
 const CSSValue* CSSProperty::CSSValueFromComputedStyle(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
-    bool allow_visited_style) const {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
   const CSSProperty& resolved_property =
       ResolveDirectionAwareProperty(style.Direction(), style.GetWritingMode());
   return resolved_property.CSSValueFromComputedStyleInternal(
-      style, layout_object, allow_visited_style, CSSValuePhase::kComputedValue);
+      style, layout_object, allow_visited_style, value_phase);
 }
 
 void CSSProperty::FilterWebExposedCSSPropertiesIntoVector(

@@ -1759,7 +1759,8 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
       display_style = CSSProperty::Get(CSSPropertyID::kDisplay)
                           .CSSValueFromComputedStyle(
                               *computed_style, /* layout_object */ nullptr,
-                              /* allow_visited_style */ false)
+                              /* allow_visited_style */ false,
+                              CSSValuePhase::kComputedValue)
                           ->CssText();
       if (!display_style.empty()) {
         TruncateAndAddStringAttribute(

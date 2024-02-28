@@ -22,7 +22,8 @@ TEST_F(ComputedStyleCSSValueMappingTest, GetVariablesOnOldStyle) {
   ASSERT_TRUE(target);
 
   auto before = ComputedStyleCSSValueMapping::GetVariables(
-      target->ComputedStyleRef(), GetDocument().GetPropertyRegistry());
+      target->ComputedStyleRef(), GetDocument().GetPropertyRegistry(),
+      CSSValuePhase::kComputedValue);
   EXPECT_EQ(1u, before.size());
   EXPECT_TRUE(before.Contains(AtomicString("--x")));
   EXPECT_FALSE(before.Contains(AtomicString("--y")));
@@ -32,7 +33,8 @@ TEST_F(ComputedStyleCSSValueMappingTest, GetVariablesOnOldStyle) {
   // Registering a property should not affect variables reported on a
   // ComputedStyle created pre-registration.
   auto after = ComputedStyleCSSValueMapping::GetVariables(
-      target->ComputedStyleRef(), GetDocument().GetPropertyRegistry());
+      target->ComputedStyleRef(), GetDocument().GetPropertyRegistry(),
+      CSSValuePhase::kComputedValue);
   EXPECT_EQ(1u, after.size());
   EXPECT_TRUE(after.Contains(AtomicString("--x")));
   EXPECT_FALSE(after.Contains(AtomicString("--y")));

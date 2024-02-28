@@ -100,7 +100,7 @@ class ContainerQueryTest : public PageTestBase {
     return ref.GetProperty().CSSValueFromComputedStyle(
         element->ComputedStyleRef(),
         /* layout_object */ nullptr,
-        /* allow_visited_style */ false);
+        /* allow_visited_style */ false, CSSValuePhase::kComputedValue);
   }
 
   String ComputedValueString(Element* element, String property_name) {

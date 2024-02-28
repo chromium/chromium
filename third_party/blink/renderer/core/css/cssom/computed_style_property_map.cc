@@ -30,7 +30,8 @@ unsigned int ComputedStylePropertyMap::size() const {
              StyledElement()->GetExecutionContext())
              .size() +
          ComputedStyleCSSValueMapping::GetVariables(
-             *style, document.GetPropertyRegistry())
+             *style, document.GetPropertyRegistry(),
+             CSSValuePhase::kComputedValue)
              .size();
 }
 
@@ -105,7 +106,8 @@ const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
   }
   CSSPropertyRef ref(property_name, element_->GetDocument());
   return ref.GetProperty().CSSValueFromComputedStyle(
-      *style, nullptr /* layout_object */, false /* allow_visited_style */);
+      *style, nullptr /* layout_object */, false /* allow_visited_style */,
+      CSSValuePhase::kComputedValue);
 }
 
 void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
@@ -125,7 +127,8 @@ void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
     DCHECK(property);
     DCHECK(!property->IDEquals(CSSPropertyID::kVariable));
     const CSSValue* value = property->CSSValueFromComputedStyle(
-        *style, nullptr /* layout_object */, false);
+        *style, nullptr /* layout_object */, false,
+        CSSValuePhase::kComputedValue);
     if (value) {
       values.emplace_back(CSSPropertyName(property->PropertyID()), value);
     }
@@ -133,8 +136,8 @@ void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
 
   const PropertyRegistry* registry = document.GetPropertyRegistry();
 
-  for (const auto& name_value :
-       ComputedStyleCSSValueMapping::GetVariables(*style, registry)) {
+  for (const auto& name_value : ComputedStyleCSSValueMapping::GetVariables(
+           *style, registry, CSSValuePhase::kComputedValue)) {
     values.emplace_back(CSSPropertyName(name_value.key), name_value.value);
   }
 
@@ -156,7 +159,8 @@ String ComputedStylePropertyMap::SerializationForShorthand(
   }
 
   if (const CSSValue* value = property.CSSValueFromComputedStyle(
-          *style, nullptr /* layout_object */, false)) {
+          *style, nullptr /* layout_object */, false,
+          CSSValuePhase::kComputedValue)) {
     return value->CssText();
   }
 

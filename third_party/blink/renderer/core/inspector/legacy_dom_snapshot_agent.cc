@@ -463,7 +463,8 @@ int LegacyDOMSnapshotAgent::GetStyleIndexForNode(Node* node) {
     if (const CSSValue* css_value =
             CSSProperty::Get(pair.second)
                 .CSSValueFromComputedStyle(*computed_style,
-                                           node->GetLayoutObject(), true)) {
+                                           node->GetLayoutObject(), true,
+                                           CSSValuePhase::kResolvedValue)) {
       value = css_value->CssText();
     }
     if (!value.empty())

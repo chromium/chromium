@@ -83,10 +83,10 @@ class CSSPropertyTest : public PageTestBase {
     const ComputedStyle* style = state.TakeStyle();
     CHECK(style);
 
-    const CSSValue* computed_value =
-        property.CSSValueFromComputedStyle(*style,
-                                           /* layout_object */ nullptr,
-                                           /* allow_visited_style */ true);
+    const CSSValue* computed_value = property.CSSValueFromComputedStyle(
+        *style,
+        /* layout_object */ nullptr,
+        /* allow_visited_style */ true, CSSValuePhase::kComputedValue);
     CHECK(computed_value);
 
     return computed_value->CssText();
@@ -143,7 +143,7 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
     // Get any value compatible with 'property'. The initial value will do.
     const CSSValue* initial_value = property.CSSValueFromComputedStyle(
         initial_style, nullptr /* layout_object */,
-        false /* allow_visited_style */);
+        false /* allow_visited_style */, CSSValuePhase::kComputedValue);
     ASSERT_TRUE(initial_value);
     String css_text = initial_value->CssText();
 

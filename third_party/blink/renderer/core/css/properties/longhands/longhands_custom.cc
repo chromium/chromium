@@ -819,7 +819,8 @@ const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(
   StyleColor background_color = style.BackgroundColor();
   if (style.ShouldForceColor(background_color)) {
     return GetCSSPropertyInternalForcedBackgroundColor()
-        .CSSValueFromComputedStyle(style, nullptr, allow_visited_style);
+        .CSSValueFromComputedStyle(style, nullptr, allow_visited_style,
+                                   value_phase);
   }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
@@ -1086,7 +1087,7 @@ const CSSValue* BorderBottomColor::CSSValueFromComputedStyleInternal(
   StyleColor border_bottom_color = style.BorderBottomColor();
   if (style.ShouldForceColor(border_bottom_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
-        style, nullptr, allow_visited_style);
+        style, nullptr, allow_visited_style, value_phase);
   }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
@@ -1363,7 +1364,7 @@ const CSSValue* BorderLeftColor::CSSValueFromComputedStyleInternal(
   StyleColor border_left_color = style.BorderLeftColor();
   if (style.ShouldForceColor(border_left_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
-        style, nullptr, allow_visited_style);
+        style, nullptr, allow_visited_style, value_phase);
   }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
@@ -1427,7 +1428,7 @@ const CSSValue* BorderRightColor::CSSValueFromComputedStyleInternal(
   StyleColor border_right_color = style.BorderRightColor();
   if (style.ShouldForceColor(border_right_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
-        style, nullptr, allow_visited_style);
+        style, nullptr, allow_visited_style, value_phase);
   }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
@@ -1505,7 +1506,7 @@ const CSSValue* BorderTopColor::CSSValueFromComputedStyleInternal(
   StyleColor border_top_color = style.BorderTopColor();
   if (style.ShouldForceColor(border_top_color)) {
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
-        style, nullptr, allow_visited_style);
+        style, nullptr, allow_visited_style, value_phase);
   }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.
@@ -1890,7 +1891,7 @@ const CSSValue* Color::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   if (style.ShouldForceColor(style.Color())) {
     return GetCSSPropertyInternalForcedColor().CSSValueFromComputedStyle(
-        style, nullptr, allow_visited_style);
+        style, nullptr, allow_visited_style, value_phase);
   }
   return cssvalue::CSSColor::Create(allow_visited_style
                                         ? style.VisitedDependentColor(*this)
@@ -6303,7 +6304,7 @@ const CSSValue* OutlineColor::CSSValueFromComputedStyleInternal(
   StyleColor outline_color = style.OutlineColor();
   if (style.ShouldForceColor(outline_color)) {
     return GetCSSPropertyInternalForcedOutlineColor().CSSValueFromComputedStyle(
-        style, nullptr, allow_visited_style);
+        style, nullptr, allow_visited_style, value_phase);
   }
   // https://drafts.csswg.org/cssom/#resolved-values
   // For this property, the resolved value is the used value.

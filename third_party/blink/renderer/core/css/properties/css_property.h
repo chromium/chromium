@@ -24,7 +24,17 @@ class ExecutionContext;
 class LayoutObject;
 
 // Determines how far to process a value requested from a computed style.
-enum class CSSValuePhase { kComputedValue, kUsedValue };
+enum class CSSValuePhase {
+  // The value inherited to child elements.
+  // https://www.w3.org/TR/css-cascade-3/#computed
+  kComputedValue,
+  // The value returned from getComputedStyle().
+  // https://www.w3.org/TR/cssom-1/#resolved-values
+  kResolvedValue,
+  // The value after calculating layout.
+  // https://www.w3.org/TR/css-cascade-3/#used
+  kUsedValue
+};
 
 // For use in Get(Un)VisitedProperty(), although you could probably
 // use them yourself if you wanted to; contains a mapping from each
@@ -133,11 +143,13 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   }
   const CSSValue* CSSValueFromComputedStyle(const ComputedStyle&,
                                             const LayoutObject*,
-                                            bool allow_visited_style) const;
+                                            bool allow_visited_style,
+                                            CSSValuePhase) const;
   std::unique_ptr<CrossThreadStyleValue> CrossThreadStyleValueFromComputedStyle(
       const ComputedStyle& computed_style,
       const LayoutObject* layout_object,
-      bool allow_visited_style) const;
+      bool allow_visited_style,
+      CSSValuePhase value_phase) const;
 
   const CSSProperty& ResolveDirectionAwareProperty(
       TextDirection direction,
