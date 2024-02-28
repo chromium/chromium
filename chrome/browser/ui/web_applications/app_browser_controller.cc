@@ -590,12 +590,22 @@ void AppBrowserController::AddColorMixers(
   // The Material Design color mixer hardcodes various toolbar colors to certain
   // colors, ignoring the toolbar colors set in the BrowserThemePack. Since in
   // web apps the toolbar is part of the frame/titlebar, we set them to match
-  // the frame colors here.
+  // the frame colors here. Because BrowserFrameViewWin overrides
+  // GetCaptionColor, special handling is needed to ensure ToolbarButton
+  // foreground color matches the rest of the title bar elements on Windows.
+#if BUILDFLAG(IS_WIN)
+  mixer[kColorFrameCaptionActive] = {kColorCaptionForegroundActive};
+  mixer[kColorFrameCaptionInactive] = {kColorCaptionForegroundInactive};
+#endif  // BUILDFLAG(IS_WIN)
   mixer[kColorToolbar] = {ui::kColorFrameActive};
   mixer[kColorToolbarButtonIconDefault] = {kColorFrameCaptionActive};
   mixer[kColorToolbarButtonIconDisabled] = {kColorFrameCaptionInactive};
   mixer[kColorToolbarTextDefault] = {kColorFrameCaptionActive};
   mixer[kColorToolbarTextDisabledDefault] = {kColorFrameCaptionInactive};
+  mixer[kColorToolbarButtonIcon] = {kColorToolbarButtonIconDefault};
+  mixer[kColorToolbarButtonIconHovered] = {kColorToolbarButtonIcon};
+  mixer[kColorToolbarButtonIconPressed] = {kColorToolbarButtonIcon};
+  mixer[kColorToolbarButtonIconInactive] = {kColorFrameCaptionInactive};
 }
 
 void AppBrowserController::OnReceivedInitialURL() {
