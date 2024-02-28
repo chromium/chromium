@@ -1918,25 +1918,26 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
 
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
     const CreditCard* candidate_card) const {
+  const CreditCard* candidate_server_card = nullptr;
   switch (candidate_card->record_type()) {
     case CreditCard::RecordType::kLocalCard:
-      candidate_card =
+      candidate_server_card =
           personal_data().GetServerCardForLocalCard(candidate_card);
-
-      // If we could not find a matching server duplicate, return false.
-      if (!candidate_card) {
-        return false;
-      }
-      ABSL_FALLTHROUGH_INTENDED;
+      break;
     case CreditCard::RecordType::kMaskedServerCard:
-      return ShouldShowVirtualCardOptionForServerCard(candidate_card);
+      candidate_server_card = candidate_card;
+      break;
     case CreditCard::RecordType::kFullServerCard:
-      return false;
+      break;
     case CreditCard::RecordType::kVirtualCard:
       // Should not happen since virtual card is not persisted.
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
+  if (!candidate_server_card) {
+    return false;
+  }
+  candidate_card = candidate_server_card;
+  return ShouldShowVirtualCardOptionForServerCard(*candidate_server_card);
 }
 
 // TODO(crbug.com/1346331): Separate logic for desktop, Android dropdown, and
@@ -2358,16 +2359,13 @@ AutofillSuggestionGenerator::GetCreditCardFooterSuggestions(
 }
 
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(
-    const CreditCard* card) const {
-  CHECK(card);
-
+    const CreditCard& card) const {
   // If the card is not enrolled into virtual cards, we should not show a
   // virtual card suggestion for it.
-  if (card->virtual_card_enrollment_state() !=
+  if (card.virtual_card_enrollment_state() !=
       CreditCard::VirtualCardEnrollmentState::kEnrolled) {
     return false;
   }
-
   // We should not show a suggestion for this card if the autofill
   // optimization guide returns that this suggestion should be blocked.
   if (auto* autofill_optimization_guide =
@@ -2377,7 +2375,6 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(
         card);
     return !blocked;
   }
-
   // No conditions to prevent displaying a virtual card suggestion were
   // found, so return true.
   return true;

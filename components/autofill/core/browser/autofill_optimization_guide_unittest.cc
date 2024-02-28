@@ -345,7 +345,7 @@ TEST_F(AutofillOptimizationGuideTest,
           optimization_guide::OptimizationGuideDecision::kFalse));
 
   EXPECT_TRUE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
-      url, &virtual_card));
+      url, virtual_card));
 }
 
 // Test that if the URL is not blocklisted, we do not block a virtual card
@@ -368,7 +368,7 @@ TEST_F(AutofillOptimizationGuideTest,
           optimization_guide::OptimizationGuideDecision::kTrue));
 
   EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
-      url, &virtual_card));
+      url, virtual_card));
 }
 
 // Test that we do not block virtual card suggestions in the VCN merchant
@@ -391,7 +391,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .Times(0);
 
   EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
-      url, &virtual_card));
+      url, virtual_card));
 }
 
 // Test that we do not block the virtual card suggestion from being shown in the
@@ -416,7 +416,7 @@ TEST_F(
       .Times(0);
 
   EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockFormFieldSuggestion(
-      url, &virtual_card));
+      url, virtual_card));
 }
 
 // Test that the Amex category-benefit optimization types are registered when we

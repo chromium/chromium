@@ -237,9 +237,9 @@ bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
 
 bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
     const GURL& url,
-    const CreditCard* card) const {
+    const CreditCard& card) const {
   if (auto optimization_type =
-          GetVcnMerchantOptOutOptimizationTypeForCard(*card);
+          GetVcnMerchantOptOutOptimizationTypeForCard(card);
       optimization_type != optimization_guide::proto::TYPE_UNSPECIFIED) {
     optimization_guide::OptimizationGuideDecision decision =
         decider_->CanApplyOptimization(url, optimization_type,

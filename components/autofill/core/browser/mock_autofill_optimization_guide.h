@@ -29,7 +29,7 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               (const override));
   MOCK_METHOD(bool,
               ShouldBlockFormFieldSuggestion,
-              (const GURL&, const CreditCard*),
+              (const GURL&, const CreditCard&),
               (const override));
   MOCK_METHOD(CreditCardCategoryBenefit::BenefitCategory,
               AttemptToGetEligibleCreditCardBenefitCategory,

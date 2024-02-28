@@ -125,10 +125,6 @@ class AutofillSuggestionGenerator {
   // one copy has a nickname, take that.
   std::u16string GetDisplayNicknameForCreditCard(const CreditCard& card) const;
 
-  // Helper function to decide whether to show the virtual card option for
-  // `candidate_card`.
-  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
-
  private:
   friend class AutofillSuggestionGeneratorTestApi;
 
@@ -274,9 +270,14 @@ class AutofillSuggestionGenerator {
       bool is_autofilled,
       bool with_gpay_logo) const;
 
+  // Helper function to decide whether to show the virtual card option for
+  // `candidate_card`.
+  // TODO(b/326950201): Pass the argument by reference.
+  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
+
   // Returns true if we should show a virtual card option for the server card
   // `card`, false otherwise.
-  bool ShouldShowVirtualCardOptionForServerCard(const CreditCard* card) const;
+  bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card) const;
 
   const PersonalDataManager& personal_data() const {
     // The PDM outlives the ASG, hence this is safe.

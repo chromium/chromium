@@ -68,7 +68,7 @@ class AutofillOptimizationGuide : public KeyedService {
   // This function relies on the optimization guide decider that corresponds to
   // the network of `card`.
   virtual bool ShouldBlockFormFieldSuggestion(const GURL& url,
-                                              const CreditCard* card) const;
+                                              const CreditCard& card) const;
 
  private:
   // Raw pointer to a decider which is owned by the decider's factory.

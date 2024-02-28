@@ -55,6 +55,11 @@ class AutofillSuggestionGeneratorTestApi {
         card_linked_offer_available, origin);
   }
 
+  // TODO(b/326950201): Remove and use GetOrderedCardsToSuggest instead.
+  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) {
+    return suggestion_generator_->ShouldShowVirtualCardOption(candidate_card);
+  }
+
  private:
   raw_ref<AutofillSuggestionGenerator> suggestion_generator_;
 };

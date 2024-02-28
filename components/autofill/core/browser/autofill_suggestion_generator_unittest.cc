@@ -2805,8 +2805,10 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
       CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
 
   // If all prerequisites are met, it should return true.
-  EXPECT_TRUE(suggestion_generator().ShouldShowVirtualCardOption(&server_card));
-  EXPECT_TRUE(suggestion_generator().ShouldShowVirtualCardOption(&local_card));
+  EXPECT_TRUE(test_api(suggestion_generator())
+                  .ShouldShowVirtualCardOption(&server_card));
+  EXPECT_TRUE(test_api(suggestion_generator())
+                  .ShouldShowVirtualCardOption(&local_card));
 }
 
 // Test that the virtual card option is shown when the autofill optimization
@@ -2826,8 +2828,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
       CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
 
   // If all prerequisites are met, it should return true.
-  EXPECT_TRUE(suggestion_generator().ShouldShowVirtualCardOption(&server_card));
-  EXPECT_TRUE(suggestion_generator().ShouldShowVirtualCardOption(&local_card));
+  EXPECT_TRUE(test_api(suggestion_generator())
+                  .ShouldShowVirtualCardOption(&server_card));
+  EXPECT_TRUE(test_api(suggestion_generator())
+                  .ShouldShowVirtualCardOption(&local_card));
 }
 
 // Test that the virtual card option is not shown if the merchant is opted-out
@@ -2851,9 +2855,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(optimization_guide),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(true));
-  EXPECT_FALSE(
-      suggestion_generator().ShouldShowVirtualCardOption(&server_card));
-  EXPECT_FALSE(suggestion_generator().ShouldShowVirtualCardOption(&local_card));
+  EXPECT_FALSE(test_api(suggestion_generator())
+                   .ShouldShowVirtualCardOption(&server_card));
+  EXPECT_FALSE(test_api(suggestion_generator())
+                   .ShouldShowVirtualCardOption(&local_card));
 }
 
 // Test that the virtual card option is not shown if the server card we might be
@@ -2873,9 +2878,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   // For server card not enrolled, both local and server card should return
   // false.
-  EXPECT_FALSE(
-      suggestion_generator().ShouldShowVirtualCardOption(&server_card));
-  EXPECT_FALSE(suggestion_generator().ShouldShowVirtualCardOption(&local_card));
+  EXPECT_FALSE(test_api(suggestion_generator())
+                   .ShouldShowVirtualCardOption(&server_card));
+  EXPECT_FALSE(test_api(suggestion_generator())
+                   .ShouldShowVirtualCardOption(&local_card));
 }
 
 // Test that the virtual card option is not shown for a local card with no
@@ -2887,7 +2893,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
       CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
 
   // The local card does not have a server duplicate, should return false.
-  EXPECT_FALSE(suggestion_generator().ShouldShowVirtualCardOption(&local_card));
+  EXPECT_FALSE(test_api(suggestion_generator())
+                   .ShouldShowVirtualCardOption(&local_card));
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, GetLocalIbanSuggestions) {
