@@ -2129,10 +2129,6 @@ BASE_FEATURE(kOsSettingsRevampWayfinding,
              "OsSettingsRevampWayfinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOverviewButton,
-             "OverviewButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables staying in overview when navigating between desks using a swipe
 // gesture or keyboard shortcut.
 BASE_FEATURE(kOverviewDeskNavigation,

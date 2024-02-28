@@ -2747,10 +2747,6 @@ const char kOverscrollHistoryNavigationName[] = "Overscroll history navigation";
 const char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
 
-const char kOverviewButtonName[] = "Overview button at the status area";
-const char kOverviewButtonDescription[] =
-    "If enabled, always show the overview button at the status area.";
-
 const char kOverviewDeskNavigationName[] =
     "CrOS Labs: Overview Desk Navigation";
 const char kOverviewDeskNavigationDescription[] =

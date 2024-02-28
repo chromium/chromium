@@ -440,11 +440,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "ash-overview-button",
-    "owners": [ "minch@chromium.org", "janetmac@chromium.org" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "ash-picker",
     "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
     "expiry_milestone": 131
