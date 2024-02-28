@@ -239,26 +239,23 @@ TEST(PhoneNumberTest, Matcher_TrunkTypes_DE) {
           {u"00491741234567", {PHONE_HOME_WHOLE_NUMBER}},
           {u"004901741234567", {PHONE_HOME_WHOLE_NUMBER}},
       });
-  MatchingTypesTest(u"0174 1234567", u"DE",
-                    /*trunk_types_enabled=*/true,
-                    {
-                        {u"49", {}},
-                        {u"+49", {}},
-                        {u"0049", {}},
-                        {u"174", {PHONE_HOME_CITY_CODE}},
-                        {u"0174", {PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX}},
-                        {u"1234567", {PHONE_HOME_NUMBER}},
-                        // TODO(crbug.com/40220393): Should this really vote for
-                        // PHONE_HOME_WHOLE_NUMBER?
-                        {u"1741234567",
-                         {PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
-                          PHONE_HOME_WHOLE_NUMBER}},
-                        {u"01741234567", {PHONE_HOME_CITY_AND_NUMBER}},
-                        // The international phone number is unknown.
-                        {u"+491741234567", {}},
-                        {u"00491741234567", {}},
-                        {u"004901741234567", {}},
-                    });
+  MatchingTypesTest(
+      u"0174 1234567", u"DE",
+      /*trunk_types_enabled=*/true,
+      {
+          {u"49", {}},
+          {u"+49", {}},
+          {u"0049", {}},
+          {u"174", {PHONE_HOME_CITY_CODE}},
+          {u"0174", {PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX}},
+          {u"1234567", {PHONE_HOME_NUMBER}},
+          {u"1741234567", {PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
+          {u"01741234567", {PHONE_HOME_CITY_AND_NUMBER}},
+          // The international phone number is unknown.
+          {u"+491741234567", {}},
+          {u"00491741234567", {}},
+          {u"004901741234567", {}},
+      });
 }
 
 // Verify that `PhoneNumber::SetInfo()` correctly formats the incoming number.

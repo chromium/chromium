@@ -165,7 +165,9 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   // Since PHONE_HOME_WHOLE_NUMBER is meant to represent an international
   // number, it is not voted in this case.
   if (matching_types->contains(PHONE_HOME_WHOLE_NUMBER) &&
-      matching_types->contains(PHONE_HOME_CITY_AND_NUMBER)) {
+      matching_types->contains_any(
+          {PHONE_HOME_CITY_AND_NUMBER,
+           PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX})) {
     matching_types->erase(PHONE_HOME_WHOLE_NUMBER);
   }
 }
