@@ -5983,6 +5983,7 @@ crbug.com/1466721 external/wpt/credential-management/fedcm-userinfo.https.html [
 
 crbug.com/1472353 external/wpt/credential-management/fedcm-context.https.html [ Pass Timeout ]
 
+crbug.com/40284123 external/wpt/credential-management/fedcm-identity-assertion-nocors.https.html [ Failure ]
 
 crbug.com/1404951 [ Win ] external/wpt/credential-management/fedcm-nonce-is-optional.https.html [ Pass Timeout ]
 
