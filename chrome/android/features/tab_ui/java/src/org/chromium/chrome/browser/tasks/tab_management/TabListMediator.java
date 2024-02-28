@@ -1137,7 +1137,7 @@ class TabListMediator {
                 mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
 
         mTabGroupTitleEditor =
-                new TabGroupTitleEditor(mContext) {
+                new TabGroupTitleEditor(mContext, mCurrentTabModelFilterSupplier) {
                     @Override
                     protected void updateTabGroupTitle(Tab tab, String title) {
                         // Only update title in PropertyModel for tab switcher.
@@ -1688,6 +1688,9 @@ class TabListMediator {
 
         if (mComponentCallbacks != null) {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
+        }
+        if (mTabGroupTitleEditor != null) {
+            mTabGroupTitleEditor.destroy();
         }
         unregisterOnScrolledListener();
     }

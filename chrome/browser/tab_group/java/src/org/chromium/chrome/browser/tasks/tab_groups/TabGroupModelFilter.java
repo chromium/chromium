@@ -43,8 +43,6 @@ import java.util.Set;
  * https://crbug.com/1523745.
  */
 public class TabGroupModelFilter extends TabModelFilter {
-    private static final int INVALID_COLOR_ID = -1;
-
     private ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver = new ObserverList<>();
     private Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
@@ -139,8 +137,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                         Collections.singletonList(index),
                         Collections.singletonList(tab.getRootId()),
                         Collections.singletonList(null),
-                        null,
-                        INVALID_COLOR_ID);
+                        null);
             }
         }
     }
@@ -189,7 +186,6 @@ public class TabGroupModelFilter extends TabModelFilter {
             List<Integer> originalRootIds = new ArrayList<>();
             List<Token> originalTabGroupIds = new ArrayList<>();
             String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
-            int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
             boolean didCreateNewGroup =
                     !isTabInTabGroup(sourceTab) && !isTabInTabGroup(destinationTab);
 
@@ -244,8 +240,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                             originalIndexes,
                             originalRootIds,
                             originalTabGroupIds,
-                            destinationGroupTitle,
-                            destinationGroupColorId);
+                            destinationGroupTitle);
                 }
             }
         }
@@ -298,7 +293,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
-        int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
 
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
@@ -362,8 +356,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                         originalIndexes,
                         originalRootIds,
                         originalTabGroupIds,
-                        destinationGroupTitle,
-                        destinationGroupColorId);
+                        destinationGroupTitle);
             }
         }
     }
