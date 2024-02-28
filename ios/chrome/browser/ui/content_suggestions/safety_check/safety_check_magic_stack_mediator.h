@@ -11,6 +11,7 @@
 @protocol ContentSuggestionsViewControllerAudience;
 class IOSChromeSafetyCheckManager;
 class PrefService;
+@class SafetyCheckMagicStackMediator;
 @class SafetyCheckState;
 @class AppState;
 
@@ -32,9 +33,9 @@ class PrefService;
 // Delegate.
 @property(nonatomic, weak) id<SafetyCheckMagicStackMediatorDelegate> delegate;
 
-// Delegate for presentation actions.
+// Audience for presentation actions.
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
-    presentationDelegate;
+    presentationAudience;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;

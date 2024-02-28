@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
@@ -180,7 +181,8 @@
 - (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state {
   SafetyCheckView* safetyCheckView =
       [[SafetyCheckView alloc] initWithState:state];
-  safetyCheckView.commandhandler = state.commandhandler;
+  safetyCheckView.audience = state.audience;
+  [state.safetyCheckConsumerSource addConsumer:safetyCheckView];
   return safetyCheckView;
 }
 

@@ -337,7 +337,7 @@
         initWithSafetyCheckManager:safetyCheckManager
                         localState:GetApplicationContext()->GetLocalState()
                           appState:self.browser->GetSceneState().appState];
-    _safetyCheckMediator.presentationDelegate = self;
+    _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];
   }
 

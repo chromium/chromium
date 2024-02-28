@@ -17,8 +17,13 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
@@ -32,6 +37,8 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 @interface SafetyCheckMagicStackMediator () <AppStateObserver,
                                              PrefObserverDelegate,
+                                             SafetyCheckAudience,
+                                             SafetyCheckConsumerSource,
                                              SafetyCheckManagerObserver>
 @end
 
@@ -49,6 +56,7 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
+  id<SafetyCheckMagicStackConsumer> _safetyCheckConsumer;
 }
 
 - (instancetype)initWithSafetyCheckManager:
@@ -79,9 +87,11 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
           &_prefChangeRegistrar);
+      _prefObserverBridge->ObserveChangesForPreference(
+          safety_check_prefs::kSafetyCheckInMagicStackDisabledPref,
+          &_prefChangeRegistrar);
 
       _safetyCheckState = [self initialSafetyCheckState];
-      _safetyCheckState.commandhandler = _presentationDelegate;
 
       _safetyCheckManagerObserver =
           std::make_unique<SafetyCheckObserverBridge>(self, safetyCheckManager);
@@ -112,6 +122,24 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 - (void)disableModule {
   safety_check_prefs::DisableSafetyCheckInMagicStack(_localState);
   [self.delegate removeSafetyCheckModule];
+}
+
+#pragma mark - SafetyCheckConsumerSource
+
+- (void)addConsumer:(id<SafetyCheckMagicStackConsumer>)consumer {
+  _safetyCheckConsumer = consumer;
+}
+
+#pragma mark - SafetyCheckAudience
+
+// Called when a Safety Check item is selected by the user.
+- (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
+  [self.presentationAudience didSelectSafetyCheckItem:type];
+}
+
+// Indicates that the user has tapped the given `view`.
+- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
+  [self.presentationAudience didTapSetUpListItemView:view];
 }
 
 #pragma mark - SafetyCheckManagerObserver
@@ -153,8 +181,12 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   // Ensures the consumer gets the latest Safety Check state only when the
   // running state changes; this avoids calling the consumer every time an
   // individual check state changes.
-  _safetyCheckState.commandhandler = self.presentationDelegate;
-  [self.consumer showSafetyCheck:_safetyCheckState];
+  _safetyCheckState.audience = self;
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    [_safetyCheckConsumer safetyCheckStateDidChange:_safetyCheckState];
+  } else {
+    [self.consumer showSafetyCheck:_safetyCheckState];
+  }
 }
 
 - (void)safetyCheckManagerWillShutdown {
@@ -193,6 +225,9 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
     // Trigger a module update when the Last Run Time, or Safe Browsing state,
     // has changed.
     [self runningStateChanged:_safetyCheckState.runningState];
+  } else if (preferenceName ==
+             safety_check_prefs::kSafetyCheckInMagicStackDisabledPref) {
+    [self.delegate removeSafetyCheckModule];
   }
 }
 
@@ -269,6 +304,8 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
                            ? RunningSafetyCheckState::kRunning
                            : RunningSafetyCheckState::kDefault;
 
+  state.audience = self;
+  state.safetyCheckConsumerSource = self;
   return state;
 }
 
