@@ -4,13 +4,13 @@
 
 conditional_files = [
   "debug/no_debug.js",
-  "test_api/no_test_api.js",
+  "test_api/no_test_api.ts",
   "components/oobe_vars/oobe_custom_vars.css.ts",
   "components/oobe_vars/oobe_custom_vars_remora.css.ts",
   "debug/debug.js",
   "debug/quick_start_debugger.ts",
   "debug/quick_start_debugger.html.ts",
-  "test_api/test_api.js",
+  "test_api/test_api.ts",
 ]
 
 conditional_js_files = []
