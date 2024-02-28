@@ -1500,6 +1500,10 @@ TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForDifferentSurfaces) {
 
 //
 TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
+  if (!base::FeatureList::IsEnabled(kExoPerSurfaceOcclusion)) {
+    GTEST_SKIP();
+  }
+
   auto canonical_form_check = [](const auto& frame) {
     EXPECT_EQ(1u, frame.render_pass_list.size());
     auto& quad_list = frame.render_pass_list.back()->quad_list;

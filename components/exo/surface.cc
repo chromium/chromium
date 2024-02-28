@@ -76,9 +76,19 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Surface*)
 
 namespace exo {
 
+BASE_FEATURE(kExoPerSurfaceOcclusion,
+             "ExoPerSurfaceOcclusion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSurfaceHasAugmentedSurfaceKey, false)
 
 namespace {
+
+bool IsExoOcclusionEnabled() {
+  static bool is_enabled =
+      base::FeatureList::IsEnabled(kExoPerSurfaceOcclusion);
+  return is_enabled;
+}
 
 // A property key containing the surface that is associated with
 // window. If unset, no surface is associated with window.
@@ -1683,7 +1693,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     }
   }
 
-  if (IsOccludedByPreviousSqs(render_pass, quad_to_target_transform, quad_rect,
+  if (IsExoOcclusionEnabled() &&
+      IsOccludedByPreviousSqs(render_pass, quad_to_target_transform, quad_rect,
                               msk)) {
     render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
     return;
