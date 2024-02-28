@@ -171,9 +171,9 @@ class TabStripModel : public TabGroupController {
   // Retrieve the Profile associated with this TabStripModel.
   Profile* profile() const { return profile_; }
 
-  // Retrieve the index of the currently active WebContents. This will be
-  // kNoTab if no tab is currently selected (this happens while the tab strip is
-  // being initialized or is empty).
+  // Retrieve the index of the currently active WebContents. The only time this
+  // is kNoTab is if the tab strip is being initialized or destroyed. Note that
+  // tab strip destruction is an asynchronous process.
   int active_index() const {
     return selection_model_.active().has_value()
                ? static_cast<int>(selection_model_.active().value())
@@ -297,6 +297,9 @@ class TabStripModel : public TabGroupController {
 
   // Returns the currently active WebContents, or NULL if there is none.
   content::WebContents* GetActiveWebContents() const;
+
+  // Returns the currently active Tab, or NULL if there is none.
+  tabs::TabModel* GetActiveTab() const;
 
   // Returns the WebContents at the specified index, or NULL if there is
   // none.

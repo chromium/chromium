@@ -678,6 +678,14 @@ WebContents* TabStripModel::GetActiveWebContents() const {
   return GetWebContentsAt(active_index());
 }
 
+tabs::TabModel* TabStripModel::GetActiveTab() const {
+  int index = active_index();
+  if (ContainsIndex(index)) {
+    return contents_data_[index].get();
+  }
+  return nullptr;
+}
+
 WebContents* TabStripModel::GetWebContentsAt(int index) const {
   if (ContainsIndex(index))
     return GetWebContentsAtImpl(index);
