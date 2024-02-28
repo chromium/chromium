@@ -44,6 +44,7 @@
 // Updates with `suggestions`.
 - (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions
            showScrollHint:(BOOL)showScrollHint
+    accessoryTrailingView:(UIView*)trailingView
                completion:(void (^)(BOOL finished))completion;
 
 // Reset content insets back to zero and sets the delegate to nil. Used to stop

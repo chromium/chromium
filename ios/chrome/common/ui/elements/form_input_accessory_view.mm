@@ -63,6 +63,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 @property(nonatomic, weak) UIView* leadingView;
 
+@property(nonatomic, weak) UIView* trailingView;
+
 @property(nonatomic, strong) UIImage* manualFillSymbol;
 
 @property(nonatomic, strong) UIImage* closeButtonSymbol;
@@ -195,6 +197,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   } else {
     trailingView = customTrailingView;
   }
+  self.trailingView = trailingView;
 
   // If there is no trailing view, set the leading view as the only view and
   // return early.

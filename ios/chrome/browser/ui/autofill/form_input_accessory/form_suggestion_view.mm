@@ -46,6 +46,10 @@ constexpr CGFloat kScrollHintDuration = 0.5;
 // The stack view with the suggestions.
 @property(nonatomic) UIStackView* stackView;
 
+// The view containing accessory buttons at the trailing end,
+// after the form suggestion view.
+@property(nonatomic, weak) UIView* accessoryTrailingView;
+
 @end
 
 @implementation FormSuggestionView
@@ -54,6 +58,7 @@ constexpr CGFloat kScrollHintDuration = 0.5;
 
 - (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions
            showScrollHint:(BOOL)showScrollHint
+    accessoryTrailingView:(UIView*)accessoryTrailingView
                completion:(void (^)(BOOL finished))completion {
   if ([self.suggestions isEqualToArray:suggestions] && !suggestions.count) {
     if (completion) {
@@ -75,6 +80,7 @@ constexpr CGFloat kScrollHintDuration = 0.5;
     [view removeFromSuperview];
   }
   self.contentInset = UIEdgeInsetsZero;
+  self.accessoryTrailingView = accessoryTrailingView;
   [self createAndInsertArrangedSubviews];
   [self setContentOffset:CGPointZero];
   if (showScrollHint) {
@@ -171,11 +177,12 @@ constexpr CGFloat kScrollHintDuration = 0.5;
 
 - (void)createAndInsertArrangedSubviews {
   auto setupBlock = ^(FormSuggestion* suggestion, NSUInteger idx, BOOL* stop) {
-    UIView* label =
-        [[FormSuggestionLabel alloc] initWithSuggestion:suggestion
-                                                  index:idx
-                                         numSuggestions:[self.suggestions count]
-                                               delegate:self];
+    UIView* label = [[FormSuggestionLabel alloc]
+           initWithSuggestion:suggestion
+                        index:idx
+               numSuggestions:[self.suggestions count]
+        accessoryTrailingView:self.accessoryTrailingView
+                     delegate:self];
     [self.stackView addArrangedSubview:label];
     if (idx == 0 && suggestion.featureForIPH.length > 0) {
       // Track the first element.

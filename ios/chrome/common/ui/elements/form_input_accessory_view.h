@@ -52,6 +52,9 @@ extern NSString* const
 // The leading view.
 @property(nonatomic, readonly, weak) UIView* leadingView;
 
+// The trailing view. Can be nil.
+@property(nonatomic, readonly, weak) UIView* trailingView;
+
 // Sets up the view with the given `leadingView`. Navigation controls are shown
 // on the trailing side and use `delegate` for actions.
 - (void)setUpWithLeadingView:(UIView*)leadingView

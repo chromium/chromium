@@ -176,9 +176,12 @@ using manual_fill::ManualFillDataType;
       weakSelf.showScrollHint = NO;
     }
   };
-  [self.formSuggestionView updateSuggestions:suggestions
-                              showScrollHint:self.showScrollHint
-                                  completion:completion];
+  [self.formInputAccessoryView layoutIfNeeded];
+  [self.formSuggestionView
+          updateSuggestions:suggestions
+             showScrollHint:self.showScrollHint
+      accessoryTrailingView:self.formInputAccessoryView.trailingView
+                 completion:completion];
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];

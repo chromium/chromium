@@ -27,6 +27,7 @@
 - (instancetype)initWithSuggestion:(FormSuggestion*)suggestion
                              index:(NSUInteger)index
                     numSuggestions:(NSUInteger)numSuggestions
+             accessoryTrailingView:(UIView*)accessoryTrailingView
                           delegate:(id<FormSuggestionLabelDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
