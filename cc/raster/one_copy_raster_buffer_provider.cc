@@ -446,6 +446,10 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     ri->BeginQueryEXT(query_target, staging_buffer->query_id);
   }
 
+  uint32_t texture_target =
+      shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
+  CHECK_EQ(texture_target, mailbox_texture_target);
+
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {
     int clear_bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
@@ -457,9 +461,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       // SkBitmap.cpp doesn't yet have an interface for SkColor4fs
       // https://bugs.chromium.org/p/skia/issues/detail?id=13329
       bitmap.eraseColor(raster_source->background_color().toSkColor());
-      ri->WritePixels(
-          shared_image->mailbox(), /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-          /*dst_plane_index=*/0, mailbox_texture_target, bitmap.pixmap());
+      ri->WritePixels(shared_image->mailbox(), /*dst_x_offset=*/0,
+                      /*dst_y_offset=*/0,
+                      /*dst_plane_index=*/0, texture_target, bitmap.pixmap());
     }
   }
 
@@ -478,7 +482,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
 
     ri->CopySharedImage(
         staging_buffer->client_shared_image->mailbox(), shared_image->mailbox(),
-        mailbox_texture_target, 0, y, 0, y, rect_to_copy.width(), rows_to_copy,
+        texture_target, 0, y, 0, y, rect_to_copy.width(), rows_to_copy,
         false /* unpack_flip_y */, false /* unpack_premultiply_alpha */);
     y += rows_to_copy;
 
