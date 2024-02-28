@@ -4,15 +4,18 @@
 
 #include "chrome/browser/security_events/security_event_sync_bridge_impl.h"
 
+#include <array>
 #include <set>
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -29,9 +32,10 @@ std::string GetStorageKeyFromSpecifics(
   // which allows leveldb to append new writes, which it is best at.
   // TODO(markusheintz): Until we force |event_time_usec| to never conflict,
   // this has the potential for errors.
-  std::string key(8, 0);
-  base::WriteBigEndian(&key[0], specifics.event_time_usec());
-  return key;
+  std::array<uint8_t, 8> key;
+  base::span(key).copy_from(base::numerics::U64ToBigEndian(
+      base::checked_cast<uint64_t>(specifics.event_time_usec())));
+  return std::string(key.begin(), key.end());
 }
 
 std::unique_ptr<syncer::EntityData> ToEntityData(

@@ -23,6 +23,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -327,16 +328,17 @@ std::string EncodeFrame(std::string message,
   header.final = finish;
   header.masked = mask;
   header.payload_length = message.size();
-  const int header_size = GetWebSocketFrameHeaderSize(header);
+  const size_t header_size = GetWebSocketFrameHeaderSize(header);
   std::string frame_header;
   frame_header.resize(header_size);
   if (mask) {
     WebSocketMaskingKey masking_key = GenerateWebSocketMaskingKey();
     WriteWebSocketFrameHeader(header, &masking_key, &frame_header[0],
-                              header_size);
+                              base::checked_cast<int>(header_size));
     MaskWebSocketFramePayload(masking_key, 0, &message[0], message.size());
   } else {
-    WriteWebSocketFrameHeader(header, nullptr, &frame_header[0], header_size);
+    WriteWebSocketFrameHeader(header, nullptr, &frame_header[0],
+                              base::checked_cast<int>(header_size));
   }
   return frame_header + message;
 }

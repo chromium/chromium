@@ -12,6 +12,7 @@
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -85,29 +86,35 @@ WebSocketFrameChunk::WebSocketFrameChunk() = default;
 
 WebSocketFrameChunk::~WebSocketFrameChunk() = default;
 
-int GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header) {
-  int extended_length_size = 0;
+size_t GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header) {
+  size_t extended_length_size = 0u;
   if (header.payload_length > kMaxPayloadLengthWithoutExtendedLengthField &&
       header.payload_length <= UINT16_MAX) {
-    extended_length_size = 2;
+    extended_length_size = 2u;
   } else if (header.payload_length > UINT16_MAX) {
-    extended_length_size = 8;
+    extended_length_size = 8u;
   }
 
   return (WebSocketFrameHeader::kBaseHeaderSize + extended_length_size +
-          (header.masked ? WebSocketFrameHeader::kMaskingKeyLength : 0));
+          (header.masked ? WebSocketFrameHeader::kMaskingKeyLength : 0u));
 }
 
 int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
                               const WebSocketMaskingKey* masking_key,
-                              char* buffer,
+                              char* buffer_ptr,
                               int buffer_size) {
+  base::span<uint8_t> buffer = base::as_writable_bytes(
+      // TODO(crbug.com/40284755): It's not possible to construct this span
+      // soundedly here. WriteWebSocketFrameHeader() should receive a span
+      // instead of a pointer and length.
+      UNSAFE_BUFFERS(
+          base::span(buffer_ptr, base::checked_cast<size_t>(buffer_size))));
+
   DCHECK((header.opcode & kOpCodeMask) == header.opcode)
       << "header.opcode must fit to kOpCodeMask.";
   DCHECK(header.payload_length <= static_cast<uint64_t>(INT64_MAX))
       << "WebSocket specification doesn't allow a frame longer than "
       << "INT64_MAX (0x7FFFFFFFFFFFFFFF) bytes.";
-  DCHECK_GE(buffer_size, 0);
 
   // WebSocket frame format is as follows:
   // - Common header (2 bytes)
@@ -119,11 +126,13 @@ int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
   // This function constructs frame header (the first three in the list
   // above).
 
-  int header_size = GetWebSocketFrameHeaderSize(header);
-  if (header_size > buffer_size)
+  size_t header_size = GetWebSocketFrameHeaderSize(header);
+  if (header_size > buffer.size()) {
     return ERR_INVALID_ARGUMENT;
+  }
 
-  int buffer_index = 0;
+  base::BigEndianWriter writer(buffer);
+  const size_t original_remaining = writer.remaining();
 
   uint8_t first_byte = 0u;
   first_byte |= header.final ? kFinalBit : 0u;
@@ -131,7 +140,7 @@ int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
   first_byte |= header.reserved2 ? kReserved2Bit : 0u;
   first_byte |= header.reserved3 ? kReserved3Bit : 0u;
   first_byte |= header.opcode & kOpCodeMask;
-  buffer[buffer_index++] = first_byte;
+  writer.WriteU8(first_byte);
 
   int extended_length_size = 0;
   uint8_t second_byte = 0u;
@@ -145,28 +154,25 @@ int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
     second_byte |= kPayloadLengthWithEightByteExtendedLengthField;
     extended_length_size = 8;
   }
-  buffer[buffer_index++] = second_byte;
+  writer.WriteU8(second_byte);
 
   // Writes "extended payload length" field.
   if (extended_length_size == 2) {
-    uint16_t payload_length_16 = static_cast<uint16_t>(header.payload_length);
-    base::WriteBigEndian(buffer + buffer_index, payload_length_16);
-    buffer_index += sizeof(payload_length_16);
+    writer.WriteU16(static_cast<uint16_t>(header.payload_length));
   } else if (extended_length_size == 8) {
-    base::WriteBigEndian(buffer + buffer_index, header.payload_length);
-    buffer_index += sizeof(header.payload_length);
+    writer.WriteU64(header.payload_length);
   }
 
   // Writes "masking key" field, if needed.
   if (header.masked) {
     DCHECK(masking_key);
-    base::ranges::copy(masking_key->key, buffer + buffer_index);
-    buffer_index += WebSocketFrameHeader::kMaskingKeyLength;
+    writer.WriteSpan(masking_key->key);
   } else {
     DCHECK(!masking_key);
   }
 
-  DCHECK_EQ(header_size, buffer_index);
+  // Verify we wrote the expected number of bytes.
+  DCHECK_EQ(header_size, original_remaining - writer.remaining());
   return header_size;
 }
 

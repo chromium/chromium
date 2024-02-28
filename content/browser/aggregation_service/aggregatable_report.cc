@@ -18,11 +18,13 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -170,23 +172,15 @@ ConstructUnencryptedExperimentalPoplarPayloads(
 }
 #endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
 
-// TODO(crbug.com/1298196): Replace with `base::WriteBigEndian()` when available
-template <typename T>
-std::vector<uint8_t> EncodeIntegerForPayload(T integer) {
-  static_assert(sizeof(T) <= sizeof(absl::uint128),
-                "sizeof(T) <= sizeof(absl::uint128)");
-  static_assert(!std::numeric_limits<T>::is_signed,
-                "!std::numeric_limits<T>::is_signed");
-  static_assert(std::is_integral_v<T> || std::is_same_v<T, absl::uint128>,
-                "std::is_integral_v<T> || std::is_same_v<T, absl::uint128>");
-  std::vector<uint8_t> byte_string(sizeof(T));
+// TODO(crbug.com/1298196): Replace with `base::numerics` if available.
+std::array<uint8_t, 16u> U128ToBigEndian(absl::uint128 integer) {
+  std::array<uint8_t, 16u> byte_string;
 
   // Construct the vector in reverse to ensure network byte (big-endian) order.
-  for (auto it = byte_string.rbegin(); it != byte_string.rend(); ++it) {
-    *it = static_cast<uint8_t>(integer & 0xFF);
+  for (auto& byte : base::Reversed(byte_string)) {
+    byte = static_cast<uint8_t>(integer & 0xFF);
     integer >>= 8;
   }
-  DCHECK_EQ(integer, 0u);
   return byte_string;
 }
 
@@ -194,9 +188,8 @@ void AppendEncodedContributionToCborArray(
     cbor::Value::ArrayValue& array,
     const blink::mojom::AggregatableReportHistogramContribution& contribution) {
   cbor::Value::MapValue map;
-  map.emplace("bucket",
-              EncodeIntegerForPayload<absl::uint128>(contribution.bucket));
-  map.emplace("value", EncodeIntegerForPayload<uint32_t>(contribution.value));
+  map.emplace("bucket", U128ToBigEndian(contribution.bucket));
+  map.emplace("value", base::numerics::U32ToBigEndian(contribution.value));
   array.emplace_back(std::move(map));
 }
 

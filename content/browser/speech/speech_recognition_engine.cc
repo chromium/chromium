@@ -8,9 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -703,13 +704,16 @@ std::string SpeechRecognitionEngine::GenerateRequestKey() const {
 }
 
 void SpeechRecognitionEngine::UploadAudioChunk(const std::string& data,
-                                                   FrameType type,
-                                                   bool is_final) {
+                                               FrameType type,
+                                               bool is_final) {
   if (use_framed_post_data_) {
-    std::string frame(data.size() + 8, 0);
-    base::WriteBigEndian(&frame[0], static_cast<uint32_t>(data.size()));
-    base::WriteBigEndian(&frame[4], static_cast<uint32_t>(type));
-    frame.replace(8, data.size(), data);
+    std::string frame(data.size() + 8u, char{0});
+    auto frame_span = base::as_writable_byte_span(frame);
+    frame_span.subspan<0u, 4u>().copy_from(
+        base::numerics::U32ToBigEndian(static_cast<uint32_t>(data.size())));
+    frame_span.subspan<4u, 4u>().copy_from(
+        base::numerics::U32ToBigEndian(base::checked_cast<uint32_t>(type)));
+    frame.replace(8u, data.size(), data);
     upstream_loader_->AppendChunkToUpload(frame, is_final);
   } else {
     upstream_loader_->AppendChunkToUpload(data, is_final);

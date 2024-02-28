@@ -4,13 +4,14 @@
 
 #include "content/browser/web_package/signed_exchange_signature_verifier.h"
 
+#include <array>
 #include <string>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -128,9 +129,8 @@ std::string HexDump(const std::vector<uint8_t>& msg) {
 }
 
 void AppendToBuf8BytesBigEndian(std::vector<uint8_t>* buf, uint64_t n) {
-  char encoded[8];
-  base::WriteBigEndian(encoded, n);
-  buf->insert(buf->end(), std::begin(encoded), std::end(encoded));
+  std::array<uint8_t, 8> encoded = base::numerics::U64ToBigEndian(n);
+  buf->insert(buf->end(), encoded.begin(), encoded.end());
 }
 
 std::vector<uint8_t> GenerateSignedMessage(

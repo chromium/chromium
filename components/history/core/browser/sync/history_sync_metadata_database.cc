@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/big_endian.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/time/time.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -128,19 +128,19 @@ bool HistorySyncMetadataDatabase::ClearModelTypeState(
 // static
 uint64_t HistorySyncMetadataDatabase::StorageKeyToMicrosSinceWindowsEpoch(
     const std::string& storage_key) {
-  uint64_t microseconds_since_windows_epoch = 0;
-  DCHECK_EQ(storage_key.size(), sizeof(microseconds_since_windows_epoch));
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(storage_key.data()),
-                      &microseconds_since_windows_epoch);
-  return microseconds_since_windows_epoch;
+  // TODO(danakj): This method could receive a span<const char, 8u> (or
+  // span<const uint8_t, 8u>) instead of checking this size at runtime.
+  DCHECK_EQ(storage_key.size(), sizeof(uint64_t));
+  return base::numerics::U64FromBigEndian(
+      base::as_byte_span(storage_key).first<sizeof(uint64_t)>());
 }
 
 // static
 std::string HistorySyncMetadataDatabase::StorageKeyFromMicrosSinceWindowsEpoch(
     uint64_t micros) {
-  std::string storage_key(sizeof(uint64_t), 0);
-  base::WriteBigEndian<uint64_t>(storage_key.data(), micros);
-  return storage_key;
+  std::array<uint8_t, sizeof(uint64_t)> storage_key =
+      base::numerics::U64ToBigEndian(micros);
+  return std::string(storage_key.begin(), storage_key.end());
 }
 
 // static

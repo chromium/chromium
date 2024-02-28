@@ -35,17 +35,23 @@ void ClearKey(SignalKeyInternal* key) {
 }  // namespace
 
 std::string SignalKeyInternalToBinary(const SignalKeyInternal& input) {
-  char output[sizeof(SignalKeyInternal)];
-  base::BigEndianWriter writer(output, sizeof(output));
+  uint8_t output_buf[sizeof(SignalKeyInternal)];
+  auto output = base::span(output_buf);
+
+  base::BigEndianWriter writer(output);
   writer.WriteBytes(&input.prefix.kind, sizeof(input.prefix.kind));
   writer.WriteBytes(&input.prefix.padding, sizeof(input.prefix.padding));
   writer.WriteU64(input.prefix.name_hash);
-  base::WriteBigEndian(writer.ptr(), input.time_range_end_sec);
-  writer.Skip(sizeof(input.time_range_end_sec));
-  base::WriteBigEndian(writer.ptr(), input.time_range_start_sec);
-  writer.Skip(sizeof(input.time_range_start_sec));
-  CHECK_EQ(0UL, writer.remaining());
-  return std::string(output, sizeof(output));
+  // SAFETY: If the value is negative we want to store the bit pattern of the
+  // negative value, which static_cast preserves. The reader will be required to
+  // convert back to a signed value.
+  writer.WriteU64(static_cast<uint64_t>(input.time_range_end_sec));
+  // SAFETY: If the value is negative we want to store the bit pattern of the
+  // negative value, which static_cast preserves. The reader will be required to
+  // convert back to a signed value.
+  writer.WriteU64(static_cast<uint64_t>(input.time_range_start_sec));
+  CHECK(writer.remaining_bytes().empty());
+  return std::string(output.begin(), output.end());
 }
 
 bool SignalKeyInternalFromBinary(const std::string& input,
@@ -58,10 +64,18 @@ bool SignalKeyInternalFromBinary(const std::string& input,
   reader.ReadBytes(&output->prefix.kind, sizeof(output->prefix.kind));
   reader.Skip(sizeof(SignalKeyInternal::Prefix::padding));
   reader.ReadU64(&output->prefix.name_hash);
-  base::ReadBigEndian(reader.ptr(), &output->time_range_end_sec);
-  reader.Skip(sizeof(SignalKeyInternal::time_range_end_sec));
-  base::ReadBigEndian(reader.ptr(), &output->time_range_start_sec);
-  reader.Skip(sizeof(SignalKeyInternal::time_range_start_sec));
+
+  uint64_t unsigned_val;
+  reader.ReadU64(&unsigned_val);
+  // SAFETY: The big endian encoding holds the bit representation of a signed
+  // value, as seen in SignalKeyInternalToBinary(), so we want to convert large
+  // unsigned values back to negative values which static_cast will do.
+  output->time_range_end_sec = static_cast<int64_t>(unsigned_val);
+  reader.ReadU64(&unsigned_val);
+  // SAFETY: The big endian encoding holds the bit representation of a signed
+  // value, as seen in SignalKeyInternalToBinary(), so we want to convert large
+  // unsigned values back to negative values which static_cast will do.
+  output->time_range_start_sec = static_cast<int64_t>(unsigned_val);
   CHECK_EQ(0UL, reader.remaining());
   return true;
 }

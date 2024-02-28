@@ -4,16 +4,18 @@
 
 #include "components/sync_user_events/user_event_sync_bridge.h"
 
+#include <array>
 #include <map>
 #include <set>
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -39,16 +41,14 @@ std::string GetStorageKeyFromSpecifics(const UserEventSpecifics& specifics) {
   // which allows leveldb to append new writes, which it is best at.
   // TODO(skym): Until we force |event_time_usec| to never conflict, this has
   // the potential for errors.
-  std::string key(8, 0);
-  base::WriteBigEndian(&key[0], specifics.event_time_usec());
-  return key;
+  std::array<uint8_t, 8> key =
+      base::numerics::U64ToBigEndian(specifics.event_time_usec());
+  return std::string(key.begin(), key.end());
 }
 
 int64_t GetEventTimeFromStorageKey(const std::string& storage_key) {
-  int64_t event_time;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&storage_key[0]),
-                      &event_time);
-  return event_time;
+  return base::numerics::U64FromBigEndian(
+      base::as_byte_span(storage_key).first<8u>());
 }
 
 std::unique_ptr<EntityData> MoveToEntityData(

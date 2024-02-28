@@ -10,10 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -194,9 +195,9 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
 
   std::string value;
   for (uint16_t param_key : param_key_list) {
-    char num_buffer[2];
-    base::WriteBigEndian(num_buffer, param_key);
-    value.append(num_buffer, 2);
+    std::array<uint8_t, 2> num_buffer =
+        base::numerics::U16ToBigEndian(param_key);
+    value.append(num_buffer.begin(), num_buffer.end());
   }
 
   return std::pair(dns_protocol::kHttpsServiceParamKeyMandatory,
@@ -204,11 +205,9 @@ std::pair<uint16_t, std::string> BuildTestHttpsServiceMandatoryParam(
 }
 
 std::pair<uint16_t, std::string> BuildTestHttpsServicePortParam(uint16_t port) {
-  char buffer[2];
-  base::WriteBigEndian(buffer, port);
-
+  std::array<uint8_t, 2> buffer = base::numerics::U16ToBigEndian(port);
   return std::pair(dns_protocol::kHttpsServiceParamKeyPort,
-                   std::string(buffer, 2));
+                   std::string(buffer.begin(), buffer.end()));
 }
 
 DnsResourceRecord BuildTestHttpsServiceRecord(
@@ -222,9 +221,10 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
 
   std::string rdata;
 
-  char num_buffer[2];
-  base::WriteBigEndian(num_buffer, priority);
-  rdata.append(num_buffer, 2);
+  {
+    std::array<uint8_t, 2> buf = base::numerics::U16ToBigEndian(priority);
+    rdata.append(buf.begin(), buf.end());
+  }
 
   std::optional<std::vector<uint8_t>> service_domain;
   if (service_name == ".") {
@@ -241,13 +241,15 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
                service_domain.value().size());
 
   for (auto& param : params) {
-    base::WriteBigEndian(num_buffer, param.first);
-    rdata.append(num_buffer, 2);
-
-    base::WriteBigEndian(num_buffer,
-                         base::checked_cast<uint16_t>(param.second.size()));
-    rdata.append(num_buffer, 2);
-
+    {
+      std::array<uint8_t, 2> buf = base::numerics::U16ToBigEndian(param.first);
+      rdata.append(buf.begin(), buf.end());
+    }
+    {
+      std::array<uint8_t, 2> buf = base::numerics::U16ToBigEndian(
+          base::checked_cast<uint16_t>(param.second.size()));
+      rdata.append(buf.begin(), buf.end());
+    }
     rdata.append(param.second);
   }
 
@@ -363,13 +365,21 @@ DnsResponse BuildTestDnsServiceResponse(
   std::vector<DnsResourceRecord> answers;
   for (TestServiceRecord& service_record : service_records) {
     std::string rdata;
-    char num_buffer[2];
-    base::WriteBigEndian(num_buffer, service_record.priority);
-    rdata.append(num_buffer, 2);
-    base::WriteBigEndian(num_buffer, service_record.weight);
-    rdata.append(num_buffer, 2);
-    base::WriteBigEndian(num_buffer, service_record.port);
-    rdata.append(num_buffer, 2);
+    {
+      std::array<uint8_t, 2> buf =
+          base::numerics::U16ToBigEndian(service_record.priority);
+      rdata.append(buf.begin(), buf.end());
+    }
+    {
+      std::array<uint8_t, 2> buf =
+          base::numerics::U16ToBigEndian(service_record.weight);
+      rdata.append(buf.begin(), buf.end());
+    }
+    {
+      std::array<uint8_t, 2> buf =
+          base::numerics::U16ToBigEndian(service_record.port);
+      rdata.append(buf.begin(), buf.end());
+    }
 
     std::optional<std::vector<uint8_t>> dns_name =
         dns_names_util::DottedNameToNetwork(service_record.target);

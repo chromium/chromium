@@ -58,7 +58,7 @@ struct NET_EXPORT WebSocketFrameHeader {
 
   // Contains four-byte data representing "masking key" of WebSocket frames.
   struct WebSocketMaskingKey {
-    char key[WebSocketFrameHeader::kMaskingKeyLength];
+    uint8_t key[WebSocketFrameHeader::kMaskingKeyLength];
   };
 
   // Constructor to avoid a lot of repetitive initialisation.
@@ -157,7 +157,8 @@ using WebSocketMaskingKey = WebSocketFrameHeader::WebSocketMaskingKey;
 // Returns the size of WebSocket frame header. The size of WebSocket frame
 // header varies from 2 bytes to 14 bytes depending on the payload length
 // and maskedness.
-NET_EXPORT int GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header);
+NET_EXPORT size_t
+GetWebSocketFrameHeaderSize(const WebSocketFrameHeader& header);
 
 // Writes wire format of a WebSocket frame header into |output|, and returns
 // the number of bytes written.

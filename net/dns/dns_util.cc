@@ -13,12 +13,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -113,10 +113,9 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
 
 std::string CreateNamePointer(uint16_t offset) {
   DCHECK_EQ(offset & ~dns_protocol::kOffsetMask, 0);
-  char buf[2];
-  base::WriteBigEndian(buf, offset);
-  buf[0] |= dns_protocol::kLabelPointer;
-  return std::string(buf, sizeof(buf));
+  std::array<uint8_t, 2> buf = base::numerics::U16ToBigEndian(offset);
+  buf[0u] |= dns_protocol::kLabelPointer;
+  return std::string(buf.begin(), buf.end());
 }
 
 uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {

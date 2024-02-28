@@ -133,12 +133,13 @@ bool WebSocket::Send(const std::string& message) {
   header.final = true;
   header.masked = true;
   header.payload_length = message.length();
-  int header_size = net::GetWebSocketFrameHeaderSize(header);
+  size_t header_size = net::GetWebSocketFrameHeaderSize(header);
   net::WebSocketMaskingKey masking_key = net::GenerateWebSocketMaskingKey();
   std::string header_str;
   header_str.resize(header_size);
-  CHECK_EQ(header_size, net::WriteWebSocketFrameHeader(
-      header, &masking_key, &header_str[0], header_str.length()));
+  CHECK_EQ(header_size,
+           base::checked_cast<size_t>(net::WriteWebSocketFrameHeader(
+               header, &masking_key, &header_str[0], header_str.length())));
 
   std::string masked_message = message;
   net::MaskWebSocketFramePayload(

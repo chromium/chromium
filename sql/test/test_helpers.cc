@@ -9,16 +9,17 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
-#include <optional>
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -78,12 +79,13 @@ std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
   return header[kWriteVersionHeaderOffset] == 2;
 }
 
-[[nodiscard]] bool CorruptSizeInHeaderMemory(uint8_t* header, int64_t db_size) {
+[[nodiscard]] bool CorruptSizeInHeaderMemory(base::span<uint8_t> header,
+                                             int64_t db_size) {
   // See https://www.sqlite.org/fileformat2.html#page_size
   constexpr size_t kPageSizeOffset = 16;
   constexpr uint16_t kMinPageSize = 512;
-  uint16_t raw_page_size;
-  base::ReadBigEndian(header + kPageSizeOffset, &raw_page_size);
+  uint16_t raw_page_size =
+      base::numerics::U16FromBigEndian(header.subspan<kPageSizeOffset, 2u>());
   const int page_size = (raw_page_size == 1) ? 65536 : raw_page_size;
   // Sanity-check that the page size is valid.
   if (page_size < kMinPageSize || (page_size & (page_size - 1)) != 0)
@@ -95,8 +97,8 @@ std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
   const int64_t page_count = (db_size + page_size * 2 - 1) / page_size;
   if (page_count > std::numeric_limits<uint32_t>::max())
     return false;
-  base::WriteBigEndian(reinterpret_cast<char*>(header + kPageCountOffset),
-                       static_cast<uint32_t>(page_count));
+  header.subspan<kPageCountOffset, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(static_cast<uint32_t>(page_count)));
 
   // Update change count so outstanding readers know the info changed.
   // See https://www.sqlite.org/fileformat2.html#file_change_counter
@@ -104,13 +106,13 @@ std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
   // https://www.sqlite.org/fileformat2.html#write_library_version_number_and_version_valid_for_number
   constexpr size_t kFileChangeCountOffset = 24;
   constexpr size_t kVersionValidForOffset = 92;
-  uint32_t old_change_count;
-  base::ReadBigEndian(header + kFileChangeCountOffset, &old_change_count);
+  uint32_t old_change_count = base::numerics::U32FromBigEndian(
+      header.subspan<kFileChangeCountOffset, 4u>());
   const uint32_t new_change_count = old_change_count + 1;
-  base::WriteBigEndian(reinterpret_cast<char*>(header + kFileChangeCountOffset),
-                       new_change_count);
-  base::WriteBigEndian(reinterpret_cast<char*>(header + kVersionValidForOffset),
-                       new_change_count);
+  header.subspan<kFileChangeCountOffset, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(new_change_count));
+  header.subspan<kVersionValidForOffset, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(new_change_count));
   return true;
 }
 
@@ -126,8 +128,8 @@ std::optional<int> ReadDatabasePageSize(const base::FilePath& db_path) {
   if (!file.ReadAndCheck(kPageSizeOffset, raw_page_size_bytes))
     return std::nullopt;
 
-  uint16_t raw_page_size;
-  base::ReadBigEndian(raw_page_size_bytes, &raw_page_size);
+  uint16_t raw_page_size =
+      base::numerics::U16FromBigEndian(raw_page_size_bytes);
   // The SQLite database format initially allocated a 16 bits for storing the
   // page size. This worked out until SQLite wanted to support 64kb pages,
   // because 65536 (64kb) doesn't fit in a 16-bit unsigned integer.

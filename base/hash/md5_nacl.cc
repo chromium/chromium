@@ -173,8 +173,12 @@ void MD5Init(MD5Context* context) {
  * of bytes.
  */
 void MD5Update(MD5Context* context, std::string_view data) {
+  MD5Update(context, base::as_byte_span(data));
+}
+
+void MD5Update(MD5Context* context, base::span<const uint8_t> data) {
   struct Context* ctx = reinterpret_cast<struct Context*>(context);
-  const uint8_t* buf = reinterpret_cast<const uint8_t*>(data.data());
+  const uint8_t* buf = data.data();
   size_t len = data.size();
 
   /* Update bitcount */

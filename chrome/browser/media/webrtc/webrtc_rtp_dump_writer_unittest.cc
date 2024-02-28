@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -26,28 +27,29 @@
 
 static const size_t kMinimumRtpHeaderLength = 12;
 
-static void CreateFakeRtpPacketHeader(size_t csrc_count,
-                                      size_t extension_header_count,
-                                      std::vector<uint8_t>* packet_header) {
-  packet_header->resize(kMinimumRtpHeaderLength +
-                        csrc_count * sizeof(uint32_t) +
-                        (extension_header_count + 1) * sizeof(uint32_t));
-
-  memset(&(*packet_header)[0], 0, packet_header->size());
+static std::vector<uint8_t> CreateFakeRtpPacketHeader(
+    size_t csrc_count,
+    size_t extension_header_count) {
+  std::vector<uint8_t> packet_header(
+      kMinimumRtpHeaderLength + csrc_count * sizeof(uint32_t) +
+      (extension_header_count + 1) * sizeof(uint32_t));
 
   // First byte format: vvpxcccc, where 'vv' is the version, 'p' is padding, 'x'
   // is the extension bit, 'cccc' is the CSRC count.
-  (*packet_header)[0] = 0;
-  (*packet_header)[0] |= (0x2 << 6);  // version.
+  packet_header[0] = 0;
+  packet_header[0] |= (0x2 << 6);  // version.
   // The extension bit.
-  (*packet_header)[0] |= (extension_header_count > 0 ? (0x1 << 4) : 0);
-  (*packet_header)[0] |= (csrc_count & 0xf);
+  packet_header[0] |= (extension_header_count > 0 ? (0x1 << 4) : 0);
+  packet_header[0] |= (csrc_count & 0xf);
 
   // Set extension length.
   size_t offset = kMinimumRtpHeaderLength +
                   (csrc_count & 0xf) * sizeof(uint32_t) + sizeof(uint16_t);
-  base::WriteBigEndian(reinterpret_cast<char*>(&(*packet_header)[offset]),
-                       static_cast<uint16_t>(extension_header_count));
+  base::BigEndianWriter writer(packet_header);
+  writer.Skip(offset);
+  writer.WriteU16(static_cast<uint16_t>(extension_header_count));
+
+  return packet_header;
 }
 
 static void FlushTaskRunner(base::SequencedTaskRunner* task_runner) {
@@ -138,8 +140,7 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
 
   // Tries to read |dump| as a rtpplay dump file and returns the number of
   // packets found in the dump.
-  bool ReadDecompressedDump(const std::vector<uint8_t>& dump,
-                            size_t* packet_count) {
+  bool ReadDecompressedDump(base::span<uint8_t> dump, size_t* packet_count) {
     static const char kFirstLine[] = "#!rtpplay1.0 0.0.0.0/0\n";
     static const size_t kDumpFileHeaderSize = 4 * sizeof(uint32_t);
 
@@ -159,9 +160,7 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
     // Reads each packet dump.
     while (dump_pos < dump.size()) {
       uint16_t packet_dump_length = 0;
-      if (!VerifyPacketDump(&dump[dump_pos],
-                            dump.size() - dump_pos,
-                            &packet_dump_length)) {
+      if (!VerifyPacketDump(dump.subspan(dump_pos), &packet_dump_length)) {
         DVLOG(0) << "Failed to read the packet dump for packet "
                  << *packet_count << ", dump_pos = " << dump_pos
                  << ", dump_length = " << dump.size();
@@ -178,50 +177,67 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
 
   // Tries to read one packet dump starting at |dump| and returns the size of
   // the packet dump.
-  bool VerifyPacketDump(const uint8_t* dump,
-                        size_t dump_length,
+  bool VerifyPacketDump(base::span<const uint8_t> dump,
                         uint16_t* packet_dump_length) {
     static const size_t kDumpHeaderLength = 8;
 
-    size_t dump_pos = 0;
-    base::ReadBigEndian(dump + dump_pos, packet_dump_length);
-    if (*packet_dump_length < kDumpHeaderLength + kMinimumRtpHeaderLength)
-      return false;
+    base::BigEndianReader reader(dump);
 
-    EXPECT_GE(dump_length, *packet_dump_length);
-    dump_pos += sizeof(uint16_t);
+    if (!reader.ReadU16(packet_dump_length)) {
+      return false;
+    }
+    if (*packet_dump_length < kDumpHeaderLength + kMinimumRtpHeaderLength) {
+      return false;
+    }
+
+    if (dump.size() < *packet_dump_length) {
+      ADD_FAILURE() << "Failed check 'dump.size() < *packet_dump_length': "
+                    << dump.size() << " < " << *packet_dump_length;
+      return false;
+    }
 
     uint16_t rtp_packet_length = 0;
-    base::ReadBigEndian(dump + dump_pos, &rtp_packet_length);
+    if (!reader.ReadU16(&rtp_packet_length)) {
+      return false;
+    }
     if (rtp_packet_length < kMinimumRtpHeaderLength)
       return false;
 
-    dump_pos += sizeof(uint16_t);
-
     // Skips the elapsed time field.
-    dump_pos += sizeof(uint32_t);
+    if (!reader.Skip(sizeof(uint32_t))) {
+      return false;
+    }
 
-    return IsValidRtpHeader(dump + dump_pos,
+    return IsValidRtpHeader(reader.remaining_bytes().data(),
                             *packet_dump_length - kDumpHeaderLength);
   }
 
-  // Returns true if |header| is a valid RTP header.
-  bool IsValidRtpHeader(const uint8_t* header, size_t length) {
-    if ((header[0] & 0xC0) != 0x80)
+  // Returns true if the header is a valid RTP header.
+  bool IsValidRtpHeader(const uint8_t* header_data, size_t header_size) {
+    auto header =
+        // TODO(crbug.com/40284755): IsValidRtpHeader() should receive a span
+        // instead of constructing one here.
+        UNSAFE_BUFFERS(base::span(header_data, header_size));
+
+    if ((header[0u] & 0xC0u) != 0x80u) {
       return false;
+    }
 
-    size_t cc_count = header[0] & 0x0F;
-    size_t header_length_without_extn = kMinimumRtpHeaderLength + 4 * cc_count;
+    size_t cc_count = header[0u] & 0x0Fu;
+    size_t header_length_without_extn = kMinimumRtpHeaderLength + 4u * cc_count;
 
-    if (length < header_length_without_extn)
+    if (header.size() < header_length_without_extn) {
       return false;
+    }
 
-    uint16_t extension_count = 0;
-    base::ReadBigEndian(header + header_length_without_extn + 2,
-                        &extension_count);
+    header = header.subspan(header_length_without_extn);
 
-    if (length < (extension_count + 1) * 4 + header_length_without_extn)
+    uint16_t extension_count =
+        base::numerics::U16FromBigEndian(header.subspan(2u).first<2u>());
+
+    if (header.size() < (extension_count + 1u) * 4u) {
       return false;
+    }
 
     return true;
   }
@@ -253,8 +269,7 @@ TEST_F(WebRtcRtpDumpWriterTest, NoDumpFileIfNoPacketDumped) {
 }
 
 TEST_F(WebRtcRtpDumpWriterTest, WriteAndFlushSmallSizeDump) {
-  std::vector<uint8_t> packet_header;
-  CreateFakeRtpPacketHeader(1, 2, &packet_header);
+  std::vector<uint8_t> packet_header = CreateFakeRtpPacketHeader(1u, 2u);
 
   writer_->WriteRtpPacket(
       &packet_header[0], packet_header.size(), 100, true);
@@ -292,8 +307,7 @@ TEST_F(WebRtcRtpDumpWriterTest, MAYBE_WriteOverMaxLimit) {
       base::BindRepeating(&WebRtcRtpDumpWriterTest::OnMaxSizeReached,
                           base::Unretained(this)));
 
-  std::vector<uint8_t> packet_header;
-  CreateFakeRtpPacketHeader(3, 4, &packet_header);
+  std::vector<uint8_t> packet_header = CreateFakeRtpPacketHeader(3u, 4u);
 
   const size_t kPacketCount = 200;
   // The scope is used to make sure the EXPECT_CALL is checked before exiting
@@ -340,8 +354,7 @@ TEST_F(WebRtcRtpDumpWriterTest, DestroyWriterBeforeEndDumpCallback) {
 }
 
 TEST_F(WebRtcRtpDumpWriterTest, EndDumpsSeparately) {
-  std::vector<uint8_t> packet_header;
-  CreateFakeRtpPacketHeader(1, 2, &packet_header);
+  std::vector<uint8_t> packet_header = CreateFakeRtpPacketHeader(1u, 2u);
 
   writer_->WriteRtpPacket(
       &packet_header[0], packet_header.size(), 100, true);

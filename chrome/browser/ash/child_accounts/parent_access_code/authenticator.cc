@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 
 namespace ash {
@@ -136,21 +136,21 @@ std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
 
   // The algorithm for PAC generation is using data in Big-endian byte order to
   // feed HMAC.
-  std::string big_endian_timestamp(sizeof(adjusted_timestamp), 0);
-  base::WriteBigEndian(&big_endian_timestamp[0], adjusted_timestamp);
+  std::array<uint8_t, sizeof(uint64_t)> big_endian_timestamp =
+      base::numerics::U64ToBigEndian(
+          // NOTE: This will convert negative numbers to large positive ones.
+          static_cast<uint64_t>(adjusted_timestamp));
 
   std::vector<uint8_t> digest(hmac_.DigestLength());
-  if (!hmac_.Sign(big_endian_timestamp, &digest[0], digest.size())) {
+  if (!hmac_.Sign(big_endian_timestamp, base::span(digest))) {
     LOG(ERROR) << "Signing HMAC data to generate Parent Access Code failed";
     return std::nullopt;
   }
 
   // Read 4 bytes in Big-endian order starting from |offset|.
   const int8_t offset = digest.back() & 0xf;
-  int32_t result;
-  std::vector<uint8_t> slice(digest.begin() + offset,
-                             digest.begin() + offset + sizeof(result));
-  base::ReadBigEndian(slice.data(), &result);
+  int32_t result = base::numerics::U32FromBigEndian(
+      base::span(digest).subspan(offset).first<4u>());
   // Clear sign bit.
   result &= 0x7fffffff;
 

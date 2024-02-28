@@ -21,6 +21,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -948,10 +949,13 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     const size_t payload_length = kWebSocketCloseCodeLength + reason.length();
     body = base::MakeRefCounted<IOBufferWithSize>(payload_length);
     size = payload_length;
-    base::WriteBigEndian(body->data(), code);
+    auto [code_span, body_span] =
+        body->span().split_at<kWebSocketCloseCodeLength>();
+    base::as_writable_bytes(code_span).copy_from(
+        base::numerics::U16ToBigEndian(code));
     static_assert(sizeof(code) == kWebSocketCloseCodeLength,
                   "they should both be two");
-    base::ranges::copy(reason, body->data() + kWebSocketCloseCodeLength);
+    body_span.copy_from(reason);
   }
 
   return SendFrameInternal(true, WebSocketFrameHeader::kOpCodeClose,

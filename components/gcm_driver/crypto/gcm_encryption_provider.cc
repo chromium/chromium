@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/gcm_driver/common/gcm_message.h"
@@ -395,15 +395,14 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
 
   // Construct encryption header.
   uint32_t rs = record_size;
-  char rs_buf[sizeof(rs)];
-  base::WriteBigEndian(rs_buf, rs);
-  std::string rs_str(std::begin(rs_buf), std::end(rs_buf));
+  std::string rs_str(sizeof(rs), 0u);
+  base::as_writable_byte_span(rs_str).copy_from(
+      base::numerics::U32ToBigEndian(rs));
 
   uint8_t key_length = sender_public_key.size();
-  char key_length_buf[sizeof(key_length)];
-  base::WriteBigEndian(key_length_buf, key_length);
-  std::string key_length_str(std::begin(key_length_buf),
-                             std::end(key_length_buf));
+  std::string key_length_str(sizeof(key_length), 0u);
+  base::as_writable_byte_span(key_length_str)
+      .copy_from(base::numerics::U8ToBigEndian(key_length));
 
   std::string payload = base::StrCat(
       {salt, rs_str, key_length_str, sender_public_key, ciphertext});

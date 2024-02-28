@@ -42,7 +42,10 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.h"
 #include "third_party/protobuf/src/google/protobuf/message.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -1538,23 +1541,9 @@ void Converter::WriteTagSize(const char (&tag)[4], const size_t size) {
 }
 
 // Writes num as a big endian number.
-template <typename T>
-void Converter::WriteBigEndian(const T num) {
-  CHECK_LE(sizeof(T), static_cast<size_t>(4));
-  uint8_t num_arr[sizeof(T)];
-  memcpy(num_arr, &num, sizeof(T));
-  uint8_t tmp1 = num_arr[0];
-  uint8_t tmp2 = num_arr[3];
-  num_arr[3] = tmp1;
-  num_arr[0] = tmp2;
-
-  tmp1 = num_arr[1];
-  tmp2 = num_arr[2];
-  num_arr[2] = tmp1;
-  num_arr[1] = tmp2;
-
-  for (size_t idx = 0; idx < sizeof(uint32_t); idx++)
-    output_.push_back(num_arr[idx]);
+void Converter::WriteBigEndian(base::StrictNumeric<uint32_t> num) {
+  auto arr = base::numerics::U32ToBigEndian(num);
+  output_.insert(output_.end(), arr.begin(), arr.end());
 }
 
 void Converter::Visit(const ICCColorSpace& icc_color_space) {

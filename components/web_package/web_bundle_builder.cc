@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include "base/big_endian.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace web_package {
 
@@ -141,10 +141,9 @@ std::vector<uint8_t> WebBundleBuilder::CreateTopLevel() {
   toplevel_array.emplace_back(cbor::Value::BinaryValue(8, 0));
 
   std::vector<uint8_t> bundle = Encode(cbor::Value(toplevel_array));
-  char encoded[8];
-  base::WriteBigEndian(encoded, static_cast<uint64_t>(bundle.size()));
   // Overwrite the dummy bytestring with the actual size.
-  memcpy(bundle.data() + bundle.size() - 8, encoded, 8);
+  base::span(bundle).last(8u).copy_from(
+      base::numerics::U64ToBigEndian(bundle.size()));
   return bundle;
 }
 

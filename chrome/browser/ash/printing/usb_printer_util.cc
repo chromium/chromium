@@ -7,17 +7,19 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -130,12 +132,17 @@ void OnDeviceOpen(mojo::Remote<device::mojom::UsbDevice> device,
 
 // Incorporate the bytes of |val| into the incremental hash carried in |ctx| in
 // big-endian order.  |val| must be a simple integer type
-template <typename T>
-void MD5UpdateBigEndian(base::MD5Context* ctx, T val) {
-  static_assert(std::is_integral<T>::value, "Value must be an integer");
-  char buf[sizeof(T)];
-  base::WriteBigEndian(buf, val);
-  base::MD5Update(ctx, std::string_view(buf, sizeof(T)));
+void MD5UpdateU8BigEndian(base::MD5Context* ctx,
+                          base::StrictNumeric<uint8_t> val) {
+  std::array<uint8_t, 1u> buf;
+  base::span(buf).copy_from(base::numerics::U8ToBigEndian(val));
+  base::MD5Update(ctx, buf);
+}
+void MD5UpdateU16BigEndian(base::MD5Context* ctx,
+                           base::StrictNumeric<uint16_t> val) {
+  std::array<uint8_t, 2u> buf;
+  base::span(buf).copy_from(base::numerics::U16ToBigEndian(val));
+  base::MD5Update(ctx, buf);
 }
 
 // Update the hash with the contents of |str|.
@@ -174,12 +181,12 @@ std::string CreateUsbPrinterId(const UsbDeviceInfo& device_info) {
 
   base::MD5Context ctx;
   base::MD5Init(&ctx);
-  MD5UpdateBigEndian(&ctx, device_info.class_code);
-  MD5UpdateBigEndian(&ctx, device_info.subclass_code);
-  MD5UpdateBigEndian(&ctx, device_info.protocol_code);
-  MD5UpdateBigEndian(&ctx, device_info.vendor_id);
-  MD5UpdateBigEndian(&ctx, device_info.product_id);
-  MD5UpdateBigEndian(&ctx, device::GetDeviceVersion(device_info));
+  MD5UpdateU8BigEndian(&ctx, device_info.class_code);
+  MD5UpdateU8BigEndian(&ctx, device_info.subclass_code);
+  MD5UpdateU8BigEndian(&ctx, device_info.protocol_code);
+  MD5UpdateU16BigEndian(&ctx, device_info.vendor_id);
+  MD5UpdateU16BigEndian(&ctx, device_info.product_id);
+  MD5UpdateU16BigEndian(&ctx, device::GetDeviceVersion(device_info));
   base::MD5Update(&ctx, GetManufacturerName(device_info));
   base::MD5Update(&ctx, GetProductName(device_info));
   MD5UpdateString16(&ctx, GetSerialNumber(device_info));
@@ -255,8 +262,8 @@ chromeos::Uri UsbPrinterUri(const UsbDeviceInfo& device_info) {
 
 std::string GuessEffectiveMakeAndModel(
     const device::mojom::UsbDeviceInfo& device_info) {
-  return base::StrCat({GetManufacturerName(device_info), " ",
-                      GetProductName(device_info)});
+  return base::StrCat(
+      {GetManufacturerName(device_info), " ", GetProductName(device_info)});
 }
 
 std::string GetManufacturerName(const UsbDeviceInfo& device_info) {

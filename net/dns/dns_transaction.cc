@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/big_endian.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -27,6 +26,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -813,7 +813,8 @@ class DnsTCPAttempt : public DnsAttempt {
     uint16_t query_size = static_cast<uint16_t>(query_->io_buffer()->size());
     if (static_cast<int>(query_size) != query_->io_buffer()->size())
       return ERR_FAILED;
-    base::WriteBigEndian<uint16_t>(length_buffer_->data(), query_size);
+    base::as_writable_bytes(length_buffer_->span())
+        .copy_from(base::numerics::U16ToBigEndian(query_size));
     buffer_ = base::MakeRefCounted<DrainableIOBuffer>(length_buffer_,
                                                       length_buffer_->size());
     next_state_ = STATE_SEND_LENGTH;
@@ -878,9 +879,8 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
 
-    base::ReadBigEndian(
-        reinterpret_cast<const uint8_t*>(length_buffer_->data()),
-        &response_length_);
+    response_length_ = base::numerics::U16FromBigEndian(
+        base::as_bytes(length_buffer_->span().first<2u>()));
     // Check if advertised response is too short. (Optimization only.)
     if (response_length_ < query_->io_buffer()->size())
       return ERR_DNS_MALFORMED_RESPONSE;

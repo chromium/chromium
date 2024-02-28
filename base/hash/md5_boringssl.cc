@@ -14,8 +14,11 @@ void MD5Init(MD5Context* context) {
 }
 
 void MD5Update(MD5Context* context, std::string_view data) {
-  MD5_Update(context, reinterpret_cast<const uint8_t*>(data.data()),
-             data.size());
+  MD5Update(context, base::as_byte_span(data));
+}
+
+void MD5Update(MD5Context* context, base::span<const uint8_t> data) {
+  MD5_Update(context, data.data(), data.size());
 }
 
 void MD5Final(MD5Digest* digest, MD5Context* context) {

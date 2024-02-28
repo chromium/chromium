@@ -7,9 +7,11 @@
 #include <string.h>
 
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/zlib/zlib.h"
@@ -27,28 +29,24 @@ void WriteRtpDumpFileHeaderBigEndian(base::TimeTicks start,
   size_t buffer_start_pos = output->size();
   output->resize(output->size() + kRtpDumpFileHeaderSize);
 
-  char* buffer = reinterpret_cast<char*>(&(*output)[buffer_start_pos]);
+  base::BigEndianWriter writer(base::span(*output).subspan(buffer_start_pos));
 
   base::TimeDelta delta = start - base::TimeTicks();
   uint32_t start_sec = delta.InSeconds();
-  base::WriteBigEndian(buffer, start_sec);
-  buffer += sizeof(start_sec);
+  writer.WriteU32(start_sec);
 
   uint32_t start_usec =
       delta.InMilliseconds() * base::Time::kMicrosecondsPerMillisecond;
-  base::WriteBigEndian(buffer, start_usec);
-  buffer += sizeof(start_usec);
+  writer.WriteU32(start_usec);
 
   // Network source, always 0.
-  base::WriteBigEndian(buffer, uint32_t(0));
-  buffer += sizeof(uint32_t);
-
+  writer.WriteU32(uint32_t{0});
   // UDP port, always 0.
-  base::WriteBigEndian(buffer, uint16_t(0));
-  buffer += sizeof(uint16_t);
-
+  writer.WriteU16(uint16_t{0});
   // 2 bytes padding.
-  base::WriteBigEndian(buffer, uint16_t(0));
+  writer.WriteU16(uint16_t{0});
+
+  CHECK(writer.remaining_bytes().empty());
 }
 
 // The header size for each packet dump.
@@ -65,17 +63,14 @@ void WritePacketDumpHeaderBigEndian(const base::TimeTicks& start,
   size_t buffer_start_pos = output->size();
   output->resize(output->size() + kPacketDumpHeaderSize);
 
-  char* buffer = reinterpret_cast<char*>(&(*output)[buffer_start_pos]);
-
-  base::WriteBigEndian(buffer, dump_length);
-  buffer += sizeof(dump_length);
-
-  base::WriteBigEndian(buffer, packet_length);
-  buffer += sizeof(packet_length);
-
+  auto buffer = base::span(*output).subspan(buffer_start_pos);
+  base::BigEndianWriter writer(buffer);
+  writer.WriteU16(dump_length);
+  writer.WriteU16(packet_length);
   uint32_t elapsed =
       static_cast<uint32_t>((base::TimeTicks::Now() - start).InMilliseconds());
-  base::WriteBigEndian(buffer, elapsed);
+  writer.WriteU32(elapsed);
+  CHECK(writer.remaining_bytes().empty());
 }
 
 // Append |src_len| bytes from |src| to |dest|.

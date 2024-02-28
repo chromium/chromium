@@ -10,8 +10,9 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "components/pwg_encoder/bitmap_image.h"
 
 namespace pwg_encoder {
@@ -83,43 +84,45 @@ void EncodePixelToMonochrome(const void* pixel, std::string* output) {
 
 std::string EncodePageHeader(const BitmapImage& image,
                              const PwgHeaderInfo& pwg_header_info) {
-  char header[kHeaderSize];
-  memset(header, 0, kHeaderSize);
+  uint8_t header_buf[kHeaderSize] = {};
+  auto header = base::span(header_buf);
 
   uint32_t num_colors =
       pwg_header_info.color_space == PwgHeaderInfo::SGRAY ? 1 : 3;
   uint32_t bits_per_pixel = num_colors * kBitsPerColor;
 
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsDuplex,
-                                 pwg_header_info.duplex ? 1 : 0);
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsHwResolutionHorizontal,
-                                 pwg_header_info.dpi.width());
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsHwResolutionVertical,
-                                 pwg_header_info.dpi.height());
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsTumble,
-                                 pwg_header_info.tumble ? 1 : 0);
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsWidth,
-                                 image.size().width());
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsHeight,
-                                 image.size().height());
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsBitsPerColor,
-                                 kBitsPerColor);
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsBitsPerPixel,
-                                 bits_per_pixel);
-  base::WriteBigEndian<uint32_t>(
-      header + kHeaderCupsBytesPerLine,
-      (bits_per_pixel * image.size().width() + 7) / 8);
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsColorOrder, kColorOrder);
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsColorSpace,
-                                 pwg_header_info.color_space);
-  base::WriteBigEndian<uint32_t>(header + kHeaderCupsNumColors, num_colors);
-  base::WriteBigEndian<uint32_t>(header + kHeaderPwgCrossFeedTransform,
-                                 pwg_header_info.flipx ? -1 : 1);
-  base::WriteBigEndian<uint32_t>(header + kHeaderPwgFeedTransform,
-                                 pwg_header_info.flipy ? -1 : 1);
-  base::WriteBigEndian<uint32_t>(header + kHeaderPwgTotalPageCount,
-                                 pwg_header_info.total_pages);
-  return std::string(header, kHeaderSize);
+  header.subspan<kHeaderCupsDuplex, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.duplex ? 1 : 0));
+  header.subspan<kHeaderCupsHwResolutionHorizontal, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.dpi.width()));
+  header.subspan<kHeaderCupsHwResolutionVertical, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.dpi.height()));
+  header.subspan<kHeaderCupsTumble, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.tumble ? 1 : 0));
+  header.subspan<kHeaderCupsWidth, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(image.size().width()));
+  header.subspan<kHeaderCupsHeight, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(image.size().height()));
+  header.subspan<kHeaderCupsBitsPerColor, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(kBitsPerColor));
+  header.subspan<kHeaderCupsBitsPerPixel, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(bits_per_pixel));
+  header.subspan<kHeaderCupsBytesPerLine, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(
+          (bits_per_pixel * image.size().width() + 7) / 8));
+  header.subspan<kHeaderCupsColorOrder, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(kColorOrder));
+  header.subspan<kHeaderCupsColorSpace, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.color_space));
+  header.subspan<kHeaderCupsNumColors, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(num_colors));
+  header.subspan<kHeaderPwgCrossFeedTransform, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.flipx ? -1 : 1));
+  header.subspan<kHeaderPwgFeedTransform, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.flipy ? -1 : 1));
+  header.subspan<kHeaderPwgTotalPageCount, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(pwg_header_info.total_pages));
+  return std::string(header.begin(), header.end());
 }
 
 template <typename InputStruct, class RandomAccessIterator>
