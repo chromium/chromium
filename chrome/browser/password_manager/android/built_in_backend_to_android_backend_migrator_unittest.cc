@@ -24,6 +24,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores;
+using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
@@ -163,7 +165,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       AllPrefsAreUpdatedWhenMigrationIsNeeded_SyncOff) {
+       AllPrefsAreUpdatedAfterLocalPasswordsMigration) {
   Init();
 
   prefs()->SetInteger(
@@ -178,8 +180,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
-  EXPECT_EQ(1, prefs()->GetInteger(
-                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
   EXPECT_EQ(
       base::Time::Now().InSecondsFSinceUnixEpoch(),
       prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
@@ -926,9 +928,12 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   migrator()->StartMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
 
-  // Migration version is still 0 since migration didn't complete.
-  EXPECT_EQ(0, prefs()->GetInteger(
-                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  // Local migration should still be pending since it didn' t complete
+  // successfully.
+  EXPECT_EQ(static_cast<int>(
+                UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+
   RunUntilIdle();
 }
 

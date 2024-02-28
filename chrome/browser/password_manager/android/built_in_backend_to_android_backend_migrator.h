@@ -102,24 +102,18 @@ class BuiltInBackendToAndroidBackendMigrator {
   // to perform initial & rolling migration for local users.
   void RunMigrationForLocalUsers();
 
-  // Migrates password between |built_in_backend_| and |android_backend_|.
-  // |result| consists of passwords from the |built_in_backend_| let's call them
-  // |A| and passwords from the |android_backend_| - |B|. If initial migration
-  // needed this function will update both backends with |A|U|B| otherwise it
-  // will replace passwords from the |built_in_backend_| with |B|.
-  void MigratePasswordsBetweenAndroidAndBuiltInBackends(
+  // Migrates password from the profile store |built_in_backend_| to the Gms
+  // core local store |android_backend_|. |result| consists of passwords from
+  // the |built_in_backend_| let's call them |A|. If the password from |A| is
+  // already present in |android_backend_|, then the latest version of the
+  // credential is adopted by |android_backend_|.
+  void MigrateLocalPasswordsBetweenAndroidAndBuiltInBackends(
       std::vector<BackendAndLoginsResults> result);
 
   // Updates both |built_in_backend_| and |android_backend_| such that both
   // contain the same set of passwords without deleting any password. In
   // addition, it marks the initial migration as completed.
-  void MergeAndroidBackendAndBuiltInBackend(
-      PasswordFormPtrFlatSet built_in_backend_logins,
-      PasswordFormPtrFlatSet android_logins);
-
-  // Updates |built_in_backend_| such that it contains the same set of passwords
-  // as in |android_backend_|.
-  void MirrorAndroidBackendToBuiltInBackend(
+  void MergeBuiltInBackendIntoAndroidBackend(
       PasswordFormPtrFlatSet built_in_backend_logins,
       PasswordFormPtrFlatSet android_logins);
 
