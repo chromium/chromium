@@ -999,6 +999,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mWebFeedFollowIntroController =
                     new WebFeedFollowIntroController(
                             mActivity,
+                            profile,
                             mAppMenuCoordinator.getAppMenuHandler(),
                             mActivityTabProvider,
                             mToolbarManager.getMenuButtonView(),

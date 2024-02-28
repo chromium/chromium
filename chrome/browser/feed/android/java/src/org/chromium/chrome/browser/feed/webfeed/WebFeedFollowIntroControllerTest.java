@@ -158,6 +158,7 @@ public final class WebFeedFollowIntroControllerTest {
         mWebFeedFollowIntroController =
                 new WebFeedFollowIntroController(
                         mActivity,
+                        mProfile,
                         mAppMenuHandler,
                         mTabSupplier,
                         new View(mActivity),
