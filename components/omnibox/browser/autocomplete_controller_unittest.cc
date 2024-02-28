@@ -1869,7 +1869,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
 
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search term");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/app");
+    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
   }
   {
     SCOPED_TRACE("@gemini starter pack match with url override");
@@ -1897,7 +1897,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
 
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers, "");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/app");
+    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
   }
   {
     SCOPED_TRACE("@bookmarks starter pack match does not get an extra header.");
