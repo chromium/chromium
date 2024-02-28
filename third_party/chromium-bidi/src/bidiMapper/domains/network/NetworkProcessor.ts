@@ -23,6 +23,7 @@ import {
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
@@ -34,15 +35,23 @@ import {
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {
+  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
 
-  constructor(networkStorage: NetworkStorage) {
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    networkStorage: NetworkStorage
+  ) {
+    this.#browsingContextStorage = browsingContextStorage;
     this.#networkStorage = networkStorage;
   }
 
   async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
+    // TODO: Use in intercepts
+    this.#browsingContextStorage.verifyContextsList(params.contexts);
+
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
     const parsedUrlPatterns: Network.UrlPattern[] =
       NetworkProcessor.parseUrlPatterns(urlPatterns);

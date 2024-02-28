@@ -61,10 +61,11 @@ export namespace Browser {
 /** @see https://w3c.github.io/webdriver-bidi/#module-network */
 export namespace Network {
   export function parseAddInterceptParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
     return parseObject(
       params,
       WebDriverBidi.Network.AddInterceptParametersSchema
-    );
+    ) as Protocol.Network.AddInterceptParameters;
   }
 
   export function parseContinueRequestParameters(params: unknown) {

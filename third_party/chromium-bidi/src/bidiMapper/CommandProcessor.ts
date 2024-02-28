@@ -124,7 +124,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       browsingContextStorage,
       realmStorage
     );
-    this.#networkProcessor = new NetworkProcessor(networkStorage);
+    this.#networkProcessor = new NetworkProcessor(
+      browsingContextStorage,
+      networkStorage
+    );
     this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,

@@ -112,9 +112,7 @@ export class BidiParser implements BidiCommandParameterParser {
   // Network domain
   // keep-sorted start block=yes
   parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
-    return Parser.Network.parseAddInterceptParameters(
-      params
-    ) as Network.AddInterceptParameters;
+    return Parser.Network.parseAddInterceptParameters(params);
   }
   parseContinueRequestParams(
     params: unknown

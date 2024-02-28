@@ -18,6 +18,7 @@
 import {
   NoSuchFrameException,
   type BrowsingContext,
+  InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
@@ -100,5 +101,24 @@ export class BrowsingContextStorage {
       throw new NoSuchFrameException(`Context ${id} not found`);
     }
     return result;
+  }
+
+  verifyContextsList(contexts: BrowsingContext.BrowsingContext[] | undefined) {
+    const foundContexts = new Set<BrowsingContextImpl>();
+    if (!contexts) {
+      return foundContexts;
+    }
+
+    for (const contextId of contexts) {
+      const context = this.getContext(contextId);
+      if (context.isTopLevelContext()) {
+        foundContexts.add(context);
+      } else {
+        throw new InvalidArgumentException(
+          `Non top-level context '${contextId}' given.`
+        );
+      }
+    }
+    return foundContexts;
   }
 }
