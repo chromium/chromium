@@ -66,20 +66,15 @@ __gCrWeb.autofill.styleInjected = false;
  * Determines whether the form is interesting enough to send to the browser for
  * further operations.
  *
- * Unlike the C++ version, this version takes a required field count param,
- * instead of using a hard coded value.
- *
  * It is based on the logic in
- *     bool IsFormInteresting(const FormData& form,
- *                            size_t num_editable_elements);
+ *     bool IsFormInteresting(const FormData& form);
  * in chromium/src/components/autofill/content/renderer/form_cache.cc
  *
  * @param {AutofillFormData} form Form to examine.
  * @param {number} numEditableElements number of editable elements.
- * @param {number} numFieldsRequired number of fields required.
  * @return {boolean} Whether the form is sufficiently interesting.
  */
-function isFormInteresting_(form, numEditableElements, numFieldsRequired) {
+function isFormInteresting_(form, numEditableElements) {
   if (form.fields.length === 0) {
     return false;
   }
@@ -96,7 +91,7 @@ function isFormInteresting_(form, numEditableElements, numFieldsRequired) {
   // If there are no autocomplete attributes, the form needs to have at least
   // the required number of editable fields for the prediction routines to be a
   // candidate for autofill.
-  return numEditableElements >= numFieldsRequired;
+  return numEditableElements >= 1;
 }
 
 /**
@@ -132,17 +127,15 @@ function scanFormControlElements_(controlElements) {
  * extraction results. This is just a wrapper around extractNewForms() to JSON
  * encode the forms, for convenience.
  *
- * @param {number} requiredFields The minimum number of fields forms must have
- *     to be extracted.
  * @param {bool} restrictUnownedFieldsToFormlessCheckout whether forms made of
  *     unowned fields (i.e., not within a <form> tag) should be restricted to
  *     those that appear to be in a checkout flow.
  * @return {string} A JSON encoded an array of the forms data.
  */
 __gCrWeb.autofill['extractForms'] = function(
-    requiredFields, restrictUnownedFieldsToFormlessCheckout) {
+    restrictUnownedFieldsToFormlessCheckout) {
   const forms = __gCrWeb.autofill.extractNewForms(
-      requiredFields, restrictUnownedFieldsToFormlessCheckout);
+      restrictUnownedFieldsToFormlessCheckout);
   return __gCrWeb.stringify(forms);
 };
 
@@ -383,18 +376,13 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
  * Initial values of select and checkable elements are not recorded at the
  * moment.
  *
- * This version still takes the minimumRequiredFields parameters. Whereas the
- * C++ version does not.
- *
- * @param {number} minimumRequiredFields The minimum number of fields a form
- *     should contain for autofill.
  * @param {bool} restrictUnownedFieldsToFormlessCheckout whether forms made of
  *     unowned fields (i.e., not within a <form> tag) should be restricted to
  *     those that appear to be in a checkout flow.
  * @return {Array<AutofillFormData>} The extracted forms.
  */
 __gCrWeb.autofill.extractNewForms = function(
-    minimumRequiredFields, restrictUnownedFieldsToFormlessCheckout) {
+    restrictUnownedFieldsToFormlessCheckout) {
   const forms = [];
   // Protect against custom implementation of Array.toJSON in host pages.
   (function() {
@@ -429,7 +417,7 @@ __gCrWeb.autofill.extractNewForms = function(
       break;
     }
 
-    if (isFormInteresting_(form, numEditableElements, minimumRequiredFields)) {
+    if (isFormInteresting_(form, numEditableElements)) {
       forms.push(form);
     }
   }
@@ -450,8 +438,8 @@ __gCrWeb.autofill.extractNewForms = function(
     if (hasUnownedForm) {
       numFieldsSeen += unownedForm['fields'].length;
       if (numFieldsSeen <= fill_constants.MAX_EXTRACTABLE_FIELDS) {
-        const interesting = isFormInteresting_(
-            unownedForm, numEditableUnownedElements, minimumRequiredFields);
+        const interesting =
+            isFormInteresting_(unownedForm, numEditableUnownedElements);
         if (interesting) {
           forms.push(unownedForm);
         }

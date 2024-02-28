@@ -1655,20 +1655,17 @@ void AutofillControllerJsTest::TestExtractNewForms(
   }
 
   NSString* actual = ExecuteJavaScript([NSString
-      stringWithFormat:@"var forms = __gCrWeb.autofill.extractNewForms(%" PRIuS
-                        ", true); %@",
-                       autofill::kMinRequiredFieldsForHeuristics,
+      stringWithFormat:@"var forms = __gCrWeb.autofill.extractNewForms("
+                        "true); %@",
                        [verifying_javascripts componentsJoinedByString:@"&&"]]);
 
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
-      stringWithFormat:
-          @"actually forms = %@, "
-           "but it is expected to be verified by %@",
-          ExecuteJavaScript([NSString
-              stringWithFormat:@"var forms = __gCrWeb.autofill.extractNewForms("
-                                "%" PRIuS ", true); __gCrWeb.stringify(forms)",
-                               autofill::kMinRequiredFieldsForHeuristics]),
-          verifying_javascripts]);
+      stringWithFormat:@"actually forms = %@, "
+                        "but it is expected to be verified by %@",
+                       ExecuteJavaScript(
+                           @"var forms = __gCrWeb.autofill.extractNewForms("
+                            "true); __gCrWeb.stringify(forms)"),
+                       verifying_javascripts]);
 }
 
 TEST_F(AutofillControllerJsTest, ExtractFormsAndFormElements) {
@@ -1730,11 +1727,10 @@ TEST_F(AutofillControllerJsTest,
                                    @"forms[0]['fields'][3]['name']==='name4' &&"
                                    @"forms[0]['fields'][3]['label']==='4'";
   EXPECT_NSEQ(
-      @YES,
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"var forms = "
-                            "__gCrWeb.autofill.extractNewForms(1, true); %@",
-                           verifying_javascript]));
+      @YES, ExecuteJavaScript([NSString
+                stringWithFormat:@"var forms = "
+                                  "__gCrWeb.autofill.extractNewForms(true); %@",
+                                 verifying_javascript]));
 }
 
 TEST_F(AutofillControllerJsTest, ExtractForms) {
@@ -2070,13 +2066,12 @@ TEST_F(AutofillControllerJsTest, ExtractNewForms) {
                  "</FORM>",
       @"expected_forms" : @0
     },
-    // A form with less than three fields with no autocomplete type(s) should
-    // not be extracted.
+    // A form with at least one autofill field is extracted.
     @{
       @"html" : @"<FORM name='TestForm' action='http://buh.com'>"
                  "  <INPUT type='name' id='firstname'/>"
                  "</FORM>",
-      @"expected_forms" : @0
+      @"expected_forms" : @1
     },
     // A form with less than three fields with at least one autocomplete type
     // should be extracted.
@@ -2102,9 +2097,8 @@ TEST_F(AutofillControllerJsTest, ExtractNewForms) {
   for (NSDictionary* testCase in testCases) {
     web::test::LoadHtml(testCase[@"html"], web_state());
 
-    NSString* result = ExecuteJavaScript(
-        [NSString stringWithFormat:@"__gCrWeb.autofill.extractForms(%zu, true)",
-                                   autofill::kMinRequiredFieldsForHeuristics]);
+    NSString* result =
+        ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(true)");
     NSArray* resultArray = [NSJSONSerialization
         JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                    options:0

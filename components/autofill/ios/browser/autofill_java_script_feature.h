@@ -31,7 +31,6 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   // `required_fields_count` fields are extracted. `callback` is called
   // with the JSON string of forms of a web page.  `callback` cannot be nil.
   void FetchForms(web::WebFrame* frame,
-                  NSUInteger required_fields_count,
                   base::OnceCallback<void(NSString*)> callback);
 
   // Fills `data` into the active form field in `frame`, then executes the

@@ -89,7 +89,7 @@ namespace {
 using FormDataVector = std::vector<autofill::FormData>;
 
 // The type of the completion handler block for
-// |fetchFormsWithName:minimumRequiredFieldsCount:completionHandler|
+// |fetchFormsWithName:completionHandler|
 typedef void (^FetchFormsCompletionHandler)(BOOL, const FormDataVector&);
 
 // Gets the field specified by |fieldIdentifier| from |form|, if focusable. Also
@@ -275,10 +275,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 // Calls |completionHandler| with NO if the forms could not be extracted.
 // |completionHandler| cannot be nil.
 - (void)fetchFormsFiltered:(BOOL)filtered
-                      withName:(const std::u16string&)formName
-    minimumRequiredFieldsCount:(NSUInteger)requiredFieldsCount
-                       inFrame:(web::WebFrame*)frame
-             completionHandler:(FetchFormsCompletionHandler)completionHandler {
+                  withName:(const std::u16string&)formName
+                   inFrame:(web::WebFrame*)frame
+         completionHandler:(FetchFormsCompletionHandler)completionHandler {
   DCHECK(completionHandler);
 
   // Necessary so the values can be used inside a block.
@@ -289,7 +288,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   scoped_refptr<autofill::FieldDataManager> fieldDataManager =
       _fieldDataManager;
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
-      frame, requiredFieldsCount, base::BindOnce(^(NSString* formJSON) {
+      frame, base::BindOnce(^(NSString* formJSON) {
         std::vector<autofill::FormData> formData;
         bool success = autofill::ExtractFormsData(
             formJSON, filtered, formNameCopy, pageURL, frameOrigin,
@@ -388,10 +387,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   // input element are considered because key/value suggestions are offered
   // even on short forms.
   [self fetchFormsFiltered:YES
-                        withName:SysNSStringToUTF16(formQuery.formName)
-      minimumRequiredFieldsCount:1
-                         inFrame:frame
-               completionHandler:completionHandler];
+                  withName:SysNSStringToUTF16(formQuery.formName)
+                   inFrame:frame
+         completionHandler:completionHandler];
 }
 
 - (void)retrieveSuggestionsForForm:(FormSuggestionProviderQuery*)formQuery
@@ -648,15 +646,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     [weakSelf notifyFormsSeen:forms inFrame:webFrame];
   };
   // The document has now been fully loaded. Scan for forms to be extracted.
-  size_t min_required_fields =
-      MIN(autofill::kMinRequiredFieldsForUpload,
-          MIN(autofill::kMinRequiredFieldsForHeuristics,
-              autofill::kMinRequiredFieldsForQuery));
   [self fetchFormsFiltered:NO
-                        withName:std::u16string()
-      minimumRequiredFieldsCount:min_required_fields
-                         inFrame:webFrame
-               completionHandler:completionHandler];
+                  withName:std::u16string()
+                   inFrame:webFrame
+         completionHandler:completionHandler];
 }
 
 #pragma mark - AutofillClientIOSBridge
@@ -970,13 +963,11 @@ constexpr CGFloat kSuggestionIconWidth = 32;
              fieldIdentifier:fieldIdentifier];
   };
 
-  // Extract the active form and field only. There is no minimum field
-  // requirement because key/value suggestions are offered even on short forms.
+  // Extract the active form and field only.
   [self fetchFormsFiltered:YES
-                        withName:base::UTF8ToUTF16(params.form_name)
-      minimumRequiredFieldsCount:1
-                         inFrame:frame
-               completionHandler:completionHandler];
+                  withName:base::UTF8ToUTF16(params.form_name)
+                   inFrame:frame
+         completionHandler:completionHandler];
 }
 
 - (void)webState:(web::WebState*)webState

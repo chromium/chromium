@@ -10,7 +10,6 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
-#import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -125,7 +124,6 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
 
     __block BOOL block_was_called = NO;
     feature()->FetchForms(main_web_frame(),
-                          autofill::kMinRequiredFieldsForHeuristics,
                           base::BindOnce(^(NSString* actualResult) {
                             block_was_called = YES;
                           }));
@@ -236,7 +234,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   feature()->FetchForms(main_web_frame(),
-                        autofill::kMinRequiredFieldsForHeuristics,
                         base::BindOnce(^(NSString* actualResult) {
                           block_was_called = YES;
                           result = [actualResult copy];
@@ -336,7 +333,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   feature()->FetchForms(main_web_frame(),
-                        autofill::kMinRequiredFieldsForHeuristics,
                         base::BindOnce(^(NSString* actualResult) {
                           block_was_called = YES;
                           result = [actualResult copy];
@@ -370,7 +366,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractFormlessForms_AllFormlessForms) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   feature()->FetchForms(main_web_frame(),
-                        autofill::kMinRequiredFieldsForHeuristics,
                         base::BindOnce(^(NSString* actualResult) {
                           block_was_called = YES;
                           result = [actualResult copy];
@@ -463,7 +458,6 @@ TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsNames) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   feature()->FetchForms(main_web_frame(),
-                        autofill::kMinRequiredFieldsForHeuristics,
                         base::BindOnce(^(NSString* actualResult) {
                           block_was_called = YES;
                           result = [actualResult copy];
@@ -528,7 +522,6 @@ TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsIDs) {
   __block BOOL block_was_called = NO;
   __block NSString* result;
   feature()->FetchForms(main_web_frame(),
-                        autofill::kMinRequiredFieldsForHeuristics,
                         base::BindOnce(^(NSString* actualResult) {
                           block_was_called = YES;
                           result = [actualResult copy];

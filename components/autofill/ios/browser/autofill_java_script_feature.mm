@@ -47,16 +47,13 @@ AutofillJavaScriptFeature::~AutofillJavaScriptFeature() = default;
 
 void AutofillJavaScriptFeature::FetchForms(
     web::WebFrame* frame,
-    NSUInteger required_fields_count,
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(!callback.is_null());
 
   bool restrict_unowned_fields_to_formless_checkout = false;
   CallJavaScriptFunction(
       frame, "autofill.extractForms",
-      base::Value::List()
-          .Append(static_cast<int>(required_fields_count))
-          .Append(restrict_unowned_fields_to_formless_checkout),
+      base::Value::List().Append(restrict_unowned_fields_to_formless_checkout),
       autofill::CreateStringCallback(std::move(callback)),
       base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
