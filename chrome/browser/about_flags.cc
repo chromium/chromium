@@ -7983,11 +7983,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kExoSurroundingTextOffset)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"enable-heavy-ad-intervention",
-     flag_descriptions::kHeavyAdInterventionName,
-     flag_descriptions::kHeavyAdInterventionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(heavy_ad_intervention::features::kHeavyAdIntervention)},
-
     {"heavy-ad-privacy-mitigations",
      flag_descriptions::kHeavyAdPrivacyMitigationsName,
      flag_descriptions::kHeavyAdPrivacyMitigationsDescription, kOsAll,

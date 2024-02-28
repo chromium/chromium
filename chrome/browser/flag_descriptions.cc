@@ -2041,10 +2041,6 @@ const char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "
     "this makes the intervention deterministic. Defaults to enabled.";
 
-const char kHeavyAdInterventionName[] = "Heavy Ad Intervention";
-const char kHeavyAdInterventionDescription[] =
-    "Unloads ads that use too many device resources.";
-
 const char kHideIncognitoMediaMetadataName[] =
     "Hide media metadata when in Incognito";
 const char kHideIncognitoMediaMetadataDescription[] =

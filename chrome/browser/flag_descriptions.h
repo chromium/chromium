@@ -1146,9 +1146,6 @@ extern const char kHandwritingLibraryDlcDescription[];
 extern const char kHeavyAdPrivacyMitigationsName[];
 extern const char kHeavyAdPrivacyMitigationsDescription[];
 
-extern const char kHeavyAdInterventionName[];
-extern const char kHeavyAdInterventionDescription[];
-
 extern const char kTabAudioMutingName[];
 extern const char kTabAudioMutingDescription[];
 
