@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/web_scrollbar_overlay_color_theme.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -38,12 +39,26 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
+bool ButtonInteractsWithScrollbar(const WebPointerProperties::Button button) {
+  if (button == WebPointerProperties::Button::kMiddle) {
+    if (RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled()) {
+      return false;
+    }
+
+    // The reason to allow middle mouse button clicks is that the
+    // ShouldCenterOnThumb mode of the scrollbar theme(such as
+    // scroll_theme_aura) uses the middle mouse button.
+    return true;
+  }
+  return button == WebPointerProperties::Button::kLeft;
+}
 
 Scrollbar* Scrollbar::CreateForTesting(ScrollableArea* scrollable_area,
                                        ScrollbarOrientation orientation,
@@ -555,9 +570,9 @@ void Scrollbar::MouseUp(const WebMouseEvent& mouse_event) {
 }
 
 void Scrollbar::MouseDown(const WebMouseEvent& evt) {
-  // Early exit for right click
-  if (evt.button == WebPointerProperties::Button::kRight)
+  if (!ButtonInteractsWithScrollbar(evt.button)) {
     return;
+  }
 
   gfx::Point position = gfx::ToFlooredPoint(evt.PositionInRootFrame());
   SetPressedPart(GetTheme().HitTestRootFramePosition(*this, position),

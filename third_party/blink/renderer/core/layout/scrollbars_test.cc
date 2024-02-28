@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -151,10 +152,13 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
                                            Vector<WebMouseEvent>());
   }
 
-  void HandleMousePressEvent(int x, int y) {
+  void HandleMousePressEvent(int x,
+                             int y,
+                             WebPointerProperties::Button button =
+                                 WebPointerProperties::Button::kLeft) {
     WebMouseEvent event(WebInputEvent::Type::kMouseDown, gfx::PointF(x, y),
-                        gfx::PointF(x, y), WebPointerProperties::Button::kLeft,
-                        0, WebInputEvent::Modifiers::kLeftButtonDown,
+                        gfx::PointF(x, y), button, 0,
+                        WebInputEvent::Modifiers::kLeftButtonDown,
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     GetEventHandler().HandleMousePressEvent(event);
@@ -169,10 +173,13 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     GetEventHandler().SendContextMenuEvent(event);
   }
 
-  void HandleMouseReleaseEvent(int x, int y) {
+  void HandleMouseReleaseEvent(int x,
+                               int y,
+                               WebPointerProperties::Button button =
+                                   WebPointerProperties::Button::kLeft) {
     WebMouseEvent event(WebInputEvent::Type::kMouseUp, gfx::PointF(x, y),
-                        gfx::PointF(x, y), WebPointerProperties::Button::kLeft,
-                        0, WebInputEvent::Modifiers::kNoModifiers,
+                        gfx::PointF(x, y), button, 0,
+                        WebInputEvent::Modifiers::kNoModifiers,
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     GetEventHandler().HandleMouseReleaseEvent(event);
@@ -2843,7 +2850,44 @@ TEST_P(ScrollbarsTest, RecorderedOverlayScrollbarHitTest) {
             result.InnerNode());
 }
 
-TEST_P(ScrollbarsTest, AllowMiddleButtonPressOnScrollbar) {
+TEST_P(ScrollbarsTest,
+       AllowMiddleButtonPressOnScrollbarWhenDisableMiddleClickAutoScroll) {
+  ScopedMiddleClickAutoscrollForTest middle_click_autoscroll(false);
+  // This test requires that scrollbars take up space.
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #big {
+      height: 800px;
+    }
+    </style>
+    <div id='big'>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ScrollableArea* scrollable_area =
+      WebView().MainFrameImpl()->GetFrameView()->LayoutViewport();
+
+  Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
+  ASSERT_TRUE(scrollbar);
+  ASSERT_TRUE(scrollbar->Enabled());
+
+  // allow press scrollbar with middle button.
+  HandleMouseMoveEvent(195, 5);
+  HandleMouseMiddlePressEvent(195, 5);
+  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kThumbPart);
+  HandleMouseMiddleReleaseEvent(195, 5);
+}
+
+TEST_P(ScrollbarsTest,
+       NotAllowMiddleButtonPressOnScrollbarWhenEnableMiddleClickAutoScroll) {
+  ScopedMiddleClickAutoscrollForTest middle_click_autoscroll(true);
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);
 
@@ -2872,8 +2916,42 @@ TEST_P(ScrollbarsTest, AllowMiddleButtonPressOnScrollbar) {
   // Not allow press scrollbar with middle button.
   HandleMouseMoveEvent(195, 5);
   HandleMouseMiddlePressEvent(195, 5);
-  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kThumbPart);
+  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kNoPart);
   HandleMouseMiddleReleaseEvent(195, 5);
+}
+
+TEST_P(ScrollbarsTest, NotAllowNonLeftButtonPressOnScrollbar) {
+  ScopedMiddleClickAutoscrollForTest middle_click_autoscroll(true);
+  // This test requires that scrollbars take up space.
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #big {
+      height: 800px;
+    }
+    </style>
+    <div id='big'>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ScrollableArea* scrollable_area =
+      WebView().MainFrameImpl()->GetFrameView()->LayoutViewport();
+
+  Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
+  ASSERT_TRUE(scrollbar);
+  ASSERT_TRUE(scrollbar->Enabled());
+
+  // Not allow press scrollbar with non-left button.
+  HandleMouseMoveEvent(195, 5);
+  HandleMousePressEvent(195, 5, WebPointerProperties::Button::kForward);
+  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kNoPart);
+  HandleMouseReleaseEvent(195, 5, WebPointerProperties::Button::kForward);
 }
 
 // Ensure Scrollbar not release press by middle button down.
