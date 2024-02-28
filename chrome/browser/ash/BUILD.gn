@@ -2071,8 +2071,6 @@ source_set("ash") {
     "login/signin_specifics.h",
     "login/startup_utils.cc",
     "login/startup_utils.h",
-    "login/ui/captive_portal_dialog_delegate.cc",
-    "login/ui/captive_portal_dialog_delegate.h",
     "login/ui/captive_portal_view.cc",
     "login/ui/captive_portal_view.h",
     "login/ui/captive_portal_window_proxy.cc",

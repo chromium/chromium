@@ -13,6 +13,7 @@
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
@@ -73,5 +74,8 @@ std::unique_ptr<views::WidgetDelegate> CaptivePortalView::MakeWidgetDelegate() {
                                  base::ASCIIToUTF16(network_name_)));
   return delegate;
 }
+
+BEGIN_METADATA(CaptivePortalView)
+END_METADATA
 
 }  // namespace ash

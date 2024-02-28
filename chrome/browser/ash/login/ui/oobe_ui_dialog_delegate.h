@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "ui/views/view_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -39,7 +40,6 @@ class Widget;
 class LoginScreenClientImpl;
 
 namespace ash {
-class CaptivePortalDialogDelegate;
 class LayoutWidgetDelegateView;
 class LoginDisplayHostMojo;
 class OobeWebDialogView;
@@ -56,7 +56,9 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public CaptivePortalWindowProxy::Observer,
                              public OobeUI::Observer,
                              public views::ViewObserver,
-                             public SystemTrayObserver {
+                             public SystemTrayObserver,
+                             public ChromeWebModalDialogManagerDelegate,
+                             public web_modal::WebContentsModalDialogHost {
  public:
   explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
 
@@ -95,11 +97,8 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   views::View* GetWebDialogView();
 
-  CaptivePortalDialogDelegate* captive_portal_delegate_for_test() {
-    return captive_portal_delegate_.get();
-  }
-
  private:
+  class ModalDialogManagerCleanup;
   // ui::WebDialogDelegate:
   // NOTE: This function starts cleanup sequence that would call FinishCleanup
   // and delete this object in the end.
@@ -129,7 +128,16 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   base::WeakPtr<LoginDisplayHostMojo> controller_;
 
-  base::WeakPtr<CaptivePortalDialogDelegate> captive_portal_delegate_;
+  // ChromeWebModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
+
+  // web_modal::WebContentsModalDialogHost:
+  gfx::Size GetMaximumDialogSize() override;
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   // Root widget. It is assumed that widget is placed as a full-screen inside
   // LockContainer.
@@ -158,6 +166,10 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   // Whether the captive portal screen should be shown the next time the Gaia
   // dialog is opened.
   bool should_display_captive_portal_ = false;
+
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observer_list_;
+  std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;
 };
 
 }  // namespace ash
