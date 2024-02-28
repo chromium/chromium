@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PermissionDeviceValidity"
-    enum="PrivateNetworkDeviceValidity" expires_after="M125">
+    enum="PrivateNetworkDeviceValidity" expires_after="M128">
   <owner>lyf@chromium.org</owner>
   <owner>phao@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
@@ -440,7 +440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType"
-    enum="NewAcceptedDeviceType" expires_after="M125">
+    enum="NewAcceptedDeviceType" expires_after="M128">
   <owner>lyf@chromium.org</owner>
   <owner>phao@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PrivateIpInferrable"
-    enum="Boolean" expires_after="2024-03-03">
+    enum="Boolean" expires_after="2024-08-20">
   <owner>titouan@chromium.org</owner>
   <owner>lyf@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
