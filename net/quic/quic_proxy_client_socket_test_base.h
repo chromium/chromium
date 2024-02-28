@@ -116,7 +116,9 @@ class QuicProxyClientSocketTestBase
 
   virtual void InitializeClientSocket() = 0;
 
-  virtual void PopulateConnectRequestIR(spdy::Http2HeaderBlock* block) = 0;
+  virtual void PopulateConnectRequestIR(
+      spdy::Http2HeaderBlock* block,
+      std::optional<const HttpRequestHeaders> extra_headers) = 0;
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructSettingsPacket(
       uint64_t packet_number);
@@ -139,6 +141,7 @@ class QuicProxyClientSocketTestBase
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructConnectRequestPacket(
       uint64_t packet_number,
+      std::optional<const HttpRequestHeaders> extra_headers = std::nullopt,
       RequestPriority request_priority = LOWEST);
 
   std::unique_ptr<quic::QuicReceivedPacket>
@@ -180,7 +183,8 @@ class QuicProxyClientSocketTestBase
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerConnectReplyPacket(
       uint64_t packet_number,
       bool fin,
-      size_t* header_length = nullptr);
+      size_t* header_length = nullptr,
+      std::optional<const HttpRequestHeaders> extra_headers = std::nullopt);
 
   std::unique_ptr<quic::QuicReceivedPacket>
   ConstructServerConnectReplyPacketWithExtraHeaders(
@@ -252,6 +256,9 @@ class QuicProxyClientSocketTestBase
   ProofVerifyDetailsChromium verify_details_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   quic::test::MockConnectionIdGenerator connection_id_generator_;
+
+  ProxyChain proxy_chain_ = ProxyChain::ForIpProtection(
+      {{ProxyServer::SCHEME_QUIC, HostPortPair("proxy.example.com", 443)}});
 
   std::string user_agent_;
   url::SchemeHostPort proxy_endpoint_;

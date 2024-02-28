@@ -132,6 +132,7 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
   EXPECT_CALL(*send_algorithm_, SetFromConfig(_, _)).Times(AnyNumber());
   EXPECT_CALL(*send_algorithm_, OnApplicationLimited(_)).Times(AnyNumber());
   EXPECT_CALL(*send_algorithm_, GetCongestionControlType()).Times(AnyNumber());
+  EXPECT_CALL(*send_algorithm_, PopulateConnectionStats(_)).Times(AnyNumber());
   helper_ = std::make_unique<QuicChromiumConnectionHelper>(&clock_,
                                                            &random_generator_);
   alarm_factory_ =
@@ -165,9 +166,8 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
       &transport_security_state_, &ssl_config_service_,
       base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
       QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                     ProxyChain::Direct(), SessionUsage::kDestination,
-                     SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow,
+                     proxy_chain_, SessionUsage::kDestination, SocketTag(),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false),
       /*require_confirmation=*/false,
       /*migrate_session_early_v2=*/false,
@@ -255,9 +255,10 @@ QuicProxyClientSocketTestBase::ConstructRstPacket(
 std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructConnectRequestPacket(
     uint64_t packet_number,
+    std::optional<const HttpRequestHeaders> extra_headers,
     RequestPriority request_priority) {
   spdy::Http2HeaderBlock block;
-  PopulateConnectRequestIR(&block);
+  PopulateConnectRequestIR(&block, extra_headers);
   return client_maker_.MakeRequestHeadersPacket(
       packet_number, client_data_stream_id1_, !kFin,
       ConvertRequestPriorityToQuicPriority(request_priority), std::move(block),
@@ -287,7 +288,7 @@ QuicProxyClientSocketTestBase::ConstructConnectAuthRequestPacket(
     uint64_t packet_number) {
   RequestPriority request_priority = LOWEST;
   spdy::Http2HeaderBlock block;
-  PopulateConnectRequestIR(&block);
+  PopulateConnectRequestIR(&block, /*extra_headers=*/std::nullopt);
   block["proxy-authorization"] = "Basic Zm9vOmJhcg==";
   return client_maker_.MakeRequestHeadersPacket(
       packet_number, client_data_stream_id1_, !kFin,
@@ -352,9 +353,18 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerConnectReplyPacket(
     uint64_t packet_number,
     bool fin,
-    size_t* header_length) {
+    size_t* header_length,
+    std::optional<const HttpRequestHeaders> extra_headers) {
   spdy::Http2HeaderBlock block;
   block[":status"] = "200";
+
+  if (extra_headers) {
+    HttpRequestHeaders::Iterator it(*extra_headers);
+    while (it.GetNext()) {
+      std::string name = base::ToLowerASCII(it.name());
+      block[name] = it.value();
+    }
+  }
 
   return server_maker_.MakeResponseHeadersPacket(
       packet_number, client_data_stream_id1_, fin, std::move(block),

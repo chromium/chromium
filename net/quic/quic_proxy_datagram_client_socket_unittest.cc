@@ -13,6 +13,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log.h"
@@ -41,6 +42,12 @@ using testing::Return;
 
 namespace net::test {
 
+namespace {
+
+constexpr char kTestHeaderName[] = "Foo";
+
+}  // anonymous namespace
+
 class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
  public:
   void TearDown() override {
@@ -51,26 +58,36 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
 
   void InitializeClientSocket() override {
     sock_ = std::make_unique<QuicProxyDatagramClientSocket>(
-        destination_endpoint_.GetURL(), user_agent_,
-        NetLogWithSource::Make(NetLogSourceType::NONE));
+        destination_endpoint_.GetURL(), proxy_chain_, user_agent_,
+        NetLogWithSource::Make(NetLogSourceType::NONE), proxy_delegate_.get());
     session_->StartReading();
   }
 
-  void PopulateConnectRequestIR(spdy::Http2HeaderBlock* block) override {
+  void PopulateConnectRequestIR(
+      spdy::Http2HeaderBlock* block,
+      std::optional<const HttpRequestHeaders> extra_headers) override {
     DCHECK(destination_endpoint_.scheme() == url::kHttpsScheme);
 
     std::string host = destination_endpoint_.host();
     uint16_t port = destination_endpoint_.port();
 
     (*block)[":method"] = "CONNECT";
-    (*block)[":protocol"] = "connect-udp";
-    (*block)[":scheme"] = destination_endpoint_.scheme();
     // Port is removed if 443 since that is the default port number for HTTPS.
     (*block)[":authority"] =
         port != 443 ? base::StrCat({host, ":", base::NumberToString(port)})
                     : host;
-    (*block)[":path"] = "/";
+    if (extra_headers) {
+      HttpRequestHeaders::Iterator it(*extra_headers);
+      while (it.GetNext()) {
+        std::string name = base::ToLowerASCII(it.name());
+        (*block)[name] = it.value();
+      }
+    }
+    (*block)["user-agent"] = kUserAgent;
     (*block)["capsule-protocol"] = "?1";
+    (*block)[":scheme"] = destination_endpoint_.scheme();
+    (*block)[":path"] = "/";
+    (*block)[":protocol"] = "connect-udp";
   }
 
   void AssertConnectSucceeds() override {
@@ -138,6 +155,77 @@ TEST_P(QuicProxyDatagramClientSocketTest, ConnectSendsCorrectRequest) {
   const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
   ASSERT_TRUE(response != nullptr);
   ASSERT_EQ(200, response->headers->response_code());
+}
+
+TEST_P(QuicProxyDatagramClientSocketTest, ProxyDelegateHeaders) {
+  proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
+
+  // TestProxyDelegate sets the header value to the proxy server URI.
+  HttpRequestHeaders extra_expected_headers;
+  extra_expected_headers.SetHeader(kTestHeaderName,
+                                   ProxyServerToProxyUri(proxy_chain_.Last()));
+
+  // Include a header in the response that the ProxyDelegate should see.
+  const char kResponseHeaderName[] = "bar";
+  const char kResponseHeaderValue[] = "testing";
+  HttpRequestHeaders response_headers;
+  response_headers.SetHeader(kResponseHeaderName, kResponseHeaderValue);
+
+  int packet_number = 1;
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructConnectRequestPacket(packet_number++, extra_expected_headers));
+  mock_quic_data_.AddRead(
+      ASYNC, ConstructServerConnectReplyPacket(
+                 1, !kFin, /*header_length=*/nullptr, response_headers));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 1, 1));
+
+  InitializeSession();
+  InitializeClientSocket();
+
+  ASSERT_FALSE(sock_->IsConnected());
+
+  AssertConnectSucceeds();
+
+  const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
+  ASSERT_TRUE(response != nullptr);
+  ASSERT_EQ(200, response->headers->response_code());
+
+  proxy_delegate_->VerifyOnTunnelHeadersReceived(
+      proxy_chain_, /*chain_index=*/0, kResponseHeaderName,
+      kResponseHeaderValue);
+}
+
+TEST_P(QuicProxyDatagramClientSocketTest, ProxyDelegateFails) {
+  proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->MakeOnTunnelHeadersReceivedFail(
+      ERR_TUNNEL_CONNECTION_FAILED);
+
+  int packet_number = 1;
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+  mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 1, 1));
+
+  InitializeSession();
+  InitializeClientSocket();
+
+  ASSERT_FALSE(sock_->IsConnected());
+
+  AssertConnectFails(ERR_TUNNEL_CONNECTION_FAILED);
 }
 
 TEST_P(QuicProxyDatagramClientSocketTest, ConnectFails) {

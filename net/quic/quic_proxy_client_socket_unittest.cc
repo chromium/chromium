@@ -74,12 +74,22 @@ class QuicProxyClientSocketTest : public QuicProxyClientSocketTestBase {
     session_->StartReading();
   }
 
-  void PopulateConnectRequestIR(spdy::Http2HeaderBlock* block) override {
+  void PopulateConnectRequestIR(
+      spdy::Http2HeaderBlock* block,
+      std::optional<const HttpRequestHeaders> extra_headers) override {
     (*block)[":method"] = "CONNECT";
     (*block)[":authority"] =
         HostPortPair::FromSchemeHostPort(destination_endpoint_).ToString();
     (*block)["user-agent"] = kUserAgent;
+    if (extra_headers) {
+      HttpRequestHeaders::Iterator it(*extra_headers);
+      while (it.GetNext()) {
+        std::string name = base::ToLowerASCII(it.name());
+        (*block)[name] = it.value();
+      }
+    }
   }
+
   void AssertConnectSucceeds() override {
     TestCompletionCallback callback;
     ASSERT_THAT(sock_->Connect(callback.callback()),
@@ -477,7 +487,9 @@ TEST_P(QuicProxyClientSocketTest, SetStreamPriority) {
   // Despite setting the priority to HIGHEST, the requests initial priority of
   // LOWEST is used.
   mock_quic_data_.AddWrite(
-      SYNCHRONOUS, ConstructConnectRequestPacket(packet_number++, LOWEST));
+      SYNCHRONOUS,
+      ConstructConnectRequestPacket(packet_number++,
+                                    /*extra_headers=*/std::nullopt, LOWEST));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
   mock_quic_data_.AddReadPauseForever();
   mock_quic_data_.AddWrite(

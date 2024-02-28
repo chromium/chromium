@@ -9,6 +9,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_delegate.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_source.h"
@@ -19,13 +21,18 @@ namespace net {
 
 QuicProxyDatagramClientSocket::QuicProxyDatagramClientSocket(
     const GURL& url,
+    const ProxyChain& proxy_chain,
     const std::string& user_agent,
-    const NetLogWithSource& source_net_log)
+    const NetLogWithSource& source_net_log,
+    ProxyDelegate* proxy_delegate)
     : url_(url),
+      proxy_chain_(proxy_chain),
+      proxy_delegate_(proxy_delegate),
       user_agent_(user_agent),
       net_log_(NetLogWithSource::Make(
           source_net_log.net_log(),
           NetLogSourceType::QUIC_PROXY_DATAGRAM_CLIENT_SOCKET)) {
+  CHECK_GE(proxy_chain.length(), 1u);
   request_.method = "CONNECT";
   request_.url = url_;
 
@@ -262,44 +269,39 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
   std::string host_and_port =
       url_.has_port() ? base::StrCat({host, ":", base::NumberToString(port)})
                       : host;
+  request_.extra_headers.SetHeader(HttpRequestHeaders::kHost, host_and_port);
 
-  // TODO(crbug.com/326437102):  Add Proxy-Authentication headers.
   HttpRequestHeaders authorization_headers;
-  std::string request_line;
-  spdy::Http2HeaderBlock headers;
-  // Construct a connect-udp request for supplied URL.
-  BuildConnectUDPTunnelRequest(url_, host_and_port, user_agent_,
-                               authorization_headers, &request_line,
-                               &request_.extra_headers, &headers);
+  // TODO(crbug.com/326437102):  Add Proxy-Authentication headers.
+  request_.extra_headers.MergeFrom(authorization_headers);
+
+  if (proxy_delegate_) {
+    HttpRequestHeaders proxy_delegate_headers;
+    proxy_delegate_->OnBeforeTunnelRequest(proxy_chain(), proxy_chain_index(),
+                                           &proxy_delegate_headers);
+    request_.extra_headers.MergeFrom(proxy_delegate_headers);
+  }
+
+  if (!user_agent_.empty()) {
+    request_.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent,
+                                     user_agent_);
+  }
+
+  request_.extra_headers.SetHeader("capsule-protocol", "?1");
+
+  // Generate a fake request line for logging purposes.
+  std::string request_line =
+      base::StringPrintf("CONNECT-UDP %s HTTP/3\r\n", url_.path().c_str());
   NetLogRequestHeaders(net_log_,
                        NetLogEventType::HTTP_TRANSACTION_SEND_TUNNEL_HEADERS,
                        request_line, &request_.extra_headers);
 
+  spdy::Http2HeaderBlock headers;
+  CreateSpdyHeadersFromHttpRequestForExtendedConnect(
+      request_, /*priority=*/std::nullopt, "connect-udp",
+      request_.extra_headers, &headers);
+
   return stream_->WriteHeaders(std::move(headers), false, nullptr);
-}
-
-void QuicProxyDatagramClientSocket::BuildConnectUDPTunnelRequest(
-    const GURL& url,
-    const std::string& host_and_port,
-    const std::string& user_agent,
-    const HttpRequestHeaders& extra_headers,
-    std::string* request_line,
-    HttpRequestHeaders* request_headers,
-    spdy::Http2HeaderBlock* headers) {
-  *request_line =
-      base::StringPrintf("CONNECT-UDP %s HTTP/3\r\n", url.path().c_str());
-  request_headers->SetHeader(HttpRequestHeaders::kHost, host_and_port);
-  if (!user_agent.empty()) {
-    request_headers->SetHeader(HttpRequestHeaders::kUserAgent, user_agent);
-  }
-  request_headers->MergeFrom(extra_headers);
-
-  headers->insert({":method", "CONNECT"});
-  headers->insert({":protocol", "connect-udp"});
-  headers->insert({":scheme", url_.scheme()});
-  headers->insert({":authority", host_and_port});
-  headers->insert({":path", url_.PathForRequest()});
-  headers->insert({"capsule-protocol", "?1"});
 }
 
 int QuicProxyDatagramClientSocket::DoSendRequestComplete(int result) {
@@ -345,6 +347,15 @@ int QuicProxyDatagramClientSocket::DoReadReplyComplete(int result) {
       response_.headers.get());
 
   // TODO(crbug.com/326437102): Add case for Proxy Authentication.
+  if (proxy_delegate_) {
+    int rv = proxy_delegate_->OnTunnelHeadersReceived(
+        proxy_chain(), proxy_chain_index(), *response_.headers);
+    if (rv != OK) {
+      CHECK_NE(ERR_IO_PENDING, rv);
+      return rv;
+    }
+  }
+
   switch (response_.headers->response_code()) {
     case 200:  // OK
       next_state_ = STATE_CONNECT_COMPLETE;

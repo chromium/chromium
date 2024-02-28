@@ -62,6 +62,16 @@ NET_EXPORT void CreateSpdyHeadersFromHttpRequest(
     const HttpRequestHeaders& request_headers,
     spdy::Http2HeaderBlock* headers);
 
+// Create a spdy::Http2HeaderBlock from HttpRequestInfo and
+// HttpRequestHeaders, with the given protocol for extended CONNECT.
+// The request's method must be `CONNECT`.
+NET_EXPORT void CreateSpdyHeadersFromHttpRequestForExtendedConnect(
+    const HttpRequestInfo& info,
+    std::optional<RequestPriority> priority,
+    const std::string& ext_connect_protocol,
+    const HttpRequestHeaders& request_headers,
+    spdy::Http2HeaderBlock* headers);
+
 // Create a spdy::Http2HeaderBlock from HttpRequestInfo and HttpRequestHeaders
 // for a WebSockets over HTTP/2 request.
 NET_EXPORT void CreateSpdyHeadersFromHttpRequestForWebSocket(

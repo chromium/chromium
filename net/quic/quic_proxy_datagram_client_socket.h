@@ -20,6 +20,8 @@
 
 namespace net {
 
+class ProxyDelegate;
+
 // A client socket that uses a QUIC proxy as the transport layer.
 //
 // Given that DatagramClientSocket class contains numerous methods tailored for
@@ -34,9 +36,14 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   // derived from a URI Template containing the variables "target_host"
   // and "target_port". These variables need to be prepopulated by the caller of
   // this constructor. Datagrams will be sent to this target server.
+  //
+  // The `proxy_chain` describes the connection to the proxies over which
+  // this socket carries data, which thus must have at least one proxy.
   QuicProxyDatagramClientSocket(const GURL& url,
+                                const ProxyChain& proxy_chain,
                                 const std::string& user_agent,
-                                const NetLogWithSource& source_net_log);
+                                const NetLogWithSource& source_net_log,
+                                ProxyDelegate* proxy_delegate);
 
   QuicProxyDatagramClientSocket(const QuicProxyDatagramClientSocket&) = delete;
   QuicProxyDatagramClientSocket& operator=(
@@ -50,6 +57,8 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   // address since it is connected over a proxy and the proxy performs the
   // hostname resolution. Instead `proxy_peer_address_` is the peer to which the
   // underlying socket is connected.
+  //
+  // The passed stream is a connection to the last proxy in `proxy_chain`.
   int ConnectViaStream(const IPEndPoint& local_address,
                        const IPEndPoint& proxy_peer_address,
                        std::unique_ptr<QuicChromiumClientStream::Handle> stream,
@@ -98,15 +107,6 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   const HttpResponseInfo* GetConnectResponseInfo() const;
   bool IsConnected() const;
 
- protected:
-  void BuildConnectUDPTunnelRequest(const GURL& url,
-                                    const std::string& host_and_port,
-                                    const std::string& user_agent,
-                                    const HttpRequestHeaders& extra_headers,
-                                    std::string* request_line,
-                                    HttpRequestHeaders* request_headers,
-                                    spdy::Http2HeaderBlock* headers);
-
  private:
   enum State {
     STATE_DISCONNECTED,
@@ -129,6 +129,13 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   int DoSendRequestComplete(int result);
   int DoReadReply();
   int DoReadReplyComplete(int result);
+
+  // ProxyDelegate operates in terms of a full proxy chain and an
+  // index into that chain identifying the "current" proxy. Emulate
+  // this by simply using the current chain and indexing the last proxy in
+  // that chain.
+  const ProxyChain& proxy_chain() { return proxy_chain_; }
+  int proxy_chain_index() { return proxy_chain_.length() - 1; }
 
   State next_state_ = STATE_DISCONNECTED;
 
@@ -153,6 +160,13 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   // This URI Template includes variables for "target_host" and "target_port",
   // which have been replaced with their actual values to form the complete URL.
   GURL url_;
+
+  // The proxy chain this socket represents: `stream_` is a connection to the
+  // last proxy in this chain.
+  const ProxyChain proxy_chain_;
+
+  // This delegate must outlive this proxy client socket.
+  const raw_ptr<ProxyDelegate> proxy_delegate_;
 
   std::string user_agent_;
 

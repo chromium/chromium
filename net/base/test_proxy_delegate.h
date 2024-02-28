@@ -55,6 +55,10 @@ class TestProxyDelegate : public ProxyDelegate {
     return on_tunnel_headers_received_headers_.size();
   }
 
+  // Make subsequent calls to `OnTunnelHeadersReceived()` fail with the given
+  // value.
+  void MakeOnTunnelHeadersReceivedFail(Error result);
+
   // Checks whether the provided proxy chain, chain index, response header name,
   // and response header value were passed to a given
   // `OnTunnelHeadersReceived()` call.
@@ -87,6 +91,7 @@ class TestProxyDelegate : public ProxyDelegate {
 
   size_t on_before_tunnel_request_call_count_ = 0;
 
+  Error on_tunnel_headers_received_result_ = OK;
   std::vector<ProxyChain> on_tunnel_headers_received_proxy_chains_;
   std::vector<size_t> on_tunnel_headers_received_chain_indices_;
   std::vector<scoped_refptr<HttpResponseHeaders>>
