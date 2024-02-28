@@ -6907,3 +6907,6 @@ crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/exter
 # Gardener 2023-02-28 
 crbug.com/327434497 [ Mac13 ] wpt_internal/scheduler/task-signal-any-memory-abort-1.any.html [ Failure Pass ]
 crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
+
+# Flaky test on all platforms
+crbug.com/41484244 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-img.tentative.https.sub.html [ Failure Pass Timeout ]
