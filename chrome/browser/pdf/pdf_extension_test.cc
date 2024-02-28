@@ -1020,14 +1020,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ExtensionlessPDFLocalFileLoads) {
 
 // This test ensures that link permissions are enforced properly in PDFs.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LinkPermissions) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_view);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
   // chrome://favicon links should be allowed for PDFs, while chrome://settings
   // links should not.
@@ -1036,8 +1031,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LinkPermissions) {
   GURL invalid_link_url(chrome::kChromeUISettingsURL);
 
   GURL unfiltered_valid_link_url(valid_link_url);
-  content::RenderProcessHost* rph =
-      guest_view->GetGuestMainFrame()->GetProcess();
+  content::RenderProcessHost* rph = extension_host->GetProcess();
   rph->FilterURL(true, &valid_link_url);
   rph->FilterURL(true, &invalid_link_url);
 
@@ -1125,14 +1119,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
 #define MAYBE_PdfZoomWithoutBubble PdfZoomWithoutBubble
 #endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_view);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
   WebContents* web_contents = GetActiveWebContents();
 
   // Here we look at the presets to find the next zoom level above 0. Ideally
@@ -1160,7 +1149,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 #endif
-  ASSERT_TRUE(content::ExecJs(guest_view->GetGuestMainFrame(),
+  ASSERT_TRUE(content::ExecJs(extension_host,
                               "while (viewer.viewport.getZoom() < 1) {"
                               "  viewer.viewport.zoomIn();"
                               "}"
@@ -1485,14 +1474,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
 // Test that even if a different tab is selected when a navigation occurs,
 // the correct tab still gets navigated (see crbug.com/672563).
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, NavigationOnCorrectTab) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
   WebContents* web_contents = GetActiveWebContents();
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1505,7 +1489,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, NavigationOnCorrectTab) {
   content::TestNavigationObserver active_navigation_observer(
       active_web_contents);
   content::TestNavigationObserver navigation_observer(web_contents);
-  ASSERT_TRUE(content::ExecJs(guest->GetGuestMainFrame(),
+  ASSERT_TRUE(content::ExecJs(extension_host,
                               "viewer.navigator_.navigate("
                               "    'www.example.com',"
                               "    WindowOpenDisposition.CURRENT_TAB);"));
@@ -2533,32 +2517,25 @@ void EnsureCustomPinchZoomInvoked(content::RenderFrameHost* guest_mainframe,
 
 // Ensure that touchpad pinch events are handled by the PDF viewer.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TouchpadPinchInvokesCustomZoom) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
-
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-  content::WaitForHitTestData(guest_mainframe);
+  content::WaitForHitTestData(extension_host);
 
   base::OnceClosure send_pinch = base::BindOnce(
-      [](content::RenderFrameHost* guest_mainframe) {
-        const gfx::Rect guest_rect =
-            guest_mainframe->GetView()->GetViewBounds();
-        const gfx::Point mouse_position(guest_rect.width() / 2,
-                                        guest_rect.height() / 2);
+      [](content::RenderFrameHost* extension_host) {
+        const gfx::Rect extension_host_rect =
+            extension_host->GetView()->GetViewBounds();
+        const gfx::Point mouse_position(extension_host_rect.width() / 2,
+                                        extension_host_rect.height() / 2);
         content::SimulateGesturePinchSequence(
-            guest_mainframe->GetRenderWidgetHost(), mouse_position, 1.23,
+            extension_host->GetRenderWidgetHost(), mouse_position, 1.23,
             blink::WebGestureDevice::kTouchpad);
       },
-      guest_mainframe);
+      extension_host);
 
-  EnsureCustomPinchZoomInvoked(guest_mainframe, GetActiveWebContents(),
+  EnsureCustomPinchZoomInvoked(extension_host, GetActiveWebContents(),
                                std::move(send_pinch));
 }
 
@@ -2570,27 +2547,25 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-  content::WaitForHitTestData(guest_mainframe);
+  content::WaitForHitTestData(extension_host);
 
   base::OnceClosure send_ctrl_wheel = base::BindOnce(
-      [](content::RenderFrameHost* guest_mainframe) {
-        const gfx::Rect guest_rect =
-            guest_mainframe->GetView()->GetViewBounds();
-        const gfx::Point mouse_position(guest_rect.width() / 2,
-                                        guest_rect.height() / 2);
+      [](content::RenderFrameHost* extension_host) {
+        const gfx::Rect extension_host_rect =
+            extension_host->GetView()->GetViewBounds();
+        const gfx::Point mouse_position(extension_host_rect.width() / 2,
+                                        extension_host_rect.height() / 2);
         content::SimulateMouseWheelCtrlZoomEvent(
-            guest_mainframe->GetRenderWidgetHost(), mouse_position, true,
+            extension_host->GetRenderWidgetHost(), mouse_position, true,
             blink::WebMouseWheelEvent::kPhaseBegan);
       },
-      guest_mainframe);
+      extension_host);
 
-  EnsureCustomPinchZoomInvoked(guest_mainframe, GetActiveWebContents(),
+  EnsureCustomPinchZoomInvoked(extension_host, GetActiveWebContents(),
                                std::move(send_ctrl_wheel));
 }
 
@@ -2604,33 +2579,26 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
 #endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                        MAYBE_TouchscreenPinchInvokesCustomZoom) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
-
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-  content::WaitForHitTestData(guest_mainframe);
+  content::WaitForHitTestData(extension_host);
 
   base::OnceClosure send_touchscreen_pinch = base::BindOnce(
-      [](WebContents* web_contents, content::RenderFrameHost* guest_mainframe) {
-        const gfx::Rect guest_rect =
-            guest_mainframe->GetView()->GetViewBounds();
-        const gfx::PointF anchor_position(guest_rect.width() / 2,
-                                          guest_rect.height() / 2);
+      [](WebContents* web_contents, content::RenderFrameHost* extension_host) {
+        const gfx::Rect extension_host_rect =
+            extension_host->GetView()->GetViewBounds();
+        const gfx::PointF anchor_position(extension_host_rect.width() / 2,
+                                          extension_host_rect.height() / 2);
         base::RunLoop run_loop;
         content::SimulateTouchscreenPinch(web_contents, anchor_position, 1.2f,
                                           run_loop.QuitClosure());
         run_loop.Run();
       },
-      GetActiveWebContents(), guest_mainframe);
+      GetActiveWebContents(), extension_host);
 
-  EnsureCustomPinchZoomInvoked(guest_mainframe, GetActiveWebContents(),
+  EnsureCustomPinchZoomInvoked(extension_host, GetActiveWebContents(),
                                std::move(send_touchscreen_pinch));
 }
 
@@ -2750,18 +2718,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BackgroundColor) {
   // ensures that the PDF plugin has loaded and the right background color is
   // beign used.
   WaitForPluginServiceToLoad();
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
   const std::string script =
       "window.getComputedStyle(document.body, null)."
       "getPropertyValue('background-color')";
   std::string outer =
       content::EvalJs(GetActiveWebContents(), script).ExtractString();
-  std::string inner = content::EvalJs(guest_mainframe, script).ExtractString();
+  std::string inner = content::EvalJs(extension_host, script).ExtractString();
   EXPECT_EQ(inner, outer);
 }
 
@@ -2793,12 +2759,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
-
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
   // Verify that current focus state is document element.
   const std::string script =
@@ -2806,7 +2769,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DefaultFocusForNonEmbeddedPDF) {
       "document.body;"
       "is_plugin_focused;";
 
-  ASSERT_EQ(true, content::EvalJs(guest_mainframe, script));
+  ASSERT_EQ(true, content::EvalJs(extension_host, script));
 }
 
 // A helper for waiting for the first request for |url_to_intercept|.
@@ -2985,20 +2948,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, Metrics) {
 
 // Flaky. See https://crbug.com/1101514.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest);
-
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
 
   // Set focus on last toolbar element (zoom-out-button).
-  ASSERT_TRUE(content::ExecJs(guest_mainframe,
+  ASSERT_TRUE(content::ExecJs(extension_host,
                               R"(viewer.shadowRoot.querySelector('#zoomToolbar')
          .$['zoom-out-button']
          .$$('cr-icon-button')
@@ -3018,11 +2973,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
       window.domAutomationController.send('zoom-out-button');
     });
   )";
-  ASSERT_TRUE(content::ExecJs(guest_mainframe, kScript));
+  ASSERT_TRUE(content::ExecJs(extension_host, kScript));
 
   // Helper to simulate a tab press and wait for a focus message.
-  auto press_tab_and_wait_for_message = [guest_mainframe, this](bool reverse) {
-    content::DOMMessageQueue msg_queue(guest_mainframe);
+  auto press_tab_and_wait_for_message = [extension_host, this](bool reverse) {
+    content::DOMMessageQueue msg_queue(extension_host);
     std::string reply;
     SimulateKeyPress(GetActiveWebContents(), ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, /*shift=*/reverse, false, false);
@@ -3186,25 +3141,17 @@ class PDFExtensionSubmitFormTest : public PDFExtensionTest {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionSubmitFormTest, SubmitForm) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/submit_form.pdf"));
-  ASSERT_TRUE(guest);
-
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
+  ASSERT_TRUE(extension_host);
 
   std::unique_ptr<base::RunLoop> run_loop = CreateFormSubmissionRunLoop();
 
   // Click on the "Submit Form" button.
   SimulateMouseClickAt(
-      guest, blink::WebInputEvent::kNoModifiers,
-      blink::WebMouseEvent::Button::kLeft,
-      ConvertPageCoordToScreenCoord(guest_mainframe, {210, 210}));
+      extension_host, GetEmbedderWebContents(),
+      blink::WebInputEvent::kNoModifiers, blink::WebMouseEvent::Button::kLeft,
+      ConvertPageCoordToScreenCoord(extension_host, {210, 210}));
 
   run_loop->Run();
 }
