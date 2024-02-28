@@ -184,3 +184,9 @@ fuzzer_test("transfer_cache_fuzzer") {
     "//components/viz/test:test_support",
   ]
 }
+
+fuzzer_test("paint_op_reader_security_constrainted_fuzzer") {
+  sources = [ "paint_op_reader_fuzzer.cc" ]
+
+  deps = [ "//cc/paint" ]
+}
