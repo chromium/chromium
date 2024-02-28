@@ -146,6 +146,12 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   NOTREACHED_NORETURN();
 }
 
+bool HanKerning::MayApply(StringView text) {
+  return !text.Is8Bit() && !text.IsAllSpecialCharacters<[](UChar ch) {
+    return !Character::MaybeHanKerningOpenOrCloseFast(ch);
+  }>();
+}
+
 inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
   return type == CharType::kOpen &&
          (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
@@ -169,6 +175,10 @@ void HanKerning::Compute(const String& text,
                          Options options,
                          FontFeatures* features) {
   DCHECK(!features_);
+  DCHECK_GT(end, start);
+  if (!MayApply(StringView(text, start, end - start))) {
+    return;
+  }
   const LayoutLocale& locale = font_description.LocaleOrDefault();
   const FontData& font_data =
       font.HanKerningData(locale, options.is_horizontal);

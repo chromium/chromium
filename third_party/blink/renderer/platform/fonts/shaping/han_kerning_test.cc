@@ -15,8 +15,6 @@
 
 namespace blink {
 
-namespace {
-
 Font CreateNotoCjk() {
   return blink::test::CreateTestFont(
       AtomicString("Noto Sans CJK"),
@@ -29,6 +27,34 @@ class HanKerningTest : public testing::Test, ScopedCSSTextSpacingTrimForTest {
  public:
   explicit HanKerningTest() : ScopedCSSTextSpacingTrimForTest(true) {}
 };
+
+TEST_F(HanKerningTest, MayApply) {
+  Font noto_cjk = CreateNotoCjk();
+  const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
+  EXPECT_TRUE(noto_cjk_data);
+  scoped_refptr<LayoutLocale> ja =
+      LayoutLocale::CreateForTesting(AtomicString("ja"));
+  HanKerning::FontData ja_data(*noto_cjk_data, *ja, true);
+
+  for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
+    StringBuilder builder;
+    builder.Append(ch);
+    String text = builder.ToString();
+
+    for (wtf_size_t i = 0; i < text.length(); ++i) {
+      const HanKerning::CharType type =
+          HanKerning::GetCharType(text[i], ja_data);
+      if (type == HanKerning::CharType::kOpen ||
+          type == HanKerning::CharType::kOpenQuote ||
+          type == HanKerning::CharType::kClose ||
+          type == HanKerning::CharType::kCloseQuote) {
+        EXPECT_EQ(HanKerning::MayApply(text), true)
+            << String::Format("U+%06X", ch);
+        break;
+      }
+    }
+  }
+}
 
 TEST_F(HanKerningTest, FontDataHorizontal) {
   Font noto_cjk = CreateNotoCjk();
@@ -164,7 +190,5 @@ TEST_F(HanKerningTest, ResetFeatures) {
   }
   EXPECT_EQ(features.size(), 1u);
 }
-
-}  // namespace
 
 }  // namespace blink

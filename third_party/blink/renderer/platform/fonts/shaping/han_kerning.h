@@ -107,7 +107,11 @@ class PLATFORM_EXPORT HanKerning {
   };
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HanKerningTest, MayApply);
+
   static CharType GetCharType(UChar ch, const FontData& font_data);
+
+  static bool MayApply(StringView text);
 
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);

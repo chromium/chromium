@@ -120,10 +120,18 @@ class PLATFORM_EXPORT Character {
   // It depends on fonts, so it may not be `kOpen` or `kClose` even when this
   // function returns `true`. See `HanKerning::GetCharType`.
   static bool MaybeHanKerningOpen(UChar32 ch) {
-    return MaybeHanKerningOpenOrClose(ch) && MaybeHanKerningOpenSlow(ch);
+    return MaybeHanKerningOpenOrCloseFast(ch) && MaybeHanKerningOpenSlow(ch);
   }
   static bool MaybeHanKerningClose(UChar32 ch) {
-    return MaybeHanKerningOpenOrClose(ch) && MaybeHanKerningCloseSlow(ch);
+    return MaybeHanKerningOpenOrCloseFast(ch) && MaybeHanKerningCloseSlow(ch);
+  }
+  // Check if the character may be `kOpen` or `kClose` only by ranges, without
+  // getting the Unicode property. Faster than `MaybeHanKerningOpen` and
+  // `MaybeHanKerningClose` but has more cases where it returns `true` for other
+  // characters.
+  static bool MaybeHanKerningOpenOrCloseFast(UChar32 character) {
+    return IsInRange(character, kLeftSingleQuotationMarkCharacter, 0x301F) ||
+           IsInRange(character, 0xFF08, 0xFF60);
   }
 
   // Collapsible white space characters defined in CSS:
@@ -239,10 +247,6 @@ class PLATFORM_EXPORT Character {
 
   static bool IsCJKIdeographOrSymbolSlow(UChar32);
   static bool IsHangulSlow(UChar32);
-  static bool MaybeHanKerningOpenOrClose(UChar32 character) {
-    return IsInRange(character, kLeftSingleQuotationMarkCharacter, 0x301F) ||
-           IsInRange(character, 0xFF08, 0xFF60);
-  }
   static bool MaybeHanKerningOpenSlow(UChar32);
   static bool MaybeHanKerningCloseSlow(UChar32);
 };

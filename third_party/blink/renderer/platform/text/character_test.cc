@@ -41,7 +41,7 @@ TEST(CharacterTest, Derived) {
     EXPECT_EQ(Character::IsEastAsianWidthFullwidth(ch),
               eaw == UEastAsianWidth::U_EA_FULLWIDTH);
 
-    if (!Character::MaybeHanKerningOpenOrClose(ch)) {
+    if (!Character::MaybeHanKerningOpenOrCloseFast(ch)) {
       DCHECK(!Character::MaybeHanKerningOpenSlow(ch));
       DCHECK(!Character::MaybeHanKerningCloseSlow(ch));
     }
