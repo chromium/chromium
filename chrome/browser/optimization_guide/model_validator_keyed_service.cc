@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -25,10 +26,6 @@
 #endif  // BUILD_WITH_TFLITE_LIB
 
 namespace {
-
-// Delay at the startup before performing the model execution validation.
-constexpr base::TimeDelta kOnDeviceModelExecutionValidationStartupDelay =
-    base::Seconds(5);
 
 std::unique_ptr<optimization_guide::proto::ComposeRequest>
 ParseComposeRequestFromFile(base::FilePath path) {
@@ -152,7 +149,7 @@ void ModelValidatorKeyedService::StartOnDeviceModelExecutionValidation(
       base::BindOnce(
           &ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation,
           weak_ptr_factory_.GetWeakPtr(), std::move(request)),
-      kOnDeviceModelExecutionValidationStartupDelay);
+      features::GetOnDeviceModelExecutionValidationStartupDelay());
 }
 
 void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(

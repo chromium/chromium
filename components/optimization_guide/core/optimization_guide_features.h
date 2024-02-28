@@ -464,6 +464,11 @@ bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelIdleTimeout();
 
+// Returns the delay before starting the on device model inference when
+// running validation.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay();
+
 // These params determine how context processing works for the on device model.
 // The model will process at least min tokens before responding. While waiting
 // for the ExecuteModel() call, up to max tokens will be processed in chunks of

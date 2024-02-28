@@ -866,6 +866,15 @@ base::TimeDelta GetOnDeviceModelIdleTimeout() {
   return kOnDeviceModelServiceIdleTimeout.Get();
 }
 
+base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelExecutionValidationStartupDelay{
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_model_execution_validation_startup_delay",
+          base::Seconds(5)};
+  return kOnDeviceModelExecutionValidationStartupDelay.Get();
+}
+
 int GetOnDeviceModelMinTokensForContext() {
   static const base::FeatureParam<int> kOnDeviceModelMinTokensForContext{
       &kOptimizationGuideOnDeviceModel,
