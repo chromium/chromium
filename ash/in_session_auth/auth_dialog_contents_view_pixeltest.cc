@@ -41,8 +41,11 @@ class AuthDialogContentsViewPixelTest
       public testing::WithParamInterface<bool> {
  public:
   AuthDialogContentsViewPixelTest() {
-    scoped_features_.InitWithFeatureState(chromeos::features::kJelly,
-                                          GetParam());
+    scoped_features_.InitWithFeatureStates(
+        {{chromeos::features::kJelly, GetParam()},
+         {::features::kChromeRefresh2023, true},
+         {::features::kChromeRefreshSecondary2023, true},
+         {::features::kChromeRefresh2023NTB, true}});
   }
 
   AuthDialogContentsViewPixelTest(const AuthDialogContentsViewPixelTest&) =
@@ -169,13 +172,13 @@ TEST_P(AuthDialogContentsViewPixelTest, PasswordAndThemeChange) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "password", /*revision_number=*/5, widget.get()));
+      "password", /*revision_number=*/6, widget.get()));
 
   SwitchToLightMode();
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "password_light", /*revision_number=*/5, widget.get()));
+      "password_light", /*revision_number=*/6, widget.get()));
 }
 
 TEST_P(AuthDialogContentsViewPixelTest, PinAndThemeChange) {
@@ -185,13 +188,13 @@ TEST_P(AuthDialogContentsViewPixelTest, PinAndThemeChange) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin", /*revision_number=*/5, widget.get()));
+      "pin", /*revision_number=*/6, widget.get()));
 
   SwitchToLightMode();
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin_light", /*revision_number=*/5, widget.get()));
+      "pin_light", /*revision_number=*/6, widget.get()));
 }
 
 TEST_P(AuthDialogContentsViewPixelTest, FixedPinAndThemeChange) {
@@ -202,13 +205,13 @@ TEST_P(AuthDialogContentsViewPixelTest, FixedPinAndThemeChange) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin6", /*revision_number=*/3, widget.get()));
+      "pin6", /*revision_number=*/5, widget.get()));
 
   SwitchToLightMode();
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin6_light", /*revision_number=*/3, widget.get()));
+      "pin6_light", /*revision_number=*/5, widget.get()));
 }
 
 TEST_P(AuthDialogContentsViewPixelTest, FingerprintAndThemeChange) {
@@ -219,13 +222,13 @@ TEST_P(AuthDialogContentsViewPixelTest, FingerprintAndThemeChange) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "fingerprint", /*revision_number=*/3, widget.get()));
+      "fingerprint", /*revision_number=*/4, widget.get()));
 
   SwitchToLightMode();
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "fingerprint_light", /*revision_number=*/3, widget.get()));
+      "fingerprint_light", /*revision_number=*/4, widget.get()));
 }
 
 TEST_P(AuthDialogContentsViewPixelTest,
@@ -239,7 +242,7 @@ TEST_P(AuthDialogContentsViewPixelTest,
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin6_fingerprint", /*revision_number=*/4, widget.get()));
+      "pin6_fingerprint", /*revision_number=*/5, widget.get()));
 
   AuthDialogContentsView::TestApi dialog_api(
       static_cast<AuthDialogContentsView*>(widget->GetContentsView()));
@@ -249,7 +252,7 @@ TEST_P(AuthDialogContentsViewPixelTest,
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin6_fingerprint_fp_disabled_attempts", /*revision_number=*/4,
+      "pin6_fingerprint_fp_disabled_attempts", /*revision_number=*/5,
       widget.get()));
 }
 
@@ -262,7 +265,7 @@ TEST_P(AuthDialogContentsViewPixelTest, PinAndFingerprintWithPinFail) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin_fingerprint", /*revision_number=*/5, widget.get()));
+      "pin_fingerprint", /*revision_number=*/6, widget.get()));
 
   AuthDialogContentsView::TestApi dialog_api(
       static_cast<AuthDialogContentsView*>(widget->GetContentsView()));
@@ -271,7 +274,7 @@ TEST_P(AuthDialogContentsViewPixelTest, PinAndFingerprintWithPinFail) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "pin_fingerprint_pin_fail", /*revision_number=*/5, widget.get()));
+      "pin_fingerprint_pin_fail", /*revision_number=*/6, widget.get()));
 }
 
 TEST_P(AuthDialogContentsViewPixelTest,
@@ -284,7 +287,7 @@ TEST_P(AuthDialogContentsViewPixelTest,
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "password_fingerprint", /*revision_number=*/5, widget.get()));
+      "password_fingerprint", /*revision_number=*/6, widget.get()));
 
   AuthDialogContentsView::TestApi dialog_api(
       static_cast<AuthDialogContentsView*>(widget->GetContentsView()));
@@ -293,7 +296,7 @@ TEST_P(AuthDialogContentsViewPixelTest,
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "password_fingerprint_password_fail", /*revision_number=*/5,
+      "password_fingerprint_password_fail", /*revision_number=*/6,
       widget.get()));
 }
 
@@ -307,13 +310,13 @@ TEST_P(AuthDialogContentsViewPixelTest, AllFactorAndThemeChange) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "fingerprint", /*revision_number=*/5, widget.get()));
+      "fingerprint", /*revision_number=*/6, widget.get()));
 
   SwitchToLightMode();
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "fingerprint_light", /*revision_number=*/5, widget.get()));
+      "fingerprint_light", /*revision_number=*/6, widget.get()));
 }
 
 }  // namespace
