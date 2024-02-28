@@ -4,7 +4,7 @@ desc: |-
 
             If this policy is left not set blockable mixed content will be blocked and optionally blockable mixed content will be upgraded, but users will be allowed to set exceptions to allow it for specific sites.
 
-            For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+            For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 example_value:
 - https://www.example.com
 - '[*.]example.edu'
