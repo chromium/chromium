@@ -222,6 +222,10 @@ void FakePasswordStoreBackend::OnSyncServiceInitialized(
   NOTIMPLEMENTED();
 }
 
+void FakePasswordStoreBackend::RecordAddLoginAsyncCalledFromTheStore() {}
+
+void FakePasswordStoreBackend::RecordUpdateLoginAsyncCalledFromTheStore() {}
+
 base::WeakPtr<PasswordStoreBackend> FakePasswordStoreBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

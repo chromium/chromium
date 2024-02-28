@@ -328,6 +328,16 @@ void LegacyPasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     migrator_->OnSyncServiceInitialized(sync_service);
 }
 
+void LegacyPasswordStoreBackendMigrationDecorator::
+    RecordAddLoginAsyncCalledFromTheStore() {
+  active_backend_->RecordAddLoginAsyncCalledFromTheStore();
+}
+
+void LegacyPasswordStoreBackendMigrationDecorator::
+    RecordUpdateLoginAsyncCalledFromTheStore() {
+  active_backend_->RecordUpdateLoginAsyncCalledFromTheStore();
+}
+
 base::WeakPtr<PasswordStoreBackend>
 LegacyPasswordStoreBackendMigrationDecorator::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
