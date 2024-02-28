@@ -238,6 +238,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/reauthentication:reauthentication",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",

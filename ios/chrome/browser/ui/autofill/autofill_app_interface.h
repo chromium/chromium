@@ -122,6 +122,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Configs the mandatory reauth preference.
 + (void)setMandatoryReauthEnabled:(BOOL)enabled;
 
+// Returns true if the Keyboard Accessory Upgrade feature is enabled.
++ (BOOL)isKeyboardAccessoryUpgradeEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_APP_INTERFACE_H_

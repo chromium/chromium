@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
@@ -553,6 +554,10 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
   personalDataManager->SetPaymentMethodsMandatoryReauthEnabled(enabled);
+}
+
++ (BOOL)isKeyboardAccessoryUpgradeEnabled {
+  return IsKeyboardAccessoryUpgradeEnabled();
 }
 
 #pragma mark - Private
