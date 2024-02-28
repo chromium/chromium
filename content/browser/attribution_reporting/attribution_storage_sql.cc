@@ -524,11 +524,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const base::Time source_time = base::Time::Now();
 
-  if (StoreSourceResult result = CheckDestinationRateLimit(source, source_time);
-      !absl::holds_alternative<StoreSourceResult::Success>(result.result())) {
-    return result;
-  }
-
   // Only delete expired impressions periodically to avoid excessive DB
   // operations.
   const base::TimeDelta delete_frequency =
@@ -573,6 +568,11 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           delegate_->GetMaxDestinationsPerSourceSiteReportingSite());
     case RateLimitResult::kError:
       return StoreSourceResult::InternalError();
+  }
+
+  if (StoreSourceResult result = CheckDestinationRateLimit(source, source_time);
+      !absl::holds_alternative<StoreSourceResult::Success>(result.result())) {
+    return result;
   }
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
