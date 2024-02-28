@@ -351,8 +351,8 @@ TEST_F(TransformStreamTest, ThrowFromTransform) {
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
-  ScriptPromiseTester write_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester write_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
   write_tester.WaitUntilSettled();
   EXPECT_TRUE(write_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, write_tester.Value(), kMessage));
@@ -390,8 +390,8 @@ TEST_F(TransformStreamTest, ThrowFromFlush) {
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
-  ScriptPromiseTester write_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester write_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
   write_tester.WaitUntilSettled();
   EXPECT_TRUE(write_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, write_tester.Value(), kMessage));
@@ -459,8 +459,8 @@ TEST_F(TransformStreamTest, WaitInTransform) {
       ->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION)
       ->read(script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromiseTester write_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester write_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
 
   // Give Transform() the opportunity to be called.
   scope.PerformMicrotaskCheckpoint();
@@ -517,8 +517,8 @@ TEST_F(TransformStreamTest, WaitInFlush) {
       ->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION)
       ->read(script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromiseTester close_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester close_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
 
   // Give Flush() the opportunity to be called.
   scope.PerformMicrotaskCheckpoint();

@@ -191,12 +191,13 @@ class LockManager::LockRequestImpl final
     v8::TryCatch try_catch(script_state->GetIsolate());
     v8::Maybe<ScriptValue> result = callback->Invoke(nullptr, lock);
     if (try_catch.HasCaught()) {
-      lock->HoldUntil(
-          ScriptPromise::Reject(script_state, try_catch.Exception()),
-          resolver_);
-    } else if (!result.IsNothing()) {
-      lock->HoldUntil(ScriptPromise::Cast(script_state, result.FromJust()),
+      lock->HoldUntil(ScriptPromiseTyped<IDLAny>::Reject(script_state,
+                                                         try_catch.Exception()),
                       resolver_);
+    } else if (!result.IsNothing()) {
+      lock->HoldUntil(
+          ToResolvedPromise<IDLAny>(script_state, result.FromJust()),
+          resolver_);
     }
   }
 

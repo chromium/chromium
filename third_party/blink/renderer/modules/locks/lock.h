@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/locks/lock_manager.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -19,7 +20,6 @@
 namespace blink {
 
 class LockManager;
-class ScriptPromise;
 class ScriptState;
 
 class Lock final : public ScriptWrappable,
@@ -46,7 +46,8 @@ class Lock final : public ScriptWrappable,
 
   // The lock is held until the passed promise resolves. When it is released,
   // the passed resolver is invoked with the promise's result.
-  void HoldUntil(ScriptPromise, ScriptPromiseResolverTyped<IDLAny>*);
+  void HoldUntil(ScriptPromiseTyped<IDLAny>,
+                 ScriptPromiseResolverTyped<IDLAny>*);
 
   static mojom::blink::LockMode StringToMode(const String&);
   static String ModeToString(mojom::blink::LockMode);

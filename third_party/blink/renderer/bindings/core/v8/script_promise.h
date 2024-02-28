@@ -114,7 +114,6 @@ class CORE_EXPORT ScriptPromise {
   // if |value| is not a Promise object, returns a Promise object
   // resolved with |value|.
   // Returns |value| itself if it is a Promise.
-  static ScriptPromise Cast(ScriptState*, const ScriptValue& /*value*/);
   static ScriptPromise Cast(ScriptState*, v8::Local<v8::Value> /*value*/);
 
   // Constructs and returns a ScriptPromise resolved with undefined.

@@ -276,11 +276,6 @@ ScriptPromise ScriptPromise::CastUndefined(ScriptState* script_state) {
 }
 
 ScriptPromise ScriptPromise::Cast(ScriptState* script_state,
-                                  const ScriptValue& value) {
-  return ScriptPromise::Cast(script_state, value.V8Value());
-}
-
-ScriptPromise ScriptPromise::Cast(ScriptState* script_state,
                                   v8::Local<v8::Value> value) {
   if (value.IsEmpty())
     return ScriptPromise();
