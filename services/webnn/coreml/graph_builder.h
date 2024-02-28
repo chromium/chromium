@@ -10,11 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "third_party/coremltools/mlmodel/format/MIL.pb.h"
 #include "third_party/coremltools/mlmodel/format/Model.pb.h"
-
-namespace mojo_base {
-class BigBuffer;
-}
 
 namespace webnn::coreml {
 
@@ -51,7 +48,8 @@ class GraphBuilder {
     ~OperandInfo();
     OperandInfo(std::string name,
                 std::vector<uint32_t> dimensions,
-                webnn::mojom::Operand_DataType data_type);
+                webnn::mojom::Operand_DataType data_type,
+                CoreML::Specification::MILSpec::DataType mil_data_type);
     OperandInfo(OperandInfo&);
     OperandInfo(OperandInfo&&);
 
@@ -59,6 +57,7 @@ class GraphBuilder {
     std::string coreml_name;
     std::vector<uint32_t> dimensions;
     webnn::mojom::Operand_DataType data_type;
+    CoreML::Specification::MILSpec::DataType mil_data_type;
   };
 
   const OperandInfo* FindInputOperandInfo(const std::string& input_name) const;
@@ -69,19 +68,18 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, std::string> BuildCoreMLModel(
       const mojom::GraphInfo& graph_info);
 
-  [[nodiscard]] base::expected<void, std::string> CreateInputNode(
+  // Add input in Model.description and in Program's main function inputs.
+  [[nodiscard]] base::expected<void, std::string> AddInput(
       const IdToOperandMap& id_to_operand_map,
-      uint64_t input_id);
-  [[nodiscard]] base::expected<void, std::string> CreateOperatorNodeForBinary(
+      uint64_t input_id,
+      CoreML::Specification::MILSpec::Function& main_function);
+  [[nodiscard]] base::expected<void, std::string> AddOperationForBinary(
       const IdToOperandMap& id_to_operand_map,
-      const mojom::ElementWiseBinary& operation);
-  [[nodiscard]] base::expected<void, std::string> CreateOutputNode(
+      const mojom::ElementWiseBinary& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, std::string> AddOutput(
       const IdToOperandMap& id_to_operand_map,
       uint64_t output_id);
-  [[nodiscard]] base::expected<void, std::string> CreateConstantLayer(
-      const IdToOperandMap& id_to_operand_map,
-      const mojo_base::BigBuffer& buffer,
-      uint64_t constant_id);
 
   // Helpers
   [[nodiscard]] const OperandInfo* GetOperandInfo(uint64_t operand_id) const;
@@ -90,21 +88,19 @@ class GraphBuilder {
       const webnn::mojom::Operand& operand,
       ::CoreML::Specification::FeatureDescription* feature_description);
 
-  void AddInputToNeuralNetworkLayer(
-      uint64_t input_id,
-      ::CoreML::Specification::NeuralNetworkLayer* neural_network_layer);
-  void AddOutputToNeuralNetworkLayer(
-      const IdToOperandMap& id_to_operand_map,
-      uint64_t output_id,
-      ::CoreML::Specification::NeuralNetworkLayer* neural_network_layer);
+  // MILSpec::Program's Function, Block, Operation's inputs/outputs could be
+  // defined as NamedValueType.
+  void PopulateNamedValueType(
+      uint64_t operand_id,
+      const webnn::mojom::Operand& operand,
+      CoreML::Specification::MILSpec::NamedValueType* value_type);
 
  private:
   CoreML::Specification::Model ml_model_;
-  raw_ptr<CoreML::Specification::NeuralNetwork> neural_network_;
-  // Used to get operand info to specify input for a neural network layer.
-  std::map<uint64_t, OperandInfo> id_to_layer_input_info_map_;
+  raw_ptr<CoreML::Specification::MILSpec::Program> program_;
+  // Used to get operand info to specify input for a MILSpec::Operation.
+  std::map<uint64_t, OperandInfo> id_to_op_input_info_map_;
   std::map<std::string, uint64_t> input_name_to_id_map_;
-  unsigned int layer_count_ = 0;
 };
 
 }  // namespace webnn::coreml

@@ -4,11 +4,14 @@
 
 #include "services/webnn/coreml/graph_builder.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
+#include "third_party/coremltools/mlmodel/format/MIL.pb.h"
 
 namespace webnn::coreml {
 
@@ -33,6 +36,28 @@ std::string GetCoreMLNameFromOperand(uint64_t operand_id,
         // Intermediate outputs don't have names so use operand_id instead.
         return base::NumberToString(operand_id);
       }
+  }
+}
+
+CoreML::Specification::MILSpec::DataType OperandTypeToMILDataType(
+    webnn::mojom::Operand::DataType data_type) {
+  switch (data_type) {
+    case webnn::mojom::Operand::DataType::kFloat32:
+      return CoreML::Specification::MILSpec::DataType::FLOAT32;
+    case webnn::mojom::Operand::DataType::kFloat16:
+      return CoreML::Specification::MILSpec::DataType::FLOAT16;
+    case webnn::mojom::Operand::DataType::kInt32:
+      return CoreML::Specification::MILSpec::DataType::INT32;
+    case webnn::mojom::Operand::DataType::kUint32:
+      return CoreML::Specification::MILSpec::DataType::UINT32;
+    case webnn::mojom::Operand::DataType::kInt64:
+      return CoreML::Specification::MILSpec::DataType::INT64;
+    case webnn::mojom::Operand::DataType::kUint64:
+      return CoreML::Specification::MILSpec::DataType::UINT64;
+    case webnn::mojom::Operand::DataType::kInt8:
+      return CoreML::Specification::MILSpec::DataType::INT8;
+    case webnn::mojom::Operand::DataType::kUint8:
+      return CoreML::Specification::MILSpec::DataType::UINT8;
   }
 }
 
@@ -73,28 +98,33 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info) {
   ml_model_.set_specificationversion(7);
   ml_model_.set_isupdatable(false);
 
+  program_ = ml_model_.mutable_mlprogram();
+  program_->set_version(1);
+
+  // Creates a Program with a single main function, and a single block within
+  // the function. The block contains all the ops right now.
+  // TODO(https://crbug.com/327216253): figure out when to use CoreML7 for some
+  // ops.
+  auto& main_function = (*program_->mutable_functions())["main"];
+  // CoreML6 means specification version 7.
+  main_function.set_opset("CoreML6");
+  auto& block = (*main_function.mutable_block_specializations())["CoreML6"];
+
   // Add inputs.
   const IdToOperandMap& id_to_operand_map = graph_info.id_to_operand_map;
   for (auto& input_id : graph_info.input_operands) {
-    RETURN_IF_ERROR(CreateInputNode(id_to_operand_map, input_id));
+    RETURN_IF_ERROR(AddInput(id_to_operand_map, input_id, main_function));
   }
 
-  neural_network_ = ml_model_.mutable_neuralnetwork();
-  neural_network_->set_arrayinputshapemapping(
-      ::CoreML::Specification::NeuralNetworkMultiArrayShapeMapping::
-          EXACT_ARRAY_MAPPING);
-
-  // Add constants.
-  for (auto& [key, buffer] : graph_info.constant_id_to_buffer_map) {
-    RETURN_IF_ERROR(CreateConstantLayer(id_to_operand_map, buffer, key));
-  }
+  // TODO(https://crbug.com/327217753): support constants written to a separate
+  // weight file.
 
   // Add operations.
   for (auto& operation : graph_info.operations) {
     switch (operation->which()) {
       case mojom::Operation::Tag::kElementWiseBinary: {
-        RETURN_IF_ERROR(CreateOperatorNodeForBinary(
-            id_to_operand_map, *operation->get_element_wise_binary()));
+        RETURN_IF_ERROR(AddOperationForBinary(
+            id_to_operand_map, *operation->get_element_wise_binary(), block));
         break;
       }
       default: {
@@ -105,7 +135,9 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 
   // Add output.
   for (auto& output_id : graph_info.output_operands) {
-    RETURN_IF_ERROR(CreateOutputNode(id_to_operand_map, output_id));
+    block.add_outputs(
+        GetCoreMLNameFromOperand(output_id, *id_to_operand_map.at(output_id)));
+    RETURN_IF_ERROR(AddOutput(id_to_operand_map, output_id));
   }
   return base::ok();
 }
@@ -128,34 +160,29 @@ const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
   return GetOperandInfo(id->second);
 }
 
-[[nodiscard]] base::expected<void, std::string> GraphBuilder::CreateInputNode(
+[[nodiscard]] base::expected<void, std::string> GraphBuilder::AddInput(
     const IdToOperandMap& id_to_operand_map,
-    uint64_t input_id) {
+    uint64_t input_id,
+    CoreML::Specification::MILSpec::Function& main_function) {
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_input();
   const OperandPtr& operand = id_to_operand_map.at(input_id);
   RETURN_IF_ERROR(
       PopulateFeatureDescription(input_id, *operand, feature_description));
-  // WebNN allows 0d scalar operands to have empty dimensions.
-  // At the input and output nodes, these can be treated as a 1D tensor to
-  // satisfy CoreML's requirement of having at least 1 dimension.
-  CHECK(id_to_layer_input_info_map_
-            .try_emplace(input_id, OperandInfo(feature_description->name(),
-                                               operand->dimensions.empty()
-                                                   ? std::vector<uint32_t>({1})
-                                                   : operand->dimensions,
-                                               operand->data_type))
-            .second);
+
+  PopulateNamedValueType(input_id, *id_to_operand_map.at(input_id),
+                         main_function.add_inputs());
+
   CHECK(input_name_to_id_map_.try_emplace(operand->name.value(), input_id)
             .second);
   return base::ok();
 }
 
-[[nodiscard]] base::expected<void, std::string> GraphBuilder::CreateOutputNode(
+[[nodiscard]] base::expected<void, std::string> GraphBuilder::AddOutput(
     const IdToOperandMap& id_to_operand_map,
     uint64_t output_id) {
-  const auto output_iterator = id_to_layer_input_info_map_.find(output_id);
-  CHECK(output_iterator != id_to_layer_input_info_map_.end());
+  const auto output_iterator = id_to_op_input_info_map_.find(output_id);
+  CHECK(output_iterator != id_to_op_input_info_map_.end());
   const OperandPtr& operand = id_to_operand_map.at(output_id);
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_output();
@@ -164,73 +191,50 @@ const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
   return base::ok();
 }
 
-base::expected<void, std::string> GraphBuilder::CreateOperatorNodeForBinary(
+base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::ElementWiseBinary& operation) {
-  auto* neural_network_layer = neural_network_->add_layers();
-  neural_network_layer->mutable_name()->assign(
-      base::NumberToString(layer_count_++));
-  AddInputToNeuralNetworkLayer(operation.lhs_operand, neural_network_layer);
-  AddInputToNeuralNetworkLayer(operation.rhs_operand, neural_network_layer);
+    const mojom::ElementWiseBinary& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  auto* op = block.add_operations();
+
+  auto input_lhs = id_to_op_input_info_map_.at(operation.lhs_operand);
+  auto input_rhs = id_to_op_input_info_map_.at(operation.rhs_operand);
+  // Input keys (x, y) and supported types are defined in coremltools.
+  // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/elementwise_binary.py#L33
+  static constexpr auto kSupportedBinaryOpsTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::FLOAT16,
+           CoreML::Specification::MILSpec::DataType::FLOAT32,
+           CoreML::Specification::MILSpec::DataType::INT32});
+
+  if (!kSupportedBinaryOpsTypes.contains(input_lhs.mil_data_type) ||
+      !kSupportedBinaryOpsTypes.contains(input_rhs.mil_data_type)) {
+    return base::unexpected("Unsupported input datatype.");
+  }
+
+  (*op->mutable_inputs())["x"].add_arguments()->set_name(input_lhs.coreml_name);
+  (*op->mutable_inputs())["y"].add_arguments()->set_name(input_rhs.coreml_name);
+
   switch (operation.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
-      neural_network_layer->mutable_add();
+      op->set_type("add");
       break;
     }
     default:
-      return base::unexpected("Unimplemented Binary Operator");
-  }
-  AddOutputToNeuralNetworkLayer(id_to_operand_map, operation.output_operand,
-                                neural_network_layer);
-  return base::ok();
-}
-
-base::expected<void, std::string> GraphBuilder::CreateConstantLayer(
-    const IdToOperandMap& id_to_operand_map,
-    const mojo_base::BigBuffer& buffer,
-    uint64_t constant_id) {
-  auto* neural_network_layer = neural_network_->add_layers();
-  neural_network_layer->mutable_name()->assign(
-      base::NumberToString(layer_count_++));
-  auto* constant_tensor = neural_network_layer->mutable_loadconstantnd();
-
-  auto& operand = id_to_operand_map.at(constant_id);
-  switch (operand->data_type) {
-    case Operand::DataType::kFloat32: {
-      const auto* data = reinterpret_cast<const float*>(buffer.data());
-      std::copy(data, data + buffer.size() / sizeof(*data),
-                google::protobuf::RepeatedFieldBackInserter(
-                    constant_tensor->mutable_data()->mutable_floatvalue()));
-      break;
-    }
-    case Operand::DataType::kFloat16: {
-      // float16value has type of bytes (std::string)
-      constant_tensor->mutable_data()->mutable_float16value()->assign(
-          buffer.data(), buffer.data() + buffer.size());
-      break;
-    }
-    // TODO: support quantized values.
-    case Operand::DataType::kInt64:
-    case Operand::DataType::kInt32:
-    case Operand::DataType::kInt8:
-    case Operand::DataType::kUint64:
-    case Operand::DataType::kUint32:
-    case Operand::DataType::kUint8:
-      return base::unexpected("Unsupported constant datatype");
+      return base::unexpected("Unimplemented Binary Operator.");
   }
 
-  for (int dimension : operand->dimensions) {
-    constant_tensor->mutable_shape()->Add(dimension);
-  }
-  AddOutputToNeuralNetworkLayer(id_to_operand_map, constant_id,
-                                neural_network_layer);
+  PopulateNamedValueType(operation.output_operand,
+                         *id_to_operand_map.at(operation.output_operand),
+                         op->add_outputs());
+
   return base::ok();
 }
 
 [[nodiscard]] const GraphBuilder::OperandInfo* GraphBuilder::GetOperandInfo(
     uint64_t operand_id) const {
-  const auto input_iterator = id_to_layer_input_info_map_.find(operand_id);
-  CHECK(input_iterator != id_to_layer_input_info_map_.end());
+  const auto input_iterator = id_to_op_input_info_map_.find(operand_id);
+  CHECK(input_iterator != id_to_op_input_info_map_.end());
   return &input_iterator->second;
 }
 
@@ -241,26 +245,26 @@ base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
   auto* feature_type = feature_description->mutable_type();
   auto* array_feature_type = feature_type->mutable_multiarraytype();
   switch (operand.data_type) {
-    case webnn::mojom::Operand_DataType::kFloat32:
+    case webnn::mojom::Operand::DataType::kFloat32:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_FLOAT32);
       break;
-    case webnn::mojom::Operand_DataType::kFloat16:
+    case webnn::mojom::Operand::DataType::kFloat16:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_FLOAT16);
       break;
-    case webnn::mojom::Operand_DataType::kInt32:
+    case webnn::mojom::Operand::DataType::kInt32:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_INT32);
       break;
-    case webnn::mojom::Operand_DataType::kUint32:
-    case webnn::mojom::Operand_DataType::kInt64:
-    case webnn::mojom::Operand_DataType::kUint64:
-    case webnn::mojom::Operand_DataType::kInt8:
-    case webnn::mojom::Operand_DataType::kUint8:
+    case webnn::mojom::Operand::DataType::kUint32:
+    case webnn::mojom::Operand::DataType::kInt64:
+    case webnn::mojom::Operand::DataType::kUint64:
+    case webnn::mojom::Operand::DataType::kInt8:
+    case webnn::mojom::Operand::DataType::kUint8:
       return base::unexpected("Unsupported input datatype.");
   }
   // FeatureDescriptions are about input and output features, WebNN allows
@@ -279,53 +283,49 @@ base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
   return base::ok();
 }
 
-void GraphBuilder::AddInputToNeuralNetworkLayer(
-    uint64_t input_id,
-    CoreML::Specification::NeuralNetworkLayer* neural_network_layer) {
-  const OperandInfo* operand = GetOperandInfo(input_id);
-  neural_network_layer->add_input(operand->coreml_name);
-  auto* tensor = neural_network_layer->add_inputtensor();
-  if (operand->dimensions.empty()) {
-    tensor->set_rank(1);
-    tensor->add_dimvalue(1);
+void GraphBuilder::PopulateNamedValueType(
+    uint64_t operand_id,
+    const webnn::mojom::Operand& operand,
+    CoreML::Specification::MILSpec::NamedValueType* value_type) {
+  value_type->set_name(GetCoreMLNameFromOperand(operand_id, operand));
+  auto* tensor_type = value_type->mutable_type()->mutable_tensortype();
+  auto mil_data_type = OperandTypeToMILDataType(operand.data_type);
+  tensor_type->set_datatype(mil_data_type);
+  tensor_type->set_rank(operand.dimensions.empty() ? 1
+                                                   : operand.dimensions.size());
+  if (operand.dimensions.empty()) {
+    tensor_type->set_rank(1);
+    tensor_type->add_dimensions()->mutable_constant()->set_size(1);
   } else {
-    tensor->set_rank(operand->dimensions.size());
-    for (int dimension : operand->dimensions) {
-      tensor->add_dimvalue(dimension);
+    tensor_type->set_rank(operand.dimensions.size());
+    for (int dimension : operand.dimensions) {
+      tensor_type->add_dimensions()->mutable_constant()->set_size(dimension);
     }
   }
+
+  // WebNN allows 0d scalar operands to have empty dimensions.
+  // At the input and output nodes, these can be treated as a 1D tensor to
+  // satisfy CoreML's requirement of having at least 1 dimension.
+  CHECK(id_to_op_input_info_map_
+            .try_emplace(
+                operand_id,
+                OperandInfo(GetCoreMLNameFromOperand(operand_id, operand),
+                            operand.dimensions.empty()
+                                ? std::vector<uint32_t>({1})
+                                : operand.dimensions,
+                            operand.data_type, mil_data_type))
+            .second);
 }
 
-void GraphBuilder::AddOutputToNeuralNetworkLayer(
-    const IdToOperandMap& id_to_operand_map,
-    uint64_t output_id,
-    ::CoreML::Specification::NeuralNetworkLayer* neural_network_layer) {
-  const OperandPtr& operand = id_to_operand_map.at(output_id);
-  auto coreml_name = GetCoreMLNameFromOperand(output_id, *operand);
-  CHECK(
-      id_to_layer_input_info_map_
-          .try_emplace(output_id, OperandInfo(coreml_name, operand->dimensions,
-                                              operand->data_type))
-          .second);
-  neural_network_layer->add_output(coreml_name);
-  auto* tensor = neural_network_layer->add_outputtensor();
-  if (operand->dimensions.empty()) {
-    tensor->set_rank(1);
-    tensor->add_dimvalue(1);
-  } else {
-    tensor->set_rank(operand->dimensions.size());
-    for (int dimension : operand->dimensions) {
-      tensor->add_dimvalue(dimension);
-    }
-  }
-}
-
-GraphBuilder::OperandInfo::OperandInfo(std::string coreml_name,
-                                       std::vector<uint32_t> dimensions,
-                                       webnn::mojom::Operand_DataType data_type)
+GraphBuilder::OperandInfo::OperandInfo(
+    std::string coreml_name,
+    std::vector<uint32_t> dimensions,
+    webnn::mojom::Operand::DataType data_type,
+    CoreML::Specification::MILSpec::DataType mil_data_type)
     : coreml_name(std::move(coreml_name)),
       dimensions(std::move(dimensions)),
-      data_type(data_type) {}
+      data_type(data_type),
+      mil_data_type(std::move(mil_data_type)) {}
 
 GraphBuilder::OperandInfo::OperandInfo() = default;
 GraphBuilder::OperandInfo::~OperandInfo() = default;
