@@ -3860,7 +3860,8 @@
                     "enable_features": [
                         "MagicStackAndroid",
                         "PriceChangeModule",
-                        "SegmentationPlatformAndroidHomeModuleRanker"
+                        "SegmentationPlatformAndroidHomeModuleRanker",
+                        "TabResumptionModuleAndroid"
                     ]
                 }
             ]
