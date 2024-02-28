@@ -10,6 +10,9 @@ option java_outer_classname = "ModelExecutionProto";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/descriptors.proto";
+import "components/optimization_guide/proto/redaction.proto";
+import "components/optimization_guide/proto/substitution.proto";
 
 message ExecuteRequest {
   // The feature that this execution request is for.
@@ -67,48 +70,6 @@ message OnDeviceModelExecutionConfig {
   repeated OnDeviceModelExecutionFeatureConfig feature_configs = 1;
 }
 
-enum RedactBehavior {
-  // No redaction.
-  REDACT_BEHAVIOR_UNSPECIFIED = 0;
-
-  // Results in rejecting the output entirely.
-  REJECT = 1;
-
-  // Redacts the text if only in the output (not in the redact input string).
-  REDACT_IF_ONLY_IN_OUTPUT = 2;
-
-  // Redacts regardless of whether it occurs in the input or not.
-  REDACT_ALWAYS = 3;
-}
-
-message RedactRule {
-  optional RedactBehavior behavior = 1;
-  optional string regex = 2;
-  // If supplied, replaces the matching string.
-  optional string replacement_string = 3;
-  // The minimum length required for the pattern to be considered a match.
-  optional int32 min_pattern_length = 4;
-  // The maximum length required for the pattern to be considered a match.
-  optional int32 max_pattern_length = 5;
-  // Specifies a group in the regular expression to be used for matching. Note
-  // that group 0 is the whole match, so the value supplied is generally > 0.
-  optional int32 group_index = 6;
-  // TODO: add support for replacement character.
-}
-
-// Applies a set of rules to a field.
-message RedactRules {
-  // Identifies the field to be checked for redaction (see
-  // REDACT_IF_ONLY_IN_OUTPUT). The first ProtoField that identifies a
-  // non-empty string is used.
-  repeated ProtoField fields_to_check = 1;
-
-  // The set of regular exrepssions to check. When checking the regular
-  // expressions all are checked, unless one matches with a behavior of REJECT,
-  // in which case no need to continue.
-  repeated RedactRule rules = 2;
-}
-
 message OnDeviceModelExecutionFeatureConfig {
   // The feature this configuration is for.
   optional ModelExecutionFeature feature = 1;
@@ -140,101 +101,6 @@ message OnDeviceModelExecutionInputConfig {
   // resulting string for the input context if `should_ignore_input_context` is
   // not set on any of the used substitutions.
   repeated SubstitutedString execute_substitutions = 2;
-}
-
-message SubstitutedString {
-  reserved 2, 3;
-
-  // String template with %s as the delimiter for substitutions.
-  optional string string_template = 1;
-
-  // The strings to be substituted in `string_template`.
-  repeated StringSubstitution substitutions = 6;
-
-  // The conditions for which to apply this substituted string.
-  optional ConditionList conditions = 4;
-
-  // Whether the input context should be ignored if this substituted string is
-  // applied.
-  optional bool should_ignore_input_context = 5;
-}
-
-message StringSubstitution {
-  // The candidates to use for this string substitution.
-  //
-  // The first candidate that passes all conditions will be the one that is used
-  // for the substitution.
-  repeated StringArg candidates = 1;
-}
-
-message StringArg {
-  oneof arg {
-    string raw_string = 1;
-    ProtoField proto_field = 2;
-  }
-
-  // TODO(b/302402959): Add support for max number of characters to apply.
-
-  // The conditions for which to apply this substituted string.
-  optional ConditionList conditions = 3;
-}
-
-message ProtoDescriptor {
-  // The tag number of the proto field.
-  optional int32 tag_number = 1;
-}
-
-message ProtoField {
-  // The descriptors to get to the desired field.
-  //
-  // If more than one entry, it is expected that all entries prior to the last
-  // one are message types.
-  repeated ProtoDescriptor proto_descriptors = 1;
-}
-
-message Value {
-  oneof type {
-    // int64 type.
-    int64 int64_value = 1;
-    // int32 type. Enums are int32s.
-    int32 int32_value = 2;
-    // float type.
-    double float_value = 3;
-    // string type.
-    string string_value = 4;
-    // boolean type.
-    bool boolean_value = 5;
-  }
-}
-
-// Operators available for comparing the value of fields.
-enum OperatorType {
-  OPERATOR_TYPE_UNSPECIFIED = 0;
-  // Equal.
-  OPERATOR_TYPE_EQUAL_TO = 1;
-  // Not Equal.
-  OPERATOR_TYPE_NOT_EQUAL_TO = 2;
-}
-
-enum ConditionEvaluationType {
-  CONDITION_EVALUATION_TYPE_UNSPECIFIED = 0;
-  CONDITION_EVALUATION_TYPE_AND = 1;
-  CONDITION_EVALUATION_TYPE_OR = 2;
-}
-
-message ConditionList {
-  // How to evaluate the below conditions.
-  optional ConditionEvaluationType condition_evaluation_type = 1;
-
-  // The set of conditions to evaluate.
-  repeated Condition conditions = 2;
-}
-
-// Evaluated as "value at proto_field" "operator_type" "value".
-message Condition {
-  optional ProtoField proto_field = 1;
-  optional OperatorType operator_type = 2;
-  optional Value value = 3;
 }
 
 message OnDeviceModelExecutionOutputConfig {

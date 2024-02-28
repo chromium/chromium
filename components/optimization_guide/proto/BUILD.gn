@@ -15,6 +15,7 @@ proto_library("optimization_guide_proto") {
     "autofill_field_classification_model_metadata.proto",
     "client_side_phishing_model_metadata.proto",
     "common_types.proto",
+    "descriptors.proto",
     "features/common_quality_data.proto",
     "features/compose.proto",
     "features/default.proto",
@@ -35,8 +36,10 @@ proto_library("optimization_guide_proto") {
     "page_topics_model_metadata.proto",
     "page_topics_override_list.proto",
     "push_notification.proto",
+    "redaction.proto",
     "salient_image_metadata.proto",
     "string_value.proto",
+    "substitution.proto",
     "text_safety_model_metadata.proto",
     "visual_search_model_metadata.proto",
   ]
