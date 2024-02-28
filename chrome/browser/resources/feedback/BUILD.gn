@@ -12,6 +12,7 @@ build_webui("build") {
   grd_prefix = "feedback"
 
   static_files = [
+    "css/about_sys.css",
     "css/feedback_shared_styles.css",
     "css/feedback_shared_vars.css",
     "css/logs_map_page.css",

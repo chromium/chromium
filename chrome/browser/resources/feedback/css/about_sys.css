@@ -1,0 +1,195 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  font-size: 84%;
+  margin: 0;
+  min-width: 45em;
+  padding: 0.75em;
+}
+
+.global-button {
+  margin: 1px 3px 0 3px;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h1 {
+  color: rgb(74, 142, 230);
+  font-size: 110%;
+  font-weight: bold;
+  padding: 0;
+}
+
+h2 {
+  color: rgb(58, 117, 189);
+  display: inline-block;
+  font-size: 110%;
+  font-weight: normal;
+  padding-inline-end: 1em;
+  padding-inline-start: 0;
+}
+
+#header {
+  background: rgb(60, 111, 235);
+  background-size: 100%;
+  border: 1px solid rgb(58, 117, 189);
+  border-radius: 6px;
+  color: white;
+  margin-bottom: 0.75em;
+  overflow: hidden;
+  padding: 0.5em 0;
+  position: relative;
+  text-shadow: 0 0 2px black;
+}
+
+html[dir='rtl'] #header {
+  padding: 0.6em 0 0.75em 1em;
+}
+
+#header h1 {
+  color: white;
+  display: inline;
+}
+
+div#header h1::before {
+  -webkit-mask-image: url(chrome://resources/images/icon_settings.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 24px;
+  background-color: white;
+  content: '';
+  display: inline-block;
+  height: 20px;
+  vertical-align: middle;
+  width: 37px;
+}
+
+#header p {
+  color: white;
+  display: inline;
+  font-size: 84%;
+  font-style: italic;
+  padding-inline-start: 0.4em;
+}
+
+.list {
+  border-collapse: collapse;
+  font-size: 84%;
+  line-height: 200%;
+  width: 100%;
+}
+
+.list:not(.filtered) tr:nth-child(odd) td {
+  background: rgb(239, 243, 255);
+}
+
+.list td {
+  font-family: 'Courier New', monospace;
+  line-height: 1.4em;
+  padding: 0 0.5em;
+  padding-top: 0.35em;
+  vertical-align: top;
+}
+
+.list tr td:nth-last-child(1),
+.list tr th:nth-last-child(1) {
+  padding-inline-end: 1em;
+}
+
+.list:not(.filtered) .tab .name {
+  padding-inline-start: 1.5em;
+}
+
+.list .name {
+  width: 20%;
+}
+
+.list .button-cell {
+  width: 7%;
+}
+
+.list .name div {
+  height: 1.6em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.button-hidden {
+  display: none;
+}
+
+.number-expanded,
+.number-collapsed  {
+  text-align: start;
+  text-overflow: ellipsis;
+  width: 80%;
+}
+
+tr > *:nth-child(1),
+tr > *:nth-child(2) {
+  border-inline-end: 1px solid rgb(181, 198, 222);
+}
+
+.name {
+  background-position: 5em center;
+  background-repeat: no-repeat;
+}
+
+a.anchor {
+  text-decoration: none;
+}
+
+a.anchor::before {
+  content: '🔗';
+}
+
+a.anchor:hover {
+  text-decoration: underline;
+}
+
+.stat-value {
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+}
+
+a.stat-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.stat-name-link:hover {
+  text-decoration: underline;
+}
+
+html[dir='rtl'] #details .name {
+  background-position-left: auto;
+  background-position-right: 5em;
+}
+
+.number-collapsed .stat-value {
+  display: none;
+}
+
+.number-expanded .stat-value {
+  display: auto;
+}
+
+.spinner {
+  animation: rotate 2s linear infinite;
+  border: 4px solid rgb(239, 243, 255);
+  border-radius: 50%;
+  border-top: 4px solid rgb(82, 150, 222);
+  height: 20px;
+  width: 20px;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
