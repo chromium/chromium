@@ -260,27 +260,37 @@ PhysicsModel::Result PhysicsModel::OnAnimate(
           viewport_width_ * kTargetCommitPending -
               animation_start_offset_viewport_,
           raf_since_start);
-      // Prevent overshoot.
+      // Prevent overshoot the right edge.
       foreground_offset_viewport_ = std::min(
           viewport_width_, viewport_width_ * kTargetCommitPending -
                                spring_position.equilibrium_offset_viewport);
+      // https://crbug.com/326850774: The commit-pending spring can also
+      // overshoot the left edge.
+      foreground_offset_viewport_ = std::max(0.f, foreground_offset_viewport_);
       break;
     }
     case Driver::kSpringInvoke: {
       spring_position = spring_invoke_->GetPosition(
           viewport_width_ - animation_start_offset_viewport_, raf_since_start);
-      // Prevent overshoot.
+      // Prevent overshoot the right edge.
       foreground_offset_viewport_ = std::min(
           viewport_width_,
           viewport_width_ - spring_position.equilibrium_offset_viewport);
+      // https://crbug.com/326850774: The invoke spring can also overshoot the
+      // left edge.
+      foreground_offset_viewport_ = std::max(0.f, foreground_offset_viewport_);
       break;
     }
     case Driver::kSpringCancel: {
       spring_position = spring_cancel_->GetPosition(
           animation_start_offset_viewport_, raf_since_start);
-      // Prevent overshoot.
+      // Prevent overshoot the left edge.
       foreground_offset_viewport_ =
           std::max(spring_position.equilibrium_offset_viewport, 0.f);
+      // https://crbug.com/326850774: The cancel spring can also overshoot the
+      // right edge.
+      foreground_offset_viewport_ =
+          std::min(viewport_width_, foreground_offset_viewport_);
       break;
     }
     case Driver::kDragCurve: {
