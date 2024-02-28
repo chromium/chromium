@@ -685,7 +685,9 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void OnBrowserCreated(const GURL& link_url, Browser* browser) {
+void OnBrowserCreated(const GURL& link_url,
+                      url::Origin initiator_origin,
+                      Browser* browser) {
   if (!browser) {
     // TODO(crbug.com/1374315): Make sure we do something or log an error if
     // opening a browser window was not possible.
@@ -700,6 +702,7 @@ void OnBrowserCreated(const GURL& link_url, Browser* browser) {
          the browser it opens in implying a link from the active tab in the
          destination browser which is not correct. */
       ui::PAGE_TRANSITION_TYPED);
+  nav_params.initiator_origin = initiator_origin;
   nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   // We are opening the link across profiles, so sending the referer
   // header is a privacy risk.
@@ -4012,7 +4015,8 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
   base::FilePath profile_path = profile_link_paths_[profile_index];
   profiles::SwitchToProfile(
       profile_path, false,
-      base::BindRepeating(OnBrowserCreated, params_.link_url));
+      base::BindRepeating(OnBrowserCreated, params_.link_url,
+                          params_.frame_origin));
 }
 
 #if BUILDFLAG(ENABLE_COMPOSE)
