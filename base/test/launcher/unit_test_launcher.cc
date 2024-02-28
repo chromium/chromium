@@ -183,9 +183,7 @@ int RunTestSuite(RunTestSuiteCallback run_test_suite,
   }
 
   // ICU must be initialized before any attempts to format times, e.g. for logs.
-  if (!base::i18n::InitializeICU()) {
-    return false;
-  }
+  CHECK(base::i18n::InitializeICU());
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(switches::kHelpFlag)) {
     PrintUsage();
