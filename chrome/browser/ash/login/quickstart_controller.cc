@@ -315,7 +315,12 @@ void QuickStartController::OnStatusChanged(
       return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
       // Intermediate state. Nothing to do.
-      CHECK(controller_state_ == ControllerState::CONNECTED);
+      if (controller_state_ != ControllerState::CONNECTED) {
+        QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
+                         "controller_state_: "
+                      << controller_state_;
+        AbortFlow(AbortFlowReason::ERROR);
+      }
       // TODO(b/298042953): Record Gaia Transfer screen shown once UI is
       // implemented.
       return;
@@ -448,15 +453,22 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     // GaiaScreen. Note the the GaiaInfoScreen/GaiaScreen is technically never
     // shown when it switches to QuickStart, so |previous_screen_| is one of the
     // many screens that may have appeared up to this point.
-    // TODO(b:283965994) - Imrpve the resume logic.
-    CHECK(controller_state_ == ControllerState::CONNECTED);
-    CHECK(LoginDisplayHost::default_host()
-              ->GetWizardContext()
-              ->quick_start_setup_ongoing);
+    // TODO(b:283965994) - Improve the resume logic.
 
     // OOBE flow cannot go back after enrollment checks, update exit point.
     exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
 
+    if (controller_state_ != ControllerState::CONNECTED) {
+      QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
+                       "controller_state_: "
+                    << controller_state_;
+      AbortFlow(AbortFlowReason::ERROR);
+      return;
+    }
+
+    CHECK(LoginDisplayHost::default_host()
+              ->GetWizardContext()
+              ->quick_start_setup_ongoing);
     StartAccountTransfer();
   }
 }
@@ -488,7 +500,7 @@ void QuickStartController::OnPhoneConnectionEstablished() {
 }
 
 void QuickStartController::SavePhoneInstanceID() {
-  DCHECK(bootstrap_controller_);
+  CHECK(bootstrap_controller_);
   std::string phone_instance_id = bootstrap_controller_->GetPhoneInstanceId();
   if (phone_instance_id.empty()) {
     return;
@@ -663,6 +675,45 @@ std::ostream& operator<<(
       break;
     case QuickStartController::AbortFlowReason::ERROR:
       stream << "[error]";
+      break;
+  }
+
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const QuickStartController::ControllerState& controller_state) {
+  switch (controller_state) {
+    case QuickStartController::ControllerState::NOT_ACTIVE:
+      stream << "[not active]";
+      break;
+    case QuickStartController::ControllerState::
+        WAITING_FOR_BLUETOOTH_PERMISSION:
+      stream << "[waiting for bluetooth permission]";
+      break;
+    case QuickStartController::ControllerState::
+        WAITING_FOR_BLUETOOTH_ACTIVATION:
+      stream << "[waiting for bluetooth activation]";
+      break;
+    case QuickStartController::ControllerState::WAITING_TO_RESUME_AFTER_UPDATE:
+      stream << "[waiting to resume after update]";
+      break;
+    case QuickStartController::ControllerState::INITIALIZING:
+      stream << "[initializing]";
+      break;
+    case QuickStartController::ControllerState::ADVERTISING:
+      stream << "[advertising]";
+      break;
+    case QuickStartController::ControllerState::CONNECTED:
+      stream << "[connected]";
+      break;
+    case QuickStartController::ControllerState::
+        CONTINUING_AFTER_ENROLLMENT_CHECKS:
+      stream << "[continuing after enrollment checks]";
+      break;
+    case QuickStartController::ControllerState::SETUP_COMPLETE:
+      stream << "[setup complete]";
       break;
   }
 

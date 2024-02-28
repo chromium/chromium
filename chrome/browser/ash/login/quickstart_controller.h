@@ -268,6 +268,10 @@ std::ostream& operator<<(
     std::ostream& stream,
     const QuickStartController::AbortFlowReason& abort_flow_reason);
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    const QuickStartController::ControllerState& controller_state);
+
 }  // namespace ash::quick_start
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICKSTART_CONTROLLER_H_
