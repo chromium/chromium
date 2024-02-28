@@ -1120,6 +1120,7 @@ bool SetNonBlocking(int fd) {
 
 bool PreReadFile(const FilePath& file_path,
                  bool is_executable,
+                 bool sequential,
                  int64_t max_bytes) {
   DCHECK_GE(max_bytes, 0);
 

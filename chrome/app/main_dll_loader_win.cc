@@ -91,7 +91,7 @@ HMODULE LoadModuleWithDirectory(const base::FilePath& module,
                                 const base::CommandLine& cmd_line) {
   ::SetCurrentDirectoryW(module.DirName().value().c_str());
   if (!cmd_line.HasSwitch(switches::kNoPreReadMainDll)) {
-    base::PreReadFile(module, /*is_executable=*/true);
+    base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
   }
   HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
                                     LOAD_WITH_ALTERED_SEARCH_PATH);

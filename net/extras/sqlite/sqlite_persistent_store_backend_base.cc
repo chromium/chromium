@@ -118,7 +118,8 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
       constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
       // TODO(crbug.com/1434166): Consider moving preload behind a database
       // option.
-      base::PreReadFile(path_, /*is_executable=*/false, kPreReadSize);
+      base::PreReadFile(path_, /*is_executable=*/false, /*sequential=*/false,
+                        kPreReadSize);
     }
   }
 

@@ -1285,6 +1285,7 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
 
 bool PreReadFile(const FilePath& file_path,
                  bool is_executable,
+                 bool sequential,
                  int64_t max_bytes) {
   DCHECK_GE(max_bytes, 0);
 
@@ -1304,7 +1305,8 @@ bool PreReadFile(const FilePath& file_path,
 
   const PlatformFile fd = file.GetPlatformFile();
   const ::off_t len = base::saturated_cast<::off_t>(max_bytes);
-  return posix_fadvise(fd, /*offset=*/0, len, POSIX_FADV_WILLNEED) == 0;
+  const int advice = sequential ? POSIX_FADV_SEQUENTIAL : POSIX_FADV_WILLNEED;
+  return posix_fadvise(fd, /*offset=*/0, len, advice) == 0;
 #elif BUILDFLAG(IS_APPLE)
   File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
   if (!file.IsValid())

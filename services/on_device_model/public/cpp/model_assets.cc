@@ -30,19 +30,20 @@ constexpr uint32_t kWeightsFlags =
 
 // Attempts to make sure `file` will be read from disk quickly when needed.
 void PrefetchFile(const base::FilePath& path) {
-  auto pre_read_file = base::BindOnce(
-      [](const base::FilePath& path) {
-        base::PreReadFile(path, /*is_executable=*/false);
-      },
-      path);
+  constexpr bool kIsExecutable = false;
+  constexpr bool kSequential = true;
 #if BUILDFLAG(IS_WIN)
   // On Windows PreReadFile() can take on the order of hundreds of milliseconds,
   // so run on a separate thread.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      std::move(pre_read_file));
+      base::BindOnce(
+          [](const base::FilePath& path) {
+            base::PreReadFile(path, kIsExecutable, kSequential);
+          },
+          path));
 #else
-  std::move(pre_read_file).Run();
+  base::PreReadFile(path, kIsExecutable, kSequential);
 #endif
 }
 

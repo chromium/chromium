@@ -459,7 +459,8 @@ void Database::Preload() {
   // for the databases that are on the critical path to startup. So, the limit
   // must exceed the expected sizes of databases on the critical path.
   constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
-  base::PreReadFile(DbPath(), /*is_executable=*/false, kPreReadSize);
+  base::PreReadFile(DbPath(), /*is_executable=*/false, /*sequential=*/false,
+                    kPreReadSize);
 }
 
 // SQLite keeps unused pages associated with a database in a cache.  It asks
