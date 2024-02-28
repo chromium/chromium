@@ -60,6 +60,12 @@ using feed::FeedUserActionType;
 // metric.
 @property(nonatomic, assign) NSDate* activityBucketLastReportedDate;
 
+// Tracks whether user has engaged with the latest refreshed content. The term
+// "engaged" is defined by its usage in this file. For example, it may be
+// similar to `engagedSimpleReportedDiscover`.
+@property(nonatomic, assign, getter=hasEngagedWithLatestRefreshedContent)
+    BOOL engagedWithLatestRefreshedContent;
+
 // Tracking property to record a scroll for Good Visits.
 // TODO(crbug.com/1373650) separate the property below in two, one for each
 // feed.
@@ -572,6 +578,10 @@ using feed::FeedUserActionType;
 
 - (void)recordFeedWillRefresh {
   base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
+  // The feed will have new content so reset the engagement tracking variable.
+  // TODO(crbug.com/1423467): We need to know whether the feed was actually
+  // refreshed, and not just when it was triggered.
+  self.engagedWithLatestRefreshedContent = NO;
 }
 
 - (void)recordFeedSelected:(FeedType)feedType
@@ -1024,6 +1034,7 @@ using feed::FeedUserActionType;
   // Chrome run.
   if (scrollDistance > 0 || interacted) {
     [self recordEngagedSimple];
+    self.engagedWithLatestRefreshedContent = YES;
   }
 
   // Report the user as engaged if they have scrolled more than the threshold or
