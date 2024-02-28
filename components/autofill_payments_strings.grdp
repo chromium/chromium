@@ -929,6 +929,15 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_ENTER_CORRECT_CODE_LABEL" desc="This text is shown after an OTP is already sent, when the user enters an incorrect OTP code. It directs the user to enter the correct code that was sent to them.">
     Enter correct code
   </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_TITLE_VCN_3DS" desc="This text is shown as the title for the user consent dialog for VCN 3DS. If the user accepts the dialog, Chrome will open a pop-up and initiate the VCN 3DS flow.">
+    Your bank wants to verify it's you
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_DESCRIPTION_VCN_3DS" desc="This text is shown as the description for the user consent dialog for VCN 3DS. If the user accepts the dialog, Chrome will open a pop-up and initiate the VCN 3DS flow.">
+    When you continue you'll be taken to your bank's website. After you verify, you'll automatically be returned to finish your purchase.
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_OK_BUTTON_LABEL_VCN_3DS" desc="This text is shown as the accept button label for the user consent dialog for VCN 3DS. If the user accepts the dialog, Chrome will open a pop-up and initiate the VCN 3DS flow.">
+    Continue
+  </message>
 
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">
