@@ -77,13 +77,18 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
       return;
     }
 
-    // Check if screen rotation matches.
-    if (absl::get<gfx::OverlayTransform>(candidate.transform) !=
-        display_transform_) {
+    // Aggregator adds `display_transform_` to all quads, which is then added to
+    // `candidate.transform` here. `display_transform_` only applies to content
+    // on the main plane so it needs to be removed candidate it its own plane.
+    gfx::OverlayTransform result = OverlayTransformsConcat(
+        absl::get<gfx::OverlayTransform>(candidate.transform),
+        InvertOverlayTransform(display_transform_));
+    if (result != gfx::OVERLAY_TRANSFORM_NONE &&
+        result != gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL) {
       candidate.overlay_handled = false;
       return;
     }
-    candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
+    candidate.transform = result;
 
     gfx::RectF orig_display_rect = candidate.display_rect;
     gfx::RectF display_rect = orig_display_rect;
