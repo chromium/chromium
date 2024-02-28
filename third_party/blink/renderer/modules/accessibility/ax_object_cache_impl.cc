@@ -1464,7 +1464,8 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
       ancestors_to_repair.push_front(ancestor);
     }
     if (ax_ancestor) {
-      if (ax_ancestor->LastKnownIsIncludedInTreeValue()) {
+      if (ax_ancestor->LastKnownIsIncludedInTreeValue() &&
+          !ancestors_to_repair.empty()) {
         ax_included_ancestor = ax_ancestor;
         break;
       }
@@ -1484,6 +1485,8 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
     }
     ax_ancestor->UpdateChildrenIfNecessary();
   }
+
+  CHECK(!ax_included_ancestor->NeedsToUpdateChildren());
 
   AXObject* result = Get(child);
   if (!result || result->IsDetached()) {
