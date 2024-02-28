@@ -342,16 +342,15 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
       };
 
   gl::GlWorkarounds workarounds = {
-      .disable_d3d11 = is_enabled(DISABLE_D3D11),
-      .disable_metal = is_enabled(DISABLE_METAL),
-      .disable_es3gl_context = is_enabled(DISABLE_ES3_GL_CONTEXT),
-      .disable_es3gl_context_for_testing =
-          is_enabled(DISABLE_ES3_GL_CONTEXT_FOR_TESTING),
+    .disable_d3d11 = is_enabled(DISABLE_D3D11),
+    .disable_metal = is_enabled(DISABLE_METAL),
+    .disable_es3gl_context = is_enabled(DISABLE_ES3_GL_CONTEXT),
+    .disable_es3gl_context_for_testing =
+        is_enabled(DISABLE_ES3_GL_CONTEXT_FOR_TESTING),
 #if BUILDFLAG(IS_WIN)
-      .disable_direct_composition = is_enabled(DISABLE_DIRECT_COMPOSITION),
-      .disable_direct_composition_video_overlays =
-          is_enabled(DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS),
-      .disable_vp_auto_hdr = is_enabled(DISABLE_VP_AUTO_HDR),
+    .disable_direct_composition = is_enabled(DISABLE_DIRECT_COMPOSITION),
+    .disable_direct_composition_video_overlays =
+        is_enabled(DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS),
 #endif
   };
 
