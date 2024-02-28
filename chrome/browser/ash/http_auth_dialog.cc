@@ -12,6 +12,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -112,6 +113,18 @@ std::unique_ptr<HttpAuthDialog> HttpAuthDialog::Create(
   // This class cannot handle UI-less auth dialog requests. Once Lacros ships,
   // this should no longer be possible and this can become a CHECK.
   if (!web_contents) {
+    return nullptr;
+  }
+
+  // Anchor to the outermost WebContents, for e.g. embedded <webview>s.
+  web_contents = web_contents->GetOutermostWebContents();
+
+  // Skip if the WebContents instance is not prepared to show a dialog.
+  if (!web_modal::WebContentsModalDialogManager::FromWebContents(
+          web_contents)) {
+    LOG(ERROR) << "Skipping HttpAuthDialog, url=" << url.possibly_invalid_spec()
+               << ", web_contents?" << !!web_contents;
+    base::debug::DumpWithoutCrashing();
     return nullptr;
   }
 
