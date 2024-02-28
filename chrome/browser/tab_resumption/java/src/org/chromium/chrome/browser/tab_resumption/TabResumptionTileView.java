@@ -42,7 +42,7 @@ public class TabResumptionTileView extends RelativeLayout {
         ((TextView) findViewById(R.id.tile_pre_info_text)).setText(preInfoText);
         ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
         ((TextView) findViewById(R.id.tile_post_info_text)).setText(postInfoText);
-        setContentDescription(displayText);
+        setContentDescription(preInfoText + ", " + displayText + ", " + postInfoText);
     }
 
     /**
@@ -54,7 +54,7 @@ public class TabResumptionTileView extends RelativeLayout {
     public void setSuggestionTextsMulti(String displayText, String infoText) {
         ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
         ((TextView) findViewById(R.id.tile_info_text)).setText(infoText);
-        setContentDescription(displayText);
+        setContentDescription(displayText + ", " + infoText);
     }
 
     /** Assigns the main URL image. */
