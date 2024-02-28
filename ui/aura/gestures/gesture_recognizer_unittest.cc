@@ -7,6 +7,7 @@
 #include <list>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -2288,13 +2289,13 @@ TEST_F(GestureRecognizerTest, GestureEventTouchLockSelectsCorrectWindow) {
   ui::GestureConfiguration::GetInstance()
       ->set_max_separation_for_gesture_touches_in_pixels(499);
 
-  std::unique_ptr<gfx::Rect[]> window_bounds(new gfx::Rect[kNumWindows]);
+  gfx::Rect window_bounds[kNumWindows];
   window_bounds[0] = gfx::Rect(0, 0, 1, 1);
   window_bounds[1] = gfx::Rect(500, 0, 1, 1);
   window_bounds[2] = gfx::Rect(0, 500, 1, 1);
   window_bounds[3] = gfx::Rect(500, 500, 1, 1);
 
-  std::unique_ptr<aura::Window* []> windows(new aura::Window*[kNumWindows]);
+  auto windows = base::HeapArray<aura::Window*>::Uninit(kNumWindows);
 
   // Instantiate windows with |window_bounds| and touch each window at
   // its origin.
