@@ -3287,7 +3287,7 @@
       'mac-osxbeta-rel': {
         'experiment_percentage': 100,
         'swarming': {
-          'shards': 4,
+          'shards': 7,
         },
       },
       'mac-rel-cft': {
