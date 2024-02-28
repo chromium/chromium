@@ -365,7 +365,8 @@ void ThreadController::RunLevelTracker::RunLevel::LogOnActiveMetrics(
 
   if (!last_active_end_.is_null()) {
     const base::TimeDelta idle_time = lazy_now.Now() - last_active_end_;
-    LogIntervalMetric("ThreadController.IdleDuration", idle_time, idle_time);
+    LogIntervalMetric("Scheduling.ThreadController.IdleDuration", idle_time,
+                      idle_time);
     last_active_end_ = base::TimeTicks();
   }
 
@@ -389,11 +390,12 @@ void ThreadController::RunLevelTracker::RunLevel::LogOnIdleMetrics(
     // there's impossibly more ThreadTicks than TimeTicks elapsed.
     elapsed_thread_ticks = std::min(elapsed_thread_ticks, elapsed_ticks);
 
-    LogIntervalMetric("ThreadController.ActiveIntervalDuration", elapsed_ticks,
-                      elapsed_ticks);
-    LogIntervalMetric("ThreadController.ActiveIntervalOffCpuDuration",
-                      elapsed_ticks - elapsed_thread_ticks, elapsed_ticks);
-    LogIntervalMetric("ThreadController.ActiveIntervalOnCpuDuration",
+    LogIntervalMetric("Scheduling.ThreadController.ActiveIntervalDuration",
+                      elapsed_ticks, elapsed_ticks);
+    LogIntervalMetric(
+        "Scheduling.ThreadController.ActiveIntervalOffCpuDuration",
+        elapsed_ticks - elapsed_thread_ticks, elapsed_ticks);
+    LogIntervalMetric("Scheduling.ThreadController.ActiveIntervalOnCpuDuration",
                       elapsed_thread_ticks, elapsed_ticks);
 
     // If the interval was shorter than a tick, 100% on-cpu time is assumed.
@@ -403,8 +405,9 @@ void ThreadController::RunLevelTracker::RunLevel::LogOnIdleMetrics(
             : static_cast<int>(
                   (elapsed_thread_ticks * 100).IntDiv(elapsed_ticks));
 
-    LogPercentageMetric("ThreadController.ActiveIntervalOnCpuPercentage",
-                        active_interval_cpu_percentage, elapsed_ticks);
+    LogPercentageMetric(
+        "Scheduling.ThreadController.ActiveIntervalOnCpuPercentage",
+        active_interval_cpu_percentage, elapsed_ticks);
 
     // Reset timings.
     last_active_start_ = base::TimeTicks();
