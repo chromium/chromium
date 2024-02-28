@@ -388,9 +388,8 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
         int relevance = max_relevance;
         if (max_relevance > 1)
           --max_relevance;
-        auto match = ShortcutToACMatch(
-            *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            relevance, input, fixed_up_input, lower_input);
+        auto match = ShortcutMatchToACMatch(shortcut_match, relevance, input,
+                                            fixed_up_input, lower_input);
         if (populate_scoring_signals &&
             AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
           PopulateScoringSignals(shortcut_match, &match);
@@ -402,9 +401,9 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
   base::ranges::transform(
       history_cluster_shortcut_matches, std::back_inserter(matches_),
       [&](const auto& shortcut_match) {
-        auto match = ShortcutToACMatch(
-            *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            shortcut_match.relevance, input, fixed_up_input, lower_input);
+        auto match =
+            ShortcutMatchToACMatch(shortcut_match, shortcut_match.relevance,
+                                   input, fixed_up_input, lower_input);
     // Guard this as `HistoryClusterProvider` doesn't exist on iOS.
     // Though this code will never run on iOS regardless.
 #if !BUILDFLAG(IS_IOS)
@@ -492,9 +491,8 @@ ShortcutMatch ShortcutsProvider::CreateScoredShortcutMatch(
                        shortcut};
 }
 
-AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
-    const ShortcutsDatabase::Shortcut& shortcut,
-    const GURL& stripped_destination_url,
+AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
+    const ShortcutMatch& shortcut_match,
     int relevance,
     const AutocompleteInput& input,
     const std::u16string& fixed_up_input_text,
@@ -509,10 +507,11 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   // when the X appears on the de-duplicated History and Shortcuts matches.
   match.deletable = client_->AllowDeletingBrowserHistory();
 
+  const ShortcutsDatabase::Shortcut& shortcut = *shortcut_match.shortcut;
   match.fill_into_edit = shortcut.match_core.fill_into_edit;
   match.destination_url = shortcut.match_core.destination_url;
   DCHECK(match.destination_url.is_valid());
-  match.stripped_destination_url = stripped_destination_url;
+  match.stripped_destination_url = shortcut_match.stripped_destination_url;
   DCHECK(match.stripped_destination_url.is_valid());
   match.document_type = shortcut.match_core.document_type;
   match.contents = shortcut.match_core.contents;
@@ -525,8 +524,13 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   match.type = shortcut.match_core.type;
   match.keyword = shortcut.match_core.keyword;
   match.shortcut_boosted = relevance > kShortcutsProviderDefaultMaxRelevance;
-  match.RecordAdditionalInfo("number of hits", shortcut.number_of_hits);
-  match.RecordAdditionalInfo("last access time", shortcut.last_access_time);
+  match.RecordAdditionalInfo("number of hits",
+                             shortcut_match.aggregate_number_of_hits);
+  match.RecordAdditionalInfo("last access time",
+                             shortcut_match.most_recent_access_time);
+  match.RecordAdditionalInfo(
+      "shortest shortcut text length",
+      static_cast<int>(shortcut_match.shortest_text_length));
   match.RecordAdditionalInfo("original input text", shortcut.text);
   if (match.shortcut_boosted)
     match.RecordAdditionalInfo("shortcut boosted", "true");
