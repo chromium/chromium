@@ -104,6 +104,10 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/utility",
   ]
 
+  if (is_component_build) {
+    public_deps += [ ":absl_flags_component_deps" ]
+  }
+
   # The following dependencies currently don't build with NaCl.
   # TODO(https://crbug.com/1114625): Fix build errors and remove this section.
   if (is_nacl) {
@@ -112,6 +116,33 @@ group("absl_component_deps") {
   }
 
   visibility = [ ":absl" ]
+}
+
+if (!is_component_build) {
+  source_set("absl_flags") {
+    public_deps = [
+      ":absl",
+      ":absl_flags_component_deps",
+    ]
+
+    testonly = true
+  }
+}
+
+group("absl_flags_component_deps") {
+  public_deps = [
+    "//third_party/abseil-cpp/absl/flags:flag",
+    "//third_party/abseil-cpp/absl/flags:parse",
+    "//third_party/abseil-cpp/absl/flags:reflection",
+    "//third_party/abseil-cpp/absl/flags:usage",
+  ]
+
+  visibility = [ ":absl_component_deps" ]
+  if (!is_component_build) {
+    visibility += [ ":absl_flags" ]
+  }
+
+  public_configs = [ "//third_party/abseil-cpp/absl/flags:absl_flags_config" ]
 }
 
 config("absl_include_config") {
