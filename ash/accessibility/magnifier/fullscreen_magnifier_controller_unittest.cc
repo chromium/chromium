@@ -25,6 +25,8 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -117,6 +119,10 @@ class FullscreenMagnifierControllerTest : public AshTestBase {
                           const ui::PointerDetails& pointer_details) {
     ui::TouchEvent event(event_type, point, time, pointer_details);
     GetEventGenerator()->Dispatch(&event);
+  }
+
+  void DispatchMouseMove(const gfx::PointF location_in_dip) {
+    GetFullscreenMagnifierController()->OnMouseMove(location_in_dip);
   }
 
   // Performs a two-finger scroll gesture in the given |direction|.
@@ -310,81 +316,88 @@ TEST_F(FullscreenMagnifierControllerTest, PanWindow2xLeftToRight) {
   EXPECT_EQ("150,75", env->last_mouse_location().ToString());
   EXPECT_EQ("0,0 400x300", GetViewport().ToString());
 
+  // Center in the screen.
   event_generator->MoveMouseToInHost(gfx::Point(700, 150));
   EXPECT_EQ("350,75", env->last_mouse_location().ToString());
   EXPECT_EQ("0,0 400x300", GetViewport().ToString());
 
+  // Moving half a DIP (1 px from center) will round up to a full DIP.
   event_generator->MoveMouseToInHost(gfx::Point(701, 150));
-  EXPECT_EQ("350,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("0,0 400x300", GetViewport().ToString());
-
-  event_generator->MoveMouseToInHost(gfx::Point(702, 150));
   EXPECT_EQ("351,75", env->last_mouse_location().ToString());
   EXPECT_EQ("1,0 400x300", GetViewport().ToString());
 
-  event_generator->MoveMouseToInHost(gfx::Point(703, 150));
+  // Moving a full DIP will also create a full DIP of movement.
+  event_generator->MoveMouseToInHost(gfx::Point(702, 150));
   EXPECT_EQ("352,75", env->last_mouse_location().ToString());
   EXPECT_EQ("2,0 400x300", GetViewport().ToString());
 
-  event_generator->MoveMouseToInHost(gfx::Point(704, 150));
+  // Moving 1.5 DIP (3 px from center) will create 2 DIP of movement, because
+  // we round pixels to DIPs rather than truncate.
+  event_generator->MoveMouseToInHost(gfx::Point(703, 150));
   EXPECT_EQ("354,75", env->last_mouse_location().ToString());
   EXPECT_EQ("4,0 400x300", GetViewport().ToString());
 
+  // Moving 2 DIP (4 px from center) will create 2 DIP of movement.
+  event_generator->MoveMouseToInHost(gfx::Point(704, 150));
+  EXPECT_EQ("356,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("6,0 400x300", GetViewport().ToString());
+
   event_generator->MoveMouseToInHost(gfx::Point(712, 150));
-  EXPECT_EQ("360,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("10,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("362,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("12,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(600, 150));
-  EXPECT_EQ("310,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("10,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("312,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("12,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(720, 150));
-  EXPECT_EQ("370,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("20,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("372,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("22,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("410,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("410,75", CurrentPointOfInterest());
-  EXPECT_EQ("60,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("412,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("412,75", CurrentPointOfInterest());
+  EXPECT_EQ("62,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(799, 150));
-  EXPECT_EQ("459,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("109,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("462,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("112,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(702, 150));
-  EXPECT_EQ("460,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("110,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("463,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("113,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("500,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("150,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("503,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("153,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("540,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("190,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("543,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("193,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("580,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("230,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("583,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("233,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("620,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("270,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("623,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("273,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("660,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("310,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("663,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("313,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("700,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("350,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("703,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("353,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("740,75", env->last_mouse_location().ToString());
-  EXPECT_EQ("390,0 400x300", GetViewport().ToString());
+  EXPECT_EQ("743,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("393,0 400x300", GetViewport().ToString());
 
+  // Reached the corner.
   event_generator->MoveMouseToInHost(gfx::Point(780, 150));
-  EXPECT_EQ("780,75", env->last_mouse_location().ToString());
+  EXPECT_EQ("783,75", env->last_mouse_location().ToString());
   EXPECT_EQ("400,0 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(799, 150));
@@ -405,7 +418,7 @@ TEST_F(FullscreenMagnifierControllerTest, PanWindow2xRightToLeft) {
   GetFullscreenMagnifierController()->SetEnabled(true);
 
   event_generator->MoveMouseToInHost(gfx::Point(799, 300));
-  EXPECT_EQ("798,300", env->last_mouse_location().ToString());
+  EXPECT_EQ("799,300", env->last_mouse_location().ToString());
   EXPECT_EQ("400,150 400x300", GetViewport().ToString());
 
   event_generator->MoveMouseToInHost(gfx::Point(0, 300));
@@ -466,7 +479,7 @@ TEST_F(FullscreenMagnifierControllerTest, PanWindowToRight) {
   event_generator->MoveMouseToInHost(gfx::Point(400, 300));
   EXPECT_EQ("400,300", env->last_mouse_location().ToString());
   event_generator->MoveMouseToInHost(gfx::Point(799, 300));
-  EXPECT_EQ("566,299", env->last_mouse_location().ToString());
+  EXPECT_EQ("567,299", env->last_mouse_location().ToString());
   EXPECT_EQ("705,300", GetHostMouseLocation());
 
   scale *= magnifier_utils::kMagnificationScaleFactor;
@@ -474,7 +487,7 @@ TEST_F(FullscreenMagnifierControllerTest, PanWindowToRight) {
   EXPECT_FLOAT_EQ(2.8284268, GetFullscreenMagnifierController()->GetScale());
   event_generator->MoveMouseToInHost(gfx::Point(799, 300));
   EXPECT_EQ("599,299", env->last_mouse_location().ToString());
-  EXPECT_EQ("702,300", GetHostMouseLocation());
+  EXPECT_EQ("705,300", GetHostMouseLocation());
 
   scale *= magnifier_utils::kMagnificationScaleFactor;
   GetFullscreenMagnifierController()->SetScale(scale, false);
@@ -487,7 +500,7 @@ TEST_F(FullscreenMagnifierControllerTest, PanWindowToRight) {
   GetFullscreenMagnifierController()->SetScale(scale, false);
   EXPECT_FLOAT_EQ(4.f, GetFullscreenMagnifierController()->GetScale());
   event_generator->MoveMouseToInHost(gfx::Point(799, 300));
-  EXPECT_EQ("649,298", env->last_mouse_location().ToString());
+  EXPECT_EQ("650,298", env->last_mouse_location().ToString());
   EXPECT_EQ("704,300", GetHostMouseLocation());
 }
 
@@ -519,21 +532,21 @@ TEST_F(FullscreenMagnifierControllerTest, PanWindowToLeft) {
   GetFullscreenMagnifierController()->SetScale(scale, false);
   EXPECT_FLOAT_EQ(2.8284268, GetFullscreenMagnifierController()->GetScale());
   event_generator->MoveMouseToInHost(gfx::Point(0, 300));
-  EXPECT_EQ("194,299", env->last_mouse_location().ToString());
+  EXPECT_EQ("195,299", env->last_mouse_location().ToString());
   EXPECT_EQ("99,300", GetHostMouseLocation());
 
   scale *= magnifier_utils::kMagnificationScaleFactor;
   GetFullscreenMagnifierController()->SetScale(scale, false);
   EXPECT_FLOAT_EQ(3.3635852, GetFullscreenMagnifierController()->GetScale());
   event_generator->MoveMouseToInHost(gfx::Point(0, 300));
-  EXPECT_EQ("164,298", env->last_mouse_location().ToString());
+  EXPECT_EQ("165,298", env->last_mouse_location().ToString());
   EXPECT_EQ("98,300", GetHostMouseLocation());
 
   scale *= magnifier_utils::kMagnificationScaleFactor;
   GetFullscreenMagnifierController()->SetScale(scale, false);
   EXPECT_FLOAT_EQ(4.f, GetFullscreenMagnifierController()->GetScale());
   event_generator->MoveMouseToInHost(gfx::Point(0, 300));
-  EXPECT_EQ("139,298", env->last_mouse_location().ToString());
+  EXPECT_EQ("140,298", env->last_mouse_location().ToString());
   EXPECT_EQ("100,300", GetHostMouseLocation());
 }
 
@@ -1053,7 +1066,7 @@ TEST_F(FullscreenMagnifierControllerTest, ContinuousFollowingReachesEdges) {
   gfx::Point top_left(0, 0);
   gfx::Point top_right(kRootWidth - 2, 0);
   gfx::Point bottom_left(0, kRootHeight - 2);
-  gfx::Point bottom_right(kRootWidth - 2, kRootHeight - 2);
+  gfx::Point bottom_right(kRootWidth - 1, kRootHeight - 2);
 
   // Move until viewport upper left corner is at (0, 0).
   // The generator moves the mouse within the scaled window,
@@ -1079,6 +1092,54 @@ TEST_F(FullscreenMagnifierControllerTest, ContinuousFollowingReachesEdges) {
   while (GetViewport().ToString() != "720,540 80x60") {
     event_generator->MoveMouseToInHost(bottom_right);
   }
+
+  magnifier->SetEnabled(false);
+}
+
+TEST_F(FullscreenMagnifierControllerTest,
+       DoesNotGetStuckInCenteredModeAtHighZoom) {
+  auto* magnifier = GetFullscreenMagnifierController();
+  magnifier->SetEnabled(true);
+  // Very high zoom.
+  float scale = 20.0;
+  magnifier->SetScale(scale, /*animate=*/false);
+  magnifier->set_mouse_following_mode(MagnifierMouseFollowingMode::kCentered);
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToInHost(kRootWidth / 2, kRootHeight / 2);
+  gfx::Rect initial_viewport = GetViewport();
+
+  // Note: EventGenerator cannot generate mouse events at less than 1 DIP of
+  // resolution. Call OnMouseEvent manually to try floating-point mouse event
+  // locations.
+
+  // Move a partial DIP down. The viewport should move down.
+  DispatchMouseMove(gfx::PointF(kRootWidth / 2, kRootHeight / 2 + .5));
+  EXPECT_EQ(initial_viewport.y() + 1, GetViewport().y());
+  EXPECT_EQ(initial_viewport.x(), GetViewport().x());
+
+  initial_viewport = GetViewport();
+
+  // Move a partial DIP right. The viewport should move right.
+  DispatchMouseMove(gfx::PointF(kRootWidth / 2 + .5, kRootHeight / 2 + .5));
+  EXPECT_EQ(initial_viewport.x() + 1, GetViewport().x());
+  EXPECT_EQ(initial_viewport.y(), GetViewport().y());
+
+  initial_viewport = GetViewport();
+
+  // Move a partial DIP up. The viewport should move up.
+  DispatchMouseMove(gfx::PointF(kRootWidth / 2 + .5, kRootHeight / 2));
+  EXPECT_EQ(initial_viewport.y() - 1, GetViewport().y());
+  EXPECT_EQ(initial_viewport.x(), GetViewport().x());
+
+  initial_viewport = GetViewport();
+
+  // Move a partial DIP left. The viewport should move left.
+  DispatchMouseMove(gfx::PointF(kRootWidth / 2, kRootHeight / 2));
+  EXPECT_EQ(initial_viewport.x() - 1, GetViewport().x());
+  EXPECT_EQ(initial_viewport.y(), GetViewport().y());
+
+  magnifier->SetEnabled(false);
 }
 
 TEST_F(FullscreenMagnifierControllerTest, DoesNotRedrawIfViewportIsNotChanged) {
