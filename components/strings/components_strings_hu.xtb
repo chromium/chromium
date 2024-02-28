@@ -1319,6 +1319,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3542628208405253498">Kártyakép</translation>
 <translation id="3542768452570884558">Link megnyitása új ablakban</translation>
 <translation id="3547746132308051926">20 × 24 hüvelyk</translation>
+<translation id="3552155506104542239">Figyelmeztetés: Ez a házirend ütközik a(z) <ph name="POLICY_NAME" /> házirenddel, ezért nem lesz hatással az Android-alkalmazásokra. Minden más esetben a kívánt módon működik.</translation>
 <translation id="3552297013052089404">Sans-serif betűtípus</translation>
 <translation id="3558573058928565255">Nappal</translation>
 <translation id="355995771319966853">Automatikus kitöltés visszavonása</translation>
@@ -1866,6 +1867,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="46128681529823442">Futballfelszerelés</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4622292761762557753">Átvitel mégis</translation>
+<translation id="4622647778991854660">Az értesítések engedélyezése az Értesítési központban. A <ph name="LINK" /> megnyitása.</translation>
 <translation id="4627675673814409125">Ez az irányelv nem állítható be a Chrome-profil szintjén, ezért figyelmen kívül hagyja a rendszer.</translation>
 <translation id="4628678854894591460">Vakációs ajánlatok</translation>
 <translation id="4628948037717959914">Fénykép</translation>
@@ -3197,6 +3199,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7234112195906418665">Utazás és közlekedés</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% kész, <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Ajándékok és tárgyak különleges eseményekre</translation>
+<translation id="7237454422623102448">Rendszerbeállítások</translation>
 <translation id="7237492777898608035">Ne jelenjen meg legközelebb ez az üzenet a webhely esetében</translation>
 <translation id="7240120331469437312">Tanúsítványtulajdonos egyéb neve</translation>
 <translation id="7241863998525879494">Mire számíthat?</translation>

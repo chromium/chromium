@@ -358,6 +358,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2484513351006226581">Para cambiar o deseño de teclado, preme <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2487915095798731898">Unirse</translation>
+<translation id="2499445554382787206">Menú do perfil do escritorio. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Teclas presas</translation>
 <translation id="2504454902900101003">Pechar a configuración de visualización do contido multimedia, das notificacións, e das fotos recentes do teu teléfono</translation>
 <translation id="2509468283778169019">Bloqueo de maiúsculas activado</translation>
@@ -412,6 +413,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2726420622004325180">O teu teléfono debe ter datos móbiles para ofrecer unha zona wifi</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baixa potencia. É posible que a carga da batería non sexa fiable.</translation>
+<translation id="2743387203779672305">Copiar no portapapeis</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Ventá activa sen fixar.</translation>
@@ -604,6 +606,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3509391053705095206">Non puidemos atopar o teu teléfono. Asegúrate de que teña o Bluetooth activado.</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Última actualización das tarefas: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza o dispositivo en 1 minuto}other{Actualiza o dispositivo en # minutos}}</translation>
 <translation id="3522979239100719575">Buscando perfís dispoñibles. Esta acción pode tardar uns minutos.</translation>
 <translation id="3526440770046466733">Abre a ligazón nunha pestana nova e queda na pestana actual</translation>
@@ -1063,6 +1066,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5218064144558110424">Marcar como non finalizada</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5229343007215035173">Activar ou desactivar a pantalla de privacidade</translation>
+<translation id="5230516054153933099">Ventá</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="523505283826916779">Configuración de accesibilidade</translation>
 <translation id="5238719049014159442">Abrir ou pechar menú de aplicacións</translation>
@@ -1143,6 +1147,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5536723544185013515">Aplicacións recentes. Desprázate coas teclas Frecha dereita ou Frecha esquerda para acceder a todas as aplicacións recentes</translation>
 <translation id="553675580533261935">Pechando sesión</translation>
 <translation id="5537725057119320332">Emitir</translation>
+<translation id="554017492391497564">Non se puido marcar como completada.</translation>
 <translation id="5546397813406633847">Recuperar usuario</translation>
 <translation id="554893713779400387">Activar ou desactivar ditado</translation>
 <translation id="5550417424894892620">Solta ficheiros no escritorio para engadilos a <ph name="HOLDING_SPACE_TITLE" />. Non podes engadir ficheiros ao escritorio.</translation>
@@ -1337,6 +1342,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Queda pouca batería. Activouse a función Aforro de batería.</translation>
 <translation id="6247728804802644171">Abre as notificacións</translation>
+<translation id="6249795363855770621">Non se puido marcar como completada. Téntao de novo cando esteas en liña.</translation>
 <translation id="6254629735336163724">Pantalla bloqueada en posición horizontal</translation>
 <translation id="6259254695169772643">Usa o teu lapis óptico para seleccionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activando...</translation>
@@ -1497,6 +1503,7 @@ Nova instalación</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6912841030378044227">Enfocar barra de enderezos</translation>
 <translation id="6912901278692845878">Visita rápida</translation>
+<translation id="6917259695595127329">Última actualización das tarefas: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
 <translation id="692135145298539227">elimina</translation>
 <translation id="6929081673585394903">Mostrar os controis</translation>

@@ -1718,6 +1718,7 @@
 <translation id="2274840746523584236">तुमचे Chromebook चार्ज करा</translation>
 <translation id="2276503375879033601">अधिक ॲप्लिकेशन जोडा</translation>
 <translation id="2276910256003242519">डेटा साफ करत आहे...</translation>
+<translation id="2278193750452754829">या साइटवर एक्स्टेंशनना अनुमती आहे. मेनू उघडण्यासाठी निवडा</translation>
 <translation id="2278562042389100163">ब्राउझर विंडो उघडा</translation>
 <translation id="2278668501808246459">कंटेनर व्यवस्थापक सुरू करत आहे</translation>
 <translation id="2280486287150724112">उजवा समास</translation>
@@ -2457,7 +2458,6 @@
 <translation id="2807517655263062534">तुम्ही डाउनलोड केलेल्या फाइल येथे दिसतात</translation>
 <translation id="2808714658215073920">वाय-फायशी कनेक्ट करत आहे...</translation>
 <translation id="2809586584051668049">आणि <ph name="NUMBER_ADDITIONAL_DISABLED" /> अधिक</translation>
-<translation id="2810674554823487782">मर्यादित दृश्य आणि संपादनासंबंधित पर्याय वापरण्यासाठी "ऑफलाइन संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="2811205483104563968">खाती</translation>
 <translation id="2812049959647166806">थंडरबोल्टला सपोर्ट करत नाही</translation>
 <translation id="2812171980080389735">तुम्हाला तात्काळ कनेक्ट करता येण्यासाठी नेटवर्क आणि पासवर्ड सेव्ह केले</translation>
@@ -2477,7 +2477,6 @@
 <translation id="2822551631199737692">कॅमेरा वापरात आहे</translation>
 <translation id="2822634587701817431">कोलॅप्स / विस्तार करा</translation>
 <translation id="2822910719211888134">Linux चा बॅकअप घेताना एरर आली</translation>
-<translation id="2823176412251649407">तुमचे इंटरनेट कनेक्शन बदला आणि "पुन्हा प्रयत्न करा" निवडा किंवा मर्यादित दृश्य व संपादनासंबंधित पर्याय वापरण्यासाठी "ऑफलाइन संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> तुमच्या अ‍ॅडमिनिस्ट्रेटरमधून प्रॉक्सी सेटिंग्ज वापरत आहे</translation>
 <translation id="2825151610926840364">कॅमेराची परवानगी असलेल्या अ‍ॅप्स आणि वेबसाइटच्या अ‍ॅक्सेसला अनुमती द्या. कॅमेरा वापरण्यासाठी, तुम्हाला अ‍ॅप रीस्टार्ट किंवा पेज रिफ्रेश करावे लागू शकते.</translation>
 <translation id="2825758591930162672">विषयाची सार्वजनिक की</translation>
@@ -2486,7 +2485,6 @@
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> मोकळी केली</translation>
 <translation id="2830528677948328648">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="2831430281393059038">डिव्हाइसला सपोर्ट नाही</translation>
-<translation id="2831897288513571718">सेटिंग्जमध्ये Google Drive सुरू करून पहा आणि "पुन्हा प्रयत्न करा" निवडा किंवा मर्यादित दृश्य व संपादनासंबंधित पर्याय वापरण्यासाठी "ऑफलाइन संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="2832124733806557606">या डिव्हाइसवर साइन इन करण्यासाठी किंवा ते अनलॉक करण्यासाठी, तुमचे लहान मूल पिन वापरू शकते.</translation>
 <translation id="2835177225987815960">असाइन केलेले सर्व स्विच आणि ऑटो-स्कॅन वेगाशी संबंधित प्राधान्ये यांसह तुमचे सध्याचे स्कॅनिंग सेटअप रीसेट केले जाईल.</translation>
 <translation id="2835547721736623118">स्पीच रेकग्निशन सेवा</translation>
@@ -2621,6 +2619,7 @@
 <translation id="2935654492420446828">शाळेचे खाते नंतर जोडा</translation>
 <translation id="2936851848721175671">बॅकअप घ्या आणि रिस्टोअर करा</translation>
 <translation id="2938981087412273365">ही साइट वाचण्याची आणि तिच्यामध्ये बदल करण्याची अनुमती नाही</translation>
+<translation id="2939005221756255562">नोटिफिकेशन केंद्र मध्ये नोटिफिकेशन सुरू करा. <ph name="BEGIN_LINK" />सिस्टीम सेटिंग्ज<ph name="END_LINK" /> उघडा.</translation>
 <translation id="2939908794993783865">अतिरिक्त इनॲक्टिव्ह साइट</translation>
 <translation id="2939938020978911855">उपलब्ध असलेले ब्लूटूथ डिव्हाइस दर्शवा</translation>
 <translation id="2941112035454246133">निम्न</translation>
@@ -4386,6 +4385,7 @@
 <translation id="4325433082696797523">स्टोरेज आणि पॉवर</translation>
 <translation id="4326146840124313313">Chrome ची सर्वात मजबूत सुरक्षा धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करण्यासाठी बरेच काही करते</translation>
 <translation id="4326484226728068206">तुमच्या कार्टमधील <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> कडील <ph name="DISCOUNT_TEXT" /> आयटम, <ph name="RELATIVE_TIME" /> पाहिले</translation>
+<translation id="4327380114687339519">एक्स्टेंशन मेनू</translation>
 <translation id="4330191372652740264">बर्फाचे पाणी</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> कधीही भाषांतरित करू नका</translation>
 <translation id="4332976768901252016">पालक नियंत्रणे सेट करा</translation>
@@ -6503,7 +6503,6 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> पैकी <ph name="CURRENT_ELEMENT" /> अतिरिक्त आशयावर नेव्हिगेट करा</translation>
 <translation id="6016551720757758985">मागील आवृत्तीवर परत येऊन Powerwash ची कन्फर्म करा</translation>
 <translation id="6016972670657536680">भाषा आणि कीबोर्ड बटण निवडा. सध्या निवडलेली भाषा <ph name="LANGUAGE" /> आहे.</translation>
-<translation id="6017503096330453612">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी, "पुन्हा प्रयत्न करा" किंवा "ऑफलाइन संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="6017514345406065928">हिरवा</translation>
 <translation id="6019169947004469866">क्रॉप करा</translation>
 <translation id="6019851026059441029">उत्तम आहे - HD</translation>
@@ -7548,7 +7547,6 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">सर्व वापरकर्त्यांसाठी ऑटोमॅटिक अपडेट सेट करणे अयशस्वी झाले (पूर्वफ्लाइट अंमलबजावणी एरर: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google गोपनीयता धोरण</translation>
-<translation id="6830200424658853449">ऑफलाइन संपादक उघडा</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6832218595502288407">डावीकडे अलाइन करा</translation>
 <translation id="6833479554815567477">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामधून काढून टाकला आहे</translation>
@@ -7966,7 +7964,6 @@
 <translation id="7174199383876220879">नवीन! तुमचे संगीत, व्हिडिओ आणि आणखी बरेच काही नियंत्रित करा.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> कॉन्फिगर करा</translation>
 <translation id="7175353351958621980">येथून लोड केले:</translation>
-<translation id="7177079607604198383">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी, तुमचे इंटरनेट कनेक्शन तपासा आणि "पुन्हा प्रयत्न करा" किंवा "ऑफलाइन संपादकामध्ये उघडा" निवडा.</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7180865173735832675">कस्टमाइझ करा</translation>
 <translation id="7181117767881540376">&amp;बुकमार्क बार लपवा</translation>
@@ -8443,6 +8440,7 @@
 <translation id="7544977292347272434">तुमच्या पालकांना एक्स्टेंशनला अनुमती देण्यास सांगा</translation>
 <translation id="7545466883021407599">सर्व्हरशी कनेक्ट करता आले नाही. तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा. तुम्हाला तरीही समस्या येत असल्यास, तुमचे Chromebook रीस्टार्ट करून पाहा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">चेतावणी: तुमची <ph name="PRODUCT_NAME" /> सेटिंग्ज एका नेटवर्क ड्राइव्हवर संचयित करण्यात आली आहेत. यामुळे वेग मंदावणे, क्रॅश किंवा डेटा गमावणे हे परिणाम देखील होऊ शकतात.</translation>
+<translation id="754836352246153944">या साइटवर एक्स्टेंशनना अनुमती नाही. मेनू उघडण्यासाठी निवडा</translation>
 <translation id="7548856833046333824">लेमोनेड</translation>
 <translation id="7549250950481368089">सेव्ह केलेले पासवर्ड येथे दिसतील. <ph name="BRAND" /> वर<ph name="BEGIN_LINK" /> पासवर्ड<ph name="END_LINK" /> इंपोर्ट करा.</translation>
 <translation id="7549434883223124329">डिव्हाइस भाषा स्विच करायची का?</translation>

@@ -1321,6 +1321,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3542628208405253498">Mynd á korti</translation>
 <translation id="3542768452570884558">Opna tengil í nýjum glugga</translation>
 <translation id="3547746132308051926">20 x 24 to.</translation>
+<translation id="3552155506104542239">Viðvörun: Þessi stefna stangast á við <ph name="POLICY_NAME" /> og mun ekki hafa nein áhrif á Android-forrit. Annars virkar þessi stefna eins og til er ætlast.</translation>
 <translation id="3552297013052089404">Sans serif-letur</translation>
 <translation id="3558573058928565255">Dagur og tími</translation>
 <translation id="355995771319966853">Afturkalla sjálfvirka útfyllingu</translation>
@@ -1868,6 +1869,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="46128681529823442">Fótboltabúnaður</translation>
 <translation id="4619564267100705184">Staðfestu hver þú ert</translation>
 <translation id="4622292761762557753">Flytja samt</translation>
+<translation id="4622647778991854660">Kveiktu á tilkynningum í Tilkynningamiðstöðinni. Opna <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Ekki er hægt að stilla þessa reglu á prófílstigi Chrome og hún verður hunsuð.</translation>
 <translation id="4628678854894591460">Ferðatilboð</translation>
 <translation id="4628948037717959914">Mynd</translation>
@@ -3199,6 +3201,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7234112195906418665">Ferðalög og samgöngur</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% lokið | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Gjafir og hlutir fyrir sérstök tilefni</translation>
+<translation id="7237454422623102448">Kerfisstillingar</translation>
 <translation id="7237492777898608035">Ekki sýna þessi skilaboð aftur fyrir þetta vefsvæði</translation>
 <translation id="7240120331469437312">Auknefni viðfangs vottorðsins</translation>
 <translation id="7241863998525879494">Við hverju má búast</translation>

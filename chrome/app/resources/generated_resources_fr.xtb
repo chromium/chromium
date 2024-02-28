@@ -2444,7 +2444,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
 <translation id="2808714658215073920">Connexion au Wi-Fi…</translation>
 <translation id="2809586584051668049">ainsi que <ph name="NUMBER_ADDITIONAL_DISABLED" /> autre(s) extension(s)</translation>
-<translation id="2810674554823487782">Sélectionnez "Ouvrir dans l'éditeur hors connexion" pour utiliser des options d'affichage et de modification limitées.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Le format Thunderbolt n'est pas compatible</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés afin que vous puissiez vous connecter instantanément</translation>
@@ -2464,7 +2463,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2822551631199737692">Caméra utilisée</translation>
 <translation id="2822634587701817431">Réduire/Développer</translation>
 <translation id="2822910719211888134">Erreur lors de la sauvegarde de Linux</translation>
-<translation id="2823176412251649407">Modifiez votre connexion Internet et sélectionnez "Réessayer", ou choisissez "Ouvrir dans l'éditeur hors connexion" pour utiliser des options d'affichage et de modification limitées.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> utilise les paramètres de proxy définis par votre administrateur</translation>
 <translation id="2825151610926840364">Accordez l'accès à l'appareil photo aux applis et sites Web ayant l'autorisation correspondante. Pour utiliser l'appareil photo, vous devrez peut-être redémarrer l'appli ou actualiser la page.</translation>
 <translation id="2825758591930162672">Clé publique de l'objet</translation>
@@ -2473,7 +2471,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> libérés</translation>
 <translation id="2830528677948328648">Gérer votre compte &amp;Google</translation>
 <translation id="2831430281393059038">Appareil accepté</translation>
-<translation id="2831897288513571718">Essayez d'activer Google Drive dans les paramètres, puis sélectionnez "Réessayer", ou choisissez "Ouvrir dans l'éditeur hors connexion" pour des options d'affichage et de modification limitées.</translation>
 <translation id="2832124733806557606">Votre enfant peut l'utiliser pour se connecter ou déverrouiller l'appareil.</translation>
 <translation id="2835177225987815960">La configuration actuelle définie pour l'exploration sera réinitialisée, y compris les préférences concernant les contacteurs et la vitesse d'exploration automatique.</translation>
 <translation id="2835547721736623118">Service de reconnaissance vocale</translation>
@@ -6491,7 +6488,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6016178549409952427">Accéder au contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmer la réinitialisation Powerwash et rétablir la version précédente</translation>
 <translation id="6016972670657536680">Bouton de sélection de la langue et du clavier. Langue actuellement sélectionnée : <ph name="LANGUAGE" />.</translation>
-<translation id="6017503096330453612">Sélectionnez "Réessayer", ou choisissez "Ouvrir dans l'éditeur hors connexion" pour utiliser des options d'affichage et de modification limitées.</translation>
 <translation id="6017514345406065928">Vert</translation>
 <translation id="6019169947004469866">Recadrer</translation>
 <translation id="6019851026059441029">Excellente – HD</translation>
@@ -7538,7 +7534,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Échec de la configuration des mises à jour automatiques pour tous les utilisateurs (erreur d'exécution avant la période de diffusion : <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Règles de confidentialité de Google</translation>
-<translation id="6830200424658853449">Ouvrir dans l'éditeur hors connexion</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6832218595502288407">Aligner à gauche</translation>
 <translation id="6833479554815567477">Onglet supprimé du groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -7693,7 +7688,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6960507406838246615">Mise à jour de Linux requise</translation>
 <translation id="6960648667961844909">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" />. Le téléchargement sera relancé plus tard. Les paroles sont envoyées à Google pour traitement jusqu'à la fin du téléchargement.</translation>
 <translation id="696103774840402661">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) ont été supprimés définitivement.</translation>
-<translation id="6961327401577924850">Les sites recherchent généralement des appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un coach électronique ou d'une ampoule connectée</translation>
+<translation id="6961327401577924850">Les sites recherchent généralement des appareils Bluetooth pour proposer des fonctionnalités comme la configuration ou la synchronisation d'une balise à faible consommation d'énergie, d'un bracelet d'activité sport et santé ou d'une ampoule connectée</translation>
 <translation id="6963872466817251924">Mettre le curseur de texte en surbrillance</translation>
 <translation id="6964390816189577014">Héros</translation>
 <translation id="6964760285928603117">Retirer du groupe</translation>
@@ -7956,7 +7951,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7174199383876220879">Nouveau ! Contrôlez votre musique, vos vidéos et d'autres contenus.</translation>
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Chargé depuis :</translation>
-<translation id="7177079607604198383">Vérifiez votre connexion Internet et sélectionnez "Réessayer", ou choisissez "Ouvrir dans l'éditeur hors connexion" pour utiliser des options d'affichage et de modification limitées.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7181117767881540376">Masquer la barre de favoris</translation>

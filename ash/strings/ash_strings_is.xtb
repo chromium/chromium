@@ -358,6 +358,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2484513351006226581">Ýttu á <ph name="KEYBOARD_SHORTCUT" /> til að skipta um lyklaskipan.</translation>
 <translation id="2486214324139475545">Forskoðun <ph name="DESK_NAME" />. Virkt skrifborð.</translation>
 <translation id="2487915095798731898">Tengjast</translation>
+<translation id="2499445554382787206">Valmynd skrifborðsprófíls. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Festilyklar</translation>
 <translation id="2504454902900101003">Hafna að setja upp skoðun nýlegra mynda, efnis og tilkynninga í símanum</translation>
 <translation id="2509468283778169019">Hástafalás er á</translation>
@@ -412,6 +413,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2726420622004325180">Síminn verður að vera með farsímagögn til að útvega heitan reit</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Tengt við afllítið hleðslutæki. Hleðsla rafhlöðunnar kann að vera brigðul.</translation>
+<translation id="2743387203779672305">Afrita á klippiborð</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Eyða“</translation>
 <translation id="2750941250130734256">Virkur gluggi losaður.</translation>
@@ -604,6 +606,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3509391053705095206">Ekki tókst að finna símann þinn. Gakktu úr skugga um að kveikt sé á Bluetooth í símanum.</translation>
 <translation id="3510164367642747937">Auðkenna músarbendil</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> stjórnar þessum reikningi</translation>
+<translation id="3517037892157925473">Verkefni síðast uppfærð: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Uppfærðu tækið innan 1 mínútu}one{Uppfærðu tækið innan # mínútu}other{Uppfærðu tækið innan # mínútna}}</translation>
 <translation id="3522979239100719575">Leitar að tiltækum prófílum. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="3526440770046466733">Opna tengil í nýjum flipa og halda áfram í núverandi flipa</translation>
@@ -1062,6 +1065,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5218064144558110424">Merkja sem ólokið</translation>
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5229343007215035173">Kveikja/slökkva á persónuverndarskjá</translation>
+<translation id="5230516054153933099">Gluggi</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="523505283826916779">Aðgengisstillingar</translation>
 <translation id="5238719049014159442">Opna/loka ræsiforriti</translation>
@@ -1142,6 +1146,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5536723544185013515">Nýleg forrit, flettu með vinstri eða hægri örvalyklunum til að fara á milli allra nýlegra forrita</translation>
 <translation id="553675580533261935">Lokar lotu</translation>
 <translation id="5537725057119320332">Senda út</translation>
+<translation id="554017492391497564">Tókst ekki að merkja sem lokið.</translation>
 <translation id="5546397813406633847">Endurheimta notandaaðgang</translation>
 <translation id="554893713779400387">Kveikja og slökkva á upplestri</translation>
 <translation id="5550417424894892620">Slepptu skrám á skjáborðið til að bæta þeim við <ph name="HOLDING_SPACE_TITLE" />. Þú getur ekki bætt skrám við skjáborðið.</translation>
@@ -1336,6 +1341,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Rafhlaðan er að tæmast. Kveikt er á rafhlöðusparnaði.</translation>
 <translation id="6247728804802644171">Opna tilkynningar</translation>
+<translation id="6249795363855770621">Tókst ekki að merkja sem lokið. Reyndu aftur þegar nettenging er til staðar.</translation>
 <translation id="6254629735336163724">Læst á lárétt</translation>
 <translation id="6259254695169772643">Notaðu pennann þinn til að velja</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Virkjar...</translation>
@@ -1496,6 +1502,7 @@ Ný uppsetning</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6912841030378044227">Fókusa á veffangastiku</translation>
 <translation id="6912901278692845878">Stutt kynning</translation>
+<translation id="6917259695595127329">Verkefni síðast uppfærð: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Ekki var hægt að bera kennsl á snjallkortið þitt. Reyndu aftur.</translation>
 <translation id="692135145298539227">eyða</translation>
 <translation id="6929081673585394903">Sýna stýringar</translation>

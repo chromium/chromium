@@ -358,6 +358,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2484513351006226581">Pwyswch <ph name="KEYBOARD_SHORTCUT" /> i newid cynllun y bysellfwrdd.</translation>
 <translation id="2486214324139475545">Rhagolwg <ph name="DESK_NAME" />. Desg weithredol.</translation>
 <translation id="2487915095798731898">Ymuno</translation>
+<translation id="2499445554382787206">Dewislen proffil desg. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Bysellau gludiog</translation>
 <translation id="2504454902900101003">Diystyru gosod gweld lluniau, cyfryngau a hysbysiadau diweddar eich ffôn</translation>
 <translation id="2509468283778169019">Mae CAPS LOCK wedi'i droi ymlaen</translation>
@@ -412,6 +413,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2726420622004325180">Rhaid bod gan eich ffôn ddata symudol i ddarparu poethfan</translation>
 <translation id="2727175239389218057">Ateb</translation>
 <translation id="2727977024730340865">Wedi'i blygio i mewn i wefrydd pŵer isel. Mae'n bosib na fydd gwefru'r batri yn ddibynadwy.</translation>
+<translation id="2743387203779672305">Copïo i'r clipfwrdd</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Dileu"</translation>
 <translation id="2750941250130734256">Mae'r ffenestr weithredol wedi'i rhyddhau.</translation>
@@ -604,6 +606,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3509391053705095206">Methu â dod o hyd i'ch ffôn. Gwnewch yn siŵr bod Bluetooth eich ffôn wedi'i droi ymlaen.</translation>
 <translation id="3510164367642747937">Amlygu'r cyrchwr llygoden</translation>
 <translation id="3513798432020909783">Rheolir y cyfrif gan <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Diweddarwyd tasgau ddiwethaf: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Diweddarwch y ddyfais o fewn 1 funud}zero{Diweddarwch y ddyfais o fewn # munud}two{Diweddarwch y ddyfais o fewn # funud}few{Diweddarwch y ddyfais o fewn # munud}many{Diweddarwch y ddyfais o fewn # munud}other{Diweddarwch y ddyfais o fewn # munud}}</translation>
 <translation id="3522979239100719575">Wrthi'n chwilio am broffiliau sydd ar gael. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="3526440770046466733">Agor y ddolen yn y tab newydd ac aros yn y tab presennol</translation>
@@ -1062,6 +1065,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5218064144558110424">Marcio fel heb ei chwblhau</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5229343007215035173">Troi'r sgrîn preifatrwydd ymlaen/ei ddiffodd</translation>
+<translation id="5230516054153933099">Ffenestr</translation>
 <translation id="5234764350956374838">Diystyru</translation>
 <translation id="523505283826916779">Gosodiadau hygyrchedd</translation>
 <translation id="5238719049014159442">Agor/cau'r Lansiwr</translation>
@@ -1142,6 +1146,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5536723544185013515">Apiau Diweddar, llywiwch gyda'r bysellau saeth Chwith neu Dde i gyrchu pob ap diweddar</translation>
 <translation id="553675580533261935">Wrthi'n gadael y sesiwn</translation>
 <translation id="5537725057119320332">Castio</translation>
+<translation id="554017492391497564">Methu â marcio fel wedi'i chwblhau.</translation>
 <translation id="5546397813406633847">Adfer defnyddiwr</translation>
 <translation id="554893713779400387">Toglo arddweud</translation>
 <translation id="5550417424894892620">Gollyngwch ffeiliau ar y bwrdd gwaith i'w hychwanegu at <ph name="HOLDING_SPACE_TITLE" />. Ni allwch ychwanegu ffeiliau at y bwrdd gwaith.</translation>
@@ -1336,6 +1341,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Lefel batri isel. Mae'r modd Arbed Batri wedi'i droi ymlaen.</translation>
 <translation id="6247728804802644171">Agor hysbysiadau</translation>
+<translation id="6249795363855770621">Methu â marcio fel wedi'i chwblhau. Rhowch gynnig arall arni pan fyddwch ar-lein.</translation>
 <translation id="6254629735336163724">Wedi'i gloi i lorweddol</translation>
 <translation id="6259254695169772643">Defnyddiwch eich pwyntil i ddewis</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Wrthi'n gweithredu...</translation>
@@ -1496,6 +1502,7 @@ Gosodiad newydd</translation>
 <translation id="6896758677409633944">Copïo</translation>
 <translation id="6912841030378044227">Ffocysu ar y bar cyfeiriad</translation>
 <translation id="6912901278692845878">Taith gyflym</translation>
+<translation id="6917259695595127329">Diweddarwyd tasgau ddiwethaf: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Methu ag adnabod eich cerdyn clyfar. Rhowch gynnig arall arni.</translation>
 <translation id="692135145298539227">dileu</translation>
 <translation id="6929081673585394903">Dangos rheolyddion</translation>

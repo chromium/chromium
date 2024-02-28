@@ -2458,7 +2458,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2807517655263062534">Filer som du laddar ned visas här</translation>
 <translation id="2808714658215073920">Ansluter till wifi …</translation>
 <translation id="2809586584051668049">och ytterligare <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810674554823487782">Välj Öppna i offlineredigeraren för att använda begränsad vy med begränsade redigeringsalternativ.</translation>
 <translation id="2811205483104563968">Konton</translation>
 <translation id="2812049959647166806">Thunderbolt stöds inte</translation>
 <translation id="2812171980080389735">Spara nätverk och lösenord så att du kan ansluta direkt</translation>
@@ -2478,7 +2477,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2822551631199737692">Kameran används</translation>
 <translation id="2822634587701817431">Förminska/expandera</translation>
 <translation id="2822910719211888134">Säkerhetskopieringen av Linux misslyckades</translation>
-<translation id="2823176412251649407">Byt internetanslutning och välj Försök igen eller välj Öppna i offlineredigeraren för att använda begränsad vy med begränsade redigeringsalternativ.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> använder proxyinställningar från administratören</translation>
 <translation id="2825151610926840364">Tillåt åtkomst för appar och webbplatser med kamerabehörighet. Du kan behöva starta om appen eller uppdatera sidan för att använda kameran.</translation>
 <translation id="2825758591930162672">Mottagarens publika nyckel</translation>
@@ -2487,7 +2485,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> har frigjorts</translation>
 <translation id="2830528677948328648">Hantera ditt &amp;Google-konto</translation>
 <translation id="2831430281393059038">Enheten stöds</translation>
-<translation id="2831897288513571718">Testa att aktivera Google Drive i inställningarna och välj Försök igen eller välj Öppna i offlineredigeraren för att använda begränsad vy med begränsade redigeringsalternativ.</translation>
 <translation id="2832124733806557606">Ditt barn kan logga in på enheten eller låsa upp den med en pinkod.</translation>
 <translation id="2835177225987815960">Din nuvarande konfiguration för genomsökning återställs, inklusive brytartilldelningar och hastighetsinställning för automatisk genomsökning.</translation>
 <translation id="2835547721736623118">Tjänst för taligenkänning</translation>
@@ -6505,7 +6502,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6016178549409952427">Navigera till extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekräfta återställningen till den tidigare versionen med Powerwash</translation>
 <translation id="6016972670657536680">Knapp för att välja språk och tangentbord. Nuvarande språkinställning: <ph name="LANGUAGE" />.</translation>
-<translation id="6017503096330453612">Välj Försök igen eller Öppna i offlineredigeraren om du vill använda begränsad visning och redigeringsalternativ.</translation>
 <translation id="6017514345406065928">Grön</translation>
 <translation id="6019169947004469866">Beskär</translation>
 <translation id="6019851026059441029">Jättebra – HD</translation>
@@ -7550,7 +7546,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Det gick inte att konfigurera automatiska uppdateringar för alla användare (preliminärt körningsfel: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Googles integritetspolicy</translation>
-<translation id="6830200424658853449">Öppna i offlineredigeraren</translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6832218595502288407">Vänsterjustera</translation>
 <translation id="6833479554815567477">Fliken togs bort från gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -7968,7 +7963,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7174199383876220879">Nyhet! Styr uppspelningen av musik, videor med mera.</translation>
 <translation id="7175037578838465313">Konfigurera <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Överförd från:</translation>
-<translation id="7177079607604198383">Kontrollera internetanslutningen och välj Försök igen eller välj Öppna i offlineredigeraren om du vill använda begränsad visning och redigeringsalternativ.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7180865173735832675">Anpassa</translation>
 <translation id="7181117767881540376">Dölj bokmärkesfältet</translation>

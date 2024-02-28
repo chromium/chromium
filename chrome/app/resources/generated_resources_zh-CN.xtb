@@ -1332,7 +1332,7 @@
 <translation id="199191324030140441">关闭“勿扰”模式</translation>
 <translation id="1992397118740194946">未设置</translation>
 <translation id="1994173015038366702">网站网址</translation>
-<translation id="1995916364271252349">控制网站可以使用和显示什么信息（如位置信息、摄像头、弹出式窗口及其他）</translation>
+<translation id="1995916364271252349">控制网站可以使用和显示的信息（位置信息、摄像头、弹出式窗口等）</translation>
 <translation id="199610894463449797">{0,plural, =1{关闭此个人资料}other{关闭此个人资料（# 个窗口）}}</translation>
 <translation id="1997433994358798851">Chrome 需要获得使用蓝牙的权限，才能连接到您的设备</translation>
 <translation id="1997616988432401742">您的证书</translation>
@@ -1664,7 +1664,7 @@
 <translation id="224835741840550119">清理设备</translation>
 <translation id="2249111429176737533">在标签页窗口中打开</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
-<translation id="2249635629516220541">自定义要让网站使用什么信息向您展示广告</translation>
+<translation id="2249635629516220541">自定义网站可用来向您投放广告的信息</translation>
 <translation id="2250624716625396929">此标签页正在使用摄像头和麦克风</translation>
 <translation id="2251218783371366160">使用系统查看器打开</translation>
 <translation id="225163402930830576">刷新网络</translation>
@@ -1701,6 +1701,7 @@
 <translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
 <translation id="2276503375879033601">添加更多应用</translation>
 <translation id="2276910256003242519">正在清除数据…</translation>
+<translation id="2278193750452754829">已允许在此网站上使用扩展程序。选择即可打开菜单</translation>
 <translation id="2278562042389100163">打开浏览器窗口</translation>
 <translation id="2278668501808246459">正在启动容器管理器</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
@@ -2439,7 +2440,6 @@
 <translation id="2807517655263062534">您下载的文件会显示在此处</translation>
 <translation id="2808714658215073920">正在连接到 Wi-Fi…</translation>
 <translation id="2809586584051668049">及另外<ph name="NUMBER_ADDITIONAL_DISABLED" />个扩展程序</translation>
-<translation id="2810674554823487782">选择“在离线编辑器中打开”可使用有限的查看和编辑选项。</translation>
 <translation id="2811205483104563968">账号</translation>
 <translation id="2812049959647166806">Thunderbolt 不受支持</translation>
 <translation id="2812171980080389735">已保存的网络和密码，方便您立即连接</translation>
@@ -2459,7 +2459,6 @@
 <translation id="2822551631199737692">摄像头正在使用中</translation>
 <translation id="2822634587701817431">缩小/放大</translation>
 <translation id="2822910719211888134">备份 Linux 时出错</translation>
-<translation id="2823176412251649407">请更改互联网连接并选择“重试”，或者选择“在离线编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 使用的是由您的管理员指定的代理设置</translation>
 <translation id="2825151610926840364">允许具有摄像头使用权限的应用和网站使用摄像头。如需使用摄像头，您可能需要重启应用或刷新页面。</translation>
 <translation id="2825758591930162672">证书持有者的公共密钥</translation>
@@ -2468,7 +2467,6 @@
 <translation id="2828833307884755422">已释放 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2830528677948328648">管理您的 Google 账号(&amp;G)</translation>
 <translation id="2831430281393059038">所用设备必须受支持</translation>
-<translation id="2831897288513571718">请尝试在“设置”中启用 Google 云端硬盘，然后选择“重试”，或者选择“在离线编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="2832124733806557606">您的孩子可以使用 PIN 码登录或解锁此设备。</translation>
 <translation id="2835177225987815960">您当前的扫描设置将被重置，包括已分配的所有开关以及自动扫描速度偏好设置。</translation>
 <translation id="2835547721736623118">语音识别服务</translation>
@@ -4371,6 +4369,7 @@
 <translation id="4325433082696797523">存储和电源</translation>
 <translation id="4326146840124313313">Chrome 强大的安全防护功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4326484226728068206">您的购物车中有多件商品享受了由 <ph name="MERCHANT_DOMAIN" /> 的 <ph name="MERCHANT_NAME" /> 提供的 <ph name="DISCOUNT_TEXT" />，距离上次查看已有 <ph name="RELATIVE_TIME" /></translation>
+<translation id="4327380114687339519">扩展程序菜单</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="4332976768901252016">设置“家长控制”功能</translation>
@@ -6485,7 +6484,6 @@
 <translation id="6016178549409952427">转到第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="6016551720757758985">确认 Powerwash 是否将设备还原到之前的版本</translation>
 <translation id="6016972670657536680">用于选择语言和输入法的按钮。当前选择的语言是“<ph name="LANGUAGE" />”。</translation>
-<translation id="6017503096330453612">请选择“重试”，或者选择“在离线编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="6017514345406065928">绿色</translation>
 <translation id="6019169947004469866">剪裁</translation>
 <translation id="6019851026059441029">非常好 - 高清</translation>
@@ -7530,7 +7528,6 @@
 <translation id="682871081149631693">Quick Fix</translation>
 <translation id="6828860976882136098">未能按您的要求为所有用户设置自动更新（执行预定流程时出错：<ph name="ERROR_NUMBER" />）</translation>
 <translation id="682971198310367122">Google 隐私权政策</translation>
-<translation id="6830200424658853449">在离线编辑器中打开</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6832218595502288407">左对齐</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
@@ -7948,7 +7945,6 @@
 <translation id="7174199383876220879">新功能！控制您的音乐、视频等媒体内容。</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7175353351958621980">加载来源：</translation>
-<translation id="7177079607604198383">请检查您的互联网连接情况并选择“重试”，或者选择“在离线编辑器中打开”以便使用有限的查看和编辑选项。</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7181117767881540376">隐藏书签栏(&amp;H)</translation>
@@ -8426,6 +8422,7 @@
 <translation id="7544977292347272434">请让你的家长批准此扩展程序</translation>
 <translation id="7545466883021407599">无法连接到服务器。请检查您的网络连接状况，然后重试。如果问题仍然存在，请尝试重启 Chromebook。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告：您的 <ph name="PRODUCT_NAME" />设置存储在网络驱动器上。这可能会导致速度变慢、崩溃，甚至数据丢失。</translation>
+<translation id="754836352246153944">不允许在此网站上使用扩展程序。选择即可打开菜单</translation>
 <translation id="7548856833046333824">酒杯</translation>
 <translation id="7549250950481368089">已保存的密码将显示在这里。<ph name="BEGIN_LINK" />将密码导入<ph name="END_LINK" /> <ph name="BRAND" />。</translation>
 <translation id="7549434883223124329">切换设备语言？</translation>

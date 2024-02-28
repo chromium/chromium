@@ -1201,6 +1201,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3324687287337751929">4 x 6 polzades</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Autocaravanes i vehicles recreatius</translation>
+<translation id="3325568918769906282">en ordre descendent</translation>
 <translation id="3329013043687509092">Saturació</translation>
 <translation id="3333762389743153920">No és apta per a una targeta virtual</translation>
 <translation id="3336044043987989409">Prem el botó de tornar a carregar la pàgina per permetre la connexió amb dispositius o servidors a la teva xarxa privada.</translation>
@@ -1868,6 +1869,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="46128681529823442">Equipament per a futbol</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4622292761762557753">Transfereix igualment</translation>
+<translation id="4622647778991854660">Activa les notificacions al Centre de notificacions. Obre <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Aquesta política no es pot establir a nivell del perfil de Chrome i s'ignorarà.</translation>
 <translation id="4628678854894591460">Ofertes de vacances</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -2246,6 +2248,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5371425731340848620">Actualitza la targeta</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"El rellotge està endarrerit", "El rellotge està avançat" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">en ordre ascendent</translation>
 <translation id="5383478552402031184">Terres</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">No es pot previsualitzar l'URL que no és HTTPS</translation>
@@ -3199,6 +3202,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7234112195906418665">Viatges i transport</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% completat | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Regals i objectes per a esdeveniments especials</translation>
+<translation id="7237454422623102448">Configuració del sistema</translation>
 <translation id="7237492777898608035">No tornis a mostrar aquest missatge per a aquest lloc web</translation>
 <translation id="7240120331469437312">Nom alternatiu del subjecte del certificat</translation>
 <translation id="7241863998525879494">Què cal esperar</translation>
@@ -3481,6 +3485,7 @@ Detalls addicionals:
 <translation id="7719791801330803993">Programari de fotografia i vídeo</translation>
 <translation id="772128550427553158">El CVC és a la part davantera de la targeta.</translation>
 <translation id="7724603315864178912">Retalla</translation>
+<translation id="7730057435797792985">Ordena</translation>
 <translation id="7734285854693414638">Crea un formulari a Formularis de Google ràpidament</translation>
 <translation id="773466115871691567">Tradueix sempre les pàgines en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Copia l'adreça de l'enllaç</translation>

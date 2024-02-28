@@ -1323,6 +1323,7 @@
 <translation id="3542628208405253498">کارڈ کی تصویر</translation>
 <translation id="3542768452570884558">لنک کو نئی ونڈو میں کھولیں</translation>
 <translation id="3547746132308051926">‏‎20 x 24 انچ</translation>
+<translation id="3552155506104542239">‏وارننگ: یہ پالیسی <ph name="POLICY_NAME" /> سے متصادم ہے اور Android ایپس پر اس کا کوئی اثر نہیں ہوگا۔ بصورت دیگر، یہ پالیسی حسب تقاضہ کام کر رہی ہے۔</translation>
 <translation id="3552297013052089404">‏Sans Serif فونٹ</translation>
 <translation id="3558573058928565255">دن کا وقت</translation>
 <translation id="355995771319966853">آٹو فل کالعدم کریں</translation>
@@ -1870,6 +1871,7 @@
 <translation id="46128681529823442">ساکر کے ساز و سامان</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="4622292761762557753">بہر حال منتقل کریں</translation>
+<translation id="4622647778991854660">اطلاع کے مرکز میں اطلاعات کو فعال کریں۔ <ph name="LINK" /> کھولیں۔</translation>
 <translation id="4627675673814409125">‏یہ پالیسی Chrome پروفائل کی سطح پر سیٹ نہیں کی جا سکتی اور اسے نظر انداز کر دیا جائے گا۔</translation>
 <translation id="4628678854894591460">تعطیل کی پیشکشیں</translation>
 <translation id="4628948037717959914">تصویر</translation>
@@ -3202,6 +3204,7 @@
 <translation id="7234112195906418665">ٹریول اور ٹرانسپورٹیشن</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> فیصد مکمل ہو گیا | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">تحائف اور خصوصی ایونٹ کے آئٹمز</translation>
+<translation id="7237454422623102448">سسٹم کی ترتیبات</translation>
 <translation id="7237492777898608035">اس سائٹ کے لیے یہ پیغام دوبارہ نہ دکھائیں</translation>
 <translation id="7240120331469437312">سرٹیفیکیٹ موضوع کا متبادل نام</translation>
 <translation id="7241863998525879494">کس چیز کی توقع کریں</translation>

@@ -471,6 +471,7 @@
 <translation id="3416023309465857378">25 ਅਕਤੂਬਰ 2023</translation>
 <translation id="3425644765244388016">ਕਾਰਡ ਦਾ ਉਪਨਾਮ</translation>
 <translation id="3433057996795775706">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਮਿਟਾਉਣ ਨਾਲ <ph name="WEBSITE" /> 'ਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ। ਇਸਨੂੰ ਹੋਰਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ <ph name="WEBSITE" /> 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲੋ।</translation>
+<translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="3443810440409579745">ਟੈਬ ਪ੍ਰਾਪਤ ਹੋਇਆ।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ਮਿੰਟ</translation>
 <translation id="3448016392200048164">ਸਪਲਿਟ ਦੇਖੋ</translation>
@@ -591,7 +592,6 @@
 <translation id="4045648459118332842">ਇੱਕ ਟੈਪ ਨਾਲ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਕਿਸੇ ਵੀ ਐਪ ਵਿੱਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4049507953662678203">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਹੈ, ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4054572406751135230">ਖਬਰਾਂ, ਖੇਡਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨਾਲ ਜੁੜੇ ਰਹੋ।</translation>
-<translation id="4057531989585132525">ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਆ</translation>
 <translation id="4066639687323968621">ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਲਈ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="4092655288299341041">ਮਦਦ ਦਿਖਾਓ</translation>
 <translation id="4105841739161771091">{count,plural, =1{ਪਤਾ ਮਿਟਾਓ}one{ਪਤਾ ਮਿਟਾਓ}other{ਪਤੇ ਮਿਟਾਓ}}</translation>

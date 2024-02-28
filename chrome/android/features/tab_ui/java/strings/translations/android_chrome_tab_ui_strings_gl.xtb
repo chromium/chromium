@@ -43,6 +43,7 @@
 <translation id="4133493477912226187">Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4212246570487010370">Continuar navegando</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Despregar o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestana.}other{Despregar o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="427987768447457592">Novo grupo de pestanas</translation>
 <translation id="4648718555153979859">As túas pestanas agrúpanse aquí</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensión)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensións)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Crea un grupo para comparar rapidamente varias páxinas. Para comezar, mantén premida unha ligazón.</translation>
 <translation id="5161254044473106830">Título obrigatorio</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Hai <ph name="TABS_COUNT_ONE" /> pestana que non usaches recentemente}other{Hai <ph name="TABS_COUNT_MANY" /> pestanas que non usaches recentemente}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Pechar o grupo de pestanas con <ph name="TABS_COUNT_ONE" /> pestana.}other{Pechar o grupo de pestanas con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="5339733443032484186">A túa última pestana</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">Grupo de pestanas despregado</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Ocultar modo de selección múltiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestana}other{Compartir pestanas}}</translation>
 <translation id="7129458170538955174">A folla de información sobre esta tenda está aberta a media pantalla</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Pechar o grupo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestana.}other{Pechar o grupo <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="7204204600596740190">Modo de selección múltiple</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" />, opción seleccionada</translation>
 <translation id="7326879924029668159">Consulta a política de devolución e outra información</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8730999928494395583">A túa actividade nestas pestanas do modo de incógnito quitarase deste dispositivo</translation>
 <translation id="8820741577754260431">Consulta as baixadas de prezo nas túas pestanas</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Despregar o grupo de pestanas con <ph name="TABS_COUNT_ONE" /> pestana.}other{Despregar o grupo de pestanas con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="9090098097337832354">A folla de información sobre esta tenda está pechada</translation>
 <translation id="9150694013019234766">Cambia dunha pestana a outra no grupo de pestanas da parte inferior da pantalla</translation>
 <translation id="9169594135889675189">Engadir nova pestana ao grupo</translation>

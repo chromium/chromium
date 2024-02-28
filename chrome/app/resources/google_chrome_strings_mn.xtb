@@ -33,6 +33,7 @@
 <translation id="1516530951338665275">Үргэлжлүүлэн хослуулахын тулд Google Chrome-д Bluetooth-н 
 хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
+<translation id="155168855724261758">Chrome-оо өөрчлөх</translation>
 <translation id="1553358976309200471">Chrome-г шинэчлэх</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> Chrome-н энэ профайлд аль хэдийн нэвтэрсэн байна. Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
 <translation id="1587223624401073077">Google Chrome нь таны камерыг ашиглаж байна.</translation>
@@ -72,6 +73,7 @@
 <translation id="2121284319307530122">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chrome-г сайжруулахад тусална уу</translation>
 <translation id="2126108037660393668">Татсан файлын баталгаажуулалт амжилтгүй боллоо.</translation>
+<translation id="2128411189117340671">Chrome-н профайлуудыг удирдах</translation>
 <translation id="2130870084309816036">Интернэтэд холбогдох боломжгүй байна. Хэрэв та галт хана ашигладаг бол <ph name="PRODUCT_EXE_NAME" />-г зөвшөөрсөн жагсаалтад оруулна уу.</translation>
 <translation id="2131230230468101642">Таны нууцлалыг хамгаалахын тулд бид таны 4 долоо хоногоос дээш хугацаатай сонирхлыг автоматаар устгадаг. Таныг үргэлжлүүлэн үзэх үед сонирхол нь жагсаалтад дахин харагдаж магадгүй. Эсвэл та Chrome-г бодож үзэхгүй байхыг хүсэж бй сонирхлоо хасах боломжтой.</translation>
 <translation id="2139300032719313227">ChromeOS-г дахин эхлүүлнэ үү</translation>
@@ -425,6 +427,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7917876797003313048">Та нэвтэрсэн Google Бүртгэлүүдээ удирдах боломжтой. Таны Google Бүртгэлүүдийг Chrome хөтөч, Play Store, Gmail болон бусад дээр ашигладаг. Хэрэв та гэр бүлийн гишүүн зэрэг өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл оронд нь өөрийн <ph name="DEVICE_TYPE" />-д шинэ хүн нэмнэ үү. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Файл нь хуурамч бөгөөд таны төхөөрөмжид гэнэтийн өөрчлөлт хийж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="7951272445806340501">Шинэчлэлтийг хэрэгжүүлэхийн тулд ChromeOS Flex-г дахин эхлүүлэх шаардлагатай.</translation>
+<translation id="7959172989483770734">Chrome-н профайлуудыг удирдах</translation>
 <translation id="7962368738413920945">Сайтууд таны бодож байснаар ажиллаж магадгүй ч таныг Chrome-н бүх цонхыг хаасны дараа таныг санахгүй</translation>
 <translation id="7962410387636238736">Энэ компьютер Windows XP болон Windows Vista-г дэмжихээ больсон тул цаашид Google Chrome-н шинэчлэлтийг авахгүй.</translation>
 <translation id="8005666035647241369">Энэ төхөөрөмж дээрх Google-н Нууц үгний менежерт</translation>
@@ -432,6 +435,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8009904340233602924">Chrome-г бүртгэлгүйгээр ашиглах</translation>
 <translation id="8013993649590906847">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chrome танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ.</translation>
 <translation id="8019103195866286235">Энэ өргөтгөлийг хөгжүүлэгч нь нийтлэхээ больсон бөгөөд энэ нь аюултай байж магадгүй. Үүнийг Chrome-с хассанаар энэ нь цаашид таны хувийн мэдээллийг оруулаад зочилсон сайтуудын тань өгөгдлийг харах болон өөрчлөх боломжгүй болно.</translation>
+<translation id="8031641407207794385">Chrome-оо өөрчлөх</translation>
 <translation id="80471789339884597">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө бүх хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Chrome-н бусад профайл</translation>

@@ -412,6 +412,7 @@
 <translation id="2726420622004325180">За да предостави точка за достъп, телефонът ви трябва да има мобилни данни</translation>
 <translation id="2727175239389218057">Отговор</translation>
 <translation id="2727977024730340865">Използва се зарядно устройство с малка мощност. Зареждането на батерията може да не е надеждно.</translation>
+<translation id="2743387203779672305">Копиране в буферната памет</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Delete“</translation>
 <translation id="2750941250130734256">Активният прозорец е отделен.</translation>
@@ -1062,6 +1063,7 @@
 <translation id="5218064144558110424">Означаване като незавършено</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5229343007215035173">Включване/изключване на екрана за поверителност</translation>
+<translation id="5230516054153933099">Window</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="523505283826916779">Настройки за достъпност</translation>
 <translation id="5238719049014159442">Отваряне/затваряне на стартовия панел</translation>

@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="4159784952369912983">Ungu</translation>
 <translation id="4212246570487010370">Lanjutkan menjelajah</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="427987768447457592">Grup tab baru</translation>
 <translation id="4648718555153979859">Tab Anda dikelompokkan menjadi satu di sini</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Bandingkan halaman secara cepat dengan membuat grup. Untuk memulai, sentuh lama link.</translation>
 <translation id="5161254044473106830">Perlu judul</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Anda memiliki <ph name="TABS_COUNT_ONE" /> tab yang belum digunakan baru-baru ini}other{Anda memiliki <ph name="TABS_COUNT_MANY" /> tab yang belum digunakan baru-baru ini}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Tutup grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Tutup grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="5339733443032484186">Tab terakhir Anda</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Grup tab diperluas</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Sembunyikan mode multi-pilihan</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bagikan tab}other{Bagikan tab}}</translation>
 <translation id="7129458170538955174">Informasi tentang toko ini terbuka setengah</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Tutup grup <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Tutup grup <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="7204204600596740190">Mode multi-pilihan</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Dipilih</translation>
 <translation id="7326879924029668159">Lihat kebijakan pengembalian dan lainnya</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Harga yang lebih rendah</translation>
 <translation id="8730999928494395583">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
 <translation id="8820741577754260431">Lihat diskon di tab</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Luaskan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="9090098097337832354">Informasi tentang toko ini ditutup</translation>
 <translation id="9150694013019234766">Beralih ke tab lain pada grup tab Anda di dekat bagian bawah layar</translation>
 <translation id="9169594135889675189">Tambahkan tab baru ke grup</translation>

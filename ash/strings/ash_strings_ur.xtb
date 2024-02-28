@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">کی بورڈ کا لے آؤٹ سوئچ کرنے کے لیے <ph name="KEYBOARD_SHORTCUT" /> دبائیں۔</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> کا پیش منظر۔ فعال ڈیسک۔</translation>
 <translation id="2487915095798731898">شامل ہوں</translation>
+<translation id="2499445554382787206">ڈیسک پروفائل کے لیے مینیو۔ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">اسٹکی کلیدیں</translation>
 <translation id="2504454902900101003">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="2509468283778169019">‏CAPS LOCK آن ہے</translation>
@@ -412,6 +413,7 @@
 <translation id="2726420622004325180">ہاٹ سپاٹ فراہم کرنے کے لیے آپ کے فون میں موبائل ڈیٹا کا ہونا ضروری ہے</translation>
 <translation id="2727175239389218057">جواب دیں</translation>
 <translation id="2727977024730340865">ایک کم پاور کے چارجر میں پلگ ان ہے۔ بیٹری چارجنگ ممکن ہے بھروسہ مند نہ ہو۔</translation>
+<translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"حذف کریں"</translation>
 <translation id="2750941250130734256">فعال ونڈو کو غیر مقفل کیا گیا۔</translation>
@@ -604,6 +606,7 @@
 <translation id="3509391053705095206">آپ کا فون تلاش نہیں کیا جا سکا۔ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔</translation>
 <translation id="3510164367642747937">ماؤس کا کرسر نمایاں کریں</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> کے زیر نظم اکاؤنٹ</translation>
+<translation id="3517037892157925473">ٹاسکس کی آخری بار اپ ڈیٹ کردہ تاریخ: <ph name="TIME" />، <ph name="DATE" />۔</translation>
 <translation id="352245152354538528">{0,plural, =1{1 منٹ کے اندر آلہ کو اپ ڈیٹ کریں}other{# منٹس کے اندر آلہ اپ ڈیٹ کریں}}</translation>
 <translation id="3522979239100719575">دستیاب پروفائلز کو تلاش کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="3526440770046466733">نئے ٹیب میں لنک کھولیں اور موجودہ ٹیب میں رہیں</translation>
@@ -1062,6 +1065,7 @@
 <translation id="5218064144558110424">نامکمل کے طور پر نشان زد کریں</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5229343007215035173">رازداری کی اسکرین آن/آف کریں</translation>
+<translation id="5230516054153933099">ونڈو</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="5238719049014159442">لانچر کھولیں/بند کریں</translation>
@@ -1142,6 +1146,7 @@
 <translation id="5536723544185013515">حالیہ ایپس، سبھی حالیہ ایپس تک رسائی حاصل کرنے کے لیے بائیں یا دائیں تیر کے نشان والی کلیدوں کے ساتھ نیویگیٹ کریں</translation>
 <translation id="553675580533261935">سیشن سے باہر نکل رہے ہیں</translation>
 <translation id="5537725057119320332">کاسٹ کریں</translation>
+<translation id="554017492391497564">مکمل کے طور پر نشان زد نہیں کیا جا سکتا۔</translation>
 <translation id="5546397813406633847">صارف کو بازیاب کریں</translation>
 <translation id="554893713779400387">ڈکٹیشن ٹوگل کریں</translation>
 <translation id="5550417424894892620">فائلز کو <ph name="HOLDING_SPACE_TITLE" /> میں شامل کرنے کے لیے ڈیسک ٹاپ پر ڈراپ کریں۔ آپ ڈیسک ٹاپ پر فائلز شامل نہیں کر سکتے۔</translation>
@@ -1336,6 +1341,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">بیٹری کم ہے۔ بیٹری سیور کو آن کیا گیا۔</translation>
 <translation id="6247728804802644171">اطلاعات کھولیں</translation>
+<translation id="6249795363855770621">مکمل کے طور پر نشان زد نہیں کیا جا سکتا۔ آن لائن ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="6254629735336163724">افقی پر مقفل ہے</translation>
 <translation id="6259254695169772643">منتخب کرنے کے لئے اپنا اسٹائلس استعمال کریں</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: فعال کیا جا رہا ہے…</translation>
@@ -1495,6 +1501,7 @@
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6912841030378044227">ایڈریس بار پر فوکس کریں</translation>
 <translation id="6912901278692845878">مختصر ٹؤر</translation>
+<translation id="6917259695595127329">ٹاسکس کی آخری بار اپ ڈیٹ کردہ تاریخ: <ph name="TIME" />۔</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
 <translation id="692135145298539227">حذف کریں</translation>
 <translation id="6929081673585394903">کنٹرولز دکھائیں</translation>

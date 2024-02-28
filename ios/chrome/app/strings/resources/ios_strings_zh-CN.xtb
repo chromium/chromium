@@ -471,6 +471,7 @@
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3425644765244388016">卡的昵称</translation>
 <translation id="3433057996795775706">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的账号。如需保护您在 <ph name="WEBSITE" /> 上的账号免遭他人盗用，请更改您的密码。</translation>
+<translation id="3435738964857648380">安全</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3448016392200048164">分割视图</translation>
@@ -569,7 +570,7 @@
 <translation id="3929457972718048006">地址</translation>
 <translation id="3939505428630887612">关于此页</translation>
 <translation id="3948600256434252210">向右滑动即可在无痕模式下浏览内容。</translation>
-<translation id="3955822496205734389">您有安全系数低的密码。</translation>
+<translation id="3955822496205734389">您有些密码的安全系数较低。</translation>
 <translation id="3958312024468322930">将图标拖动到主屏幕底部的程序坞中</translation>
 <translation id="3959736869653157332">菜单 → 打开新的无痕式标签页</translation>
 <translation id="3962326069546168954">保存</translation>
@@ -591,7 +592,6 @@
 <translation id="4045648459118332842">在任意应用中点按一下即可获取您已保存的密码</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4054572406751135230">随时掌握新闻、体育等方面的资讯。</translation>
-<translation id="4057531989585132525">连接安全性</translation>
 <translation id="4066639687323968621">只需使用您的 Google 账号登录，即可同步您的书签、历史记录等信息。</translation>
 <translation id="4092655288299341041">显示帮助</translation>
 <translation id="4105841739161771091">{count,plural, =1{删除这个地址}other{删除这些地址}}</translation>

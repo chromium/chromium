@@ -358,6 +358,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2484513351006226581">Apasă <ph name="KEYBOARD_SHORTCUT" /> pentru a schimba aspectul tastaturii.</translation>
 <translation id="2486214324139475545">Previzualizare pentru <ph name="DESK_NAME" />. Desktop activ.</translation>
 <translation id="2487915095798731898">Urmează</translation>
+<translation id="2499445554382787206">Meniul profilului de desktop: <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taste adezive</translation>
 <translation id="2504454902900101003">Renunță la configurarea afișării fotografiilor, a elementelor media și a notificărilor recente ale telefonului</translation>
 <translation id="2509468283778169019">Tasta CAPS LOCK este activată</translation>
@@ -412,6 +413,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2726420622004325180">Telefonul trebuie să aibă date mobile pentru a crea un hotspot</translation>
 <translation id="2727175239389218057">Răspunde</translation>
 <translation id="2727977024730340865">V-ați conectat la un încărcător de putere joasă. Încărcarea bateriei poate fi nesigură.</translation>
+<translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">Șterge</translation>
 <translation id="2750941250130734256">Fereastra activă a fost desprinsă.</translation>
@@ -604,6 +606,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3509391053705095206">Telefonul nu a fost găsit. Asigură-te că funcția Bluetooth a telefonului este activată.</translation>
 <translation id="3510164367642747937">Evidențiază cursorul mouse-ului</translation>
 <translation id="3513798432020909783">Cont gestionat de <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Ultima actualizare a activităților: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Actualizează dispozitivul într-un minut}few{Actualizează dispozitivul în # minute}other{Actualizează dispozitivul în # de minute}}</translation>
 <translation id="3522979239100719575">Se caută profiluri disponibile. Procesul poate dura câteva minute.</translation>
 <translation id="3526440770046466733">Deschide linkul într-o filă nouă și rămâi în fila actuală</translation>
@@ -1062,6 +1065,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5218064144558110424">Marchează ca nefinalizată</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="5229343007215035173">Activează / dezactivează ecranul de confidențialitate</translation>
+<translation id="5230516054153933099">Fereastră</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
 <translation id="5238719049014159442">Deschide / închide Lansatorul</translation>
@@ -1142,6 +1146,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="5536723544185013515">Aplicațiile recente, navighează cu săgețile la stânga sau la dreapta pentru a le accesa</translation>
 <translation id="553675580533261935">Se iese din sesiune</translation>
 <translation id="5537725057119320332">Proiectează</translation>
+<translation id="554017492391497564">Nu a putut fi marcată ca finalizată.</translation>
 <translation id="5546397813406633847">Recuperează utilizatorul</translation>
 <translation id="554893713779400387">Activează/dezactivează dictarea</translation>
 <translation id="5550417424894892620">Plasează fișiere pe desktop pentru a le adăuga în <ph name="HOLDING_SPACE_TITLE" />. Nu poți adăuga fișiere pe desktop.</translation>
@@ -1336,6 +1341,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Nivel scăzut al bateriei. Economisirea bateriei este activată.</translation>
 <translation id="6247728804802644171">Deschide notificările</translation>
+<translation id="6249795363855770621">Nu a putut fi marcată ca finalizată. Încearcă din nou când ești online.</translation>
 <translation id="6254629735336163724">Blocată pe orizontală</translation>
 <translation id="6259254695169772643">Folosește creionul pentru a selecta</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: se activează...</translation>
@@ -1496,6 +1502,7 @@ Instalare nouă</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6912841030378044227">Focalizează bara de adrese</translation>
 <translation id="6912901278692845878">Tur rapid</translation>
+<translation id="6917259695595127329">Ultima actualizare a activităților: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nu s-a recunoscut cardul inteligent. Încearcă din nou.</translation>
 <translation id="692135145298539227">șterge</translation>
 <translation id="6929081673585394903">Afișează comenzile</translation>

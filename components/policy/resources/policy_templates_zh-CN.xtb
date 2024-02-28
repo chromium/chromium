@@ -491,10 +491,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1417888712677507140">屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="1418387035898607074">不对从可信来源下载的文件执行安全浏览检查</translation>
 <translation id="1419020637569060510">针对在 Chrome 操作系统中将受管理的账号用作辅助账号的情况添加限制</translation>
-<translation id="1419945463533552043">User-Agent Client Hints GREASE 更新功能（若已启用）会按照最新规范来更新 User-Agent GREASE 算法。
-      如果某些网站限制了请求中可包含的字符，更新后的规范可能会导致这些网站无法正常运作。如需了解详情，请查看规范：https://wicg.github.io/ua-client-hints/#grease
-      如果此政策已启用或未设置，浏览器会决定要使用哪种 User-Agent GREASE 算法。如果此政策已停用，系统会使用旧版 User-Agent GREASE 算法。
-      此政策只是一项暂时性措施，会在某个未来版本中移除。</translation>
 <translation id="142346659686073702">允许独立用户使用 Crostini</translation>
 <translation id="1423900783955065155">此政策旨在控制是否可将具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页储存在往返缓存中。设置了此标头的网站可能不希望从往返缓存中恢复相应网页，因为即使页面不再可访问，一些敏感信息仍然可能被显示出来。
 

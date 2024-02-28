@@ -1719,6 +1719,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2274840746523584236">Laai jou Chromebook</translation>
 <translation id="2276503375879033601">Voeg nog programme by</translation>
 <translation id="2276910256003242519">Vee tans data uit …</translation>
+<translation id="2278193750452754829">Uitbreidings word op hierdie werf toegelaat. Kies om kieslys oop te maak</translation>
 <translation id="2278562042389100163">Maak blaaiervenster oop</translation>
 <translation id="2278668501808246459">Begin tans die houerbestuurder</translation>
 <translation id="2280486287150724112">Regterkantlyn</translation>
@@ -2458,7 +2459,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2807517655263062534">Lêers wat jy aflaai, verskyn hier</translation>
 <translation id="2808714658215073920">Koppel tans aan wi-fi …</translation>
 <translation id="2809586584051668049">en nog <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810674554823487782">Kies “Maak in vanlyn redigeerder oop” om beperkte aansig en redigeringopsies te gebruik.</translation>
 <translation id="2811205483104563968">Rekeninge</translation>
 <translation id="2812049959647166806">Thunderbolt word nie gesteun nie</translation>
 <translation id="2812171980080389735">Gestoorde netwerke en wagwoorde sodat jy in ’n kits kan koppel</translation>
@@ -2478,7 +2478,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2822551631199737692">Kamera in gebruik</translation>
 <translation id="2822634587701817431">Krimp / vou uit</translation>
 <translation id="2822910719211888134">Kon nie Linux rugsteun nie</translation>
-<translation id="2823176412251649407">Verander jou internetverbinding en kies “Probeer weer” of kies “Maak in vanlyn redigeerder oop” om beperkte aansig en redigeringopsies te gebruik.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> gebruik tans jou administrateur se instaanbedienerinstellings</translation>
 <translation id="2825151610926840364">Laat toegang toe vir apps en webwerwe met die kameratoestemming. Jy moet dalk die app herbegin of die bladsy herlaai om die kamera te gebruik.</translation>
 <translation id="2825758591930162672">Voorwerp se publieke sleutel</translation>
@@ -2487,7 +2486,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> is beskikbaar gemaak</translation>
 <translation id="2830528677948328648">Bestuur jou &amp;Google-rekening</translation>
 <translation id="2831430281393059038">Toestel word gesteun</translation>
-<translation id="2831897288513571718">Probeer om Google Drive in instellings te aktiveer en kies “Probeer weer”, of kies “Maak in vanlyn redigeerder oop” om beperkte aansig- en redigeeropsies te gebruik.</translation>
 <translation id="2832124733806557606">Jou kind kan 'n PIN gebruik om by die toestel aan te meld of dit te ontsluit.</translation>
 <translation id="2835177225987815960">Jou huidige skanderingopstelling sal teruggestel word, insluitend enige toegewysde skakelaars en outoskandeerspoedvoorkeure.</translation>
 <translation id="2835547721736623118">Spraakherkenningdiens</translation>
@@ -4389,6 +4387,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4325433082696797523">Berging en krag</translation>
 <translation id="4326146840124313313">Chrome se sterkste sekuriteit doen meer om jou teen gevaarlike webwerwe, aflaaie en uitbreidings te beskerm</translation>
 <translation id="4326484226728068206">Items in jou <ph name="DISCOUNT_TEXT" />-mandjie van <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> af, is <ph name="RELATIVE_TIME" /> bekyk</translation>
+<translation id="4327380114687339519">Uitbreidingkieslys</translation>
 <translation id="4330191372652740264">Yswater</translation>
 <translation id="4330387663455830245">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
 <translation id="4332976768901252016">Stel ouerkontroles op</translation>
@@ -6506,7 +6505,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6016178549409952427">Navigeer na ekstra inhoud <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bevestig Powerwash met terugkeer na vorige weergawe</translation>
 <translation id="6016972670657536680">Kies taal en sleutelbord-knoppie. Die taal wat tans gekies is, is <ph name="LANGUAGE" />.</translation>
-<translation id="6017503096330453612">Kies “Probeer weer” of kies “Maak in vanlyn redigeerder oop” om beperkte aansig en redigeringopsies te gebruik.</translation>
 <translation id="6017514345406065928">Groen</translation>
 <translation id="6019169947004469866">Snoei</translation>
 <translation id="6019851026059441029">Wonderlik – HD</translation>
@@ -7551,7 +7549,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Kon nie outomatiese opdaterings vir alle gebruikers opstel nie (kontroleringuitvoeringfout: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google se privaatheidbeleid</translation>
-<translation id="6830200424658853449">Maak in vanlyn redigeerder oop</translation>
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="6832218595502288407">Belyn links</translation>
 <translation id="6833479554815567477">Oortjie is verwyder uit groep <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -7968,7 +7965,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7174199383876220879">Nuut! Beheer jou musiek, video's en meer.</translation>
 <translation id="7175037578838465313">Stel <ph name="NAME" /> op</translation>
 <translation id="7175353351958621980">Gelaai vanaf:</translation>
-<translation id="7177079607604198383">Gaan jou internetverbinding na en kies “Probeer weer” of kies "Maak in vanlyn redigeerder oop" om beperkte aansig en redigeringopsies te gebruik.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7180865173735832675">Pasmaak</translation>
 <translation id="7181117767881540376">&amp;Versteek boekmerkbalk</translation>
@@ -8445,6 +8441,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7544977292347272434">Vra jou ouer om ’n uitbreiding toe te laat</translation>
 <translation id="7545466883021407599">Kon nie aan die bediener koppel nie. Gaan jou netwerkverbinding na en probeer weer. Probeer om jou Chromebook te herbegin as jy steeds sukkel. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Waarskuwing: jou <ph name="PRODUCT_NAME" />-instellings is op 'n netwerkskyf gestoor. Dit kan lei tot stadige reaksies, omvalle en selfs die verlies van data.</translation>
+<translation id="754836352246153944">Uitbreidings word nie op hierdie werf toegelaat nie. Kies om kieslys oop te maak</translation>
 <translation id="7548856833046333824">Limonade</translation>
 <translation id="7549250950481368089">Gestoorde wagwoorde sal hier verskyn. <ph name="BEGIN_LINK" /> Voer wagwoorde in<ph name="END_LINK" /> na <ph name="BRAND" />.</translation>
 <translation id="7549434883223124329">Skakel toesteltaal oor?</translation>

@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4212246570487010370">Continuă navigarea</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă.}few{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="427987768447457592">Grup de file nou</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzie)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzii)}other{(<ph name="REVIEWS_COUNT_MANY" /> de recenzii)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Compară rapid paginile făcând un grup. Pentru a începe, atinge lung un link.</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Ai <ph name="TABS_COUNT_ONE" /> filă pe care nu ai folosit-o recent}few{Ai <ph name="TABS_COUNT_MANY" /> file pe care nu le-ai folosit recent}other{Ai <ph name="TABS_COUNT_MANY" /> de file pe care nu le-ai folosit recent}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Închide grupul de file cu <ph name="TABS_COUNT_ONE" /> filă.}few{Închide grupul de file cu <ph name="TABS_COUNT_MANY" /> file.}other{Închide grupul de file cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="5339733443032484186">Ultima filă</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Ascunde modul de selectare multiplă</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Trimite fila}few{Trimite filele}other{Trimite filele}}</translation>
 <translation id="7129458170538955174">Informațiile despre magazin deschise la jumătate din înălțime</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Închide grupul <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă.}few{Închide grupul <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Închide grupul <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="7204204600596740190">Modul de selectare multiplă</translation>
 <translation id="731648547091221002">S-a selectat <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Vezi politica privind returnarea și altele</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Preț mai mic</translation>
 <translation id="8730999928494395583">Activitatea ta în filele incognito va fi eliminată de pe acest dispozitiv</translation>
 <translation id="8820741577754260431">Vezi scăderile de prețuri din file</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file cu <ph name="TABS_COUNT_ONE" /> filă.}few{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> file.}other{Extinde grupul de file cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>
 <translation id="9150694013019234766">Comută între filele din grupul de file în partea de jos a ecranului</translation>
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>

@@ -117,6 +117,7 @@
 <translation id="1082214733466244292">このデバイスの一部の機能は、管理者によってブロックされています</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> が Chrome 設定を元のデフォルトに戻すことを求めています。これにより、ホームページ、新しいタブの画面、検索エンジンがリセットされ、拡張機能が無効となり、すべてのタブの固定が解除されます。また、その他の一時的なキャッシュ データ（Cookie、コンテンツ データ、サイトデータなど）も消去されます。</translation>
 <translation id="1082725763867769612">オフライン ファイル</translation>
+<translation id="1084026333130513768">保存、共有、キャスト</translation>
 <translation id="1084096383128641877">このパスワードを削除しても、<ph name="DOMAIN" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="DOMAIN_LINK" /> のアカウントを削除してください。</translation>
 <translation id="1084288067399862432">不正使用されたパスワードを変更しました。
 
@@ -1219,6 +1220,7 @@
 <translation id="1910721550319506122">ようこそ！</translation>
 <translation id="1910736334623230603">複数の画像を検索することはできません。一度につき画像を 1 つだけ追加してください。</translation>
 <translation id="1910908536872421421">Chrome for Testing v<ph name="BROWSER_VERSION" /> は、自動テスト専用です。通常のブラウジングには、自動的に更新される標準版の Chrome をご使用ください。</translation>
+<translation id="1913749768968678106">キャスト、保存、共有</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1915734383465415025">販売店の番号</translation>
@@ -1320,6 +1322,7 @@
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
 <translation id="1981434377190976112">すべてのウェブサイト上にある自分の全データの読み取り</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
+<translation id="1986836014090708999">位置情報の詳細設定</translation>
 <translation id="1987317783729300807">アカウント</translation>
 <translation id="1987574314042117472">人気のアプリを選択してインストール</translation>
 <translation id="1988259784461813694">要件</translation>
@@ -1588,6 +1591,7 @@
 <translation id="2182058453334755893">クリップボードにコピーされました</translation>
 <translation id="2182419606502127232">サーバーログを含める。</translation>
 <translation id="2183570493397356669">続行ボタンは無効です</translation>
+<translation id="2184272387334793084">ログインすると、保存済みのパスワードなどをすべてのデバイスで使用できるようになります</translation>
 <translation id="2184515124301515068">サイトで音声が再生される可能性がある場合、Chrome で自動的に許可またはブロックする（推奨）</translation>
 <translation id="2186206192313702726">Google レンズ</translation>
 <translation id="2186711480981247270">別のデバイスから共有されたページ</translation>
@@ -1700,6 +1704,7 @@
 <translation id="2274840746523584236">Chromebook を充電してください</translation>
 <translation id="2276503375879033601">アプリを追加</translation>
 <translation id="2276910256003242519">データを消去しています...</translation>
+<translation id="2278193750452754829">拡張機能はこのサイトで許可されています。メニューを開くには選択してください。</translation>
 <translation id="2278562042389100163">ブラウザ ウィンドウを開く</translation>
 <translation id="2278668501808246459">コンテナ マネージャーを起動しています</translation>
 <translation id="2280486287150724112">右余白</translation>
@@ -2437,7 +2442,6 @@
 <translation id="2807517655263062534">ダウンロードしたファイルがここに表示されます</translation>
 <translation id="2808714658215073920">Wi-Fi に接続中...</translation>
 <translation id="2809586584051668049">、他 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 件</translation>
-<translation id="2810674554823487782">[オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="2811205483104563968">アカウント</translation>
 <translation id="2812049959647166806">Thunderbolt はサポートされていません</translation>
 <translation id="2812171980080389735">すぐに接続できるようにネットワークとパスワードを保存します</translation>
@@ -2457,7 +2461,6 @@
 <translation id="2822551631199737692">カメラを使用中</translation>
 <translation id="2822634587701817431">拡大または縮小</translation>
 <translation id="2822910719211888134">Linux のバックアップ中にエラーが発生しました</translation>
-<translation id="2823176412251649407">インターネット接続を変更して、[再試行] または [オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> は管理者により指定されたプロキシ設定を使用しています</translation>
 <translation id="2825151610926840364">カメラへのアクセス権を持つアプリとウェブサイトに対して、アクセスを許可します。カメラを使用するには、アプリの再起動やページの更新が必要になることがあります。</translation>
 <translation id="2825758591930162672">サブジェクトの公開鍵</translation>
@@ -2466,7 +2469,6 @@
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> を解放しました</translation>
 <translation id="2830528677948328648">Google アカウントを管理(&amp;G)</translation>
 <translation id="2831430281393059038">デバイスはサポートされています</translation>
-<translation id="2831897288513571718">[設定] で Google ドライブを有効にして、[再試行] または [オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="2832124733806557606">お子様はデバイスのログインやロック解除に PIN を使用できます。</translation>
 <translation id="2835177225987815960">現在のスキャン設定（割り当てたスイッチや自動スキャンの速度設定など）はリセットされます。</translation>
 <translation id="2835547721736623118">音声認識サービス</translation>
@@ -2549,6 +2551,7 @@
 <translation id="2893180576842394309">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="2893701697603065178">管理対象の開発環境</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
+<translation id="2895730582088342039">保存、共有、キャスト</translation>
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> 個のタブが開きます。本当によろしいですか？</translation>
@@ -3180,6 +3183,7 @@
 <translation id="3420501302812554910">内部セキュリティ キーのリセットが必要です</translation>
 <translation id="3421387094817716717">楕円曲線公開鍵</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、アカウントに基づく情報やアシスタントにアクセスできてしまうことがあります。</translation>
+<translation id="3421835120203732951">新しいプロファイルを追加</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> で一致する結果が見つかりました</translation>
 <translation id="3423463006624419153">「<ph name="PHONE_NAME_1" />」と「<ph name="PHONE_NAME_2" />」で次の操作を行います。</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> を再起動してください</translation>
@@ -4367,6 +4371,7 @@
 <translation id="4325433082696797523">ストレージと電源</translation>
 <translation id="4326146840124313313">Chrome の最高水準のセキュリティで、危険なウェブサイト、ダウンロード、拡張機能から保護します</translation>
 <translation id="4326484226728068206">カート内の商品が <ph name="MERCHANT_NAME" />（<ph name="MERCHANT_DOMAIN" />）で <ph name="DISCOUNT_TEXT" />（<ph name="RELATIVE_TIME" /> に閲覧）</translation>
+<translation id="4327380114687339519">拡張機能メニュー</translation>
 <translation id="4330191372652740264">氷水</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="4332976768901252016">保護者による使用制限を設定する</translation>
@@ -4565,6 +4570,7 @@
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> で予期しない再起動が行われました</translation>
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4482990632723642375">最近閉じたタブ</translation>
+<translation id="4486333480498805415">位置情報の精度</translation>
 <translation id="4487489714832036847">Chromebook では従来のソフトウェアではなくアプリを使用します。仕事効率化やエンタメなど、豊富なアプリが揃っています。</translation>
 <translation id="4488257340342212116">カメラの使用を許可するサイト</translation>
 <translation id="4490086832405043258">このプロフィールで Chrome OS のプロキシ設定を使用する。</translation>
@@ -5422,6 +5428,7 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> をブロックしました</translation>
 <translation id="5163910114647549394">タブをタブバーの右端に移動しました</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> では通知が許可されていません</translation>
+<translation id="5165989352025966137">全画面表示への自動切り替えを許可するサイト</translation>
 <translation id="516747639689914043">ハイパーテキスト トランスポート プロトコル（HTTP）</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
@@ -6479,7 +6486,6 @@
 <translation id="6016178549409952427">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目に移動します</translation>
 <translation id="6016551720757758985">Powerwash を実行して以前のバージョンに戻すことを確認</translation>
 <translation id="6016972670657536680">言語とキーボードのボタンを選択します。現在選択している言語は <ph name="LANGUAGE" /> です。</translation>
-<translation id="6017503096330453612">[再試行] または [オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="6017514345406065928">緑</translation>
 <translation id="6019169947004469866">トリミング</translation>
 <translation id="6019851026059441029">大変良い - HD</translation>
@@ -7522,7 +7528,6 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">すべてのユーザーで自動更新を行うよう設定できませんでした（プリフライト実行エラー: <ph name="ERROR_NUMBER" />）</translation>
 <translation id="682971198310367122">Google プライバシー ポリシー</translation>
-<translation id="6830200424658853449">オフライン エディタで開く</translation>
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6832218595502288407">左揃え</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
@@ -7940,7 +7945,6 @@
 <translation id="7174199383876220879">New! 音楽や動画などを操作できます。</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> の設定</translation>
 <translation id="7175353351958621980">ロード元:</translation>
-<translation id="7177079607604198383">インターネット接続を確認して、[再試行] または [オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7181117767881540376">ブックマーク バーを非表示(&amp;H)</translation>
@@ -8082,6 +8086,7 @@
 <translation id="7290242001003353852">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされており、カメラにアクセスしています。</translation>
 <translation id="7292067737327289208">お使いの<ph name="BEGIN_LINK" />ブラウザは組織<ph name="END_LINK" />によって、<ph name="BEGIN_LINK" />プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />（<ph name="VARIANT" />）</translation>
+<translation id="7295305918366078219">全画面表示への自動切り替えを許可しないサイト</translation>
 <translation id="7295614427631867477">なお、Android、Play、および関連付けられているアプリには、それぞれ独自のデータ収集と使用のポリシーが適用されます。</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> フォルダを選択</translation>
 <translation id="7297726121602187087">暗い緑</translation>
@@ -8416,6 +8421,7 @@
 <translation id="7544977292347272434">保護者に拡張機能の許可をリクエスト</translation>
 <translation id="7545466883021407599">サーバーに接続できませんでした。ネットワーク接続を確認して、もう一度お試しください。接続を確認しても問題が解決しない場合は、Chromebook を再起動してみてください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告: お使いの <ph name="PRODUCT_NAME" /> の設定はネットワーク ドライブに保存されています。遅延、クラッシュ、データ損失が生じる場合があります。</translation>
+<translation id="754836352246153944">拡張機能はこのサイトで許可されていません。メニューを開くには選択してください。</translation>
 <translation id="7548856833046333824">レモネード</translation>
 <translation id="7549250950481368089">保存したパスワードはこちらに表示されます。<ph name="BRAND" /> に<ph name="BEGIN_LINK" />パスワードをインポート<ph name="END_LINK" />します。</translation>
 <translation id="7549434883223124329">デバイスの言語を切り替えますか？</translation>
@@ -8507,6 +8513,7 @@
 <translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
 <translation id="7622966771025050155">キャプチャしたタブに切り替え</translation>
 <translation id="7624337243375417909">CapsLock オフ</translation>
+<translation id="7625025537587898155">新しいプロファイルを追加</translation>
 <translation id="7625568159987162309">すべてのサイトに保存されている権限とデータを表示</translation>
 <translation id="7625823789272218216">左側の新しいタブ</translation>
 <translation id="7628201176665550262">リフレッシュ レート</translation>
@@ -9184,6 +9191,7 @@
 <translation id="810185532889603849">カスタム色</translation>
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>
 <translation id="8102139037507939978">system_logs.txt から個人を特定できる情報を削除する。</translation>
+<translation id="8102344699913991108">この設定により、サイトはユーザーの操作に関係なく常に没入型の全画面表示モードになります</translation>
 <translation id="810362914482827094">パスキーを検索</translation>
 <translation id="8104088837833760645">eSIM プロファイルのダウンロード</translation>
 <translation id="8105273883928376822">続行するにはログインしてください。</translation>
@@ -9504,6 +9512,7 @@
 <translation id="8351630282875799764">充電は行われていません</translation>
 <translation id="8352287103893778223">タブグループのタイトル</translation>
 <translation id="835238322900896202">アンインストール中にエラーが発生しました。ターミナルからアンインストールしてください。</translation>
+<translation id="8353420862507374944">キャスト、保存、共有</translation>
 <translation id="8353683614194668312">次の権限にアクセス可能:</translation>
 <translation id="8354034204605718473">お子様の PIN を追加しました</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
@@ -9610,6 +9619,7 @@
 <translation id="8428271547607112339">学校用アカウントを追加</translation>
 <translation id="84297032718407999">あと <ph name="LOGOUT_TIME_LEFT" />でログアウトします</translation>
 <translation id="8431190899827883166">タップを表示</translation>
+<translation id="8432724317983466962">デフォルトでは、全画面表示にするにはユーザーの操作が必要です</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8434480141477525001">NaCl デバッグ ポート</translation>
 <translation id="8436054240208929121">タブグループの提案機能を使ってタブを整理するには、ログインして同期をオンにしてください</translation>
@@ -9992,6 +10002,7 @@
 <translation id="8729133765463465108">カメラを使用して QR コードをスキャンする</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731029916209785242">権限（<ph name="FORMATTED_ORIGIN" />）</translation>
+<translation id="873125854638499125">位置情報の精度の改善</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">ポート番号</translation>

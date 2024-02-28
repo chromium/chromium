@@ -1201,6 +1201,7 @@
 <translation id="3324687287337751929">4 x 6 इंच</translation>
 <translation id="3324983252691184275">गहरा लाल</translation>
 <translation id="3325027355611702542">कैंपर और आरवी</translation>
+<translation id="3325568918769906282">घटते क्रम में</translation>
 <translation id="3329013043687509092">संतृप्तता</translation>
 <translation id="3333762389743153920">वर्चुअल कार्ड के तौर पर इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="3336044043987989409">अपने निजी नेटवर्क पर मौजूद डिवाइसों या सर्वर से कनेक्ट करने की अनुमति देने के लिए, 'फिर से लोड करें' बटन दबाएं.</translation>
@@ -1868,6 +1869,7 @@
 <translation id="46128681529823442">फ़ुटबॉल इक्विपमेंट</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4622292761762557753">फिर भी ट्रांसफ़र करें</translation>
+<translation id="4622647778991854660">सूचना केंद्र में जाकर, सूचनाएं पाने की सुविधा चालू करें. <ph name="LINK" /> खोलें.</translation>
 <translation id="4627675673814409125">इस नीति को Chrome के प्रोफ़ाइल लेवल पर सेट नहीं किया जा सकता और इसे नज़रअंदाज़ कर दिया जाएगा.</translation>
 <translation id="4628678854894591460">छुट्टियों के लिए ऑफ़र</translation>
 <translation id="4628948037717959914">फ़ोटो</translation>
@@ -2245,6 +2247,7 @@
 <translation id="5371425731340848620">कार्ड अपडेट करें</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"आपकी घड़ी पीछे चल रही है" या "आपकी घड़ी आगे चल रही है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">बढ़ते क्रम में</translation>
 <translation id="5383478552402031184">फ़्लोरिंग</translation>
 <translation id="5385857628869214740">हास्य</translation>
 <translation id="5385966243497224160">बिना एचटीटीपीएस वाले यूआरएल की झलक नहीं दिखाई जा सकती</translation>
@@ -3198,6 +3201,7 @@
 <translation id="7234112195906418665">यात्रा और परिवहन</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूरा हो गया है | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">उपहार और खास मौके के लिए आइटम</translation>
+<translation id="7237454422623102448">सिस्टम सेटिंग</translation>
 <translation id="7237492777898608035">इस साइट के लिए यह मैसेज दोबारा न दिखाएं</translation>
 <translation id="7240120331469437312">प्रमाणपत्र विषय वैकल्पिक नाम</translation>
 <translation id="7241863998525879494">अपडेट होने पर क्या सुविधाएं मिलेंगी</translation>
@@ -3479,6 +3483,7 @@
 <translation id="7719791801330803993">फ़ोटो और वीडियो सॉफ़्टवेयर</translation>
 <translation id="772128550427553158">सीवीसी आपके कार्ड के आगे के हिस्से में मौजूद होता है.</translation>
 <translation id="7724603315864178912">काटें</translation>
+<translation id="7730057435797792985">क्रम से लगाएं</translation>
 <translation id="7734285854693414638">Google Forms में जल्दी से नया फ़ॉर्म बनाएं</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> भाषा के पेज का हमेशा अनुवाद करें</translation>
 <translation id="7736959720849233795">लिंक का पता कॉपी करें</translation>

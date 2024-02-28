@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="4159784952369912983">Күлгін</translation>
 <translation id="4212246570487010370">Үздіксіз көру</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар "<ph name="TITLE_OF_GROUP" />" қойындылар тобын жаю.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар "<ph name="TITLE_OF_GROUP" />" қойындылар тобын жаю.}}</translation>
 <translation id="427987768447457592">Жаңа қойындылар тобы</translation>
 <translation id="4648718555153979859">Қойындылар осы жерге топтастырылады.</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> пікір)}other{(<ph name="REVIEWS_COUNT_MANY" /> пікір)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Топ жасай отырып, беттерді жылдам салыстырыңыз. Бастау үшін сілтемені басып тұрыңыз.</translation>
 <translation id="5161254044473106830">Тақырып қою қажет</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_ONE" /> қойынды бар.}other{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_MANY" /> қойынды бар.}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар қойындылар тобын жабу}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жабу}}</translation>
 <translation id="5339733443032484186">Соңғы қойындыңыз</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Бірнеше нұсқа таңдау режимін жасыру</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Қойындыны бөлісу}other{Қойындыларды бөлісу}}</translation>
 <translation id="7129458170538955174">Бұл дүкеннің жартылай ашылғандығы туралы ақпарат</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар "<ph name="TITLE_OF_GROUP" />" тобын жабу}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар "<ph name="TITLE_OF_GROUP" />" тобын жабу}}</translation>
 <translation id="7204204600596740190">Бірнеше нұсқа таңдау режимі</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> таңдалды</translation>
 <translation id="7326879924029668159">Қайтару саясаты мен басқа да ақпаратты көріңіз.</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Арзанырақ</translation>
 <translation id="8730999928494395583">Бұл инкогнито қойындыларындағы әрекетіңіз осы құрылғыдан өшіріледі.</translation>
 <translation id="8820741577754260431">Баға төмендеген кезде, оны қойындыдан көріңіз.</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар қойындылар тобын жаю.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жаю.}}</translation>
 <translation id="9090098097337832354">Бұл дүкеннің жабық екендігі туралы ақпарат</translation>
 <translation id="9150694013019234766">Экранның төменгі жағындағы қойындылар тобында қойындылар арасында ауысуға болады.</translation>
 <translation id="9169594135889675189">Топқа жаңа қойынды енгізу</translation>

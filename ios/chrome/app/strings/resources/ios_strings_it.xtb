@@ -470,6 +470,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3416023309465857378">25 ott 2023</translation>
 <translation id="3425644765244388016">Nickname carta</translation>
 <translation id="3433057996795775706">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />. Cambia la password su <ph name="WEBSITE" /> per proteggere il tuo account dagli altri.</translation>
+<translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3443810440409579745">Scheda ricevuta.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Visualizzazione divisa</translation>
@@ -590,7 +591,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4045648459118332842">Recupera le tue password salvate con un solo tocco in qualsiasi app</translation>
 <translation id="4049507953662678203">Controlla la connessione di rete e riprova.</translation>
 <translation id="4054572406751135230">Rimani al passo con notizie, sport e molto altro.</translation>
-<translation id="4057531989585132525">Sicurezza della connessione</translation>
 <translation id="4066639687323968621">Accedi con il tuo Account Google per sincronizzare i preferiti, la cronologia e altri dati.</translation>
 <translation id="4092655288299341041">Mostra la Guida</translation>
 <translation id="4105841739161771091">{count,plural, =1{Elimina indirizzo}other{Elimina indirizzi}}</translation>

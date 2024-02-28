@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4212246570487010370">Verder browsen</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen.}other{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen.}}</translation>
 <translation id="427987768447457592">Nieuwe tabbladgroep</translation>
 <translation id="4648718555153979859">Je tabbladen zijn hier gegroepeerd</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Je hebt <ph name="TABS_COUNT_ONE" /> tabblad dat je niet recent hebt gebruikt}other{Je hebt <ph name="TABS_COUNT_MANY" /> tabbladen die je niet recent hebt gebruikt}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad sluiten.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten.}}</translation>
 <translation id="5339733443032484186">Je laatste tabblad</translation>
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabblad delen}other{Tabbladen delen}}</translation>
 <translation id="7129458170538955174">Informatie over deze winkel is op halve hoogte geopend</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Groep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad sluiten.}other{Groep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten.}}</translation>
 <translation id="7204204600596740190">Optie om meerdere tabbladen te selecteren</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> is geselecteerd</translation>
 <translation id="7326879924029668159">Retourbeleid en meer bekijken</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Lagere prijs</translation>
 <translation id="8730999928494395583">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
 <translation id="8820741577754260431">Prijsdalingen bekijken op je tabbladen</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen.}}</translation>
 <translation id="9090098097337832354">Informatie over deze winkel gesloten</translation>
 <translation id="9150694013019234766">Je kunt onderaan het scherm schakelen tussen tabbladen in je tabbladgroep</translation>
 <translation id="9169594135889675189">Nieuw tabblad aan groep toevoegen</translation>

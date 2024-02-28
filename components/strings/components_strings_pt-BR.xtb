@@ -1321,6 +1321,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3542628208405253498">Imagem do cartão</translation>
 <translation id="3542768452570884558">Abrir link em uma nova janela</translation>
 <translation id="3547746132308051926">20 x 24 pol.</translation>
+<translation id="3552155506104542239">Aviso: esta política está em conflito com a <ph name="POLICY_NAME" /> e não afetará apps Android. Em outros apps a política vai funcionar conforme o esperado.</translation>
 <translation id="3552297013052089404">Fonte Sans-Serif</translation>
 <translation id="3558573058928565255">Dia</translation>
 <translation id="355995771319966853">Desfazer preenchimento automático</translation>
@@ -3019,11 +3020,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6898699227549475383">O (Organização)</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6908168784986658395">Quando você fecha todas as guias anônimas do Chromium, suas atividades nelas são apagadas deste dispositivo:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Histórico de pesquisa<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" /><ph name="END_LIST_ITEM" />Informações inseridas em formulários
-          <ph name="END_LIST" /></translation>
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Histórico de pesquisa<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Informações inseridas em formulários<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" />
+</translation>
 <translation id="691024665142758461">Fazer o download de vários arquivos</translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6916193791494646625">Informe o motivo do download (obrigatório)</translation>

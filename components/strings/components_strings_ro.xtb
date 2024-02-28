@@ -1321,6 +1321,7 @@
 <translation id="3542628208405253498">Imaginea cardului</translation>
 <translation id="3542768452570884558">Deschide linkul într-o fereastră nouă</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
+<translation id="3552155506104542239">Avertisment: politica intră în conflict cu <ph name="POLICY_NAME" /> și nu va avea niciun efect asupra aplicațiilor pentru Android. În caz contrar, politica funcționează corespunzător.</translation>
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">În timpul zilei</translation>
 <translation id="355995771319966853">Anulează completarea automată</translation>
@@ -1868,6 +1869,7 @@
 <translation id="46128681529823442">Echipament pentru fotbal</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4622292761762557753">Transferă oricum</translation>
+<translation id="4622647778991854660">Activează notificările în Centrul de notificări. Deschide <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Această politică nu se poate seta la nivelul profilului Chrome și va fi ignorată.</translation>
 <translation id="4628678854894591460">Oferte de vacanțe</translation>
 <translation id="4628948037717959914">Fotografie</translation>
@@ -3199,6 +3201,7 @@
 <translation id="7234112195906418665">Călătorii și transport</translation>
 <translation id="7236417832106250253">Progres: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Cadouri și articole pentru evenimente speciale</translation>
+<translation id="7237454422623102448">Setări de sistem</translation>
 <translation id="7237492777898608035">Nu mai afișa mesajul pentru acest site</translation>
 <translation id="7240120331469437312">Nume alternativ subiect certificat</translation>
 <translation id="7241863998525879494">La ce te poți aștepta</translation>

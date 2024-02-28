@@ -43,6 +43,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4212246570487010370">Axtarmağa davam edin</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin.}}</translation>
 <translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4648718555153979859">Tablar burada qruplaşdırılır</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> rəy)}other{(<ph name="REVIEWS_COUNT_MANY" /> rəy)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">Qruplaşdırmaqla səhifələri asanlıqla müqayisə edin. Başlamaq üçün linkə toxunub saxlayın.</translation>
 <translation id="5161254044473106830">Başlıq tələb olunur</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_ONE" /> tab var}other{Son vaxtlar istifadə etmədiyiniz <ph name="TABS_COUNT_MANY" /> tab var}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan tab qrupunu bağlayın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu bağlayın.}}</translation>
 <translation id="5339733443032484186">Son tab</translation>
 <translation id="5400836586163650660">Boz</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">Çoxsaylı seçim rejimini gizlədin</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabı paylaşın}other{Tabları paylaşın}}</translation>
 <translation id="7129458170538955174">Bu mağaza haqqında məlumatlar yarım hündürlükdə açılıb</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın.}}</translation>
 <translation id="7204204600596740190">Çoxsaylı seçim rejimi</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> Seçilib</translation>
 <translation id="7326879924029668159">Qaytarma siyasətinə və digər məlumatlara baxın</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8730999928494395583">Bu Anonim tablardakı fəaliyyət bu cihazdan silinəcək</translation>
 <translation id="8820741577754260431">Tablarda qiymət endirimləri göstərilsin</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tab olan tab qrupunu genişləndirin.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu genişləndirin.}}</translation>
 <translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
 <translation id="9150694013019234766">Ekranın aşağısındakı tab qrupunda tablar arasında keçid edin</translation>
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>

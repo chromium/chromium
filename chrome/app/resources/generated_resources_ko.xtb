@@ -2460,7 +2460,6 @@
 <translation id="2807517655263062534">다운로드한 파일이 여기에 표시됩니다.</translation>
 <translation id="2808714658215073920">Wi-Fi에 연결 중...</translation>
 <translation id="2809586584051668049">외 <ph name="NUMBER_ADDITIONAL_DISABLED" />개</translation>
-<translation id="2810674554823487782">'오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="2811205483104563968">계정</translation>
 <translation id="2812049959647166806">Thunderbolt가 지원되지 않음</translation>
 <translation id="2812171980080389735">즉시 연결할 수 있도록 저장된 네트워크 및 비밀번호</translation>
@@ -2480,7 +2479,6 @@
 <translation id="2822551631199737692">카메라 사용 중</translation>
 <translation id="2822634587701817431">축소 / 확대</translation>
 <translation id="2822910719211888134">Linux 백업 중에 오류가 발생했습니다.</translation>
-<translation id="2823176412251649407">인터넷 연결을 변경하고 '다시 시도'를 선택하거나 '오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 관리자의 프록시 설정을 사용 중입니다.</translation>
 <translation id="2825151610926840364">카메라 권한이 있는 앱 및 웹사이트에 대한 액세스를 허용합니다. 카메라를 사용하려면 앱을 다시 시작하거나 페이지를 새로고침해야 할 수 있습니다.</translation>
 <translation id="2825758591930162672">대상의 공개 키</translation>
@@ -2489,7 +2487,6 @@
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> 확보됨</translation>
 <translation id="2830528677948328648">Google 계정 관리(&amp;G)</translation>
 <translation id="2831430281393059038">지원되는 기기입니다.</translation>
-<translation id="2831897288513571718">설정에서 Google Drive를 사용 설정하고 '다시 시도'를 선택하거나 '오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="2832124733806557606">자녀가 PIN을 사용해 로그인하거나 기기를 잠금 해제할 수 있습니다</translation>
 <translation id="2835177225987815960">할당된 스위치 및 자동 스캔 속도 환경설정을 포함하여 현재의 스캔 설정이 재설정됩니다.</translation>
 <translation id="2835547721736623118">음성 인식 서비스</translation>
@@ -6130,7 +6127,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />에 연결됨</translation>
 <translation id="5713960379473463904">공백 입력 스타일</translation>
 <translation id="5715711091495208045">플러그인 중개인: <ph name="PLUGIN_NAME" /></translation>
-<translation id="5718049162805123412">지금 변경해야 합니다.</translation>
+<translation id="5718049162805123412">지금 변경해야 합니다</translation>
 <translation id="5719854774000914513">사이트에서 HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="572155275267014074">Android 설정</translation>
 <translation id="5722086096420375088">초록색 및 흰색</translation>
@@ -6505,7 +6502,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠로 이동</translation>
 <translation id="6016551720757758985">이전 버전으로 돌아가서 Powerwash 확인</translation>
 <translation id="6016972670657536680">언어 및 키보드 버튼을 선택하세요. 현재 선택된 언어는 <ph name="LANGUAGE" />입니다.</translation>
-<translation id="6017503096330453612">'다시 시도'를 선택하거나 '오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="6017514345406065928">녹색</translation>
 <translation id="6019169947004469866">자르기</translation>
 <translation id="6019851026059441029">훌륭함 - HD</translation>
@@ -7550,7 +7546,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">모든 사용자에 대해 자동 업데이트를 설정하지 못했습니다(프리플라이트 실행 오류: <ph name="ERROR_NUMBER" />).</translation>
 <translation id="682971198310367122">Google 개인정보처리방침</translation>
-<translation id="6830200424658853449">오프라인 편집기에서 열기</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="6832218595502288407">왼쪽 정렬</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> 그룹에서 탭이 삭제됨 - <ph name="GROUP_CONTENTS" /></translation>
@@ -7968,7 +7963,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7174199383876220879">New! 음악, 동영상 등의 항목을 제어할 수 있습니다.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
 <translation id="7175353351958621980">로드 위치:</translation>
-<translation id="7177079607604198383">인터넷 연결을 확인하고 '다시 시도'를 선택하거나 '오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7181117767881540376">북마크바 숨기기</translation>
@@ -10289,7 +10283,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8940888110818450052">로그인 옵션</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' 권한 취소</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> 꺼짐</translation>
-<translation id="894191600409472540">안전한 비밀번호를 만드세요.</translation>
+<translation id="894191600409472540">안전한 비밀번호를 만드세요</translation>
 <translation id="8942714513622077633">Microsoft 365 설정을 취소하시겠어요?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">배터리 소모가 빨라짐(현재 <ph name="BATTERY_PERCENTAGE" />%)</translation>

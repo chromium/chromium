@@ -492,10 +492,6 @@ Se impostato su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, ap
 <translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="1418387035898607074">Salta i controlli di Navigazione sicura per i file scaricati da fonti attendibili</translation>
 <translation id="1419020637569060510">Aggiungi limitazioni all'utilizzo di un account gestito come account secondario su ChromeOS</translation>
-<translation id="1419945463533552043">Se il criterio viene attivato, la funzionalità di aggiornamento User-Agent Client Hints GREASE allinea l'algoritmo User-Agent GREASE alla specifica più recente.
-      La specifica aggiornata potrebbe interrompere il funzionamento di alcuni siti web che limitano i caratteri consentiti per le richieste. Per ulteriori informazioni, consulta la specifica: https://wicg.github.io/ua-client-hints/#grease.
-      Se questo criterio viene attivato o se non viene configurato, sarà il browser a decidere quale algoritmo User-Agent GREASE usare. Se il criterio viene disattivato, viene usato l'algoritmo User-Agent GREASE precedente.
-      Questo criterio è una misura temporanea e verrà rimosso in una futura versione.</translation>
 <translation id="142346659686073702">Consenti agli utenti non affiliati di usare Crostini</translation>
 <translation id="1423900783955065155">Questo criterio consente di stabilire se una pagina con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /> può essere memorizzata o meno nella cache back-forward. L'impostazione del sito web per questa intestazione potrebbe non prevedere il ripristino della pagina dalla cache back-forward perché alcune informazioni sensibili potrebbero essere ancora visualizzate dopo il ripristino, anche se non sono più accessibili.
 

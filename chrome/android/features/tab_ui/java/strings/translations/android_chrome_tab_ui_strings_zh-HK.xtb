@@ -43,6 +43,7 @@
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要唔要將佢哋分組？</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">建立群組以快速比較多個頁面。輕觸並按住連結即可開始建立。</translation>
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{你有 <ph name="TABS_COUNT_ONE" /> 個最近未用過的分頁}other{你有 <ph name="TABS_COUNT_MANY" /> 個最近未用過的分頁}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">隱藏多重選取模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
 <translation id="7129458170538955174">關於呢間商店嘅資料宜家顯示喺畫面下半部</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組。}}</translation>
 <translation id="7204204600596740190">多重選取模式</translation>
 <translation id="731648547091221002">揀咗<ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">查看退貨政策等資料</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730999928494395583">系統將會從此裝置移除你在這些無痕式分頁中的活動</translation>
 <translation id="8820741577754260431">在分頁上查看降價資料</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
 <translation id="9150694013019234766">喺接近畫面底部附近嘅分頁群組入面切換分頁</translation>
 <translation id="9169594135889675189">喺群組入面加新嘅分頁</translation>

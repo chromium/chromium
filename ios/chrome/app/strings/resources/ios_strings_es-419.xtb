@@ -470,6 +470,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3416023309465857378">25 de octubre de 2023</translation>
 <translation id="3425644765244388016">Sobrenombre de la tarjeta</translation>
 <translation id="3433057996795775706">Si borras esta contraseña, no se quitará tu cuenta de <ph name="WEBSITE" />. Cambia la contraseña de <ph name="WEBSITE" /> para proteger la cuenta.</translation>
+<translation id="3435738964857648380">Seguridad</translation>
 <translation id="3443810440409579745">Se recibió una pestaña.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vista dividida</translation>
@@ -590,7 +591,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4045648459118332842">Obtén tus contraseñas guardadas en cualquier app con solo presionar una vez</translation>
 <translation id="4049507953662678203">Asegúrate de tener una conexión de red y vuelve a intentarlo.</translation>
 <translation id="4054572406751135230">Mantente al tanto de las noticias, los deportes y mucho más.</translation>
-<translation id="4057531989585132525">Seguridad de la conexión</translation>
 <translation id="4066639687323968621">Accede con tu Cuenta de Google para sincronizar tus favoritos, historial y más.</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Borrar dirección}other{Borrar direcciones}}</translation>

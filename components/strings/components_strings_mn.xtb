@@ -1322,6 +1322,7 @@
 <translation id="3542628208405253498">Картын зураг</translation>
 <translation id="3542768452570884558">Холбоосыг шинэ цонхонд нээх</translation>
 <translation id="3547746132308051926">20 x 24 инч</translation>
+<translation id="3552155506104542239">Сануулга: Энэ бодлого <ph name="POLICY_NAME" /> бодлоготой зөрчилдөж байгаа бөгөөд Android аппуудад нөлөөлөхгүй. Өөрөөр энэ бодлого зориулалтын дагуу ажиллаж байна.</translation>
 <translation id="3552297013052089404">Санс-сериф фонт</translation>
 <translation id="3558573058928565255">Өдөр цаг</translation>
 <translation id="355995771319966853">Автоматаар бөглөх хэсгийг болих</translation>
@@ -1869,6 +1870,7 @@
 <translation id="46128681529823442">Хөлбөмбөгийн хэрэгсэл</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
 <translation id="4622292761762557753">Ямартай ч шилжүүлэх</translation>
+<translation id="4622647778991854660">Мэдэгдлийн төвд мэдэгдлүүдийг идэвхжүүлнэ үү. <ph name="LINK" />-г нээнэ үү.</translation>
 <translation id="4627675673814409125">Энэ бодлогыг Chrome-н профайлын түвшинд тохируулах боломжгүй бөгөөд үл хэрэгсэнэ.</translation>
 <translation id="4628678854894591460">Амралтын саналууд</translation>
 <translation id="4628948037717959914">Зураг</translation>
@@ -3199,6 +3201,7 @@
 <translation id="7234112195906418665">Аялал, тээвэр</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% дууссан | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Бэлэг болон тусгай арга хэмжээний зүйлс</translation>
+<translation id="7237454422623102448">Системийн тохиргоо</translation>
 <translation id="7237492777898608035">Энэ сайтад уг мессежийг дахин бүү харуул</translation>
 <translation id="7240120331469437312">Гэрчилгээний субъектийн хувилбар нэр</translation>
 <translation id="7241863998525879494">Ямар хүлээлттэй байх вэ?</translation>

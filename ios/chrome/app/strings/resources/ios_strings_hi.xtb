@@ -470,6 +470,7 @@
 <translation id="3416023309465857378">25 अक्टूबर, 2023</translation>
 <translation id="3425644765244388016">कार्ड का कोई दूसरा नाम</translation>
 <translation id="3433057996795775706">इस पासवर्ड को मिटाने से, आपका <ph name="WEBSITE" /> वाला खाता नहीं मिटेगा. अपने खाते को दूसरों से सुरक्षित रखने के लिए, <ph name="WEBSITE" /> पर अपना पासवर्ड बदलें.</translation>
+<translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3443810440409579745">टैब मिला.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="3448016392200048164">स्प्लिट व्यू</translation>
@@ -588,7 +589,6 @@
 <translation id="4045648459118332842">सेव किए गए पासवर्ड को किसी भी ऐप्लिकेशन में इस्तेमाल करने के लिए, सिर्फ़ एक बार टैप करें</translation>
 <translation id="4049507953662678203">पक्का करें कि आपके पास नेटवर्क कनेक्शन है और फिर से प्रयास करें.</translation>
 <translation id="4054572406751135230">खबरें, खेल-कूद वगैरह की सूचनाएं पाएं.</translation>
-<translation id="4057531989585132525">कनेक्शन सुरक्षित है या नहीं</translation>
 <translation id="4066639687323968621">अपने बुकमार्क, इतिहास वगैरह को सिंक करने के लिए, अपने Google खाते से साइन इन करें.</translation>
 <translation id="4092655288299341041">ऐप्लिकेशन से जुड़ी मदद पाएं</translation>
 <translation id="4105841739161771091">{count,plural, =1{पता मिटाएं}one{पता मिटाएं}other{पते मिटाएं}}</translation>

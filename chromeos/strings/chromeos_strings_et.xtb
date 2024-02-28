@@ -322,7 +322,7 @@
 <translation id="2940811910881150316">Seadet ei saa testida. Testimiseks avage uuesti kaas.</translation>
 <translation id="2941112035454246133">Madal</translation>
 <translation id="2956070106555335453">Kokkuvõte</translation>
-<translation id="299385721391037602">roosa ja kollane</translation>
+<translation id="299385721391037602">Roosades ja kollastes</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
 <translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="3017079585324758401">Taust</translation>
@@ -520,7 +520,7 @@
 <translation id="4310735698903592804">Google'i AI platvormil toimivad hiljutised taustapildid</translation>
 <translation id="4320904097188876154">neoonroosades toonides</translation>
 <translation id="4333390807948134856">Klahv <ph name="KEY_NAME" /> on alla vajutatud</translation>
-<translation id="4341897648462347919">sinakasroheline</translation>
+<translation id="4341897648462347919">Sinakasrohelistes</translation>
 <translation id="4354430579665871434">klahv</translation>
 <translation id="4361257691546579041">APN on vaiketüüp.</translation>
 <translation id="437294888293595148">Lähtesta kõik otseteed</translation>
@@ -629,7 +629,7 @@
 <translation id="4965703485264574128">Umbkaudse tulemuse saamiseks korrutage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Jagatud</translation>
 <translation id="4972592110715526173">muudab režiimi</translation>
-<translation id="4981003703840817201">sinine ja roosa</translation>
+<translation id="4981003703840817201">Sinistes ja roosades</translation>
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
 <translation id="4982627662315910959">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades tõstuklahvi ja veel ühte muuteklahvi (Ctrl, Alt või <ph name="META_KEY" />).</translation>
 <translation id="4985509611418653372">Käitati</translation>
@@ -719,7 +719,7 @@
 <translation id="5543701552415191873">lukus</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Päikeseloojangul automaatselt tumedale teemale lülitumine</translation>
-<translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> tooniga <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> toonides <ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skanni uuesti</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
@@ -817,7 +817,7 @@
 <translation id="6137767437444130246">Kasutaja sertifikaat</translation>
 <translation id="6146993107019042706">Toimingu lõpuleviimiseks sisestage oma uus parool</translation>
 <translation id="6147514244879357420">PNG</translation>
-<translation id="6156030503438652198">kastanpruun ja roosa</translation>
+<translation id="6156030503438652198">Kastanpruunides ja roosades</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Loodi kuupäeval <ph name="DATE" /></translation>
@@ -834,7 +834,7 @@
 <translation id="6275224645089671689">Paremnool</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
-<translation id="6283581480003247988">sinine ja lilla</translation>
+<translation id="6283581480003247988">Sinistes ja lillades</translation>
 <translation id="6284632978374966585">Tumeda teema sisselülitamine</translation>
 <translation id="628726841779494414">Hallake oma printereid printeri seadetes</translation>
 <translation id="6292095526077353682">Laadimise ajal kuvage ekraanisäästja</translation>
@@ -850,7 +850,7 @@
 <translation id="6331191339300272798">Automaatne tume teema</translation>
 <translation id="6340526405444716530">Isikupärastamine</translation>
 <translation id="6348738456043757611">Kasutajanimi ja parool</translation>
-<translation id="6352210854422428614">erinev planeet</translation>
+<translation id="6352210854422428614">teine planeet</translation>
 <translation id="6359706544163531585">Heleda teema keelamine</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>

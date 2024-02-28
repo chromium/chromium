@@ -1201,6 +1201,7 @@
 <translation id="3324687287337751929">4 x 6 นิ้ว</translation>
 <translation id="3324983252691184275">แดงเข้ม</translation>
 <translation id="3325027355611702542">รถสำหรับตั้งแคมป์และรถบ้าน</translation>
+<translation id="3325568918769906282">ตามลำดับจากมากไปน้อย</translation>
 <translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
 <translation id="3333762389743153920">ไม่มีสิทธิ์ใช้บัตรเสมือน</translation>
 <translation id="3336044043987989409">กดปุ่มโหลดซ้ำเพื่ออนุญาตการเชื่อมต่อกับอุปกรณ์หรือเซิร์ฟเวอร์ในเครือข่ายส่วนตัว</translation>
@@ -1867,6 +1868,7 @@
 <translation id="46128681529823442">อุปกรณ์ฟุตบอล</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
 <translation id="4622292761762557753">โอนต่อไป</translation>
+<translation id="4622647778991854660">เปิดใช้การแจ้งเตือนในศูนย์การแจ้งเตือน เปิด<ph name="LINK" /></translation>
 <translation id="4627675673814409125">ตั้งค่านโยบายนี้ในระดับโปรไฟล์ Chrome ไม่ได้ และระบบจะไม่สนใจ</translation>
 <translation id="4628678854894591460">ข้อเสนอสำหรับวันหยุดพักผ่อน</translation>
 <translation id="4628948037717959914">รูปภาพ</translation>
@@ -2245,6 +2247,7 @@
 <translation id="5371425731340848620">อัปเดตบัตร</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"นาฬิกาของคุณช้ากว่าปัจจุบัน" หรือ "นาฬิกาของคุณเร็วกว่าปัจจุบัน" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">ตามลำดับจากน้อยไปมาก</translation>
 <translation id="5383478552402031184">การปูพื้น</translation>
 <translation id="5385857628869214740">อารมณ์ขัน</translation>
 <translation id="5385966243497224160">แสดงตัวอย่าง URL ที่ไม่ใช่ HTTPS ไม่ได้</translation>
@@ -3198,6 +3201,7 @@
 <translation id="7234112195906418665">การเดินทางและการขนส่ง</translation>
 <translation id="7236417832106250253">เสร็จสมบูรณ์แล้ว <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">ของขวัญและสินค้าในโอกาสพิเศษ</translation>
+<translation id="7237454422623102448">การตั้งค่าระบบ</translation>
 <translation id="7237492777898608035">ไม่ต้องแสดงข้อความนี้อีกสำหรับเว็บไซต์นี้</translation>
 <translation id="7240120331469437312">ชื่อสำรองของหัวเรื่องใบรับรอง</translation>
 <translation id="7241863998525879494">สิ่งที่คาดว่าจะเกิดขึ้น</translation>
@@ -3480,6 +3484,7 @@
 <translation id="7719791801330803993">ซอฟต์แวร์ของรูปถ่ายและวิดีโอ</translation>
 <translation id="772128550427553158">CVC จะอยู่ที่ด้านหน้าบัตร</translation>
 <translation id="7724603315864178912">ตัด</translation>
+<translation id="7730057435797792985">จัดเรียง</translation>
 <translation id="7734285854693414638">สร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="773466115871691567">แปลหน้าเว็บภาษา<ph name="SOURCE_LANGUAGE" />ทุกครั้ง</translation>
 <translation id="7736959720849233795">คัดลอกที่อยู่ลิงก์</translation>

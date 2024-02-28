@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">වෙබ් සෙවීම</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> සඳහා Drive තුළ සුරැකීම.</translation>
 <translation id="2256933947031277845">නිශ්චිත ගිණුම්වලින් පමණක් පිරීමට ඔබගේ සංවිධානය ඔබට ඉඩ ‍දෙයි.</translation>
+<translation id="2257594476751932246">පුද්ගලායන කෙරෙන පුවත්</translation>
 <translation id="2258326562203545455">{count,plural, =1{ඔබට ඔබේ පිටුසන ඔබේ Google ගිණුමේ, {email} සුරැකිය හැක.}one{ඔබට ඔබේ පිටුසන් ඔබේ Google ගිණුමේ, {email} සුරැකිය හැක.}other{ඔබට ඔබේ පිටුසන් ඔබේ Google ගිණුමේ, {email} සුරැකිය හැක.}}</translation>
 <translation id="225943865679747347">දෝශ කේතය: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ගිණුම එක් කරන්න</translation>
@@ -470,6 +471,7 @@
 <translation id="3416023309465857378">2023 ඔක්තෝබර් 25</translation>
 <translation id="3425644765244388016">කාඩ්පත් අපනාමය</translation>
 <translation id="3433057996795775706">මෙම මුරපදය මැකීම <ph name="WEBSITE" /> මත ඔබේ ගිණුම මකන්නේ නැත. එය අන් අයගෙන් ආරක්ෂිතව තබා ගැනීමට <ph name="WEBSITE" /> හි ඔබගේ මුරපදය වෙනස් කරන්න.</translation>
+<translation id="3435738964857648380">ආරක්ෂක</translation>
 <translation id="3443810440409579745">ලැබූ පටිත්ත.</translation>
 <translation id="3445288400492335833">මිනි <ph name="MINUTES" /></translation>
 <translation id="3448016392200048164">විභෙදුම් දසුන</translation>
@@ -590,7 +592,6 @@
 <translation id="4045648459118332842">ඔබේ සුරකින ලද මුරපද එක තට්ටු කිරීමකින් ඕනෑම යෙදුමකින් ලබා ගන්න</translation>
 <translation id="4049507953662678203">ඔබට ජාල සම්බන්ධතාවක් ඇති බව සහතික කරගෙන, නැවත උත්සාහ කරන්න.</translation>
 <translation id="4054572406751135230">පුවත්, ක්‍රීඩා සහ තවත් දේ සමගින් සිටින්න.</translation>
-<translation id="4057531989585132525">සම්බන්ධතා ආරක්ෂාව</translation>
 <translation id="4066639687323968621">ඔබේ පිටුසන්, ඉතිහාසය, සහ තවත් දේ සමමුහුර්ත කිරීමට ඔබේ Google ගිණුම සමගින් පුරන්න.</translation>
 <translation id="4092655288299341041">උදවු පෙන්වන්න</translation>
 <translation id="4105841739161771091">{count,plural, =1{ලිපිනය මකන්න}one{ලිපින මකන්න}other{ලිපින මකන්න}}</translation>

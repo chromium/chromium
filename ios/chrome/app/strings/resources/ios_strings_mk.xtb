@@ -471,6 +471,7 @@
 <translation id="3416023309465857378">25 окт. 2023 г.</translation>
 <translation id="3425644765244388016">Прекар на картичката</translation>
 <translation id="3433057996795775706">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="WEBSITE" />. Сменете ја лозинката на <ph name="WEBSITE" /> за да ја заштитите сметката од надворешни лица.</translation>
+<translation id="3435738964857648380">Безбедност</translation>
 <translation id="3443810440409579745">Примена е картичка.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3448016392200048164">Поделен приказ</translation>
@@ -591,7 +592,6 @@
 <translation id="4045648459118332842">Добивајте ги зачуваните лозинки во која било апликација со еден допир</translation>
 <translation id="4049507953662678203">Проверете дали имате мрежна врска и обидете се повторно.</translation>
 <translation id="4054572406751135230">Бидете во тек со вестите, спортот и друго.</translation>
-<translation id="4057531989585132525">Безбедност на врската</translation>
 <translation id="4066639687323968621">Најавете се со сметката на Google за да ги синхронизирате вашите обележувачи, историја и друго.</translation>
 <translation id="4092655288299341041">Прикажи помош</translation>
 <translation id="4105841739161771091">{count,plural, =1{Избриши ја адресата}one{Избриши ги адресите}other{Избриши ги адресите}}</translation>

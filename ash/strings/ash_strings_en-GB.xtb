@@ -358,6 +358,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> preview. Active desk.</translation>
 <translation id="2487915095798731898">Join</translation>
+<translation id="2499445554382787206">Desk profile menu. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2504454902900101003">Dismiss setting up viewing your phone's recent photos, media and notifications</translation>
 <translation id="2509468283778169019">CAPS LOCK is on</translation>
@@ -412,6 +413,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2726420622004325180">Your phone must have mobile data to provide a hotspot</translation>
 <translation id="2727175239389218057">Reply</translation>
 <translation id="2727977024730340865">Plugged in to a low-power charger. Battery charging may not be reliable.</translation>
+<translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">'Delete'</translation>
 <translation id="2750941250130734256">Active window undocked.</translation>
@@ -604,6 +606,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3509391053705095206">Can’t find your phone. Make sure that your phone’s Bluetooth is on.</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Tasks last updated: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Update device within 1 minute}other{Update device within # minutes}}</translation>
 <translation id="3522979239100719575">Looking for available profiles. This may take a few minutes.</translation>
 <translation id="3526440770046466733">Open link in new tab and stay in current tab</translation>
@@ -1062,6 +1065,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5218064144558110424">Mark as not completed</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5229343007215035173">Turn on/off Privacy Screen</translation>
+<translation id="5230516054153933099">Window</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
 <translation id="5238719049014159442">Open/close Launcher</translation>
@@ -1142,6 +1146,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5536723544185013515">Recent apps; navigate with left or right arrow keys to access all recent apps</translation>
 <translation id="553675580533261935">Exiting session</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="554017492391497564">Couldn't mark as complete.</translation>
 <translation id="5546397813406633847">Recover user</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
 <translation id="5550417424894892620">Drop files on the desktop to add them to <ph name="HOLDING_SPACE_TITLE" />. You can't add files to desktop.</translation>
@@ -1336,6 +1341,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Low battery. Battery Saver turned on.</translation>
 <translation id="6247728804802644171">Open notifications</translation>
+<translation id="6249795363855770621">Couldn't mark as complete. Please try again when online.</translation>
 <translation id="6254629735336163724">Locked to horizontal</translation>
 <translation id="6259254695169772643">Use your stylus to select</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activating...</translation>
@@ -1496,6 +1502,7 @@ New install</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6912841030378044227">Focus on address bar</translation>
 <translation id="6912901278692845878">Quick tour</translation>
+<translation id="6917259695595127329">Tasks last updated: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="692135145298539227">delete</translation>
 <translation id="6929081673585394903">Show controls</translation>

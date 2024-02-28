@@ -470,6 +470,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3416023309465857378">25 oct. 2023</translation>
 <translation id="3425644765244388016">Pseudo associé à la carte</translation>
 <translation id="3433057996795775706">La suppression de ce mot de passe n'entraînera pas la suppression de votre compte sur <ph name="WEBSITE" />. Modifiez votre mot de passe sur <ph name="WEBSITE" /> pour maintenir la sécurité de votre compte.</translation>
+<translation id="3435738964857648380">Sécurité</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vue fractionnée</translation>
@@ -590,7 +591,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4045648459118332842">Récupérez d'un seul geste vos mots de passe enregistrés dans n'importe quelle appli</translation>
 <translation id="4049507953662678203">Vérifiez si vous disposez bien d'une connexion réseau, puis réessayez.</translation>
 <translation id="4054572406751135230">Suivez l'actualité, le sport et plus encore.</translation>
-<translation id="4057531989585132525">Sécurité de la connexion</translation>
 <translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et plus encore.</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4105841739161771091">{count,plural, =1{Supprimer l'adresse}one{Supprimer l'adresse}other{Supprimer les adresses}}</translation>

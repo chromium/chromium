@@ -358,6 +358,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2484513351006226581">Pulsa <ph name="KEYBOARD_SHORTCUT" /> para cambiar el diseño del teclado.</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2487915095798731898">Unirse</translation>
+<translation id="2499445554382787206">Menú de perfil de escritorio (<ph name="DESK_NAME" />).</translation>
 <translation id="2501920221385095727">Teclas persistentes</translation>
 <translation id="2504454902900101003">Cerrar la configuración de la visualización de las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
 <translation id="2509468283778169019">Bloqueo de mayúsculas activado</translation>
@@ -412,6 +413,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2726420622004325180">Se requieren datos móviles para activar el punto de acceso</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baja potencia. Es posible que la carga de la batería no sea fiable.</translation>
+<translation id="2743387203779672305">Copiar en portapapeles</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Eliminar"</translation>
 <translation id="2750941250130734256">Ventana activa desanclada.</translation>
@@ -604,6 +606,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3509391053705095206">No encuentro tu teléfono. Comprueba que su Bluetooth esté activado.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del ratón</translation>
 <translation id="3513798432020909783">Cuenta gestionada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Última actualización de las tareas: <ph name="DATE" />, <ph name="TIME" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 minuto}other{Actualiza el dispositivo en un plazo de # minutos}}</translation>
 <translation id="3522979239100719575">Buscando perfiles disponibles. Este proceso puede durar unos minutos.</translation>
 <translation id="3526440770046466733">Abrir el enlace en una pestaña nueva y permanecer en la pestaña actual</translation>
@@ -1063,6 +1066,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5218064144558110424">Marcar como no completada</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5229343007215035173">Activar o desactivar la pantalla de privacidad</translation>
+<translation id="5230516054153933099">Ventana</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="523505283826916779">Ajustes de accesibilidad</translation>
 <translation id="5238719049014159442">Abrir/Cerrar el menú de aplicaciones</translation>
@@ -1143,6 +1147,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5536723544185013515">Aplicaciones recientes, desplázate con las teclas de flecha hacia la izquierda o hacia la derecha para acceder a todas las aplicaciones recientes</translation>
 <translation id="553675580533261935">Saliendo de la sesión</translation>
 <translation id="5537725057119320332">Enviar</translation>
+<translation id="554017492391497564">No se ha podido marcar como completada.</translation>
 <translation id="5546397813406633847">Recuperar usuario</translation>
 <translation id="554893713779400387">Activar o desactivar dictado</translation>
 <translation id="5550417424894892620">Suelta archivos en el escritorio para añadirlos a <ph name="HOLDING_SPACE_TITLE" />. No puedes añadir archivos al escritorio.</translation>
@@ -1337,6 +1342,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batería baja. Ahorro de batería activado.</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
+<translation id="6249795363855770621">No se ha podido marcar como completada. Vuelve a intentarlo cuando tengas conexión a Internet.</translation>
 <translation id="6254629735336163724">Bloqueada en horizontal</translation>
 <translation id="6259254695169772643">Usa el lápiz óptico para seleccionar contenido</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activando...</translation>
@@ -1497,6 +1503,7 @@ Nueva instalación</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6912841030378044227">Enfocar la barra de direcciones</translation>
 <translation id="6912901278692845878">Visita rápida</translation>
+<translation id="6917259695595127329">Última actualización de las tareas: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">No se ha podido reconocer la tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="692135145298539227">eliminar</translation>
 <translation id="6929081673585394903">Mostrar controles</translation>

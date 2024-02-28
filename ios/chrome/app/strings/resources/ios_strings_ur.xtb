@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Web Search</translation>
 <translation id="2252749852083403809">‏<ph name="USER_EMAIL" /> کے لیے Drive میں محفوظ کیا جا رہا ہے۔</translation>
 <translation id="2256933947031277845">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔</translation>
+<translation id="2257594476751932246">ذاتی نوعیت کی خبریں</translation>
 <translation id="2258326562203545455">{count,plural, =1{‏آپ اپنے بُک مارک کو اپنے Google اکاؤنٹ {email} میں محفوظ کر سکتے ہیں۔}other{‏آپ اپنے بُک مارکس کو اپنے Google اکاؤنٹ {email} میں محفوظ کر سکتے ہیں۔}}</translation>
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">اکاؤنٹ شامل کریں</translation>
@@ -470,6 +471,7 @@
 <translation id="3416023309465857378">25 اکتوبر، 2023</translation>
 <translation id="3425644765244388016">کارڈ کا عرفی نام</translation>
 <translation id="3433057996795775706">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="WEBSITE" /> سے حذف نہیں ہوگا۔ اپنا اکاؤنٹ دوسروں سے محفوظ رکھنے کے لیے <ph name="WEBSITE" /> پر اپنا پاس ورڈ تبدیل کریں۔</translation>
+<translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3443810440409579745">ٹیب موصول ہوا۔</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
 <translation id="3448016392200048164">تقسیم کا منظر</translation>
@@ -590,7 +592,6 @@
 <translation id="4045648459118332842">ایک بار تھپتھپا کر کسی بھی ایپ میں اپنے محفوظ کردہ پاس ورڈز پائیں</translation>
 <translation id="4049507953662678203">یقینی بنائیں کہ آپ کے پاس نیٹ ورک کنکشن ہے اور دوبارہ کوشش کریں۔</translation>
 <translation id="4054572406751135230">خبروں، کھیلوں وغیرہ سے باخبر رہیں۔</translation>
-<translation id="4057531989585132525">کنکشن سیکیورٹی</translation>
 <translation id="4066639687323968621">‏اپنے بُک مارکس، سرگزشت کو مطابقت پذیر بنانے اور مزید بہت کچھ کرنے کے لیے اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں۔</translation>
 <translation id="4092655288299341041">مدد دکھائیں</translation>
 <translation id="4105841739161771091">{count,plural, =1{پتہ حذف کریں}other{پتوں کو حذف کریں}}</translation>

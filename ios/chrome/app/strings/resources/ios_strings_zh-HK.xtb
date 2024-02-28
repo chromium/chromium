@@ -470,6 +470,7 @@
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3425644765244388016">信用卡暱稱</translation>
 <translation id="3433057996795775706">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。請變更您在 <ph name="WEBSITE" /> 的密碼，以免被他人盜用。</translation>
+<translation id="3435738964857648380">安全性</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3448016392200048164">分割檢視</translation>
@@ -590,7 +591,6 @@
 <translation id="4045648459118332842">輕按一下即可在任何應用程式中取得已儲存的密碼</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
 <translation id="4054572406751135230">緊貼新聞、體育賽事等內容。</translation>
-<translation id="4057531989585132525">連線安全性</translation>
 <translation id="4066639687323968621">登入 Google 帳戶便可同步處理書籤、記錄等等。</translation>
 <translation id="4092655288299341041">顯示說明</translation>
 <translation id="4105841739161771091">{count,plural, =1{刪除地址}other{刪除地址}}</translation>

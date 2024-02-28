@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">Щоб продовжити підключення, надайте веб-переглядачу Google Chrome
 доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ОС Chrome працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Персоналізувати Chrome</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
 <translation id="1583073672411044740">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome використовує вашу камеру.</translation>
@@ -68,6 +69,7 @@
 <translation id="2121284319307530122">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="2123055963409958220">Допоможіть покращити Chrome, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Завантажений файл не пройшов перевірку.</translation>
+<translation id="2128411189117340671">Керувати профілями Chrome</translation>
 <translation id="2130870084309816036">Не вдалося підключитися до Інтернету. Якщо ви використовуєте брандмауер, додайте <ph name="PRODUCT_EXE_NAME" /> у білий список.</translation>
 <translation id="2131230230468101642">З міркувань конфіденційності ми автоматично видаляємо ваші інтереси через 4 тижні. Якщо ви й надалі переглядатимете веб-сторінки, відповідний інтерес може знову з’явитися в списку. Щоб Chrome не враховував певні інтереси, їх можна вилучити.</translation>
 <translation id="2139300032719313227">Перезапустіть ОС Chrome</translation>
@@ -417,6 +419,7 @@
 <translation id="7917876797003313048">Ви можете керувати обліковими записами Google, у які ввійшли. Через них ви входите у веб-переглядач Chrome, Google Play, Gmail тощо. Якщо ви хочете додати обліковий запис для іншого користувача (наприклад, учасника сімейної групи), зробіть це натомість на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Веб-переглядач Chrome заблокував завантаження, оскільки цей файл оманливий і може внести неочікувані зміни на вашому пристрої</translation>
 <translation id="7951272445806340501">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome Flex.</translation>
+<translation id="7959172989483770734">Керувати профілями Chrome</translation>
 <translation id="7962368738413920945">Сайти, імовірно, працюватимуть належним чином, але дані про ваші дії на них буде очищено, коли ви закриєте всі вікна в Chrome</translation>
 <translation id="7962410387636238736">На цей комп’ютер не надходитимуть оновлення Google Chrome, оскільки Windows XP та Windows Vista більше не підтримуються</translation>
 <translation id="8005666035647241369">У Менеджері паролів Google на цьому пристрої</translation>
@@ -424,6 +427,7 @@
 <translation id="8009904340233602924">Використовувати Chrome, не входячи в обліковий запис</translation>
 <translation id="8013993649590906847">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google.</translation>
 <translation id="8019103195866286235">Розробник скасував публікацію цього розширення, і воно може бути небезпечним. Вилучіть його з Chrome, щоб розширення більше не могло переглядати й змінювати дані на сайтах, які ви відвідуєте (зокрема вашу особисту інформацію).</translation>
+<translation id="8031641407207794385">Персоналізувати Chrome</translation>
 <translation id="80471789339884597">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити всі веб-переглядачі.</translation>
 <translation id="8064015586118426197">ОС Chrome Flex</translation>
 <translation id="8077579734294125741">Інші профілі Chrome</translation>

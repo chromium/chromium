@@ -504,10 +504,6 @@ Jika kebijakan ini disetel ke PromptInTab, tab baru dengan halaman login Google 
 <translation id="1417888712677507140">Blokir dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
 <translation id="1418387035898607074">Lewati pemeriksaan Safe Browsing untuk file yang didownload dari sumber tepercaya</translation>
 <translation id="1419020637569060510">Menambahkan batasan pada penggunaan akun terkelola sebagai akun sekunder di ChromeOS</translation>
-<translation id="1419945463533552043">Jika disetel ke aktif, fitur Pembaruan User-Agent Client Hints GREASE akan memperbarui algoritme User-Agent GREASE ke spesifikasi terbaru.
-      Spesifikasi terbaru dapat menyebabkan error pada beberapa situs yang membatasi karakter yang mungkin dimuat oleh permintaan. Lihat spesifikasi untuk mendapatkan informasi selengkapnya: https://wicg.github.io/ua-client-hints/#grease
-      Jika kebijakan ini disetel ke aktif atau tidak disetel, browser akan menentukan algoritme User-Agent GREASE mana yang akan digunakan. Jika kebijakan ini disetel ke nonaktif, algoritme User-Agent GREASE sebelumnya akan digunakan.
-      Kebijakan ini adalah tindakan sementara dan akan dihapus pada rilis mendatang.</translation>
 <translation id="142346659686073702">Izinkan pengguna tak terafiliasi menggunakan Crostini</translation>
 <translation id="1423900783955065155">Kebijakan ini mengontrol apakah halaman dengan header <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dapat disimpan dalam back-forward cache. Situs yang menyetel header ini mungkin tidak mengharapkan halaman tersebut dipulihkan dari back-forward cache karena beberapa informasi sensitif masih dapat ditampilkan setelah pemulihan, meskipun tidak dapat diakses lagi.
 
@@ -2194,6 +2190,23 @@ Sistem hanya akan mengkueri data AAAA ketika perangkat dapat menjangkau host IPv
 <translation id="2673363037046384711">Pengguna akhir dapat mengaktifkan atau menonaktifkan Mode Efisiensi Tinggi.</translation>
 <translation id="2673968385134502798">Game</translation>
 <translation id="2678503605767349615">Sertifikat Klien seluruh perangkat yang diperlukan</translation>
+<translation id="2679980446318031955">Untuk alasan keamanan,
+API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
+memerlukan gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil atau
+jika tidak, akan gagal. Setelan pribadi pengguna dapat mengizinkan origin tertentu memanggil
+API ini tanpa gestur pengguna sebelumnya, seperti dijelaskan dalam
+<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Kebijakan ini menggantikan setelan pribadi pengguna dan memungkinkan origin yang cocok
+memanggil API tanpa gestur pengguna sebelumnya.
+
+Untuk informasi selengkapnya tentang pola URL yang valid, lihat
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+Origin yang cocok dengan pola kebijakan yang diblokir dan diizinkan akan diblokir.
+Origin yang tidak ditentukan oleh kebijakan atau setelan pengguna akan memerlukan gestur pengguna sebelumnya
+untuk memanggil API ini.</translation>
 <translation id="268134026533587276">Screensaver untuk layar kunci pengguna diaktifkan.</translation>
 <translation id="268577405881275241">Aktifkan fitur proxy kompresi data</translation>
 <translation id="268695908564263739">Kebijakan ini mengaktifkan atau menonaktifkan setelan Mode Efisiensi Tinggi. Setelan ini membuat tab ditutup setelah jangka waktu tertentu di latar belakang untuk mengklaim kembali memori.
@@ -6783,6 +6796,23 @@ akan gagal berfungsi dan hanya menggunakan resolusi lokasi berbasis <ph name="IP
 di layar <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Melaporkan info sistem</translation>
 <translation id="6339355882150329269">Jangan menganggap pengguna sebagai tidak ada aktivitas saat video diputar</translation>
+<translation id="634949984530753985">Untuk alasan keamanan,
+API web <ph name="REQUEST_FULLSCREEN_API_NAME" />
+memerlukan gestur pengguna sebelumnya ("aktivasi sementara") untuk dipanggil atau
+jika tidak, akan gagal. Setelan pribadi pengguna dapat mengizinkan origin tertentu memanggil
+API ini tanpa gestur pengguna sebelumnya, seperti dijelaskan dalam
+<ph name="AUTOMATIC_FULLSCREEN_HELP_URL" />.
+
+Kebijakan ini akan menggantikan setelan pribadi pengguna dan memblokir origin yang cocok
+agar tidak memanggil API tanpa gestur pengguna sebelumnya.
+
+Untuk informasi selengkapnya tentang pola URL yang valid, lihat
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+Origin yang cocok dengan pola kebijakan yang diblokir dan diizinkan akan diblokir.
+Origin yang tidak ditentukan oleh kebijakan atau setelan pengguna akan memerlukan gestur pengguna sebelumnya
+untuk memanggil API ini.</translation>
 <translation id="6352714113109004581">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta izin kepada pengguna untuk mengakses perangkat HID.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan berlaku.

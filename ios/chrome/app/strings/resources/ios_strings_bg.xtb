@@ -470,6 +470,7 @@
 <translation id="3416023309465857378">25 октомври 2023 г.</translation>
 <translation id="3425644765244388016">Псевдоним на картата</translation>
 <translation id="3433057996795775706">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />. За да го защитите от други хора, променете паролата си за <ph name="WEBSITE" />.</translation>
+<translation id="3435738964857648380">Сигурност</translation>
 <translation id="3443810440409579745">Получен раздел.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3448016392200048164">Разделен изглед</translation>
@@ -590,7 +591,6 @@
 <translation id="4045648459118332842">Получаване на запазените ви пароли с едно докосване във всяко приложение</translation>
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
 <translation id="4054572406751135230">Бъдете в крак с новини, спорт и др.</translation>
-<translation id="4057531989585132525">Сигурност на връзката</translation>
 <translation id="4066639687323968621">Влезте с профила си в Google, за да синхронизирате своите отметки, история и др.</translation>
 <translation id="4092655288299341041">Показване на помощна информация</translation>
 <translation id="4105841739161771091">{count,plural, =1{Изтриване на адреса}other{Изтриване на адресите}}</translation>

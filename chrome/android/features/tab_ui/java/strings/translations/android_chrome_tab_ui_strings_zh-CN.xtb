@@ -43,6 +43,7 @@
 <translation id="4133493477912226187">有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4212246570487010370">继续浏览</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}}</translation>
 <translation id="427987768447457592">新标签页分组</translation>
 <translation id="4648718555153979859">您的标签页会按组列在此处</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价）}other{（共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价）}}</translation>
@@ -56,6 +57,7 @@
 <translation id="5082793167783849073">通过分组快速比较网页。为此，请先轻触并按住某个链接。</translation>
 <translation id="5161254044473106830">必须提供标题</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{您有 <ph name="TABS_COUNT_ONE" /> 个近期未使用的标签页}other{您有 <ph name="TABS_COUNT_MANY" /> 个近期未使用的标签页}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{关闭包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组。}other{关闭包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组。}}</translation>
 <translation id="5339733443032484186">您的最后一个标签页</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5490235265819901748">已展开标签页组</translation>
@@ -84,6 +86,7 @@
 <translation id="6856809498882026482">隐藏多选模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享标签页}other{分享标签页}}</translation>
 <translation id="7129458170538955174">此商店的相关信息已半屏打开</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{关闭包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组。}other{关闭包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”分组。}}</translation>
 <translation id="7204204600596740190">多选模式</translation>
 <translation id="731648547091221002">已选中<ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">查看退货政策及其他信息</translation>
@@ -107,6 +110,7 @@
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8730999928494395583">您在这些无痕式标签页中的活动记录将从此设备上移除</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组。}}</translation>
 <translation id="9090098097337832354">此商店的相关信息已关闭</translation>
 <translation id="9150694013019234766">在屏幕底部附近的标签页组中切换标签页</translation>
 <translation id="9169594135889675189">向组中添加新标签页</translation>

@@ -2455,7 +2455,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2807517655263062534">Faili unazopakua zitaonekana hapa</translation>
 <translation id="2808714658215073920">Inaunganisha kwenye Wi-Fi...</translation>
 <translation id="2809586584051668049">na <ph name="NUMBER_ADDITIONAL_DISABLED" /> zaidi</translation>
-<translation id="2810674554823487782">Chagua "Fungua kwenye kihariri cha nje ya mtandao" ili utumie mwonekano uliodhibitiwa na chaguo za kuhariri.</translation>
 <translation id="2811205483104563968">Akaunti</translation>
 <translation id="2812049959647166806">Thunderbolt haiwezi kutumika</translation>
 <translation id="2812171980080389735">Mitandao na manenosiri uliyoyahifadhi ili uweze kuunganishwa papo hapo</translation>
@@ -2475,7 +2474,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2822551631199737692">Kamera inatumika</translation>
 <translation id="2822634587701817431">Punguza / Panua</translation>
 <translation id="2822910719211888134">Hitilafu imetokea wakati wa kuhifadhi nakala ya Linux</translation>
-<translation id="2823176412251649407">Badilisha muunganisho wako wa intaneti kisha uchague "Jaribu tena" au uteue "Fungua kwenye kihariri cha nje ya mtandao" ili utumie mwonekano unaodhibitiwa na chaguo za kuhariri.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> inatumia mipangilio ya seva mbadala kutoka kwa msimamizi wako</translation>
 <translation id="2825151610926840364">Ruhusu programu na tovuti zifikie kamera. Ili utumie kamera, huenda ukahitaji kuzima kisha uwashe programu au uonyeshe upya ukurasa.</translation>
 <translation id="2825758591930162672">Ufunguo wa Umma wa Mhusika</translation>
@@ -2484,7 +2482,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> zimerejeshwa</translation>
 <translation id="2830528677948328648">Kudhibiti akaunti yako ya Google</translation>
 <translation id="2831430281393059038">Kifaa kinachoweza kutumika</translation>
-<translation id="2831897288513571718">Jaribu kuruhusu Hifadhi ya Google kwenye Mipangilio kisha uchague "Jaribu tena" au uteue "Fungua kwenye kihariri cha nje ya mtandao" ili utumie mwonekano unaodhibitiwa na chaguo za kuhariri.</translation>
 <translation id="2832124733806557606">Mtoto wako anaweza kutumia PIN kuingia katika akaunti kwenye kifaa au kukifungua.</translation>
 <translation id="2835177225987815960">Mipangilio yako ya sasa ya kuchanganua itawekwa upya, ikijumuisha swichi zozote ulizoteua na mapendeleo ya kasi ya kuchanganua kiotomatiki.</translation>
 <translation id="2835547721736623118">Huduma ya utambuzi wa matamshi</translation>
@@ -6500,7 +6497,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6016178549409952427">Nenda kwenye maudhui mengine <ph name="CURRENT_ELEMENT" /> kati ya <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Thibitisha Powerwash kwa kurejea kwenye toleo la awali</translation>
 <translation id="6016972670657536680">Chagua kitufe cha lugha na kibodi. Lugha uliyochagua kwa sasa ni <ph name="LANGUAGE" />.</translation>
-<translation id="6017503096330453612">Chagua "Jaribu tena" au uchague "Fungua kwenye prpogramu ya kuhariri ukiwa haupo mtandaoni" ili utumie chaguo za kuona kwa uchache na kuhariri.</translation>
 <translation id="6017514345406065928">Kijani</translation>
 <translation id="6019169947004469866">Punguza</translation>
 <translation id="6019851026059441029">HD - Bora</translation>
@@ -7545,7 +7541,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="682871081149631693">Kurekebisha kwa Haraka</translation>
 <translation id="6828860976882136098">Imeshindwa kuweka mipangilio ya masasisho ya kiotomatiki kwa watumiaji wote (hitilafu ya kutoweka vipengele vya kabla vinayohitajika: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Sera ya faragha ya Google</translation>
-<translation id="6830200424658853449">Fungua kwenye kihariri cha ukiwa haupo mtandaoni</translation>
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6832218595502288407">Pangilia kushoto</translation>
 <translation id="6833479554815567477">Kichupo kimeondolewa kwenye kikundi kiitwacho <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -7963,7 +7958,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7174199383876220879">Mpya! Dhibiti muziki, video na vipengee vyako vingine.</translation>
 <translation id="7175037578838465313">Weka mipangilio ya <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Imepakiwa kutoka:</translation>
-<translation id="7177079607604198383">Kagua muunganisho wako wa Intaneti kisha uchague "Jaribu tena" au chagua "Fungua katika programu ya kuhariri ukiwa haupo mtandaoni" ili utumie chaguo za kuona kwa uchache na kuhariri.</translation>
 <translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7180865173735832675">Binafsisha</translation>
 <translation id="7181117767881540376">Ficha sehemu ya alamisho</translation>

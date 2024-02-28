@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2486214324139475545">Попередній огляд робочого столу "<ph name="DESK_NAME" />". Він активний.</translation>
 <translation id="2487915095798731898">Приєднатися</translation>
+<translation id="2499445554382787206">Меню профілю робочого столу (<ph name="DESK_NAME" />).</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
 <translation id="2504454902900101003">Відхилити налаштування перегляду нещодавніх фотографій, медіафайлів і сповіщень на телефоні</translation>
 <translation id="2509468283778169019">Режим CAPS LOCK увімкнено</translation>
@@ -412,6 +413,7 @@
 <translation id="2726420622004325180">Щоб увімкнути функцію "Точка доступу", на телефоні має бути мобільний Інтернет</translation>
 <translation id="2727175239389218057">Відповісти</translation>
 <translation id="2727977024730340865">Підключено до зарядного пристрою низької потужності. Акумулятор може заряджатися неналежним чином.</translation>
+<translation id="2743387203779672305">Копіювати в буфер</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Видалити"</translation>
 <translation id="2750941250130734256">Активне вікно відкріплено.</translation>
@@ -604,6 +606,7 @@
 <translation id="3509391053705095206">Не вдається знайти телефон. Переконайтеся, що на ньому ввімкнено Bluetooth.</translation>
 <translation id="3510164367642747937">Підсвічувати курсор миші</translation>
 <translation id="3513798432020909783">Обліковим записом керує <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Завдання востаннє оновлено <ph name="DATE" /> о <ph name="TIME" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Оновіть пристрій протягом 1 хвилини}one{Оновіть пристрій протягом # хвилини}few{Оновіть пристрій протягом # хвилин}many{Оновіть пристрій протягом # хвилин}other{Оновіть пристрій протягом # хвилини}}</translation>
 <translation id="3522979239100719575">Пошук доступних профілів. Це може зайняти кілька хвилин.</translation>
 <translation id="3526440770046466733">Відкрити посилання на новій вкладці й залишитися на поточній вкладці</translation>
@@ -1062,6 +1065,7 @@
 <translation id="5218064144558110424">Позначити як невиконане</translation>
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="5229343007215035173">Увімкнути або вимкнути екран конфіденційності</translation>
+<translation id="5230516054153933099">Вікно</translation>
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="523505283826916779">Налаштування доступності</translation>
 <translation id="5238719049014159442">Відкрити або закрити панель запуску</translation>
@@ -1142,6 +1146,7 @@
 <translation id="5536723544185013515">Нещодавні додатки: щоб перейти до нещодавніх додатків, використовуйте клавіші зі стрілками вліво або вправо</translation>
 <translation id="553675580533261935">Завершення сеансу</translation>
 <translation id="5537725057119320332">Трансляція</translation>
+<translation id="554017492391497564">Не вдалося позначити як виконане.</translation>
 <translation id="5546397813406633847">Відновити пароль</translation>
 <translation id="554893713779400387">Перемкнути диктування</translation>
 <translation id="5550417424894892620">Перетягніть файли на робочий стіл, щоб додати їх у сервіс <ph name="HOLDING_SPACE_TITLE" />. Ви не можете додавати файли на робочий стіл.</translation>
@@ -1336,6 +1341,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Низький заряд акумулятора. Режим енергозбереження ввімкнено.</translation>
 <translation id="6247728804802644171">Відкрити сповіщення</translation>
+<translation id="6249795363855770621">Не вдалося позначити як виконане. Повторіть спробу, коли інтернет-з’єднання відновиться.</translation>
 <translation id="6254629735336163724">Заблоковано в горизонтальному положенні</translation>
 <translation id="6259254695169772643">Вибирайте елементи за допомогою стилуса</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: активація…</translation>
@@ -1496,6 +1502,7 @@
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6912841030378044227">Виділити адресний рядок</translation>
 <translation id="6912901278692845878">Короткий огляд</translation>
+<translation id="6917259695595127329">Завдання востаннє оновлено о <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="692135145298539227">видалити</translation>
 <translation id="6929081673585394903">Показати елементи керування</translation>

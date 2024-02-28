@@ -2459,7 +2459,6 @@
 <translation id="2807517655263062534">您下載的檔案會在這裡顯示</translation>
 <translation id="2808714658215073920">正在連線至 Wi-Fi…</translation>
 <translation id="2809586584051668049">和另外 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 個</translation>
-<translation id="2810674554823487782">選擇「在離線編輯器中開啟」以使用有限的查看和編輯選項。</translation>
 <translation id="2811205483104563968">帳戶</translation>
 <translation id="2812049959647166806">系統不支援 Thunderbolt</translation>
 <translation id="2812171980080389735">已儲存網絡和密碼，方便即時連線</translation>
@@ -2479,7 +2478,6 @@
 <translation id="2822551631199737692">相機正在使用中</translation>
 <translation id="2822634587701817431">縮小/展開</translation>
 <translation id="2822910719211888134">備份 Linux 時發生錯誤</translation>
-<translation id="2823176412251649407">請變更互聯網連線並選擇「再試一次」。你亦能選擇「在離線編輯器中開啟」以使用有限的查看和編輯選項。</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用管理員的 Proxy 設定</translation>
 <translation id="2825151610926840364">允許具備相機權限的應用程式和網站存取相機。如要使用相機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="2825758591930162672">主體的公開金鑰</translation>
@@ -2488,7 +2486,6 @@
 <translation id="2828833307884755422">已釋出 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2830528677948328648">管理 Google 帳戶(&amp;G)</translation>
 <translation id="2831430281393059038">支援裝置</translation>
-<translation id="2831897288513571718">請前往「設定」啟用「Google 雲端硬碟」，並選擇「再試一次」。你亦可選擇「在離線編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="2832124733806557606">子女可使用 PIN 來登入裝置或裝置解鎖。</translation>
 <translation id="2835177225987815960">系統將會重設目前的掃瞄設定，包括任何已指派的按鈕裝置和自動掃瞄速度偏好設定。</translation>
 <translation id="2835547721736623118">語音識別服務</translation>
@@ -6500,7 +6497,6 @@
 <translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 以重設為上個版本</translation>
 <translation id="6016972670657536680">選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
-<translation id="6017503096330453612">您可選擇「再試一次」或「在離線編輯器中開啟」。如果選擇後者，可使用有限的查看和編輯選項。</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019169947004469866">剪裁</translation>
 <translation id="6019851026059441029">極佳 - 高清畫質</translation>
@@ -7546,7 +7542,6 @@
 <translation id="682871081149631693">快速修正</translation>
 <translation id="6828860976882136098">無法為所有使用者設定自動更新 (預先執行錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google 私隱權政策</translation>
-<translation id="6830200424658853449">在離線編輯器中開啟</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6832218595502288407">靠左對齊</translation>
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
@@ -7964,7 +7959,6 @@
 <translation id="7174199383876220879">新功能！控制音樂、影片及其他內容。</translation>
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7175353351958621980">載入來源：</translation>
-<translation id="7177079607604198383">請檢查互聯網連線並選擇「再試一次」。您亦能選擇「在離線編輯器中開啟」以使用有限的查看和編輯選項。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>

@@ -358,6 +358,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2486214324139475545">Aperçu du bureau <ph name="DESK_NAME" />. Bureau actif.</translation>
 <translation id="2487915095798731898">Joindre</translation>
+<translation id="2499445554382787206">Menu de profil du bureau. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2504454902900101003">Ignorer la configuration de l'affichage des photos, des notifications et du contenu multimédia récents de votre téléphone</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
@@ -412,6 +413,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2726420622004325180">Les données cellulaires doivent être activées sur votre téléphone pour que celui-ci puisse offrir un point d'accès sans fil</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la recharge de la batterie ne soit pas fiable.</translation>
+<translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">« Supprimer »</translation>
 <translation id="2750941250130734256">Fenêtre active désancrée.</translation>
@@ -604,6 +606,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3509391053705095206">Impossible de trouver votre téléphone. Assurez-vous que le Bluetooth est activé sur votre téléphone.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Dernière mise à jour des tâches : <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Mettez à jour l'appareil d'ici 1 minute}one{Mettez à jour l'appareil d'ici # minute}other{Mettez à jour l'appareil d'ici # minutes}}</translation>
 <translation id="3522979239100719575">Recherche des profils accessibles en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="3526440770046466733">Ouvrir le lien dans un nouvel onglet et demeurer dans l'onglet actuel</translation>
@@ -1061,6 +1064,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5218064144558110424">Marquer comme non terminée</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5229343007215035173">Activer ou désactiver l'écran de confidentialité</translation>
+<translation id="5230516054153933099">Fenêtre</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5238719049014159442">Ouvrir/fermer le lanceur</translation>
@@ -1141,6 +1145,7 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="5536723544185013515">Applications récentes, naviguer avec les touches fléchées gauche ou droite pour accéder à toutes les applications récentes</translation>
 <translation id="553675580533261935">Fermeture de la session</translation>
 <translation id="5537725057119320332">Diffuser</translation>
+<translation id="554017492391497564">Impossible de marquer la tâche comme terminée.</translation>
 <translation id="5546397813406633847">Récupérer l'utilisateur</translation>
 <translation id="554893713779400387">Activer/désactiver la dictée</translation>
 <translation id="5550417424894892620">Déposez des fichiers sur le bureau pour les ajouter à <ph name="HOLDING_SPACE_TITLE" />. Vous ne pouvez pas ajouter de fichiers au bureau.</translation>
@@ -1335,6 +1340,7 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Pile faible. L'Économiseur de pile est activé.</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>
+<translation id="6249795363855770621">Impossible de marquer la tâche comme terminée. Réessayez une fois en ligne.</translation>
 <translation id="6254629735336163724">Verrouillée à l'horizontale</translation>
 <translation id="6259254695169772643">Utilisez votre stylet pour effectuer une sélection</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>
@@ -1495,6 +1501,7 @@ Nouvelle installation</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6912841030378044227">Mettre la barre d'adresse en évidence</translation>
 <translation id="6912901278692845878">Présentation rapide</translation>
+<translation id="6917259695595127329">Dernière mise à jour des tâches : <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
 <translation id="692135145298539227">supprimer</translation>
 <translation id="6929081673585394903">Afficher les commandes</translation>

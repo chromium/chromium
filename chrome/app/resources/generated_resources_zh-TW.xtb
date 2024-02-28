@@ -2444,7 +2444,6 @@
 <translation id="2807517655263062534">你下載的檔案會顯示在這裡</translation>
 <translation id="2808714658215073920">正在連線至 Wi-Fi…</translation>
 <translation id="2809586584051668049">和另外 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 個</translation>
-<translation id="2810674554823487782">請選擇「在離線編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="2811205483104563968">帳戶</translation>
 <translation id="2812049959647166806">系統不支援 Thunderbolt</translation>
 <translation id="2812171980080389735">儲存的網路和密碼，方便即時連線</translation>
@@ -2464,7 +2463,6 @@
 <translation id="2822551631199737692">相機正在使用中</translation>
 <translation id="2822634587701817431">縮小/展開</translation>
 <translation id="2822910719211888134">備份 Linux 時發生錯誤</translation>
-<translation id="2823176412251649407">請變更網際網路連線並選擇「再試一次」。你也能選擇「在離線編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用系統管理員的 Proxy 設定</translation>
 <translation id="2825151610926840364">允許擁有攝影機權限的應用程式和網站存取。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="2825758591930162672">主體的公開金鑰</translation>
@@ -2473,7 +2471,6 @@
 <translation id="2828833307884755422">已釋出 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2830528677948328648">管理 Google 帳戶(&amp;G)</translation>
 <translation id="2831430281393059038">須支援裝置</translation>
-<translation id="2831897288513571718">請前往「設定」啟用 Google 雲端硬碟，並選擇「再試一次」。你也可以選擇「在離線編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="2832124733806557606">你的孩子可以使用 PIN 碼登入裝置，或將裝置解鎖。</translation>
 <translation id="2835177225987815960">目前的掃描設定將會重設，包含指派的外接切換裝置和自動掃描的速度偏好設定。</translation>
 <translation id="2835547721736623118">語音辨識服務</translation>
@@ -2702,7 +2699,7 @@
 <translation id="3009300415590184725">你確定要取消行動數據服務設定程序嗎？</translation>
 <translation id="3009352964623081324">搜尋鍵 + O 鍵，然後按下 S 鍵，用途是安裝、管理及自訂語音。</translation>
 <translation id="3009779501245596802">索引資料庫</translation>
-<translation id="3010234549896186761">{COUNT,plural, =0{你的密碼強度夠高}=1{{COUNT} 個密碼的強度太低}other{{COUNT} 個密碼的強度太低}}</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{你的密碼強度夠高}=1{{COUNT} 組密碼的強度太低}other{{COUNT} 組密碼的強度太低}}</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
 <translation id="3010389206479238935">強制開啟方式</translation>
 <translation id="3010961843303056486">顯示所有書籤</translation>
@@ -3934,7 +3931,7 @@
 <translation id="3971764089670057203">這個安全金鑰上的指紋</translation>
 <translation id="3973005893595042880">不允許這位使用者</translation>
 <translation id="3973660817924297510">正在檢查密碼 (已檢查 <ph name="CHECKED_PASSWORDS" /> 個，共 <ph name="TOTAL_PASSWORDS" /> 個)…</translation>
-<translation id="3974105241379491420">網站可以要求使用與你相關的既有資訊</translation>
+<translation id="3974105241379491420">網站可以要求使用與你相關的已儲存網站資訊</translation>
 <translation id="3974514184580396500">使用「下一個」切換功能將焦點移至螢幕畫面的下一個項目</translation>
 <translation id="3975201861340929143">說明</translation>
 <translation id="3975565978598857337">無法連線至指定領域的伺服器</translation>
@@ -5772,7 +5769,7 @@
 <translation id="5445400788035474247">10 倍</translation>
 <translation id="5446983216438178612">顯示機構憑證</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> 項商品</translation>
-<translation id="5448092089030025717">{NUM_REUSED,plural, =0{沒有重複使用的密碼}=1{1 個重複使用的密碼}other{{NUM_REUSED} 個重複使用的密碼}}</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{沒有重複使用的密碼}=1{1 組重複使用的密碼}other{{NUM_REUSED} 組重複使用的密碼}}</translation>
 <translation id="5448293924669608770">糟糕，登入帳戶時發生錯誤</translation>
 <translation id="5449551289610225147">密碼無效</translation>
 <translation id="5449588825071916739">將所有分頁加入書籤</translation>
@@ -6487,7 +6484,6 @@
 <translation id="6016178549409952427">前往 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 並還原至上一個版本</translation>
 <translation id="6016972670657536680">請選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
-<translation id="6017503096330453612">你可以選擇「再試一次」或「在離線編輯器中開啟」。如果選擇後者，可以使用有限的查看和編輯選項。</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019169947004469866">裁剪</translation>
 <translation id="6019851026059441029">極佳 - HD 高畫質</translation>
@@ -7312,7 +7308,7 @@
 <translation id="6671320560732140690">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
 <translation id="6671497123040790595">正在配置由 <ph name="MANAGER" /> 管理的設定</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
-<translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽隱私<ph name="END_LINK" />，防止裝置的其他使用者查看你的瀏覽資料</translation>
+<translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽隱私<ph name="END_LINK" />，防止其他人使用裝置時查看你的瀏覽資料</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">系統會降低亮度、限制背景活動和視覺效果、延後通知並開啟 Chrome 節能模式，以延長電池續航力。</translation>
 <translation id="6673898378497337661">調高鍵盤亮度</translation>
@@ -7531,7 +7527,6 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">無法為所有使用者設定自動更新作業 (預先執行錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google 隱私權政策</translation>
-<translation id="6830200424658853449">在離線編輯器中開啟</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6832218595502288407">靠左對齊</translation>
 <translation id="6833479554815567477">分頁已從包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組中移除</translation>
@@ -7949,7 +7944,6 @@
 <translation id="7174199383876220879">新功能！控管你的音樂、影片等媒體內容</translation>
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7175353351958621980">載入來源：</translation>
-<translation id="7177079607604198383">請檢查網際網路連線並選擇「再試一次」。你也能選擇「在離線編輯器中開啟」，這樣可以使用有限的查看和編輯選項。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
@@ -9673,7 +9667,7 @@
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
 <translation id="8471525937465764768">網站通常會連線至 USB 裝置，以提供列印文件或儲存至裝置等功能</translation>
 <translation id="8471959340398751476">折扣搜尋功能已關閉。你可以在自訂選單中開啟這項功能</translation>
-<translation id="8472563193954285009">{COUNT,plural, =0{沒有重複使用的密碼}=1{{COUNT} 個重複使用的密碼}other{{COUNT} 個重複使用的密碼}}</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{沒有重複使用的密碼}=1{{COUNT} 組重複使用的密碼}other{{COUNT} 組重複使用的密碼}}</translation>
 <translation id="8472623782143987204">硬體支援</translation>
 <translation id="8473540203671727883">請讀出滑鼠游標下方的文字</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>

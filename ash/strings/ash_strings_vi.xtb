@@ -358,6 +358,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2484513351006226581">Hãy nhấn <ph name="KEYBOARD_SHORTCUT" /> để chuyển bố cục bàn phím.</translation>
 <translation id="2486214324139475545">Bản xem trước <ph name="DESK_NAME" />. Không gian làm việc đang hoạt động.</translation>
 <translation id="2487915095798731898">Tham gia</translation>
+<translation id="2499445554382787206">Trình đơn hồ sơ không gian làm việc. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Phím cố định</translation>
 <translation id="2504454902900101003">Loại bỏ việc thiết lập tính năng xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="2509468283778169019">Đang bật CAPS LOCK</translation>
@@ -412,6 +413,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2726420622004325180">Điện thoại của bạn phải có dữ liệu di động thì mới dùng làm điểm phát sóng được</translation>
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
+<translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Xoá"</translation>
 <translation id="2750941250130734256">Đã gỡ cửa sổ đang hoạt động.</translation>
@@ -604,6 +606,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3509391053705095206">Không tìm được điện thoại của bạn. Hãy đảm bảo bạn đã bật Bluetooth trên điện thoại.</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">Lần cập nhật việc cần làm gần đây nhất: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Cập nhật thiết bị trong vòng 1 phút}other{Cập nhật thiết bị trong vòng # phút}}</translation>
 <translation id="3522979239100719575">Đang tìm hồ sơ có sẵn. Quá trình này có thể mất vài phút.</translation>
 <translation id="3526440770046466733">Mở đường liên kết trong thẻ mới và tiếp tục sử dụng thẻ hiện tại</translation>
@@ -1062,6 +1065,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5218064144558110424">Đánh dấu là chưa hoàn thành</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5229343007215035173">Bật/tắt màn hình bảo vệ quyền riêng tư</translation>
+<translation id="5230516054153933099">Cửa sổ</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="523505283826916779">Hỗ trợ tiếp cận</translation>
 <translation id="5238719049014159442">Mở/đóng Trình chạy</translation>
@@ -1142,6 +1146,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5536723544185013515">Ứng dụng gần đây, di chuyển bằng phím mũi tên trái hoặc phải để truy cập tất cả ứng dụng gần đây</translation>
 <translation id="553675580533261935">Thoát phiên</translation>
 <translation id="5537725057119320332">Truyền</translation>
+<translation id="554017492391497564">Không thể đánh dấu là hoàn thành.</translation>
 <translation id="5546397813406633847">Khôi phục người dùng</translation>
 <translation id="554893713779400387">Bật/tắt tính năng nhập bằng giọng nói</translation>
 <translation id="5550417424894892620">Thả tệp trên màn hình để thêm vào <ph name="HOLDING_SPACE_TITLE" />. Bạn không thể thêm tệp vào màn hình.</translation>
@@ -1336,6 +1341,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Pin yếu. Đã bật Trình tiết kiệm pin.</translation>
 <translation id="6247728804802644171">Mở thông báo</translation>
+<translation id="6249795363855770621">Không thể đánh dấu là hoàn thành. Hãy thử lại khi có kết nối mạng.</translation>
 <translation id="6254629735336163724">Đã khóa theo chiều ngang</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Đang kích hoạt...</translation>
@@ -1496,6 +1502,7 @@ Mới cài đặt</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6912841030378044227">Tập trung vào thanh địa chỉ</translation>
 <translation id="6912901278692845878">Tìm hiểu nhanh</translation>
+<translation id="6917259695595127329">Lần cập nhật việc cần làm gần đây nhất: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
 <translation id="692135145298539227">xoá</translation>
 <translation id="6929081673585394903">Hiện các nút điều khiển</translation>

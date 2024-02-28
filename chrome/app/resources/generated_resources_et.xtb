@@ -2453,7 +2453,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2807517655263062534">Siin kuvatakse teie allalaaditud failid</translation>
 <translation id="2808714658215073920">WiFi-ga ühendamine …</translation>
 <translation id="2809586584051668049">ja veel <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810674554823487782">Tehke valik „Ava võrguühenduseta redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="2811205483104563968">Kontod</translation>
 <translation id="2812049959647166806">Thunderbolti ei toetata</translation>
 <translation id="2812171980080389735">Võrkude ja paroolide salvestamine, et saaksite kiiresti ühenduse luua</translation>
@@ -2473,7 +2472,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2822551631199737692">Kaamera on kasutuses</translation>
 <translation id="2822634587701817431">Ahenda/laienda</translation>
 <translation id="2822910719211888134">Viga Linuxi varundamisel</translation>
-<translation id="2823176412251649407">Kontrollige oma internetiühendust ning tehke valik „Proovi uuesti“ või valik „Ava võrguühenduseta redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> kasutab teie administraatori puhverserveri seadeid</translation>
 <translation id="2825151610926840364">Luba juurdepääs kaamerale rakenduste ja veebisaitide puhul, millel on kaamerale juurdepääsemise luba. Kaamera kasutamiseks peate võib-olla taaskäivitama rakenduse või värskendama lehte.</translation>
 <translation id="2825758591930162672">Subjekti avalik võti</translation>
@@ -2482,7 +2480,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2828833307884755422">Vabastati <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2830528677948328648">Hallake oma &amp;Google'i kontot</translation>
 <translation id="2831430281393059038">Seadet toetatakse</translation>
-<translation id="2831897288513571718">Proovige Google Drive seadetes lubada ning tehke valik „Proovi uuesti“ või valik „Ava võrguühenduseta redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="2832124733806557606">Teie laps saab sisselogimiseks või seadme avamiseks kasutada PIN-koodi.</translation>
 <translation id="2835177225987815960">Teie praegune skannimise seadistus lähtestatakse (sh kõik määratud lülitid ja automaatse skannimise kiiruse eelistused).</translation>
 <translation id="2835547721736623118">Kõnetuvastuse teenus</translation>
@@ -2618,6 +2615,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2935654492420446828">Lisage koolikonto hiljem</translation>
 <translation id="2936851848721175671">Varundamine ja taastamine</translation>
 <translation id="2938981087412273365">Seda saiti pole lubatud lugeda ja muuta</translation>
+<translation id="2939005221756255562">Märguanded saate lubada märguandekeskuses. Avage <ph name="BEGIN_LINK" />Süsteemi seaded<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Täiendavad inaktiivsed saidid</translation>
 <translation id="2939938020978911855">Kuva saadaolevad Bluetoothi seadmed</translation>
 <translation id="2941112035454246133">Madal</translation>
@@ -2827,7 +2825,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3101709781009526431">Kuupäev ja kellaaeg</translation>
 <translation id="310297983047869047">Eelmine slaid</translation>
 <translation id="3103451787721578293">Sisestage nende andmete üleslaadimise põhjus.</translation>
-<translation id="3103512663951238230">Alt + klõpsamine</translation>
+<translation id="3103512663951238230">Alt + klikk</translation>
 <translation id="3105339775057145050">Viimane ebaõnnestunud värskendus</translation>
 <translation id="3105796011181310544">Kas muuta tagasi Google'ile?</translation>
 <translation id="3105820656234755131">Parooli värskendati</translation>
@@ -6503,7 +6501,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6016178549409952427">Lisasisu juurde navigeerimine, üksus <ph name="CURRENT_ELEMENT" /> <ph name="TOTAL_ELEMENTS" />-st</translation>
 <translation id="6016551720757758985">Kinnitage Powerwash eelmisele versioonile naasmisega</translation>
 <translation id="6016972670657536680">Valige keele ja klaviatuuri nupp. Praegu on valitud <ph name="LANGUAGE" /> keel.</translation>
-<translation id="6017503096330453612">Tehke valik „Proovi uuesti“ või valige „Ava võrguühenduseta redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="6017514345406065928">Roheline</translation>
 <translation id="6019169947004469866">Kärbi</translation>
 <translation id="6019851026059441029">Suurepärane – HD</translation>
@@ -7548,7 +7545,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Automaatvärskenduste seadistamine kõikidele kasutajatele ebaõnnestus (esituseelne käivitamisviga: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google'i privaatsuseeskirjad</translation>
-<translation id="6830200424658853449">Ava võrguühenduseta redaktoris</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6832218595502288407">Joonda vasakule</translation>
 <translation id="6833479554815567477">Vaheleht eemaldati grupist <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -7966,7 +7962,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7174199383876220879">Uus! Juhtige muusikat, videoid ja muudki.</translation>
 <translation id="7175037578838465313">Võrgu <ph name="NAME" /> seadistamine</translation>
 <translation id="7175353351958621980">Laaditud:</translation>
-<translation id="7177079607604198383">Kontrollige oma internetiühendust ja tehke valik „Proovi uuesti“ või valige „Ava võrguühenduseta redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7180865173735832675">Kohandamine</translation>
 <translation id="7181117767881540376">Peida järjehoidjariba</translation>
@@ -10032,7 +10027,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8732030010853991079">Laienduse aktiveerimiseks klõpsake sellel ikoonil.</translation>
 <translation id="8732212173949624846">Sirvimisajaloo lugemine ja muutmine kõikides sisselogitud seadmetes</translation>
 <translation id="8732844209475700754">Rohkem privaatsuse, turvalisuse ja andmete kogumisega seotud seadeid</translation>
-<translation id="8733779588180110397">⌥+Klõpsake</translation>
+<translation id="8733779588180110397">⌥ + klikk</translation>
 <translation id="8734073480934656039">Kui lubate seade, võivad kioskirakendused käivitamisel automaatselt avaneda.</translation>
 <translation id="8734755021067981851">Ühtegi USB-seadet pole ühendatud.</translation>
 <translation id="8736288397686080465">Saiti värskendati taustal.</translation>

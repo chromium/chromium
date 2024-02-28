@@ -1201,6 +1201,7 @@
 <translation id="3324687287337751929">४ x ६ इं</translation>
 <translation id="3324983252691184275">किरमिजी</translation>
 <translation id="3325027355611702542">कँपर आणि RVs</translation>
+<translation id="3325568918769906282">उतरत्या क्रमाने</translation>
 <translation id="3329013043687509092">संपृक्तता</translation>
 <translation id="3333762389743153920">व्हर्च्युअल कार्डसाठी पात्र नाही</translation>
 <translation id="3336044043987989409">तुमच्या खाजगी नेटवर्कवरील डिव्हाइस किंवा सर्व्हरशी कनेक्ट करण्याची अनुमती देण्यासाठी रीलोड करा बटण प्रेस करा.</translation>
@@ -1867,6 +1868,7 @@
 <translation id="46128681529823442">सॉकर उपकरणे</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4622292761762557753">तरीही ट्रान्सफर करा</translation>
+<translation id="4622647778991854660">नोटिफिकेशन केंद्र येथे नोटिफिकेशन सुरू करा. <ph name="LINK" /> उघडा.</translation>
 <translation id="4627675673814409125">हे धोरण Chrome प्रोफाइल स्तरावर सेट केले जाऊ शकत नाही आणि ते दुर्लक्षित केले जाईल.</translation>
 <translation id="4628678854894591460">सुट्ट्यांच्या ऑफर</translation>
 <translation id="4628948037717959914">फोटो</translation>
@@ -2245,6 +2247,7 @@
 <translation id="5371425731340848620">कार्ड अपडेट करा</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"तुमचे क्लॉक मागे पडले आहे" किंवा "तुमचे क्लॉक वेळेपेक्षा पुढे आहे" किंवा "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">चढत्या क्रमाने</translation>
 <translation id="5383478552402031184">फ्लोरिंग</translation>
 <translation id="5385857628869214740">विनोदी</translation>
 <translation id="5385966243497224160">HTTPS नसलेल्या URL चे पूर्वावलोकन करू शकत नाही</translation>
@@ -3199,6 +3202,7 @@
 <translation id="7234112195906418665">प्रवास आणि परिवहन</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूर्ण झाले | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">भेटवस्‍तू आणि विशिष्‍ट इव्‍हेंटसंबंधित आयटम</translation>
+<translation id="7237454422623102448">सिस्‍टीम सेटिंग्‍ज</translation>
 <translation id="7237492777898608035">या साइटसाठी हा मेसेज पुन्हा दाखवू नका</translation>
 <translation id="7240120331469437312">सर्टिफिकेट विषय वैकल्पिक नाव</translation>
 <translation id="7241863998525879494">काय अपेक्षित आहे</translation>
@@ -3481,6 +3485,7 @@
 <translation id="7719791801330803993">फोटो आणि व्हिडिओ सॉफ्टवेअर</translation>
 <translation id="772128550427553158">CVC तुमच्या कार्डच्या पुढील भागावर स्थित आहे.</translation>
 <translation id="7724603315864178912">कट करा</translation>
+<translation id="7730057435797792985">क्रमाने लावा</translation>
 <translation id="7734285854693414638">Google Forms मध्ये नवीन फॉर्म झटपट तयार करा</translation>
 <translation id="773466115871691567">नेहमी पेज <ph name="SOURCE_LANGUAGE" />मध्ये भाषांतरित करा</translation>
 <translation id="7736959720849233795">लिंकचा अ‍ॅड्रेस कॉपी करा</translation>

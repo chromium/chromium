@@ -1704,6 +1704,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2274840746523584236">Carrega el Chromebook</translation>
 <translation id="2276503375879033601">Afegeix més aplicacions</translation>
 <translation id="2276910256003242519">S'estan esborrant les dades...</translation>
+<translation id="2278193750452754829">Les extensions es permeten en aquest lloc web. Selecciona per obrir el menú.</translation>
 <translation id="2278562042389100163">Obre una finestra del navegador</translation>
 <translation id="2278668501808246459">S'està iniciant el gestor de contenidors</translation>
 <translation id="2280486287150724112">Marge dret</translation>
@@ -2443,7 +2444,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2807517655263062534">Aquí es mostren els fitxers baixats</translation>
 <translation id="2808714658215073920">S'està connectant a la Wi-Fi...</translation>
 <translation id="2809586584051668049">i <ph name="NUMBER_ADDITIONAL_DISABLED" /> més</translation>
-<translation id="2810674554823487782">Per utilitzar opcions de visualització i d'edició limitades, tria Obre a l'editor sense connexió.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Els connectors Thunderbolt no s'admeten</translation>
 <translation id="2812171980080389735">Xarxes i contrasenyes desades perquè puguis connectar-te a l'instant</translation>
@@ -2463,7 +2463,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2822551631199737692">Càmera en ús</translation>
 <translation id="2822634587701817431">Redueix o amplia</translation>
 <translation id="2822910719211888134">S'ha produït un error en crear una còpia de seguretat de Linux</translation>
-<translation id="2823176412251649407">Per utilitzar opcions de visualització i d'edició limitades, canvia la connexió a Internet i tria Torna-ho a provar o Obre a l'editor sense connexió.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> està fent servir la configuració del servidor intermediari del teu administrador</translation>
 <translation id="2825151610926840364">Permet l'accés a aplicacions i llocs web amb el permís d'accés a la càmera. Per utilitzar la càmera, pot ser que hagis de reiniciar l'aplicació o hagis d'actualitzar la pàgina.</translation>
 <translation id="2825758591930162672">Clau pública del subjecte</translation>
@@ -2472,7 +2471,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> alliberats</translation>
 <translation id="2830528677948328648">Gestiona el teu &amp;Compte de Google</translation>
 <translation id="2831430281393059038">El dispositiu s'admet</translation>
-<translation id="2831897288513571718">Prova d'activar Google Drive a Configuració i tria Torna-ho a provar, o bé selecciona Obre a l'editor sense connexió per utilitzar opcions de visualització i d'edició limitades.</translation>
 <translation id="2832124733806557606">El teu fill pot utilitzar un PIN per iniciar la sessió o desbloquejar el dispositiu.</translation>
 <translation id="2835177225987815960">Es restablirà la teva configuració actual de cerca, la qual inclou tots els interruptors assignats i les preferències de velocitat per a la cerca automàtica.</translation>
 <translation id="2835547721736623118">Servei de reconeixement de parla</translation>
@@ -2607,6 +2605,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2935654492420446828">Afegeix un compte de centre educatiu més endavant</translation>
 <translation id="2936851848721175671">Còpia de seguretat i restauració</translation>
 <translation id="2938981087412273365">Sense permís per llegir i canviar aquest lloc web</translation>
+<translation id="2939005221756255562">Activa les notificacions al Centre de notificacions. Obre <ph name="BEGIN_LINK" />Configuració del Sistema<ph name="END_LINK" />.</translation>
 <translation id="2939908794993783865">Llocs web inactius addicionals</translation>
 <translation id="2939938020978911855">Mostra els dispositius Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Baixa</translation>
@@ -4373,6 +4372,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4325433082696797523">Emmagatzematge i potència</translation>
 <translation id="4326146840124313313">La millor seguretat de Chrome és més eficaç a l'hora de protegir-te de baixades, extensions i llocs web perillosos</translation>
 <translation id="4326484226728068206">Alguns articles del teu carretó amb un <ph name="DISCOUNT_TEXT" /> a <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) s'han vist <ph name="RELATIVE_TIME" /></translation>
+<translation id="4327380114687339519">Menú d'extensions</translation>
 <translation id="4330191372652740264">Aigua glaçada</translation>
 <translation id="4330387663455830245">No tradueixis mai de: <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configura els controls parentals</translation>
@@ -6487,7 +6487,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6016178549409952427">Navega pel contingut addicional, <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmació de Powerwash amb retorn a la versió anterior</translation>
 <translation id="6016972670657536680">Botó per seleccionar l’idioma i el teclat. L'idioma seleccionat actualment és: <ph name="LANGUAGE" />.</translation>
-<translation id="6017503096330453612">Tria Torna-ho a provar o Obre a l'editor sense connexió per utilitzar opcions de visualització i d'edició limitades.</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019169947004469866">Retalla</translation>
 <translation id="6019851026059441029">Excel·lent: HD</translation>
@@ -7532,7 +7531,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">No s'han pogut configurar actualitzacions automàtiques per a tots els usuaris (error de comprovació preliminar: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Política de privadesa de Google</translation>
-<translation id="6830200424658853449">Obre a l'editor sense connexió</translation>
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="6832218595502288407">Alinea a l'esquerra</translation>
 <translation id="6833479554815567477">La pestanya s'ha suprimit del grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
@@ -7950,7 +7948,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7174199383876220879">Novetat! Controla la música, els vídeos i molt més.</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Carregat des de:</translation>
-<translation id="7177079607604198383">Comprova la connexió a Internet i tria Torna-ho a provar o Obre a l'editor sense connexió per utilitzar opcions de visualització i d'edició limitades.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7181117767881540376">Amaga la barra d'adreces d'interès</translation>
@@ -8427,6 +8424,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7544977292347272434">Demana al teu pare o mare que permeti una extensió</translation>
 <translation id="7545466883021407599">No s'ha pogut connectar amb el servidor. Comprova la connexió a la xarxa i torna-ho a provar. Si encara tens problemes, prova de reiniciar el Chromebook. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advertiment: la vostra configuració de <ph name="PRODUCT_NAME" /> s'emmagatzema en una unitat de xarxa. Això pot provocar alentiments, bloquejos o fins i tot la pèrdua de dades.</translation>
+<translation id="754836352246153944">Les extensions no es permeten en aquest lloc web. Selecciona per obrir el menú.</translation>
 <translation id="7548856833046333824">Còctel</translation>
 <translation id="7549250950481368089">Les contrasenyes desades es mostraran aquí. <ph name="BEGIN_LINK" /> Importa les contrasenyes<ph name="END_LINK" /> a <ph name="BRAND" />.</translation>
 <translation id="7549434883223124329">Vols canviar l'idioma del dispositiu?</translation>

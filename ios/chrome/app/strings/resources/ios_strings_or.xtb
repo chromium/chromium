@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">ୱେବ୍ ସର୍ଚ୍ଚ</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> ପାଇଁ Driveରେ ସେଭ କରାଯାଉଛି।</translation>
 <translation id="2256933947031277845">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କୁ କେବଳ ନିର୍ଦ୍ଦିଷ୍ଟ କିଛି ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରିବାକୁ ଅନୁମତି ଦିଏ।</translation>
+<translation id="2257594476751932246">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ନ୍ୟୁଜ</translation>
 <translation id="2258326562203545455">{count,plural, =1{ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, {email}ରେ ଆପଣଙ୍କ ବୁକମାର୍କକୁ ସେଭ କରିପାରିବେ।}other{ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, {email}ରେ ଆପଣଙ୍କ ବୁକମାର୍କଗୁଡ଼ିକୁ ସେଭ କରିପାରିବେ।}}</translation>
 <translation id="225943865679747347">ତ୍ରୁଟି କୋଡ୍: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
@@ -470,6 +471,7 @@
 <translation id="3416023309465857378">ଅକ୍ଟୋବର 25, 2023</translation>
 <translation id="3425644765244388016">କାର୍ଡର ଡାକନାମ</translation>
 <translation id="3433057996795775706">ଏହି ପାସୱାର୍ଡ ଡିଲିଟ୍ କରିବା ଦ୍ଵାରା <ph name="WEBSITE" />ରେ ଥିବା ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ଡିଲିଟ୍ ହେବ ନାହିଁ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ଅନ୍ୟମାନଙ୍କ ଠାରୁ ସୁରକ୍ଷିତ ରଖିବାକୁ <ph name="WEBSITE" />ରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ।</translation>
+<translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="3443810440409579745">ଟାବ୍ ପ୍ରାପ୍ତ ହେଲା।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ମିନିଟ୍</translation>
 <translation id="3448016392200048164">ବିଭାଜିତ ଦୃଶ୍ୟ</translation>
@@ -590,7 +592,6 @@
 <translation id="4045648459118332842">ଗୋଟିଏ ଟାପ ମାଧ୍ୟମରେ ଯେ କୌଣସି ଆପରେ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="4049507953662678203">ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ଆପଣଙ୍କର ଏକ ନେଟ୍‍ୱର୍କ ସଂଯୋଗ ଅଛି ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4054572406751135230">ସମାଚାର, ସ୍ପୋର୍ଟସ ଓ ଆହୁରି ଅନେକ କିଛି ସହିତ ଜାରି ରୁହନ୍ତୁ।</translation>
-<translation id="4057531989585132525">କନେକ୍ସନ ସୁରକ୍ଷା</translation>
 <translation id="4066639687323968621">ଆପଣଙ୍କ ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ କରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="4092655288299341041">ସହାୟତା ଦେଖାନ୍ତୁ</translation>
 <translation id="4105841739161771091">{count,plural, =1{ଠିକଣାକୁ ଡିଲିଟ କରନ୍ତୁ}other{ଠିକଣାଗୁଡ଼ିକୁ ଡିଲିଟ କରନ୍ତୁ}}</translation>

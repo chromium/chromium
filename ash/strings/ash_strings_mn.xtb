@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">Гарын бүдүүвчийг солихын тулд <ph name="KEYBOARD_SHORTCUT" />-г дарна уу.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-н урьдчилан үзэлт. Идэвхтэй дэлгэц.</translation>
 <translation id="2487915095798731898">Нэгдэх</translation>
+<translation id="2499445554382787206">Дэлгэцийн профайлын цэс. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Холбогч түлхүүр</translation>
 <translation id="2504454902900101003">Утасныхаа саяхны зураг, медиа болон мэдэгдлүүдийг харахыг тохируулахыг үл хэрэгсэх</translation>
 <translation id="2509468283778169019">CAPS LOCK асаалттай байна</translation>
@@ -412,6 +413,7 @@
 <translation id="2726420622004325180">Таны утас сүлжээний цэг өгөхийн тулд мобайл дататай байх ёстой</translation>
 <translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
+<translation id="2743387203779672305">Завсрын түр санах самбар луу хуулах</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Устгах"</translation>
 <translation id="2750941250130734256">Идэвхтэй цонхыг салгасан.</translation>
@@ -604,6 +606,7 @@
 <translation id="3509391053705095206">Таны утсыг олох боломжгүй. Утасны тань Bluetooth асаалттай эсэхийг шалгана уу.</translation>
 <translation id="3510164367642747937">Хулганы курсорыг тодруулах</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />-н удирддаг бүртгэл</translation>
+<translation id="3517037892157925473">Tasks-г сүүлд шинэчилсэн хугацаа: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Төхөөрөмжийг 1 минутын дотор шинэчилнэ үү}other{Төхөөрөмжийг # минутын дотор шинэчилнэ үү}}</translation>
 <translation id="3522979239100719575">Боломжтой профайлыг хайж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="3526440770046466733">Холбоосыг шинэ табд нээж, одоогийн табд үлдэх</translation>
@@ -1063,6 +1066,7 @@
 <translation id="5218064144558110424">Дуусаагүй гэж тэмдэглэх</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5229343007215035173">Нууцлалтай дэлгэцийг асаах/унтраах</translation>
+<translation id="5230516054153933099">Цонх</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="523505283826916779">Нэвтрэх боломжит байдлын тохиргоо</translation>
 <translation id="5238719049014159442">Эхлүүлэгчийг нээх/хаах</translation>
@@ -1143,6 +1147,7 @@
 <translation id="5536723544185013515">Саяхны аппууд, саяхны бүх аппад хандахын тулд зүүн эсвэл баруун суман товчоор шилжинэ үү</translation>
 <translation id="553675580533261935">Харилцан үйлдлээс гарч байна</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="554017492391497564">Дууссан гэж тэмдэглэж чадсангүй.</translation>
 <translation id="5546397813406633847">Хэрэглэгчийг сэргээх</translation>
 <translation id="554893713779400387">Диктафоныг асаах/унтраах</translation>
 <translation id="5550417424894892620">Файлуудыг <ph name="HOLDING_SPACE_TITLE" />-д нэмэхийн тулд тэдгээрийг дэлгэцэд буулгана уу. Та дэлгэцэд файлууд нэмэх боломжгүй.</translation>
@@ -1337,6 +1342,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Батарей бага байна. Батарей хэмнэгчийг асаасан.</translation>
 <translation id="6247728804802644171">Мэдэгдэл нээх</translation>
+<translation id="6249795363855770621">Дууссан гэж тэмдэглэж чадсангүй. Онлайн үед дахин оролдоно уу.</translation>
 <translation id="6254629735336163724">Хэвтээ чиглэлээр түгжсэн</translation>
 <translation id="6259254695169772643">Мэдрэгч үзгээ ашиглан сонгоно уу</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: идэвхжүүлж байна...</translation>
@@ -1497,6 +1503,7 @@
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6912841030378044227">Хаяг оруулах хэсгийг сонгох</translation>
 <translation id="6912901278692845878">Шуурхай аялал</translation>
+<translation id="6917259695595127329">Tasks-г сүүлд шинэчилсэн хугацаа: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="692135145298539227">устгах</translation>
 <translation id="6929081673585394903">Тохиргоог харуулах</translation>

@@ -2347,7 +2347,7 @@
 <translation id="2732134891301408122">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से पेज <ph name="CURRENT_ELEMENT" /></translation>
 <translation id="2733248615007838252">'पसंद है' बटन को दबाने से यह राय सबमिट की जाती है कि आपको ये नतीजे पसंद हैं.</translation>
 <translation id="2733992589856193783">आपने इस साइट के लिए पासकी बनाई है. साइन इन करने के लिए, आपको मोबाइल डिवाइस की ज़रूरत होगी.</translation>
-<translation id="2734797989819862638">कॉपी न करें</translation>
+<translation id="2734797989819862638">इसे कॉपी न करें</translation>
 <translation id="27349076983469322">हल्का बैकग्राउंड</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
@@ -2457,7 +2457,6 @@
 <translation id="2807517655263062534">आपकी डाउनलोड की गई फ़ाइलें यहां दिखाई देती हैं</translation>
 <translation id="2808714658215073920">वाई-फ़ाई से कनेक्ट हो रहा है...</translation>
 <translation id="2809586584051668049">और <ph name="NUMBER_ADDITIONAL_DISABLED" /> और</translation>
-<translation id="2810674554823487782">सीमित व्यू और बदलाव करने के विकल्पों का इस्तेमाल करने के लिए, "ऑफ़लाइन एडिटर में खोलें" चुनें.</translation>
 <translation id="2811205483104563968">खाते</translation>
 <translation id="2812049959647166806">Thunderbolt काम नहीं करता</translation>
 <translation id="2812171980080389735">सेव किए गए नेटवर्क और पासवर्ड, ताकि तुरंत कनेक्ट किया जा सके</translation>
@@ -2477,7 +2476,6 @@
 <translation id="2822551631199737692">कैमरा इस्तेमाल हो रहा है</translation>
 <translation id="2822634587701817431">छोटा करें / पूरा खोलें</translation>
 <translation id="2822910719211888134">Linux का बैकअप लेते समय गड़बड़ी हुई</translation>
-<translation id="2823176412251649407">अपने इंटरनेट कनेक्शन की जांच करें और "फिर से कोशिश करें" चुनें. इसके अलावा, सीमित व्यू और बदलाव करने के विकल्पों का इस्तेमाल करने के लिए "ऑफ़लाइन एडिटर में खोलें" चुनें.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> आपके एडमिन की प्रॉक्सी सेटिंग का इस्तेमाल कर रहा है</translation>
 <translation id="2825151610926840364">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस दें जिनके पास कैमरा इस्तेमाल करने की अनुमति है. कैमरे का इस्तेमाल करने के लिए, आपको ऐप्लिकेशन को रीस्टार्ट या पेज को रीफ़्रेश करना पड़ सकता है.</translation>
 <translation id="2825758591930162672">विषय की सार्वजनिक कुंजी</translation>
@@ -2486,7 +2484,6 @@
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> मेमोरी खाली की गई</translation>
 <translation id="2830528677948328648">अपना Google खाता मैनेज करें</translation>
 <translation id="2831430281393059038">इस डिवाइस पर वीएम सॉफ़्टवेयर इस्तेमाल किया जा सकता है</translation>
-<translation id="2831897288513571718">सेटिंग में Google Drive को चालू करके देखें और "फिर से कोशिश करें" चुनें. इसके अलावा, सीमित व्यू और बदलाव करने के विकल्पों का इस्तेमाल करने के लिए, "ऑफ़लाइन एडिटर में खोलें" चुनें.</translation>
 <translation id="2832124733806557606">इस डिवाइस में साइन इन करने या इसे अनलॉक करने के लिए, आपका बच्चा पिन का इस्तेमाल कर सकता है.</translation>
 <translation id="2835177225987815960">स्कैन करने वाला आपका मौजूदा सेट अप रीसेट हो जाएगा. इसमें, असाइन किए गए स्विच और अपने-आप तेज़ी से स्कैन होने की सेटिंग शामिल हैं.</translation>
 <translation id="2835547721736623118">बोली पहचानने की सुविधा</translation>
@@ -2621,6 +2618,7 @@
 <translation id="2935654492420446828">बाद में स्कूल वाला खाता जोड़ें</translation>
 <translation id="2936851848721175671">बैकअप लेना और इंपोर्ट करना</translation>
 <translation id="2938981087412273365">इस साइट को पढ़ने और इसमें बदलाव करने की अनुमति नहीं है</translation>
+<translation id="2939005221756255562">सूचना केंद्र में जाकर, सूचनाएं पाने की सुविधा चालू करें. <ph name="BEGIN_LINK" />सिस्टम सेटिंग<ph name="END_LINK" /> खोलें.</translation>
 <translation id="2939908794993783865">ऐसी अन्य साइटें जो चालू नहीं हैं</translation>
 <translation id="2939938020978911855">उपलब्ध ब्लूटूथ डिवाइस दिखाएं</translation>
 <translation id="2941112035454246133">कम</translation>
@@ -6498,7 +6496,6 @@
 <translation id="6016178549409952427">ज़्यादा कॉन्टेंट वाले कुल <ph name="TOTAL_ELEMENTS" /> पेजों में से <ph name="CURRENT_ELEMENT" /> पेज पर जाएं</translation>
 <translation id="6016551720757758985">पिछले वर्शन पर वापस लौटने के साथ ही पावरवॉश की पुष्‍टि करें</translation>
 <translation id="6016972670657536680">भाषा और कीबोर्ड बटन चुनें. इस समय चुनी गई भाषा <ph name="LANGUAGE" /> है.</translation>
-<translation id="6017503096330453612">सीमित व्यू और बदलाव करने के विकल्पों का इस्तेमाल करने के लिए, "फिर से कोशिश करें" चुनें या "ऑफ़लाइन एडिटर में खोलें" चुनें.</translation>
 <translation id="6017514345406065928">हरा</translation>
 <translation id="6019169947004469866">काटें</translation>
 <translation id="6019851026059441029">बहुत अच्छा - एचडी</translation>
@@ -7545,7 +7542,6 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">सभी उपयोगकर्ताओं के लिए स्वचालित अपडेट सेट करने में विफल (प्रीफ़्लाइट निष्पादन गड़बड़ी: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google निजता नीति</translation>
-<translation id="6830200424658853449">ऑफ़लाइन एडिटर में खोलें</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">बाईं ओर अलाइन करें</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ग्रुप में मौजूद टैब हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
@@ -7963,7 +7959,6 @@
 <translation id="7174199383876220879">नया! अपने संगीत, वीडियो, और दूसरी चीज़ें नियंत्रित करें.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> को कॉन्फ़िगर करें</translation>
 <translation id="7175353351958621980">यहां से लोड किया गया:</translation>
-<translation id="7177079607604198383">अपने इंटरनेट कनेक्शन की जांच करें और "फिर से कोशिश करें" चुनें. इसके अलावा, सीमित व्यू और बदलाव करने के विकल्पों का इस्तेमाल करने के लिए "ऑफ़लाइन एडिटर में खोलें" चुना जा सकता है.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7180865173735832675">पसंद के मुताबिक बनाएं</translation>
 <translation id="7181117767881540376">बुकमार्क बार छिपाएं</translation>

@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Chwiliad Gwe</translation>
 <translation id="2252749852083403809">Wrthi'n cadw yn Drive ar gyfer <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig.</translation>
+<translation id="2257594476751932246">Newyddion Personol</translation>
 <translation id="2258326562203545455">{count,plural, =1{Gallwch gadw'ch nod tudalen yn eich Cyfrif Google, {email}.}zero{Gallwch gadw'ch nodau tudalen yn eich Cyfrif Google, {email}.}two{Gallwch gadw'ch nodau tudalen yn eich Cyfrif Google, {email}.}few{Gallwch gadw'ch nodau tudalen yn eich Cyfrif Google, {email}.}many{Gallwch gadw'ch nodau tudalen yn eich Cyfrif Google, {email}.}other{Gallwch gadw'ch nodau tudalen yn eich Cyfrif Google, {email}.}}</translation>
 <translation id="225943865679747347">Cod gwall: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ychwanegu Cyfrif</translation>
@@ -470,6 +471,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3416023309465857378">25 Hyd 2023</translation>
 <translation id="3425644765244388016">Llysenw Cerdyn</translation>
 <translation id="3433057996795775706">Ni fydd dileu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="WEBSITE" />. Newidiwch eich cyfrinair ar <ph name="WEBSITE" /> i'w gadw'n ddiogel rhag eraill.</translation>
+<translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3443810440409579745">Cafodd y tab ei dderbyn.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> munud</translation>
 <translation id="3448016392200048164">Gwedd Hollt</translation>
@@ -590,7 +592,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4045648459118332842">Cael eich cyfrineiriau sydd wedi'u cadw mewn unrhyw ap arall gydag un tap</translation>
 <translation id="4049507953662678203">Gwnewch yn siŵr bod gennych gysylltiad rhwydwaith, a rhowch gynnig arall arni.</translation>
 <translation id="4054572406751135230">Cael y diweddaraf am newyddion, chwaraeon, a rhagor.</translation>
-<translation id="4057531989585132525">Diogelwch Cysylltiad</translation>
 <translation id="4066639687323968621">Mewngofnodwch gyda'ch Cyfrif Google i gysoni'ch nodau tudalen, eich hanes a rhagor.</translation>
 <translation id="4092655288299341041">Dangos Help</translation>
 <translation id="4105841739161771091">{count,plural, =1{Dileu'r Cyfeiriad}zero{Dileu'r Cyfeiriadau}two{Dileu'r Cyfeiriadau}few{Dileu'r Cyfeiriadau}many{Dileu'r Cyfeiriadau}other{Dileu'r Cyfeiriadau}}</translation>

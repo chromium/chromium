@@ -471,6 +471,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3416023309465857378">25. října 2023</translation>
 <translation id="3425644765244388016">Přezdívka karty</translation>
 <translation id="3433057996795775706">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="WEBSITE" />. Pokud chcete ochránit svá data, změňte své heslo na webu <ph name="WEBSITE" />.</translation>
+<translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3443810440409579745">Byla přijata karta.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Režim Split View</translation>
@@ -591,7 +592,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4045648459118332842">Používejte uložená hesla jedním klepnutím v libovolné aplikaci</translation>
 <translation id="4049507953662678203">Zkontrolujte, zda jste připojeni k síti a zkuste to znovu.</translation>
 <translation id="4054572406751135230">Sledujte zprávy, sport a podobně.</translation>
-<translation id="4057531989585132525">Zabezpečení připojení</translation>
 <translation id="4066639687323968621">Pokud chcete synchronizovat své záložky, historii a další položky, přihlaste se pomocí účtu Google.</translation>
 <translation id="4092655288299341041">Zobrazit nápovědu</translation>
 <translation id="4105841739161771091">{count,plural, =1{Smazat adresu}few{Smazat adresy}many{Smazat adresy}other{Smazat adresy}}</translation>

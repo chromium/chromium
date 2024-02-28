@@ -1867,6 +1867,7 @@
 <translation id="46128681529823442">Футбол жабдығы</translation>
 <translation id="4619564267100705184">Жеке басыңызды растаңыз</translation>
 <translation id="4622292761762557753">Бәрібір тасымалдау</translation>
+<translation id="4622647778991854660">Хабарландыру орталығында хабарландыруларды қосу. "<ph name="LINK" />" бетін ашу.</translation>
 <translation id="4627675673814409125">Бұл саясатты Chrome профилі деңгейінде орнатуға болмайды және ол еленбейді.</translation>
 <translation id="4628678854894591460">Демалыс ұсыныстары</translation>
 <translation id="4628948037717959914">Фотосурет</translation>
@@ -3198,6 +3199,7 @@
 <translation id="7234112195906418665">Саяхат және тасымалдау</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% аяқталды | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Сыйлықтар және арнайы іс-шара элементтері</translation>
+<translation id="7237454422623102448">Жүйе параметрлері</translation>
 <translation id="7237492777898608035">Бұл хабарды осы сайт үшін қайта көрсетпеу</translation>
 <translation id="7240120331469437312">Certificate Subject Alternative Name</translation>
 <translation id="7241863998525879494">Әрі қарай не болады</translation>

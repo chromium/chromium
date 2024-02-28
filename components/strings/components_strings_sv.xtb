@@ -1868,6 +1868,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="46128681529823442">Fotbollsutrustning</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4622292761762557753">Överför ändå</translation>
+<translation id="4622647778991854660">Aktivera aviseringar i aviseringscentret. Öppna <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Den här policyn kan inte ställas in på Chrome-profilnivå och kommer att ignoreras.</translation>
 <translation id="4628678854894591460">Paketresor</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3199,6 +3200,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7234112195906418665">Resor och transportmedel</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % slutförd | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Presentartiklar och specialgåvor</translation>
+<translation id="7237454422623102448">Systeminställningar</translation>
 <translation id="7237492777898608035">Visa inte det här meddelandet igen för den här webbplatsen</translation>
 <translation id="7240120331469437312">Certifikatämnets andra namn</translation>
 <translation id="7241863998525879494">Det här kan du förvänta dig</translation>

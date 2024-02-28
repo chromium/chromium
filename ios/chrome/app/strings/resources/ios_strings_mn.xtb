@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Веб хайлт</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" />-н Драйвт хадгалж байна.</translation>
 <translation id="2256933947031277845">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө.</translation>
+<translation id="2257594476751932246">Хэрэглэгчийн тохируулсан мэдээний сонголт</translation>
 <translation id="2258326562203545455">{count,plural, =1{Та {email} Google Бүртгэлдээ хавчуургаа хадгалах боломжтой.}other{Та {email} Google Бүртгэлдээ хавчуургуудаа хадгалах боломжтой.}}</translation>
 <translation id="225943865679747347">Алдааны код: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Бүртгэл нэмэх</translation>
@@ -470,6 +471,7 @@
 <translation id="3416023309465857378">2023 оны 10-р сарын 25</translation>
 <translation id="3425644765244388016">Картын хоч</translation>
 <translation id="3433057996795775706">Энэ нууц үгийг устгасан ч <ph name="WEBSITE" /> дээрх таны бүртгэл устахгүй. Бусдаас хамгаалахын тулд <ph name="WEBSITE" /> дээрх нууц үгээ өөрчилнө үү.</translation>
+<translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3443810440409579745">Табыг хүлээн авлаа.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3448016392200048164">Хувааж харах</translation>
@@ -590,7 +592,6 @@
 <translation id="4045648459118332842">Дурын аппад хадгалсан нууц үгнүүдээ нэг товшилтоор аваарай</translation>
 <translation id="4049507953662678203">Сүлжээнд холбогдсон эсэхээ шалгаад, дахин оролдоно уу.</translation>
 <translation id="4054572406751135230">Мэдээ, спорт болон бусад зүйлийн мэдээлэлтэй байгаарай.</translation>
-<translation id="4057531989585132525">Холболтын аюулгүй байдал</translation>
 <translation id="4066639687323968621">Хавчуурга, түүх болон бусад зүйлээ синк хийхийн тулд Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="4092655288299341041">Тусламжийг харуулах</translation>
 <translation id="4105841739161771091">{count,plural, =1{Хаягийг устгах}other{Хаягуудыг устгах}}</translation>

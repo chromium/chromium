@@ -470,6 +470,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3416023309465857378">25. okt. 2023</translation>
 <translation id="3425644765244388016">Kortets kaldenavn</translation>
 <translation id="3433057996795775706">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />. Skift din adgangskode på <ph name="WEBSITE" /> for at beskytte den mod andre.</translation>
+<translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3448016392200048164">Opdelt visning</translation>
@@ -588,7 +589,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4045648459118332842">Få adgang til dine gemte adgangskoder i enhver app med et enkelt tryk</translation>
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
 <translation id="4054572406751135230">Hold dig opdateret om nyheder, sport m.m.</translation>
-<translation id="4057531989585132525">Forbindelsessikkerhed</translation>
 <translation id="4066639687323968621">Log ind med din Google-konto for at synkronisere dine bogmærker, din historik m.m.</translation>
 <translation id="4092655288299341041">Vis Hjælp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Slet adresse}one{Slet adresse}other{Slet adresser}}</translation>

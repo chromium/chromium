@@ -33,6 +33,7 @@
 <translation id="1516530951338665275">Google Chrome သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
  လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
+<translation id="155168855724261758">Chrome ကို စိတ်ကြိုက်ပြင်ဆင်ရန်</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ကို ဤ Chrome ပရိုဖိုင်တွင် လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်။ ၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
@@ -72,6 +73,7 @@
 <translation id="2121284319307530122">&amp;Chrome အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />လက်ရှိဆက်တင်များ<ph name="END_LINK" />ကို အစီရင်ခံပေးခြင်းအားဖြင့် Chromium ကို ပိုကောင်းလာအောင် ကူညီပေးပါ</translation>
 <translation id="2126108037660393668">ဒေါင်းလုဒ်လုပ်ထားသော ဖိုင်ကို စိစစ်၍မရပါ။</translation>
+<translation id="2128411189117340671">Chrome ပရိုဖိုင်များ စီမံရန်</translation>
 <translation id="2130870084309816036">အင်တာနက် ချိတ်ဆက်၍ မရပါ။ firewall သုံးပါက <ph name="PRODUCT_EXE_NAME" /> ကို ခွင့်ပြုစာရင်းသို့ ထည့်ပါ။</translation>
 <translation id="2131230230468101642">သင်၏ကိုယ်ရေးအချက်အလက်လုံခြုံမှုကို ကာကွယ်ရန် ၄ ပတ်ကျော်ပြီဖြစ်သော သင့်စိတ်ဝင်စားမှုများကို အလိုအလျောက်ဖျက်သည်။ သင်ကြည့်ရှုနေသည့်အတွက် စိတ်ဝင်စားမှုက စာရင်းတွင် ထပ်ပေါ်လာနိုင်သည်။ သို့မဟုတ် Chrome ထည့်မတွက်ရမည့် စိတ်ဝင်စားမှုများကို ဖယ်ရှားနိုင်သည်။</translation>
 <translation id="2139300032719313227">ChromeOS ပြန်စပါ</translation>
@@ -425,6 +427,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7917876797003313048">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံနိုင်သည်။ Chrome ဘရောင်ဇာ၊ Play Store၊ Gmail စသည်တို့အတွက် သင်၏ Google Account များကို သုံးသည်။ မိသားစုဝင်ကဲ့သို့ တစ်စုံတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက ၎င်းအစား ထိုပုဂ္ဂိုလ်အသစ်ကို သင့် <ph name="DEVICE_TYPE" /> တွင် ထည့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">ဖိုင်သည် လှည့်စားနိုင်ပြီး သင့်စက်ကို မမျှော်လင့်ထားသည့် အပြောင်းအလဲများ ပြုလုပ်နိုင်သဖြင့် Chrome က ဤဒေါင်းလုဒ်ကို ပိတ်ထားသည်</translation>
 <translation id="7951272445806340501">အပ်ဒိတ်ထည့်သွင်းရန် ChromeOS Flex ကို ပြန်စရမည်။</translation>
+<translation id="7959172989483770734">Chrome ပရိုဖိုင်များ စီမံရန်</translation>
 <translation id="7962368738413920945">ဝဘ်ဆိုက်များက သင်မျှော်မှန်းထားသည့်အတိုင်း လုပ်ဆောင်နိုင်သော်လည်း Chrome ၏ ဝင်းဒိုးအားလုံးပိတ်လိုက်ပါက သင့်ကို မှတ်မိမည်မဟုတ်ပါ</translation>
 <translation id="7962410387636238736">Windows XP နှင့် Windows Vista ကို ဆက်မပံ့ပိုးတော့သောကြောင့် ဤကွန်ပျူတာသည် Google Chrome အပ်ဒိတ်များကို မရယူတော့ပါ။</translation>
 <translation id="8005666035647241369">ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ သို့</translation>
@@ -432,6 +435,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8009904340233602924">Chrome ကို အကောင့်မပါဘဲ အသုံးပြုရန်</translation>
 <translation id="8013993649590906847">ပုံတွင် အသုံးဝင်သော အကြောင်းအရာ မပါလျှင် Chrome က သင့်အတွက် ဖော်ပြပေးပါမည်။ အကြောင်းအရာများ ဖော်ပြပေးရန် ပုံများကို Google သို့ပို့လိုက်ပါသည်။</translation>
 <translation id="8019103195866286235">ဤနောက်ဆက်တွဲကို ၎င်း၏ ဆော့ဖ်ဝဲရေးသူက ထုတ်ဝေမထားပါ။ ၎င်းသည် လုံခြုံမှု မရှိနိုင်ပါ။ ၎င်းကို Chrome မှ ဖယ်ရှားခြင်းဖြင့် သင့်ကိုယ်ရေးအချက်အလက်များအပါအဝင် သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များရှိ သင့်ဒေတာများကို ၎င်းက မြင်နိုင်၊ ပြောင်းနိုင်တော့မည်မဟုတ်ပါ။</translation>
+<translation id="8031641407207794385">Chrome ကို စိတ်ကြိုက်ပြင်ဆင်ရန်</translation>
 <translation id="80471789339884597">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ဘရောင်ဇာအားလုံးကို ပြန်စရမည်။</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">အခြား Chrome ပရိုဖိုင်များ</translation>

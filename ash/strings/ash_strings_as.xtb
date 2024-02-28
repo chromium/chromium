@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">কীব'র্ডৰ লেইআউট সলনি কৰিবলৈ <ph name="KEYBOARD_SHORTCUT" /> টিপক।</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />ৰ পূৰ্বদৰ্শন। সক্ৰিয় ডেস্ক।</translation>
 <translation id="2487915095798731898">যোগদান কৰক</translation>
+<translation id="2499445554382787206">ডেস্কৰ প্ৰ’ফাইল মেনু। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ষ্টিকি কী</translation>
 <translation id="2504454902900101003">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া আৰু জাননী চোৱাৰ সুবিধা ছেট আপ কৰাটো বাতিল কৰক</translation>
 <translation id="2509468283778169019">CAPS LOCK হৈ আছে</translation>
@@ -412,6 +413,7 @@
 <translation id="2726420622004325180">এটা হটস্পট প্ৰদান কৰিবলৈ আপোনাৰ ফ’নত ম’বাইল ডেটা থাকিবই লাগিব</translation>
 <translation id="2727175239389218057">প্ৰত্যুত্তৰ দিয়ক</translation>
 <translation id="2727977024730340865">কম পাৱাৰৰ এটা চাৰ্জাৰত প্লাগ ইন কৰা হৈছে। বেটাৰীৰ চাৰ্জিং বিশ্বাসযোগ্য নহ'বও পাৰে।</translation>
+<translation id="2743387203779672305">ক্লিপব'ৰ্ডত প্ৰতিলিপি কৰক</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"মচক"</translation>
 <translation id="2750941250130734256">ড’ক নকৰা ৱিণ্ড’ সক্ৰিয় কৰক।</translation>
@@ -604,6 +606,7 @@
 <translation id="3509391053705095206">আপোনাৰ ফ’নটো বিচাৰি পোৱা নাই। আপোনাৰ ফ’নৰ ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="3510164367642747937">মাউছৰ কাৰ্ছৰ হাইলাইট কৰক</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে</translation>
+<translation id="3517037892157925473">কাৰ্যসমূহ শেষবাৰ আপডে’ট কৰাৰ সময়: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{১ মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="3522979239100719575">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="3526440770046466733">নতুন টেবত লিংক খোলক আৰু বৰ্তমানৰ টেবটোত থাকক</translation>
@@ -1062,6 +1065,7 @@
 <translation id="5218064144558110424">সম্পূৰ্ণ হোৱা নাই বুলি চিহ্নিত কৰক</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="5229343007215035173">গোপনীয়তাৰ স্ক্ৰীন অন/অফ কৰক</translation>
+<translation id="5230516054153933099">ৱিণ্ড’</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="523505283826916779">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="5238719049014159442">লঞ্চাৰ খোলক/বন্ধ কৰক</translation>
@@ -1142,6 +1146,7 @@
 <translation id="5536723544185013515">শেহতীয়াকৈ খোলা এপ্‌, শেহতীয়াকৈ খোলা আটাইবোৰ এপ্‌ এক্সেছ কৰিবলৈ বাওঁ অথবা সোঁ কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰি নেভিগে’ট কৰক</translation>
 <translation id="553675580533261935">ছেশ্বন বন্ধ কৰি আছে</translation>
 <translation id="5537725057119320332">কাষ্ট কৰক</translation>
+<translation id="554017492391497564">সম্পূৰ্ণ হোৱা বুলি চিহ্নিত কৰিব পৰা নগ’ল।</translation>
 <translation id="5546397813406633847">ব্যৱহাৰকাৰীক পুনৰুদ্ধাৰ কৰক</translation>
 <translation id="554893713779400387">শ্ৰুতলিপি দিয়া বুটামটো টগ'ল কৰক</translation>
 <translation id="5550417424894892620">ফাইলসমূহ <ph name="HOLDING_SPACE_TITLE" />ত যোগ দিবলৈ ডেস্কটপত ফাইলসমূহ টানি আনি এৰক। আপুনি ডেস্কটপত ফাইল যোগ দিব নোৱাৰে।</translation>
@@ -1336,6 +1341,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">বেটাৰী কমিছে। বেটাৰী সঞ্চয়কাৰী অন কৰা হৈছে।</translation>
 <translation id="6247728804802644171">জাননী খোলক</translation>
+<translation id="6249795363855770621">সম্পূৰ্ণ হোৱা বুলি চিহ্নিত কৰিব পৰা নগ’ল। অনলাইন হ’লে পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6254629735336163724">আনুভূমিক হিচাপে লক কৰা হৈছে</translation>
 <translation id="6259254695169772643">বাছনি কৰিবলৈ আপোনাৰ ষ্টাইলাছ ব্যৱহাৰ কৰক</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: সক্ৰিয় কৰি থকা হৈছে…</translation>
@@ -1496,6 +1502,7 @@
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
 <translation id="6912841030378044227">ঠিকনা বাৰত ফ’কাছ কৰক</translation>
 <translation id="6912901278692845878">ক্ষিপ্ৰ আভাস</translation>
+<translation id="6917259695595127329">কাৰ্যসমূহ শেষবাৰ আপডে’ট কৰাৰ সময়: <ph name="TIME" />।</translation>
 <translation id="6919251195245069855">আপোনাৰ স্মার্ট কার্ডখন চিনাক্ত কৰিব পৰা নগ'ল। আকৌ চেষ্টা কৰক।</translation>
 <translation id="692135145298539227">মচক</translation>
 <translation id="6929081673585394903">নিয়ন্ত্ৰণসমূহ দেখুৱাওক</translation>

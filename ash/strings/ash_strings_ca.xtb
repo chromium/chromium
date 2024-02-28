@@ -412,6 +412,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
 <translation id="2727175239389218057">Respon</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
+<translation id="2743387203779672305">Copia al porta-retalls</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Suprimeix"</translation>
 <translation id="2750941250130734256">Finestra activa desacoblada.</translation>
@@ -1062,6 +1063,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5218064144558110424">Marca com a no completada</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5229343007215035173">Activa/desactiva la pantalla de privadesa</translation>
+<translation id="5230516054153933099">Finestra</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
 <translation id="5238719049014159442">Obre/Tanca el menú d'aplicacions</translation>

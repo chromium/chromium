@@ -1201,6 +1201,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3324983252691184275">Đỏ thẫm</translation>
 <translation id="3325027355611702542">Xe cắm trại và xe dã ngoại</translation>
+<translation id="3325568918769906282">theo thứ tự giảm dần</translation>
 <translation id="3329013043687509092">Độ bão hòa</translation>
 <translation id="3333762389743153920">Không đáp ứng điều kiện để tạo thẻ ảo</translation>
 <translation id="3336044043987989409">Nhấn nút tải lại để cho phép kết nối với các thiết bị hoặc máy chủ trên mạng riêng của bạn.</translation>
@@ -1321,6 +1322,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3542628208405253498">Hình ảnh trên thẻ</translation>
 <translation id="3542768452570884558">Mở đường liên kết trong cửa sổ mới</translation>
 <translation id="3547746132308051926">20 x 24 inch</translation>
+<translation id="3552155506104542239">Cảnh báo: Chính sách này xung đột với <ph name="POLICY_NAME" /> và sẽ không có hiệu lực với ứng dụng Android. Trong các trường hợp khác, chính sách này sẽ hoạt động như dự kiến.</translation>
 <translation id="3552297013052089404">Phông chữ Sans-serif</translation>
 <translation id="3558573058928565255">Giờ ban ngày</translation>
 <translation id="355995771319966853">Huỷ thao tác tự động điền</translation>
@@ -1868,6 +1870,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="46128681529823442">Thiết bị dành cho môn bóng đá</translation>
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
 <translation id="4622292761762557753">Vẫn chuyển</translation>
+<translation id="4622647778991854660">Bật thông báo trong Trung tâm thông báo. Mở <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Bạn không thể đặt chính sách ở cấp hồ sơ trên Chrome và hệ thống sẽ bỏ qua chính sách này.</translation>
 <translation id="4628678854894591460">Gói kỳ nghỉ</translation>
 <translation id="4628948037717959914">Ảnh</translation>
@@ -2246,6 +2249,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5371425731340848620">Cập nhật thẻ</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Đồng hồ của bạn chạy chậm" hoặc "Đồng hồ của bạn chạy nhanh" hay "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5380953781541843508">theo thứ tự tăng dần</translation>
 <translation id="5383478552402031184">Lát sàn</translation>
 <translation id="5385857628869214740">Hài hước</translation>
 <translation id="5385966243497224160">Không thể xem trước URL không thuộc loại HTTPS</translation>
@@ -3199,6 +3203,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7234112195906418665">Du lịch và vận tải</translation>
 <translation id="7236417832106250253">Đã hoàn tất <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Sản phẩm cho sự kiện đặc biệt và quà tặng</translation>
+<translation id="7237454422623102448">Cài đặt hệ thống</translation>
 <translation id="7237492777898608035">Không hiện lại thông báo này cho trang web này</translation>
 <translation id="7240120331469437312">Tên Thay thế Đối tượng của Chứng chỉ</translation>
 <translation id="7241863998525879494">Những điều cần biết</translation>
@@ -3481,6 +3486,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7719791801330803993">Phần mềm ảnh và video</translation>
 <translation id="772128550427553158">CVC nằm ở mặt trước của thẻ.</translation>
 <translation id="7724603315864178912">Cắt</translation>
+<translation id="7730057435797792985">Sắp xếp</translation>
 <translation id="7734285854693414638">Tạo nhanh một biểu mẫu mới trong Google Biểu mẫu</translation>
 <translation id="773466115871691567">Luôn dịch các trang viết bằng <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Sao chép địa chỉ đường liên kết</translation>

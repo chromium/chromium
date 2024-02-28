@@ -1321,6 +1321,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3542628208405253498">Imaxe da tarxeta</translation>
 <translation id="3542768452570884558">Abrir ligazón nunha ventá nova</translation>
 <translation id="3547746132308051926">20 x 24 polgadas</translation>
+<translation id="3552155506104542239">Advertencia: Esta política está en conflito con <ph name="POLICY_NAME" />, polo que non terá ningún efecto nas aplicacións para Android. Polo resto, funciona do xeito previsto.</translation>
 <translation id="3552297013052089404">Tipo de letra sen serifas</translation>
 <translation id="3558573058928565255">Hora do día</translation>
 <translation id="355995771319966853">Desfacer autocompletado</translation>
@@ -1868,6 +1869,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="46128681529823442">Equipamento de fútbol</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4622292761762557753">Transferir de todos os xeitos</translation>
+<translation id="4622647778991854660">Activa as notificacións no Centro de notificacións. Abre <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Esta política non se pode configurar no perfil de Chrome e, polo tanto, ignorarase.</translation>
 <translation id="4628678854894591460">Ofertas de vacacións</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3199,6 +3201,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7234112195906418665">Viaxes e transporte</translation>
 <translation id="7236417832106250253">Progreso: <ph name="PROGRESS_PERCENT" /> % | Tempo restante: <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Agasallos e artigos de eventos especiais</translation>
+<translation id="7237454422623102448">Configuración do sistema</translation>
 <translation id="7237492777898608035">Non mostrar esta mensaxe de novo para este sitio</translation>
 <translation id="7240120331469437312">Nome alternativo do asunto do certificado</translation>
 <translation id="7241863998525879494">Que pasará a continuación?</translation>

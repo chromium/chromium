@@ -358,6 +358,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2484513351006226581">Teklatuaren diseinua aldatzeko, sakatu <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> lan-eremuaren aurrebista. Lan-eremu aktiboa.</translation>
 <translation id="2487915095798731898">Sartu</translation>
+<translation id="2499445554382787206">Lan-eremuaren profilaren menua. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tekla itsaskorrak</translation>
 <translation id="2504454902900101003">Baztertu telefonoko azken argazkiak, multimedia-elementuak eta jakinarazpenak ikusteko aukera konfiguratzeko prozesua</translation>
 <translation id="2509468283778169019">BLOK MAIUS aktibatuta dago</translation>
@@ -412,6 +413,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2726420622004325180">Telefonoak datu-konexioa erabili behar du wifi-gune bat sortzeko</translation>
 <translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727977024730340865">Potentzia txikiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
+<translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" /> (<ph name="PRICE" />)</translation>
 <translation id="2750932254614666392">"Ezabatu"</translation>
 <translation id="2750941250130734256">Kendu zaio aingura leiho aktiboari.</translation>
@@ -604,6 +606,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3509391053705095206">Ezin da aurkitu telefonoa. Ziurtatu telefonoaren Bluetootha aktibatuta dagoela.</translation>
 <translation id="3510164367642747937">Nabarmendu saguaren kurtsorea</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> kontuaren bidez kudeatzen da kontu hau</translation>
+<translation id="3517037892157925473">Zereginen azken eguneratzea: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Eguneratu gailua minutu bat barru}other{Eguneratu gailua # minutu barru}}</translation>
 <translation id="3522979239100719575">Erabilgarri dauden profilak bilatzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="3526440770046466733">Ireki esteka beste fitxa batean eta geratu oraingo fitxan</translation>
@@ -1063,6 +1066,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5218064144558110424">Markatu osatu gabeko gisa</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5229343007215035173">Aktibatu edo desaktibatu pribatutasun-pantaila</translation>
+<translation id="5230516054153933099">Leihoa</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="523505283826916779">Erabilerraztasun-ezarpenak</translation>
 <translation id="5238719049014159442">Ireki/Itxi Exekutatzeko tresna</translation>
@@ -1143,6 +1147,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5536723544185013515">Azkenaldiko aplikazioak, erabili ezkerrera edo eskuinera egiteko gezi-teklak azkenaldiko aplikazioak atzitzeko</translation>
 <translation id="553675580533261935">Saiotik irteten</translation>
 <translation id="5537725057119320332">Igorri</translation>
+<translation id="554017492391497564">Ezin izan da markatu osatutako gisa.</translation>
 <translation id="5546397813406633847">Berreskuratu erabiltzailea</translation>
 <translation id="554893713779400387">Aktibatu/Desaktibatu diktaketa</translation>
 <translation id="5550417424894892620">Jaregin fitxategiak mahaigainean hemen gehitzeko: <ph name="HOLDING_SPACE_TITLE" />. Ezin dituzu gehitu fitxategiak mahaigainean.</translation>
@@ -1337,6 +1342,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="6237231532760393653">1×</translation>
 <translation id="62380141479352646">Bateria agortzen ari da. Aktibatu egin da Bateria-aurreztailea.</translation>
 <translation id="6247728804802644171">Ireki jakinarazpenak</translation>
+<translation id="6249795363855770621">Ezin izan da markatu osatutako gisa. Saiatu berriro konektatuta zaudenean.</translation>
 <translation id="6254629735336163724">Modu horizontalean blokeatuta</translation>
 <translation id="6259254695169772643">Hautatzeko, erabili arkatza</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktibatzen…</translation>
@@ -1497,6 +1503,7 @@ Berriki instalatu da</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6912841030378044227">Fokuratu helbide-barra</translation>
 <translation id="6912901278692845878">Txango bizkorra</translation>
+<translation id="6917259695595127329">Zereginen azken eguneratzea: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Ezin izan da hauteman txartel adimenduna. Saiatu berriro.</translation>
 <translation id="692135145298539227">ezabatu</translation>
 <translation id="6929081673585394903">Erakutsi kontrolatzeko aukerak</translation>
@@ -1516,7 +1523,7 @@ Berriki instalatu da</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="698231206551913481">Erabiltzailea kentzen denean, harekin erlazionatutako fitxategi eta gailuko datu guztiak betiko ezabatuko dira.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" />-ko bereizmena (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). <ph name="FALLBACK_RESOLUTION" />-ko bereizmenera (<ph name="FALLBACK_REFRESH_RATE" /> Hz) aldatu da. Aldaketak gordetzeko, sakatu Berretsi. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
-<translation id="6989752354829085073">Egin txango bizkor bat Chromebook-a erabiltzen ikasteko. Izan dena prest 6 urratsetan.</translation>
+<translation id="6989752354829085073">Egin txango bizkor bat Chromebook-a erabiltzeko argibideak lortzeko. Izan dena prest 6 urratsetan.</translation>
 <translation id="7000027735917578303">Leihoen eta lan-eremuen ezarpenak</translation>
 <translation id="7004910047186208204">Erabili datu-konexioa</translation>
 <translation id="7005239792648594238">Erabiltzen hasteko, ireki aplikazio bat</translation>

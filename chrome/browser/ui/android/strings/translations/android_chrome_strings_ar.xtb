@@ -604,6 +604,7 @@
 <translation id="426652736638196239">‏سيتم حفظ رقم الحساب هذا بصيغة IBAN على هذا الجهاز فقط.</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
 <translation id="4277529130885813215">استخدام جهاز آخر</translation>
+<translation id="4282440837784183472">‏يدير نطاق مؤسستك، <ph name="MANAGED_DOMAIN" />، الحساب الذي تسجِّل الدخول إليه وطريقة استخدام متصفِّح Chrome. ويمكن لمشرفك إعداد ميزات معيّنة أو حظرها.</translation>
 <translation id="4285846616383034558">ملفات تعريف الارتباط وذاكرة التخزين المؤقّت والبيانات الأخرى للمواقع الإلكترونية</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />تفعيل قفل الشاشة في إعدادات Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">علامة تبويب للتصفّح المتخفي</translation>
@@ -636,6 +637,7 @@
 <translation id="4461614516424362539">عند ربط جهاز آخر باستخدام رمز الاستجابة السريعة، يمكن لهذا الجهاز استخدام هذا الهاتف كمفتاح أمان. وإذا أزَلت هذا الجهاز، يجب مسح رمز الاستجابة السريعة ضوئيًا لربط الجهاز مرة أخرى.</translation>
 <translation id="4478161224666880173">يمكنك استخدام حسابك على <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> على هذا الموقع الإلكتروني. للمتابعة، سجِّل الدخول إلى <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">‏جارٍ تثبيت <ph name="MODULE" /> لمتصفِّح Chrome…</translation>
+<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}zero{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}two{تم حفظ الإشارتَين المرجعيتَين في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}few{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}many{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}other{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}}</translation>
 <translation id="4484496141267039529">لا يتوفّر اتصال بالإنترنت. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4487967297491345095">‏سيتم حذف جميع بيانات تطبيق Chrome نهائيًا. ويشمل ذلك جميع الملفات والإعدادات والحسابات وقواعد البيانات وما إلى ذلك.</translation>
 <translation id="4491323382106587961">اختَر حسابًا. الحساب الذي تم اختياره حاليًا هو ‏<ph name="EMAIL" />.</translation>
@@ -856,6 +858,7 @@
 <translation id="557018954714092179">إنشاء مجلد جديد</translation>
 <translation id="5578795271662203820">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="5581519193887989363">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK1" />الإعدادات<ph name="END_LINK1" />.</translation>
+<translation id="558429399979870715">‏يمكنك الربط بين Chrome وخدمات Google الأخرى إذا كنت تريد مشاركة البيانات في ما بينها</translation>
 <translation id="5590372121997663538">تذكّر جهاز الكمبيوتر هذا</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5599455543593328020">وضع "التصفّح المتخفي"</translation>
@@ -885,6 +888,7 @@
 <translation id="571930967925877633">‏ستتوقّف مزامنة الإشارات المرجعية والسجلّ وبيانات Chrome الأخرى مع حسابك على Google.</translation>
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
 <translation id="5726692708398506830">تكبير كامل محتوى الصفحة</translation>
+<translation id="5728072125198221967">‏خدمات Google المرتبطة</translation>
 <translation id="5744751019568455640">إليك الأصوات التي يمكنك الاختيار منها لقراءة صفحات الويب. إذا أعجبك هذا الصوت وأردت أن أستمر في استخدامه، يُرجى النقر على اسمه.</translation>
 <translation id="5748802427693696783">تم التبديل إلى علامات التبويب القياسية</translation>
 <translation id="5749068826913805084">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
@@ -1063,7 +1067,6 @@
 <translation id="6593061639179217415">الموقع على الكمبيوتر</translation>
 <translation id="6594347733515723558">خيارات الترتيب والعرض</translation>
 <translation id="6595046016124923392">‏يتم إرسال الصور إلى Google لتحسين أوصاف الصور.</translation>
-<translation id="6600954340915313787">‏تم النسخ إلى Chrome</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6621391692573306628">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
 <translation id="6627583120233659107">تعديل مجلد</translation>
@@ -1165,9 +1168,11 @@
 <translation id="7037830628447527439">‏سجِّل الدخول إلى Chrome باستخدام حسابك على Google.</translation>
 <translation id="7054588988317389591">هل تريد عرض أوصاف الصور؟</translation>
 <translation id="7055152154916055070">تم حظر إعادة توجيه:</translation>
+<translation id="7057969023583258980">‏فتح سجلّ Chrome بالكامل</translation>
 <translation id="7063006564040364415">تعذر الاتصال بخادم المزامنة.</translation>
 <translation id="7071521146534760487">إدارة الحساب</translation>
 <translation id="707155805709242880">اختَر ما تريد مزامنته أدناه</translation>
+<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}zero{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}two{تم حفظ الإشارتَين المرجعيتَين في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}few{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}many{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}other{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7077143737582773186">‏بطاقة SD</translation>
 <translation id="7080806333218412752">‏يُرسِل هذا الوضع عناوين URL إلى "التصفُّح الآمن" للتحقُّق منها. ويُرسِل أيضًا عددًا قليلاً من الصفحات وعمليات التنزيل ونشاط الإضافة ومعلومات النظام للمساعدة في اكتشاف التهديدات الجديدة. ويربط مؤقتًا هذه البيانات مع حسابك على Google عندما تكون مُسجّلاً الدخول لحمايتك على تطبيقات Google.</translation>
 <translation id="7085332316435785646">‏اختَر ما إذا كنت تريد تضمين سجلّ Chrome للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>
@@ -1437,6 +1442,7 @@
 <translation id="8310344678080805313">علامات التبويب القياسية</translation>
 <translation id="831192587911042850">تعمل هذه الميزة على إضافة الموقع الإلكتروني الحالي إلى قائمة المواقع الإلكترونية التي تتابعها.</translation>
 <translation id="8333340769932050274">‏يمكنك حظر المواضيع التي لا تريد مشاركتها مع المواقع الإلكترونية. يحذف Chrome أيضًا تلقائيًا من القائمة المواضيع التي مر عليها أكثر من 4 أسابيع. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="8336984817750547763">‏يمكنك تضمين سجلّ Chrome إذا أردت إضافته إلى "النشاط على الويب وفي التطبيقات" في حسابك على Google</translation>
 <translation id="834313815369870491">مواقع إلكترونية لا أريد ترجمتها مطلقًا</translation>
 <translation id="8348430946834215779">‏استخدِم بروتوكول HTTPS كلما أمكن ذلك واحصل على تحذيرات قبل تحميل المواقع الإلكترونية غير المتوافقة معه.</translation>
 <translation id="8354977102499939946">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
@@ -1582,6 +1588,7 @@
 <translation id="9081543426177426948">المواقع الإلكترونية التي تزورها لا يتم حفظها في وضع التصفح المتخفي</translation>
 <translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9086455579313502267">تعذر الدخول إلى الشبكة</translation>
+<translation id="909756639352028172">‏للحصول على تجربة مخصَّصة أكثر، يمكنك تضمين Chrome في "النشاط على الويب وفي التطبيقات" وخدمات Google المرتبطة</translation>
 <translation id="9099220545925418560">تستند مواضيع الإعلانات إلى سجلّ التصفُّح الخاص بك. هذا الإعداد غير مفعَّل.</translation>
 <translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
 <translation id="9101137867221042551">الإدارة</translation>

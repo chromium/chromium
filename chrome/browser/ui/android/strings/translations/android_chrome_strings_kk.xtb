@@ -602,6 +602,7 @@
 <translation id="426652736638196239">Бұл IBAN нөмірі осы құрылғыға ғана сақталады.</translation>
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="4277529130885813215">Басқа құрылғыны пайдалану</translation>
+<translation id="4282440837784183472">Ұйымыңыз (<ph name="MANAGED_DOMAIN" />) сіз кіріп жатқан аккаунтты және Chrome-ды пайдалану жолын басқарады. Әкімшіңіз белгілі бір функцияларды реттей алады немесе шектей алады.</translation>
 <translation id="4285846616383034558">Cookie файлдары, кэш және басқа сайт деректері</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android параметрлерінен экран құлпын қосыңыз.<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Жаңа инкогнито қойындысы</translation>
@@ -1061,7 +1062,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6593061639179217415">Компьютерге арналған сайт</translation>
 <translation id="6594347733515723558">Сұрыптау және көру опциялары</translation>
 <translation id="6595046016124923392">Сипаттамаларды жасқарту үшін Google-ға суреттер жіберіледі.</translation>
-<translation id="6600954340915313787">Chrome жүйесіне көшірілген</translation>
 <translation id="661266467055912436">Интернеттегі сіздің және басқалардың қауіпсіздігін күшейтеді.</translation>
 <translation id="6621391692573306628">Бұл қойындыны басқа құрылғыға жіберу үшін екі құрылғыда Chrome-ға кіріңіз.</translation>
 <translation id="6627583120233659107">Қалтаны өзгерту</translation>

@@ -358,6 +358,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2484513351006226581">Paina <ph name="KEYBOARD_SHORTCUT" /> vaihtaaksesi näppäimistöasettelua.</translation>
 <translation id="2486214324139475545">Esikatselu: <ph name="DESK_NAME" />. Aktiivinen työpöytä.</translation>
 <translation id="2487915095798731898">Liity</translation>
+<translation id="2499445554382787206">Työpöytäprofiilin valikko. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
 <translation id="2504454902900101003">Hylkää puhelimen viimeaikaisten kuvien, median ja ilmoitusten katselun käyttöönotto</translation>
 <translation id="2509468283778169019">CAPS LOCK on päällä</translation>
@@ -412,6 +413,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2726420622004325180">Puhelimen käyttäminen modeemina edellyttää mobiilidataa</translation>
 <translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
+<translation id="2743387203779672305">Kopioi leikepöydälle</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">Poista</translation>
 <translation id="2750941250130734256">Aktiivinen ikkuna irrotettu</translation>
@@ -604,6 +606,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3509391053705095206">Puhelintasi ei löydy. Varmista, että puhelimen Bluetooth-yhteys on päällä.</translation>
 <translation id="3510164367642747937">Korosta hiiren osoitin</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> hallinnoi tiliä</translation>
+<translation id="3517037892157925473">Tehtävät päivitetty viimeksi: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Päivitä laite 1 minuutin kuluessa}other{Päivitä laite # minuutin kuluessa}}</translation>
 <translation id="3522979239100719575">Etsitään käytettävissä olevia profiileja. Tässä voi kulua muutama minuutti.</translation>
 <translation id="3526440770046466733">Avaa linkki uudella välilehdellä ja pysy nykyisellä välilehdellä</translation>
@@ -1062,6 +1065,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="5218064144558110424">Merkitse keskeneräiseksi</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5229343007215035173">Laita Yksityinen näkyvyys päälle tai pois päältä</translation>
+<translation id="5230516054153933099">Ikkuna</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="523505283826916779">Saavutettavuusasetukset</translation>
 <translation id="5238719049014159442">Avaa/sulje käynnistysohjelma</translation>
@@ -1142,6 +1146,7 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="5536723544185013515">Viimeaikaiset sovellukset, siirry viimeaikaisiin sovelluksiin vasemmalla tai oikealla nuolinäppäimellä</translation>
 <translation id="553675580533261935">Käyttökerran lopettaminen</translation>
 <translation id="5537725057119320332">Suoratoista</translation>
+<translation id="554017492391497564">Valmiiksi merkitseminen epäonnistui.</translation>
 <translation id="5546397813406633847">Palauta käyttäjä</translation>
 <translation id="554893713779400387">Laita sanelu päälle tai pois päältä</translation>
 <translation id="5550417424894892620">Pudota tiedostoja työpöydälle, niin ne lisätään tänne: <ph name="HOLDING_SPACE_TITLE" />. Et voi lisätä tiedostoja työpöydälle.</translation>
@@ -1336,6 +1341,7 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Akku vähissä. Virransäästö on laitettu päälle.</translation>
 <translation id="6247728804802644171">Avaa ilmoitukset</translation>
+<translation id="6249795363855770621">Valmiiksi merkitseminen epäonnistui. Yritä uudelleen, kun olet yhteydessä verkkoon.</translation>
 <translation id="6254629735336163724">Lukittu vaakasuuntaiseksi</translation>
 <translation id="6259254695169772643">Valitse näyttökynällä</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktivoidaan…</translation>
@@ -1496,6 +1502,7 @@ Uusi asennus</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6912841030378044227">Tarkenna osoitepalkkiin</translation>
 <translation id="6912901278692845878">Pikaesittely</translation>
+<translation id="6917259695595127329">Tehtävät päivitetty viimeksi: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
 <translation id="692135145298539227">poista</translation>
 <translation id="6929081673585394903">Näytä säätimet</translation>

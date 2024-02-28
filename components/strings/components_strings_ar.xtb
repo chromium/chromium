@@ -1322,6 +1322,7 @@
 <translation id="3542628208405253498">صورة البطاقة</translation>
 <translation id="3542768452570884558">فتح الرابط في نافذة جديدة</translation>
 <translation id="3547746132308051926">20 × 24 بوصة</translation>
+<translation id="3552155506104542239">‏تحذير: تتعارض هذه السياسة مع سياسة "<ph name="POLICY_NAME" />" ولن تؤثّر في تطبيقات Android. بخلاف ذلك، تعمل هذه السياسة على النحو المقصود.</translation>
 <translation id="3552297013052089404">‏خط Sans-serif</translation>
 <translation id="3558573058928565255">خلال النهار</translation>
 <translation id="355995771319966853">التراجع عن الملء التلقائي</translation>
@@ -1873,6 +1874,7 @@
 <translation id="46128681529823442">معدّات كرة قدم</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4622292761762557753">النقل على أي حال</translation>
+<translation id="4622647778991854660">‏يؤدي هذا الخيار إلى تفعيل الإشعارات في "مركز الإشعارات" (Notification Center). فتح <ph name="LINK" /></translation>
 <translation id="4627675673814409125">‏يتعذّر ضبط هذه السياسة على مستوى الملف الشخصي على Chrome وسيتم تجاهلها.</translation>
 <translation id="4628678854894591460">عروض للعطلات</translation>
 <translation id="4628948037717959914">صورة</translation>
@@ -3204,6 +3206,7 @@
 <translation id="7234112195906418665">سفر ووسائل نقل</translation>
 <translation id="7236417832106250253">اكتمل التحديث بنسبة %<ph name="PROGRESS_PERCENT" /> | يتبقى <ph name="ESTIMATED_REMAINING_TIME" /> لاكتماله.</translation>
 <translation id="7237166092326447040">هدايا ومستلزمات مناسبات خاصة</translation>
+<translation id="7237454422623102448">إعدادات النظام</translation>
 <translation id="7237492777898608035">عدم إظهار هذه الرسالة مرة أخرى لهذا الموقع الإلكتروني</translation>
 <translation id="7240120331469437312">الاسم البديل لصاحب الشهادة</translation>
 <translation id="7241863998525879494">التحسينات المتوقَّعة</translation>

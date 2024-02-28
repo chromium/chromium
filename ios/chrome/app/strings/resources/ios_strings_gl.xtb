@@ -236,6 +236,7 @@
 <translation id="2252674110805316998">Busca web</translation>
 <translation id="2252749852083403809">Está gardándose en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="2256933947031277845">A túa organización só che permite iniciar sesión con certas contas.</translation>
+<translation id="2257594476751932246">Noticias personalizadas</translation>
 <translation id="2258326562203545455">{count,plural, =1{Podes gardar o marcador na túa Conta de Google ({email}).}other{Podes gardar os marcadores na túa Conta de Google ({email}).}}</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Engadir conta</translation>
@@ -470,6 +471,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
 <translation id="3425644765244388016">Alcume da tarxeta</translation>
 <translation id="3433057996795775706">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />. Cámbiao en <ph name="WEBSITE" /> para que estea a salvo doutras persoas.</translation>
+<translation id="3435738964857648380">Seguranza</translation>
 <translation id="3443810440409579745">Recibiuse unha pestana.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vista dividida</translation>
@@ -590,7 +592,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4045648459118332842">Usa en calquera aplicación e cun toque os contrasinais gardados</translation>
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
 <translation id="4054572406751135230">Mantente ao día das noticias, os deportes e moito máis.</translation>
-<translation id="4057531989585132525">Seguranza da conexión</translation>
 <translation id="4066639687323968621">Inicia sesión coa túa Conta de Google para sincronizar os marcadores ou o historial, entre outras opcións.</translation>
 <translation id="4092655288299341041">Mostrar axuda:</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar enderezo}other{Eliminar enderezos}}</translation>

@@ -1321,6 +1321,7 @@
 <translation id="3542628208405253498">Зображення картки</translation>
 <translation id="3542768452570884558">Відкрити посилання в новому вікні</translation>
 <translation id="3547746132308051926">20 x 24 дюйм.</translation>
+<translation id="3552155506104542239">Попередження: це правило конфліктує з правилом <ph name="POLICY_NAME" /> і не застосовується до додатків для Android. В інших випадках це правило працює належним чином.</translation>
 <translation id="3552297013052089404">Шрифт Sans Serif</translation>
 <translation id="3558573058928565255">День</translation>
 <translation id="355995771319966853">Скасувати автозаповнення</translation>
@@ -1868,6 +1869,7 @@
 <translation id="46128681529823442">Обладнання для футболу</translation>
 <translation id="4619564267100705184">Підтвердити особу</translation>
 <translation id="4622292761762557753">Усе одно перенести</translation>
+<translation id="4622647778991854660">Увімкніть сповіщення в Центрі сповіщень. Відкрийте <ph name="LINK" />.</translation>
 <translation id="4627675673814409125">Це правило не можна налаштувати на рівні профілю Chrome, тому воно ігноруватиметься.</translation>
 <translation id="4628678854894591460">Пропозиції для відпочинку</translation>
 <translation id="4628948037717959914">Фотографія</translation>
@@ -3199,6 +3201,7 @@
 <translation id="7234112195906418665">Подорожі й транспорт</translation>
 <translation id="7236417832106250253">Виконано <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подарунки й атрибути особливих подій</translation>
+<translation id="7237454422623102448">Налаштування системи</translation>
 <translation id="7237492777898608035">Більше не показувати це повідомлення для цього сайту</translation>
 <translation id="7240120331469437312">Альтернативне ім'я суб'єкта сертифіката</translation>
 <translation id="7241863998525879494">Чого слід очікувати</translation>

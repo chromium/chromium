@@ -238,6 +238,7 @@
 <translation id="2252674110805316998">بحث الويب</translation>
 <translation id="2252749852083403809">‏يجري حفظ الملف في الحساب <ph name="USER_EMAIL" /> على Google Drive.</translation>
 <translation id="2256933947031277845">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط.</translation>
+<translation id="2257594476751932246">أخبار مُخَصَّصة</translation>
 <translation id="2258326562203545455">{count,plural, =1{‏يمكنك حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏يمكنك حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏يمكنك حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">إضافة حساب</translation>
@@ -472,6 +473,7 @@
 <translation id="3416023309465857378">‫25 تشرين الأول (أكتوبر) 2023</translation>
 <translation id="3425644765244388016">لقب البطاقة</translation>
 <translation id="3433057996795775706">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />. يُرجى تغيير كلمة مرورك على <ph name="WEBSITE" /> لحمايته من الآخرين.</translation>
+<translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3443810440409579745">تم استلام علامة تبويب.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="3448016392200048164">تقسيم العرض</translation>
@@ -592,7 +594,6 @@
 <translation id="4045648459118332842">الوصول بنقرة واحدة إلى كلمات المرور المحفوظة في أي تطبيق</translation>
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
 <translation id="4054572406751135230">يمكنك متابعة الأخبار والرياضة وغير ذلك.</translation>
-<translation id="4057531989585132525">أمان الاتصال</translation>
 <translation id="4066639687323968621">‏سجِّل الدخول باستخدام حسابك على Google لمزامنة الإشارات المرجعية والسجلّ وغير ذلك.</translation>
 <translation id="4092655288299341041">عرض معلومات المساعدة</translation>
 <translation id="4105841739161771091">{count,plural, =1{حذف العنوان}zero{حذف العناوين}two{حذف العنوانَين}few{حذف العناوين}many{حذف العناوين}other{حذف العناوين}}</translation>
