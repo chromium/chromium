@@ -901,6 +901,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "DoNotEvictOnAXLocationChange",
                 "When enabled, do not evict the bfcache entry even when AXLocationChange happens."),
+        Flag.baseFeature("CreateSpareRendererOnBrowserContextCreation"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

@@ -164,6 +164,7 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
 
     @Test
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"disable-features=CreateSpareRendererOnBrowserContextCreation"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessCanNotTerminateBeforeStart() throws Throwable {

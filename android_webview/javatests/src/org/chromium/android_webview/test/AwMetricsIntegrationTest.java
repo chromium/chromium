@@ -325,6 +325,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"disable-features=CreateSpareRendererOnBrowserContextCreation"})
     public void testMetadata_stability_rendererLaunchCount() throws Throwable {
         EmbeddedTestServer embeddedTestServer =
                 EmbeddedTestServer.createAndStartServer(
