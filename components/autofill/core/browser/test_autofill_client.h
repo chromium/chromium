@@ -491,6 +491,10 @@ class TestAutofillClientTemplate : public T {
 
   LogManager* GetLogManager() const override { return log_manager_.get(); }
 
+  bool ShouldFormatForLargeKeyboardAccessory() const override {
+    return format_for_large_keyboard_accessory_;
+  }
+
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override {
     return {};
   }
@@ -648,6 +652,11 @@ class TestAutofillClientTemplate : public T {
 
   bool autofill_error_dialog_shown() { return autofill_error_dialog_shown_; }
 
+  void set_format_for_large_keyboard_accessory(
+      bool format_for_large_keyboard_accessory) {
+    format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
+  }
+
   bool virtual_card_error_dialog_is_permanent_error() {
     return autofill_error_dialog_context().type ==
            AutofillErrorDialogType::kVirtualCardPermanentError;
@@ -794,6 +803,8 @@ class TestAutofillClientTemplate : public T {
   LegalMessageLines legal_message_lines_;
 
   bool autofill_error_dialog_shown_ = false;
+
+  bool format_for_large_keyboard_accessory_ = false;
 
   // Context parameters that are used to display an error dialog during card
   // number retrieval. This context will have information that the autofill

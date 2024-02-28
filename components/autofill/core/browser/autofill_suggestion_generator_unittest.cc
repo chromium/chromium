@@ -66,6 +66,23 @@ using testing::Matcher;
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
+Matcher<Suggestion> EqualLabels(
+    const std::vector<std::vector<Suggestion::Text>>& suggestion_objects) {
+  return Field(&Suggestion::labels, suggestion_objects);
+}
+
+Matcher<Suggestion> EqualLabels(
+    const std::vector<std::vector<std::u16string>>& labels) {
+  std::vector<std::vector<Suggestion::Text>> suggestion_objects;
+  for (const auto& row : labels) {
+    suggestion_objects.emplace_back();
+    for (const auto& col : row) {
+      suggestion_objects.back().emplace_back(col);
+    }
+  }
+  return EqualLabels(suggestion_objects);
+}
+
 Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
     PopupItemId id,
     const std::u16string& main_text,
@@ -80,7 +97,7 @@ Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
       Field(&Suggestion::icon, Suggestion::Icon::kNoIcon),
       Field(&Suggestion::field_by_field_filling_type_used,
             std::optional(field_by_field_filling_type_used)),
-      Field(&Suggestion::labels, labels));
+      EqualLabels(labels));
 }
 
 Matcher<Suggestion> EqualsIbanSuggestion(
@@ -91,11 +108,10 @@ Matcher<Suggestion> EqualsIbanSuggestion(
                Field(&Suggestion::main_text,
                      Suggestion::Text(text, Suggestion::Text::IsPrimary(true))),
                Field(&Suggestion::payload, payload),
-               Field(&Suggestion::labels,
-                     first_label_value.empty()
-                         ? std::vector<std::vector<Suggestion::Text>>{}
-                         : std::vector<std::vector<Suggestion::Text>>{
-                               {Suggestion::Text(first_label_value)}}));
+               EqualLabels(first_label_value.empty()
+                               ? std::vector<std::vector<Suggestion::Text>>{}
+                               : std::vector<std::vector<Suggestion::Text>>{
+                                     {Suggestion::Text(first_label_value)}}));
 }
 
 Matcher<Suggestion> EqualsClearFormSuggestion() {
@@ -904,10 +920,7 @@ TEST_P(
               {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
               /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
               /*trigger_field_max_length=*/0),
-      ElementsAre(AllOf(
-          testing::Field(&Suggestion::labels,
-                         std::vector<std::vector<Suggestion::Text>>{
-                             {Suggestion::Text(full_form_filling_label)}}))));
+      ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
 }
 
 TEST_P(
@@ -932,14 +945,8 @@ TEST_P(
               /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(
-          AllOf(testing::Field(
-              &Suggestion::labels,
-              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
-                  full_form_filling_label + u"hoa@gmail.com")}})),
-          AllOf(testing::Field(
-              &Suggestion::labels,
-              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
-                  full_form_filling_label + u"pham@gmail.com")}}))));
+          AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
+          AllOf(EqualLabels({{full_form_filling_label + u"pham@gmail.com"}}))));
 }
 
 // The logic which adds the country as a differentating label is slightly
@@ -966,14 +973,8 @@ TEST_P(
               /*last_targeted_fields=*/std::nullopt, trigerring_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(
-          AllOf(testing::Field(
-              &Suggestion::labels,
-              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
-                  full_form_filling_label + u"United States")}})),
-          AllOf(testing::Field(
-              &Suggestion::labels,
-              std::vector<std::vector<Suggestion::Text>>{{Suggestion::Text(
-                  full_form_filling_label + u"Switzerland")}}))));
+          AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
+          AllOf(EqualLabels({{full_form_filling_label + u"Switzerland"}}))));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1793,40 +1794,31 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"John Doe",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"Address 123")}}),
+                EqualLabels({{u"Address 123"}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Johnas Dhonas",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"New York")}}),
+                EqualLabels({{u"New York"}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Other Address 33",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"Old City")}}),
+                EqualLabels({{u"Old City"}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Munich",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"munich@gmail.com")}}),
+                EqualLabels({{u"munich@gmail.com"}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"other@gmail.com",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{{}}),
+                EqualLabels(std::vector<std::vector<Suggestion::Text>>{{}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false))));
 }
@@ -1852,9 +1844,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                   Field(&Suggestion::main_text,
                         Suggestion::Text(u"港区六本木ヒルズ森タワー",
                                          Suggestion::Text::IsPrimary(true))),
-                  Field(&Suggestion::labels,
-                        std::vector<std::vector<Suggestion::Text>>{
-                            {Suggestion::Text(u"ミク初音")}}),
+                  EqualLabels({{u"ミク初音"}}),
                   Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                   Field(&Suggestion::is_acceptable, false))));
 }
@@ -1881,9 +1871,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
       ElementsAre(AllOf(
           Field(&Suggestion::main_text,
                 Suggestion::Text(u"صاحب", Suggestion::Text::IsPrimary(true))),
-          Field(&Suggestion::labels,
-                std::vector<std::vector<Suggestion::Text>>{
-                    {Suggestion::Text(u"الملكي")}}),
+          EqualLabels({{u"الملكي"}}),
           Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
           Field(&Suggestion::is_acceptable, false))));
 }
@@ -1909,9 +1897,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
                   Field(&Suggestion::main_text,
                         Suggestion::Text(u"แขวงลุมพินี",
                                          Suggestion::Text::IsPrimary(true))),
-                  Field(&Suggestion::labels,
-                        std::vector<std::vector<Suggestion::Text>>{
-                            {Suggestion::Text(u"57 ปาร์คเวนเชอร์")}}),
+                  EqualLabels({{u"57 ปาร์คเวนเชอร์"}}),
                   Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                   Field(&Suggestion::is_acceptable, false))));
 }
@@ -2023,15 +2009,11 @@ TEST_F(AutofillSuggestionGeneratorTest,
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Jon Snow",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"2 Beyond-the-Wall Rd")}})),
+                EqualLabels({{u"2 Beyond-the-Wall Rd"}})),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Jon Snow",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"1 Winterfell Ln")}}))));
+                EqualLabels({{u"1 Winterfell Ln"}}))));
 }
 
 // TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
@@ -2063,20 +2045,15 @@ TEST_F(AutofillSuggestionGeneratorTest,
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Sansa",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"1 Winterfell Ln")}})),
+                EqualLabels({{u"1 Winterfell Ln"}})),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Sansa",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{})),
+                EqualLabels(std::vector<std::vector<Suggestion::Text>>{})),
           AllOf(Field(&Suggestion::main_text,
                       Suggestion::Text(u"Brienne",
                                        Suggestion::Text::IsPrimary(true))),
-                Field(&Suggestion::labels,
-                      std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"1 Winterfell Ln")}}))));
+                EqualLabels({{u"1 Winterfell Ln"}}))));
 }
 
 // TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
@@ -2101,8 +2078,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
                   Field(&Suggestion::main_text,
                         Suggestion::Text(u"Mañana Road",
                                          Suggestion::Text::IsPrimary(true))),
-                  Field(&Suggestion::labels,
-                        std::vector<std::vector<Suggestion::Text>>{}))));
+                  EqualLabels(std::vector<std::vector<Suggestion::Text>>{}))));
 }
 
 // Tests that regular suggestions are filtered by the triggering field's value,
@@ -3073,10 +3049,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(Suggestion::Guid("1")));
-  ASSERT_EQ(promo_code_suggestions[0].labels.size(), 1U);
-  ASSERT_EQ(promo_code_suggestions[0].labels[0].size(), 1U);
-  EXPECT_EQ(promo_code_suggestions[0].labels[0][0].value,
-            u"test_value_prop_text_1");
+  EXPECT_THAT(promo_code_suggestions[0],
+              EqualLabels({{u"test_value_prop_text_1"}}));
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(Suggestion::Guid("1")));
   EXPECT_EQ(promo_code_suggestions[0].popup_item_id,
@@ -3085,10 +3059,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(promo_code_suggestions[1].main_text.value, u"test_promo_code_2");
   EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(Suggestion::Guid("2")));
-  ASSERT_EQ(promo_code_suggestions[1].labels.size(), 1U);
-  ASSERT_EQ(promo_code_suggestions[1].labels[0].size(), 1U);
-  EXPECT_EQ(promo_code_suggestions[1].labels[0][0].value,
-            u"test_value_prop_text_2");
+  EXPECT_THAT(promo_code_suggestions[1],
+              EqualLabels({{u"test_value_prop_text_2"}}));
   EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(Suggestion::Guid("2")));
   EXPECT_EQ(promo_code_suggestions[1].popup_item_id,
@@ -3121,10 +3093,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_TRUE(promo_code_suggestions.size() == 1);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
-  ASSERT_EQ(promo_code_suggestions[0].labels.size(), 1U);
-  ASSERT_EQ(promo_code_suggestions[0].labels[0].size(), 1U);
-  EXPECT_EQ(promo_code_suggestions[0].labels[0][0].value,
-            u"test_value_prop_text_1");
+  EXPECT_THAT(promo_code_suggestions[0],
+              EqualLabels({{u"test_value_prop_text_1"}}));
   EXPECT_FALSE(
       absl::holds_alternative<GURL>(promo_code_suggestions[0].payload));
   EXPECT_EQ(promo_code_suggestions[0].popup_item_id,
@@ -3148,10 +3118,7 @@ TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
   EXPECT_EQ(suggestions[1].popup_item_id, PopupItemId::kAddressEntry);
 
   EXPECT_EQ(suggestions[0].main_text.value, u"Devtools");
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0],
-            Suggestion::Text(u"Address test data"));
+  EXPECT_THAT(suggestions[0], EqualLabels({{u"Address test data"}}));
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCode);
   EXPECT_EQ(suggestions[0].children.size(), 1u);
 
@@ -3239,11 +3206,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 #else
   if (keyboard_accessory_enabled()) {
     // There should be only 1 line of label: obfuscated last 4 digits "..1111".
-    ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
-    ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
-    EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
-              CreditCard::GetObfuscatedStringForCardDigits(
-                  /*obfuscation_length=*/2, u"1111"));
+    EXPECT_THAT(virtual_card_name_field_suggestion,
+                EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
+                    /*obfuscation_length=*/2, u"1111")}}));
   } else {
     // There should be 2 lines of labels:
     // 1. Card name + obfuscated last 4 digits "CardName  ....1111". Card name
@@ -3311,10 +3276,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
     ASSERT_TRUE(virtual_card_number_field_suggestion.labels.empty());
   } else {
     // For Desktop/Android dropdown, and on iOS, "Virtual card" is the label.
-    ASSERT_EQ(virtual_card_number_field_suggestion.labels.size(), 1U);
-    ASSERT_EQ(virtual_card_number_field_suggestion.labels[0].size(), 1U);
-    EXPECT_EQ(virtual_card_number_field_suggestion.labels[0][0].value,
-              u"Virtual card");
+    EXPECT_THAT(virtual_card_number_field_suggestion,
+                EqualLabels({{u"Virtual card"}}));
   }
 }
 
@@ -3337,19 +3300,15 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
 #if BUILDFLAG(IS_IOS)
   // For IOS, the label is "..1111" or "....1111".
-  ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
-            CreditCard::GetObfuscatedStringForCardDigits(
-                ios_obfuscation_length(), u"1111"));
+  EXPECT_THAT(real_card_name_field_suggestion,
+              EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
+                  ios_obfuscation_length(), u"1111")}}));
 #else
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, the label is "..1111".
-    ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
-    ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
-    EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
-              CreditCard::GetObfuscatedStringForCardDigits(
-                  /*obfuscation_length=*/2, u"1111"));
+    EXPECT_THAT(real_card_name_field_suggestion,
+                EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
+                    /*obfuscation_length=*/2, u"1111")}}));
   } else {
     // For Desktop/Android, the label is "CardName  ....1111". Card name and
     // last four are shown separately.
@@ -3394,11 +3353,11 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 #endif
 
   // The label is the expiration date formatted as mm/yy.
-  ASSERT_EQ(real_card_number_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(real_card_number_field_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(real_card_number_field_suggestion.labels[0][0].value,
-            base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
-                          base::UTF8ToUTF16(test::NextYear().substr(2))}));
+  EXPECT_THAT(
+      real_card_number_field_suggestion,
+      EqualLabels(
+          {{base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
+                          base::UTF8ToUTF16(test::NextYear().substr(2))})}}));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -3425,11 +3384,9 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
             server_card.ObfuscatedNumberWithVisibleLastFourDigits(4));
 
   // The label is the expiration date formatted as mm/yy.
-  EXPECT_EQ(server_card_suggestion.labels.size(), 1U);
-  EXPECT_EQ(server_card_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(
-      server_card_suggestion.labels[0][0].value,
-      server_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale()));
+  EXPECT_THAT(server_card_suggestion,
+              EqualLabels({{server_card.GetInfo(
+                  CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale())}}));
 
   EXPECT_EQ(server_card_suggestion.acceptance_a11y_announcement,
             l10n_util::GetStringUTF16(
@@ -3803,6 +3760,79 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 }
 
 #if BUILDFLAG(IS_IOS)
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       GetSuggestionsForCreditCards_LargeKeyboardAccessoryFormat) {
+  // Enable formatting for large keyboard accessories.
+  autofill_client()->set_format_for_large_keyboard_accessory(true);
+
+  CreditCard server_card = CreateServerCard();
+
+  int obfuscation_length = ios_obfuscation_length();
+
+  const std::u16string obfuscated_number =
+      CreditCard::GetObfuscatedStringForCardDigits(obfuscation_length, u"1111");
+  const std::u16string name_full =
+      server_card.GetRawInfo(CREDIT_CARD_NAME_FULL);
+  const std::u16string exp_date =
+      server_card.GetRawInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
+  const std::u16string card_type = server_card.GetRawInfo(CREDIT_CARD_TYPE);
+  const std::u16string type_and_number =
+      base::StrCat({card_type, u"  ", obfuscated_number});
+
+  Suggestion card_number_field_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false);
+
+  // From the credit card number field, the suggestion should show the card type
+  // and number and the label should show the expiration date.
+  EXPECT_EQ(card_number_field_suggestion.main_text.value, type_and_number);
+  EXPECT_THAT(card_number_field_suggestion, EqualLabels({{exp_date}}));
+
+  card_number_field_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NAME_FULL,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false);
+
+  // From the credit card name field, the suggestion should show the full name
+  // and the label should show the card type and number.
+  EXPECT_EQ(card_number_field_suggestion.main_text.value,
+            base::StrCat({name_full}));
+  EXPECT_THAT(card_number_field_suggestion, EqualLabels({{type_and_number}}));
+
+  card_number_field_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_EXP_MONTH,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false);
+
+  // From a credit card expiry field, the suggestion should show the expiration
+  // date and the label should show the card type and number.
+  EXPECT_EQ(card_number_field_suggestion.main_text.value,
+            base::StrCat({exp_date}));
+  EXPECT_THAT(card_number_field_suggestion, EqualLabels({{type_and_number}}));
+
+  server_card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  card_number_field_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card, CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false);
+
+  // From a virtual credit card, the suggestion should show the card name and
+  // the label should show the card's virtual status, type and number.
+  EXPECT_EQ(card_number_field_suggestion.main_text.value,
+            base::StrCat({server_card.CardNameForAutofillDisplay(
+                server_card.nickname())}));
+  EXPECT_THAT(
+      card_number_field_suggestion,
+      EqualLabels({{l10n_util::GetStringUTF16(
+                        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
+                    u" • " + card_type + u" " + obfuscated_number}}));
+}
+
 // Tests that credit card suggestions on iOS use the correct number of '•'
 // characters depending on the kAutofillUseTwoDotsForLastFourDigits feature.
 class AutofillCreditCardSuggestionIOSObfuscationLengthContentTest
@@ -3839,11 +3869,9 @@ TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false);
 
-  ASSERT_EQ(card_name_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(card_name_field_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(card_name_field_suggestion.labels[0][0].value,
-            CreditCard::GetObfuscatedStringForCardDigits(
-                expected_obfuscation_length(), u"1111"));
+  EXPECT_THAT(card_name_field_suggestion,
+              EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
+                  expected_obfuscation_length(), u"1111")}}));
 
   // Card number field suggestion.
   Suggestion card_number_field_suggestion =

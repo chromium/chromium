@@ -273,6 +273,10 @@ void AutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTIMPLEMENTED();
 }
 
+bool AutofillClient::ShouldFormatForLargeKeyboardAccessory() const {
+  return false;
+}
+
 void AutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     const std::map<std::string, std::string>& field_filling_stats_data) {
   NOTIMPLEMENTED();

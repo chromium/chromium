@@ -844,6 +844,10 @@ class AutofillClient {
   virtual bool IsLastQueriedField(FieldGlobalId field_id) = 0;
 #endif
 
+  // Whether we can add more information to the contents of suggestions text due
+  // to the use of a large keyboard accessory view. See b/40942168.
+  virtual bool ShouldFormatForLargeKeyboardAccessory() const;
+
   // Navigates to |url| in a new tab. |url| links to the promo code offer
   // details page for the offers in a promo code suggestions popup. Every offer
   // in a promo code suggestions popup links to the same offer details page.

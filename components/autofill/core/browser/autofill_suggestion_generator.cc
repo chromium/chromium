@@ -1168,6 +1168,19 @@ Suggestion::Text GetBenefitTextWithTermsAppended(
       IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS, benefit_text));
 }
 
+bool IsCreditCardExpiryData(FieldType trigger_field_type) {
+  switch (trigger_field_type) {
+    case CREDIT_CARD_EXP_MONTH:
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
@@ -2042,40 +2055,57 @@ std::pair<Suggestion::Text, Suggestion::Text>
 AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
     const CreditCard& credit_card,
     FieldType trigger_field_type) const {
-  std::u16string main_text;
-  std::u16string minor_text;
-  if (trigger_field_type == CREDIT_CARD_NUMBER) {
-    std::u16string nickname = GetDisplayNicknameForCreditCard(credit_card);
-    if (ShouldSplitCardNameAndLastFourDigits()) {
-      main_text = credit_card.CardNameForAutofillDisplay(nickname);
-      minor_text = credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-          GetObfuscationLength());
-    } else {
-      main_text = credit_card.CardNameAndLastFourDigits(nickname,
-                                                        GetObfuscationLength());
-    }
-  } else if (trigger_field_type == CREDIT_CARD_VERIFICATION_CODE) {
-    CHECK(!credit_card.cvc().empty());
-#if BUILDFLAG(IS_ANDROID)
-    main_text = l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT,
-        credit_card.CardNameForAutofillDisplay(
-            GetDisplayNicknameForCreditCard(credit_card)));
-#else
-    main_text =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT);
-#endif
-  } else {
-    main_text =
-        credit_card.GetInfo(trigger_field_type, personal_data().app_locale());
+  if (IsCreditCardExpiryData(trigger_field_type) &&
+      autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
+    // For large keyboard accessories, always show the full date regardless of
+    // which expiry data related field triggered the suggestion.
+    trigger_field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
   }
 
-  return {Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true),
-                           Suggestion::Text::ShouldTruncate(
-                               ShouldSplitCardNameAndLastFourDigits())),
-          // minor_text should also be shown in primary style, since it is also
-          // on the first line.
-          Suggestion::Text(minor_text, Suggestion::Text::IsPrimary(true))};
+  auto create_text =
+      [](std::u16string main_text,
+         std::u16string minor_text =
+             u"") -> std::pair<Suggestion::Text, Suggestion::Text> {
+    return {Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true),
+                             Suggestion::Text::ShouldTruncate(
+                                 ShouldSplitCardNameAndLastFourDigits())),
+            // minor_text should also be shown in primary style, since it is
+            // also on the first line.
+            Suggestion::Text(minor_text, Suggestion::Text::IsPrimary(true))};
+  };
+
+  std::u16string nickname = GetDisplayNicknameForCreditCard(credit_card);
+  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
+      autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
+    return create_text(credit_card.CardNameForAutofillDisplay(nickname));
+  }
+
+  if (trigger_field_type == CREDIT_CARD_NUMBER) {
+    if (ShouldSplitCardNameAndLastFourDigits()) {
+      return create_text(credit_card.CardNameForAutofillDisplay(nickname),
+                         credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+                             GetObfuscationLength()));
+    }
+
+    return create_text(credit_card.CardNameAndLastFourDigits(
+        nickname, GetObfuscationLength()));
+  }
+
+  if (trigger_field_type == CREDIT_CARD_VERIFICATION_CODE) {
+    CHECK(!credit_card.cvc().empty());
+#if BUILDFLAG(IS_ANDROID)
+    return create_text(l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT,
+        credit_card.CardNameForAutofillDisplay(
+            GetDisplayNicknameForCreditCard(credit_card))));
+#else
+    return create_text(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+#endif
+  }
+
+  return create_text(
+      credit_card.GetInfo(trigger_field_type, personal_data().app_locale()));
 }
 
 std::vector<Suggestion::Text>
@@ -2084,6 +2114,16 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     FieldType trigger_field_type,
     const url::Origin& origin) const {
   const std::string& app_locale = personal_data().app_locale();
+
+  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
+      autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
+    return {Suggestion::Text(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
+        u" • " + credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale) + u" " +
+        credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+            GetObfuscationLength()))};
+  }
 
   // If the focused field is a card number field.
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
@@ -2123,6 +2163,11 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
   // empty.
 
   if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
+    if (autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
+      return {Suggestion::Text(credit_card.CardNameAndLastFourDigits(
+          nickname, GetObfuscationLength()))};
+    }
+
     // On Mobile, the label is formatted as either "••••1234" or "••1234",
     // depending on the obfuscation length.
     return {

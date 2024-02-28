@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -569,6 +570,10 @@ LogManager* ChromeAutofillClientIOS::GetLogManager() const {
 
 bool ChromeAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
+}
+
+bool ChromeAutofillClientIOS::ShouldFormatForLargeKeyboardAccessory() const {
+  return IsKeyboardAccessoryUpgradeEnabled();
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>

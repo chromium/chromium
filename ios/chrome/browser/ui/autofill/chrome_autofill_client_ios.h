@@ -165,6 +165,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetLogManager() const override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
+  bool ShouldFormatForLargeKeyboardAccessory() const override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
