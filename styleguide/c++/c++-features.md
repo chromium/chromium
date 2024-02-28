@@ -847,7 +847,7 @@ to be written out-of-line in the .cc file. Feel free to write `= default`
 directly in the header, as this is much simpler to write.
 
 - [Migration bug](https://crbug.com/1414530)
-- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0)
+- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/h4lVi2jHU-0/m/X0q_Bh2IAAAJ)
 
 ***
 
