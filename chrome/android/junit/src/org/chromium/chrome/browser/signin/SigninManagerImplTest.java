@@ -824,7 +824,7 @@ public class SigninManagerImplTest {
                 new int[] {
                     BrowsingDataType.HISTORY,
                     BrowsingDataType.CACHE,
-                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.SITE_DATA,
                     BrowsingDataType.FORM_DATA,
                     BrowsingDataType.PASSWORDS
                 };
@@ -860,7 +860,7 @@ public class SigninManagerImplTest {
                 new int[] {
                     BrowsingDataType.HISTORY,
                     BrowsingDataType.CACHE,
-                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.SITE_DATA,
                     BrowsingDataType.FORM_DATA,
                 };
         verify(mBrowsingDataBridgeNativeMock)
@@ -892,7 +892,7 @@ public class SigninManagerImplTest {
                 new int[] {
                     BrowsingDataType.HISTORY,
                     BrowsingDataType.CACHE,
-                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.SITE_DATA,
                     BrowsingDataType.FORM_DATA,
                     BrowsingDataType.PASSWORDS
                 };
@@ -925,7 +925,7 @@ public class SigninManagerImplTest {
                 new int[] {
                     BrowsingDataType.HISTORY,
                     BrowsingDataType.CACHE,
-                    BrowsingDataType.COOKIES,
+                    BrowsingDataType.SITE_DATA,
                     BrowsingDataType.FORM_DATA,
                 };
         verify(mBrowsingDataBridgeNativeMock)

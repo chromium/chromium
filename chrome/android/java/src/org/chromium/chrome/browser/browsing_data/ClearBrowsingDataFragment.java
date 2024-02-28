@@ -259,7 +259,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             case DialogOption.CLEAR_CACHE:
                 return BrowsingDataType.CACHE;
             case DialogOption.CLEAR_COOKIES_AND_SITE_DATA:
-                return BrowsingDataType.COOKIES;
+                return BrowsingDataType.SITE_DATA;
             case DialogOption.CLEAR_FORM_DATA:
                 return BrowsingDataType.FORM_DATA;
             case DialogOption.CLEAR_HISTORY:
@@ -388,7 +388,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         }
 
         final @CookieOrCacheDeletionChoice int choice;
-        if (dataTypes.contains(BrowsingDataType.COOKIES)) {
+        if (dataTypes.contains(BrowsingDataType.SITE_DATA)) {
             choice =
                     dataTypes.contains(BrowsingDataType.CACHE)
                             ? CookieOrCacheDeletionChoice.BOTH_COOKIES_AND_CACHE

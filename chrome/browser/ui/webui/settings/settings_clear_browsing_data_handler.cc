@@ -187,7 +187,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
       case BrowsingDataType::CACHE:
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
         break;
-      case BrowsingDataType::COOKIES:
+      case BrowsingDataType::SITE_DATA:
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         origin_mask |=
             content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
@@ -207,16 +207,9 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         origin_mask |= content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
         break;
-      case BrowsingDataType::BOOKMARKS:
-        // Only implemented on Android.
-        NOTREACHED();
-        break;
       case BrowsingDataType::TABS:
         // Tab closure is not implemented yet.
         NOTIMPLEMENTED();
-        break;
-      case BrowsingDataType::NUM_TYPES:
-        NOTREACHED();
         break;
     }
 
@@ -231,7 +224,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   // Record the deletion of cookies and cache.
   content::BrowsingDataRemover::CookieOrCacheDeletionChoice choice =
       content::BrowsingDataRemover::NEITHER_COOKIES_NOR_CACHE;
-  if (data_types.find(BrowsingDataType::COOKIES) != data_types.end()) {
+  if (data_types.find(BrowsingDataType::SITE_DATA) != data_types.end()) {
     choice = data_types.find(BrowsingDataType::CACHE) != data_types.end()
                  ? content::BrowsingDataRemover::BOTH_COOKIES_AND_CACHE
                  : content::BrowsingDataRemover::ONLY_COOKIES;

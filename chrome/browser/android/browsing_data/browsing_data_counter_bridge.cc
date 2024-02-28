@@ -25,11 +25,11 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     jint clear_browsing_data_tab)
     : jobject_(obj) {
   DCHECK_GE(data_type, 0);
-  DCHECK_LT(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::NUM_TYPES));
+  DCHECK_LE(data_type,
+            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
   DCHECK_GE(clear_browsing_data_tab, 0);
-  DCHECK_LT(clear_browsing_data_tab,
-            static_cast<int>(browsing_data::ClearBrowsingDataTab::NUM_TYPES));
+  DCHECK_LE(clear_browsing_data_tab,
+            static_cast<int>(browsing_data::ClearBrowsingDataTab::MAX_VALUE));
   TRACE_EVENT1("browsing_data",
                "BrowsingDataCounterBridge::BrowsingDataCounterBridge",
                "data_type", data_type);

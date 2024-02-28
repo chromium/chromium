@@ -150,7 +150,7 @@ public class SiteSettingsTestUtils {
                             .clearBrowsingData(
                                     helper::notifyCalled,
                                     new int[] {
-                                        BrowsingDataType.COOKIES, BrowsingDataType.SITE_SETTINGS
+                                        BrowsingDataType.SITE_DATA, BrowsingDataType.SITE_SETTINGS
                                     },
                                     TimePeriod.ALL_TIME);
                 });

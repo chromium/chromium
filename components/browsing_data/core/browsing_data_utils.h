@@ -23,17 +23,15 @@ namespace browsing_data {
 enum class BrowsingDataType {
   HISTORY,
   CACHE,
-  COOKIES,
+  SITE_DATA,
   PASSWORDS,
   FORM_DATA,
   SITE_SETTINGS,
-  // Only for Android:
-  BOOKMARKS,
   // Only for Desktop:
   DOWNLOADS,
   HOSTED_APPS_DATA,
   TABS,
-  NUM_TYPES
+  MAX_VALUE = TABS,
 };
 
 // Time period ranges available when doing browsing data removals.

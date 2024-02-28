@@ -781,7 +781,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                                         Arrays.asList(
                                                 BrowsingDataType.HISTORY,
                                                 BrowsingDataType.CACHE,
-                                                BrowsingDataType.COOKIES,
+                                                BrowsingDataType.SITE_DATA,
                                                 BrowsingDataType.FORM_DATA));
                         // If usesSplitStoresAndUPMForLocal() is true, browser sign-in won't upload
                         // existing passwords, so there's no reason to wipe them immediately before.

@@ -326,21 +326,16 @@ bool GetDeletionPreferenceFromDataType(
       case BrowsingDataType::CACHE:
         *out_pref = prefs::kDeleteCacheBasic;
         return true;
-      case BrowsingDataType::COOKIES:
+      case BrowsingDataType::SITE_DATA:
         *out_pref = prefs::kDeleteCookiesBasic;
         return true;
       case BrowsingDataType::PASSWORDS:
       case BrowsingDataType::FORM_DATA:
-      case BrowsingDataType::BOOKMARKS:
       case BrowsingDataType::SITE_SETTINGS:
       case BrowsingDataType::DOWNLOADS:
       case BrowsingDataType::HOSTED_APPS_DATA:
       case BrowsingDataType::TABS:
         return false;  // No corresponding preference on basic tab.
-      case BrowsingDataType::NUM_TYPES:
-        // This is not an actual type.
-        NOTREACHED();
-        return false;
     }
   }
   switch (data_type) {
@@ -350,7 +345,7 @@ bool GetDeletionPreferenceFromDataType(
     case BrowsingDataType::CACHE:
       *out_pref = prefs::kDeleteCache;
       return true;
-    case BrowsingDataType::COOKIES:
+    case BrowsingDataType::SITE_DATA:
       *out_pref = prefs::kDeleteCookies;
       return true;
     case BrowsingDataType::PASSWORDS:
@@ -359,10 +354,6 @@ bool GetDeletionPreferenceFromDataType(
     case BrowsingDataType::FORM_DATA:
       *out_pref = prefs::kDeleteFormData;
       return true;
-    case BrowsingDataType::BOOKMARKS:
-      // Bookmarks are deleted on the Android side. No corresponding deletion
-      // preference. Not implemented on Desktop.
-      return false;
     case BrowsingDataType::SITE_SETTINGS:
       *out_pref = prefs::kDeleteSiteSettings;
       return true;
@@ -375,9 +366,6 @@ bool GetDeletionPreferenceFromDataType(
     case BrowsingDataType::TABS:
       *out_pref = prefs::kCloseTabs;
       return true;
-    case BrowsingDataType::NUM_TYPES:
-      NOTREACHED();  // This is not an actual type.
-      return false;
   }
   NOTREACHED();
   return false;
@@ -392,8 +380,8 @@ std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
           {prefs::kDeleteBrowsingHistoryBasic, BrowsingDataType::HISTORY},
           {prefs::kDeleteCache, BrowsingDataType::CACHE},
           {prefs::kDeleteCacheBasic, BrowsingDataType::CACHE},
-          {prefs::kDeleteCookies, BrowsingDataType::COOKIES},
-          {prefs::kDeleteCookiesBasic, BrowsingDataType::COOKIES},
+          {prefs::kDeleteCookies, BrowsingDataType::SITE_DATA},
+          {prefs::kDeleteCookiesBasic, BrowsingDataType::SITE_DATA},
           {prefs::kDeletePasswords, BrowsingDataType::PASSWORDS},
           {prefs::kDeleteFormData, BrowsingDataType::FORM_DATA},
           {prefs::kDeleteSiteSettings, BrowsingDataType::SITE_SETTINGS},

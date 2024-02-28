@@ -97,7 +97,7 @@ public class BrowsingDataTest {
                             new BrowsingDataCounterBridge(
                                     ProfileManager.getLastUsedRegularProfile(),
                                     callback,
-                                    BrowsingDataType.COOKIES,
+                                    BrowsingDataType.SITE_DATA,
                                     ClearBrowsingDataTab.ADVANCED);
                 });
         helper.waitForCallback(0);
@@ -130,7 +130,7 @@ public class BrowsingDataTest {
         Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
         Assert.assertEquals(1, getCookieCount());
 
-        clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
+        clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
         Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
         Assert.assertEquals(0, getCookieCount());
     }
@@ -157,12 +157,12 @@ public class BrowsingDataTest {
             Assert.assertEquals(type, 1, getCookieCount());
             Assert.assertEquals(type, "true", runJavascriptAsync("has" + type + "Async()"));
 
-            clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
+            clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
             Assert.assertEquals(type, 0, getCookieCount());
             Assert.assertEquals(type, "false", runJavascriptAsync("has" + type + "Async()"));
 
             // Some types create data by checking for them, so we need to do a cleanup at the end.
-            clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
+            clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
         }
     }
 
@@ -184,7 +184,7 @@ public class BrowsingDataTest {
                                     new int[] {
                                         BrowsingDataType.HISTORY,
                                         BrowsingDataType.CACHE,
-                                        BrowsingDataType.COOKIES,
+                                        BrowsingDataType.SITE_DATA,
                                         BrowsingDataType.PASSWORDS,
                                         BrowsingDataType.FORM_DATA
                                     },

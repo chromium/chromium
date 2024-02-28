@@ -281,7 +281,7 @@ public class QuickDeleteControllerTest {
         assertDataTypesCleared(
                 TimePeriod.LAST_15_MINUTES,
                 BrowsingDataType.HISTORY,
-                BrowsingDataType.COOKIES,
+                BrowsingDataType.SITE_DATA,
                 BrowsingDataType.CACHE);
     }
 
@@ -314,7 +314,7 @@ public class QuickDeleteControllerTest {
         assertDataTypesCleared(
                 TimePeriod.LAST_HOUR,
                 BrowsingDataType.HISTORY,
-                BrowsingDataType.COOKIES,
+                BrowsingDataType.SITE_DATA,
                 BrowsingDataType.CACHE);
     }
 

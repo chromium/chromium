@@ -50,7 +50,7 @@ public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
                         onDeleteFinished::run,
                         new int[] {
                             BrowsingDataType.HISTORY,
-                            BrowsingDataType.COOKIES,
+                            BrowsingDataType.SITE_DATA,
                             BrowsingDataType.CACHE
                         },
                         timePeriod);

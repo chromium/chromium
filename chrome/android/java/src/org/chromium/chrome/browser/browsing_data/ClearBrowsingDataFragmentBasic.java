@@ -268,7 +268,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         RecordHistogram.recordEnumeratedHistogram(
                 "History.ClearBrowsingData.UserDeletedFromTab",
                 ClearBrowsingDataTab.BASIC,
-                ClearBrowsingDataTab.NUM_TYPES);
+                ClearBrowsingDataTab.MAX_VALUE + 1);
         RecordUserAction.record("ClearBrowsingData_BasicTab");
     }
 }

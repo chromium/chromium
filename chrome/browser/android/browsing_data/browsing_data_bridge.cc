@@ -63,8 +63,8 @@ PrefService* GetPrefService(const JavaParamRef<jobject>& jprofile) {
 
 browsing_data::ClearBrowsingDataTab ToTabEnum(jint clear_browsing_data_tab) {
   DCHECK_GE(clear_browsing_data_tab, 0);
-  DCHECK_LT(clear_browsing_data_tab,
-            static_cast<int>(browsing_data::ClearBrowsingDataTab::NUM_TYPES));
+  DCHECK_LE(clear_browsing_data_tab,
+            static_cast<int>(browsing_data::ClearBrowsingDataTab::MAX_VALUE));
 
   return static_cast<browsing_data::ClearBrowsingDataTab>(
       clear_browsing_data_tab);
@@ -101,7 +101,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
       case browsing_data::BrowsingDataType::CACHE:
         remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
         break;
-      case browsing_data::BrowsingDataType::COOKIES:
+      case browsing_data::BrowsingDataType::SITE_DATA:
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         break;
       case browsing_data::BrowsingDataType::PASSWORDS:
@@ -111,10 +111,6 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
         break;
       case browsing_data::BrowsingDataType::FORM_DATA:
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_FORM_DATA;
-        break;
-      case browsing_data::BrowsingDataType::BOOKMARKS:
-        // Bookmarks are deleted separately on the Java side.
-        NOTREACHED();
         break;
       case browsing_data::BrowsingDataType::TABS:
         // Tab closure is not implemented yet.
@@ -126,9 +122,6 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
       case browsing_data::BrowsingDataType::DOWNLOADS:
       case browsing_data::BrowsingDataType::HOSTED_APPS_DATA:
         // Only implemented on Desktop.
-        NOTREACHED();
-        [[fallthrough]];
-      case browsing_data::BrowsingDataType::NUM_TYPES:
         NOTREACHED();
     }
   }
@@ -252,8 +245,8 @@ static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
     jint data_type,
     jint clear_browsing_data_tab) {
   DCHECK_GE(data_type, 0);
-  DCHECK_LT(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::NUM_TYPES));
+  DCHECK_LE(data_type,
+            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
 
   // If there is no corresponding preference for this |data_type|, pretend
   // that it's set to false.
@@ -277,8 +270,8 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
     jint clear_browsing_data_tab,
     jboolean value) {
   DCHECK_GE(data_type, 0);
-  DCHECK_LT(data_type,
-            static_cast<int>(browsing_data::BrowsingDataType::NUM_TYPES));
+  DCHECK_LE(data_type,
+            static_cast<int>(browsing_data::BrowsingDataType::MAX_VALUE));
 
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(

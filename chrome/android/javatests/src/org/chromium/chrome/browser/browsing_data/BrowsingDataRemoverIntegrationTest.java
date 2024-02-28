@@ -62,7 +62,8 @@ public class BrowsingDataRemoverIntegrationTest {
     /**
      * Tests that web apps are unregistered after clearing with the "cookies and site data" option.
      * TODO(msramek): Expose more granular datatypes to the Java code, so we can directly test
-     * BrowsingDataRemover::RemoveDataMask::REMOVE_WEBAPP_DATA instead of BrowsingDataType.COOKIES.
+     * BrowsingDataRemover::RemoveDataMask::REMOVE_WEBAPP_DATA instead of
+     * BrowsingDataType.SITE_DATA.
      */
     @Test
     @MediumTest
@@ -90,7 +91,7 @@ public class BrowsingDataRemoverIntegrationTest {
                                             dataClearedExcludingDomainHelper.notifyCalled();
                                         }
                                     },
-                                    new int[] {BrowsingDataType.COOKIES},
+                                    new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.ALL_TIME,
                                     new String[] {"google.com"},
                                     new int[] {1},
@@ -116,7 +117,7 @@ public class BrowsingDataRemoverIntegrationTest {
                                             dataClearedNoUrlFilterHelper.notifyCalled();
                                         }
                                     },
-                                    new int[] {BrowsingDataType.COOKIES},
+                                    new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.ALL_TIME);
                 });
         dataClearedNoUrlFilterHelper.waitForFirst();

@@ -117,7 +117,7 @@ public class BrowsingDataBridgeTest {
                     getBrowsingDataBridge()
                             .clearBrowsingData(
                                     mListener,
-                                    new int[] {BrowsingDataType.COOKIES},
+                                    new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.LAST_HOUR);
                 });
         mCallbackHelper.waitForCallback(0);
@@ -236,7 +236,7 @@ public class BrowsingDataBridgeTest {
                                     mListener,
                                     new int[] {
                                         BrowsingDataType.CACHE,
-                                        BrowsingDataType.COOKIES,
+                                        BrowsingDataType.SITE_DATA,
                                         BrowsingDataType.FORM_DATA,
                                         BrowsingDataType.HISTORY,
                                         BrowsingDataType.PASSWORDS,
@@ -390,7 +390,7 @@ public class BrowsingDataBridgeTest {
                                     mListener,
                                     new int[] {
                                         org.chromium.chrome.browser.browsing_data.BrowsingDataType
-                                                .COOKIES,
+                                                .SITE_DATA,
                                     },
                                     TimePeriod.LAST_WEEK);
                 });

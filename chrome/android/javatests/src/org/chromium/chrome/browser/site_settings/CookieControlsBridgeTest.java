@@ -139,7 +139,7 @@ public class CookieControlsBridgeTest {
                     BrowsingDataBridge.getForProfile(profile)
                             .clearBrowsingData(
                                     helper::notifyCalled,
-                                    new int[] {BrowsingDataType.COOKIES},
+                                    new int[] {BrowsingDataType.SITE_DATA},
                                     TimePeriod.ALL_TIME);
                 });
         helper.waitForCallback(0);
