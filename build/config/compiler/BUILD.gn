@@ -1773,6 +1773,12 @@ config("default_warnings") {
       # When compiling Objective-C, warns if a selector named via @selector has
       # not been defined in any visible interface.
       cflags += [ "-Wundeclared-selector" ]
+
+      # Blink builds use a higher deployment target than non-Blink builds, so
+      # suppress deprecation warnings in these builds.
+      if (use_blink) {
+        cflags += [ "-Wno-deprecated-declarations" ]
+      }
     }
 
     # Suppress warnings about ABI changes on ARM (Clang doesn't give this
@@ -2429,7 +2435,7 @@ config("optimize") {
 
     if (is_fuchsia) {
       cflags = [ "-Oz" ] + common_optimize_on_cflags
-    } else { 
+    } else {
       cflags = [ "-Os" ] + common_optimize_on_cflags
     }
 
