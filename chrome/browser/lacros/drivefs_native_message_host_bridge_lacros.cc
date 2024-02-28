@@ -22,7 +22,7 @@ void ConnectToExtensionWithProfile(
     mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote,
     DriveFsNativeMessageHostBridge::ConnectToExtensionCallback callback,
     Profile* profile) {
-  if (!profile) {
+  if (g_browser_process->IsShuttingDown() || !profile) {
     std::move(callback).Run(
         drivefs::mojom::ExtensionConnectionStatus::kUnknownError);
     return;

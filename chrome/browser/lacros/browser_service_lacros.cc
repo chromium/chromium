@@ -459,6 +459,10 @@ void BrowserServiceLacros::NotifyPolicyFetchAttempt() {
 }
 
 void BrowserServiceLacros::UpdateKeepAlive(bool enabled) {
+  if (g_browser_process->IsShuttingDown()) {
+    return;
+  }
+
   if (enabled == static_cast<bool>(keep_alive_))
     return;
 
@@ -472,6 +476,10 @@ void BrowserServiceLacros::UpdateKeepAlive(bool enabled) {
 }
 
 void BrowserServiceLacros::OpenForFullRestore(bool skip_crash_restore) {
+  if (g_browser_process->IsShuttingDown()) {
+    return;
+  }
+
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::OpenForFullRestoreWithProfile,
                      weak_ptr_factory_.GetWeakPtr(), skip_crash_restore),
