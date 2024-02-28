@@ -4,10 +4,13 @@ source_set("media_effects") {
     "//components/keyed_service/content",
     "//components/user_prefs",
     "//content/public/browser",
+    "//services/audio/public/mojom",
     "//services/video_capture/public/mojom",
     "//third_party/abseil-cpp:absl",
   ]
   sources = [
+    "media_device_info.cc",
+    "media_device_info.h",
     "media_effects_manager_binder.cc",
     "media_effects_manager_binder.h",
     "media_effects_service.cc",
@@ -25,6 +28,7 @@ source_set("unit_tests") {
     ":media_effects",
     "//base",
     "//build:buildflag_header_h",
+    "//components/media_effects/test:test_support",
     "//components/prefs:test_support",
     "//components/user_prefs/test:test_support",
     "//content/test:test_support",
@@ -32,6 +36,7 @@ source_set("unit_tests") {
     "//third_party/mediapipe",
   ]
   sources = [
+    "media_device_info_unittest.cc",
     "media_effects_manager_binder_unittest.cc",
     "media_effects_mediapipe_unittests.cc",
     "media_effects_service_factory_unittest.cc",

@@ -49,6 +49,19 @@ class FakeVideoCaptureService
   void OnGpuInfoUpdate(const CHROME_LUID& luid) override {}
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void InjectGpuDependencies(
+      mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
+          accelerator_factory) override {}
+
+  void BindVideoCaptureDeviceFactory(
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver)
+      override {}
+
+  void ConnectToCameraAppDeviceBridge(
+      mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge>) override {}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   FakeVideoSourceProvider fake_provider_;
 };
