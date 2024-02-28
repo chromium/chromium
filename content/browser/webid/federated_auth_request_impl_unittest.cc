@@ -5285,6 +5285,38 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowWellKnownNotInList) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
+TEST_F(FederatedAuthRequestImplTest, ButtonFlowWithUnknownLoginStatus) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+
+  // Check that the LoginStatus is "unknown".
+  EXPECT_EQ(test_permission_delegate_->idp_signin_statuses_.count(kIdpOrigin),
+            0u);
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  // Check that the pop-up window is displayed.
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _))
+      .WillOnce(Return(nullptr));
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+}
+
 TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
 #if BUILDFLAG(IS_ANDROID)
   auto dialog_controller =

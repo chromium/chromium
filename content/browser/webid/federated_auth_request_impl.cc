@@ -741,6 +741,9 @@ void FederatedAuthRequestImpl::RequestToken(
                            /*is_disabled=*/idp_get_params_ptrs.size() > 1);
   }
 
+  had_transient_user_activation_ =
+      render_frame_host().HasTransientUserActivation();
+
   if (HasPendingRequest()) {
     RpMode pending_request_rp_mode = GetPageData(&render_frame_host())
                                          ->PendingWebIdentityRequest()
@@ -748,7 +751,7 @@ void FederatedAuthRequestImpl::RequestToken(
     bool can_replace_pending_request =
         IsFedCmButtonModeEnabled() &&
         idp_get_params_ptrs[0]->mode == RpMode::kButton &&
-        render_frame_host().HasTransientUserActivation() &&
+        had_transient_user_activation_ &&
         pending_request_rp_mode != RpMode::kButton;
 
     // TODO(crbug.com/326587232): We should add metrics to capture
@@ -777,6 +780,10 @@ void FederatedAuthRequestImpl::RequestToken(
                                    /*token_status=*/std::nullopt,
                                    /*token_error=*/std::nullopt,
                                    /*should_delay_callback=*/false);
+
+    // This was reset to false during CleanUp when replacing a widget flow
+    // from the same frame so we need to change it back to true.
+    had_transient_user_activation_ = true;
   }
 
   bool intercept = false;
@@ -797,7 +804,7 @@ void FederatedAuthRequestImpl::RequestToken(
   if (IsFedCmButtonModeEnabled() &&
       idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
     rp_mode_ = RpMode::kButton;
-    if (!render_frame_host().HasTransientUserActivation()) {
+    if (!had_transient_user_activation_) {
       // TODO(crbug.com/1487270): use a more specific error.
       CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                TokenStatus::kUnhandledRequest,
@@ -912,7 +919,7 @@ void FederatedAuthRequestImpl::RequestToken(
             mojo::ReportBadMessage("FedCM button mode is not enabled.");
             return;
           }
-          if (!render_frame_host().HasTransientUserActivation()) {
+          if (!had_transient_user_activation_) {
             // TODO(crbug.com/1487270): use a more specific error.
             CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                      TokenStatus::kUnhandledRequest,
@@ -1188,21 +1195,9 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             FedCmIdpSigninStatusMode::ENABLED) {
       // If the user is logged out and we are in a button-mode, allow the user
       // to sign-in to the IdP and return early.
-      // TODO(https://crbug.com/1490611): handle the "unknown" status and button
-      // flows.
-      if (IsFedCmButtonModeEnabled() &&
-          idp_info->rp_mode == blink::mojom::RpMode::kButton &&
-          idp_info->metadata.idp_login_url.is_valid()) {
-        // We fail sooner before, but just to double check, we assert that
-        // we are inside a user gesture here again.
-        CHECK(render_frame_host().HasTransientUserActivation());
-        // TODO(crbug.com/1487270): we should probably make idp_login_url
-        // optional instead of empty.
-        LoginToIdP(/*can_append_hints=*/false, identity_provider_config_url,
-                   idp_info->metadata.idp_login_url);
-        // TODO(https://crbug.com/1487268): handle the button flow and the
-        // Multi IdP API (what should happen if you are logged in to some
-        // IdPs but not to others).
+      if (rp_mode_ == blink::mojom::RpMode::kButton) {
+        MaybeShowButtonModeModalDialog(identity_provider_config_url,
+                                       idp_info->metadata.idp_login_url);
         return;
       }
       // Do not send metrics for IDP where the user is not signed-in in order
@@ -1214,7 +1209,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
           std::move(idp_info),
           FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
           TokenStatus::kNotSignedInWithIdp,
-          /*should_delay_callback=*/rp_mode_ == RpMode::kWidget);
+          /*should_delay_callback=*/true);
       continue;
     }
 
@@ -1637,6 +1632,11 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
 
   if (!old_idp_signin_status.has_value() ||
       signin_status_mode == FedCmIdpSigninStatusMode::METRICS_ONLY) {
+    if (rp_mode_ == blink::mojom::RpMode::kButton) {
+      MaybeShowButtonModeModalDialog(idp_info->provider->config->config_url,
+                                     idp_info->metadata.idp_login_url);
+      return;
+    }
     OnFetchDataForIdpFailed(std::move(idp_info), result, token_status,
                             /*should_delay_callback=*/true);
     return;
@@ -2471,6 +2471,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   token_error_ = std::nullopt;
   dialog_type_ = kNone;
   identity_selection_type_ = kExplicit;
+  had_transient_user_activation_ = false;
   rp_mode_ = RpMode::kWidget;
 }
 
@@ -2834,6 +2835,27 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
 
   login_url_ = login_url;
   ShowModalDialog(idp_config_url, login_url);
+}
+
+void FederatedAuthRequestImpl::MaybeShowButtonModeModalDialog(
+    const GURL& idp_config_url,
+    const GURL& idp_login_url) {
+  if (IsFedCmMultipleIdentityProvidersEnabled() && idp_infos_.size() > 1) {
+    // TODO(https://crbug.com/1487268): handle the button flow and the
+    // Multi IdP API (what should happen if you are logged in to some
+    // IdPs but not to others).
+    // TODO(crbug.com/326987150): This is temporary so we should degrade
+    // gracefully.
+    return;
+  }
+
+  // We fail sooner before, but just to double check, we assert that
+  // we are inside a user gesture here again.
+  CHECK(had_transient_user_activation_);
+  // TODO(crbug.com/1487270): we should probably make idp_login_url
+  // optional instead of empty.
+  LoginToIdP(/*can_append_hints=*/false, idp_config_url, idp_login_url);
+  return;
 }
 
 void FederatedAuthRequestImpl::PreventSilentAccess(
