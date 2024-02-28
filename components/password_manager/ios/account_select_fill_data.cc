@@ -61,7 +61,7 @@ AccountSelectFillData::AccountSelectFillData() = default;
 AccountSelectFillData::~AccountSelectFillData() = default;
 
 void AccountSelectFillData::Add(const autofill::PasswordFormFillData& form_data,
-                                bool is_cross_origin_iframe) {
+                                bool always_populate_realm) {
   auto iter_ok = forms_.insert(
       std::make_pair(form_data.form_renderer_id.value(), FormInfo()));
   FormInfo& form_info = iter_ok.first->second;
@@ -78,7 +78,7 @@ void AccountSelectFillData::Add(const autofill::PasswordFormFillData& form_data,
   credentials_.push_back(
       {form_data.preferred_login.username_value,
        form_data.preferred_login.password_value,
-       is_cross_origin_iframe && form_data.preferred_login.realm.empty()
+       always_populate_realm && form_data.preferred_login.realm.empty()
            ? form_data.url.spec()
            : form_data.preferred_login.realm});
 
@@ -86,7 +86,7 @@ void AccountSelectFillData::Add(const autofill::PasswordFormFillData& form_data,
     const std::u16string& username = username_password_and_realm.username_value;
     const std::u16string& password = username_password_and_realm.password_value;
     const std::string& realm = username_password_and_realm.realm;
-    if (is_cross_origin_iframe && realm.empty()) {
+    if (always_populate_realm && realm.empty()) {
       credentials_.push_back({username, password, form_data.url.spec()});
     } else {
       credentials_.push_back({username, password, realm});

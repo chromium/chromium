@@ -99,7 +99,8 @@ TEST_F(AccountSelectFillDataTest, EmptyReset) {
   AccountSelectFillData account_select_fill_data;
   EXPECT_TRUE(account_select_fill_data.Empty());
 
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
   EXPECT_FALSE(account_select_fill_data.Empty());
 
   account_select_fill_data.Reset();
@@ -108,7 +109,8 @@ TEST_F(AccountSelectFillDataTest, EmptyReset) {
 
 TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableOneForm) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
 
   // Suggestions are available for the correct form and field ids.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
@@ -131,8 +133,10 @@ TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableOneForm) {
 
 TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableTwoForms) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
-  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
+  account_select_fill_data.Add(form_data_[1],
+                               /*always_populate_realm=*/false);
 
   // Suggestions are available for the correct form and field names.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
@@ -156,7 +160,7 @@ TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailable_EmptyUsernames) {
   PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
       form_data.form_renderer_id, form_data.username_element_renderer_id,
@@ -176,7 +180,7 @@ TEST_F(AccountSelectFillDataTest,
   PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
       form_data.form_renderer_id, form_data.username_element_renderer_id,
@@ -192,7 +196,7 @@ TEST_F(AccountSelectFillDataTest,
   PasswordFormFillData form_data = EligibleSingleUsernameFormData();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
       form_data.form_renderer_id, form_data.username_element_renderer_id,
@@ -208,7 +212,7 @@ TEST_F(AccountSelectFillDataTest,
   PasswordFormFillData form_data = IneligibleSingleUsernameFormData();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_FALSE(account_select_fill_data.IsSuggestionsAvailable(
       form_data.form_renderer_id, form_data.username_element_renderer_id,
@@ -217,7 +221,8 @@ TEST_F(AccountSelectFillDataTest,
 
 TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsOneForm) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
 
   for (bool is_password_field : {false, true}) {
     const FieldRendererId field_id =
@@ -241,8 +246,10 @@ TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsTwoForm) {
   // emulates the case when credentials in the Password Store were changed
   // between load the first and the second forms.
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
-  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
+  account_select_fill_data.Add(form_data_[1],
+                               /*always_populate_realm=*/false);
 
   std::vector<UsernameAndRealm> suggestions =
       account_select_fill_data.RetrieveSuggestions(
@@ -267,7 +274,7 @@ TEST_F(AccountSelectFillDataTest, RetrieveSuggestions_EmptyUsernames) {
   PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
                   form_data.form_renderer_id,
@@ -289,7 +296,7 @@ TEST_F(AccountSelectFillDataTest,
   PasswordFormFillData form_data = FormDataWithEmptyUsernamesOnly();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
                   form_data.form_renderer_id,
@@ -306,7 +313,7 @@ TEST_F(AccountSelectFillDataTest,
   PasswordFormFillData form_data = EligibleSingleUsernameFormData();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
                   form_data.form_renderer_id,
@@ -323,7 +330,7 @@ TEST_F(AccountSelectFillDataTest,
   PasswordFormFillData form_data = IneligibleSingleUsernameFormData();
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   EXPECT_THAT(account_select_fill_data.RetrieveSuggestions(
                   form_data.form_renderer_id,
@@ -340,7 +347,8 @@ TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {
   form_data_[0].preferred_login.realm = kRealm;
   form_data_[0].additional_logins.begin()->realm = kAdditionalRealm;
 
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
   std::vector<UsernameAndRealm> suggestions =
       account_select_fill_data.RetrieveSuggestions(
           form_data_[0].form_renderer_id,
@@ -355,8 +363,10 @@ TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {
 
 TEST_F(AccountSelectFillDataTest, GetFillData) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
-  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
+  account_select_fill_data.Add(form_data_[1],
+                               /*always_populate_realm=*/false);
 
   for (bool is_password_field : {false, true}) {
     for (size_t form_i = 0; form_i < std::size(form_data_); ++form_i) {
@@ -393,8 +403,10 @@ TEST_F(AccountSelectFillDataTest, GetFillData) {
 
 TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
-  account_select_fill_data.Add(form_data_[1], /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/false);
+  account_select_fill_data.Add(form_data_[1],
+                               /*always_populate_realm=*/false);
 
   // GetFillData() doesn't have form identifier in arguments, it should be
   // provided in RetrieveSuggestions().
@@ -411,7 +423,8 @@ TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
 
 TEST_F(AccountSelectFillDataTest, CrossOriginSuggestionHasRealm) {
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/true);
+  account_select_fill_data.Add(form_data_[0],
+                               /*always_populate_realm=*/true);
 
   for (bool is_password_field : {false, true}) {
     const FieldRendererId field_id =
@@ -431,7 +444,7 @@ TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnExistingUsernameField) {
   const auto& form_data = form_data_[0];
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   const password_manager::FormInfo* form_info =
       account_select_fill_data.GetFormInfo(
@@ -455,7 +468,7 @@ TEST_F(AccountSelectFillDataTest,
   const auto& form_data = form_data_[0];
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   const password_manager::FormInfo* form_info =
       account_select_fill_data.GetFormInfo(form_data.form_renderer_id,
@@ -470,7 +483,7 @@ TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnPasswordField) {
   const auto& form_data = form_data_[0];
 
   AccountSelectFillData account_select_fill_data;
-  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+  account_select_fill_data.Add(form_data, /*always_populate_realm=*/false);
 
   // Get form info for a password field with a unexisting field renderer ID,
   // which should still give a non-null result because any password field should

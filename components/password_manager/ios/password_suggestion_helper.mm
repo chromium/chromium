@@ -264,7 +264,9 @@ enum class FormExtractionStatus {
                       forSecurityOrigin:(const GURL&)origin {
   DCHECK(_webState.get());
   [self fillDataForFrameId:frameId]->Add(
-      formData, IsCrossOriginIframe(_webState.get(), isMainFrame, origin));
+      formData, [self shouldAlwaysPopulateRealmForFrame:frameId
+                                            isMainFrame:isMainFrame
+                                      forSecurityOrigin:origin]);
 
   // "attachListenersForBottomSheet" is used to add event listeners
   // to fields which must trigger a specific behavior. In this case,
@@ -343,6 +345,35 @@ enum class FormExtractionStatus {
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   return feature->GetWebFramesManager(_webState.get())->GetFrameWithId(frameId);
+}
+
+// Returns whether to add the form's url as the Credential's realm if the realm
+// is not specified.
+- (bool)shouldAlwaysPopulateRealmForFrame:(const std::string&)frameId
+                              isMainFrame:(BOOL)isMainFrame
+                        forSecurityOrigin:(const GURL&)origin {
+  CHECK(_webState.get());
+  if (IsCrossOriginIframe(_webState.get(), isMainFrame, origin)) {
+    return true;
+  }
+
+  web::WebFrame* frame = [self frameWithId:frameId];
+  if (!frame) {
+    return false;
+  }
+
+  auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+      _webState.get(), frame);
+  if (!driver) {
+    return false;
+  }
+
+  autofill::AutofillClient* client = driver->client();
+  if (!client) {
+    return false;
+  }
+
+  return client->ShouldFormatForLargeKeyboardAccessory();
 }
 
 // Completes all the pending form queries that were queued for the frame that

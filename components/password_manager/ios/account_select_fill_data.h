@@ -79,7 +79,7 @@ class AccountSelectFillData {
   // overrides known credentials with credentials from |form_data|. So only the
   // credentials from the latest |form_data| will be shown to the user.
   void Add(const autofill::PasswordFormFillData& form_data,
-           bool is_cross_origin_iframe);
+           bool always_populate_realm);
   void Reset();
   bool Empty() const;
 
