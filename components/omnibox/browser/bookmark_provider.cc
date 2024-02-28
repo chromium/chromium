@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"

@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
@@ -288,7 +288,7 @@ void SyncedBookmarkTracker::Remove(const SyncedBookmarkTrackerEntity* entity) {
 
   client_tag_hash_to_entities_map_.erase(entity->GetClientTagHash());
 
-  base::Erase(ordered_local_tombstones_, entity);
+  std::erase(ordered_local_tombstones_, entity);
   sync_id_to_entities_map_.erase(entity->metadata().server_id());
   DCHECK_EQ(sync_id_to_entities_map_.size(),
             client_tag_hash_to_entities_map_.size());
@@ -727,7 +727,7 @@ void SyncedBookmarkTracker::UndeleteTombstoneForBookmarkNode(
          bookmark_node_to_entities_map_.end());
   DCHECK_EQ(GetEntityForSyncId(entity->metadata().server_id()), entity);
 
-  base::Erase(ordered_local_tombstones_, entity);
+  std::erase(ordered_local_tombstones_, entity);
   SyncedBookmarkTrackerEntity* mutable_entity = AsMutableEntity(entity);
   mutable_entity->MutableMetadata()->set_is_deleted(false);
   mutable_entity->set_bookmark_node(node);

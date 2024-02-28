@@ -4,7 +4,8 @@
 
 #include "components/media_device_salt/media_device_salt_database.h"
 
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -113,7 +114,7 @@ void MediaDeviceSaltDatabase::DeleteEntries(
     serialized_storage_keys.push_back(select_statement.ColumnString(0));
   }
 
-  base::EraseIf(serialized_storage_keys,
+  std::erase_if(serialized_storage_keys,
                 [&matcher](const std::string& serialized_storage_key) {
                   std::optional<blink::StorageKey> storage_key =
                       blink::StorageKey::Deserialize(serialized_storage_key);

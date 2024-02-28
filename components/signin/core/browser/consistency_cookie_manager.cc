@@ -4,9 +4,10 @@
 
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -100,7 +101,7 @@ void ConsistencyCookieManager::RemoveExtraCookieManager(
     network::mojom::CookieManager* manager) {
   DCHECK(manager);
   DCHECK(base::Contains(extra_cookie_managers_, manager));
-  base::Erase(extra_cookie_managers_, manager);
+  std::erase(extra_cookie_managers_, manager);
 }
 
 // static

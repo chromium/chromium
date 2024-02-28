@@ -8,8 +8,8 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -58,7 +58,7 @@ void MediaRouterAndroid::PresentationConnectionProxy::DidClose(
   auto& route_connections =
       media_router_android_->presentation_connections_[route_id_];
   DCHECK(!route_connections.empty());
-  base::EraseIf(route_connections, [this](const auto& connection) {
+  std::erase_if(route_connections, [this](const auto& connection) {
     return connection.get() == this;
   });
 }

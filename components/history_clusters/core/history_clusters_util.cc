@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <set>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -270,11 +270,11 @@ void CullNonProminentOrDuplicateClusters(
     // For the empty-query state, only show clusters with
     // `should_show_on_prominent_ui_surfaces` set to true. This restriction is
     // NOT applied when the user is searching for a specific keyword.
-    base::EraseIf(clusters, [](const history::Cluster& cluster) {
+    std::erase_if(clusters, [](const history::Cluster& cluster) {
       return !cluster.should_show_on_prominent_ui_surfaces;
     });
   } else {
-    base::EraseIf(clusters, [&](const history::Cluster& cluster) {
+    std::erase_if(clusters, [&](const history::Cluster& cluster) {
       // Erase all duplicate single-visit non-prominent
       // clusters.
       if (!cluster.should_show_on_prominent_ui_surfaces &&
@@ -297,10 +297,10 @@ void CullVisitsThatShouldBeHidden(std::vector<history::Cluster>& clusters,
   const size_t min_visits = is_zero_query_state ? 2 : 1;
 
   DCHECK_GT(min_visits, 0u);
-  base::EraseIf(clusters, [&](auto& cluster) {
+  std::erase_if(clusters, [&](auto& cluster) {
     int index = -1;
     size_t num_visits_below_fold = 0;
-    base::EraseIf(cluster.visits, [&](auto& visit) {
+    std::erase_if(cluster.visits, [&](auto& visit) {
       index++;
       // Easy cases: cull all zero-score and explicitly Hidden visits.
       if (visit.score == 0.0 ||

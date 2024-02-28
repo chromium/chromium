@@ -4,7 +4,6 @@
 
 #include "components/ui_devtools/ui_element.h"
 
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/ui_element_delegate.h"

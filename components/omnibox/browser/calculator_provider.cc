@@ -5,9 +5,9 @@
 #include "calculator_provider.h"
 
 #include <limits>
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -139,7 +139,7 @@ void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
 void CalculatorProvider::AddMatches() {
   // Expire old cached matches.
   const auto now = base::TimeTicks::Now();
-  base::EraseIf(Cache(), [&](const auto& cached) {
+  std::erase_if(Cache(), [&](const auto& cached) {
     return now - cached.time > base::Hours(1);
   });
 

@@ -9,10 +9,10 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
@@ -509,7 +509,7 @@ void TopSitesImpl::SetTopSitesFromHistory(
   // Generate the final list of the most visited sites arranged in descending
   // order of their scores. Exclude any site that is the search results page.
   MostVisitedURLList most_visited_sites = std::move(*request->sites);
-  base::EraseIf(most_visited_sites, [&](const auto& site) {
+  std::erase_if(most_visited_sites, [&](const auto& site) {
     return (template_url_service_ &&
             template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
                 site.url)) ||

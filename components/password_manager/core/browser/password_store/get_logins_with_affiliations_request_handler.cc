@@ -4,9 +4,10 @@
 
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 
+#include <vector>
+
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -114,7 +115,7 @@ void InjectAffiliationAndBrandingInformation(
 // Transforms federated credentials into non zero-click ones.
 void TrimUsernameOnlyCredentials(std::vector<PasswordForm>& credentials) {
   // Remove username-only credentials which are not federated.
-  base::EraseIf(credentials, [](const PasswordForm& form) {
+  std::erase_if(credentials, [](const PasswordForm& form) {
     return form.scheme == PasswordForm::Scheme::kUsernameOnly &&
            form.federation_origin.opaque();
   });
@@ -294,7 +295,7 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
   // Erase any form which has no match_type assigned. This can happen if PSL
   // matched form was not marked as such inside ProccessExactAndPSLForms()
   // because of PSL extension list.
-  base::EraseIf(final_result,
+  std::erase_if(final_result,
                 [](const auto& form) { return !form.match_type.has_value(); });
 
   TrimUsernameOnlyCredentials(final_result);
@@ -302,7 +303,7 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
   // Remove grouped only matches if filling across groups is disabled.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossGroupedSites)) {
-    base::EraseIf(final_result, [](const auto& form) {
+    std::erase_if(final_result, [](const auto& form) {
       return form.match_type == PasswordForm::MatchType::kGrouped;
     });
   }

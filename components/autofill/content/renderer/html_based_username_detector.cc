@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_split.h"
@@ -201,7 +201,7 @@ void RemoveFieldsWithNegativeWords(
       kNegativeLatin, kNegativeLatinSize, kNegativeNonLatin,
       kNegativeNonLatinSize};
 
-  base::EraseIf(
+  std::erase_if(
       *possible_usernames_data, [](const UsernameFieldData& possible_username) {
         return ContainsWordFromCategory(possible_username, kNegativeCategory);
       });

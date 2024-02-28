@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
@@ -267,7 +266,7 @@ class DisjointSet {
       disjoint_sets[root].push_back(i);
     }
     // Clear empty sets.
-    base::EraseIf(disjoint_sets, [](const auto& set) { return set.empty(); });
+    std::erase_if(disjoint_sets, [](const auto& set) { return set.empty(); });
     return disjoint_sets;
   }
 

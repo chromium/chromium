@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -626,7 +626,7 @@ void SurfaceManager::MaybeGarbageCollectAllocationGroups() {
     auto list_it = frame_sink_id_to_allocation_groups_.find(
         it->second->submitter_frame_sink_id());
     DCHECK(list_it != frame_sink_id_to_allocation_groups_.end());
-    base::Erase(list_it->second, it->second.get());
+    std::erase(list_it->second, it->second.get());
     if (list_it->second.empty())
       frame_sink_id_to_allocation_groups_.erase(list_it);
     // Destroy the allocation group. Removing it from the map is done in a

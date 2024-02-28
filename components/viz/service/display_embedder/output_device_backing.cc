@@ -5,9 +5,9 @@
 #include "components/viz/service/display_embedder/output_device_backing.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -64,7 +64,7 @@ void OutputDeviceBacking::RegisterClient(Client* client) {
 
 void OutputDeviceBacking::UnregisterClient(Client* client) {
   DCHECK(base::Contains(clients_, client));
-  base::Erase(clients_, client);
+  std::erase(clients_, client);
   ClientResized();
 }
 

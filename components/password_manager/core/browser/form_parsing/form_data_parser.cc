@@ -681,7 +681,7 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   if (mode == FormDataParser::Mode::kFilling &&
       base::FeatureList::IsEnabled(
           password_manager::features::kDisablePasswordsDropdownForCvcFields)) {
-    base::EraseIf(passwords, [](const ProcessedField* processed_field) {
+    std::erase_if(passwords, [](const ProcessedField* processed_field) {
       // TODO(crbug/1425423): This code does not use |StringMatchesCVC| because
       // the underlying regex has a high false positive rate, i.e. matches many
       // real password fields. Reconsider this once the regex becomes better.
@@ -699,14 +699,14 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   size_t ignored_readonly = 0;
 
   // Step 2: apply filter criterion (2).
-  base::EraseIf(
+  std::erase_if(
       passwords, [best_interactability](const ProcessedField* processed_field) {
         return !MatchesInteractability(*processed_field, best_interactability);
       });
 
   if (mode == FormDataParser::Mode::kSaving) {
     // Step 3: apply filter criterion (3).
-    base::EraseIf(passwords, [](const ProcessedField* processed_field) {
+    std::erase_if(passwords, [](const ProcessedField* processed_field) {
       return GetFieldValue(*processed_field->field).empty();
     });
   }
@@ -723,7 +723,7 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
 
   // Step 5: remove the field parsed as username, if needed.
   if (username && username->IsPasswordInputElement()) {
-    base::EraseIf(filtered, [username](const ProcessedField* processed_field) {
+    std::erase_if(filtered, [username](const ProcessedField* processed_field) {
       return processed_field->field->renderer_id == username->renderer_id;
     });
   }

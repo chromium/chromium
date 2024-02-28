@@ -6,9 +6,9 @@
 
 #include <iterator>
 #include <memory>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -817,7 +817,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpUserGestures() {
 
 void SafeBrowsingNavigationObserverManager::CleanUpIpAddresses() {
   for (auto it = host_to_ip_map_.begin(); it != host_to_ip_map_.end();) {
-    base::EraseIf(it->second, [](const ResolvedIPAddress& resolved_ip) {
+    std::erase_if(it->second, [](const ResolvedIPAddress& resolved_ip) {
       return IsEventExpired(resolved_ip.timestamp, GetNavigationFootprintTTL());
     });
     if (it->second.empty())

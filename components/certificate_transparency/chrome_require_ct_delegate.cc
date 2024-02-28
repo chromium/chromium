@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -205,7 +204,7 @@ void ChromeRequireCTDelegate::UpdateCTPolicies(
   ParseSpkiHashes(excluded_legacy_spkis, &legacy_spkis_);
 
   // Filter out SPKIs that aren't for legacy CAs.
-  base::EraseIf(legacy_spkis_, [](const net::HashValue& hash) {
+  std::erase_if(legacy_spkis_, [](const net::HashValue& hash) {
     if (!net::IsLegacyPubliclyTrustedCA(hash)) {
       LOG(ERROR) << "Non-legacy SPKI configured " << hash.ToString();
       return true;

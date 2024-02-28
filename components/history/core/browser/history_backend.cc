@@ -2364,7 +2364,7 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
 
   if (include_duplicates && !seen_duplicate_ids.empty()) {
     // Prune out top-level visits that are duplicates elsewhere.
-    base::EraseIf(cluster_visits, [&](const auto& cluster_visit) {
+    std::erase_if(cluster_visits, [&](const auto& cluster_visit) {
       return seen_duplicate_ids.contains(
           cluster_visit.annotated_visit.visit_row.visit_id);
     });

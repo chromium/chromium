@@ -10,13 +10,13 @@
 #include <optional>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1376,11 +1376,11 @@ void UserManagerBase::DeleteUser(User* user) {
   if (primary_user_ == user) {
     primary_user_ = nullptr;
   }
-  base::Erase(users_, user);
-  base::Erase(logged_in_users_, user);
-  base::Erase(lru_logged_in_users_, user);
+  std::erase(users_, user);
+  std::erase(logged_in_users_, user);
+  std::erase(lru_logged_in_users_, user);
 
-  base::EraseIf(user_storage_, [user](auto& ptr) { return ptr.get() == user; });
+  std::erase_if(user_storage_, [user](auto& ptr) { return ptr.get() == user; });
 }
 
 // TODO(crbug/1189715): Remove dormant legacy supervised user cryptohomes. After

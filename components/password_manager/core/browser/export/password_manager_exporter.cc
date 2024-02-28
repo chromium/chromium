@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -87,7 +88,7 @@ void PasswordManagerExporter::PreparePasswordsForExport() {
   std::vector<CredentialUIEntry> credentials =
       presenter_->GetSavedCredentials();
   // Clear blocked credentials.
-  base::EraseIf(credentials, [](const auto& credential) {
+  std::erase_if(credentials, [](const auto& credential) {
     return credential.blocked_by_user;
   });
 

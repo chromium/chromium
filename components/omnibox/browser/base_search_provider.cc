@@ -9,8 +9,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -668,7 +668,7 @@ void BaseSearchProvider::OnDeletionComplete(
     const int response_code,
     std::unique_ptr<std::string> response_body) {
   RecordDeletionResult(response_code == 200);
-  base::EraseIf(
+  std::erase_if(
       deletion_loaders_,
       [source](const std::unique_ptr<network::SimpleURLLoader>& loader) {
         return loader.get() == source;

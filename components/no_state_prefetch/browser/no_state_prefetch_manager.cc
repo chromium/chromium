@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -961,7 +960,7 @@ bool NoStatePrefetchManager::HasRecentlyPrefetchedUrlForTesting(
 void NoStatePrefetchManager::OnPrefetchUsed(const GURL& url) {
   // Loading a prefetched URL resets the revalidation bypass. Remove all
   // matching urls from the prefetch list for more accurate metrics.
-  base::EraseIf(prefetches_,
+  std::erase_if(prefetches_,
                 [url](const NavigationRecord& r) { return r.url == url; });
 }
 

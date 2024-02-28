@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -45,11 +44,11 @@ std::string BuildImageURLOptionsString(int image_size,
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   RE2 size_pattern(kImageURLOptionSizePattern);
-  base::EraseIf(url_options, [&size_pattern](const std::string& str) {
+  std::erase_if(url_options, [&size_pattern](const std::string& str) {
     return RE2::FullMatch(str, size_pattern);
   });
-  base::Erase(url_options, kImageURLOptionSquareCrop);
-  base::Erase(url_options, kImageURLOptionNoSilhouette);
+  std::erase(url_options, kImageURLOptionSquareCrop);
+  std::erase(url_options, kImageURLOptionNoSilhouette);
 
   url_options.push_back(
       base::StringPrintf(kImageURLOptionSizeFormat, image_size));

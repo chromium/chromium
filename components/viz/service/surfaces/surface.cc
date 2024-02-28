@@ -11,9 +11,9 @@
 #include <limits>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -45,7 +45,7 @@ void RequestCopyOfOutputOnRenderPass(std::unique_ptr<CopyOutputRequest> request,
     const base::UnguessableToken& source = request->source();
     // Remove existing CopyOutputRequests made on the Surface by the same
     // source.
-    base::EraseIf(render_pass.copy_requests,
+    std::erase_if(render_pass.copy_requests,
                   [&source](const std::unique_ptr<CopyOutputRequest>& x) {
                     return x->has_source() && x->source() == source;
                   });

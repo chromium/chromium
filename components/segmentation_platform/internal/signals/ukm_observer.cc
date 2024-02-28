@@ -6,7 +6,6 @@
 
 #include <cstdint>
 
-#include "base/containers/cxx20_erase.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"

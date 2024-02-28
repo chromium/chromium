@@ -4,7 +4,8 @@
 
 #include "components/sync_sessions/test_synced_window_delegates_getter.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync_sessions/synced_session.h"
@@ -296,7 +297,7 @@ void TestSyncedWindowDelegate::OverrideTabAt(int index,
 }
 
 void TestSyncedWindowDelegate::CloseTab(SessionID tab_id) {
-  base::EraseIf(tab_delegates_, [tab_id](SyncedTabDelegate* tab) {
+  std::erase_if(tab_delegates_, [tab_id](SyncedTabDelegate* tab) {
     return tab->GetSessionId() == tab_id;
   });
 }

@@ -5,8 +5,8 @@
 #include "components/site_engagement/content/site_engagement_helper.h"
 
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -179,7 +179,7 @@ void SiteEngagementService::Helper::MediaTracker::MediaStoppedPlaying(
     const MediaPlayerInfo& media_info,
     const content::MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
-  base::Erase(active_media_players_, id);
+  std::erase(active_media_players_, id);
 }
 
 SiteEngagementService::Helper::Helper(

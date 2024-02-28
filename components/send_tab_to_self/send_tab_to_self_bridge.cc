@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <optional>
+#include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -439,7 +439,7 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   std::vector<TargetDeviceInfo> non_expired_devices =
       target_device_info_sorted_list_;
   const base::Time now = clock_->Now();
-  base::EraseIf(non_expired_devices, [now](const TargetDeviceInfo& device) {
+  std::erase_if(non_expired_devices, [now](const TargetDeviceInfo& device) {
     return now - device.last_updated_timestamp > kDeviceExpiration;
   });
 

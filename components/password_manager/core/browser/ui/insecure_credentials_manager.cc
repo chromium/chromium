@@ -8,6 +8,7 @@
 #include <iterator>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -158,7 +159,7 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
 
 #if BUILDFLAG(IS_ANDROID)
   // Otherwise erase entries which aren't leaked and phished.
-  base::EraseIf(credentials, [](const auto& credential) {
+  std::erase_if(credentials, [](const auto& credential) {
     return !IsCompromised(credential);
   });
   return credentials;
@@ -180,7 +181,7 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
     }
   }
 
-  base::EraseIf(credentials, [](const auto& credential) {
+  std::erase_if(credentials, [](const auto& credential) {
     return credential.password_issues.empty();
   });
   return credentials;

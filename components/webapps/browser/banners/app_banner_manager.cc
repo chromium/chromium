@@ -8,11 +8,11 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -748,7 +748,7 @@ void AppBannerManager::MediaStoppedPlaying(
     const MediaPlayerInfo& media_info,
     const content::MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
-  base::Erase(active_media_players_, id);
+  std::erase(active_media_players_, id);
 }
 
 void AppBannerManager::WebContentsDestroyed() {

@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -350,7 +351,7 @@ void MostVisitedSitesProvider::DeleteMatchElement(
 
   BlockURL(tile_to_delete.url);
   auto& tiles_to_update = matches_[0].suggest_tiles;
-  base::EraseIf(tiles_to_update, [&tile_to_delete](const auto& tile) {
+  std::erase_if(tiles_to_update, [&tile_to_delete](const auto& tile) {
     return tile.url == tile_to_delete.url;
   });
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/contains.h"
@@ -290,7 +291,7 @@ void UkmRecorderImpl::PurgeSourcesAndEventsBySourceIds(
 
   std::vector<mojom::UkmEntryPtr>& events = recordings_.entries;
 
-  base::EraseIf(events, [&](const auto& event) {
+  std::erase_if(events, [&](const auto& event) {
     return source_ids.count(event->source_id);
   });
 }

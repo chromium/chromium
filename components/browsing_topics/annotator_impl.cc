@@ -4,6 +4,8 @@
 
 #include "components/browsing_topics/annotator_impl.h"
 
+#include <vector>
+
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
@@ -408,7 +410,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
 
   // Prune out categories that do not meet the minimum threshold.
   if (category_params.min_category_weight() > 0) {
-    base::EraseIf(categories, [&](const std::pair<int32_t, float>& category) {
+    std::erase_if(categories, [&](const std::pair<int32_t, float>& category) {
       return category.second < category_params.min_category_weight();
     });
   }
@@ -425,7 +427,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
     }
     // None weight doesn't matter, so prune it out. Note that it may have
     // already been removed above if its weight was below the category min.
-    base::EraseIf(categories, [&](const std::pair<int32_t, float>& category) {
+    std::erase_if(categories, [&](const std::pair<int32_t, float>& category) {
       return category.first == kNoneCategoryId;
     });
   }
@@ -433,7 +435,7 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
   // Normalize category weights.
   float normalization_factor =
       sum_positive_scores > 0 ? sum_positive_scores : 1.0;
-  base::EraseIf(categories, [&](const std::pair<int32_t, float>& category) {
+  std::erase_if(categories, [&](const std::pair<int32_t, float>& category) {
     return (category.second / normalization_factor) <
            category_params.min_normalized_weight_within_top_n();
   });

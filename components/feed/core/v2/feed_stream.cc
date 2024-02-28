@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -564,7 +563,7 @@ void FeedStream::RemoveUnreadContentObserver(const StreamType& stream_type,
     UnreadContentObserver* ptr = notifier.observer().get();
     return ptr == nullptr || observer == ptr;
   };
-  base::EraseIf(stream.unread_content_notifiers, predicate);
+  std::erase_if(stream.unread_content_notifiers, predicate);
 }
 
 void FeedStream::ScheduleModelUnloadIfNoSurfacesAttached(
@@ -1792,9 +1791,10 @@ void FeedStream::CheckDuplicatedContentsOnRefresh() {
   base::flat_set<uint32_t> viewed_content_hashes(
       stream_metadata.viewed_content_hashes().begin(),
       stream_metadata.viewed_content_hashes().end());
-  base::EraseIf(most_recent_viewed_content_hashes,
-      [&viewed_content_hashes](
-      uint32_t x) { return viewed_content_hashes.contains(x); });
+  std::erase_if(most_recent_viewed_content_hashes,
+                [&viewed_content_hashes](uint32_t x) {
+                  return viewed_content_hashes.contains(x);
+                });
   most_recent_viewed_content_hashes.insert(
       most_recent_viewed_content_hashes.end(),
       stream_metadata.viewed_content_hashes().begin(),

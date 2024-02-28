@@ -4,6 +4,8 @@
 
 #include "components/media_message_center/media_notification_view_impl.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -792,7 +794,7 @@ MediaNotificationViewImpl::GetButtons() {
   buttons.insert(buttons.cbegin(),
                  playback_button_container_->children().cbegin(),
                  playback_button_container_->children().cend());
-  base::EraseIf(buttons, [](views::View* view) {
+  std::erase_if(buttons, [](views::View* view) {
     return !(views::IsViewClass<views::ImageButton>(view) ||
              views::IsViewClass<views::ToggleImageButton>(view));
   });

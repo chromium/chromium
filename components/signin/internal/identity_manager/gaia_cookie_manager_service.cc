@@ -10,9 +10,9 @@
 #include <queue>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -608,7 +608,7 @@ void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
   }
 
   const bool accounts_updated =
-      base::EraseIf(signed_out_accounts_,
+      std::erase_if(signed_out_accounts_,
                     [&gaia_id](const gaia::ListedAccount& account) {
                       return account.gaia_id == gaia_id;
                     }) != 0;

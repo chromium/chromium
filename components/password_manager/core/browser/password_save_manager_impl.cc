@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -109,7 +108,7 @@ void SanitizeAlternativeUsernames(PasswordForm* form) {
 
   // Filter out |form->username_value| and sensitive information.
   const std::u16string& username_value = form->username_value;
-  base::EraseIf(usernames,
+  std::erase_if(usernames,
                 [&username_value](const AlternativeElement& element) {
                   return element.value == username_value ||
                          autofill::IsValidCreditCardNumber(element.value) ||

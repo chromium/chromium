@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
@@ -272,7 +271,7 @@ void KeywordProvider::DeleteMatch(const AutocompleteMatch& match) {
     return i.keyword == match.keyword &&
            i.fill_into_edit == match.fill_into_edit;
   };
-  base::EraseIf(matches_, pred);
+  std::erase_if(matches_, pred);
 
   std::u16string keyword, remaining_input;
   if (!ExtractKeywordFromInput(keyword_input_, GetTemplateURLService(),

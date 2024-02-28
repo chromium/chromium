@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
@@ -141,7 +142,7 @@ void PasswordStoreFetcher::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   domain_examples_.clear();
 
-  base::EraseIf(
+  std::erase_if(
       results,
       [this](const std::unique_ptr<password_manager::PasswordForm>& form) {
         return (form->date_created < start_ || form->date_created >= end_);

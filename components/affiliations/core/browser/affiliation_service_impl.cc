@@ -4,8 +4,9 @@
 
 #include "components/affiliations/core/browser/affiliation_service_impl.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -198,14 +199,14 @@ void AffiliationServiceImpl::OnFetchSucceeded(
 
 void AffiliationServiceImpl::OnFetchFailed(
     AffiliationFetcherInterface* fetcher) {
-  base::EraseIf(pending_fetches_, [fetcher](const auto& info) {
+  std::erase_if(pending_fetches_, [fetcher](const auto& info) {
     return info.fetcher.get() == fetcher;
   });
 }
 
 void AffiliationServiceImpl::OnMalformedResponse(
     AffiliationFetcherInterface* fetcher) {
-  base::EraseIf(pending_fetches_, [fetcher](const auto& info) {
+  std::erase_if(pending_fetches_, [fetcher](const auto& info) {
     return info.fetcher.get() == fetcher;
   });
 }

@@ -14,7 +14,6 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -504,7 +503,7 @@ void WebUIInfoSingleton::RegisterWebUIInstance(SafeBrowsingUIHandler* webui) {
 }
 
 void WebUIInfoSingleton::UnregisterWebUIInstance(SafeBrowsingUIHandler* webui) {
-  base::Erase(webui_instances_, webui);
+  std::erase(webui_instances_, webui);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Notify other WebUIs that the source of the tailored verdict override is

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -20,7 +21,7 @@ namespace {
 
 void FilterRulesForType(ContentSettingsForOneType& settings,
                         const GURL& primary_url) {
-  base::EraseIf(settings,
+  std::erase_if(settings,
                 [&primary_url](const ContentSettingPatternSource& source) {
                   return !source.primary_pattern.Matches(primary_url);
                 });

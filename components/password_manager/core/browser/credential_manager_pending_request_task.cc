@@ -10,8 +10,8 @@
 #include <memory>
 #include <tuple>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -95,7 +95,7 @@ void FilterIrrelevantForms(std::vector<std::unique_ptr<PasswordForm>>& forms,
                            bool include_passwords,
                            const std::set<std::string>& federations) {
   // Get rid of the irrelevant credentials.
-  base::EraseIf(forms, [include_passwords, &federations](
+  std::erase_if(forms, [include_passwords, &federations](
                            const std::unique_ptr<PasswordForm>& form) {
     // Remove empty usernames from the list.
     if (form->username_value.empty()) {

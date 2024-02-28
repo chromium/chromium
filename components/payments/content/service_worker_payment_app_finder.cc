@@ -10,7 +10,6 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -445,7 +444,7 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     return;
 
   // Do not look up payment handlers for ignored payment methods.
-  base::EraseIf(requested_method_data,
+  std::erase_if(requested_method_data,
                 [&](const mojom::PaymentMethodDataPtr& method_data) {
                   return base::Contains(ignored_methods_,
                                         method_data->supported_method);

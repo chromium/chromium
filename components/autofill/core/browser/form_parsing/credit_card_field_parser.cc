@@ -9,9 +9,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -861,7 +861,7 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
       type_length(server_hint)};
   // Now erase all zeros that indicate that some of the three cases above did
   // not lead to a hint.
-  base::Erase(year_length_candidates, kInvalid);
+  std::erase(year_length_candidates, kInvalid);
 
   // If we don't have any concrete hints from the server or the matched date
   // pattern, we leave `year_length_candidates` empty (instead of always adding

@@ -9,9 +9,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/json/values_util.h"
@@ -77,7 +77,7 @@ void PurgeUnsupportedLanguagesInLanguageFamily(base::StringPiece language,
   }
 
   // Purge all languages in the same family as |language|.
-  base::EraseIf(*list, [base_language](const std::string& lang) {
+  std::erase_if(*list, [base_language](const std::string& lang) {
     return base_language == language::ExtractBaseLanguage(lang);
   });
 }

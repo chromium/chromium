@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -269,7 +270,7 @@ void AccountManagerMojoService::FinishUpsertAccount(
 
 void AccountManagerMojoService::DeletePendingAccessTokenFetchRequest(
     AccessTokenFetcher* request) {
-  base::EraseIf(
+  std::erase_if(
       pending_access_token_requests_,
       [&request](const std::unique_ptr<AccessTokenFetcher>& pending_request)
           -> bool { return pending_request.get() == request; });

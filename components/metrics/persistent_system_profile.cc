@@ -5,11 +5,11 @@
 #include "components/metrics/persistent_system_profile.h"
 
 #include <set>
+#include <vector>
 
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -295,7 +295,7 @@ void PersistentSystemProfile::DeregisterPersistentAllocator(
 
   // This would be more efficient with a std::map but it's not expected that
   // allocators will get deregistered with any frequency, if at all.
-  base::EraseIf(allocators_, [=](RecordAllocator& records) {
+  std::erase_if(allocators_, [=](RecordAllocator& records) {
     return records.allocator() == memory_allocator;
   });
 }

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
@@ -228,7 +227,7 @@ void ShortcutsProvider::DeleteMatch(const AutocompleteMatch& match) {
     backend_->DeleteShortcutsWithURL(url);
   }
 
-  base::EraseIf(matches_, DestinationURLEqualsURL(url));
+  std::erase_if(matches_, DestinationURLEqualsURL(url));
   // NOTE: |match| is now dead!
 
   // Delete the match from the history DB. This will eventually result in a

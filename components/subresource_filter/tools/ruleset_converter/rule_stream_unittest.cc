@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
@@ -277,7 +276,7 @@ TEST(RuleStreamTest, TransferRulesAndDiscardRegexpRules) {
   input.reset();
   output.reset();
 
-  base::EraseIf(contents.url_rules,
+  std::erase_if(contents.url_rules,
                 [](const url_pattern_index::proto::UrlRule& rule) {
                   return rule.url_pattern_type() ==
                          url_pattern_index::proto::URL_PATTERN_TYPE_REGEXP;

@@ -6,8 +6,8 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -118,7 +118,7 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
 
 void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
   // Ignore PSL, affiliated and other matches.
-  base::EraseIf(results_, [](const std::unique_ptr<PasswordForm>& form) {
+  std::erase_if(results_, [](const std::unique_ptr<PasswordForm>& form) {
     return password_manager_util::GetMatchType(*form) !=
            password_manager_util::GetLoginMatchType::kExact;
   });

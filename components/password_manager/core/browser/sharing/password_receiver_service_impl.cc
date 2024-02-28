@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
@@ -319,7 +318,7 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
 
 void PasswordReceiverServiceImpl::RemoveTaskFromTasksList(
     ProcessIncomingSharingInvitationTask* task) {
-  base::EraseIf(
+  std::erase_if(
       process_invitations_tasks_,
       [&task](const std::unique_ptr<ProcessIncomingSharingInvitationTask>&
                   cached_task) { return cached_task.get() == task; });

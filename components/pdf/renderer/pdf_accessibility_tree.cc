@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include <vector>
 
 #include "base/check_is_test.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/break_iterator.h"
@@ -2016,7 +2016,7 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
     const ui::AXNodeData& page = postamble_page_tree_update_->nodes[1];
     const ui::AXNodeID& page_id = page.id;
     CHECK_NE(ui::kInvalidAXNodeID, page_id);
-    int num_erased = base::EraseIf(doc_node_->child_ids,
+    int num_erased = std::erase_if(doc_node_->child_ids,
                                    [&page_id](const ui::AXNodeID child_id) {
                                      return child_id == page_id;
                                    });
@@ -2521,7 +2521,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
                         [](const ui::AXNodeData& node) {
                           return std::make_unique<ui::AXNodeData>(node);
                         });
-      int num_erased = base::EraseIf(
+      int num_erased = std::erase_if(
           nodes_, [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
             return node->id == ocr_request.image_node_id;
           });
@@ -2532,8 +2532,8 @@ void PdfAccessibilityTree::OnOcrDataReceived(
             return node->id == ocr_request.parent_node_id;
           });
       CHECK(parent_node_iter != ranges::end(nodes_));
-      num_erased = base::Erase((*parent_node_iter)->child_ids,
-                               ocr_request.image_node_id);
+      num_erased =
+          std::erase((*parent_node_iter)->child_ids, ocr_request.image_node_id);
       CHECK_EQ(num_erased, 1);
       (*parent_node_iter)->child_ids.push_back(extracted_text_root_node_id);
       // Need to keep iterating the rest of `tree_updates`.
@@ -2547,7 +2547,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     CHECK(parent_node);
     ui::AXNodeData parent_node_data = parent_node->data();
     int num_erased =
-        base::Erase(parent_node_data.child_ids, ocr_request.image_node_id);
+        std::erase(parent_node_data.child_ids, ocr_request.image_node_id);
     CHECK_EQ(num_erased, 1);
     parent_node_data.child_ids.push_back(extracted_text_root_node_id);
     tree_update.root_id = doc_node_->id;

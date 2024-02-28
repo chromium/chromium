@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -196,7 +195,7 @@ void LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
   auto card_is_selected = [&selected_card_guids](MigratableCreditCard& card) {
     return !base::Contains(selected_card_guids, card.credit_card().guid());
   };
-  base::EraseIf(migratable_credit_cards_, card_is_selected);
+  std::erase_if(migratable_credit_cards_, card_is_selected);
   // Populating risk data and offering migration two-round pop-ups occur
   // asynchronously. If |migration_risk_data_| has already been loaded, send the
   // migrate local cards request. Otherwise, continue to wait and let
@@ -464,7 +463,7 @@ void LocalCardMigrationManager::FilterOutUnsupportedLocalCards(
           return !payments::IsCreditCardNumberSupported(
               card.credit_card().number(), supported_card_bin_ranges);
         };
-    base::EraseIf(migratable_credit_cards_, card_is_unsupported);
+    std::erase_if(migratable_credit_cards_, card_is_unsupported);
   }
 }
 

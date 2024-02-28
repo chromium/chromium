@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
@@ -578,7 +577,7 @@ void CastMessageHandler::PendingRequests::HandlePendingRequest(
     std::string app_id = (*app_availability_it)->app_id;
     GetAppAvailabilityResult result =
         GetAppAvailabilityResultFromResponse(response, app_id);
-    base::EraseIf(pending_app_availability_requests_,
+    std::erase_if(pending_app_availability_requests_,
                   [&app_id, result](const auto& request_ptr) {
                     if (request_ptr->app_id == app_id) {
                       std::move(request_ptr->callback).Run(app_id, result);

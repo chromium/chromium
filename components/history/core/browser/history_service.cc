@@ -18,10 +18,10 @@
 #include "components/history/core/browser/history_service.h"
 
 #include <functional>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -618,7 +618,7 @@ void HistoryService::AddPage(HistoryAddPageArgs add_page_args) {
 
   DCHECK(add_page_args.url.is_valid());
 
-  base::EraseIf(add_page_args.redirects,
+  std::erase_if(add_page_args.redirects,
                 [this](const GURL& url) { return !CanAddURL(url); });
 
   // Inform VisitedDelegate of all links and redirects.

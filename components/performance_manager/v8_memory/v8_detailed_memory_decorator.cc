@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -924,10 +923,10 @@ size_t V8DetailedMemoryRequestQueue::RemoveMeasurementRequest(
     V8DetailedMemoryRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
-  return base::Erase(IsMeasurementBounded(request->mode())
-                         ? bounded_measurement_requests_
-                         : lazy_measurement_requests_,
-                     request);
+  return std::erase(IsMeasurementBounded(request->mode())
+                        ? bounded_measurement_requests_
+                        : lazy_measurement_requests_,
+                    request);
 }
 
 void V8DetailedMemoryRequestQueue::NotifyObserversOnMeasurementAvailable(
