@@ -11,7 +11,7 @@ import {parseArgs} from 'node:util';
 
 // Regular expression to extract CSS Content from within <style>...</style>
 // tags. The 'd' flag is needed to obtain the start/end indices of the match.
-const CSS_REGEX = /<style(?<deps>[\s\S]{0,})>(?<content>[\s\S]+)<\/style>/d;
+const CSS_REGEX = /<style(?<deps>[\s\S][^>]{0,})>(?<content>[\s\S]+)<\/style>/d;
 
 // Header to place on top of the newly created CSS file.
 const CSS_FILE_HEADER = `/* Copyright 2024 The Chromium Authors
