@@ -733,35 +733,6 @@ try_.builder(
     tryjob = try_.job(),
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.builder(
-    name = "linux_chromium_compile_siso_dbg_ng",
-    description_html = """\
-This builder shadows linux_chromium_compile_dbg_ng builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux_chromium_compile_dbg_ng from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux_chromium_compile_dbg_ng"),
-    builder_config_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    gn_args = "try/linux_chromium_compile_dbg_ng",
-    builderless = False,
-    caches = [
-        swarming.cache(
-            name = "builder",
-            path = "linux_debug",
-        ),
-    ],
-    contact_team_email = "chrome-build-team@google.com",
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-)
-
 try_.builder(
     name = "linux_chromium_compile_rel_ng",
     mirrors = [

@@ -117,7 +117,6 @@ chromium/try/linux_chromium_chromeos_asan_rel_ng
 chromium/try/linux_chromium_chromeos_msan_rel_ng
 chromium/try/linux_chromium_compile_dbg_ng
 chromium/try/linux_chromium_compile_rel_ng
-chromium/try/linux_chromium_compile_siso_dbg_ng
 chromium/try/linux_chromium_dbg_ng
 chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng

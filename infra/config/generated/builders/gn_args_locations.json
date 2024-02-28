@@ -813,7 +813,6 @@
     "linux_chromium_clobber_deterministic": "try/linux_chromium_clobber_deterministic/gn-args.json",
     "linux_chromium_compile_dbg_ng": "try/linux_chromium_compile_dbg_ng/gn-args.json",
     "linux_chromium_compile_rel_ng": "try/linux_chromium_compile_rel_ng/gn-args.json",
-    "linux_chromium_compile_siso_dbg_ng": "try/linux_chromium_compile_siso_dbg_ng/gn-args.json",
     "linux_chromium_dbg_ng": "try/linux_chromium_dbg_ng/gn-args.json",
     "linux_chromium_msan_rel_ng": "try/linux_chromium_msan_rel_ng/gn-args.json",
     "linux_chromium_tsan_rel_ng": "try/linux_chromium_tsan_rel_ng/gn-args.json",

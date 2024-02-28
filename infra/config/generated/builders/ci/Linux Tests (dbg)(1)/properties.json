@@ -71,10 +71,6 @@
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux_chromium_compile_siso_dbg_ng",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux_chromium_dbg_ng",
           "group": "tryserver.chromium.linux"
         }

@@ -648,9 +648,6 @@ as required builders.
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
   * Experiment percentage: 10.0
 
-* [linux_chromium_compile_siso_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_compile_siso_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_compile_siso_dbg_ng""))
-  * Experiment percentage: 10.0
-
 * [linux_chromium_tsan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_tsan_siso_rel_ng""))
   * Experiment percentage: 10.0
 
