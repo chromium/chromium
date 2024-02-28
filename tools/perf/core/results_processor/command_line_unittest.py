@@ -13,8 +13,7 @@ import datetime
 import posixpath
 import re
 import unittest
-
-import mock
+from unittest import mock
 
 from core.results_processor import command_line
 

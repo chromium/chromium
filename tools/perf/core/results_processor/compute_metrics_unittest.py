@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
 
 from core.results_processor import compute_metrics
 from core.results_processor import testing
@@ -12,8 +13,6 @@ from tracing.mre import job
 from tracing.mre import mre_result
 from tracing.value import histogram
 from tracing.value import histogram_set
-
-import mock
 
 
 RUN_METRICS_METHOD = 'tracing.metrics.metric_runner.RunMetricOnSingleTrace'

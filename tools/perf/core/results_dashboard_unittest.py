@@ -1,11 +1,11 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import unittest
 import json
 import logging
-import mock
-from mock import call
+import unittest
+from unittest import mock
+from unittest.mock import call
 
 from core import results_dashboard
 

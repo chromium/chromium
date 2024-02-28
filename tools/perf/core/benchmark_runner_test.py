@@ -7,8 +7,7 @@ import os
 import shutil
 import tempfile
 import unittest
-
-import mock
+from unittest import mock
 
 from telemetry import decorators
 from telemetry.testing import test_stories

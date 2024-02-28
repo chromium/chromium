@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
 
 # TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
-import mock
 
 from core.services import dashboard_service
 from core.services import request

@@ -6,10 +6,9 @@ import os
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 from core.tbmv3 import trace_processor
-
-import mock
 
 RUN_METHOD = 'core.tbmv3.trace_processor._RunTraceProcessor'
 

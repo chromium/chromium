@@ -361,7 +361,6 @@
 ../../third_party/catapult/telemetry/telemetry/web_perf/timeline_interaction_record.py
 ../../third_party/catapult/telemetry/telemetry/wpr/__init__.py
 ../../third_party/catapult/telemetry/telemetry/wpr/archive_info.py
-../../third_party/catapult/telemetry/third_party/mock/mock.py
 ../../third_party/catapult/telemetry/third_party/png/png.py
 ../../third_party/catapult/telemetry/third_party/websocket-client/websocket/__init__.py
 ../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_abnf.py

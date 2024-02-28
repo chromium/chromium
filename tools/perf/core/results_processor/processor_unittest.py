@@ -6,8 +6,7 @@
 import datetime
 import os
 import unittest
-
-import mock
+from unittest import mock
 
 from core.results_processor import processor
 from core.results_processor import testing

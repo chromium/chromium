@@ -7,13 +7,9 @@
 import argparse
 import re
 import unittest
+from unittest import mock
 
 import six
-
-if six.PY2:
-  import mock
-else:
-  import unittest.mock as mock  # pylint: disable=no-name-in-module,import-error,wrong-import-order
 
 from cli_tools.update_wpr import update_wpr
 from core.services import request
@@ -27,7 +23,7 @@ BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
 ESCAPED_STORY = re.escape('<story>')
 
 def mock_exists(path):
-    return '<archive>' in path
+  return '<archive>' in path
 
 class UpdateWprTest(unittest.TestCase):
   def setUp(self):

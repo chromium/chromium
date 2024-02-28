@@ -60,7 +60,6 @@ def _GetPathsToPrepend(input_api):
   return [
       telemetry_dir,
       typ_dir,
-      input_api.os_path.join(telemetry_dir, 'third_party', 'mock'),
       experimental_dir,
       tracing_dir,
       py_utils_dir,
