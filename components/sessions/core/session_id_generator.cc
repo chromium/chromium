@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -68,13 +69,16 @@ SessionID SessionIdGenerator::NewUnique() {
 
 void SessionIdGenerator::SetHighestRestoredID(SessionID highest_restored_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SessionID::id_type difference = 0;
   if (last_value_ < highest_restored_id.id() &&
       highest_restored_id.id() - last_value_ <
           std::numeric_limits<SessionID::id_type>::max() / 2) {
     // Only do the check if the two numbers are not too far apart to prevent
     // issues when the `last_value_` is looping back to 0.
-    IncrementValueBy(highest_restored_id.id() - last_value_);
+    difference = highest_restored_id.id() - last_value_;
+    IncrementValueBy(difference);
   }
+  base::UmaHistogramCounts100("Session.ID.RestoredDifference", difference);
 }
 
 // static

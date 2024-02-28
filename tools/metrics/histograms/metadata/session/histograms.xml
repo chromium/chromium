@@ -52,6 +52,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.ID.RestoredDifference" units="Session IDs"
+    expires_after="2025-02-28">
+  <owner>gambard@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    Records the difference between the highest restored SessionID and the value
+    of the pref used for the next SessionID. If the difference is negative, 0 is
+    recorded (0 means there is no problem, the session ID's pref was correctly
+    restored). Having a value &gt; 0 means that there has been an issue and the
+    SessionID was probably not recorded properly. This is recorded after each
+    session restoration (so it can be recorded multiple times per run).
+  </summary>
+</histogram>
+
 <histogram name="Session.IsActive" enum="BooleanActive"
     expires_after="2024-07-21">
   <owner>rogerm@chromium.org</owner>

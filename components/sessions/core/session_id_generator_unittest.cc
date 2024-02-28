@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -154,6 +155,9 @@ TEST_F(SessionIdGeneratorTest, ShouldHandleOverflowDuringPadding) {
 }
 
 TEST_F(SessionIdGeneratorTest, HighestRestoredID) {
+  std::string histogram("Session.ID.RestoredDifference");
+  base::HistogramTester tester;
+
   base::MockCallback<SessionIdGenerator::RandomGenerator> random_generator;
   SessionIdGenerator* generator = SessionIdGenerator::GetInstance();
   generator->SetRandomGeneratorForTest(random_generator.Get());
@@ -166,6 +170,8 @@ TEST_F(SessionIdGeneratorTest, HighestRestoredID) {
   generator->SetHighestRestoredID(highest);
 
   EXPECT_EQ(123 + 1 + kExpectedIdPadding, generator->NewUnique().id());
+  tester.ExpectBucketCount(histogram, 0, 1);
+  tester.ExpectTotalCount(histogram, 1);
 
   // Highest restored ID is higher than the next value.
   generator->Shutdown();
@@ -177,6 +183,8 @@ TEST_F(SessionIdGeneratorTest, HighestRestoredID) {
   generator->SetHighestRestoredID(highest);
 
   EXPECT_EQ(201, generator->NewUnique().id());
+  tester.ExpectBucketCount(histogram, 27, 1);
+  tester.ExpectTotalCount(histogram, 2);
 
   // Highest restored ID is higher than the next value because it overflown.
   generator->Shutdown();
@@ -191,6 +199,8 @@ TEST_F(SessionIdGeneratorTest, HighestRestoredID) {
   generator->SetHighestRestoredID(highest);
 
   EXPECT_EQ(123 + 1 + kExpectedIdPadding, generator->NewUnique().id());
+  tester.ExpectBucketCount(histogram, 0, 2);
+  tester.ExpectTotalCount(histogram, 3);
 }
 
 // Verifies correctness of the test-only codepath.
