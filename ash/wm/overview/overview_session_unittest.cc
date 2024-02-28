@@ -221,10 +221,19 @@ void CombineDesksViaMiniView(const DeskMiniView* desk_mini_view,
   event_generator->ClickLeftButton();
 }
 
+std::string OverviewSessionTestParamsToString(
+    const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+  const auto& [desk_templates, has_snapshot] = info.param;
+  std::string name = desk_templates ? "DesksTemplatesOn" : "DesksTemplatesOff";
+  name += has_snapshot ? "_SnapshotOn" : "_SnapshotOff";
+  return name;
+}
+
 }  // namespace
 
-class OverviewSessionTest : public OverviewTestBase,
-                            public testing::WithParamInterface<bool> {
+class OverviewSessionTest
+    : public OverviewTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   OverviewSessionTest() = default;
   OverviewSessionTest(const OverviewSessionTest&) = delete;
@@ -237,65 +246,18 @@ class OverviewSessionTest : public OverviewTestBase,
   }
   bool IsUIShown(ExitWarningHandler* ewh) { return !!ewh->widget_; }
 
+  bool DeskTemplatesOn() const { return std::get<0>(GetParam()); }
+
+  bool SnapshotOn() const { return std::get<1>(GetParam()); }
+
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(features::kDesksTemplates,
-                                              GetParam());
+                                              DeskTemplatesOn());
 
     OverviewTestBase::SetUp();
-  }
-
-  float ExpectedRasterScale(aura::Window* window,
-                            gfx::Rect start_bounds,
-                            bool window_grows) {
-    auto* item = GetOverviewItemForWindow(window);
-    CHECK(item);
-
-    // If the window is minimized, the widget size is changed. Otherwise, it's
-    // transformed via the transform window. Use the target bounds if it's not
-    // minimized. If it's minimized, it won't have its size animated so it's
-    // safe to look at the item view size.
-    auto end_bounds = window->layer()->GetTargetTransform().MapRect(
-        gfx::RectF(window->GetTargetBounds()));
-
-    if (WindowState::Get(window)->IsMinimized()) {
-      const auto insets = gfx::Insets::TLBR(
-          window->GetProperty(aura::client::kTopViewInset), 0, 0, 0);
-      start_bounds.Inset(insets);
-      const auto size = item->GetLeafItemForWindow(window)
-                            ->overview_item_view()
-                            ->GetPreviewViewSize();
-      end_bounds = gfx::RectF(gfx::Rect(size));
-    }
-
-    auto transform = gfx::TransformBetweenRects(gfx::RectF(start_bounds),
-                                                gfx::RectF(end_bounds));
-    auto scale_2d = transform.To2dScale();
-    auto scale = std::max(scale_2d.x(), scale_2d.y());
-    // Specify 1.0's manually, since they are easy to know, and we want to
-    // minimize the amount of extra computation for raster scale expectations.
-    EXPECT_NE(1.0f, scale);
-    if (window_grows) {
-      EXPECT_GT(scale, 1.0);
-    } else {
-      EXPECT_LT(scale, 1.0);
-    }
-    return scale;
-  }
-
-  void MinimizeAndCheckWindow(aura::Window* window) {
-    WMEvent minimize_event(WM_EVENT_MINIMIZE);
-    WindowState::Get(window)->OnWMEvent(&minimize_event);
-    EXPECT_FALSE(window->IsVisible());
-    EXPECT_EQ(0.f, window->layer()->GetTargetOpacity());
-    ASSERT_TRUE(WindowState::Get(window)->IsMinimized());
-  }
-
-  void MaximizeAndCheckWindow(aura::Window* window) {
-    WMEvent maximize_event(WM_EVENT_MAXIMIZE);
-    WindowState::Get(window)->OnWMEvent(&maximize_event);
-    EXPECT_TRUE(window->IsVisible());
-    ASSERT_TRUE(WindowState::Get(window)->IsMaximized());
+    Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
+        SnapshotOn());
   }
 
  private:
@@ -3228,7 +3190,7 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   // flip for Save & Recall has truly landed, remove the `NoSavedDesks` variant
   // of this test below and remove the Save & Recall feature check at the start
   // of this test.
-  if (GetParam() || !saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (DeskTemplatesOn() || !saved_desk_util::ShouldShowSavedDesksButtons()) {
     return;
   }
 
@@ -3281,7 +3243,7 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
 TEST_P(OverviewSessionTest, AccessibilityFocusAnnotatorNoSavedDesks) {
   // If saved desk is enabled, the a11y order changes. This is tested in
   // the saved desk test suite.
-  if (GetParam() || saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (DeskTemplatesOn() || saved_desk_util::ShouldShowSavedDesksButtons()) {
     return;
   }
 
@@ -3609,8 +3571,9 @@ TEST_P(OverviewSessionTest,
 
   // We don't need to worry about virtual desk previews not showing up if we
   // have snapshots, so this test tests the case where we don't have snapshots.
-  Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
-      false);
+  if (SnapshotOn()) {
+    GTEST_SKIP();
+  }
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -3659,8 +3622,9 @@ TEST_P(OverviewSessionTest,
 
   // We don't need to worry about virtual desk previews not showing up if we
   // have snapshots, so this test tests the case where we don't have snapshots.
-  Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
-      false);
+  if (SnapshotOn()) {
+    GTEST_SKIP();
+  }
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -3716,23 +3680,93 @@ TEST_P(OverviewSessionTest,
 
 // If you update the parameterisation of OverviewSessionTest also update the
 // parameterisation of OverviewRasterScaleTest below.
-INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
-                         OverviewSessionTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DesksTemplatesOn"
-                                             : "DesksTemplatesOff";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    OverviewSessionTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    OverviewSessionTestParamsToString);
 
-using OverviewRasterScaleTest = OverviewSessionTest;
+class OverviewRasterScaleTest : public OverviewSessionTest {
+ public:
+  OverviewRasterScaleTest() = default;
+  OverviewRasterScaleTest(const OverviewRasterScaleTest&) = delete;
+  OverviewRasterScaleTest& operator=(const OverviewRasterScaleTest&) = delete;
+  ~OverviewRasterScaleTest() override = default;
+
+  // OverviewSessionTest:
+  void SetUp() override {
+    OverviewSessionTest::SetUp();
+
+    Shell::Get()
+        ->raster_scale_controller()
+        ->set_raster_scale_slop_proportion_for_testing(0.0f);
+    Shell::Get()
+        ->overview_controller()
+        ->set_occlusion_pause_duration_for_start_for_test(
+            base::Milliseconds(0));
+    Shell::Get()
+        ->overview_controller()
+        ->set_occlusion_pause_duration_for_end_for_test(base::Milliseconds(0));
+  }
+
+  float ExpectedRasterScale(aura::Window* window,
+                            gfx::Rect start_bounds,
+                            bool window_grows) {
+    auto* item = GetOverviewItemForWindow(window);
+    CHECK(item);
+
+    // If the window is minimized, the widget size is changed. Otherwise, it's
+    // transformed via the transform window. Use the target bounds if it's not
+    // minimized. If it's minimized, it won't have its size animated so it's
+    // safe to look at the item view size.
+    auto end_bounds = window->layer()->GetTargetTransform().MapRect(
+        gfx::RectF(window->GetTargetBounds()));
+
+    if (WindowState::Get(window)->IsMinimized()) {
+      const auto insets = gfx::Insets::TLBR(
+          window->GetProperty(aura::client::kTopViewInset), 0, 0, 0);
+      start_bounds.Inset(insets);
+      const auto size = item->GetLeafItemForWindow(window)
+                            ->overview_item_view()
+                            ->GetPreviewViewSize();
+      end_bounds = gfx::RectF(gfx::Rect(size));
+    }
+
+    auto transform = gfx::TransformBetweenRects(gfx::RectF(start_bounds),
+                                                gfx::RectF(end_bounds));
+    auto scale_2d = transform.To2dScale();
+    auto scale = std::max(scale_2d.x(), scale_2d.y());
+    // Specify 1.0's manually, since they are easy to know, and we want to
+    // minimize the amount of extra computation for raster scale expectations.
+    EXPECT_NE(1.0f, scale);
+    if (window_grows) {
+      EXPECT_GT(scale, 1.0);
+    } else {
+      EXPECT_LT(scale, 1.0);
+    }
+    return scale;
+  }
+
+  void MinimizeAndCheckWindow(aura::Window* window) {
+    WMEvent minimize_event(WM_EVENT_MINIMIZE);
+    WindowState::Get(window)->OnWMEvent(&minimize_event);
+    EXPECT_FALSE(window->IsVisible());
+    EXPECT_EQ(0.f, window->layer()->GetTargetOpacity());
+    ASSERT_TRUE(WindowState::Get(window)->IsMinimized());
+  }
+
+  void MaximizeAndCheckWindow(aura::Window* window) {
+    WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+    WindowState::Get(window)->OnWMEvent(&maximize_event);
+    EXPECT_TRUE(window->IsVisible());
+    ASSERT_TRUE(WindowState::Get(window)->IsMaximized());
+  }
+};
 
 // Tests raster scale changes for a single window which grows when entering
 // overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAnimatedSingleWindowEnterGrowExitShrink) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3750,6 +3784,8 @@ TEST_P(OverviewRasterScaleTest,
       ExpectedRasterScale(window.get(), start_bounds, /*window_grows=*/true);
   EXPECT_EQ(std::vector<float>{raster_scale}, tracker.TakeRasterScaleChanges());
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   // No change after animation.
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
@@ -3760,6 +3796,8 @@ TEST_P(OverviewRasterScaleTest,
   // the shrink animation.
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   // After completion, restore to normal raster scale.
   EXPECT_EQ(std::vector<float>{1.0}, tracker.TakeRasterScaleChanges());
@@ -3769,9 +3807,6 @@ TEST_P(OverviewRasterScaleTest,
 // overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAnimatedSingleWindowEnterShrinkExitGrow) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(600, 600)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3787,6 +3822,8 @@ TEST_P(OverviewRasterScaleTest,
   // until after the animation finishes.
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   auto raster_scale =
       ExpectedRasterScale(window.get(), start_bounds, /*window_grows=*/false);
@@ -3798,6 +3835,9 @@ TEST_P(OverviewRasterScaleTest,
   // the grow animation.
   EXPECT_EQ(std::vector<float>{1.0}, tracker.TakeRasterScaleChanges());
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
 }
 
@@ -3805,9 +3845,6 @@ TEST_P(OverviewRasterScaleTest,
 // entering overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMinimizedSingleWindowEnterGrowExitShrink) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3827,6 +3864,8 @@ TEST_P(OverviewRasterScaleTest,
       ExpectedRasterScale(window.get(), start_bounds, /*window_grows=*/true);
   EXPECT_EQ(std::vector<float>{raster_scale}, tracker.TakeRasterScaleChanges());
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   // No change after enter.
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
@@ -3837,6 +3876,8 @@ TEST_P(OverviewRasterScaleTest,
   // everything is hidden.
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   // After completion, restore to normal raster scale.
   EXPECT_EQ(std::vector<float>{1.0}, tracker.TakeRasterScaleChanges());
@@ -3846,9 +3887,6 @@ TEST_P(OverviewRasterScaleTest,
 // entering overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMinimizedSingleWindowEnterShrinkExitGrow) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(600, 600)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3868,6 +3906,8 @@ TEST_P(OverviewRasterScaleTest,
       ExpectedRasterScale(window.get(), start_bounds, /*window_grows=*/false);
   EXPECT_EQ(std::vector<float>{raster_scale}, tracker.TakeRasterScaleChanges());
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   // No change after enter.
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
@@ -3878,6 +3918,8 @@ TEST_P(OverviewRasterScaleTest,
   // detail.
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   // After completion, restore to normal raster scale.
   EXPECT_EQ(std::vector<float>{1.0}, tracker.TakeRasterScaleChanges());
@@ -3886,9 +3928,6 @@ TEST_P(OverviewRasterScaleTest,
 // Tests raster scale changes for a more complex case with multiple windows in
 // different states.
 TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindows) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow_animated(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink_animated(
@@ -3951,6 +3990,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindows) {
             tracker_shrink_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker_grow_animated.TakeRasterScaleChanges());
   EXPECT_EQ(std::vector<float>{raster_scale_shrink_animated},
@@ -3967,6 +4008,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindows) {
   EXPECT_EQ(empty, tracker_shrink_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{1.0},
             tracker_grow_animated.TakeRasterScaleChanges());
@@ -3980,9 +4023,6 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindows) {
 // Tests raster scale changes when a maximized window exists with windows on
 // top.
 TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_maximized(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_grow(
@@ -4028,6 +4068,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
   EXPECT_EQ(empty, tracker_shrink.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{raster_scale_maximized},
             tracker_maximized.TakeRasterScaleChanges());
@@ -4043,6 +4085,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
   EXPECT_EQ(std::vector<float>{1.0}, tracker_shrink.TakeRasterScaleChanges());
 
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker_maximized.TakeRasterScaleChanges());
   EXPECT_EQ(std::vector<float>{1.0}, tracker_grow.TakeRasterScaleChanges());
@@ -4051,9 +4095,6 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
 
 // Tests raster scale changes when a maximized window exists with windows below.
 TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink(
@@ -4101,6 +4142,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
             tracker_shrink.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{raster_scale_maximized},
             tracker_maximized.TakeRasterScaleChanges());
@@ -4115,6 +4158,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
   EXPECT_EQ(empty, tracker_shrink.TakeRasterScaleChanges());
 
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   // Windows will be covered and not animate, so they wait until the animation
   // has finished to update.
@@ -4127,9 +4172,6 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
 // different states when the overview mode animation is cancelled while entering
 // and exiting.
 TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow_covered(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink_covered(
@@ -4249,6 +4291,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
   EXPECT_EQ(empty, tracker_shrink_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{1.0},
             tracker_grow_covered.TakeRasterScaleChanges());
@@ -4280,6 +4324,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
             tracker_shrink_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker_grow_covered.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker_shrink_covered.TakeRasterScaleChanges());
@@ -4348,6 +4394,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
 
   // Finally fully enter overview mode.
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker_grow_covered.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker_shrink_covered.TakeRasterScaleChanges());
@@ -4362,9 +4410,6 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
 
 // Tests raster scale changes for transient windows.
 TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow_covered(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink_covered(
@@ -4533,6 +4578,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
             tracker_shrink_minimized_transient.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker_grow_covered.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker_shrink_covered.TakeRasterScaleChanges());
@@ -4578,6 +4625,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
   EXPECT_EQ(empty, tracker_shrink_minimized_transient.TakeRasterScaleChanges());
 
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{1.0},
             tracker_grow_covered.TakeRasterScaleChanges());
@@ -4635,6 +4684,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
             tracker_shrink_minimized_transient.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker_grow_covered.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker_shrink_covered.TakeRasterScaleChanges());
@@ -4754,79 +4805,11 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
   EXPECT_EQ(empty, tracker_grow_minimized_transient.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker_shrink_minimized_transient.TakeRasterScaleChanges());
 
-  // Only expect updates for ones that were not updated when beginning the exit
-  // animation.
-  wm::RemoveTransientChild(window_grow_covered.get(),
-                           window_grow_covered_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_grow_covered_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_shrink_covered.get(),
-                           window_shrink_covered_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_shrink_covered_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_maximized.get(),
-                           window_maximized_transient.get());
-  EXPECT_EQ(empty, tracker_maximized_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_grow_animated.get(),
-                           window_grow_animated_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_grow_animated_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_shrink_animated.get(),
-                           window_shrink_animated_transient.get());
-  EXPECT_EQ(empty, tracker_shrink_animated_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_grow_minimized.get(),
-                           window_grow_minimized_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_grow_minimized_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_shrink_minimized.get(),
-                           window_shrink_minimized_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_shrink_minimized_transient.TakeRasterScaleChanges());
-
-  // Add back the transient child windows and expect the raster scales to be
-  // set except for the windows that were already set to 1.0.
-  wm::AddTransientChild(window_grow_covered.get(),
-                        window_grow_covered_transient.get());
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_covered},
-            tracker_grow_covered_transient.TakeRasterScaleChanges());
-
-  wm::AddTransientChild(window_shrink_covered.get(),
-                        window_shrink_covered_transient.get());
-  EXPECT_EQ(std::vector<float>{raster_scale_shrink_covered},
-            tracker_shrink_covered_transient.TakeRasterScaleChanges());
-
-  wm::AddTransientChild(window_maximized.get(),
-                        window_maximized_transient.get());
-  EXPECT_EQ(empty, tracker_maximized_transient.TakeRasterScaleChanges());
-
-  wm::AddTransientChild(window_grow_animated.get(),
-                        window_grow_animated_transient.get());
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_animated},
-            tracker_grow_animated_transient.TakeRasterScaleChanges());
-
-  wm::AddTransientChild(window_shrink_animated.get(),
-                        window_shrink_animated_transient.get());
-  EXPECT_EQ(empty, tracker_shrink_animated_transient.TakeRasterScaleChanges());
-
-  wm::AddTransientChild(window_grow_minimized.get(),
-                        window_grow_minimized_transient.get());
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_minimized},
-            tracker_grow_minimized_transient.TakeRasterScaleChanges());
-
-  wm::AddTransientChild(window_shrink_minimized.get(),
-                        window_shrink_minimized_transient.get());
-  EXPECT_EQ(std::vector<float>{raster_scale_shrink_minimized},
-            tracker_shrink_minimized_transient.TakeRasterScaleChanges());
-
   // Expect that transient children added during the overview mode animation
   // have their raster scale set at the end of the animation.
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{1.0},
             tracker_grow_covered.TakeRasterScaleChanges());
@@ -4851,71 +4834,6 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
   EXPECT_EQ(empty, tracker_shrink_animated_transient.TakeRasterScaleChanges());
   EXPECT_EQ(std::vector<float>{1.0},
             tracker_grow_minimized_transient.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_shrink_minimized_transient.TakeRasterScaleChanges());
-
-  // Re-enter overview mode to test removing transient child windows during
-  // enter animation.
-  ToggleOverview();
-
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_covered},
-            tracker_grow_covered.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_shrink_covered},
-            tracker_shrink_covered.TakeRasterScaleChanges());
-  EXPECT_EQ(empty, tracker_maximized.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_animated},
-            tracker_grow_animated.TakeRasterScaleChanges());
-  EXPECT_EQ(empty, tracker_shrink_animated.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_minimized},
-            tracker_grow_minimized.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_shrink_minimized},
-            tracker_shrink_minimized.TakeRasterScaleChanges());
-
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_covered},
-            tracker_grow_covered_transient.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_shrink_covered},
-            tracker_shrink_covered_transient.TakeRasterScaleChanges());
-  EXPECT_EQ(empty, tracker_maximized_transient.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_animated},
-            tracker_grow_animated_transient.TakeRasterScaleChanges());
-  EXPECT_EQ(empty, tracker_shrink_animated_transient.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_grow_minimized},
-            tracker_grow_minimized_transient.TakeRasterScaleChanges());
-  EXPECT_EQ(std::vector<float>{raster_scale_shrink_minimized},
-            tracker_shrink_minimized_transient.TakeRasterScaleChanges());
-
-  // Only expect updates for ones that were already updated when starting to
-  // enter.
-  wm::RemoveTransientChild(window_grow_covered.get(),
-                           window_grow_covered_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_grow_covered_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_shrink_covered.get(),
-                           window_shrink_covered_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_shrink_covered_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_maximized.get(),
-                           window_maximized_transient.get());
-  EXPECT_EQ(empty, tracker_maximized_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_grow_animated.get(),
-                           window_grow_animated_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_grow_animated_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_shrink_animated.get(),
-                           window_shrink_animated_transient.get());
-  EXPECT_EQ(empty, tracker_shrink_animated_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_grow_minimized.get(),
-                           window_grow_minimized_transient.get());
-  EXPECT_EQ(std::vector<float>{1.0},
-            tracker_grow_minimized_transient.TakeRasterScaleChanges());
-
-  wm::RemoveTransientChild(window_shrink_minimized.get(),
-                           window_shrink_minimized_transient.get());
   EXPECT_EQ(std::vector<float>{1.0},
             tracker_shrink_minimized_transient.TakeRasterScaleChanges());
 }
@@ -4924,9 +4842,6 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
 // update its raster scale.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAddRemoveTransientChildWindowsDuringOverviewMode) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
 
   std::unique_ptr<aura::Window> window_transient(
@@ -4957,6 +4872,8 @@ TEST_P(OverviewRasterScaleTest,
   EXPECT_EQ(empty, tracker_transient.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker.TakeRasterScaleChanges());
   EXPECT_EQ(std::vector<float>{raster_scale_transient},
@@ -4973,9 +4890,6 @@ TEST_P(OverviewRasterScaleTest,
 // scales.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAddWindowsDuringOverviewModeByCombiningAVirtualDesk) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -5027,6 +4941,8 @@ TEST_P(OverviewRasterScaleTest,
   EXPECT_EQ(empty, tracker3.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker1.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker2.TakeRasterScaleChanges());
@@ -5068,9 +4984,6 @@ TEST_P(OverviewRasterScaleTest,
 // works.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMoveWindowToVirtualDeskDuringOverviewMode) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -5110,6 +5023,8 @@ TEST_P(OverviewRasterScaleTest,
             tracker2.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker1.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker2.TakeRasterScaleChanges());
@@ -5128,6 +5043,8 @@ TEST_P(OverviewRasterScaleTest,
   EXPECT_EQ(empty, tracker2.TakeRasterScaleChanges());
 
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{1.0f}, tracker1.TakeRasterScaleChanges());
   EXPECT_EQ(empty, tracker2.TakeRasterScaleChanges());
@@ -5136,9 +5053,6 @@ TEST_P(OverviewRasterScaleTest,
 // Tests raster scale changes work in tablet mode.
 // TODO(crbug.com/1508655): Fix flaky test.
 TEST_P(OverviewRasterScaleTest, DISABLED_RasterScaleTabletMode) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   EnterTabletMode();
 
   std::unique_ptr<aura::Window> window_maximized(
@@ -5184,6 +5098,8 @@ TEST_P(OverviewRasterScaleTest, DISABLED_RasterScaleTabletMode) {
   EXPECT_EQ(empty, tracker_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(empty, tracker_maximized.TakeRasterScaleChanges());
   EXPECT_EQ(std::vector<float>{1.0},
@@ -5197,6 +5113,8 @@ TEST_P(OverviewRasterScaleTest, DISABLED_RasterScaleTabletMode) {
             tracker_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{raster_scale_maximized},
             tracker_maximized.TakeRasterScaleChanges());
@@ -5238,6 +5156,8 @@ TEST_P(OverviewRasterScaleTest, DISABLED_RasterScaleTabletMode) {
 
   // Finally fully enter overview mode.
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{raster_scale_maximized},
             tracker_maximized.TakeRasterScaleChanges());
@@ -5246,9 +5166,6 @@ TEST_P(OverviewRasterScaleTest, DISABLED_RasterScaleTabletMode) {
 
 // Tests raster scale changes work during screen rotations.
 TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotation) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   UpdateDisplay("1600x1200");
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
@@ -5292,6 +5209,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotation) {
             tracker_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{raster_scale_maximized},
             tracker_maximized.TakeRasterScaleChanges());
@@ -5311,9 +5230,6 @@ TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotation) {
 
 // Tests raster scale changes work during screen rotations in tablet mode.
 TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotationTabletMode) {
-  Shell::Get()
-      ->raster_scale_controller()
-      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   UpdateDisplay("1600x1200");
   EnterTabletMode();
 
@@ -5359,6 +5275,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotationTabletMode) {
             tracker_minimized.TakeRasterScaleChanges());
 
   WaitForOverviewEnterAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview enter.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(std::vector<float>{raster_scale_maximized},
             tracker_maximized.TakeRasterScaleChanges());
@@ -5378,11 +5296,8 @@ TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotationTabletMode) {
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                          OverviewRasterScaleTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DesksTemplatesOn"
-                                             : "DesksTemplatesOff";
-                         });
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         OverviewSessionTestParamsToString);
 
 class FloatOverviewSessionTest : public OverviewTestBase {
  public:
@@ -5449,6 +5364,9 @@ TEST_F(FloatOverviewSessionTest, FloatContainerStacking) {
   ToggleOverview();
   EXPECT_FALSE(IsFloatContainerBelowActiveDesk());
   WaitForOverviewExitAnimation();
+  // Wait for the occlusion tracker to be unpaused after overview exit.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(IsFloatContainerNormalStacked());
 
   // Start overview but exit before the animation is complete. Verify the float

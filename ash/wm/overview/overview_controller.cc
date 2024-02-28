@@ -21,7 +21,6 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -116,7 +115,8 @@ OverviewController::ScopedOcclusionPauser::ScopedOcclusionPauser(
 }
 
 OverviewController::OverviewController()
-    : occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
+    : occlusion_pause_duration_for_start_(kOcclusionPauseDurationForStart),
+      occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
       delayed_animation_task_delay_(kTransition),
       // Currently, lacros windows do not have a snapshot while they are
       // evicted.
@@ -324,7 +324,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   // Pause raster scale updates while the overview is being toggled. This is to
   // handle the case where a mirror view is deleted then recreated when
   // cancelling an overview exit animation, for example.
-  ScopedPauseRasterScaleUpdates scoped_pause;
+  aura::WindowOcclusionTracker::ScopedPause scoped_pause_occlusion;
+  auto scoped_pause_raster =
+      std::make_optional<ScopedPauseRasterScaleUpdates>();
 
   // Hide the virtual keyboard as it obstructs the overview mode.
   // Don't need to hide if it's the a11y keyboard, as overview mode
@@ -500,7 +502,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // (i.e. they have a snapshot), suspend occlusion tracker until the enter
     // animation is complete.
     if (windows_have_snapshot_) {
-      enter_pauser_ = PauseOcclusionTracker(kOcclusionPauseDurationForStart);
+      enter_pauser_ =
+          PauseOcclusionTracker(occlusion_pause_duration_for_start_);
     }
 
     overview_session_ = std::make_unique<OverviewSession>(this);
@@ -535,6 +538,15 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       UMA_HISTOGRAM_LONG_TIMES("Ash.Overview.TimeBetweenUse",
                                base::Time::Now() - last_overview_session_time_);
     }
+  }
+
+  // Let immediate raster scale updates take effect. If we are pausing the
+  // occlusion tracker, defer any additional raster scale updates until after
+  // occlusion pausing is done to ensure raster scale updates come after
+  // occlusion updates on exit.
+  scoped_pause_raster.reset();
+  if (occlusion_tracker_pauser_) {
+    raster_scale_pauser_.emplace();
   }
 }
 
@@ -616,6 +628,7 @@ void OverviewController::ResetPauser() {
   CHECK_EQ(pause_count_, 0);
   if (!overview_session_) {
     occlusion_tracker_pauser_.reset();
+    raster_scale_pauser_.reset();
     return;
   }
 
@@ -623,6 +636,7 @@ void OverviewController::ResetPauser() {
   const bool ignore_activations = overview_session_->ignore_activations();
   overview_session_->set_ignore_activations(true);
   occlusion_tracker_pauser_.reset();
+  raster_scale_pauser_.reset();
   overview_session_->set_ignore_activations(ignore_activations);
 }
 

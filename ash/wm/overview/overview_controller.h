@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
+#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -145,6 +146,10 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
     return is_continuous_scroll_in_progress_;
   }
 
+  void set_occlusion_pause_duration_for_start_for_test(
+      base::TimeDelta duration) {
+    occlusion_pause_duration_for_start_ = duration;
+  }
   void set_occlusion_pause_duration_for_end_for_test(base::TimeDelta duration) {
     occlusion_pause_duration_for_end_ = duration;
   }
@@ -213,10 +218,15 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
       occlusion_tracker_pauser_;
   base::CancelableOnceClosure reset_pauser_task_;
 
+  // In order to guarantee relative ordering between occlusion updates and
+  // raster scale updates, we need to pause raster scale updates sometimes.
+  std::optional<ScopedPauseRasterScaleUpdates> raster_scale_pauser_;
+
   std::unique_ptr<OverviewSession> overview_session_;
 
   base::Time last_overview_session_time_;
 
+  base::TimeDelta occlusion_pause_duration_for_start_;
   base::TimeDelta occlusion_pause_duration_for_end_;
 
   // App dragging enters overview right away. This task is used to delay the
