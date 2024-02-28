@@ -7,10 +7,7 @@ package org.chromium.base;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Environment;
-import android.os.StatFs;
 import android.os.StrictMode;
-import android.util.Log;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -28,17 +25,10 @@ import java.util.regex.Pattern;
 public class SysUtils {
     // A device reporting strictly more total memory in megabytes cannot be considered 'low-end'.
     private static final int LOW_MEMORY_DEVICE_THRESHOLD_MB = 1024;
-    private static final int BYTES_PER_GIGABYTE = 1024 * 1024 * 1024;
-
-    // A device reporting more disk capacity in gigabytes than this is considered high end.
-    private static final long HIGH_END_DEVICE_DISK_CAPACITY_GB = 24;
-
     private static final String TAG = "SysUtils";
 
     private static Boolean sLowEndDevice;
     private static Integer sAmountOfPhysicalMemoryKB;
-
-    private static Boolean sHighEndDiskDevice;
 
     private SysUtils() {}
 
@@ -63,42 +53,29 @@ public class SysUtils {
         Pattern pattern = Pattern.compile("^MemTotal:\\s+([0-9]+) kB$");
         // Synchronously reading files in /proc in the UI thread is safe.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-        try {
-            FileReader fileReader = new FileReader("/proc/meminfo");
-            try {
-                BufferedReader reader = new BufferedReader(fileReader);
-                try {
-                    String line;
-                    for (; ; ) {
-                        line = reader.readLine();
-                        if (line == null) {
-                            Log.w(TAG, "/proc/meminfo lacks a MemTotal entry?");
-                            break;
-                        }
-                        Matcher m = pattern.matcher(line);
-                        if (!m.find()) continue;
-
-                        int totalMemoryKB = Integer.parseInt(m.group(1));
-                        if (totalMemoryKB <= 1024) {
-                            Log.w(TAG, "Invalid /proc/meminfo total size in kB: " + m.group(1));
-                            break;
-                        }
-
-                        return totalMemoryKB;
+        try (FileReader fileReader = new FileReader("/proc/meminfo")) {
+            try (BufferedReader reader = new BufferedReader(fileReader)) {
+                for (; ; ) {
+                    String line = reader.readLine();
+                    if (line == null) {
+                        Log.w(TAG, "/proc/meminfo lacks a MemTotal entry?");
+                        break;
                     }
-
-                } finally {
-                    reader.close();
+                    Matcher m = pattern.matcher(line);
+                    if (!m.find()) continue;
+                    int totalMemoryKB = Integer.parseInt(m.group(1));
+                    if (totalMemoryKB <= 1024) {
+                        Log.w(TAG, "Invalid /proc/meminfo total size in kB: " + m.group(1));
+                        break;
+                    }
+                    return totalMemoryKB;
                 }
-            } finally {
-                fileReader.close();
             }
         } catch (Exception e) {
             Log.w(TAG, "Cannot get total physical size from /proc/meminfo", e);
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
-
         return 0;
     }
 
@@ -177,28 +154,6 @@ public class SysUtils {
      */
     public static void logPageFaultCountToTracing() {
         SysUtilsJni.get().logPageFaultCountToTracing();
-    }
-
-    /**
-     * @return Whether or not this device should be considered a high end device from a disk
-     *         capacity point of view.
-     */
-    public static boolean isHighEndDiskDevice() {
-        if (sHighEndDiskDevice == null) {
-            sHighEndDiskDevice = detectHighEndDiskDevice();
-        }
-        return sHighEndDiskDevice;
-    }
-
-    private static boolean detectHighEndDiskDevice() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            StatFs dataStats = new StatFs(Environment.getDataDirectory().getAbsolutePath());
-            long totalGBytes = dataStats.getTotalBytes() / BYTES_PER_GIGABYTE;
-            return totalGBytes >= HIGH_END_DEVICE_DISK_CAPACITY_GB;
-        } catch (IllegalArgumentException e) {
-            Log.v(TAG, "Cannot get disk data capacity", e);
-        }
-        return false;
     }
 
     @NativeMethods
