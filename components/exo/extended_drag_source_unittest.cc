@@ -792,4 +792,85 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   EXPECT_EQ(gfx::Size(400, 200), drop_bounds.size());
 }
 
+// Regression test for crbug.com/40946538. Ensures Exo is able to handle
+// arbitrary ordering of asynchronous system mouse events and exo client drag
+// requests.
+TEST_F(ExtendedDragSourceTest, HandlesMouseMoveBeforeExtendedDragStart) {
+  UpdateDisplay("800x600,800x600");
+  const auto* screen = display::Screen::GetScreen();
+  ASSERT_EQ(2u, screen->GetAllDisplays().size());
+
+  // Create and map a toplevel shell surface at position 100, 100 on the second
+  // display.
+  constexpr gfx::Rect kOriginalWindowBounds(900, 100, 200, 200);
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder(kOriginalWindowBounds.size())
+          .SetOrigin(kOriginalWindowBounds.origin())
+          .BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+  aura::Window* shell_window = shell_surface->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(screen->GetDisplayNearestWindow(shell_window).id(),
+            screen->GetAllDisplays()[1].id());
+
+  // Dragging a window without any size changes will emit origin change
+  // server events.
+  gfx::Point client_window_origin;
+  shell_surface->set_origin_change_callback(base::BindLambdaForTesting(
+      [&](const gfx::Point& point) { client_window_origin = point; }));
+
+  // Move the mouse to the intended drag target over the surface.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo({910, 110});
+  generator->PressLeftButton();
+
+  // Initiate the drag and drop session from Ash's drag drop controller.
+  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  data_device_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+                          ui::mojom::DragEventSource::kMouse);
+
+  // Simulate a window drag along the x axis.
+  constexpr int kXTargetMovement = 300;
+  constexpr int kXDragStep = 30;
+  int x_movement = 0;
+
+  base::RunLoop loop;
+  drag_drop_controller_->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        if (x_movement == kXTargetMovement) {
+          // Assert the correct initial initial location in patent-coordinates
+          // was latched for the drag.
+          const auto* window_state = ash::WindowState::Get(shell_window);
+          EXPECT_EQ(gfx::PointF(110, 110),
+                    window_state->drag_details()->initial_location_in_parent);
+
+          // End the drag once we have reached the target position.
+          generator->ReleaseLeftButton();
+        } else {
+          EXPECT_LT(x_movement, kXTargetMovement);
+          generator->MoveMouseBy(kXDragStep, 0);
+          x_movement += kXDragStep;
+
+          // The drag should be in a pending state until the server receives the
+          // extended drag source drag request. Simulate this receipt of this
+          // request after the first mouse move event has been processed by the
+          // drag source.
+          const auto* toplevel_handler =
+              ash::Shell::Get()->toplevel_window_event_handler();
+          if (!toplevel_handler->is_drag_in_progress()) {
+            extended_drag_source_->Drag(surface, gfx::Vector2d(10, 10));
+          }
+          EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
+        }
+      }),
+      loop.QuitClosure());
+  loop.Run();
+
+  // Assert that the window's size is unchanged and clients have been correctly
+  // notified of the change in window position.
+  EXPECT_EQ(kOriginalWindowBounds.size(),
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+  EXPECT_EQ(kOriginalWindowBounds.origin() + gfx::Vector2d(kXTargetMovement, 0),
+            client_window_origin);
+}
+
 }  // namespace exo
