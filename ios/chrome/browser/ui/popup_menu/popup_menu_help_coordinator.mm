@@ -24,8 +24,10 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
+#import "ios/chrome/browser/ui/bubble/bubble_dismissal_reason_type.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
@@ -209,7 +211,18 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                                                        view:menu.view
                                                 anchorPoint:anchorPoint];
   [self.overflowMenuBubblePresenter setArrowHidden:YES animated:NO];
+
+  OverflowMenuAction* editActionsAction = [self.actionProvider
+      actionForActionType:overflow_menu::ActionType::EditActions];
+  editActionsAction.highlighted = YES;
+  editActionsAction.displayNewLabelIcon = YES;
+
   return YES;
+}
+
+- (void)scrollToEditActionsButton {
+  self.uiConfiguration.scrollToAction = [self.actionProvider
+      actionForActionType:overflow_menu::ActionType::EditActions];
 }
 
 #pragma mark - Popup Menu Button Bubble/IPH methods
@@ -385,6 +398,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   CallbackWithIPHDismissalReasonType dismissalCallback = ^(
       IPHDismissalReasonType IPHDismissalReasonType,
       feature_engagement::Tracker::SnoozeAction snoozeAction) {
+    if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedIPH) {
+      [self scrollToEditActionsButton];
+    }
     [weakSelf
         overflowMenuCustomizationIPHDidDismissWithSnoozeAction:snoozeAction];
   };

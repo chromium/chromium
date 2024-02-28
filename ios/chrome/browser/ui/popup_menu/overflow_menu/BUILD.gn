@@ -14,6 +14,7 @@ source_set("overflow_menu_constants") {
 
 source_set("overflow_menu") {
   sources = [
+    "overflow_menu_action_provider.h",
     "overflow_menu_mediator.h",
     "overflow_menu_mediator.mm",
     "overflow_menu_metrics.h",

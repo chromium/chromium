@@ -355,6 +355,7 @@ using base::UserMetricsAction;
 
     _overflowMenuOrderer.model = _overflowMenuModel;
     mediator.model = _overflowMenuModel;
+    self.popupMenuHelpCoordinator.actionProvider = mediator;
 
     self.overflowMenuMediator = mediator;
 

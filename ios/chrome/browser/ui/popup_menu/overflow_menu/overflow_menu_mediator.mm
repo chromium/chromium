@@ -149,7 +149,6 @@ bool IsBookmarked(const GURL& url,
                                     CRWWebStateObserver,
                                     FollowMenuUpdater,
                                     IOSLanguageDetectionTabHelperObserving,
-                                    OverflowMenuActionProvider,
                                     OverflowMenuDestinationProvider,
                                     OverlayPresenterObserving,
                                     PrefObserverDelegate,
@@ -664,6 +663,7 @@ bool IsBookmarked(const GURL& url,
                                  handler:^{
                                    [weakSelf beginCustomization];
                                  }];
+  self.editActionsAction.automaticallyUnhighlight = NO;
   self.editActionsAction.useButtonStyling = YES;
 
   // The app actions vary based on page state, so they are set in
@@ -2113,6 +2113,9 @@ bool IsBookmarked(const GURL& url,
 
 // Begins the action edit flow.
 - (void)beginCustomization {
+  // Clear the new badge if it's active.
+  self.editActionsAction.displayNewLabelIcon = NO;
+  self.editActionsAction.highlighted = NO;
   [self.overflowMenuCustomizationHandler showMenuCustomization];
 }
 

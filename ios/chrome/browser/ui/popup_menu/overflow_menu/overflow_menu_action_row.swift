@@ -58,12 +58,15 @@ struct OverflowMenuActionRow: View {
     button
       .listRowBackground(background)
       .onChange(of: action.highlighted) { _ in
+        guard action.automaticallyUnhighlight else {
+          return
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
           action.highlighted = false
         }
       }
       .onAppear {
-        if action.highlighted {
+        if action.highlighted && action.automaticallyUnhighlight {
           DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
             action.highlighted = false
           }

@@ -16,6 +16,10 @@ import Combine
   /// Whether the action should be highlighted in the UI.
   @Published public var highlighted = false
 
+  /// Whether or not the row should automatically unhighlight itself when it
+  /// appears highlighted.
+  @Published public var automaticallyUnhighlight = true
+
   /// An optional subtitle to be displayed under the main title.
   @Published public var subtitle: String? = nil
 

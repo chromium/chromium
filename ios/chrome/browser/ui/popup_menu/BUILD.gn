@@ -98,6 +98,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/ui/browser_container",
     "//ios/chrome/browser/ui/browser_container:ui",
     "//ios/chrome/browser/ui/bubble",
+    "//ios/chrome/browser/ui/bubble:bubble_view",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/ntp/metrics",
