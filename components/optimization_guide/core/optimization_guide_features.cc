@@ -408,22 +408,18 @@ bool IsModelQualityLoggingEnabledForFeature(
     return false;
   }
 
+  // Disable logging for test features.
   if (feature_name ==
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
+          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED ||
+      feature_name ==
+          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
     return false;
   }
 
   std::string param_name =
       base::ToLowerASCII(proto::ModelExecutionFeature_Name(feature_name));
-  bool default_value = true;
-
-  // Disable logging for test feature.
-  if (feature_name ==
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
-    default_value = false;
-  }
   return GetFieldTrialParamByFeatureAsBool(kModelQualityLogging, param_name,
-                                           default_value);
+                                           true);
 }
 
 bool IsRemoteFetchingEnabled() {

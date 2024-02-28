@@ -165,6 +165,10 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (!ShouldCheckSettingForFeature(feature)) {
+    return false;
+  }
+
   ScopedFeatureCurrentlyEnabledHistogramRecorder metrics_recorder;
   bool is_enabled = GetPrefState(feature) == prefs::FeatureOptInState::kEnabled;
   metrics_recorder.SetResult(
@@ -190,7 +194,6 @@ prefs::FeatureOptInState ModelExecutionFeaturesController::GetPrefState(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!ShouldCheckSettingForFeature(feature)) {
-    NOTREACHED();
     return prefs::FeatureOptInState::kNotInitialized;
   }
 

@@ -91,6 +91,8 @@ TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
       proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
       proto::MODEL_EXECUTION_FEATURE_TEST));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
 }
 
 TEST(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {

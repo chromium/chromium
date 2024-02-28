@@ -27,7 +27,6 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
-#include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -415,6 +414,14 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
         ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
   }
 };
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
+                       ShouldFeatureBeCurrentlyAllowedForLoggingTestFeatures) {
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
+}
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionDisabledInIncognito) {
