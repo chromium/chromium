@@ -7,7 +7,6 @@ package org.chromium.base;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.StrictMode;
@@ -28,8 +27,7 @@ import java.util.regex.Pattern;
 @JNINamespace("base::android")
 public class SysUtils {
     // A device reporting strictly more total memory in megabytes cannot be considered 'low-end'.
-    private static final int ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB = 512;
-    private static final int ANDROID_O_LOW_MEMORY_DEVICE_THRESHOLD_MB = 1024;
+    private static final int LOW_MEMORY_DEVICE_THRESHOLD_MB = 1024;
     private static final int BYTES_PER_GIGABYTE = 1024 * 1024 * 1024;
 
     // A device reporting more disk capacity in gigabytes than this is considered high end.
@@ -81,7 +79,6 @@ public class SysUtils {
                         if (!m.find()) continue;
 
                         int totalMemoryKB = Integer.parseInt(m.group(1));
-                        // Sanity check.
                         if (totalMemoryKB <= 1024) {
                             Log.w(TAG, "Invalid /proc/meminfo total size in kB: " + m.group(1));
                             break;
@@ -114,7 +111,7 @@ public class SysUtils {
         if (sLowEndDevice == null || BuildConfig.IS_FOR_TEST) {
             sLowEndDevice = detectLowEndDevice();
         }
-        return sLowEndDevice.booleanValue();
+        return sLowEndDevice;
     }
 
     /**
@@ -125,7 +122,7 @@ public class SysUtils {
         if (sAmountOfPhysicalMemoryKB == null) {
             sAmountOfPhysicalMemoryKB = detectAmountOfPhysicalMemoryKB();
         }
-        return sAmountOfPhysicalMemoryKB.intValue();
+        return sAmountOfPhysicalMemoryKB;
     }
 
     /**
@@ -164,13 +161,11 @@ public class SysUtils {
 
         // If this logic changes, update the comments above base::SysUtils::IsLowEndDevice.
         int physicalMemoryKb = amountOfPhysicalMemoryKB();
-        boolean isLowEnd = true;
+        boolean isLowEnd;
         if (physicalMemoryKb <= 0) {
             isLowEnd = false;
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            isLowEnd = physicalMemoryKb / 1024 <= ANDROID_O_LOW_MEMORY_DEVICE_THRESHOLD_MB;
         } else {
-            isLowEnd = physicalMemoryKb / 1024 <= ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB;
+            isLowEnd = physicalMemoryKb / 1024 <= LOW_MEMORY_DEVICE_THRESHOLD_MB;
         }
 
         return isLowEnd;
@@ -192,7 +187,7 @@ public class SysUtils {
         if (sHighEndDiskDevice == null) {
             sHighEndDiskDevice = detectHighEndDiskDevice();
         }
-        return sHighEndDiskDevice.booleanValue();
+        return sHighEndDiskDevice;
     }
 
     private static boolean detectHighEndDiskDevice() {
@@ -204,14 +199,6 @@ public class SysUtils {
             Log.v(TAG, "Cannot get disk data capacity", e);
         }
         return false;
-    }
-
-    /**
-     * @return Whether this device is running Android Go. This is assumed when we're running Android
-     * O or later and we're on a low-end device.
-     */
-    public static boolean isAndroidGo() {
-        return isLowEndDevice() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 
     @NativeMethods

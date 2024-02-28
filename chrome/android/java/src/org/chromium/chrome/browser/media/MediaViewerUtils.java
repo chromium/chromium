@@ -263,12 +263,12 @@ public class MediaViewerUtils {
 
     private static boolean shouldEnableMediaLauncherActivity() {
         return sIsMediaLauncherActivityForceEnabledForTest
-                || SysUtils.isAndroidGo()
+                || SysUtils.isLowEndDevice()
                 || isEnterpriseManaged();
     }
 
     private static boolean shouldEnableAudioLauncherActivity() {
-        return shouldEnableMediaLauncherActivity() && !SysUtils.isAndroidGo();
+        return shouldEnableMediaLauncherActivity() && !SysUtils.isLowEndDevice();
     }
 
     private static boolean isEnterpriseManaged() {
