@@ -113,7 +113,7 @@
 <template is="dom-if" if="[[shouldShowApnSelectionDialog_]]" restamp>
   <apn-selection-dialog
       guid="[[guid]]"
-      apn-list="[[managedCellularProperties.apnList]]"
+      apn-list="[[getDatabaseApns_(managedCellularProperties)]]"
       on-close="onApnSelectionDialogClose_">
   </apn-selection-dialog>
 </template>

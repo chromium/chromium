@@ -6,14 +6,16 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {ApnProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class ApnSelectionDialog extends I18nMixin
+export class ApnSelectionDialogListItem extends I18nMixin
 (PolymerElement) {
-apnList:
-  ApnProperties[];
+apn:
+  ApnProperties;
+selected:
+  boolean;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'apn-selection-dialog': ApnSelectionDialog;
+    'apn-selection-dialog-list-item': ApnSelectionDialogListItem;
   }
 }

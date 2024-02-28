@@ -326,6 +326,18 @@ export class ApnList extends ApnListBase {
   getCustomApns_() {
     return this.managedCellularProperties.customApnList ?? [];
   }
+
+  /**
+   * @returns {Array<ApnProperties>}
+   * @private
+   */
+  getDatabaseApns_() {
+    if (!this.managedCellularProperties ||
+        !this.managedCellularProperties.apnList) {
+      return [];
+    }
+    return this.managedCellularProperties.apnList.activeValue;
+  }
 }
 
 customElements.define(ApnList.is, ApnList);

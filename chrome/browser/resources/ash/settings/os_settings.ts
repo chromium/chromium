@@ -109,6 +109,7 @@ export {CrPolicyIndicatorElement} from 'chrome://resources/ash/common/cr_element
 export {CrTooltipIconElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 export {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_dialog.js';
 export {ApnSelectionDialog} from 'chrome://resources/ash/common/network/apn_selection_dialog.js';
+export {ApnSelectionDialogListItem} from 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
 export {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';

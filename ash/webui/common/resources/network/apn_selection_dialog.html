@@ -1,6 +1,16 @@
-<style include="cr-shared-style md-select">
+<style include="cr-shared-style md-select cros-color-overrides">
   cr-dialog {
     --cr-dialog-width: 416px;
+  }
+
+  /* Override the styling used for the focused item */
+  [scrollable] iron-list > :not(.no-outline):focus {
+    background-color: transparent !important;
+  }
+
+  #container {
+    margin-bottom: 32px;
+    margin-top: 20px;
   }
 </style>
 <!-- TODO(b/325487350): Use localized strings. -->
@@ -13,7 +23,21 @@
     <div>
       Invalid APNs could cause your mobile connection to be disabled. Only set APNs provided by your mobile provider or administrator.
     </div>
-    <!-- TODO(b/325487350): Implement list UI. -->
+    <div id="container" class="layout vertical flex" scrollable>
+      <iron-list items="[[apnList]]"
+          selection-enabled
+          selected-item="{{selectedApn_}}"
+          preserve-focus
+          role="listbox">
+        <template>
+          <apn-selection-dialog-list-item apn="[[item]]"
+              selected="[[isApnSelected_(item, selectedApn_)]]"
+              tabindex="0"
+              role="option">
+          </apn-selection-dialog-list-item>
+        </template>
+      </iron-list>
+    </div>
   </div>
   <!-- TODO(b/325487350): Add a11y. -->
   <div slot="button-container">

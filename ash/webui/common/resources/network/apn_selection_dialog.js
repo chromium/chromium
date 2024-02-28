@@ -10,6 +10,8 @@
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {ApnProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -37,12 +39,15 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
 
   static get properties() {
     return {
-      guid: {type: String},
-
-      /** @type {Array<ApnProperties>?} */
+      /** @type {Array<ApnProperties>} */
       apnList: {
         type: Array,
         value: [],
+      },
+
+      /** @type {ApnProperties} */
+      selectedApn_: {
+        type: Object,
       },
     };
   }
@@ -65,6 +70,15 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
   onActionButtonClicked_(event) {
     // TODO(b/325487350): Implement.
     this.$.apnSelectionDialog.close();
+  }
+
+  /**
+   * @param {!ApnProperties} apn
+   * @return {boolean}
+   * @private
+   */
+  isApnSelected_(apn) {
+    return apn === this.selectedApn_;
   }
 }
 

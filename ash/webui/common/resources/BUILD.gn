@@ -58,6 +58,7 @@ web_component_files = [
   "network/sim_lock_dialogs.js",
   "network/apn_detail_dialog.js",
   "network/apn_selection_dialog.js",
+  "network/apn_selection_dialog_list_item.js",
   "smb_shares/add_smb_share_dialog.js",
 ]
 
@@ -473,6 +474,7 @@ checked_in_dts_files = [
 
   "network/apn_detail_dialog.d.ts",
   "network/apn_selection_dialog.d.ts",
+  "network/apn_selection_dialog_list_item.d.ts",
   "network/apn_list.d.ts",
   "network/apn_list_item.d.ts",
   "network/cr_policy_network_indicator_mojo.d.ts",

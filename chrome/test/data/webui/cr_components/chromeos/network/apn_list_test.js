@@ -506,4 +506,6 @@ suite('ApnListTest', function() {
     apnList.portalState = PortalState.kNoInternet;
     assertEquals(PortalState.kNoInternet, apns[0].portalState);
   });
+
+  // TODO(b/325487350): Test that <apn-selection-dialog> has correct apnList.
 });
