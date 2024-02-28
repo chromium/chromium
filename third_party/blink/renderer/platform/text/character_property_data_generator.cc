@@ -16,6 +16,8 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -145,7 +147,9 @@ class CharacterPropertyValues {
   std::unique_ptr<CharacterProperty[]> values_;
 };
 
-static void GenerateUTrieSerialized(FILE* fp, int32_t size, uint8_t* array) {
+static void GenerateUTrieSerialized(FILE* fp,
+                                    int32_t size,
+                                    base::span<uint8_t> array) {
   fprintf(fp,
           "#include <cstdint>\n\n"
           "namespace blink {\n\n"
@@ -204,15 +208,15 @@ static void GenerateCharacterPropertyData(FILE* fp) {
       ucptrie_toBinary(immutable_trie.get(), nullptr, 0, &error);
   error = U_ZERO_ERROR;
 
-  std::unique_ptr<uint8_t[]> serialized(new uint8_t[serialized_size]);
+  auto serialized = base::HeapArray<uint8_t>::Uninit(serialized_size);
   // Ensure 32-bit alignment, as ICU requires that to the ucptrie_toBinary call.
-  CHECK(!(reinterpret_cast<intptr_t>(serialized.get()) % 4));
+  CHECK(!(reinterpret_cast<intptr_t>(serialized.data()) % 4));
 
-  serialized_size = ucptrie_toBinary(immutable_trie.get(), serialized.get(),
-                                     serialized_size, &error);
+  serialized_size = ucptrie_toBinary(immutable_trie.get(), serialized.data(),
+                                     serialized.size(), &error);
   assert(error == U_ZERO_ERROR);
 
-  GenerateUTrieSerialized(fp, serialized_size, serialized.get());
+  GenerateUTrieSerialized(fp, serialized_size, serialized);
 }
 
 }  // namespace
