@@ -117,6 +117,14 @@ source_set("grid_utils") {
   ]
 }
 
+source_set("group_tab_info") {
+  sources = [
+    "group_tab_info.h",
+    "group_tab_info.mm",
+  ]
+  deps = []
+}
+
 source_set("grid_ui") {
   sources = [
     "base_grid_view_controller+Testing.h",
@@ -143,8 +151,6 @@ source_set("grid_ui") {
     "group_grid_cell.mm",
     "group_grid_configurable_view.h",
     "group_grid_configurable_view.mm",
-    "group_tab_info.h",
-    "group_tab_info.mm",
     "group_tab_view.h",
     "group_tab_view.mm",
     "legacy_grid_layout.h",
@@ -156,6 +162,7 @@ source_set("grid_ui") {
     ":grid_mediator_item_provider",
     ":grid_ui_constants",
     ":grid_view_controller_mutator",
+    ":group_tab_info",
     "resources:tab_grid_incognito_tabs_empty",
     "resources:tab_grid_regular_tabs_empty",
     "//base",
