@@ -13,10 +13,13 @@ import '//resources/ash/common/cr_elements/localized_link/localized_link.js';
 import './base_page.js';
 import './profile_discovery_list_item.js';
 
+import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_page.html.js';
 
@@ -40,11 +43,28 @@ export class ProfileDiscoveryListPageElement extends
         type: Object,
         notify: true,
       },
+      /**
+       * If true, device is locked to specific cellular operator.
+       */
+      isDeviceCarrierLocked_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isCellularCarrierLockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+        },
+      },
     };
   }
 
   pendingProfileProperties: ESimProfileProperties[];
   selectedProfileProperties: ESimProfileProperties|null;
+  private isDeviceCarrierLocked_: boolean;
+  private isCellularCarrierLockEnabled_: boolean;
 
   attemptToFocusOnFirstProfile(): boolean {
     if (!this.pendingProfileProperties ||
@@ -64,6 +84,29 @@ export class ProfileDiscoveryListPageElement extends
   private isProfilePropertiesSelected_(profileProperties:
                                            ESimProfileProperties): boolean {
     return this.selectedProfileProperties === profileProperties;
+  }
+
+  constructor() {
+    super();
+
+    if (!this.isCellularCarrierLockEnabled_) {
+      return;
+    }
+
+    const networkConfig =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+    networkConfig!.getDeviceStateList().then(response => {
+      const devices = response.result;
+      const deviceState =
+          devices.find(device => device.type === NetworkType.kCellular) || null;
+      if (deviceState) {
+        this.isDeviceCarrierLocked_ = deviceState.isCarrierLocked;
+      }
+    });
+  }
+
+  private shouldShowCarrierLockWarning_(): boolean {
+    return this.isCellularCarrierLockEnabled_ && this.isDeviceCarrierLocked_;
   }
 
   private enterManuallyClicked_(e: CustomEvent): void {

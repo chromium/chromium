@@ -35,6 +35,7 @@ ts_library("build_ts") {
     "cellular_setup/cellular_setup_test.ts",
     "cellular_setup/confirmation_code_page_legacy_test.ts",
     "cellular_setup/confirmation_code_page_test.ts",
+    "cellular_setup/profile_discovery_list_page_test.ts",
     "cellular_setup/esim_flow_ui_legacy_test.ts",
     "cellular_setup/esim_flow_ui_test.ts",
     "cellular_setup/fake_barcode_detector.ts",
