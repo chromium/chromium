@@ -63,7 +63,6 @@ void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
        parent = parent->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(parent)) {
       form->InvalidateListedElementsIncludingShadowTrees();
-      return;
     }
   }
 }

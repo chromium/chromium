@@ -348,4 +348,61 @@ TEST_F(HTMLFormElementTest, ListedElementsInNestedForms) {
                           GetListedElement("i3", shadow_root)));
 }
 
+// Tests that dynamic addition and removal of an element properly invalidates
+// the caches of all ancestors.
+TEST_F(HTMLFormElementTest, ListedElementsInDeepNestedForms) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillIncludeFormElementsInShadowDom};
+
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  body->setHTMLUnsafe(R"HTML(
+    <form id=f1>
+      <div id=shadowhost1>
+        <template shadowrootmode=open>
+          <form id=f2>
+            <input id=i1>
+            <div id=shadowhost2>
+              <template shadowrootmode=open>
+                <div id=d1>
+                  <input id=i2>
+                </div>
+              </template>
+            </div>
+          </form>
+        </template>
+      </div>
+    </form>
+  )HTML");
+
+  ShadowRoot* shadow_root1 = GetElementById("shadowhost1")->GetShadowRoot();
+  ASSERT_NE(shadow_root1, nullptr);
+  ShadowRoot* shadow_root2 =
+      shadow_root1->getElementById(AtomicString("shadowhost2"))
+          ->GetShadowRoot();
+  ASSERT_NE(shadow_root2, nullptr);
+  HTMLFormElement* f1 = GetFormElement("f1");
+  HTMLFormElement* f2 = GetFormElement("f2", shadow_root1);
+  ASSERT_NE(f1, nullptr);
+  ASSERT_NE(f2, nullptr);
+  Element* d1 = shadow_root2->getElementById(AtomicString("d1"));
+  ASSERT_NE(d1, nullptr);
+
+  EXPECT_THAT(f1->ListedElements(), IsEmpty());
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(GetListedElement("i1", shadow_root1),
+                          GetListedElement("i2", shadow_root2)));
+
+  // Test that cache invalidation happens for all ancestor forms.
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  d1->AppendChild(input);
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(GetListedElement("i1", shadow_root1),
+                          GetListedElement("i2", shadow_root2), input));
+  input->remove();
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(GetListedElement("i1", shadow_root1),
+                          GetListedElement("i2", shadow_root2)));
+}
+
 }  // namespace blink
