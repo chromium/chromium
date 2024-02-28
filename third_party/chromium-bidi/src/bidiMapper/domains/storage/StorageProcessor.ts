@@ -42,6 +42,46 @@ export class StorageProcessor {
     this.#logger = logger;
   }
 
+  async deleteCookies(
+    params: Storage.DeleteCookiesParameters
+  ): Promise<Storage.DeleteCookiesResult> {
+    const partitionKey = this.#expandStoragePartitionSpec(params.partition);
+
+    const cdpResponse = await this.#browserCdpClient.sendCommand(
+      'Storage.getCookies',
+      {
+        browserContextId: partitionKey.userContext,
+      }
+    );
+
+    const cdpCookiesToDelete = cdpResponse.cookies
+      .filter(
+        // CDP's partition key is the source origin. If the request specifies the
+        // `sourceOrigin` partition key, only cookies with the requested source origin
+        // are returned.
+        (c) =>
+          partitionKey.sourceOrigin === undefined ||
+          c.partitionKey === partitionKey.sourceOrigin
+      )
+      .filter((cdpCookie) => {
+        const bidiCookie = cdpToBiDiCookie(cdpCookie);
+        return this.#matchCookie(bidiCookie, params.filter);
+      })
+      .map((cookie) => ({
+        ...cookie,
+        // Set expiry to pass date to delete the cookie.
+        expires: 1,
+      }));
+
+    await this.#browserCdpClient.sendCommand('Storage.setCookies', {
+      cookies: cdpCookiesToDelete,
+      browserContextId: partitionKey.userContext,
+    });
+    return {
+      partitionKey,
+    };
+  }
+
   async getCookies(
     params: Storage.GetCookiesParameters
   ): Promise<Storage.GetCookiesResult> {

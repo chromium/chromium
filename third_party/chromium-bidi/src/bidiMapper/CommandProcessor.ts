@@ -338,8 +338,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Storage domain
       // keep-sorted start block=yes
       case 'storage.deleteCookies':
-        throw new UnsupportedOperationException(
-          `${command.method} is not supported yet`
+        return await this.#storageProcessor.deleteCookies(
+          this.#parser.parseDeleteCookiesParams(command.params)
         );
       case 'storage.getCookies':
         return await this.#storageProcessor.getCookies(
