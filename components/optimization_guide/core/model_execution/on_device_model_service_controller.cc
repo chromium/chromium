@@ -168,20 +168,17 @@ OnDeviceModelServiceController::CreateSession(
   model_paths.weights = model_path_->Append(kWeightsFile);
 
   std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
-  if (features::GetOnDeviceModelMustUseSafetyModel()) {
-    if (!safety_model_info_) {
-      logger.set_reason(
-          OnDeviceModelEligibilityReason::kSafetyModelNotAvailable);
-      return nullptr;
-    }
-
+  if (!safety_model_info_ && features::GetOnDeviceModelMustUseSafetyModel()) {
+    logger.set_reason(OnDeviceModelEligibilityReason::kSafetyModelNotAvailable);
+    return nullptr;
+  }
+  if (safety_model_info_) {
     safety_config = GetFeatureTextSafetyConfigForFeature(feature);
-    if (!safety_config) {
+    if (!safety_config && features::GetOnDeviceModelMustUseSafetyModel()) {
       logger.set_reason(
           OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature);
       return nullptr;
     }
-
     model_paths.ts_data =
         *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
             kTsDataFile));
@@ -190,13 +187,13 @@ OnDeviceModelServiceController::CreateSession(
             kTsSpModelFile));
 
     if (!safety_config->allowed_languages().empty()) {
-      if (!language_detection_model_path_) {
+      if (language_detection_model_path_) {
+        model_paths.language_detection_model = *language_detection_model_path_;
+      } else if (features::GetOnDeviceModelMustUseSafetyModel()) {
         logger.set_reason(OnDeviceModelEligibilityReason::
                               kLanguageDetectionModelNotAvailable);
         return nullptr;
       }
-
-      model_paths.language_detection_model = *language_detection_model_path_;
     }
   }
 

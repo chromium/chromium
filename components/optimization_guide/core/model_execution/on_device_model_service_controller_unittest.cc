@@ -1107,7 +1107,64 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "true"}});
+      {{"on_device_must_use_safety_model", "true"},
+       {"on_device_retract_unsafe_content", "false"}});
+
+  proto::TextSafetyModelMetadata model_metadata;
+  auto* safety_config = model_metadata.add_feature_text_safety_configurations();
+  safety_config->set_feature(kFeature);
+  auto* threshold1 = safety_config->add_safety_category_thresholds();
+  threshold1->set_output_index(0);
+  threshold1->set_threshold(0.5);
+  auto* threshold2 = safety_config->add_safety_category_thresholds();
+  threshold2->set_output_index(1);
+  threshold2->set_threshold(0.5);
+  proto::Any any;
+  any.set_type_url(
+      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
+  model_metadata.SerializeToString(any.mutable_value());
+  std::unique_ptr<optimization_guide::ModelInfo> model_info =
+      TestModelInfoBuilder()
+          .SetAdditionalFiles(
+              {temp_dir().Append(kTsDataFile),
+               temp_dir().Append(base::FilePath(kTsSpModelFile))})
+          .SetModelMetadata(any)
+          .Build();
+  test_controller_->MaybeUpdateSafetyModel(*model_info);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                                 &logger_, nullptr);
+  EXPECT_TRUE(session);
+
+  // Score exceeds threshold. Would not pass but not retracting.
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.7, 0.3};
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_FALSE(response_error_);
+
+  // Make sure T&S logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
+  auto ts_log = logged_on_device_model_execution_info.execution_infos(
+      logged_on_device_model_execution_info.execution_infos_size() - 1);
+  EXPECT_TRUE(ts_log.request().has_text_safety_model_request());
+  EXPECT_THAT(ts_log.response().text_safety_model_response().scores(),
+              ElementsAre(0.7, 0.3));
+  EXPECT_TRUE(ts_log.response().text_safety_model_response().is_unsafe());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
+  Initialize();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_must_use_safety_model", "false"},
+       {"on_device_retract_unsafe_content", "false"}});
 
   proto::TextSafetyModelMetadata model_metadata;
   auto* safety_config = model_metadata.add_feature_text_safety_configurations();
