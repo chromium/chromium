@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SwitchCompat;
@@ -29,6 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
 
 /** The view to describe revamped incognito mode. */
@@ -135,8 +137,14 @@ public class RevampedIncognitoDescriptionView extends LinearLayout
      * Populates |element| with |content|.
      */
     private void populateDescriptions(@IdRes int element, @StringRes int content) {
-        TextView view = (TextView) findViewById(element);
-        String text = getContext().getResources().getString(content);
+        TextView view = findViewById(element);
+        SpannableString spannableString = getSpannedBulletText(getContext(), content);
+        view.setText(spannableString);
+    }
+
+    @NonNull
+    static SpannableString getSpannedBulletText(Context context, int content) {
+        String text = context.getResources().getString(content);
 
         // Format the bulletpoints:
         //   - Disambiguate the <li></li> spans for SpanApplier.
@@ -146,19 +154,26 @@ public class RevampedIncognitoDescriptionView extends LinearLayout
         text = text.replaceFirst(" *<li>([^<]*)</li>", "<li2>$1</li2>");
         text = text.replaceFirst(" *<li>([^<]*)</li>\n", "<li3>$1</li3>");
 
+        String error =
+                "Format error. Locale: "
+                        + context.getResources().getConfiguration().getLocales()
+                        + " \nstring: "
+                        + context.getResources().getString(content);
+        assert text.contains("<li1>") : error;
+        assert text.contains("<li2>") : error;
+        assert text.contains("<li3>") : error;
+
         // Remove the <ul></ul> tags which serve no purpose here, including the whitespace around
         // them.
         text = text.replaceAll(" *</?ul>\\n?", "");
 
-        view.setText(
+        SpannableString spannableString =
                 SpanApplier.applySpans(
                         text,
-                        new SpanApplier.SpanInfo(
-                                "<li1>", "</li1>", new ChromeBulletSpan(getContext())),
-                        new SpanApplier.SpanInfo(
-                                "<li2>", "</li2>", new ChromeBulletSpan(getContext())),
-                        new SpanApplier.SpanInfo(
-                                "<li3>", "</li3>", new ChromeBulletSpan(getContext()))));
+                        new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(context)),
+                        new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(context)),
+                        new SpanInfo("<li3>", "</li3>", new ChromeBulletSpan(context)));
+        return spannableString;
     }
 
     /**
