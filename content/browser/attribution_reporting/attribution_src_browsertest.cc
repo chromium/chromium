@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -1520,23 +1519,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
   }
 }
 
-class AttributionSrcPreferredPlatformBrowserTest
-    : public AttributionSrcBrowserTest {
- public:
-  AttributionSrcPreferredPlatformBrowserTest()
-      : AttributionSrcBrowserTest(/*enabled_features=*/{
-            features::kPrivacySandboxAdsAPIsOverride,
-            network::features::kAttributionReportingCrossAppWeb,
-            attribution_reporting::features::
-                kAttributionReportingPreferredPlatform}) {}
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AttributionSrcPreferredPlatformBrowserTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(AttributionSrcPreferredPlatformBrowserTest,
-                       WebAndOsHeaders_Registered) {
+IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
+                       WebAndOsHeadersAndPreferOs_OsRegistered) {
   AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
       AttributionOsLevelManager::ApiState::kEnabled);
 

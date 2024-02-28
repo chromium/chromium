@@ -17,8 +17,4 @@ BASE_FEATURE(kAttributionReportingTriggerContextId,
              "AttributionReportingTriggerContextId",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAttributionReportingPreferredPlatform,
-             "AttributionReportingPreferredPlatform",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace attribution_reporting::features

@@ -15,7 +15,6 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -836,16 +835,6 @@ struct PreferredPlatformTestCase {
 
 const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
     {
-        .feature_enabled = false,
-        .info_header = "preferred-platform=os",
-        .has_web_header = true,
-        .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
-        .expected_web = false,
-        .expected_os = false,
-    },
-    {
-        .feature_enabled = true,
         .info_header = nullptr,
         .has_web_header = true,
         .has_os_header = true,
@@ -952,30 +941,8 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
 };
 
 class AttributionSrcLoaderPreferredPlatformEnabledTest
-    : public AttributionSrcLoaderTest,
-      public ::testing::WithParamInterface<PreferredPlatformTestCase> {
- public:
-  AttributionSrcLoaderPreferredPlatformEnabledTest() {
-    std::vector<base::test::FeatureRef> enabled_features(
-        {network::features::kAttributionReportingCrossAppWeb});
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam().feature_enabled) {
-      enabled_features.emplace_back(attribution_reporting::features::
-                                        kAttributionReportingPreferredPlatform);
-    } else {
-      disabled_features.emplace_back(
-          attribution_reporting::features::
-              kAttributionReportingPreferredPlatform);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-
-    WebRuntimeFeatures::EnableFeatureFromString(
-        /*name=*/"AttributionReportingCrossAppWeb", /*enable=*/true);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+    : public AttributionSrcLoaderCrossAppWebEnabledTest,
+      public ::testing::WithParamInterface<PreferredPlatformTestCase> {};
 
 class AttributionSrcLoaderPreferredPlatformSourceTest
     : public AttributionSrcLoaderPreferredPlatformEnabledTest {};

@@ -19,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
@@ -119,14 +118,6 @@ void LogAuditIssue(ExecutionContext* execution_context,
                                       id_string, invalid_parameter);
 }
 
-bool IsPreferredPlatformEnabled() {
-  return base::FeatureList::IsEnabled(
-             network::features::kAttributionReportingCrossAppWeb) &&
-         base::FeatureList::IsEnabled(
-             attribution_reporting::features::
-                 kAttributionReportingPreferredPlatform);
-}
-
 base::expected<std::optional<attribution_reporting::Registrar>,
                attribution_reporting::PreferredPlatformError>
 GetPreferredPlatform(const HTTPHeaderMap& map,
@@ -197,13 +188,11 @@ struct AttributionSrcLoader::AttributionHeaders {
 
   AttributionHeaders(const HTTPHeaderMap& map,
                      uint64_t request_id,
-                     bool cross_app_web_runtime_enabled)
+                     bool cross_app_web_enabled)
       : web_source(map.Get(http_names::kAttributionReportingRegisterSource)),
         web_trigger(map.Get(http_names::kAttributionReportingRegisterTrigger)),
         request_id(request_id) {
-    if (cross_app_web_runtime_enabled &&
-        base::FeatureList::IsEnabled(
-            network::features::kAttributionReportingCrossAppWeb)) {
+    if (cross_app_web_enabled) {
       os_source = map.Get(http_names::kAttributionReportingRegisterOSSource);
       os_trigger = map.Get(http_names::kAttributionReportingRegisterOSTrigger);
     }
@@ -730,12 +719,14 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   }
 
   const uint64_t request_id = request.InspectorId();
-  const bool cross_app_web_runtime_enabled =
+  const bool cross_app_web_enabled =
       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-          local_frame_->DomWindow());
+          local_frame_->DomWindow()) &&
+      base::FeatureList::IsEnabled(
+          network::features::kAttributionReportingCrossAppWeb);
 
   AttributionHeaders headers(response.HttpHeaderFields(), request_id,
-                             cross_app_web_runtime_enabled);
+                             cross_app_web_enabled);
 
   // Only handle requests which are attempting to invoke the API.
   if (headers.count() == 0) {
@@ -776,7 +767,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   }
 
   std::optional<attribution_reporting::Registrar> preferred_platform;
-  if (cross_app_web_runtime_enabled && IsPreferredPlatformEnabled()) {
+  if (cross_app_web_enabled) {
     auto parsed_preferred_platform = GetPreferredPlatform(
         response.HttpHeaderFields(), local_frame_->DomWindow(), request_id);
     if (parsed_preferred_platform.has_value()) {
@@ -889,11 +880,13 @@ void AttributionSrcLoader::ResourceClient::Finish() {
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     const ResourceResponse& response,
     uint64_t request_id) {
-  const bool cross_app_web_runtime_enabled =
+  const bool cross_app_web_enabled =
       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-          loader_->local_frame_->DomWindow());
+          loader_->local_frame_->DomWindow()) &&
+      base::FeatureList::IsEnabled(
+          network::features::kAttributionReportingCrossAppWeb);
   AttributionHeaders headers(response.HttpHeaderFields(), request_id,
-                             cross_app_web_runtime_enabled);
+                             cross_app_web_enabled);
   if (headers.count() == 0) {
     return;
   }
@@ -906,7 +899,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   }
 
   std::optional<attribution_reporting::Registrar> preferred_platform;
-  if (cross_app_web_runtime_enabled && IsPreferredPlatformEnabled()) {
+  if (cross_app_web_enabled) {
     auto parsed_preferred_platform =
         GetPreferredPlatform(response.HttpHeaderFields(),
                              loader_->local_frame_->DomWindow(), request_id);

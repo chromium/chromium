@@ -17,9 +17,6 @@ BASE_DECLARE_FEATURE(kConversionMeasurement);
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING_FEATURES)
 BASE_DECLARE_FEATURE(kAttributionReportingTriggerContextId);
 
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING_FEATURES)
-BASE_DECLARE_FEATURE(kAttributionReportingPreferredPlatform);
-
 }  // namespace attribution_reporting::features
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_FEATURES_H_

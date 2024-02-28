@@ -35,7 +35,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
@@ -4293,16 +4292,6 @@ struct PreferredPlatformTestCase {
 
 const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
     {
-        .feature_enabled = false,
-        .info_header = "preferred-platform=os",
-        .has_web_header = true,
-        .has_os_header = true,
-        .support = network::mojom::AttributionSupport::kWebAndOs,
-        .expected_web = false,
-        .expected_os = false,
-    },
-    {
-        .feature_enabled = true,
         .info_header = nullptr,
         .has_web_header = true,
         .has_os_header = true,
@@ -4311,7 +4300,6 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .expected_os = false,
     },
     {
-        .feature_enabled = true,
         .info_header = nullptr,
         .has_web_header = true,
         .has_os_header = false,
@@ -4320,7 +4308,6 @@ const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
         .expected_os = false,
     },
     {
-        .feature_enabled = true,
         .info_header = nullptr,
         .has_web_header = false,
         .has_os_header = true,
@@ -4430,23 +4417,11 @@ class AttributionDataHostManagerImplPreferredPlatformEnabledTest
     : public AttributionDataHostManagerImplTest,
       public ::testing::WithParamInterface<PreferredPlatformTestCase> {
  public:
-  AttributionDataHostManagerImplPreferredPlatformEnabledTest() {
-    std::vector<base::test::FeatureRef> enabled_features(
-        {network::features::kAttributionReportingCrossAppWeb});
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam().feature_enabled) {
-      enabled_features.emplace_back(attribution_reporting::features::
-                                        kAttributionReportingPreferredPlatform);
-    } else {
-      disabled_features.emplace_back(
-          attribution_reporting::features::
-              kAttributionReportingPreferredPlatform);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  AttributionDataHostManagerImplPreferredPlatformEnabledTest() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      network::features::kAttributionReportingCrossAppWeb};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -4546,23 +4521,6 @@ class
     AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest
     : public AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       public ::testing::WithParamInterface<PreferredPlatformTestCase> {
- public:
-  AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam().feature_enabled) {
-      enabled_features.emplace_back(attribution_reporting::features::
-                                        kAttributionReportingPreferredPlatform);
-    } else {
-      disabled_features.emplace_back(
-          attribution_reporting::features::
-              kAttributionReportingPreferredPlatform);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

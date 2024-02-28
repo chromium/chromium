@@ -762,13 +762,8 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
         break;
     }
 
-    const bool preferred_platform_enabled =
-        cross_app_web_enabled &&
-        base::FeatureList::IsEnabled(
-            attribution_reporting::features::
-                kAttributionReportingPreferredPlatform);
     return RegistrationDataHeaders(
-        get_header(kAttributionReportingInfoHeader, preferred_platform_enabled),
+        get_header(kAttributionReportingInfoHeader, cross_app_web_enabled),
         std::move(web_header), std::move(os_header), *registration_type);
   }
 
