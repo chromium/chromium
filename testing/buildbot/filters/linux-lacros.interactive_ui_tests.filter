@@ -56,7 +56,6 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/3
 -TabDragging/DetachToBrowserTabDragControllerTest.OffsetForDraggingTab/*
 # The following tests are flaky.
--TabDragging/DetachToBrowserInSeparateDisplayTabDragControllerTest.DragTabToWindowInSeparateDisplay/*
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/2
