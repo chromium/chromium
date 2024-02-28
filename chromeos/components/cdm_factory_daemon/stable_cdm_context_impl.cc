@@ -68,8 +68,8 @@ void StableCdmContextImpl::AllocateSecureBuffer(
     uint32_t size,
     AllocateSecureBufferCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cdm_context_->GetChromeOsCdmContext()->AllocateSecureBuffer(
-      size, std::move(callback));
+  ChromeOsCdmFactory::AllocateSecureBuffer(
+      size, base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void StableCdmContextImpl::ParseEncryptedSliceHeader(
@@ -78,8 +78,9 @@ void StableCdmContextImpl::ParseEncryptedSliceHeader(
     const std::vector<uint8_t>& stream_data,
     ParseEncryptedSliceHeaderCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cdm_context_->GetChromeOsCdmContext()->ParseEncryptedSliceHeader(
-      secure_handle, offset, stream_data, std::move(callback));
+  ChromeOsCdmFactory::ParseEncryptedSliceHeader(
+      secure_handle, offset, stream_data,
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void StableCdmContextImpl::CdmEventCallback(media::CdmContext::Event event) {
