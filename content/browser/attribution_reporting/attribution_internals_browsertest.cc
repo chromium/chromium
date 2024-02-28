@@ -421,6 +421,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     if (!setTitleIfDone()) {
       const obs = new MutationObserver(setTitleIfDone);
       obs.observe(table, {childList: true, subtree: true, characterData: true});
+      obs.observe(regTable, {childList: true, subtree: true, characterData: true});
     }
   )";
   ASSERT_TRUE(ExecJsInWebUI(
