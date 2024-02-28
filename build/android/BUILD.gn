@@ -11,6 +11,10 @@ import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 import("//build_overrides/build.gni")
 
+if (build_with_chromium) {
+  import("//base/allocator/partition_allocator/partition_alloc.gni")
+}
+
 if (enable_java_templates) {
   # Create or update the API versions cache if necessary by running a
   # functionally empty lint task. This prevents racy creation of the
@@ -192,6 +196,9 @@ group("test_runner_device_support") {
     }
     if (is_asan) {
       data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
+    }
+    if (use_full_mte) {
+      data_deps += [ "//tools/android/mte:mte_device_setup" ]
     }
   }
 
