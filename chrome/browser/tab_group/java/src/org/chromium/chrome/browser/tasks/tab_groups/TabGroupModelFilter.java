@@ -9,6 +9,7 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArraySet;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
@@ -1019,6 +1020,20 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
 
         super.didMoveTab(tab, newIndex, curIndex);
+    }
+
+    /** Get all tab group root ids that are associated with tab groups greater than size 1. */
+    public Set<Integer> getAllTabGroupRootIds() {
+        Set<Integer> uniqueTabGroupRootIds = new ArraySet<>();
+        TabList tabList = getTabModel();
+
+        for (int i = 0; i < tabList.getCount(); i++) {
+            Tab tab = tabList.getTabAt(i);
+            if (isTabInTabGroup(tab)) {
+                uniqueTabGroupRootIds.add(tab.getRootId());
+            }
+        }
+        return uniqueTabGroupRootIds;
     }
 
     private boolean isMoveTabOutOfGroup(Tab movedTab) {

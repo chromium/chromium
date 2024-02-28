@@ -61,6 +61,8 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.supplier.UnwrapObservableSupplier;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.UsedByReflection;
@@ -209,6 +211,8 @@ import org.chromium.chrome.browser.tasks.JourneyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
 import org.chromium.chrome.browser.tasks.TasksUma;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
@@ -2300,6 +2304,27 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         mTabModelSelector,
                         this::getSnackbarManager,
                         dialogVisibilitySupplier);
+
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            TabModelUtils.runOnTabStateInitialized(
+                    getTabModelSelectorSupplier().get(),
+                    (tabModelSelectorReturn) -> {
+                        TabGroupColorUtils.assignTabGroupColorsIfApplicable(
+                                (TabGroupModelFilter)
+                                        tabModelSelectorReturn
+                                                .getTabModelFilterProvider()
+                                                .getCurrentTabModelFilter());
+                    });
+        } else {
+            new BackgroundOnlyAsyncTask<Void>() {
+                @Override
+                protected final Void doInBackground() {
+                    // Delete the tab group color SharedPreferences file on a background thread.
+                    TabGroupColorUtils.clearTabGroupColorInfo();
+                    return null;
+                }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
 
         mInactivityTracker =
                 new ChromeInactivityTracker(

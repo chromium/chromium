@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
+import androidx.collection.ArraySet;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /** Tests for {@link TabGroupModelFilter}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -1764,5 +1766,16 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.tabGroupExistsForRootId(mTab1.getRootId()));
         assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab3.getRootId()));
         assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab5.getRootId()));
+    }
+
+    @Test
+    public void testGetAllTabGroupRootIds() {
+        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
+        // group.
+        Set<Integer> rootIds = new ArraySet<>();
+        rootIds.add(mTab2.getRootId());
+        rootIds.add(mTab5.getRootId());
+
+        assertEquals(rootIds, mTabGroupModelFilter.getAllTabGroupRootIds());
     }
 }
