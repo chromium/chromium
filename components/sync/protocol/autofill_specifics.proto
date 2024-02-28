@@ -522,6 +522,8 @@ message PaymentInstrument {
     SUPPORTED_RAIL_UNKNOWN = 0;
     // Payment rails for Brazil Open Banking.
     PIX = 1;
+    // International Bank Account Numbers.
+    IBAN = 2;
   }
   // The supported rails for which a payment can be made for the given account.
   // For example, Pix is the open-banking rail in Brazil, UPI is the
@@ -538,6 +540,7 @@ message PaymentInstrument {
   // The backing source for the applicable rails.
   oneof instrument_details {
     BankAccountDetails bank_account = 5;
+    WalletMaskedIban iban = 6;
   }
 }
 
@@ -590,7 +593,7 @@ message AutofillWalletSpecifics {
     CUSTOMER_DATA = 3;
     CREDIT_CARD_CLOUD_TOKEN_DATA = 4;
     PAYMENT_INSTRUMENT = 5;
-    MASKED_IBAN = 6;
+    MASKED_IBAN = 6 [deprecated = true];
   }
 
   optional WalletInfoType type = 1;
@@ -618,7 +621,7 @@ message AutofillWalletSpecifics {
 
   // This field exists if and only if the `type` field equals to
   // MASKED_IBAN.
-  optional WalletMaskedIban masked_iban = 7;
+  optional WalletMaskedIban masked_iban = 7 [deprecated = true];
 }
 
 // Wallet card usage information that can be synced.

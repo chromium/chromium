@@ -1551,6 +1551,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrument& proto) {
   VISIT(instrument_id);
   VISIT(bank_account);
   VISIT(nickname);
+  VISIT(iban);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::BankAccountDetails& proto) {
