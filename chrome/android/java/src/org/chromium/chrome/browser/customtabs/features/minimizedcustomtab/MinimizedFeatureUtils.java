@@ -23,6 +23,7 @@ import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -165,5 +166,11 @@ public class MinimizedFeatureUtils {
 
     public static @DrawableRes int getMinimizeIcon() {
         return ICON_VARIANT.getValue() == 1 ? R.drawable.ic_pip_24dp : R.drawable.ic_minimize;
+    }
+
+    /** Returns whether the current Activity is a web app, web apk or TWA. */
+    public static boolean isWebApp(BrowserServicesIntentDataProvider intentDataProvider) {
+        return intentDataProvider.isWebappOrWebApkActivity()
+                || intentDataProvider.isTrustedWebActivity();
     }
 }
