@@ -179,6 +179,7 @@
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/browser/universal_web_contents_observers.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -1279,11 +1280,6 @@ bool IsErrorPageAutoReloadEnabled() {
   return true;
 }
 
-bool IsTopChromeWebUIURL(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         base::EndsWith(url.host_piece(), chrome::kChromeUITopChromeDomain);
-}
-
 // Checks whether a render process hosting a top chrome page exists.
 bool IsTopChromeRendererPresent(Profile* profile) {
   for (auto rph_iterator = content::RenderProcessHost::AllHostsIterator();
@@ -1921,7 +1917,7 @@ bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
   if (!profile)
     return false;
 
-  // Returning false here will ensure existing Top chrome WebUI renderers are
+  // Returning false here will ensure existing Top Chrome WebUI renderers are
   // considered for process reuse over the spare renderer.
   if (IsTopChromeWebUIURL(site_url) &&
       !ShouldUseSpareRenderProcessHostForTopChromePage(profile)) {
@@ -2281,8 +2277,9 @@ bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
     const GURL& url) {
   // Top Chrome WebUI should try to share a RenderProcessHost with other
   // existing Top Chrome WebUI.
-  if (IsTopChromeWebUIURL(url))
+  if (IsTopChromeWebUIURL(url)) {
     return true;
+  }
 
   return false;
 }

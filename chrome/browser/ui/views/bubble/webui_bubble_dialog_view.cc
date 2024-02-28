@@ -61,10 +61,6 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
   DCHECK(!contents_wrapper_->GetHost());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
 
-  // Ensure the WebContents is in a visible state after being added to the
-  // Views bubble so the correct lifecycle hooks are triggered.
-  DCHECK_NE(content::Visibility::VISIBLE,
-            contents_wrapper_->web_contents()->GetVisibility());
   contents_wrapper_->web_contents()->WasShown();
 
   SetButtons(ui::DIALOG_BUTTON_NONE);

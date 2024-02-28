@@ -77,6 +77,14 @@ BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 #endif
 
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);
+// This enum entry values must be in sync with
+// WebUIContentsPreloadManager::PreloadMode.
+enum class PreloadTopChromeWebUIMode {
+  kPreloadOnWarmup = 0,
+  kPreloadOnMakeContents = 1
+};
+extern const base::FeatureParam<PreloadTopChromeWebUIMode>
+    kPreloadTopChromeWebUIMode;
 
 BASE_DECLARE_FEATURE(kResponsiveToolbar);
 

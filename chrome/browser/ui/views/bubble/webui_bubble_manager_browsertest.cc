@@ -187,5 +187,5 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
   base::RunLoop().RunUntilIdle();
   bubble_manager()->ShowBubble();
   EXPECT_EQ(bubble_manager()->bubble_warmup_level(),
-            WebUIBubbleWarmUpLevel::kNavigatedWebContents);
+            WebUIBubbleWarmUpLevel::kReshowingWebContents);
 }

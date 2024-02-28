@@ -31,14 +31,14 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(WebUIContentsPreloadManagerTest, PreloadedContentsIsNullWithoutWarmup) {
-  EXPECT_EQ(preload_manager()->preloaded_web_contents_for_testing(), nullptr);
+  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
 }
 
 TEST_F(WebUIContentsPreloadManagerTest, PreloadedContentsIsNotNullAfterWarmup) {
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
-  preload_manager()->PreloadForBrowserContext(browser_context.get());
-  EXPECT_NE(preload_manager()->preloaded_web_contents_for_testing(), nullptr);
+  preload_manager()->PreloadForBrowserContextForTesting(browser_context.get());
+  EXPECT_NE(preload_manager()->preloaded_web_contents(), nullptr);
 }
 
 TEST_F(WebUIContentsPreloadManagerTest, NoPreloadUnderHeavyMemoryPressure) {
@@ -47,8 +47,8 @@ TEST_F(WebUIContentsPreloadManagerTest, NoPreloadUnderHeavyMemoryPressure) {
                              MEMORY_PRESSURE_LEVEL_MODERATE);
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
-  preload_manager()->PreloadForBrowserContext(browser_context.get());
-  EXPECT_EQ(preload_manager()->preloaded_web_contents_for_testing(), nullptr);
+  preload_manager()->PreloadForBrowserContextForTesting(browser_context.get());
+  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
 }
 
 TEST_F(WebUIContentsPreloadManagerTest, MakeContentsReturnsNonNull) {
@@ -65,22 +65,24 @@ TEST_F(WebUIContentsPreloadManagerTest,
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
   preload_manager()->MakeContents(GURL("about:blank"), browser_context.get());
-  EXPECT_NE(preload_manager()->preloaded_web_contents_for_testing(), nullptr);
+  EXPECT_NE(preload_manager()->preloaded_web_contents(), nullptr);
 }
 
 TEST_F(WebUIContentsPreloadManagerTest,
        PreloadedContentsChangesAfterSecondWarmupWithDifferentContext) {
   std::unique_ptr<content::BrowserContext> first_browser_context =
       std::make_unique<TestingProfile>();
-  preload_manager()->PreloadForBrowserContext(first_browser_context.get());
+  preload_manager()->PreloadForBrowserContextForTesting(
+      first_browser_context.get());
   content::WebContents* first_preloaded_contents =
-      preload_manager()->preloaded_web_contents_for_testing();
+      preload_manager()->preloaded_web_contents();
 
   std::unique_ptr<content::BrowserContext> second_browser_context =
       std::make_unique<TestingProfile>();
-  preload_manager()->PreloadForBrowserContext(second_browser_context.get());
+  preload_manager()->PreloadForBrowserContextForTesting(
+      second_browser_context.get());
   content::WebContents* second_preloaded_contents =
-      preload_manager()->preloaded_web_contents_for_testing();
+      preload_manager()->preloaded_web_contents();
 
   EXPECT_NE(first_preloaded_contents, second_preloaded_contents);
 }
@@ -89,9 +91,10 @@ TEST_F(WebUIContentsPreloadManagerTest,
        WebContentsDiffersAfterWarmupThenMakeContentsWithDifferentContext) {
   std::unique_ptr<content::BrowserContext> first_browser_context =
       std::make_unique<TestingProfile>();
-  preload_manager()->PreloadForBrowserContext(first_browser_context.get());
+  preload_manager()->PreloadForBrowserContextForTesting(
+      first_browser_context.get());
   content::WebContents* pre_warmup_web_contents =
-      preload_manager()->preloaded_web_contents_for_testing();
+      preload_manager()->preloaded_web_contents();
 
   std::unique_ptr<content::BrowserContext> second_browser_context =
       std::make_unique<TestingProfile>();
@@ -106,9 +109,9 @@ TEST_F(WebUIContentsPreloadManagerTest,
        WebContentsSameAfterWarmupThenMakeContentsWithSameContext) {
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
-  preload_manager()->PreloadForBrowserContext(browser_context.get());
+  preload_manager()->PreloadForBrowserContextForTesting(browser_context.get());
   content::WebContents* pre_warmup_web_contents =
-      preload_manager()->preloaded_web_contents_for_testing();
+      preload_manager()->preloaded_web_contents();
 
   std::unique_ptr<content::WebContents> made_web_contents =
       preload_manager()->MakeContents(GURL("about:blank"),
@@ -121,9 +124,9 @@ TEST_F(WebUIContentsPreloadManagerTest,
        PreloadedContentsBecomesNullAfterProfileDestruction) {
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
-  preload_manager()->PreloadForBrowserContext(browser_context.get());
+  preload_manager()->PreloadForBrowserContextForTesting(browser_context.get());
 
-  EXPECT_NE(preload_manager()->preloaded_web_contents_for_testing(), nullptr);
+  EXPECT_NE(preload_manager()->preloaded_web_contents(), nullptr);
 
   // Destroy the BrowserContext.
   browser_context.reset();
@@ -131,7 +134,7 @@ TEST_F(WebUIContentsPreloadManagerTest,
   // Now, check if the preloaded contents have been cleared and become nullptr.
   // This assumes that WebUIContentsPreloadManager listens to BrowserContext
   // destruction and acts accordingly.
-  EXPECT_EQ(preload_manager()->preloaded_web_contents_for_testing(), nullptr);
+  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
 }
 
 // Verify that calling MakeContents() navigates to the requested URL.
@@ -139,12 +142,12 @@ TEST_F(WebUIContentsPreloadManagerTest, MakeContentsNavigation) {
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
   GURL preloaded_url = preload_manager()->GetPreloadedURLForTesting();
-  preload_manager()->PreloadForBrowserContext(browser_context.get());
+  preload_manager()->PreloadForBrowserContextForTesting(browser_context.get());
 
   // Case 1: MakeContents with the preloaded URL.
   {
     content::WebContents* preloaded_web_contents =
-        preload_manager()->preloaded_web_contents_for_testing();
+        preload_manager()->preloaded_web_contents();
     EXPECT_EQ(preloaded_web_contents->GetURL(), preloaded_url);
 
     std::unique_ptr<content::WebContents> web_contents =
@@ -158,7 +161,7 @@ TEST_F(WebUIContentsPreloadManagerTest, MakeContentsNavigation) {
     EXPECT_NE(preloaded_url,
               different_url);  // Ensure the URL is indeed different.
     content::WebContents* preloaded_web_contents =
-        preload_manager()->preloaded_web_contents_for_testing();
+        preload_manager()->preloaded_web_contents();
 
     std::unique_ptr<content::WebContents> web_contents =
         preload_manager()->MakeContents(different_url, browser_context.get());

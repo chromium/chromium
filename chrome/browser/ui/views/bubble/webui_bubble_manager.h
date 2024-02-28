@@ -34,6 +34,8 @@ class WebUIBubbleDialogView;
 // The readiness levels of the browser prior to showing a new WebUI bubble,
 // ordered by increasing readiness. Higher levels have lower latency at the cost
 // of greater memory use.
+// TODO(326490753): move warm-up levels to cbui/webui/top_chrome because this
+// concept can apply to any Top Chrome WebUIs.
 enum class WebUIBubbleWarmUpLevel {
   // No render process is available. No pre-existing process, including spare
   // renderers, can be used or reused for this WebUI.
@@ -42,12 +44,17 @@ enum class WebUIBubbleWarmUpLevel {
   kSpareRenderer,
   // Uses a render process that already hosts other WebUIs prior to this WebUI.
   kDedicatedRenderer,
-  // Uses a WebContents that is initially on a different domain and requires
-  // redirection to this WebUI.
-  // Note: this is not currently used anywhere, but worth further investigation.
+  // Uses a WebContents that is preloaded with a different WebUI and therefore
+  // requires redirection to this WebUI.
+  // TODO(325836830): WebContents forbids navigation between WebUIs. This
+  // is mostly due to the asynchronous update of RenderFrameHost that causes
+  // difficulty in WebUIImpl lifetime management.
   kRedirectedWebContents,
-  // Uses a WebContents that has already navigated to this WebUI.
-  kNavigatedWebContents,
+  // Uses a WebContents that is preloaded with this WebUI but is never shown.
+  // TODO(325928324): investigate why this is slower than re-showing contents.
+  kPreloadedWebContents,
+  // Re-showing a WebContents that has already navigated to this WebUI.
+  kReshowingWebContents,
 };
 
 // WebUIBubbleManager handles the creation / destruction of the WebUI bubble.

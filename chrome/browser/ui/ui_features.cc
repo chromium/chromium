@@ -121,10 +121,19 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
 
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
 // so that it can be shown instantly at a later time when necessary.
-// TODO(40168622): hook up to browser view initialization.
 BASE_FEATURE(kPreloadTopChromeWebUI,
              "PreloadTopChromeWebUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<PreloadTopChromeWebUIMode>::Option
+    kPreloadTopChromeWebUIModeOptions[] = {
+        {PreloadTopChromeWebUIMode::kPreloadOnWarmup, "preload-on-warmup"},
+        {PreloadTopChromeWebUIMode::kPreloadOnMakeContents,
+         "preload-on-make-contents"},
+};
+const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
+    &kPreloadTopChromeWebUI, "preload-mode",
+    PreloadTopChromeWebUIMode::kPreloadOnMakeContents,
+    &kPreloadTopChromeWebUIModeOptions};
 
 // Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
 // the browser width is resized smaller than normal.

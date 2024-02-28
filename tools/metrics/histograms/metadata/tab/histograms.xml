@@ -1988,11 +1988,14 @@ chromium-metrics-reviews@google.com.
   <token key="WarmUpLevel">
     <variant name="DedicatedRenderer"
         summary="Uses a renderer that already hosts other top chrome WebUIs"/>
-    <variant name="NavigatedWebContents"
-        summary="Uses a WebContents that has already navigated to this WebUI"/>
     <variant name="NoRenderer" summary="No renderer can be used"/>
+    <variant name="PreloadedRenderer" summary="Uses a preloaded WebContents."/>
     <variant name="RedirectedRenderer"
-        summary="Uses a redirected WebContents. Note: currently not used"/>
+        summary="Uses a redirected preloaded WebContents that was on a
+                 different WebUI."/>
+    <variant name="ReshowingWebContents"
+        summary="Reshowing a WebContents that has already navigated to this
+                 WebUI"/>
     <variant name="SpareRenderer" summary="Uses a spare renderer"/>
   </token>
 </histogram>

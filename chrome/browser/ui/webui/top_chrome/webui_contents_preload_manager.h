@@ -13,10 +13,22 @@
 // This is a singleton class that preloads Top Chrome WebUIs resources.
 // If preloaded, it hosts a WebContents that can later be used to show a WebUI.
 // The currently implementation preloads Tab Search. If a different WebUI
-// is requested, it redirects the preloaded WebContents to the requested one.
+// is requested, it creates a WebContents with the requested WebUI.
 // If under heavy memory pressure, no preloaded contents will be created.
 class WebUIContentsPreloadManager {
  public:
+  enum class PreloadMode {
+    // Preloads on calling `WarmupForBrowserContext()` and after every WebUI
+    // creation.
+    // TODO(326505383): preloading on browser startup causes test failures
+    // primarily because they expect a certain number of WebContents are
+    // created.
+    kPreloadOnWarmup = 0,
+    // Preloads only after every WebUI creation.
+    // After the preloaded contents is taken, perloads a new contents.
+    kPreloadOnMakeContents = 1,
+  };
+
   WebUIContentsPreloadManager();
   ~WebUIContentsPreloadManager();
 
@@ -26,12 +38,13 @@ class WebUIContentsPreloadManager {
 
   static WebUIContentsPreloadManager* GetInstance();
 
-  // Preload a WebContents for `browser_context`.
-  // There is at most one preloaded contents at any time.
-  // If the preloaded contents has a different browser context, it will be
-  // replaced with a new contents under the given `browser_context`.
-  // If under heavy memory pressure, no preloaded contents will be created.
-  void PreloadForBrowserContext(content::BrowserContext* browser_context);
+  // Ensures that the keyed service factory for the browser context shutdown
+  // notification is built.
+  static void EnsureFactoryBuilt();
+
+  // Warms up the preload manager. Depending on PreloadMode this may or may not
+  // make a preloaded contents.
+  void WarmupForBrowserContext(content::BrowserContext* browser_context);
 
   // Make a WebContents that shows `webui_url` under `browser_context`.
   // Reuses the preloaded contents if it is under the same `browser_context`.
@@ -41,26 +54,51 @@ class WebUIContentsPreloadManager {
       const GURL& webui_url,
       content::BrowserContext* browser_context);
 
-  content::WebContents* preloaded_web_contents_for_testing() {
+  content::WebContents* preloaded_web_contents() {
     return preloaded_web_contents_.get();
   }
 
   GURL GetPreloadedURLForTesting() const;
 
+  // Disable navigations for tests that don't have //content properly
+  // initialized.
+  void DisableNavigationForTesting();
+
+  void PreloadForBrowserContextForTesting(
+      content::BrowserContext* browser_context);
+
  private:
   static const char* const kPreloadedWebUIURL;
+
+  // Preload a WebContents for `browser_context`.
+  // There is at most one preloaded contents at any time.
+  // If the preloaded contents has a different browser context, replace it
+  // with a new contents under the given `browser_context`.
+  // If under heavy memory pressure, no preloaded contents will be created.
+  void PreloadForBrowserContext(content::BrowserContext* browser_context);
 
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,
       GURL url = GURL(kPreloadedWebUIURL));
+
+  void LoadURLForContents(content::WebContents* web_contents, GURL url);
 
   // Returns true if a new preloaded contents should be created for
   // `browser_context`.
   bool ShouldPreloadForBrowserContext(
       content::BrowserContext* browser_context) const;
 
+  void ObserveBrowserContextShutdown();
+  void StopObserveBrowserContextShutdown();
+
   // Cleans up preloaded contents on browser context shutdown.
   void OnBrowserContextShutdown(content::BrowserContext* browser_context);
+
+  PreloadMode preload_mode_ = PreloadMode::kPreloadOnMakeContents;
+
+  // Disable navigations for views unittests because they don't initialize
+  // //content properly.
+  bool is_navigation_disabled_for_test_ = false;
 
   std::unique_ptr<content::WebContents> preloaded_web_contents_;
 
