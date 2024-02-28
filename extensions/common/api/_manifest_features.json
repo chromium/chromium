@@ -7,6 +7,10 @@
 // well as feature.h, simple_feature.h, and feature_provider.h.
 
 {
+  "about_page": {
+    "channel": "stable",
+    "extension_types": ["shared_module"]
+  },
   "action_handlers": {
     "channel": "stable",
     "extension_types": ["platform_app"],
@@ -38,6 +42,10 @@
   "app.background": {
     "channel": "stable",
     "extension_types": ["platform_app"]
+  },
+  "author": {
+    "channel": "stable",
+    "extension_types": "all"
   },
   "automation": {
     // This is a private API which, for historical reasons, does not include
@@ -109,6 +117,10 @@
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
     ]
   }],
+  "commands": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"]
+  },
   "content_capabilities": [{
     "channel": "stable",
     "extension_types": ["extension"],
@@ -161,6 +173,10 @@
     "channel": "stable",
     "extension_types": "all"
   },
+  "export": {
+    "channel": "stable",
+    "extension_types": ["shared_module"]
+  },
   "externally_connectable": [{
     "channel": "stable",
     "extension_types": [
@@ -212,6 +228,10 @@
     "min_manifest_version": 3
   }],
   "icons": {
+    "channel": "stable",
+    "extension_types": "all"
+  },
+  "import": {
     "channel": "stable",
     "extension_types": "all"
   },
@@ -355,6 +375,11 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
+  "page_action": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "max_manifest_version": 2
+  },
   "permissions": {
     "channel": "stable",
     "extension_types": [
@@ -369,6 +394,12 @@
   "replacement_web_app": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
+  },
+  "requirements": {
+    "channel": "stable",
+    "extension_types": [
+      "extension", "legacy_packaged_app", "hosted_app", "platform_app"
+    ]
   },
   "sandbox": {
     "channel": "stable",

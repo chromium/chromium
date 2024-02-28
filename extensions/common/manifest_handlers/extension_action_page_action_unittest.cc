@@ -5,14 +5,13 @@
 #include <memory>
 
 #include "base/path_service.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -20,14 +19,8 @@ namespace extensions {
 namespace errors = manifest_errors;
 namespace keys = manifest_keys;
 
-class PageActionManifestTest : public ChromeManifestTest {
+class PageActionManifestTest : public ManifestTest {
  protected:
-  base::FilePath GetTestDataDir() override {
-    base::FilePath path;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-    return path.AppendASCII("extensions").AppendASCII("page_action");
-  }
-
   std::unique_ptr<ActionInfo> LoadAction(const std::string& manifest_filename);
 };
 

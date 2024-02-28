@@ -52,7 +52,7 @@ void RegisterCommonManifestHandlers() {
   // TODO(devlin): Pass in |registry| rather than Get()ing it.
   ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
 
-  DCHECK(!ManifestHandler::IsRegistrationFinalized());
+  registry->RegisterHandler(std::make_unique<AboutPageHandler>());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterHandler(std::make_unique<ActionHandlersHandler>());
 #endif
@@ -72,6 +72,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<ExternallyConnectableHandler>());
   registry->RegisterHandler(std::make_unique<ExtensionActionHandler>());
   registry->RegisterHandler(std::make_unique<FileHandlersParser>());
+  registry->RegisterHandler(std::make_unique<HomepageURLHandler>());
   registry->RegisterHandler(std::make_unique<IconsHandler>());
   registry->RegisterHandler(std::make_unique<IncognitoHandler>());
   registry->RegisterHandler(std::make_unique<KioskModeHandler>());

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/requirements_info.h"
+#include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 namespace errors = manifest_errors;
 
-using RequirementsManifestTest = ChromeManifestTest;
+using RequirementsManifestTest = ManifestTest;
 
 TEST_F(RequirementsManifestTest, RequirementsInvalid) {
   Testcase testcases[] = {

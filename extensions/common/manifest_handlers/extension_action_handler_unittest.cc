@@ -29,8 +29,6 @@
 
 namespace extensions {
 
-namespace keys = manifest_keys;
-
 namespace {
 
 base::FilePath GetTestDataDir() {
