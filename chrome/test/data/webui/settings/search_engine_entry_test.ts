@@ -157,6 +157,10 @@ suite('SearchEngineEntryTest', function() {
     flush();
     testButtonHidden(
         createSampleSearchEngine({canBeActivated: true}), 'editIconButton');
+
+    flush();
+    testButtonHidden(
+        createSampleSearchEngine({isStarterPack: true}), 'editIconButton');
   });
   /**
    * Checks that the given button is disabled for the given search engine.
