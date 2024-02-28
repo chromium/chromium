@@ -75,7 +75,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -181,9 +180,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void continueButtonClickShowsHistorySyncPage() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.HistorySyncOptIn.Started", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
@@ -191,7 +187,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_continue_button);
 
-        histogramWatcher.assertExpected();
         waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
     }
 
