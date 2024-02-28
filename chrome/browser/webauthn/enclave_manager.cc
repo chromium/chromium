@@ -611,6 +611,7 @@ std::optional<std::unique_ptr<trusted_vault_pb::Vault>>
 RecoveryKeyStoreWrapResponseToProto(
     base::span<const uint8_t> scrypt_salt,
     int scrypt_n,
+    bool is_six_digits,
     const cbor::Value& recovery_key_store_wrap_response) {
   if (!recovery_key_store_wrap_response.is_map()) {
     return std::nullopt;
@@ -677,7 +678,9 @@ RecoveryKeyStoreWrapResponseToProto(
   asymmetric_key_pair->set_wrapping_key(VecToString(wrapped_wrapping_key));
 
   trusted_vault_pb::VaultMetadata metadata;
-  metadata.set_lskf_type(trusted_vault_pb::VaultMetadata::PIN);
+  metadata.set_lskf_type(is_six_digits
+                             ? trusted_vault_pb::VaultMetadata::PIN
+                             : trusted_vault_pb::VaultMetadata::PASSWORD);
   metadata.set_hash_type(trusted_vault_pb::VaultMetadata::SCRYPT);
   metadata.set_hash_salt(VecToString(scrypt_salt));
   metadata.set_hash_difficulty(scrypt_n);
@@ -1446,6 +1449,7 @@ class EnclaveManager::StateMachine {
 
     std::optional<std::unique_ptr<trusted_vault_pb::Vault>> vault =
         RecoveryKeyStoreWrapResponseToProto(hashed_pin_->salt, hashed_pin_->n,
+                                            hashed_pin_->is_six_digits,
                                             recovery_key_store_wrap_response);
     if (!vault) {
       FIDO_LOG(ERROR)
