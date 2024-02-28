@@ -9,7 +9,8 @@
 namespace blink {
 
 GPURenderBundle::GPURenderBundle(GPUDevice* device,
-                                 WGPURenderBundle render_bundle)
-    : DawnObject<WGPURenderBundle>(device, render_bundle) {}
+                                 WGPURenderBundle render_bundle,
+                                 const String& label)
+    : DawnObject<WGPURenderBundle>(device, render_bundle, label) {}
 
 }  // namespace blink

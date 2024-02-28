@@ -19,7 +19,9 @@ class GPUBindGroup : public DawnObject<WGPUBindGroup> {
   static GPUBindGroup* Create(GPUDevice* device,
                               const GPUBindGroupDescriptor* webgpu_desc,
                               ExceptionState& exception_state);
-  explicit GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group);
+  explicit GPUBindGroup(GPUDevice* device,
+                        WGPUBindGroup bind_group,
+                        const String& label);
 
   GPUBindGroup(const GPUBindGroup&) = delete;
   GPUBindGroup& operator=(const GPUBindGroup&) = delete;

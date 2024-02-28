@@ -15,8 +15,9 @@ namespace blink {
 
 GPUComputePassEncoder::GPUComputePassEncoder(
     GPUDevice* device,
-    WGPUComputePassEncoder compute_pass_encoder)
-    : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder) {}
+    WGPUComputePassEncoder compute_pass_encoder,
+    const String& label)
+    : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder, label) {}
 
 void GPUComputePassEncoder::setBindGroup(
     uint32_t index,

@@ -27,11 +27,12 @@ class GPUTexture : public DawnObject<WGPUTexture> {
   static GPUTexture* CreateError(GPUDevice* device,
                                  const WGPUTextureDescriptor* desc);
 
-  GPUTexture(GPUDevice* device, WGPUTexture texture);
+  GPUTexture(GPUDevice* device, WGPUTexture texture, const String& label);
   GPUTexture(GPUDevice* device,
              WGPUTextureFormat format,
              WGPUTextureUsage usage,
-             scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
+             scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
+             const String& label);
 
   ~GPUTexture() override;
 

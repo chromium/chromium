@@ -334,7 +334,7 @@ void ConvertToDawnType(v8::Isolate* isolate,
   DCHECK(dawn_desc_info);
 
   // Label
-  if (webgpu_desc->hasLabel()) {
+  if (!webgpu_desc->label().empty()) {
     dawn_desc_info->label = webgpu_desc->label().Utf8();
     dawn_desc_info->dawn_desc.label = dawn_desc_info->label.c_str();
   }
@@ -397,20 +397,22 @@ GPURenderPipeline* GPURenderPipeline::Create(
   }
 
   pipeline = MakeGarbageCollected<GPURenderPipeline>(
-      device, device->GetProcs().deviceCreateRenderPipeline(
-                  device->GetHandle(), &dawn_desc_info.dawn_desc));
-  if (webgpu_desc->hasLabel())
-    pipeline->setLabel(webgpu_desc->label());
+      device,
+      device->GetProcs().deviceCreateRenderPipeline(device->GetHandle(),
+                                                    &dawn_desc_info.dawn_desc),
+      webgpu_desc->label());
   return pipeline;
 }
 
 GPURenderPipeline::GPURenderPipeline(GPUDevice* device,
-                                     WGPURenderPipeline render_pipeline)
-    : DawnObject<WGPURenderPipeline>(device, render_pipeline) {}
+                                     WGPURenderPipeline render_pipeline,
+                                     const String& label)
+    : DawnObject<WGPURenderPipeline>(device, render_pipeline, label) {}
 
 GPUBindGroupLayout* GPURenderPipeline::getBindGroupLayout(uint32_t index) {
   return MakeGarbageCollected<GPUBindGroupLayout>(
-      device_, GetProcs().renderPipelineGetBindGroupLayout(GetHandle(), index));
+      device_, GetProcs().renderPipelineGetBindGroupLayout(GetHandle(), index),
+      String());
 }
 
 }  // namespace blink

@@ -35,7 +35,6 @@ GPUShaderModule* GPUShaderModule::Create(
   std::string wgsl_code;
   WGPUShaderModuleWGSLDescriptor wgsl_desc = {};
   WGPUShaderModuleSPIRVDescriptor spirv_desc = {};
-  std::string label;
   WGPUShaderModuleDescriptor dawn_desc = {};
 
   const auto* wgsl_or_spirv = webgpu_desc->code();
@@ -78,8 +77,8 @@ GPUShaderModule* GPUShaderModule::Create(
     }
   }
 
-  if (webgpu_desc->hasLabel()) {
-    label = webgpu_desc->label().Utf8();
+  std::string label = webgpu_desc->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
@@ -93,10 +92,8 @@ GPUShaderModule* GPUShaderModule::Create(
         device->GetHandle(), &dawn_desc);
   }
 
-  GPUShaderModule* shader =
-      MakeGarbageCollected<GPUShaderModule>(device, shader_module);
-  if (webgpu_desc->hasLabel())
-    shader->setLabel(webgpu_desc->label());
+  GPUShaderModule* shader = MakeGarbageCollected<GPUShaderModule>(
+      device, shader_module, webgpu_desc->label());
 
   // Very roughly approximate how much memory Tint might need for this shader.
   // Pessimizes if Tint actually holds less memory than this (including if the
@@ -115,8 +112,9 @@ GPUShaderModule* GPUShaderModule::Create(
 }
 
 GPUShaderModule::GPUShaderModule(GPUDevice* device,
-                                 WGPUShaderModule shader_module)
-    : DawnObject<WGPUShaderModule>(device, shader_module) {}
+                                 WGPUShaderModule shader_module,
+                                 const String& label)
+    : DawnObject<WGPUShaderModule>(device, shader_module, label) {}
 
 void GPUShaderModule::OnCompilationInfoCallback(
     ScriptPromiseResolver* resolver,

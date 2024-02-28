@@ -19,7 +19,8 @@ class GPUPipelineLayout : public DawnObject<WGPUPipelineLayout> {
       GPUDevice* device,
       const GPUPipelineLayoutDescriptor* webgpu_desc);
   explicit GPUPipelineLayout(GPUDevice* device,
-                             WGPUPipelineLayout pipeline_layout);
+                             WGPUPipelineLayout pipeline_layout,
+                             const String& label);
 
   GPUPipelineLayout(const GPUPipelineLayout&) = delete;
   GPUPipelineLayout& operator=(const GPUPipelineLayout&) = delete;

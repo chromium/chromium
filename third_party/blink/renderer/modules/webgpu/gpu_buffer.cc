@@ -46,8 +46,8 @@ WGPUBufferDescriptor AsDawnType(const GPUBufferDescriptor* webgpu_desc,
   dawn_desc.usage = AsDawnFlags<WGPUBufferUsage>(webgpu_desc->usage());
   dawn_desc.size = webgpu_desc->size();
   dawn_desc.mappedAtCreation = webgpu_desc->mappedAtCreation();
-  if (webgpu_desc->hasLabel()) {
-    *label = webgpu_desc->label().Utf8();
+  *label = webgpu_desc->label().Utf8();
+  if (!label->empty()) {
     dawn_desc.label = label->c_str();
   }
 
@@ -149,10 +149,8 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
     return nullptr;
   }
 
-  GPUBuffer* buffer =
-      MakeGarbageCollected<GPUBuffer>(device, buffer_size, wgpuBuffer);
-  if (webgpu_desc->hasLabel())
-    buffer->setLabel(webgpu_desc->label());
+  GPUBuffer* buffer = MakeGarbageCollected<GPUBuffer>(
+      device, buffer_size, wgpuBuffer, webgpu_desc->label());
 
   if (is_mappable) {
     GPU* gpu = device->adapter()->gpu();
@@ -166,9 +164,9 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
 
 GPUBuffer::GPUBuffer(GPUDevice* device,
                      uint64_t size,
-                     WGPUBuffer buffer)
-    : DawnObject<WGPUBuffer>(device, buffer), size_(size) {
-}
+                     WGPUBuffer buffer,
+                     const String& label)
+    : DawnObject<WGPUBuffer>(device, buffer, label), size_(size) {}
 
 GPUBuffer::~GPUBuffer() {
   if (mappable_buffer_handles_) {

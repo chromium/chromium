@@ -17,7 +17,9 @@ class GPUSampler : public DawnObject<WGPUSampler> {
  public:
   static GPUSampler* Create(GPUDevice* device,
                             const GPUSamplerDescriptor* webgpu_desc);
-  explicit GPUSampler(GPUDevice* device, WGPUSampler sampler);
+  explicit GPUSampler(GPUDevice* device,
+                      WGPUSampler sampler,
+                      const String& label);
 
   GPUSampler(const GPUSampler&) = delete;
   GPUSampler& operator=(const GPUSampler&) = delete;

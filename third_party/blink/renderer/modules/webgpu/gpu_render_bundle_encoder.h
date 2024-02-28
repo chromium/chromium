@@ -27,9 +27,9 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
       GPUDevice* device,
       const GPURenderBundleEncoderDescriptor* webgpu_desc,
       ExceptionState& exception_state);
-  explicit GPURenderBundleEncoder(
-      GPUDevice* device,
-      WGPURenderBundleEncoder render_bundle_encoder);
+  explicit GPURenderBundleEncoder(GPUDevice* device,
+                                  WGPURenderBundleEncoder render_bundle_encoder,
+                                  const String& label);
 
   GPURenderBundleEncoder(const GPURenderBundleEncoder&) = delete;
   GPURenderBundleEncoder& operator=(const GPURenderBundleEncoder&) = delete;

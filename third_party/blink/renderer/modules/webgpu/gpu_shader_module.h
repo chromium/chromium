@@ -23,7 +23,9 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
   static GPUShaderModule* Create(GPUDevice* device,
                                  const GPUShaderModuleDescriptor* webgpu_desc,
                                  ExceptionState& exception_state);
-  explicit GPUShaderModule(GPUDevice* device, WGPUShaderModule shader_module);
+  explicit GPUShaderModule(GPUDevice* device,
+                           WGPUShaderModule shader_module,
+                           const String& label);
 
   GPUShaderModule(const GPUShaderModule&) = delete;
   GPUShaderModule& operator=(const GPUShaderModule&) = delete;

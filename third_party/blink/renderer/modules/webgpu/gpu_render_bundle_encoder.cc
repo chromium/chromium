@@ -44,7 +44,6 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
-  std::string label;
   WGPURenderBundleEncoderDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
   dawn_desc.colorFormatCount = color_formats_count;
@@ -53,24 +52,27 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
   dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
   dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
-  if (webgpu_desc->hasLabel()) {
-    label = webgpu_desc->label().Utf8();
+  std::string label = webgpu_desc->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
   GPURenderBundleEncoder* encoder =
       MakeGarbageCollected<GPURenderBundleEncoder>(
-          device, device->GetProcs().deviceCreateRenderBundleEncoder(
-                      device->GetHandle(), &dawn_desc));
-  if (webgpu_desc->hasLabel())
-    encoder->setLabel(webgpu_desc->label());
+          device,
+          device->GetProcs().deviceCreateRenderBundleEncoder(
+              device->GetHandle(), &dawn_desc),
+          webgpu_desc->label());
   return encoder;
 }
 
 GPURenderBundleEncoder::GPURenderBundleEncoder(
     GPUDevice* device,
-    WGPURenderBundleEncoder render_bundle_encoder)
-    : DawnObject<WGPURenderBundleEncoder>(device, render_bundle_encoder) {}
+    WGPURenderBundleEncoder render_bundle_encoder,
+    const String& label)
+    : DawnObject<WGPURenderBundleEncoder>(device,
+                                          render_bundle_encoder,
+                                          label) {}
 
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
@@ -104,17 +106,17 @@ void GPURenderBundleEncoder::setBindGroup(
 
 GPURenderBundle* GPURenderBundleEncoder::finish(
     const GPURenderBundleDescriptor* webgpu_desc) {
-  std::string label;
   WGPURenderBundleDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  if (webgpu_desc->hasLabel()) {
-    label = webgpu_desc->label().Utf8();
+  std::string label = webgpu_desc->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
   WGPURenderBundle render_bundle =
       GetProcs().renderBundleEncoderFinish(GetHandle(), &dawn_desc);
-  return MakeGarbageCollected<GPURenderBundle>(device_, render_bundle);
+  return MakeGarbageCollected<GPURenderBundle>(device_, render_bundle,
+                                               webgpu_desc->label());
 }
 
 }  // namespace blink

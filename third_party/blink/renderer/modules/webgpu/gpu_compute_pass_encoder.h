@@ -19,7 +19,8 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
 
  public:
   explicit GPUComputePassEncoder(GPUDevice* device,
-                                 WGPUComputePassEncoder compute_pass_encoder);
+                                 WGPUComputePassEncoder compute_pass_encoder,
+                                 const String& label);
 
   GPUComputePassEncoder(const GPUComputePassEncoder&) = delete;
   GPUComputePassEncoder& operator=(const GPUComputePassEncoder&) = delete;

@@ -175,8 +175,8 @@ WGPUCommandEncoderDescriptor AsDawnType(
 
   WGPUCommandEncoderDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  if (webgpu_desc->hasLabel()) {
-    *label = webgpu_desc->label().Utf8();
+  *label = webgpu_desc->label().Utf8();
+  if (!label->empty()) {
     dawn_desc.label = label->c_str();
   }
 
@@ -196,16 +196,17 @@ GPUCommandEncoder* GPUCommandEncoder::Create(
   WGPUCommandEncoderDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
 
   GPUCommandEncoder* encoder = MakeGarbageCollected<GPUCommandEncoder>(
-      device, device->GetProcs().deviceCreateCommandEncoder(device->GetHandle(),
-                                                            &dawn_desc));
-  if (webgpu_desc->hasLabel())
-    encoder->setLabel(webgpu_desc->label());
+      device,
+      device->GetProcs().deviceCreateCommandEncoder(device->GetHandle(),
+                                                    &dawn_desc),
+      webgpu_desc->label());
   return encoder;
 }
 
 GPUCommandEncoder::GPUCommandEncoder(GPUDevice* device,
-                                     WGPUCommandEncoder command_encoder)
-    : DawnObject<WGPUCommandEncoder>(device, command_encoder) {}
+                                     WGPUCommandEncoder command_encoder,
+                                     const String& label)
+    : DawnObject<WGPUCommandEncoder>(device, command_encoder, label) {}
 
 GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     const GPURenderPassDescriptor* descriptor,
@@ -214,9 +215,8 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 
   WGPURenderPassDescriptor dawn_desc = {};
 
-  std::string label;
-  if (descriptor->hasLabel()) {
-    label = descriptor->label().Utf8();
+  std::string label = descriptor->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
@@ -272,19 +272,17 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 
   GPURenderPassEncoder* encoder = MakeGarbageCollected<GPURenderPassEncoder>(
       device_,
-      GetProcs().commandEncoderBeginRenderPass(GetHandle(), &dawn_desc));
-  if (descriptor->hasLabel())
-    encoder->setLabel(descriptor->label());
+      GetProcs().commandEncoderBeginRenderPass(GetHandle(), &dawn_desc),
+      descriptor->label());
   return encoder;
 }
 
 GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
     const GPUComputePassDescriptor* descriptor,
     ExceptionState& exception_state) {
-  std::string label;
   WGPUComputePassDescriptor dawn_desc = {};
-  if (descriptor->hasLabel()) {
-    label = descriptor->label().Utf8();
+  std::string label = descriptor->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
@@ -303,9 +301,8 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
 
   GPUComputePassEncoder* encoder = MakeGarbageCollected<GPUComputePassEncoder>(
       device_,
-      GetProcs().commandEncoderBeginComputePass(GetHandle(), &dawn_desc));
-  if (descriptor->hasLabel())
-    encoder->setLabel(descriptor->label());
+      GetProcs().commandEncoderBeginComputePass(GetHandle(), &dawn_desc),
+      descriptor->label());
   return encoder;
 }
 
@@ -391,18 +388,15 @@ void GPUCommandEncoder::writeTimestamp(DawnObject<WGPUQuerySet>* querySet,
 
 GPUCommandBuffer* GPUCommandEncoder::finish(
     const GPUCommandBufferDescriptor* descriptor) {
-  std::string label;
   WGPUCommandBufferDescriptor dawn_desc = {};
-  if (descriptor->hasLabel()) {
-    label = descriptor->label().Utf8();
+  std::string label = descriptor->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
   GPUCommandBuffer* command_buffer = MakeGarbageCollected<GPUCommandBuffer>(
-      device_, GetProcs().commandEncoderFinish(GetHandle(), &dawn_desc));
-  if (descriptor->hasLabel()) {
-    command_buffer->setLabel(descriptor->label());
-  }
+      device_, GetProcs().commandEncoderFinish(GetHandle(), &dawn_desc),
+      descriptor->label());
 
   return command_buffer;
 }

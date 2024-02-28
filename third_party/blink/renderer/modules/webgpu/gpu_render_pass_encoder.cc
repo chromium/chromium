@@ -19,8 +19,9 @@ namespace blink {
 
 GPURenderPassEncoder::GPURenderPassEncoder(
     GPUDevice* device,
-    WGPURenderPassEncoder render_pass_encoder)
-    : DawnObject<WGPURenderPassEncoder>(device, render_pass_encoder) {}
+    WGPURenderPassEncoder render_pass_encoder,
+    const String& label)
+    : DawnObject<WGPURenderPassEncoder>(device, render_pass_encoder, label) {}
 
 void GPURenderPassEncoder::setBindGroup(
     uint32_t index,

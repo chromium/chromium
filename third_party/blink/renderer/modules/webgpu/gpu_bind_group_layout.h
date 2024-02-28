@@ -21,7 +21,8 @@ class GPUBindGroupLayout : public DawnObject<WGPUBindGroupLayout> {
       const GPUBindGroupLayoutDescriptor* webgpu_desc,
       ExceptionState& exception_state);
   explicit GPUBindGroupLayout(GPUDevice* device,
-                              WGPUBindGroupLayout bind_group_layout);
+                              WGPUBindGroupLayout bind_group_layout,
+                              const String& label);
 
   GPUBindGroupLayout(const GPUBindGroupLayout&) = delete;
   GPUBindGroupLayout& operator=(const GPUBindGroupLayout&) = delete;

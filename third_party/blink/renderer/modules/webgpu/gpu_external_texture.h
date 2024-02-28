@@ -108,7 +108,8 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
       bool is_zero_copy,
       bool read_lock_fences_enabled,
-      std::optional<media::VideoFrame::ID> media_video_frame_unique_id);
+      std::optional<media::VideoFrame::ID> media_video_frame_unique_id,
+      const String& label);
 
   GPUExternalTexture(const GPUExternalTexture&) = delete;
   GPUExternalTexture& operator=(const GPUExternalTexture&) = delete;

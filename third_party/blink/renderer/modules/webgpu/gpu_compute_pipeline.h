@@ -28,7 +28,8 @@ class GPUComputePipeline : public DawnObject<WGPUComputePipeline> {
       GPUDevice* device,
       const GPUComputePipelineDescriptor* webgpu_desc);
   explicit GPUComputePipeline(GPUDevice* device,
-                              WGPUComputePipeline compute_pipeline);
+                              WGPUComputePipeline compute_pipeline,
+                              const String& label);
 
   GPUComputePipeline(const GPUComputePipeline&) = delete;
   GPUComputePipeline& operator=(const GPUComputePipeline&) = delete;

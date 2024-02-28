@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -94,7 +95,7 @@ GPUAdapter::GPUAdapter(
     GPU* gpu,
     WGPUAdapter handle,
     scoped_refptr<DawnControlClientHolder> dawn_control_client)
-    : DawnObject(dawn_control_client, handle), gpu_(gpu) {
+    : DawnObject(dawn_control_client, handle, String()), gpu_(gpu) {
   WGPUAdapterProperties properties = {};
   WGPUAdapterPropertiesMemoryHeaps memoryHeapProperties = {};
   memoryHeapProperties.chain.sType = WGPUSType_AdapterPropertiesMemoryHeaps;
@@ -289,6 +290,16 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
                                   required_features_set.end());
     dawn_desc.requiredFeatures = required_features.data();
     dawn_desc.requiredFeatureCount = required_features.size();
+  }
+
+  std::string label = descriptor->label().Utf8();
+  if (!label.empty()) {
+    dawn_desc.label = label.c_str();
+  }
+
+  std::string queueLabel = descriptor->defaultQueue()->label().Utf8();
+  if (!queueLabel.empty()) {
+    dawn_desc.defaultQueue.label = queueLabel.c_str();
   }
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(

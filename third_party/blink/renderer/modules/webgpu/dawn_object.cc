@@ -30,8 +30,9 @@ void ExternalMemoryTracker::SetCurrentSize(size_t newSizeUnchecked) {
 // DawnObjectBase
 
 DawnObjectBase::DawnObjectBase(
-    scoped_refptr<DawnControlClientHolder> dawn_control_client)
-    : dawn_control_client_(std::move(dawn_control_client)) {}
+    scoped_refptr<DawnControlClientHolder> dawn_control_client,
+    const String& label)
+    : dawn_control_client_(std::move(dawn_control_client)), label_(label) {}
 
 const scoped_refptr<DawnControlClientHolder>&
 DawnObjectBase::GetDawnControlClient() const {
@@ -53,8 +54,8 @@ void DawnObjectBase::FlushNow() {
 
 // DawnObjectImpl
 
-DawnObjectImpl::DawnObjectImpl(GPUDevice* device)
-    : DawnObjectBase(device->GetDawnControlClient()), device_(device) {}
+DawnObjectImpl::DawnObjectImpl(GPUDevice* device, const String& label)
+    : DawnObjectBase(device->GetDawnControlClient(), label), device_(device) {}
 
 DawnObjectImpl::~DawnObjectImpl() = default;
 

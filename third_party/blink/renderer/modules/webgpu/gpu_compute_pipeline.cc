@@ -29,8 +29,8 @@ WGPUComputePipelineDescriptor AsDawnType(
   dawn_desc.nextInChain = nullptr;
 
   dawn_desc.layout = AsDawnType(webgpu_desc->layout());
-  if (webgpu_desc->hasLabel()) {
-    *label = webgpu_desc->label().Utf8();
+  *label = webgpu_desc->label().Utf8();
+  if (!label->empty()) {
     dawn_desc.label = label->c_str();
   }
 
@@ -71,21 +71,22 @@ GPUComputePipeline* GPUComputePipeline::Create(
   }
 
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
-      device, device->GetProcs().deviceCreateComputePipeline(
-                  device->GetHandle(), &dawn_desc));
-  if (webgpu_desc->hasLabel())
-    pipeline->setLabel(webgpu_desc->label());
+      device,
+      device->GetProcs().deviceCreateComputePipeline(device->GetHandle(),
+                                                     &dawn_desc),
+      webgpu_desc->label());
   return pipeline;
 }
 
 GPUComputePipeline::GPUComputePipeline(GPUDevice* device,
-                                       WGPUComputePipeline compute_pipeline)
-    : DawnObject<WGPUComputePipeline>(device, compute_pipeline) {}
+                                       WGPUComputePipeline compute_pipeline,
+                                       const String& label)
+    : DawnObject<WGPUComputePipeline>(device, compute_pipeline, label) {}
 
 GPUBindGroupLayout* GPUComputePipeline::getBindGroupLayout(uint32_t index) {
   return MakeGarbageCollected<GPUBindGroupLayout>(
-      device_,
-      GetProcs().computePipelineGetBindGroupLayout(GetHandle(), index));
+      device_, GetProcs().computePipelineGetBindGroupLayout(GetHandle(), index),
+      String());
 }
 
 }  // namespace blink

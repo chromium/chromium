@@ -31,8 +31,8 @@ WGPUSamplerDescriptor AsDawnType(const GPUSamplerDescriptor* webgpu_desc,
   if (webgpu_desc->hasCompare()) {
     dawn_desc.compare = AsDawnEnum(webgpu_desc->compare());
   }
-  if (webgpu_desc->hasLabel()) {
-    *label = webgpu_desc->label().Utf8();
+  *label = webgpu_desc->label().Utf8();
+  if (!label->empty()) {
     dawn_desc.label = label->c_str();
   }
 
@@ -50,13 +50,14 @@ GPUSampler* GPUSampler::Create(GPUDevice* device,
   WGPUSamplerDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
   GPUSampler* sampler = MakeGarbageCollected<GPUSampler>(
       device,
-      device->GetProcs().deviceCreateSampler(device->GetHandle(), &dawn_desc));
-  if (webgpu_desc->hasLabel())
-    sampler->setLabel(webgpu_desc->label());
+      device->GetProcs().deviceCreateSampler(device->GetHandle(), &dawn_desc),
+      webgpu_desc->label());
   return sampler;
 }
 
-GPUSampler::GPUSampler(GPUDevice* device, WGPUSampler sampler)
-    : DawnObject<WGPUSampler>(device, sampler) {}
+GPUSampler::GPUSampler(GPUDevice* device,
+                       WGPUSampler sampler,
+                       const String& label)
+    : DawnObject<WGPUSampler>(device, sampler, label) {}
 
 }  // namespace blink

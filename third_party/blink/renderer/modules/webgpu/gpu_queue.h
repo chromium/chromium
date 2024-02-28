@@ -32,7 +32,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit GPUQueue(GPUDevice* device, WGPUQueue queue);
+  explicit GPUQueue(GPUDevice* device, WGPUQueue queue, const String& label);
 
   GPUQueue(const GPUQueue&) = delete;
   GPUQueue& operator=(const GPUQueue&) = delete;

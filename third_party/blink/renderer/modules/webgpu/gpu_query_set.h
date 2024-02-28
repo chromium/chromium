@@ -18,7 +18,9 @@ class GPUQuerySet : public DawnObject<WGPUQuerySet> {
  public:
   static GPUQuerySet* Create(GPUDevice* device,
                              const GPUQuerySetDescriptor* webgpu_desc);
-  explicit GPUQuerySet(GPUDevice* device, WGPUQuerySet querySet);
+  explicit GPUQuerySet(GPUDevice* device,
+                       WGPUQuerySet querySet,
+                       const String& label);
 
   GPUQuerySet(const GPUQuerySet&) = delete;
   GPUQuerySet& operator=(const GPUQuerySet&) = delete;

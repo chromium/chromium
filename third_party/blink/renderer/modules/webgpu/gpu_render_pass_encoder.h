@@ -23,7 +23,8 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
 
  public:
   explicit GPURenderPassEncoder(GPUDevice* device,
-                                WGPURenderPassEncoder render_pass_encoder);
+                                WGPURenderPassEncoder render_pass_encoder,
+                                const String& label);
 
   GPURenderPassEncoder(const GPURenderPassEncoder&) = delete;
   GPURenderPassEncoder& operator=(const GPURenderPassEncoder&) = delete;

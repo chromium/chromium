@@ -128,13 +128,14 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
                      const GPUDeviceDescriptor* descriptor,
                      GPUDeviceLostInfo* lost_info)
     : ExecutionContextClient(execution_context),
-      DawnObject(dawn_control_client, dawn_device),
+      DawnObject(dawn_control_client, dawn_device, descriptor->label()),
       adapter_(adapter),
       features_(MakeGarbageCollected<GPUSupportedFeatures>(
           descriptor->requiredFeatures())),
-      queue_(MakeGarbageCollected<GPUQueue>(
-          this,
-          GetProcs().deviceGetQueue(GetHandle()))),
+      queue_(
+          MakeGarbageCollected<GPUQueue>(this,
+                                         GetProcs().deviceGetQueue(GetHandle()),
+                                         descriptor->defaultQueue()->label())),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       error_callback_(BindWGPURepeatingCallback(&GPUDevice::OnUncapturedError,
                                                 WrapWeakPersistent(this))),
@@ -171,12 +172,6 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
   GetProcs().deviceSetDeviceLostCallback(GetHandle(),
                                          lost_callback_->UnboundCallback(),
                                          lost_callback_->AsUserdata());
-
-  if (descriptor->hasLabel())
-    setLabel(descriptor->label());
-
-  if (descriptor->defaultQueue()->hasLabel())
-    queue_->setLabel(descriptor->defaultQueue()->label());
 
   external_texture_cache_ = MakeGarbageCollected<ExternalTextureCache>(this);
 
@@ -376,7 +371,7 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
 }
 
 void GPUDevice::OnCreateRenderPipelineAsyncCallback(
-    std::optional<String> label,
+    const String& label,
     ScriptPromiseResolver* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPURenderPipeline render_pipeline,
@@ -386,10 +381,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
   switch (status) {
     case WGPUCreatePipelineAsyncStatus_Success: {
       GPURenderPipeline* pipeline =
-          MakeGarbageCollected<GPURenderPipeline>(this, render_pipeline);
-      if (label) {
-        pipeline->setLabel(label.value());
-      }
+          MakeGarbageCollected<GPURenderPipeline>(this, render_pipeline, label);
       resolver->Resolve(pipeline);
       break;
     }
@@ -417,7 +409,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
 }
 
 void GPUDevice::OnCreateComputePipelineAsyncCallback(
-    std::optional<String> label,
+    const String& label,
     ScriptPromiseResolver* resolver,
     WGPUCreatePipelineAsyncStatus status,
     WGPUComputePipeline compute_pipeline,
@@ -426,11 +418,8 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
 
   switch (status) {
     case WGPUCreatePipelineAsyncStatus_Success: {
-      GPUComputePipeline* pipeline =
-          MakeGarbageCollected<GPUComputePipeline>(this, compute_pipeline);
-      if (label) {
-        pipeline->setLabel(label.value());
-      }
+      GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
+          this, compute_pipeline, label);
       resolver->Resolve(pipeline);
       break;
     }
@@ -565,13 +554,9 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   if (exception_state.HadException()) {
     resolver->Reject(exception_state);
   } else {
-    std::optional<String> label = {};
-    if (descriptor->hasLabel()) {
-      label = descriptor->label();
-    }
     auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
         WTF::BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
-                      WrapPersistent(this), std::move(label))));
+                      WrapPersistent(this), descriptor->label())));
 
     GetProcs().deviceCreateRenderPipelineAsync(
         GetHandle(), &dawn_desc_info.dawn_desc, callback->UnboundCallback(),
@@ -606,13 +591,9 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
     dawn_desc.nextInChain = &fullSubgroupsOptions.chain;
   }
 
-  std::optional<String> label = {};
-  if (descriptor->hasLabel()) {
-    label = descriptor->label();
-  }
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,
-                    WrapPersistent(this), std::move(label))));
+                    WrapPersistent(this), descriptor->label())));
 
   GetProcs().deviceCreateComputePipelineAsync(GetHandle(), &dawn_desc,
                                               callback->UnboundCallback(),

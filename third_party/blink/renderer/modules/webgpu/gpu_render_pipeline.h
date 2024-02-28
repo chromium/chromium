@@ -113,7 +113,8 @@ class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
       GPUDevice* device,
       const GPURenderPipelineDescriptor* webgpu_desc);
   explicit GPURenderPipeline(GPUDevice* device,
-                             WGPURenderPipeline render_pipeline);
+                             WGPURenderPipeline render_pipeline,
+                             const String& label);
 
   GPURenderPipeline(const GPURenderPipeline&) = delete;
   GPURenderPipeline& operator=(const GPURenderPipeline&) = delete;

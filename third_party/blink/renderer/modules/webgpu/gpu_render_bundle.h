@@ -15,7 +15,9 @@ class GPURenderBundle : public DawnObject<WGPURenderBundle> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit GPURenderBundle(GPUDevice* device, WGPURenderBundle render_bundle);
+  explicit GPURenderBundle(GPUDevice* device,
+                           WGPURenderBundle render_bundle,
+                           const String& label);
 
   GPURenderBundle(const GPURenderBundle&) = delete;
   GPURenderBundle& operator=(const GPURenderBundle&) = delete;

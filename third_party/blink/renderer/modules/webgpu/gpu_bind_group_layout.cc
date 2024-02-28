@@ -121,26 +121,26 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
     return nullptr;
   }
 
-  std::string label;
   WGPUBindGroupLayoutDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
   dawn_desc.entryCount = entry_count;
   dawn_desc.entries = entries.get();
-  if (webgpu_desc->hasLabel()) {
-    label = webgpu_desc->label().Utf8();
+  std::string label = webgpu_desc->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
   GPUBindGroupLayout* layout = MakeGarbageCollected<GPUBindGroupLayout>(
-      device, device->GetProcs().deviceCreateBindGroupLayout(
-                  device->GetHandle(), &dawn_desc));
-  if (webgpu_desc->hasLabel())
-    layout->setLabel(webgpu_desc->label());
+      device,
+      device->GetProcs().deviceCreateBindGroupLayout(device->GetHandle(),
+                                                     &dawn_desc),
+      webgpu_desc->label());
   return layout;
 }
 
 GPUBindGroupLayout::GPUBindGroupLayout(GPUDevice* device,
-                                       WGPUBindGroupLayout bind_group_layout)
-    : DawnObject<WGPUBindGroupLayout>(device, bind_group_layout) {}
+                                       WGPUBindGroupLayout bind_group_layout,
+                                       const String& label)
+    : DawnObject<WGPUBindGroupLayout>(device, bind_group_layout, label) {}
 
 }  // namespace blink

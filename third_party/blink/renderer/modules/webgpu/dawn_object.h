@@ -100,7 +100,8 @@ class ExternalMemoryTracker final {
 class DawnObjectBase {
  public:
   explicit DawnObjectBase(
-      scoped_refptr<DawnControlClientHolder> dawn_control_client);
+      scoped_refptr<DawnControlClientHolder> dawn_control_client,
+      const String& label);
 
   const scoped_refptr<DawnControlClientHolder>& GetDawnControlClient() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
@@ -131,7 +132,7 @@ class DawnObjectBase {
 
 class DawnObjectImpl : public ScriptWrappable, public DawnObjectBase {
  public:
-  explicit DawnObjectImpl(GPUDevice* device);
+  explicit DawnObjectImpl(GPUDevice* device, const String& label);
   ~DawnObjectImpl() override;
 
   WGPUDevice GetDeviceHandle();
@@ -146,8 +147,8 @@ class DawnObjectImpl : public ScriptWrappable, public DawnObjectBase {
 template <typename Handle>
 class DawnObject : public DawnObjectImpl {
  public:
-  DawnObject(GPUDevice* device, Handle handle)
-      : DawnObjectImpl(device),
+  DawnObject(GPUDevice* device, Handle handle, const String& label)
+      : DawnObjectImpl(device, label),
         handle_(handle),
         device_handle_(GetDeviceHandle()) {
     // All WebGPU Blink objects created directly or by the Device hold a
@@ -179,8 +180,9 @@ template <>
 class DawnObject<WGPUDevice> : public DawnObjectBase {
  public:
   DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
-             WGPUDevice handle)
-      : DawnObjectBase(dawn_control_client), handle_(handle) {}
+             WGPUDevice handle,
+             const String& label)
+      : DawnObjectBase(dawn_control_client, label), handle_(handle) {}
   ~DawnObject() { GetProcs().deviceRelease(handle_); }
 
   WGPUDevice GetHandle() const { return handle_; }
@@ -193,8 +195,9 @@ template <>
 class DawnObject<WGPUAdapter> : public DawnObjectBase {
  public:
   DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
-             WGPUAdapter handle)
-      : DawnObjectBase(dawn_control_client), handle_(handle) {}
+             WGPUAdapter handle,
+             const String& label)
+      : DawnObjectBase(dawn_control_client, label), handle_(handle) {}
   ~DawnObject() { GetProcs().adapterRelease(handle_); }
 
   WGPUAdapter GetHandle() const { return handle_; }

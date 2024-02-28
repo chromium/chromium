@@ -32,7 +32,8 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder>,
       GPUDevice* device,
       const GPUCommandEncoderDescriptor* webgpu_desc);
   explicit GPUCommandEncoder(GPUDevice* device,
-                             WGPUCommandEncoder command_encoder);
+                             WGPUCommandEncoder command_encoder,
+                             const String& label);
 
   GPUCommandEncoder(const GPUCommandEncoder&) = delete;
   GPUCommandEncoder& operator=(const GPUCommandEncoder&) = delete;

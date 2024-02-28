@@ -358,8 +358,8 @@ gfx::Rect GetSourceImageSubrect(StaticBitmapImage* image,
 
 }  // namespace
 
-GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
-    : DawnObject<WGPUQueue>(device, queue) {}
+GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue, const String& label)
+    : DawnObject<WGPUQueue>(device, queue, label) {}
 
 void GPUQueue::submit(ScriptState* script_state,
                       const HeapVector<Member<GPUCommandBuffer>>& buffers) {
