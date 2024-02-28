@@ -32,6 +32,7 @@
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -622,6 +623,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
           case KEYWORD_MODE_STARTER_PACK_TABS:
             return use_chrome_refresh_icons ? omnibox::kProductChromeRefreshIcon
                                             : omnibox::kProductIcon;
+
+          case KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE:
+            return omnibox::kSparkIcon;
           default:
             break;
         }
