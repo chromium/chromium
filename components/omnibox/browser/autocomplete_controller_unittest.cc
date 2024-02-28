@@ -1844,36 +1844,79 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
 }
 
 TEST_F(AutocompleteControllerTest, ExtraHeaders) {
-  // Populate template URL service with starter pack entries.
-  std::vector<std::unique_ptr<TemplateURLData>> turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
-  for (auto& turl : turls) {
+  // Populate TemplateURLService with a keyword.
+  {
+    TemplateURLData turl_data;
+    turl_data.SetShortName(u"Keyword");
+    turl_data.SetKeyword(u"keyword");
+    turl_data.SetURL("https://google.com/search?q={searchTerms}");
     controller_.template_url_service_->Add(
-        std::make_unique<TemplateURL>(std::move(*turl)));
+        std::make_unique<TemplateURL>(turl_data));
+  }
+
+  // Populate template URL service with starter pack entries.
+  for (auto& turl_data : TemplateURLStarterPackData::GetStarterPackEngines()) {
+    controller_.template_url_service_->Add(
+        std::make_unique<TemplateURL>(std::move(*turl_data)));
+  }
+
+  {
+    SCOPED_TRACE("@gemini starter pack match gets an extra header.");
+    auto match = CreateStarterPackMatch(u"@gemini");
+    // search_terms_args need to have been set.
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term");
+
+    controller_.SetMatchDestinationURL(&match);
+    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search term");
+    EXPECT_EQ(match.destination_url, "https://gemini.google.com/app");
   }
   {
-    SCOPED_TRACE("@gemini starter pack match get an extra header.");
-    auto match = CreateStarterPackMatch(u"@gemini");
-    // searchbox_stats need to have been set.
-    match.search_terms_args =
-        std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
-    match.search_terms_args->searchbox_stats.set_client_name("chrome");
+    SCOPED_TRACE("@gemini starter pack match with url override");
 
-    controller_.UpdateMatchDestinationURLWithAdditionalSearchboxStats(
-        base::Milliseconds(123), &match);
-    EXPECT_EQ(match.extra_headers, kOmniboxGeminiHeader);
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kStarterPackExpansion,
+        {{"StarterPackGeminiUrlOverride", "https://example.com/"}});
+
+    auto match = CreateStarterPackMatch(u"@gemini");
+    // search_terms_args need to have been set.
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term");
+
+    controller_.SetMatchDestinationURL(&match);
+    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search term");
+    EXPECT_EQ(match.destination_url, "https://example.com/");
+  }
+  {
+    SCOPED_TRACE("@gemini starter pack with invalid input");
+    auto match = CreateStarterPackMatch(u"@gemini");
+    // search_terms_args need to have been set.
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term\n");
+
+    controller_.SetMatchDestinationURL(&match);
+    EXPECT_EQ(match.extra_headers, "");
+    EXPECT_EQ(match.destination_url, "https://gemini.google.com/app");
   }
   {
     SCOPED_TRACE("@bookmarks starter pack match does not get an extra header.");
     auto match = CreateStarterPackMatch(u"@bookmarks");
-    // searchbox_stats need to have been set.
+    // search_terms_args need to have been set.
     match.search_terms_args =
-        std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
-    match.search_terms_args->searchbox_stats.set_client_name("chrome");
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term");
 
-    controller_.UpdateMatchDestinationURLWithAdditionalSearchboxStats(
-        base::Milliseconds(123), &match);
+    controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers, "");
+    EXPECT_EQ(match.destination_url, "chrome://bookmarks/?q=search+term");
+  }
+  {
+    SCOPED_TRACE("search match does not get an extra header.");
+    auto match = CreateSearchMatch("search term", true, 1300);
+
+    controller_.SetMatchDestinationURL(&match);
+    EXPECT_EQ(match.extra_headers, "");
+    EXPECT_EQ(match.destination_url, "https://google.com/search?q=search+term");
   }
 }
 

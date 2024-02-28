@@ -81,6 +81,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "net/http/http_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
@@ -822,10 +823,16 @@ void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
   const TemplateURL* turl = match->GetTemplateURL(template_url_service_, false);
-  // Append an extra header to navigations from the AskGoogle built-in keyword.
+  const std::string search_terms =
+      base::UTF16ToUTF8(match->search_terms_args->search_terms);
+  // Append an extra header to navigations from the @gemini scope.
   if (turl &&
-      turl->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle) {
+      turl->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle &&
+      net::HttpUtil::IsValidHeaderValue(search_terms)) {
+    DCHECK(net::HttpUtil::IsValidHeaderName(kOmniboxGeminiHeader));
     match->extra_headers = kOmniboxGeminiHeader;
+    match->extra_headers += ":";
+    match->extra_headers += search_terms;
   }
 
   auto url = ComputeURLFromSearchTermsArgs(turl, *match->search_terms_args);
@@ -840,21 +847,20 @@ void AutocompleteController::SetMatchDestinationURL(
 GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
     const TemplateURL* template_url,
     const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
-  std::string gemini_url = "";
   if (!template_url) {
     return GURL();
   }
 
-  // Override the URL when in the @gemini scope. If `gemini_url` is
-  // invalid/empty, it will not be overridden.
+  // Skip search term replacement when in the @gemini scope.
+  // TODO(crbug.com/41494524): Replace this logic with a proper fix to support
+  // keywords that do not do search term replacement in omnibox.
   if (template_url->starter_pack_id() ==
       TemplateURLStarterPackData::kAskGoogle) {
-    gemini_url = OmniboxFieldTrial::kGeminiUrlOverride.Get();
+    return GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get());
   }
 
   return GURL(template_url->url_ref().ReplaceSearchTerms(
-      search_terms_args, template_url_service_->search_terms_data(),
-      gemini_url));
+      search_terms_args, template_url_service_->search_terms_data()));
 }
 
 void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
