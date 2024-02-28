@@ -71,14 +71,14 @@ std::vector<uint64_t> CrtcController::GetFormatModifiers(uint32_t format) {
   return drm_->plane_manager()->GetFormatModifiers(crtc_, format);
 }
 
-void CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
-  if (!is_enabled())
-    return;
-  if (!drm_->SetCursor(crtc_, handle, size)) {
-    PLOG(ERROR) << "drmModeSetCursor: device " << drm_->device_path().value()
-                << " crtc " << crtc_ << " handle " << handle << " size "
-                << size.ToString();
+bool CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
+  if (is_enabled() && !drm_->SetCursor(crtc_, handle, size)) {
+    PLOG(WARNING) << "drmModeSetCursor: device " << drm_->device_path().value()
+                  << " crtc " << crtc_ << " handle " << handle << " size "
+                  << size.ToString();
+    return false;
   }
+  return true;
 }
 
 void CrtcController::MoveCursor(const gfx::Point& location) {

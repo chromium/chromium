@@ -43,6 +43,12 @@ BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
              "PrettyPrintDrmModesetConfigLogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chromium will try to use the smallest valid size for the cursor
+// plane that fits the cursor bitmap.
+BASE_FEATURE(kUseDynamicCursorSize,
+             "UseDynamicCursorSize",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(
       kWaylandSurfaceSubmissionInPixelCoordinates);
@@ -58,6 +64,10 @@ bool IsWaylandFractionalScaleV1Enabled() {
 
 bool IsPrettyPrintDrmModesetConfigLogsEnabled() {
   return base::FeatureList::IsEnabled(kPrettyPrintDrmModesetConfigLogs);
+}
+
+bool IsUseDynamicCursorSizeEnabled() {
+  return base::FeatureList::IsEnabled(kUseDynamicCursorSize);
 }
 
 }  // namespace ui

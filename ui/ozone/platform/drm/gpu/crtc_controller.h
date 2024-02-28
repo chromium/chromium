@@ -59,7 +59,9 @@ class CrtcController {
   // gbm will pick a modifier as it allocates the bo.
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format);
 
-  void SetCursor(uint32_t handle, const gfx::Size& size);
+  // Returns whether DrmWrapper successfully sets cursor with the given
+  // parameters.
+  [[nodiscard]] bool SetCursor(uint32_t handle, const gfx::Size& size);
   void MoveCursor(const gfx::Point& location);
 
   // Adds trace records to |context|.

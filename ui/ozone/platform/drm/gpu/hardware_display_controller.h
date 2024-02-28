@@ -211,11 +211,12 @@ class HardwareDisplayController {
       scoped_refptr<PageFlipRequest> page_flip_request,
       gfx::GpuFenceHandle* release_fence);
   void AllocateCursorBuffers();
-  DrmDumbBuffer* NextCursorBuffer();
-  void UpdateCursorImage();
+  DrmDumbBuffer* NextCursorBuffer(const SkBitmap& image);
+  bool UpdateCursorImage();
   void UpdateCursorLocation();
   void ResetCursor();
   void DisableCursor();
+  void ProbeValidCursorSizes();
 
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format) const;
 
@@ -232,9 +233,13 @@ class HardwareDisplayController {
   DrmOverlayPlaneList current_planes_;
   base::TimeTicks time_of_last_flip_;
 
-  std::unique_ptr<DrmDumbBuffer> cursor_buffers_[2];
+  // Stores all the valid width/height for cursor plane. We assume the
+  // width/height are always the same here.
+  std::vector<int> valid_cursor_sizes_;
+  // |cursor_buffer_map_| stores active buffers for each |valid_cursor_sizes_|.
+  base::flat_map<int, std::vector<std::unique_ptr<DrmDumbBuffer>>>
+      cursor_buffer_map_;
   gfx::Point cursor_location_;
-  int cursor_frontbuffer_ = 0;
   raw_ptr<DrmDumbBuffer> current_cursor_ = nullptr;
 
   // Maps each fourcc_format to its preferred modifier which was generated

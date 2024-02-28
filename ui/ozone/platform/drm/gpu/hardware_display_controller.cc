@@ -30,6 +30,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -81,6 +82,21 @@ bool IsRockchipAfbc(uint64_t modifier) {
                                  AFBC_FORMAT_MOD_SPARSE | AFBC_FORMAT_MOD_YTR);
 }
 
+std::unique_ptr<DrmDumbBuffer> MakeCursorDrmBuffer(
+    int size,
+    scoped_refptr<DrmDevice> drm_device) {
+  SkImageInfo info = SkImageInfo::MakeN32Premul(size, size);
+  auto buffer = std::make_unique<DrmDumbBuffer>(drm_device);
+
+  // Don't register a framebuffer for cursors since they are special (they
+  // aren't modesetting buffers and drivers may fail to register them due to
+  // their small sizes).
+  if (!buffer->Initialize(info)) {
+    LOG(FATAL) << "Failed to initialize cursor buffer";
+  }
+  return buffer;
+}
+
 }  // namespace
 
 HardwareDisplayController::HardwareDisplayController(
@@ -89,6 +105,7 @@ HardwareDisplayController::HardwareDisplayController(
     raw_ptr<DrmModifiersFilter> drm_modifiers_filter)
     : origin_(origin), drm_modifiers_filter_(drm_modifiers_filter) {
   AddCrtc(std::move(controller));
+  ProbeValidCursorSizes();
   AllocateCursorBuffers();
 }
 
@@ -350,7 +367,7 @@ void HardwareDisplayController::SetCursor(SkBitmap bitmap) {
   if (bitmap.drawsNothing()) {
     current_cursor_ = nullptr;
   } else {
-    current_cursor_ = NextCursorBuffer();
+    current_cursor_ = NextCursorBuffer(bitmap);
     DrawCursor(current_cursor_, bitmap);
   }
 
@@ -515,27 +532,35 @@ void HardwareDisplayController::OnModesetComplete(
 
 void HardwareDisplayController::AllocateCursorBuffers() {
   TRACE_EVENT0("drm", "HDC::AllocateCursorBuffers");
-  gfx::Size max_cursor_size = GetMaximumCursorSize(*GetDrmDevice());
-  SkImageInfo info = SkImageInfo::MakeN32Premul(max_cursor_size.width(),
-                                                max_cursor_size.height());
-  for (size_t i = 0; i < std::size(cursor_buffers_); ++i) {
-    cursor_buffers_[i] = std::make_unique<DrmDumbBuffer>(GetDrmDevice());
-    // Don't register a framebuffer for cursors since they are special (they
-    // aren't modesetting buffers and drivers may fail to register them due to
-    // their small sizes).
-    if (!cursor_buffers_[i]->Initialize(info)) {
-      LOG(FATAL) << "Failed to initialize cursor buffer";
+  constexpr int kActiveBufferCount = 2;
+
+  for (auto& size : valid_cursor_sizes_) {
+    for (int i = 0; i < kActiveBufferCount; i++) {
+      cursor_buffer_map_[size].push_back(
+          MakeCursorDrmBuffer(size, GetDrmDevice()));
     }
   }
 }
 
-DrmDumbBuffer* HardwareDisplayController::NextCursorBuffer() {
-  ++cursor_frontbuffer_;
-  cursor_frontbuffer_ %= std::size(cursor_buffers_);
-  return cursor_buffers_[cursor_frontbuffer_].get();
+DrmDumbBuffer* HardwareDisplayController::NextCursorBuffer(
+    const SkBitmap& image) {
+  DrmDumbBuffer* next_buffer = nullptr;
+  // Find the smallest buffer size that fits the |image| size and return the not
+  // in-use buffer with that size.
+  for (auto size : valid_cursor_sizes_) {
+    if (image.width() <= size && image.height() <= size) {
+      auto& active_buffers = cursor_buffer_map_[size];
+      next_buffer = active_buffers.front().get();
+      if (next_buffer == current_cursor_) {
+        next_buffer = active_buffers.back().get();
+      }
+      break;
+    }
+  }
+  return next_buffer;
 }
 
-void HardwareDisplayController::UpdateCursorImage() {
+bool HardwareDisplayController::UpdateCursorImage() {
   uint32_t handle = 0;
   gfx::Size size;
 
@@ -544,8 +569,14 @@ void HardwareDisplayController::UpdateCursorImage() {
     size = current_cursor_->GetSize();
   }
 
-  for (const auto& controller : crtc_controllers_)
-    controller->SetCursor(handle, size);
+  // |success| is only used for tests in ProbeValidCursorSizes().
+  bool success = true;
+  for (const auto& controller : crtc_controllers_) {
+    if (!controller->SetCursor(handle, size)) {
+      success = false;
+    }
+  }
+  return success;
 }
 
 void HardwareDisplayController::UpdateCursorLocation() {
@@ -556,6 +587,47 @@ void HardwareDisplayController::UpdateCursorLocation() {
 void HardwareDisplayController::ResetCursor() {
   UpdateCursorLocation();
   UpdateCursorImage();
+}
+
+void HardwareDisplayController::ProbeValidCursorSizes() {
+  gfx::Size max_cursor_size_supported = GetMaximumCursorSize(*GetDrmDevice());
+  int max_cursor_buffer_size = std::min(max_cursor_size_supported.width(),
+                                        max_cursor_size_supported.height());
+
+  // Only use dynamic cursor size on Intel GPUs.
+  std::optional<std::string> driver = GetDrmDevice()->GetDriverName();
+  bool use_dynamic_cursor_size = IsUseDynamicCursorSizeEnabled() &&
+                                 driver.has_value() && *driver == "i915";
+  if (!use_dynamic_cursor_size) {
+    valid_cursor_sizes_.push_back(max_cursor_buffer_size);
+    return;
+  }
+
+  // According to Intel GPU spec and i915 driver code, Intel GPUs support cursor
+  // buffer with width of 64, 128 or 256 for the cursor plane. As we can only
+  // read the max supported width from DRM directly, a probe is done here to
+  // determine all the supported sizes.
+  constexpr int kMinCursorSize = 64;
+  int size = kMinCursorSize;
+  while (size <= max_cursor_buffer_size) {
+    // Create a test buffer and try UpdateCursorImage() to determine if a buffer
+    // size is supported.
+    // Although rectangle buffers are supported, square sizes are used here to
+    // simplify the probe process.
+    SkBitmap image;
+    SkImageInfo info =
+        SkImageInfo::Make(size, size, kN32_SkColorType, kPremul_SkAlphaType);
+    image.allocPixels(info);
+    image.eraseColor(SK_ColorTRANSPARENT);
+    auto cursor_buffer = MakeCursorDrmBuffer(size, GetDrmDevice());
+    current_cursor_ = cursor_buffer.get();
+    DrawCursor(current_cursor_, image);
+    if (UpdateCursorImage()) {
+      valid_cursor_sizes_.push_back(size);
+    }
+    current_cursor_ = nullptr;
+    size *= 2;
+  }
 }
 
 }  // namespace ui

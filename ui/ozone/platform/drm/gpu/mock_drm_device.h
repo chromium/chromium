@@ -222,7 +222,9 @@ class MockDrmDevice : public DrmDevice {
 
   uint32_t current_framebuffer() const { return current_framebuffer_; }
 
-  const std::vector<sk_sp<SkSurface>> buffers() const { return buffers_; }
+  const base::flat_map<uint32_t, sk_sp<SkSurface>> buffers() const {
+    return buffers_;
+  }
 
   int last_planes_committed_count() const {
     return last_planes_committed_count_;
@@ -393,7 +395,7 @@ class MockDrmDevice : public DrmDevice {
 
   std::optional<std::string> driver_name_ = "mock";
 
-  std::vector<sk_sp<SkSurface>> buffers_;
+  base::flat_map<uint32_t /*handle*/, sk_sp<SkSurface>> buffers_;
 
   std::map<uint32_t, uint32_t> crtc_cursor_map_;
 
