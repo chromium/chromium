@@ -8569,7 +8569,6 @@ test("unit_tests") {
       "//chrome/browser/apps/app_deduplication_service:unit_tests",
       "//chrome/browser/apps/app_discovery_service:unit_tests",
       "//chrome/browser/apps/app_preload_service:unit_tests",
-      "//chrome/browser/apps/app_provisioning_service",
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash",
       "//chrome/browser/ash:arc_test_support",
