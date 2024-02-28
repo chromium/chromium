@@ -3264,7 +3264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.AccountPicker"
-    enum="IOSSaveToPhotosAccountPickerType" expires_after="2024-03-19">
+    enum="IOSSaveToPhotosAccountPickerType" expires_after="2024-08-18">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -3286,7 +3286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.GTLRErrorObjectDomainErrorCode"
-    enum="HttpResponseCode" expires_after="2024-03-29">
+    enum="HttpResponseCode" expires_after="2024-08-18">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
