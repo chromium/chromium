@@ -39,10 +39,10 @@ constexpr int kTickStrokeWidth = 2;
 constexpr int kBucketCount = 4;
 constexpr double kBucketWidthDegrees = 180 / kBucketCount;
 
-constexpr int kMemorySaverChartPmf25PercentileBytes = 62 * 1024 * 1024;
-constexpr int kMemorySaverChartPmf50PercentileBytes = 112 * 1024 * 1024;
-constexpr int kMemorySaverChartPmf75PercentileBytes = 197 * 1024 * 1024;
-constexpr int kMemorySaverChartPmf99PercentileBytes = 800 * 1024 * 1024;
+constexpr int64_t kMemorySaverChartPmf25PercentileBytes = 62 * 1024 * 1024;
+constexpr int64_t kMemorySaverChartPmf50PercentileBytes = 112 * 1024 * 1024;
+constexpr int64_t kMemorySaverChartPmf75PercentileBytes = 197 * 1024 * 1024;
+constexpr int64_t kMemorySaverChartPmf99PercentileBytes = 800 * 1024 * 1024;
 
 // Enum to represent memory savings quartiles.
 enum MemorySavingsQuartile {

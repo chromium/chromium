@@ -43,8 +43,9 @@
 #include "ui/views/test/button_test_api.h"
 
 namespace {
-constexpr int kMemorySavingsKilobytes = 100 * 1024;
-constexpr int kHighMemorySavingsKilobytes = 300 * 1024;
+constexpr int64_t kMemorySavingsKilobytes = 100 * 1024;
+constexpr int64_t kHighMemorySavingsKilobytes = 300 * 1024;
+constexpr int64_t kVeryHighMemorySavingsKilobytes = 3 * 1024 * 1024;
 }  // namespace
 
 class MemorySaverChipViewTest
@@ -74,9 +75,6 @@ class MemorySaverChipViewTest
   }
 
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // When the previous page has a tab discard state of true, when the icon is
@@ -258,6 +256,30 @@ TEST_F(MemorySaverChipViewTest, ShouldLogMetricsForCelebratoryExpandedChip) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.MemorySaver.ChipState",
       MemorySaverChipState::kExpandedWithSavings, 1);
+}
+
+// When a tab is proactively discarded with >2Gb memory saving, we should show
+// the expanded chip with savings, and not crash.
+TEST_F(MemorySaverChipViewTest, MoreThan2GbMemorySavings) {
+  // Skip the "education" expansion.
+  SetChipExpandedCount(MemorySaverChipTabHelper::kChipAnimationCount);
+
+  // Add a new tab with a >2GB memory saving.
+  AddNewTab(kVeryHighMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  // Fast-forward time, to exceed the time threshold for the chip to be shown.
+  task_environment()->AdvanceClock(base::Hours(8));
+  SetTabDiscardState(0, true);
+
+  // Ensure that the expanded-with-savings chip was shown.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  MemorySaverChipTabHelper* const tab_helper =
+      MemorySaverChipTabHelper::FromWebContents(web_contents);
+  EXPECT_EQ(tab_helper->chip_state(),
+            memory_saver::ChipState::EXPANDED_WITH_SAVINGS);
+  EXPECT_TRUE(GetPageActionIconView()->GetVisible());
 }
 
 class MemorySaverChipViewWithPerformanceSidePanelTest

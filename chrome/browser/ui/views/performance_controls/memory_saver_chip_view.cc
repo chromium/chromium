@@ -108,7 +108,7 @@ void MemorySaverChipView::UpdateImpl() {
       }
       case memory_saver::ChipState::EXPANDED_WITH_SAVINGS: {
         SetVisible(true);
-        int const memory_savings =
+        int64_t const memory_savings =
             memory_saver::GetDiscardedMemorySavingsInBytes(web_contents);
         std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
         SetLabel(l10n_util::GetStringFUTF16(IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL,
