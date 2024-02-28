@@ -742,23 +742,6 @@ ui::AXTreeID ViewAccessibility::GetChildTreeID() const {
   return child_tree_id_ ? *child_tree_id_ : ui::AXTreeIDUnknown();
 }
 
-void ViewAccessibility::OverrideCharacterOffsets(
-    const std::vector<int32_t>& offsets) {
-  override_data_.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, offsets);
-}
-
-void ViewAccessibility::OverrideWordStarts(
-    const std::vector<int32_t>& offsets) {
-  override_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
-                                     offsets);
-}
-
-void ViewAccessibility::OverrideWordEnds(const std::vector<int32_t>& offsets) {
-  override_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
-                                     offsets);
-}
-
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
   return nullptr;
 }

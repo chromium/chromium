@@ -314,16 +314,6 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideChildTreeID(ui::AXTreeID tree_id);
   ui::AXTreeID GetChildTreeID() const;
 
-  // Deprecated. Use ViewAccessibility::SetCharacterOffsets instead.
-  // See https://crbug.com/324485311.
-  void OverrideCharacterOffsets(const std::vector<int32_t>& offsets);
-  // Deprecated. Use ViewAccessibility::SetWordStarts instead.
-  // See https://crbug.com/324485311.
-  void OverrideWordStarts(const std::vector<int32_t>& offsets);
-  // Deprecated. Use ViewAccessibility::SetWordEnds instead.
-  // See https://crbug.com/324485311.
-  void OverrideWordEnds(const std::vector<int32_t>& offsets);
-
   // Returns the accessibility object that represents the View whose
   // accessibility is managed by this instance. This may be an AXPlatformNode or
   // it may be a native accessible object implemented by another class.
