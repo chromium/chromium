@@ -112,6 +112,10 @@ void IpProtectionProxyConfigRetriever::GetProxyConfig(
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kGetProxyConfigTrafficAnnotation);
+  // Retry on network changes, as sometimes this occurs during browser startup.
+  url_loader->SetRetryOptions(
+      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
   url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
