@@ -46,8 +46,7 @@ enum class ButtonState;
 // - Explicit modifications override: such as displaying specific text when
 //   intercept bubbles are displayed.
 // - Sync paused/error state.
-class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
-                                    public syncer::SyncServiceObserver {
+class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer {
  public:
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Browser* browser);
 
@@ -98,10 +97,6 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override;
 
-  // SyncServiceObserver:
-  void OnStateChanged(syncer::SyncService*) override;
-  void OnSyncShutdown(syncer::SyncService*) override;
-
   TextState GetDefaultTextState() const;
 
   std::u16string GetProfileName() const;
@@ -111,7 +106,6 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
   gfx::Image GetProfileAvatarImage(int preferred_size) const;
   // Returns the count of incognito or guest windows attached to the profile.
   int GetWindowCount() const;
-  std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType() const;
   gfx::Image GetGaiaAccountImage() const;
 
   // Callback used to remove the explicit text shown and reset to the default.
@@ -122,8 +116,6 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observation_{this};
 
   const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
   const raw_ptr<Browser> browser_;
@@ -131,10 +123,6 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
   TextState button_text_state_ = TextState::kNotShowing;
 
   bool enterprise_text_hide_scheduled_ = false;
-
-  // Caches the value of the last error so the class can detect when it
-  // changes and notify |avatar_toolbar_button_|.
-  std::optional<AvatarSyncErrorType> last_avatar_error_;
 
   // Text to be displayed while the state is
   // `ButtonState::kExplicitTextShowing`.
