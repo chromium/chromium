@@ -179,7 +179,6 @@ class Internals final : public ScriptWrappable {
 
   Element* innerEditorElement(Element* container, ExceptionState&) const;
 
-  String visiblePlaceholder(Element*);
   bool isValidationMessageVisible(Element*);
   void selectColorInColorChooser(Element*, const String& color_value);
   void endColorChooser(Element*);
