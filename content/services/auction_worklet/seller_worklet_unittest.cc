@@ -4991,6 +4991,20 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdTimedOut) {
   run_loop.Run();
 }
 
+// Test that seller timeout zero results in no score produced.
+TEST_F(SellerWorkletRealTimeTest, ScoreAdZeroTimeOut) {
+  seller_timeout_ = base::TimeDelta();
+  RunScoreAdWithReturnValueExpectingResult(
+      "10", /*expected_score=*/0,
+      /*expected_errors=*/{"scoreAd() aborted due to zero timeout."});
+
+  // Test robustness with negative values, too.
+  seller_timeout_ = base::Seconds(-1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "10", /*expected_score=*/0,
+      /*expected_errors=*/{"scoreAd() aborted due to zero timeout."});
+}
+
 TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
   // Use a very long default script timeout, and a short seller timeout, so
   // that if the seller script with endless loop times out, we know that the

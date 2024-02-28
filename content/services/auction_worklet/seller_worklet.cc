@@ -969,6 +969,15 @@ void SellerWorklet::V8State::ScoreAd(
   // it's bound to the closure to clean things up if this method got cancelled.
   cleanup_score_ad_task.ReplaceClosure(base::OnceClosure());
 
+  // We may not be allowed any time to run.
+  if (seller_timeout.has_value() && !seller_timeout->is_positive()) {
+    PostScoreAdCallbackToUserThreadOnError(
+        std::move(callback),
+        /*scoring_latency=*/base::TimeDelta(),
+        /*errors=*/{"scoreAd() aborted due to zero timeout."});
+    return;
+  }
+
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 

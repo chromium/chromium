@@ -1062,9 +1062,25 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     bool restrict_to_kanon_ads) {
   // Can't make a bid without any ads, or if we aren't permitted to spend any
   // time on it.
-  if (!bidder_worklet_non_shared_params.ads ||
-      (per_buyer_timeout.has_value() && per_buyer_timeout.value().is_zero())) {
+  if (!bidder_worklet_non_shared_params.ads) {
     return std::nullopt;
+  }
+
+  std::vector<std::string> errors_out;
+  if (per_buyer_timeout.has_value() &&
+      !per_buyer_timeout.value().is_positive()) {
+    errors_out.push_back("generateBid() aborted due to zero timeout.");
+    return std::make_optional(SingleGenerateBidResult(
+        std::unique_ptr<ContextRecycler>(),
+        std::vector<mojom::BidderWorkletBidPtr>(),
+        /*bidding_signals_data_version=*/std::nullopt,
+        /*debug_loss_report_url=*/std::nullopt,
+        /*debug_win_report_url=*/std::nullopt,
+        /*set_priority=*/std::nullopt,
+        /*update_priority_signals_overrides=*/{},
+        /*pa_requests=*/{},
+        /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+        std::move(errors_out)));
   }
 
   if (context_recycler_for_rerun) {
@@ -1072,7 +1088,6 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   base::TimeTicks start = base::TimeTicks::Now();
-  std::vector<std::string> errors_out;
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
