@@ -565,7 +565,8 @@ void TabbedPane::AddTabInternal(size_t index,
   contents->SetVisible(false);
   contents->GetViewAccessibility().SetRole(ax::mojom::Role::kTabPanel);
   if (!title.empty()) {
-    contents->GetViewAccessibility().OverrideName(title);
+    contents->GetViewAccessibility().SetName(title,
+                                             ax::mojom::NameFrom::kAttribute);
   }
 
   tab_strip_->AddChildViewAt(

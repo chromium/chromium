@@ -616,15 +616,14 @@ void ViewAccessibility::OverrideLabelledBy(
   const_cast<View*>(labelled_by_view)->GetAccessibleNodeData(&label_data);
   const std::string& label =
       label_data.GetStringAttribute(ax::mojom::StringAttribute::kName).empty()
-          ? labelled_by_view->GetViewAccessibility()
-                .override_data_.GetStringAttribute(
-                    ax::mojom::StringAttribute::kName)
+          ? labelled_by_view->GetViewAccessibility().data_.GetStringAttribute(
+                ax::mojom::StringAttribute::kName)
           : label_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
 
-  // |OverrideName| includes logic to populate override_data_.role with the
-  // View's default role in cases where |OverrideRole| was not called (yet).
+  // |SetName| includes logic to populate data_.role with the
+  // View's default role in cases where |SetRole| was not called (yet).
   // This ensures |AXNodeData::SetName| is not called with |Role::kUnknown|.
-  OverrideName(label, name_from);
+  SetName(label, name_from);
 
   int32_t labelled_by_id =
       labelled_by_view->GetViewAccessibility().GetUniqueId().Get();

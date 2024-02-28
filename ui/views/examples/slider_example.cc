@@ -39,7 +39,8 @@ void SliderExample::CreateExampleView(View* container) {
   slider_default_ =
       container_default->AddChildView(std::make_unique<Slider>(this));
   slider_default_->SetValue(0.5);
-  slider_default_->GetViewAccessibility().OverrideName(default_name);
+  slider_default_->GetViewAccessibility().SetName(
+      default_name, ax::mojom::NameFrom::kAttribute);
 
   auto* const container_minimal =
       container->AddChildView(std::make_unique<BoxLayoutView>());
@@ -52,7 +53,8 @@ void SliderExample::CreateExampleView(View* container) {
       container_minimal->AddChildView(std::make_unique<Slider>(this));
   slider_minimal_->SetValue(0.5);
   slider_minimal_->SetRenderingStyle(Slider::RenderingStyle::kMinimalStyle);
-  slider_minimal_->GetViewAccessibility().OverrideName(minimal_name);
+  slider_minimal_->GetViewAccessibility().SetName(
+      minimal_name, ax::mojom::NameFrom::kAttribute);
 }
 
 void SliderExample::SliderValueChanged(Slider* sender,

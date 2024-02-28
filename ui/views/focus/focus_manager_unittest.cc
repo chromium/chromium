@@ -1191,10 +1191,12 @@ TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
 
   // In order to pass the accessibility paint checks, focusable views must have
   // a non-empty accessible name, or have their name set to explicitly empty.
-  parent1->GetViewAccessibility().OverrideName(u"Parent 1");
-  parent2->GetViewAccessibility().OverrideName(
+  parent1->GetViewAccessibility().SetName(u"Parent 1",
+                                          ax::mojom::NameFrom::kAttribute);
+  parent2->GetViewAccessibility().SetName(
       u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  child->GetViewAccessibility().OverrideName("uChild");
+  child->GetViewAccessibility().SetName("uChild",
+                                        ax::mojom::NameFrom::kAttribute);
 
   widget->Activate();
   parent1->RequestFocus();

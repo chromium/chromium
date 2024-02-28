@@ -462,7 +462,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, GetAuthorUniqueIdNonDefault) {
   ASSERT_EQ(u"view_1", button_accessibility()->GetAuthorUniqueId());
 }
 
-TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
+TEST_F(ViewAXPlatformNodeDelegateTest, SetNameAndDescription) {
   // Initially the button has no name and no description.
   EXPECT_EQ(button_accessibility()->GetName(), "");
   EXPECT_EQ(button_accessibility()->GetNameFrom(), ax::mojom::NameFrom::kNone);
@@ -471,20 +471,21 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
             ax::mojom::DescriptionFrom::kNone);
 
   // Setting the name to the empty string without explicitly setting the
-  // source to reflect that should trigger a DCHECK in OverrideName.
-  EXPECT_DCHECK_DEATH_WITH(button_accessibility()->OverrideName(""),
-                           "Check failed: name.empty\\(\\) == name_from == "
-                           "ax::mojom::NameFrom::kAttributeExplicitlyEmpty");
+  // source to reflect that should trigger a DCHECK in SetName.
+  EXPECT_DCHECK_DEATH_WITH(
+      button_accessibility()->SetName("", ax::mojom::NameFrom::kAttribute),
+      "Check failed: name.empty\\(\\) == name_from == "
+      "ax::mojom::NameFrom::kAttributeExplicitlyEmpty");
 
   // Setting the name to a non-empty string with a NameFrom of
-  // kAttributeExplicitlyEmpty should trigger a DCHECK in OverrideName.
+  // kAttributeExplicitlyEmpty should trigger a DCHECK in SetName.
   EXPECT_DCHECK_DEATH_WITH(
-      button_accessibility()->OverrideName(
+      button_accessibility()->SetName(
           "foo", ax::mojom::NameFrom::kAttributeExplicitlyEmpty),
       "Check failed: name.empty\\(\\) == name_from == "
       "ax::mojom::NameFrom::kAttributeExplicitlyEmpty");
 
-  button_accessibility()->OverrideName(
+  button_accessibility()->SetName(
       "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   EXPECT_EQ(button_accessibility()->GetName(), "");
   EXPECT_EQ(button_accessibility()->GetNameFrom(),
@@ -513,7 +514,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
 
   // Overriding the name and description without specifying the sources
   // should set the sources to kAttribute and kAriaDescription respectively.
-  button_accessibility()->OverrideName("Button's Name");
+  button_accessibility()->SetName("Button's Name",
+                                  ax::mojom::NameFrom::kAttribute);
   EXPECT_EQ(button_accessibility()->GetName(), "Button's Name");
   EXPECT_EQ(button_accessibility()->GetNameFrom(),
             ax::mojom::NameFrom::kAttribute);
@@ -530,8 +532,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
   // Set the name and description of the label using other source types
   // for greater test coverage (i.e. rather than those types being the
   // most appropriate choice.)
-  label_accessibility()->OverrideName("Label's Name",
-                                      ax::mojom::NameFrom::kContents);
+  label_accessibility()->SetName("Label's Name",
+                                 ax::mojom::NameFrom::kContents);
   EXPECT_EQ(label_accessibility()->GetName(), "Label's Name");
   EXPECT_EQ(label_accessibility()->GetNameFrom(),
             ax::mojom::NameFrom::kContents);
@@ -753,9 +755,9 @@ TEST_F(ViewAXPlatformNodeDelegateTest, ComputeViewListItemName) {
   child_view_2->SetRole(ax::mojom::Role::kLink);
   child_view_3->SetRole(ax::mojom::Role::kStaticText);
 
-  child_view_1->OverrideName("1");
-  child_view_2->OverrideName("2");
-  child_view_3->OverrideName("3");
+  child_view_1->SetName("1", ax::mojom::NameFrom::kAttribute);
+  child_view_2->SetName("2", ax::mojom::NameFrom::kAttribute);
+  child_view_3->SetName("3", ax::mojom::NameFrom::kAttribute);
 
   EXPECT_EQ(parent_view->ComputeListItemNameFromContent(), L"123");
 }
