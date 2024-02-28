@@ -132,10 +132,6 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
 bool PrimaryAccountMutatorImpl::RemovePrimaryAccountButKeepTokens(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
-  CHECK(source_metric == signin_metrics::ProfileSignout::
-                             kCancelSyncConfirmationOnWebOnlySignedIn ||
-        source_metric ==
-            signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin)) {
     return false;
   }

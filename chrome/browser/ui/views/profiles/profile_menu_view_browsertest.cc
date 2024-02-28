@@ -430,9 +430,13 @@ class ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature
  public:
   ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature() {
     if (uno_enabled()) {
-      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop},
+          {});
     } else {
-      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          {},
+          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop});
     }
   }
 
@@ -463,6 +467,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1, tab_strip->active_index());
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
   EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL(uno_enabled()));
+  if (uno_enabled()) {
+    EXPECT_FALSE(IdentityManagerFactory::GetForProfile(browser()->profile())
+                     ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
 }
 
 // Checks that the NTP is navigated to the logout URL, instead of creating
@@ -484,6 +492,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1, tab_strip->count());
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
   EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL(uno_enabled()));
+  if (uno_enabled()) {
+    EXPECT_FALSE(IdentityManagerFactory::GetForProfile(browser()->profile())
+                     ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -510,9 +522,13 @@ class ProfileMenuViewSignoutTestWithNetwork
         has_network_error()));
 
     if (uno_enabled()) {
-      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop},
+          {});
     } else {
-      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+      feature_list_.InitWithFeatures(
+          {},
+          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop});
     }
   }
 
@@ -597,6 +613,10 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewSignoutTestWithNetwork, Signout) {
       IdentityManagerFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(identity_manager->HasAccountWithRefreshToken(account_id()),
             !has_network_error());
+  if (uno_enabled()) {
+    EXPECT_FALSE(
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
