@@ -7527,14 +7527,9 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 
 // Smoke test for the case where a proxy for a given subframe is created before
 // other subframe proxies, that might be below it in the indexed order.
-// TODO(1495328): Failing on Mac bots
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SubframesProxiesInWrongOrderSmokeTest DISABLED_SubframesProxiesInWrongOrderSmokeTest
-#else
-#define MAYBE_SubframesProxiesInWrongOrderSmokeTest SubframesProxiesInWrongOrderSmokeTest
-#endif
+// TODO(1495328,40269878): Failing on bots in multiple platforms
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
-                       MAYBE_SubframesProxiesInWrongOrderSmokeTest) {
+                       DISABLED_SubframesProxiesInWrongOrderSmokeTest) {
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
       "/set-header"
