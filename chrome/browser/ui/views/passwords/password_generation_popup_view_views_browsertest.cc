@@ -213,13 +213,28 @@ class PasswordGenerationPopupViewWithExperimentsBrowsertest
     ON_CALL(controller(), password).WillByDefault(ReturnRef(password_));
   }
 
-  void PrepareOfferGenerationState() {
+  void PrepareOfferGenerationState(const std::string& experiment) {
     ON_CALL(controller(), state)
         .WillByDefault(Return(PasswordGenerationPopupController::
                                   GenerationUIState::kOfferGeneration));
+
+    int message_id = IDS_PASSWORD_GENERATION_SUGGESTION_GPM;
+    if (experiment == "trusted_advice") {
+      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE;
+    } else if (experiment == "safety_first") {
+      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST;
+    } else if (experiment == "try_something_new") {
+      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW;
+    } else if (experiment == "convenience") {
+      message_id = IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE;
+    }
     ON_CALL(controller(), SuggestedText)
-        .WillByDefault(Return(
-            l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM)));
+        .WillByDefault(Return(l10n_util::GetStringUTF16(message_id)));
+
+    if (experiment == "nudge_password") {
+      ON_CALL(controller(), ShouldShowNudgePassword)
+          .WillByDefault(Return(true));
+    }
   }
 
   void ShowUi(const std::string& name) override {
@@ -244,7 +259,7 @@ class PasswordGenerationPopupViewWithExperimentsBrowsertest
 
 IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewWithExperimentsBrowsertest,
                        OfferPasswordGeneration) {
-  PrepareOfferGenerationState();
+  PrepareOfferGenerationState(std::get<2>(GetParam()));
   ShowAndVerifyUi();
 }
 
