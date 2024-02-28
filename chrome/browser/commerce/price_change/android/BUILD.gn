@@ -12,11 +12,13 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleProperties.java",
     "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleView.java",
     "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/price_change/PriceChangeModuleViewUtils.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
     "//base:base_shared_preferences_java",
+    "//chrome/android/features/tab_ui:java_resources",
     "//chrome/browser/commerce/android:java",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/magic_stack/android:java",
@@ -31,6 +33,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/image_fetcher:java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -44,6 +47,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/price_change_module_favicon_background.xml",
+    "java/res/drawable/price_change_module_image_background.xml",
     "java/res/drawable/price_change_module_price_drop_background.xml",
     "java/res/layout/price_change_module_layout.xml",
     "java/res/values/dimens.xml",
