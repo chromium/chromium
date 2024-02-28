@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
+#include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
@@ -356,8 +356,7 @@ void TextPainter::PaintDecorationLine(
     const TextDecorationInfo& decoration_info,
     const Color& line_color,
     const TextFragmentPaintInfo* fragment_paint_info) {
-  AppliedDecorationPainter decoration_painter(graphics_context_,
-                                              decoration_info);
+  DecorationLinePainter decoration_painter(graphics_context_, decoration_info);
   if (fragment_paint_info &&
       decoration_info.TargetStyle().TextDecorationSkipInk() ==
           ETextDecorationSkipInk::kAuto) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
+#include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -50,7 +50,7 @@ bool ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
 
 }  // namespace
 
-void AppliedDecorationPainter::DrawLineForText(
+void DecorationLinePainter::DrawLineForText(
     GraphicsContext& context,
     const gfx::PointF& pt,
     float width,
@@ -85,10 +85,10 @@ void AppliedDecorationPainter::DrawLineForText(
   }
 }
 
-Path AppliedDecorationPainter::GetPathForTextLine(const gfx::PointF& pt,
-                                                  float width,
-                                                  float stroke_thickness,
-                                                  StrokeStyle stroke_style) {
+Path DecorationLinePainter::GetPathForTextLine(const gfx::PointF& pt,
+                                               float width,
+                                               float stroke_thickness,
+                                               StrokeStyle stroke_style) {
   Path path;
   DCHECK_NE(stroke_style, kWavyStroke);
   if (ShouldUseStrokeForTextLine(stroke_style)) {
@@ -102,8 +102,8 @@ Path AppliedDecorationPainter::GetPathForTextLine(const gfx::PointF& pt,
   return path;
 }
 
-void AppliedDecorationPainter::Paint(const Color& color,
-                                     const cc::PaintFlags* flags) {
+void DecorationLinePainter::Paint(const Color& color,
+                                  const cc::PaintFlags* flags) {
   StyledStrokeData styled_stroke;
   styled_stroke.SetStyle(decoration_info_.StrokeStyle());
   styled_stroke.SetThickness(decoration_info_.ResolvedThickness());
@@ -138,7 +138,7 @@ void AppliedDecorationPainter::Paint(const Color& color,
   }
 }
 
-void AppliedDecorationPainter::PaintWavyTextDecoration() {
+void DecorationLinePainter::PaintWavyTextDecoration() {
   // We need this because of the clipping we're doing below, as we paint both
   // overlines and underlines here. That clip would hide the overlines, when
   // painting the underlines.

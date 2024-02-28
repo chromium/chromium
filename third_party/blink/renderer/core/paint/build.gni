@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 blink_core_sources_paint = [
-  "applied_decoration_painter.cc",
-  "applied_decoration_painter.h",
   "background_image_geometry.cc",
   "background_image_geometry.h",
   "block_paint_invalidator.cc",
@@ -40,6 +38,8 @@ blink_core_sources_paint = [
   "custom_scrollbar_theme.cc",
   "custom_scrollbar_theme.h",
   "decorating_box.h",
+  "decoration_line_painter.cc",
+  "decoration_line_painter.h",
   "document_marker_painter.cc",
   "document_marker_painter.h",
   "embedded_content_painter.cc",

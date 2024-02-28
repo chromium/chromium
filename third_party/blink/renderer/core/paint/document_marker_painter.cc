@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
+#include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -202,7 +202,7 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
     }
     context.SetStrokeColor(marker_color);
 
-    AppliedDecorationPainter::DrawLineForText(
+    DecorationLinePainter::DrawLineForText(
         context,
         gfx::PointF(box_origin.left + start,
                     (box_origin.top + logical_height.ToInt() - line_thickness)
