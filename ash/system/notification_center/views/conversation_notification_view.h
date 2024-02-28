@@ -25,6 +25,7 @@ class FlexLayoutView;
 namespace ash {
 
 class NotificationActionsView;
+class AshNotificationExpandButton;
 class TimestampView;
 
 class ASH_EXPORT ConversationNotificationView
@@ -82,6 +83,7 @@ class ASH_EXPORT ConversationNotificationView
   raw_ptr<views::View> collapsed_preview_container_ = nullptr;
   raw_ptr<message_center::NotificationControlButtonsView>
       control_buttons_view_ = nullptr;
+  raw_ptr<AshNotificationExpandButton> expand_button_ = nullptr;
   raw_ptr<views::View> inline_settings_view_ = nullptr;
   raw_ptr<views::View> right_controls_container_ = nullptr;
   raw_ptr<TimestampView> timestamp_ = nullptr;

@@ -4,6 +4,7 @@
 
 #include "ash/system/notification_center/views/conversation_notification_view.h"
 
+#include "ash/system/notification_center/views/notification_actions_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/events/test/test_event.h"
 #include "ui/message_center/message_center.h"
@@ -46,7 +47,11 @@ class ConversationNotificationViewTest : public AshTestBase {
     rich_data.items = items;
     rich_data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
-
+    auto reply_button = message_center::ButtonInfo(u"Reply");
+    reply_button.placeholder = std::make_optional(u"Placeholder");
+    std::vector<message_center::ButtonInfo> buttons;
+    buttons.push_back(reply_button);
+    rich_data.buttons = buttons;
     return std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"title",
         u"test message", ui::ImageModel(), /*display_source=*/std::u16string(),
@@ -56,6 +61,8 @@ class ConversationNotificationViewTest : public AshTestBase {
   ConversationNotificationView* notification_view() {
     return notification_view_.get();
   }
+
+  views::View* actions_view() { return notification_view_->actions_view_; }
 
   views::View* collapsed_preview_container() {
     return notification_view_->collapsed_preview_container_;
@@ -134,4 +141,17 @@ TEST_F(ConversationNotificationViewTest, ToggleInlineSettings) {
   EXPECT_TRUE(right_controls_container()->GetVisible());
 }
 
+TEST_F(ConversationNotificationViewTest, ActionsViewToggleExpandVisibility) {
+  ASSERT_EQ(actions_view()->GetVisible(), notification_view()->IsExpanded());
+
+  notification_view()->ToggleExpand();
+
+  EXPECT_FALSE(notification_view()->IsExpanded());
+  EXPECT_FALSE(actions_view()->GetVisible());
+
+  notification_view()->ToggleExpand();
+
+  EXPECT_TRUE(notification_view()->IsExpanded());
+  EXPECT_TRUE(actions_view()->GetVisible());
+}
 }  // namespace ash

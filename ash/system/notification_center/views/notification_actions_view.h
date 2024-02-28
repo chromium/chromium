@@ -56,6 +56,9 @@ class ASH_EXPORT NotificationActionsView : public views::View,
   // Sends an input response when the `send_button_` is pressed.
   void SendButtonPressed();
 
+  // Updates the view for the provided expanded state.
+  void SetExpanded(bool expanded);
+
  private:
   friend class NotificationActionsViewTest;
 
@@ -67,6 +70,12 @@ class ASH_EXPORT NotificationActionsView : public views::View,
   // Sends the input reply contained in `textfield_` to
   // `message_center::MessageCenter`.
   void SendReply(const std::string& notification_id, const int button_index);
+
+  // Animates the view to a collapsed state.
+  void AnimateCollapse();
+
+  // Animates the view to an expanded state.
+  void AnimateExpand();
 
   // Owned by the views hierarchy
   base::RepeatingCallback<void()> send_reply_callback_;

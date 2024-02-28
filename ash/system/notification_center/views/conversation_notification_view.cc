@@ -77,6 +77,9 @@ void ConversationNotificationView::ToggleExpand() {
   expanded_ = !expanded_;
   conversations_container_->SetVisible(expanded_);
   collapsed_preview_container_->SetVisible(!expanded_);
+  expand_button_->SetExpanded(expanded_);
+  actions_view_->SetExpanded(expanded_);
+
   PreferredSizeChanged();
 }
 
@@ -98,6 +101,7 @@ void ConversationNotificationView::UpdateWithNotification(
   UpdateControlButtonsVisibilityWithNotification(notification);
 
   actions_view_->UpdateWithNotification(notification);
+  actions_view_->SetExpanded(expanded_);
 
   if (notification.items().empty()) {
     return;
@@ -195,7 +199,8 @@ ConversationNotificationView::CreateRightControlsContainer() {
   expand_button->SetCallback(base::BindRepeating(
       &ConversationNotificationView::ToggleExpand, base::Unretained(this)));
 
-  expand_button_container->AddChildView(std::move(expand_button));
+  expand_button_ =
+      expand_button_container->AddChildView(std::move(expand_button));
 
   auto view =
       std::make_unique<message_center::NotificationControlButtonsView>(this);

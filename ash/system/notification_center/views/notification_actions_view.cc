@@ -109,6 +109,7 @@ void NotificationActionsView::UpdateWithNotification(
     buttons_container_->AddChildView(std::move(actions_button));
   }
 
+  SetEnabled(!notification.buttons().empty());
   SetVisible(!notification.buttons().empty());
 }
 
@@ -159,6 +160,20 @@ void NotificationActionsView::SendButtonPressed() {
   send_reply_callback_.Run();
 }
 
+void NotificationActionsView::SetExpanded(bool expanded) {
+  if (!GetEnabled()) {
+    return;
+  }
+
+  if (expanded && !GetVisible()) {
+    AnimateExpand();
+  }
+
+  if (!expanded && GetVisible()) {
+    AnimateCollapse();
+  }
+}
+
 bool NotificationActionsView::HandleKeyEvent(views::Textfield* sender,
                                              const ui::KeyEvent& event) {
   // Do not try to send a reply if no text has been input.
@@ -187,6 +202,17 @@ void NotificationActionsView::SendReply(const std::string& notification_id,
                                         const int button_index) {
   message_center::MessageCenter::Get()->ClickOnNotificationButtonWithReply(
       notification_id, button_index, textfield_->GetText());
+}
+
+void NotificationActionsView::AnimateCollapse() {
+  // TODO(b/325555641): Add animation to collapse the view.
+  SetVisible(false);
+}
+
+void NotificationActionsView::AnimateExpand() {
+  SetVisible(true);
+  message_center_utils::FadeInView(this, 0,
+                                   kInlineReplyFadeInAnimationDurationMs);
 }
 
 BEGIN_METADATA(NotificationActionsView)
