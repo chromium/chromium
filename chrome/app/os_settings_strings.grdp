@@ -6333,7 +6333,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Data access protection for peripherals
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
-    Block external accessories from accessing and sharing memory (RAM)
+    Block Thunderbolt or USB4 accessories from accessing and sharing memory (RAM)
   </message>
   <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION" desc="The description of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
     Some devices require you to disable data access protection to work properly or at full performance.
