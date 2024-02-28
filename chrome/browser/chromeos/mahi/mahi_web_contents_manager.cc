@@ -54,29 +54,21 @@ void MahiWebContentsManager::Initialize() {
   is_initialized_ = true;
 }
 
-void MahiWebContentsManager::OnFocusChanged(
-    content::WebContents* web_contents) {
-  // Creates a new focused web content state.
-  focused_web_content_state_ =
-      WebContentState(web_contents->GetVisibleURL(), web_contents->GetTitle());
-
-  client_->OnFocusedPageChanged(focused_web_content_state_);
-}
-
 void MahiWebContentsManager::OnFocusedPageLoadComplete(
     content::WebContents* web_contents) {
-  if (focused_web_content_state_.url != web_contents->GetVisibleURL()) {
-    LOG(ERROR) << "MahiBrowser:: Focused page does not match.";
-    return;
-  }
+  // Creates a new focused web content state, and fires `OnFocusedPageChanged()`
+  // event immediately so that `MahiManager` knows the focused page has changed.
+  focused_web_content_state_ = WebContentState(
+      web_contents->GetLastCommittedURL(), web_contents->GetTitle());
+  client_->OnFocusedPageChanged(focused_web_content_state_);
 
+  // Requests the a11y tree snapshot.
   content::RenderFrameHost* render_frame_host =
       web_contents->GetPrimaryMainFrame();
   if (render_frame_host) {
     focused_web_content_state_.ukm_source_id =
         render_frame_host->GetPageUkmSourceId();
   }
-
   web_contents->RequestAXTreeSnapshot(
       base::BindOnce(&MahiWebContentsManager::OnGetSnapshot,
                      weak_pointer_factory_.GetWeakPtr(),

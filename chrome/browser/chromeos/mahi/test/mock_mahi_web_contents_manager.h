@@ -15,7 +15,6 @@ class MockMahiWebContentsManager : public MahiWebContentsManager {
   MockMahiWebContentsManager();
   ~MockMahiWebContentsManager() override;
 
-  MOCK_METHOD1(OnFocusChanged, void(content::WebContents*));
   MOCK_METHOD1(OnFocusedPageLoadComplete, void(content::WebContents*));
 };
 

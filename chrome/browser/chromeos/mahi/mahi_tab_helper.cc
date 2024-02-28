@@ -42,8 +42,6 @@ void MahiTabHelper::OnWebContentsFocused(
   if (ShouldSkip()) {
     return;
   }
-  MahiWebContentsManager::Get()->OnFocusChanged(web_contents());
-
   // Only fire an event if the web content has finished document loading.
   // Otherwise, it would be handled by
   // `DocumentOnLoadCompletedInPrimaryMainFrame`.

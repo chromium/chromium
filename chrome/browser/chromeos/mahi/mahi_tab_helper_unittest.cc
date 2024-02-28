@@ -85,7 +85,6 @@ TEST_F(MahiTabHelperTest, TabSwitch) {
   EXPECT_NE(nullptr, MahiTabHelper::FromWebContents(web_contents2));
 
   // Switch back to a previous loaded tab.
-  EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusChanged(_)).Times(1);
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
       .Times(1);
   // Change active tab with `browser()->tab_strip_model()->ActivateTabAt()` or

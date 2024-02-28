@@ -47,10 +47,6 @@ class MahiWebContentsManager {
 
   void Initialize();
 
-  // Called when the focused tab changed.
-  // Virtual so we can override in tests.
-  virtual void OnFocusChanged(content::WebContents* web_contents);
-
   // Called when the focused tab finish loading.
   // Virtual so we can override in tests.
   virtual void OnFocusedPageLoadComplete(content::WebContents* web_contents);

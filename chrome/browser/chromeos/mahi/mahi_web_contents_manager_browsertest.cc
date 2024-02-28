@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -88,6 +89,10 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
 
   // Simulates opening a new tab with url.
   void CreateWebContent() {
+    // Simulates chrome open.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab/")));
+    // Then navigates to the target page.
     EXPECT_TRUE(AddTabAtIndex(0, GURL(kUrl), ui::PAGE_TRANSITION_TYPED));
   }
 
