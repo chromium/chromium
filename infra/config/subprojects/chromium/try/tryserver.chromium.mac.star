@@ -521,6 +521,7 @@ ios_builder(
     builderless = True,
     cpu = cpu.ARM64,
     execution_timeout = 4 * time.hour,
+    xcode = xcode.x15betabots,
 )
 
 ios_builder(

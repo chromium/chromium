@@ -3354,9 +3354,6 @@
           'xcode_15_beta',
           'xctest',
         ],
-        'test_suites': {
-          'isolated_scripts': 'ios_blink_dbg_tests'
-        },
       },
       'ios-fieldtrial-rel': {
         'mixins': [
