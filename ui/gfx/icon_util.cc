@@ -416,7 +416,7 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
 
   // Capture boolean opacity. We may not use it if we find out the bitmap has
   // an alpha channel.
-  std::unique_ptr<bool[]> opaque(new bool[num_pixels]);
+  bool opaque[num_pixels];
   for (size_t i = 0; i < num_pixels; ++i)
     opaque[i] = !static_cast<uint32_t*>(bits)[i];
 
