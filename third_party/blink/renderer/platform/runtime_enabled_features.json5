@@ -2486,6 +2486,12 @@
       name: "NoIdleEncodingForWebTests",
       status: "test",
     },
+    // Doesn't increase the end offset on getting the range for a new line
+    // character. See https://crbug.com/326888905
+    {
+      name: "NoIncreasingEndOffsetOnSplittingTextNodes",
+      status: "stable",
+    },
     // Makes enter/leave Mouse and Pointer Events non-composed as per
     // corresponding specifications.
     {
