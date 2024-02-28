@@ -5,7 +5,7 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey ventura
+#         mac highsierra mojave catalina bigsur monterey ventura sonoma
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
@@ -581,6 +581,18 @@ crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
+
+crbug.com/327017906 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
+crbug.com/327017906 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
+crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
+crbug.com/327026292 [ angle-metal intel passthrough sonoma graphite-enabled ] conformance2/glsl3/float-parsing.html [ Failure ]
 
 ## Metal Apple Silicon ##
 

@@ -49,6 +49,7 @@ TAG_SPECIALIZATIONS = {
             'bigsur',
             'monterey',
             'ventura',
+            'sonoma',
         ],
         'win': [
             'win8',

@@ -4453,9 +4453,12 @@
         # When the experimental OS version is identical to the stable version,
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
         # should have the combination of test_suites of 'Mac FYI Release (Intel)'
-        # and 'Mac Release (Intel)'.
+        # and 'Mac Release (Intel)' but with
+        # 'gpu_fyi_only_mac_release_telemetry_tests' instead of
+        # 'gpu_fyi_mac_release_telemetry_tests'.
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_only_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Experimental Retina Release (AMD)': {
