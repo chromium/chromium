@@ -72,6 +72,11 @@ void PasswordManualFallbackFlow::RunFlow(
   RunFlowImpl(bounds, text_direction);
 }
 
+absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
+PasswordManualFallbackFlow::GetDriver() {
+  return password_manager_driver_.get();
+}
+
 void PasswordManualFallbackFlow::OnPopupShown() {}
 
 void PasswordManualFallbackFlow::OnPopupHidden() {}

@@ -11,7 +11,13 @@
 #include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace password_manager {
+class PasswordManagerDriver;
+}
+
 namespace autofill {
+
+class AutofillDriver;
 
 // An interface for interaction with AutofillPopupController. Will be notified
 // of events by the controller.
@@ -26,6 +32,12 @@ class AutofillPopupDelegate {
     // selected.
     int sub_popup_level = 0;
   };
+
+  virtual ~AutofillPopupDelegate() = default;
+
+  virtual absl::variant<AutofillDriver*,
+                        password_manager::PasswordManagerDriver*>
+  GetDriver() = 0;
 
   // Called when the Autofill popup is shown. If the popup supports sub-popups
   // only the root one triggers it.
@@ -72,8 +84,6 @@ class AutofillPopupDelegate {
   // should not outlive it.
   virtual void RegisterDeletionCallback(
       base::OnceClosure deletion_callback) = 0;
-
-  virtual ~AutofillPopupDelegate() = default;
 };
 
 }  // namespace autofill

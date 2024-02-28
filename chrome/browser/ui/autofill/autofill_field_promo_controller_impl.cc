@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -26,6 +29,11 @@ AutofillFieldPromoControllerImpl::~AutofillFieldPromoControllerImpl() {
 void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   Hide();
 
+  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  if (!rfh) {
+    return;
+  }
+
   AutofillPopupHideHelper::HidingParams hiding_params = {
       .hide_on_text_field_change = false};
   AutofillPopupHideHelper::HidingCallback hiding_callback =
@@ -39,17 +47,9 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
                    controller.promo_view_->OverlapsWithPictureInPictureWindow();
           },
           std::ref(*this));
-  // The hide helper is destroyed on hide, so it cannot outlive the popup
-  // controller.
-  promo_hide_helper_ = AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
-      web_contents_, std::move(hiding_params), std::move(hiding_callback),
-      std::move(pip_detection_callback));
-  // If the hide helper is null, then no frame has focus.
-  if (!promo_hide_helper_) {
-    Hide();
-    return;
-  }
-
+  promo_hide_helper_ = std::make_unique<AutofillPopupHideHelper>(
+      web_contents_, rfh->GetGlobalId(), std::move(hiding_params),
+      std::move(hiding_callback), std::move(pip_detection_callback));
   promo_view_ = AutofillFieldPromoView::CreateAndShow(
       web_contents_, bounds, promo_element_identifier_);
 }

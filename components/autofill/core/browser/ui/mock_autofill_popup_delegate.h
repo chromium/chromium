@@ -21,6 +21,11 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
   MockAutofillPopupDelegate();
   ~MockAutofillPopupDelegate() override;
 
+  MOCK_METHOD((absl::variant<AutofillDriver*,
+                             password_manager::PasswordManagerDriver*>),
+              GetDriver,
+              (),
+              (override));
   MOCK_METHOD(void, OnPopupShown, (), (override));
   MOCK_METHOD(void, OnPopupHidden, (), (override));
   MOCK_METHOD(void,

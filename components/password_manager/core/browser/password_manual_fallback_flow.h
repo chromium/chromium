@@ -50,6 +50,8 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
                base::i18n::TextDirection text_direction) override;
 
   // AutofillPopupDelegate:
+  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
+      override;
   void OnPopupShown() override;
   void OnPopupHidden() override;
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;

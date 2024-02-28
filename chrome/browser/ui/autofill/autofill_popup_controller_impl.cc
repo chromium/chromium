@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -37,6 +39,7 @@
 #include "components/compose/core/browser/config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -78,6 +81,31 @@ bool CanAccept(PopupItemId id) {
   return id != PopupItemId::kSeparator &&
          id != PopupItemId::kInsecureContextPaymentDisabledMessage &&
          id != PopupItemId::kMixedFormMessage;
+}
+
+content::RenderFrameHost* GetRenderFrameHost(AutofillPopupDelegate& delegate) {
+  return absl::visit(
+      base::Overloaded{
+          [](AutofillDriver* driver) {
+            return static_cast<ContentAutofillDriver*>(driver)
+                ->render_frame_host();
+          },
+          [](password_manager::PasswordManagerDriver* driver) {
+            return static_cast<password_manager::ContentPasswordManagerDriver*>(
+                       driver)
+                ->render_frame_host();
+          }},
+      delegate.GetDriver());
+}
+
+bool IsAncestorOf(content::RenderFrameHost* ancestor,
+                  content::RenderFrameHost* descendant) {
+  for (auto* rfh = descendant; rfh; rfh = rfh->GetParent()) {
+    if (rfh == ancestor) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -153,6 +181,22 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
+  // The focused frame may be a different frame than the one the delegate is
+  // associated with. This happens in two scenarios:
+  // - With frame-transcending forms: the focused frame is subframe, whose
+  //   form has been flattened into an ancestor form.
+  // - With race conditions: while Autofill parsed the form, the focused may
+  //   have moved to another frame.
+  // We support the case where the focused frame is a descendant of the
+  // `delegate_`'s frame. We observe the focused frame's RenderFrameDeleted()
+  // event.
+  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  if (!rfh || !delegate_ ||
+      !IsAncestorOf(GetRenderFrameHost(*delegate_), rfh)) {
+    Hide(PopupHidingReason::kNoFrameHasFocus);
+    return;
+  }
+
   if (IsPointerLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
@@ -175,16 +219,9 @@ void AutofillPopupControllerImpl::Show(
                    controller->view_->OverlapsWithPictureInPictureWindow();
           },
           GetWeakPtr());
-  // The hide helper is destroyed on hide, so it cannot outlive the popup
-  // controller.
-  popup_hide_helper_ = AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
-      web_contents_.get(), std::move(hiding_params), std::move(hiding_callback),
-      std::move(pip_detection_callback));
-  // If the hide helper is null, then no frame has focus.
-  if (!popup_hide_helper_) {
-    Hide(PopupHidingReason::kNoFrameHasFocus);
-    return;
-  }
+  popup_hide_helper_ = std::make_unique<AutofillPopupHideHelper>(
+      web_contents_.get(), rfh->GetGlobalId(), std::move(hiding_params),
+      std::move(hiding_callback), std::move(pip_detection_callback));
 
   SetSuggestions(std::move(suggestions));
 

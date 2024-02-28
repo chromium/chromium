@@ -310,6 +310,11 @@ void AutofillExternalDelegate::SetCurrentDataListValues(
   manager_->client().UpdateAutofillPopupDataListValues(datalist_);
 }
 
+absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+AutofillExternalDelegate::GetDriver() {
+  return &manager_->driver();
+}
+
 void AutofillExternalDelegate::OnPopupShown() {
   // Popups are expected to be Autofill or Autocomplete.
   DCHECK_NE(GetMainFillingProduct(), FillingProduct::kPassword);

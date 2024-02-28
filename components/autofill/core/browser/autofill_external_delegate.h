@@ -53,6 +53,8 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   static bool IsAutofillAndFirstLayerSuggestionId(PopupItemId item_id);
 
   // AutofillPopupDelegate implementation.
+  absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+  GetDriver() override;
   void OnPopupShown() override;
   void OnPopupHidden() override;
   void DidSelectSuggestion(const Suggestion& suggestion) override;

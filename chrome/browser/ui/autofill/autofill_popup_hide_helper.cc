@@ -15,32 +15,17 @@
 
 namespace autofill {
 
-// static
-std::unique_ptr<AutofillPopupHideHelper>
-AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
-    content::WebContents* web_contents,
-    HidingParams hiding_params,
-    HidingCallback hiding_callback,
-    PictureInPictureDetectionCallback pip_detection_callback) {
-  if (!web_contents->GetFocusedFrame()) {
-    return nullptr;
-  }
-  return base::WrapUnique(new AutofillPopupHideHelper(
-      web_contents, std::move(hiding_params), std::move(hiding_callback),
-      std::move(pip_detection_callback)));
-}
-
 AutofillPopupHideHelper::AutofillPopupHideHelper(
     content::WebContents* web_contents,
+    content::GlobalRenderFrameHostId rfh_id,
     HidingParams hiding_params,
     HidingCallback hiding_callback,
     PictureInPictureDetectionCallback pip_detection_callback)
     : content::WebContentsObserver(web_contents),
       hiding_params_(std::move(hiding_params)),
       hiding_callback_(std::move(hiding_callback)),
-      pip_detection_callback_(std::move(pip_detection_callback)) {
-  rfh_id_ = CHECK_DEREF(web_contents->GetFocusedFrame()).GetGlobalId();
-
+      pip_detection_callback_(std::move(pip_detection_callback)),
+      rfh_id_(rfh_id) {
 #if !BUILDFLAG(IS_ANDROID)
   // There may not always be a ZoomController, e.g., in tests.
   if (auto* zoom_controller =

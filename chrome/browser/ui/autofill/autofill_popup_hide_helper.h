@@ -54,10 +54,9 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
     bool hide_on_text_field_change = true;
   };
 
-  // Creates an `AutofillPopupHideHelper` if there is a frame which has focus.
-  // Otherwise, returns nullptr. The caller has to handle this scenario.
-  static std::unique_ptr<AutofillPopupHideHelper> CreateAutofillPopupHideHelper(
+  AutofillPopupHideHelper(
       content::WebContents* web_contents,
+      content::GlobalRenderFrameHostId rfh_id,
       HidingParams hiding_params,
       HidingCallback hiding_callback,
       PictureInPictureDetectionCallback pip_detection_callback);
@@ -67,12 +66,6 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
   ~AutofillPopupHideHelper() override;
 
  private:
-  AutofillPopupHideHelper(
-      content::WebContents* web_contents,
-      HidingParams hiding_params,
-      HidingCallback hiding_callback,
-      PictureInPictureDetectionCallback pip_detection_callback);
-
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
   void OnWebContentsLostFocus(

@@ -51,9 +51,10 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   ~PasswordAutofillManager() override;
 
   // AutofillPopupDelegate implementation.
+  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
+      override;
   void OnPopupShown() override;
   void OnPopupHidden() override;
-
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
   void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
                            const SuggestionPosition& position) override;

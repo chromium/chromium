@@ -141,6 +141,11 @@ PasswordAutofillManager::~PasswordAutofillManager() {
     std::move(deletion_callback_).Run();
 }
 
+absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
+PasswordAutofillManager::GetDriver() {
+  return password_manager_driver_.get();
+}
+
 void PasswordAutofillManager::OnPopupShown() {}
 
 void PasswordAutofillManager::OnPopupHidden() {}
