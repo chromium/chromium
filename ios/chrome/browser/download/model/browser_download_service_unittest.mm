@@ -115,7 +115,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
 
   StubTabHelper<ARQuickLookTabHelper>* ar_quick_look_tab_helper() {
     return static_cast<StubTabHelper<ARQuickLookTabHelper>*>(
-        ARQuickLookTabHelper::FromWebState(&web_state_));
+        ARQuickLookTabHelper::GetOrCreateForWebState(&web_state_));
   }
 
   StubTabHelper<VcardTabHelper>* vcard_tab_helper() {

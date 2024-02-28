@@ -223,7 +223,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   ukm::InitializeSourceUrlRecorderForWebState(web_state);
 
   // Download tab helpers.
-  ARQuickLookTabHelper::CreateForWebState(web_state);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    ARQuickLookTabHelper::GetOrCreateForWebState(web_state);
+  }
   DownloadManagerTabHelper::CreateForWebState(web_state);
   SafariDownloadTabHelper::CreateForWebState(web_state);
   PassKitTabHelper::CreateForWebState(web_state);

@@ -161,11 +161,11 @@ PresentQLPreviewController GetHistogramEnum(
 #pragma mark - DependencyInstalling methods
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
-  ARQuickLookTabHelper::FromWebState(webState)->set_delegate(self);
+  ARQuickLookTabHelper::GetOrCreateForWebState(webState)->set_delegate(self);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
-  ARQuickLookTabHelper::FromWebState(webState)->set_delegate(nil);
+  ARQuickLookTabHelper::GetOrCreateForWebState(webState)->set_delegate(nil);
 }
 
 #pragma mark - ARQuickLookTabHelperDelegate
