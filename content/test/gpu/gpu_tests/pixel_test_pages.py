@@ -528,6 +528,10 @@ class PixelTestPages():
                       base_name + '_OffscreenCanvasIBRCWorker',
                       test_rect=[0, 0, 100, 100],
                       grace_period_end=date(2023, 8, 5)),
+        PixelTestPage('pixel_webgl_resized_canvas.html',
+                      base_name + '_WebglResizedCanvas',
+                      test_rect=[0, 0, 300, 300],
+                      grace_period_end=date(2024, 3, 5)),
     ]
 
   @staticmethod

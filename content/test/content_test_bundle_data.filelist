@@ -6355,6 +6355,7 @@ data/gpu/pixel_webgl_noalpha_implicit_clear.html
 data/gpu/pixel_webgl_premultiplied_alpha_false.html
 data/gpu/pixel_webgl_preserved_after_tab_switch.html
 data/gpu/pixel_webgl_read_pixels_tab_switch.html
+data/gpu/pixel_webgl_resized_canvas.html
 data/gpu/pixel_webgl_sad_canvas.html
 data/gpu/pixel_webgl_util.js
 data/gpu/pixel_webgl_webcodecs_breakoutbox_displays_frame.html

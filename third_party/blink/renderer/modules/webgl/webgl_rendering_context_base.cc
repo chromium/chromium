@@ -2029,6 +2029,7 @@ void WebGLRenderingContextBase::Reshape(int width, int height) {
   // buffer will also start off clear (and this matches what reshape will do).
   GetDrawingBuffer()->set_low_latency_enabled(Host()->LowLatencyEnabled());
   GetDrawingBuffer()->Resize(gfx::Size(width, height));
+  GetDrawingBuffer()->MarkContentsChanged();
 
   if (buffer) {
     ContextGL()->BindBuffer(GL_PIXEL_UNPACK_BUFFER,
