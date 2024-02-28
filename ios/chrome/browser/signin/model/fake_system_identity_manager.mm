@@ -72,6 +72,14 @@ void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [storage_ addIdentity:identity];
   FireIdentityListChanged(/*notify_user*/ false);
+
+  // Set up capabilities to remove the delay while displaying the history sync
+  // opt-in screen for testing.
+  // TODO(b/327221052): verify if this should be replaced by a handler for
+  // default capabilities.
+  AccountCapabilitiesTestMutator* mutator = GetCapabilitiesMutator(identity);
+  mutator->set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
 }
 
 void FakeSystemIdentityManager::AddIdentities(NSArray<NSString*>* names) {

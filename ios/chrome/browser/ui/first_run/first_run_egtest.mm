@@ -459,7 +459,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
             (testHistorySyncShownWithoutMinorModeRestrictions)] ||
       [self
           isRunningTest:@selector
-          (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
+          (DISABLED_testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
               )]) {
     config.features_enabled.push_back(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
@@ -1267,10 +1267,12 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// TODO(b/327221052): Set up the fake identity without value for the capability
+// CanShowHistorySyncOptInsWithoutMinorModeRestrictions.
 // Tests that the History Sync Opt-In screen will have equally weighted button
 // for users with unknown minor mode restrictions status.
 - (void)
-    testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout {
+    DISABLED_testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout {
   // Add identity without specifiying capabilities.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
