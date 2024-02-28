@@ -99,7 +99,7 @@ class SyncFileStreams extends Transform {
     // Handles output from PyTest
     if (line.includes(PYTEST_PREFIX)) {
       if (SyncFileStreams.percentRegEx.test(line)) {
-        if (line.includes('FAILED') && line.includes('ERROR')) {
+        if (line.includes('FAILED') || line.includes('ERROR')) {
           this.push(this.serverLogs);
         }
         this.serverLogs = Buffer.from('');
