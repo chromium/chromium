@@ -163,6 +163,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   void AddExpectRenderBlockingLinkIfNeeded(const String& href = String(),
                                            bool media_known_to_match = false);
 
+  AtomicString ParseSameDocumentIdFromHref(const String& href);
+
   Member<LinkResource> link_;
   Member<LinkLoader> link_loader_;
 

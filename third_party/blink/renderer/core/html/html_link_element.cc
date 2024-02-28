@@ -52,17 +52,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-namespace {
-
-AtomicString ParseHrefAsId(const String& href) {
-  if (href.empty() || href[0] != '#') {
-    return AtomicString();
-  }
-  auto result = AtomicString(href.Substring(1));
-  return result;
-}
-
-}  // namespace
 
 HTMLLinkElement::HTMLLinkElement(Document& document,
                                  const CreateElementFlags flags)
@@ -481,10 +470,25 @@ void HTMLLinkElement::RemoveExpectRenderBlockingLink(const String& href) {
   if (auto* render_blocking_resource_manager =
           GetDocument().GetRenderBlockingResourceManager()) {
     render_blocking_resource_manager->RemovePendingParsingElementLink(
-        ParseHrefAsId(href.IsNull() ? FastGetAttribute(html_names::kHrefAttr)
-                                    : href),
-        this);
+        ParseSameDocumentIdFromHref(href), this);
   }
+}
+
+AtomicString HTMLLinkElement::ParseSameDocumentIdFromHref(const String& href) {
+  String actual_href =
+      href.IsNull() ? FastGetAttribute(html_names::kHrefAttr) : href;
+  if (actual_href.empty()) {
+    return WTF::g_null_atom;
+  }
+
+  KURL url = GetDocument().CompleteURL(actual_href);
+  if (!url.HasFragmentIdentifier()) {
+    return WTF::g_null_atom;
+  }
+
+  return EqualIgnoringFragmentIdentifier(url, GetDocument().Url())
+             ? AtomicString(url.FragmentIdentifier())
+             : g_null_atom;
 }
 
 void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
@@ -503,9 +507,7 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
   if (auto* render_blocking_resource_manager =
           GetDocument().GetRenderBlockingResourceManager()) {
     render_blocking_resource_manager->AddPendingParsingElementLink(
-        ParseHrefAsId(href.IsNull() ? FastGetAttribute(html_names::kHrefAttr)
-                                    : href),
-        this);
+        ParseSameDocumentIdFromHref(href), this);
   }
 }
 
