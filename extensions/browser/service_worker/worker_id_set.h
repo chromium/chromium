@@ -12,6 +12,10 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 
+namespace content {
+class BrowserContext;
+}
+
 // Set of WorkersIds that provides faster retrieval/removal of workers by
 // extension id, render process id etc.
 namespace extensions {
@@ -25,7 +29,7 @@ class WorkerIdSet {
 
   ~WorkerIdSet();
 
-  void Add(const WorkerId& worker_id);
+  void Add(const WorkerId& worker_id, content::BrowserContext* context);
   bool Remove(const WorkerId& worker_id);
   bool Contains(const WorkerId& worker_id) const;
   std::vector<WorkerId> GetAllForExtension(

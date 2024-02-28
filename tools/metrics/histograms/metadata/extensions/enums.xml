@@ -3306,6 +3306,16 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Null context"/>
 </enum>
 
+<enum name="ServiceWorkerVersionStatus">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kNew"/>
+  <int value="2" label="kInstalling"/>
+  <int value="3" label="kInstalled"/>
+  <int value="4" label="kActivating"/>
+  <int value="5" label="kActivated"/>
+  <int value="6" label="kRedundant"/>
+</enum>
+
 <enum name="SessionType">
   <int value="0" label="Existing Regular"/>
   <int value="1" label="Guest"/>

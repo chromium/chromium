@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "extensions/browser/extensions_test.h"
 #include "extensions/browser/service_worker/worker_id_set.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,17 +75,9 @@ std::vector<WorkerId> GenerateWorkerIds(
   return worker_ids;
 }
 
-std::unique_ptr<WorkerIdSet> CreateWorkerIdSet(
-    const std::vector<WorkerId>& worker_ids) {
-  auto worker_id_set = std::make_unique<WorkerIdSet>();
-  for (const WorkerId& worker_id : worker_ids)
-    worker_id_set->Add(worker_id);
-  return worker_id_set;
-}
-
 }  // namespace
 
-class WorkerIdSetTest : public testing::Test {
+class WorkerIdSetTest : public ExtensionsTest {
  public:
   WorkerIdSetTest()
       : allow_multiple_workers_per_extension_(
@@ -103,6 +96,15 @@ class WorkerIdSetTest : public testing::Test {
     std::sort(expected_copy.begin(), expected_copy.end());
     std::sort(actual_copy.begin(), actual_copy.end());
     return expected_copy == actual_copy;
+  }
+
+  std::unique_ptr<WorkerIdSet> CreateWorkerIdSet(
+      const std::vector<WorkerId>& worker_ids) {
+    auto worker_id_set = std::make_unique<WorkerIdSet>();
+    for (const WorkerId& worker_id : worker_ids) {
+      worker_id_set->Add(worker_id, browser_context());
+    }
+    return worker_id_set;
   }
 
  private:

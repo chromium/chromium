@@ -8,8 +8,11 @@
 #include <iterator>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/service_worker_context.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -35,14 +38,43 @@ static_assert(
     kSmallestRenderProcessId < 0,
     "Sentinel render_process_id must be smaller than any valid process id.");
 
+void EmitMultiWorkerMetrics(const char* metric_name,
+                            const WorkerId& worker_id,
+                            content::BrowserContext* context) {
+  content::ServiceWorkerContext* sw_context =
+      util::GetServiceWorkerContextForExtensionId(worker_id.extension_id,
+                                                  context);
+  const base::flat_map<int64_t, content::ServiceWorkerRunningInfo>&
+      worker_running_info = sw_context->GetRunningServiceWorkerInfos();
+
+  const auto search_worker_running =
+      worker_running_info.find(worker_id.version_id);
+  content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus version_status =
+      search_worker_running != worker_running_info.end()
+          ? search_worker_running->second.version_status
+          // Didn't find registered worker as running worker in the //content
+          // layer so emit unknown status. This indicates we're tracking a
+          // worker that is unknown to the lower SW layer.
+          : content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+                kUnknown;
+  base::UmaHistogramEnumeration(metric_name, version_status);
+}
+
 }  // namespace
 
 WorkerIdSet::WorkerIdSet() = default;
 WorkerIdSet::~WorkerIdSet() = default;
 
-void WorkerIdSet::Add(const WorkerId& worker_id) {
+void WorkerIdSet::Add(const WorkerId& worker_id,
+                      content::BrowserContext* context) {
+  // We should not try to register the same WorkerId multiple times.
+  CHECK(!Contains(worker_id));
+
+  std::vector<WorkerId> previous_worker_ids =
+      GetAllForExtension(worker_id.extension_id);
+
   workers_.insert(worker_id);
-  size_t new_size = GetAllForExtension(worker_id.extension_id).size();
+  size_t new_size = previous_worker_ids.size() + 1;
   base::UmaHistogramExactLinear(
       "Extensions.ServiceWorkerBackground.WorkerCountAfterAdd", new_size,
       kMaxWorkerCountToReport);
@@ -58,6 +90,23 @@ void WorkerIdSet::Add(const WorkerId& worker_id) {
     DUMP_WILL_BE_CHECK(new_size != 2u)
         << "Extension with worker id " << worker_id
         << " added additional worker";
+  }
+
+  // Only emit our incorrect worker metrics if an unexpected number of workers
+  // is present.
+  if (new_size == 2) {
+    EmitMultiWorkerMetrics(
+        "Extensions.ServiceWorkerBackground.MultiWorkerVersionStatus.NewWorker",
+        worker_id, context);
+    // new_size == 2 guarantees that a previous WorkerId will be present.
+    const WorkerId& previous_worker_id = previous_worker_ids.front();
+    EmitMultiWorkerMetrics(
+        "Extensions.ServiceWorkerBackground.MultiWorkerVersionStatus."
+        "PreviousWorker",
+        previous_worker_id, context);
+    base::UmaHistogramBoolean(
+        "Extensions.ServiceWorkerBackground.MultiWorkerVersionIdMatch",
+        worker_id.version_id == previous_worker_id.version_id);
   }
 }
 

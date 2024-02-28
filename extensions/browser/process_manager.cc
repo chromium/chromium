@@ -979,7 +979,7 @@ void ProcessManager::UnregisterExtension(const ExtensionId& extension_id) {
 }
 
 void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
-  all_extension_workers_.Add(worker_id);
+  all_extension_workers_.Add(worker_id, browser_context_);
   worker_context_ids_[worker_id] = base::Uuid::GenerateRandomV4();
 
   // Observe the RenderProcessHost for cleaning up on process shutdown.

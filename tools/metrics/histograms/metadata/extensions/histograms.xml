@@ -4201,6 +4201,36 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.ServiceWorkerBackground.MultiWorkerVersionIdMatch"
+    enum="Boolean" expires_after="2024-08-15">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    When Extensions.ServiceWorkerBackground.WorkerCountAfterAdd == 2, this emits
+    whether the previous and new worker added to WorkerIdSet had the same
+    service worker version id.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.MultiWorkerVersionStatus.{WorkerType}"
+    enum="ServiceWorkerVersionStatus" expires_after="2024-08-15">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus for the
+    {WorkerType} WorkerIdSet. Only emitted when
+    Extensions.ServiceWorkerBackground.WorkerCountAfterAdd == 2. This ensures
+    there will be a new and previous worker to emit for.
+  </summary>
+  <token key="WorkerType">
+    <variant name="NewWorker" summary="new worker that we've just added to"/>
+    <variant name="PreviousWorker"
+        summary="previous worker that was recorded before we added a new
+                 worker to"/>
+  </token>
+</histogram>
+
 <histogram
     name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithSuccessfulStart"
     enum="ServiceWorkerExternalRequestResult" expires_after="2024-08-01">
