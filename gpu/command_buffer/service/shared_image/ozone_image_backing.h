@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -75,6 +77,10 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
@@ -152,6 +158,10 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
 
   void DestroyTexturesOnContext(OzoneImageGLTexturesHolder* holder,
                                 gl::GLContext* context);
+
+#if BUILDFLAG(USE_DAWN)
+  bool UploadFromMemoryGraphite(const std::vector<SkPixmap>& pixmaps);
+#endif  // BUILDFLAG(USE_DAWN)
 
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;

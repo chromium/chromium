@@ -664,9 +664,9 @@ bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
   }
 #endif  // BUILDFLAG(IS_MAC)
   return true;
-#elif BUILDFLAG(IS_ANDROID)
-  // Graphite on Android uses the Dawn Vulkan backend. Only enable Graphite if
-  // device would already be using Ganesh/Vulkan.
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  // Graphite on Android and ChromeOS uses the Dawn Vulkan backend. Only enable
+  // Graphite if device would already be using Ganesh/Vulkan.
   return IsUsingVulkan();
 #elif BUILDFLAG(IS_WIN)
   return true;

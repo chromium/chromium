@@ -2338,7 +2338,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   }
   return true;
 
-#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2353,7 +2353,11 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   if (features::UseGpuVsync()) {
     presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
   }
-#endif  // BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_CHROMEOS)
+  if (!presenter_) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
       std::make_unique<OutputPresenterGL>(
@@ -2364,7 +2368,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
       GetReleaseOverlaysCallback());
   return true;
 
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
   NOTREACHED_NORETURN();
 }
