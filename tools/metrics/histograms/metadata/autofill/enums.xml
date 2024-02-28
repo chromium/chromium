@@ -1522,6 +1522,9 @@ Called by update_autofill_enums.py.-->
   <int value="25"
       label="The user edited the field. Currently applied only to Compose
              suggestions."/>
+  <int value="26"
+      label="The popup has faded due to an expired timer. Currently applied
+             only to Compose suggestions."/>
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">

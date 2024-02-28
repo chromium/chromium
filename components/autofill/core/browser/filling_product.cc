@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
@@ -75,6 +76,7 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kViewPasswordDetails:
       return FillingProduct::kPassword;
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kFillExistingPlusAddress:

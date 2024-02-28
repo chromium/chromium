@@ -1621,6 +1621,25 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
               Hide(PopupHidingReason::kTabGone));
 }
 
+// Tests that Compose saved state notification popup gets hidden after 2
+// seconds, but not after 1 second.
+TEST_F(AutofillPopupControllerImplTestHidingLogic,
+       TimedHideComposeSavedStateNotification) {
+  ShowSuggestions(manager(), {PopupItemId::kComposeSavedStateNotification});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  ::testing::MockFunction<void()> check;
+  {
+    ::testing::InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(client().popup_controller(manager()),
+                Hide(PopupHidingReason::kFadeTimerExpired));
+  }
+  task_environment()->FastForwardBy(base::Seconds(1));
+  check.Call();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that if the popup is shown in the *main frame*, changing the zoom hides
 // the popup.

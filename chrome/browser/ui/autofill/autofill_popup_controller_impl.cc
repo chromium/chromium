@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/compose/core/browser/config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/strings/grit/components_strings.h"
@@ -162,7 +163,9 @@ void AutofillPopupControllerImpl::Show(
       // Currently, this is only relevant for Compose.
       .hide_on_text_field_change =
           IsRootPopup() && suggestions.size() == 1 &&
-          suggestions[0].popup_item_id == PopupItemId::kCompose};
+          GetFillingProductFromPopupItemId(suggestions[0].popup_item_id) ==
+              FillingProduct::kCompose};
+
   AutofillPopupHideHelper::HidingCallback hiding_callback = base::BindRepeating(
       &AutofillPopupControllerImpl::Hide, base::Unretained(this));
   AutofillPopupHideHelper::PictureInPictureDetectionCallback
@@ -231,6 +234,17 @@ void AutofillPopupControllerImpl::Show(
     // and only permit a single call to `Show`.
     key_press_observer_.Reset();
     key_press_observer_.Observe(web_contents_->GetFocusedFrame());
+
+    if (suggestions_.size() == 1 &&
+        suggestions_[0].popup_item_id ==
+            PopupItemId::kComposeSavedStateNotification) {
+      const compose::Config& config = compose::GetComposeConfig();
+      fading_popup_timer_.Start(
+          FROM_HERE,
+          base::Milliseconds(config.saved_state_timeout_milliseconds),
+          base::BindOnce(&AutofillPopupControllerImpl::Hide, GetWeakPtr(),
+                         PopupHidingReason::kFadeTimerExpired));
+    }
 
     delegate_->OnPopupShown();
   }

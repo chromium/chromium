@@ -88,6 +88,7 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
       // On Android, no popup exists. Instead, the keyboard accessory is used.
 #if BUILDFLAG(IS_ANDROID)
       return AutofillTriggerSource::kKeyboardAccessory;
@@ -162,6 +163,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kClearForm:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDeleteAddressProfile:
@@ -429,6 +431,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
@@ -675,6 +678,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
       if (AutofillComposeDelegate* delegate =
               manager_->client().GetComposeDelegate()) {
         delegate->OpenCompose(
@@ -816,6 +820,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kMerchantPromoCodeEntry:
     case PopupItemId::kSeePromoCodeDetails:

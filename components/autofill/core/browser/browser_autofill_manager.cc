@@ -266,6 +266,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kClearForm:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kDatalistEntry:
@@ -435,6 +436,31 @@ bool ShouldRecordUkm() {
           : 0;
 
   return random_value_per_session < kSamplingRate;
+}
+
+// Returns true if the source is only relevant for Compose.
+bool IsTriggerSourceOnlyRelevantForCompose(
+    AutofillSuggestionTriggerSource source) {
+  switch (source) {
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+      return true;
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::
+        kShowPromptAfterDialogClosedNonManualFallback:
+      return false;
+  }
 }
 
 }  // namespace
@@ -1054,7 +1080,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       (field.form_control_type == FormControlType::kTextArea ||
        field.form_control_type == FormControlType::kContentEditable)) {
     if (std::optional<Suggestion> maybe_compose_suggestion =
-            MaybeGetComposeSuggestion(field)) {
+            MaybeGetComposeSuggestion(field, trigger_source)) {
       suggestions.push_back(*std::move(maybe_compose_suggestion));
     }
   }
@@ -2337,10 +2363,8 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   DCHECK(suggestions);
   DCHECK(context);
 
-  // This trigger source is only relevant for Compose, for which suggestions
-  // are not populated here.
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
+  // Compose suggestions are not populated in this method.
+  if (IsTriggerSourceOnlyRelevantForCompose(trigger_source)) {
     return;
   }
 
@@ -2664,19 +2688,25 @@ bool BrowserAutofillManager::ShouldUploadUkm(
 }
 
 std::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
-    const FormFieldData& field) {
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source) {
   AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
   if (!compose_delegate || !compose_delegate->ShouldOfferComposePopup(field)) {
     return std::nullopt;
   }
   std::u16string suggestion_text;
   std::u16string label_text;
+  PopupItemId popup_item_id = PopupItemId::kCompose;
   if (compose_delegate->HasSavedState(field.global_id())) {
     // The nudge text indicates that the user can resume where they left off in
     // the Compose dialog.
     suggestion_text =
         l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT);
     label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
+    if (trigger_source ==
+        AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
+      popup_item_id = PopupItemId::kComposeSavedStateNotification;
+    }
   } else {
     // Text for a new Compose session.
     suggestion_text =
@@ -2685,7 +2715,7 @@ std::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
   }
   Suggestion suggestion(std::move(suggestion_text));
   suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
-  suggestion.popup_item_id = PopupItemId::kCompose;
+  suggestion.popup_item_id = popup_item_id;
   suggestion.icon = Suggestion::Icon::kPenSpark;
   return suggestion;
 }

@@ -620,4 +620,7 @@ enum AutofillSuggestionTriggerSource {
   // is used only if the suggestions were triggered manually via the Chrome
   // context menu.
   kShowPromptAfterDialogClosedNonManualFallback,
+  // The compose saved state notification is triggered when the compose dialog
+  // loses focus and is closed.
+  kComposeDialogLostFocus,
 };

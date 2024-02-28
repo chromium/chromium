@@ -556,6 +556,7 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kCreditCardFieldByFieldFilling:
@@ -602,6 +603,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kClearForm:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDevtoolsTestAddressEntry:

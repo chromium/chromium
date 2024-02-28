@@ -531,9 +531,10 @@ class BrowserAutofillManager : public AutofillManager {
   bool ShouldUploadUkm(const FormStructure& form_structure);
 
   // Returns a compose suggestion if the compose service is available for
-  // `field`.
+  // `field` and `trigger_source`.
   std::optional<Suggestion> MaybeGetComposeSuggestion(
-      const FormFieldData& field);
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.

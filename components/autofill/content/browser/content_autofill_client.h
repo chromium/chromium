@@ -41,9 +41,6 @@ class ContentAutofillClient
       base::PassKey<ContentAutofillDriverFactory> pass_key,
       const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) = 0;
 
-  // Shows the compose fading popup for the given autofill field.
-  void ShowComposeFadingPopup(FormGlobalId form_id, FieldGlobalId field_id);
-
  private:
   friend class content::WebContentsUserData<ContentAutofillClient>;
 

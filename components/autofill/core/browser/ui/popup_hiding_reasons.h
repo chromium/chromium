@@ -74,7 +74,11 @@ enum class PopupHidingReason {
   // Compose-related
   // popups, which close in response to user edits of the focused field.
   kFieldValueChanged = 25,
-  kMaxValue = kFieldValueChanged
+  // When a Compose popup loses focus, another autofill popup is shown for
+  // a few seconds on a timer then the popup is closed. Currently, this event
+  // is only used for Compose.
+  kFadeTimerExpired = 26,
+  kMaxValue = kFadeTimerExpired
 };
 
 }  // namespace autofill

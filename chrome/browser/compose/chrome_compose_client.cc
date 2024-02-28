@@ -5,6 +5,7 @@
 #include "chrome/browser/compose/chrome_compose_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,7 +34,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -441,12 +445,34 @@ void ChromeComposeClient::ShowSavedStateNotification() {
   if (!active_compose_ids_.has_value()) {
     return;
   }
-  if (auto* autofill_client =
-          autofill::ContentAutofillClient::FromWebContents(&GetWebContents())) {
-    autofill_client->ShowComposeFadingPopup(
-        /*form_id=*/active_compose_ids_->second,
-        /*field_id=*/active_compose_ids_->first);
+
+  autofill::AutofillDriver* driver =
+      autofill::ContentAutofillDriverFactory::FromWebContents(&GetWebContents())
+          ->DriverForFrame(GetWebContents().GetPrimaryMainFrame());
+  if (!driver) {
+    return;
   }
+  // AutofillDriver forwards ExtractForm to the AutofillDriverRouter which can
+  // find the correct driver to use for the form.
+  driver->ExtractForm(
+      /*form=*/active_compose_ids_->second, /*response_handler=*/base::BindOnce(
+          [](autofill::FieldGlobalId trigger_field,
+             autofill::AutofillDriver* host_frame_driver,
+             const std::optional<autofill::FormData>& form) {
+            if (!form) {
+              return;
+            }
+            CHECK(host_frame_driver);
+            const autofill::FormFieldData* form_field =
+                form->FindFieldByGlobalId(trigger_field);
+            if (form_field != nullptr) {
+              host_frame_driver->GetAutofillManager().OnAskForValuesToFill(
+                  *form, *form_field, form_field->bounds,
+                  autofill::AutofillSuggestionTriggerSource::
+                      kComposeDialogLostFocus);
+            }
+          },
+          /*field_id=*/active_compose_ids_->first));
 }
 
 ComposeSession* ChromeComposeClient::GetSessionForActiveComposeField() {

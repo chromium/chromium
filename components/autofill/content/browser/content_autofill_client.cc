@@ -17,11 +17,6 @@ ContentAutofillClient::GetAutofillDriverFactory() {
   return &autofill_driver_factory_;
 }
 
-void ContentAutofillClient::ShowComposeFadingPopup(FormGlobalId form_id,
-                                                   FieldGlobalId field_id) {
-  // TODO(b/303500278): Complete fading popup implementation.
-}
-
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentAutofillClient);
 
 }  // namespace autofill

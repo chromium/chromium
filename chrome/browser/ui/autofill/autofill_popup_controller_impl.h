@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
@@ -267,6 +268,9 @@ class AutofillPopupControllerImpl
       Profile*,
       password_manager::metrics_util::PasswordMigrationWarningTriggers)>
       show_pwd_migration_warning_callback_;
+
+  // Timer to close a fading popup.
+  base::OneShotTimer fading_popup_timer_;
 
   // Whether the popup should ignore mouse observed outside check.
   bool should_ignore_mouse_observed_outside_item_bounds_check_ = false;
