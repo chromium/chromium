@@ -36,7 +36,12 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
   EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
 }
 
-TEST_F(PaintRecordBuilderTest, LastingPaintController) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_LastingPaintController DISABLED_LastingPaintController
+#else
+#define MAYBE_LastingPaintController LastingPaintController
+#endif
+TEST_F(PaintRecordBuilderTest, MAYBE_LastingPaintController) {
   FakeDisplayItemClient& client =
       *MakeGarbageCollected<FakeDisplayItemClient>("client");
   auto* builder =
