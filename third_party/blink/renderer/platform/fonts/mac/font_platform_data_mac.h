@@ -58,7 +58,7 @@ bool PLATFORM_EXPORT VariableAxisChangeEffective(SkTypeface* typeface,
 // optical sizing and tracking, needed in particular for the San Francisco
 // system font.
 const FontPlatformData* FontPlatformDataFromCTFont(
-    base::apple::ScopedCFTypeRef<CTFontRef>,
+    CTFontRef,
     float size,
     float specified_size,
     bool synthetic_bold,

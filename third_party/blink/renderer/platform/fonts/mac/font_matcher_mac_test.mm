@@ -17,7 +17,7 @@
 
 using base::apple::CFCast;
 using base::apple::GetValueFromDictionary;
-using base::apple::NSToCFPtrCast;
+using base::apple::NSToCFOwnershipCast;
 using base::apple::ScopedCFTypeRef;
 
 namespace blink {
@@ -84,7 +84,7 @@ ScopedCFTypeRef<CTFontRef> MatchCTFontFamily(const AtomicString& font_name,
     traits |= NSFontCondensedTrait;
   }
 
-  return ScopedCFTypeRef<CTFontRef>(NSToCFPtrCast(
+  return ScopedCFTypeRef<CTFontRef>(NSToCFOwnershipCast(
       MatchNSFontFamily(font_name, traits, desired_weight, size)));
 }
 
@@ -150,8 +150,8 @@ TEST(FontMatcherMacTest, MatchSystemFontItalic) {
       kNormalWeightValue, kItalicSlopeValue, kNormalWidthValue, 11);
   EXPECT_TRUE(font);
   ScopedCFTypeRef<CFDictionaryRef> traits(CTFontCopyTraits(font.get()));
-  CFNumberRef slant_num = base::apple::GetValueFromDictionary<CFNumberRef>(
-      traits.get(), kCTFontSlantTrait);
+  CFNumberRef slant_num =
+      GetValueFromDictionary<CFNumberRef>(traits.get(), kCTFontSlantTrait);
   float slant;
   CFNumberGetValue(slant_num, kCFNumberFloatType, &slant);
   EXPECT_NE(slant, 0.0);

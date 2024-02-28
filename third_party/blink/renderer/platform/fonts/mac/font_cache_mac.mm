@@ -238,7 +238,7 @@ const FontPlatformData* GetAlternateFontPlatformData(
                           !(substitute_font_traits & kCTFontTraitItalic);
 
   return FontPlatformDataFromCTFont(
-      substitute_font, font_description.EffectiveFontSize(),
+      substitute_font.get(), font_description.EffectiveFontSize(),
       font_description.SpecifiedSize(), synthetic_bold, synthetic_italic,
       font_description.TextRendering(), ResolvedFontFeatures(),
       platform_data.Orientation(), font_description.FontOpticalSizing(),
@@ -326,7 +326,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
       code_units_length = 2;
     }
 
-    NSFont* ns_font = base::apple::CFToNSPtrCast(platform_data.CtFont());
+    NSFont* ns_font = CFToNSPtrCast(platform_data.CtFont());
 
     NSString* string = [[NSString alloc]
         initWithCharacters:reinterpret_cast<UniChar*>(code_units)
@@ -407,8 +407,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
                           !IsAppKitFontWeightBold(substitute_font_weight);
 
     alternate_font = FontPlatformDataFromCTFont(
-        ScopedCFTypeRef<CTFontRef>(base::apple::NSToCFOwnershipCast(
-            substitute_font)),  // Ownership -> Ptr
+        base::apple::NSToCFPtrCast(substitute_font),
         font_description.EffectiveFontSize(), font_description.SpecifiedSize(),
         synthetic_bold,
         (traits & NSFontItalicTrait) &&
@@ -525,8 +524,8 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
   // stored in non-system locations.  When loading fails, we do not want to use
   // the returned FontPlatformData since it will not have a valid SkTypeface.
   const FontPlatformData* platform_data = FontPlatformDataFromCTFont(
-      matched_font, size, font_description.SpecifiedSize(), synthetic_bold,
-      synthetic_italic, font_description.TextRendering(),
+      matched_font.get(), size, font_description.SpecifiedSize(),
+      synthetic_bold, synthetic_italic, font_description.TextRendering(),
       ResolvedFontFeatures(), font_description.Orientation(),
       font_description.FontOpticalSizing(),
       font_description.VariationSettings());
