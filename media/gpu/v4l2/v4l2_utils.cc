@@ -527,7 +527,12 @@ std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
     for (const auto& profile : media_codec_profiles) {
       supported_media_configs.emplace_back(SupportedVideoDecoderConfig(
           profile, profile, min_coded_size, max_coded_size,
-          /*allow_encrypted=*/false, /*require_encrypted=*/false));
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+          /*allow_encrypted=*/true,
+#else
+          /*allow_encrypted=*/false,
+#endif
+          /*require_encrypted=*/false));
     }
   }
 
