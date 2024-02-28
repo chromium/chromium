@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
@@ -470,10 +471,22 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     private TabletCaptureStateToken generateCaptureStateToken() {
-        UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
-        @DrawableRes
-        int securityIconResource =
-                getToolbarDataProvider().getSecurityIconResource(/* isTablet= */ true);
+        UrlBarData urlBarData;
+        final @DrawableRes int securityIconResource;
+
+        if (ToolbarFeatures.shouldSuppressCaptures()) {
+            urlBarData = mLocationBar.getUrlBarData();
+            if (urlBarData == null) urlBarData = getToolbarDataProvider().getUrlBarData();
+            StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
+            securityIconResource =
+                    statusCoordinator == null
+                            ? getToolbarDataProvider().getSecurityIconResource(false)
+                            : statusCoordinator.getSecurityIconResource();
+        } else {
+            urlBarData = getToolbarDataProvider().getUrlBarData();
+            securityIconResource = getToolbarDataProvider().getSecurityIconResource(false);
+        }
+
         VisibleUrlText visibleUrlText =
                 new VisibleUrlText(
                         urlBarData.displayText, mLocationBar.getOmniboxVisibleTextPrefixHint());
