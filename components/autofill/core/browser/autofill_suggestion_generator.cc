@@ -1171,9 +1171,8 @@ Suggestion::Text GetBenefitTextWithTermsAppended(
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
-    AutofillClient& autofill_client,
-    PersonalDataManager& personal_data)
-    : autofill_client_(autofill_client), personal_data_(personal_data) {}
+    AutofillClient& autofill_client)
+    : autofill_client_(autofill_client) {}
 
 AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 
@@ -1190,7 +1189,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     // available profiles should be shown. Selecting a suggestion overwrites the
     // triggering field's value.
     for (const AutofillProfile* profile :
-         personal_data_->GetProfilesToSuggest()) {
+         personal_data().GetProfilesToSuggest()) {
       profiles_to_suggest.push_back(profile);
     }
   } else {
@@ -1256,7 +1255,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
 
   // Get the profiles to suggest, which are already sorted.
   std::vector<AutofillProfile*> sorted_profiles =
-      personal_data_->GetProfilesToSuggest();
+      personal_data().GetProfilesToSuggest();
 
   // When suggesting with no prefix to match, suppress disused address
   // suggestions as well as those based on invalid profile data.
@@ -1271,7 +1270,7 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
                                field_contents, field_contents_canon,
                                field_is_autofilled);
 
-  const AutofillProfileComparator comparator(personal_data_->app_locale());
+  const AutofillProfileComparator comparator(personal_data().app_locale());
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -1291,7 +1290,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     uint64_t trigger_field_max_length,
     const std::set<std::string>& previously_hidden_profiles_guid) {
   std::vector<Suggestion> suggestions;
-  std::string app_locale = personal_data_->app_locale();
+  std::string app_locale = personal_data().app_locale();
 
   // This will be used to check if suggestions should be supported with icons.
   const bool contains_profile_related_fields =
@@ -1381,7 +1380,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
   if (std::optional<Suggestion> test_addresses_suggestion =
-          GetSuggestionForTestAddresses(personal_data_->test_addresses(),
+          GetSuggestionForTestAddresses(personal_data().test_addresses(),
                                         app_locale)) {
     suggestions.insert(suggestions.begin(),
                        std::move(*test_addresses_suggestion));
@@ -1403,7 +1402,7 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
     suggestion_main_text.push_back(GetProfileSuggestionMainText(
-        *profile, personal_data_->app_locale(), trigger_field_type));
+        *profile, personal_data().app_locale(), trigger_field_type));
   }
 
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
@@ -1484,7 +1483,7 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
     std::u16string main_text = GetProfileSuggestionMainText(
-        *profile, personal_data_->app_locale(), trigger_field_type);
+        *profile, personal_data().app_locale(), trigger_field_type);
     // Discard profiles that do not have a value for the trigger field.
     if (main_text.empty()) {
       continue;
@@ -1518,7 +1517,7 @@ void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
     Suggestion& suggestion) const {
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
-  const std::string app_locale = personal_data_->app_locale();
+  const std::string app_locale = personal_data().app_locale();
   AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
                           suggestion);
   AddAddressChildSuggestions(trigger_field_type_group, profile, app_locale,
@@ -1543,7 +1542,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback_for_non_credit_card_field =
       GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
-  const std::string& app_locale = personal_data_->app_locale();
+  const std::string& app_locale = personal_data().app_locale();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(*autofill_client_);
@@ -1761,17 +1760,13 @@ Suggestion AutofillSuggestionGenerator::CreateClearFormSuggestion() {
 // static
 std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
     bool suppress_disused_cards) {
-  std::map<std::string, AutofillOfferData*> card_linked_offers_map =
-      GetCardLinkedOffers(*autofill_client_);
-
-  const PersonalDataManager& personal_data =
-      CHECK_DEREF(autofill_client_->GetPersonalDataManager());
   std::vector<CreditCard*> available_cards =
-      personal_data.GetCreditCardsToSuggest();
-
+      personal_data().GetCreditCardsToSuggest();
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
-  if (!card_linked_offers_map.empty()) {
+  if (std::map<std::string, AutofillOfferData*> card_linked_offers_map =
+          GetCardLinkedOffers(*autofill_client_);
+      !card_linked_offers_map.empty()) {
     base::ranges::stable_sort(
         available_cards,
         [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
@@ -1779,7 +1774,6 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
                  !base::Contains(card_linked_offers_map, b->guid());
         });
   }
-
   // Suppress disused credit cards when triggered from an empty field.
   if (suppress_disused_cards) {
     const base::Time min_last_used =
@@ -1788,7 +1782,6 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
         RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
                                                            available_cards);
   }
-
   std::vector<CreditCard> cards_to_suggest;
   cards_to_suggest.reserve(available_cards.size());
   for (const CreditCard* card : available_cards) {
@@ -1911,7 +1904,7 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   }
   // Either the card a) has no nickname or b) is a server card and we would
   // prefer to use the nickname of a local card.
-  std::vector<CreditCard*> candidates = personal_data_->GetCreditCards();
+  std::vector<CreditCard*> candidates = personal_data().GetCreditCards();
   for (CreditCard* candidate : candidates) {
     if (candidate->guid() != card.guid() &&
         candidate->MatchingCardDetails(card) &&
@@ -1928,7 +1921,7 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
   switch (candidate_card->record_type()) {
     case CreditCard::RecordType::kLocalCard:
       candidate_card =
-          personal_data_->GetServerCardForLocalCard(candidate_card);
+          personal_data().GetServerCardForLocalCard(candidate_card);
 
       // If we could not find a matching server duplicate, return false.
       if (!candidate_card) {
@@ -2028,7 +2021,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 void AutofillSuggestionGenerator::AddPaymentsGranularFillingChildSuggestions(
     const CreditCard& credit_card,
     Suggestion& suggestion) const {
-  const std::string& app_locale = personal_data_->app_locale();
+  const std::string& app_locale = personal_data().app_locale();
 
   bool has_content_above =
       AddCreditCardNameChildSuggestion(credit_card, app_locale, suggestion);
@@ -2073,7 +2066,7 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
 #endif
   } else {
     main_text =
-        credit_card.GetInfo(trigger_field_type, personal_data_->app_locale());
+        credit_card.GetInfo(trigger_field_type, personal_data().app_locale());
   }
 
   return {Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true),
@@ -2089,7 +2082,7 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     const CreditCard& credit_card,
     FieldType trigger_field_type,
     const url::Origin& origin) const {
-  const std::string& app_locale = personal_data_->app_locale();
+  const std::string& app_locale = personal_data().app_locale();
 
   // If the focused field is a card number field.
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
@@ -2159,7 +2152,7 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
     const url::Origin& origin) const {
   // Benefits are only displayed for app locale set to U.S. English.
   if (!base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefits) ||
-      personal_data_->app_locale() != "en-US") {
+      personal_data().app_locale() != "en-US") {
     return std::nullopt;
   }
   CreditCardBenefitBase::LinkedCardInstrumentId benefit_instrument_id(
@@ -2167,7 +2160,7 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
 
   // 1. Check merchant benefit.
   std::optional<CreditCardMerchantBenefit> merchant_benefit =
-      personal_data_->GetMerchantBenefitByInstrumentIdAndOrigin(
+      personal_data().GetMerchantBenefitByInstrumentIdAndOrigin(
           benefit_instrument_id, origin);
   if (merchant_benefit && merchant_benefit->IsActiveBenefit()) {
     return GetBenefitTextWithTermsAppended(
@@ -2182,7 +2175,7 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
   if (category_benefit_type !=
       CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
     std::optional<CreditCardCategoryBenefit> category_benefit =
-        personal_data_->GetCategoryBenefitByInstrumentIdAndCategory(
+        personal_data().GetCategoryBenefitByInstrumentIdAndCategory(
             benefit_instrument_id, category_benefit_type);
     if (category_benefit && category_benefit->IsActiveBenefit()) {
       return GetBenefitTextWithTermsAppended(
@@ -2192,7 +2185,7 @@ AutofillSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
 
   // 3. Check flat rate benefit.
   std::optional<CreditCardFlatRateBenefit> flat_rate_benefit =
-      personal_data_->GetFlatRateBenefitByInstrumentId(benefit_instrument_id);
+      personal_data().GetFlatRateBenefitByInstrumentId(benefit_instrument_id);
   if (flat_rate_benefit && flat_rate_benefit->IsActiveBenefit()) {
     return GetBenefitTextWithTermsAppended(
         flat_rate_benefit->benefit_description());
@@ -2209,7 +2202,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     const url::Origin& origin) const {
   if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
     const CreditCard* server_duplicate_card =
-        personal_data_->GetServerCardForLocalCard(&credit_card);
+        personal_data().GetServerCardForLocalCard(&credit_card);
     DCHECK(server_duplicate_card);
     suggestion.payload = Suggestion::Guid(server_duplicate_card->guid());
   }
@@ -2285,7 +2278,7 @@ void AutofillSuggestionGenerator::SetCardArtURL(
     Suggestion& suggestion,
     const CreditCard& credit_card,
     bool virtual_card_option) const {
-  const GURL card_art_url = personal_data_->GetCardArtURL(credit_card);
+  const GURL card_art_url = personal_data().GetCardArtURL(credit_card);
 
   if (card_art_url.is_empty() || !card_art_url.is_valid())
     return;
@@ -2306,7 +2299,7 @@ void AutofillSuggestionGenerator::SetCardArtURL(
     suggestion.custom_icon_url = card_art_url;
 #else
     gfx::Image* image =
-        personal_data_->GetCreditCardArtImageForUrl(card_art_url);
+        personal_data().GetCreditCardArtImageForUrl(card_art_url);
     if (image) {
       suggestion.custom_icon = *image;
     }

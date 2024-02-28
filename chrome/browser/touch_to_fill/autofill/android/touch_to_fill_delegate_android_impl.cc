@@ -120,8 +120,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   // Complete = contains number, expiration date and name on card.
   // Valid = unexpired with valid number format.
   std::vector<CreditCard> cards_to_suggest =
-      AutofillSuggestionGenerator(manager_->client(),
-                                  *manager_->client().GetPersonalDataManager())
+      AutofillSuggestionGenerator(manager_->client())
           .GetTouchToFillCardsToSuggest();
   return cards_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidCards, {})

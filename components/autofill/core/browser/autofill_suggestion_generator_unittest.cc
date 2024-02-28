@@ -185,8 +185,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
                          /*strike_database=*/nullptr,
                          /*image_fetcher=*/nullptr,
                          /*shared_storage_handler=*/nullptr);
-    suggestion_generator_ = std::make_unique<AutofillSuggestionGenerator>(
-        autofill_client_, personal_data());
+    suggestion_generator_ =
+        std::make_unique<AutofillSuggestionGenerator>(autofill_client_);
     autofill_client_.set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
             &personal_data(),

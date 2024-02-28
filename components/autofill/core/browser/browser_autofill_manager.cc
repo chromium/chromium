@@ -471,9 +471,8 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
     : AutofillManager(driver, client),
       external_delegate_(std::make_unique<AutofillExternalDelegate>(this)),
       app_locale_(app_locale),
-      suggestion_generator_(std::make_unique<AutofillSuggestionGenerator>(
-          *client,
-          *client->GetPersonalDataManager())),
+      suggestion_generator_(
+          std::make_unique<AutofillSuggestionGenerator>(*client)),
       form_filler_(
           std::make_unique<FormFiller>(*this, log_manager(), app_locale)) {
   address_form_event_logger_ =

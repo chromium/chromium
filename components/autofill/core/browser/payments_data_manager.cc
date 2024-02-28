@@ -465,14 +465,14 @@ CreditCard* PaymentsDataManager::GetCreditCardByServerId(
 template <typename T>
 std::optional<T> PaymentsDataManager::GetCreditCardBenefitByInstrumentId(
     CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-    base::FunctionRef<bool(T&)> filter) {
+    base::FunctionRef<bool(const T&)> filter) const {
   if (!pdm_->IsAutofillWalletImportEnabled() ||
       !pdm_->IsAutofillPaymentMethodsEnabled()) {
     return std::nullopt;
   }
   base::Time now = AutofillClock::Now();
-  for (CreditCardBenefit& benefit : credit_card_benefits_) {
-    if (auto* b = absl::get_if<T>(&benefit);
+  for (const CreditCardBenefit& benefit : credit_card_benefits_) {
+    if (const auto* b = absl::get_if<T>(&benefit);
         b && b->linked_card_instrument_id() == instrument_id &&
         b->start_time() <= now && now < b->expiry_time() && filter(*b)) {
       return *b;
@@ -483,7 +483,7 @@ std::optional<T> PaymentsDataManager::GetCreditCardBenefitByInstrumentId(
 
 std::optional<CreditCardFlatRateBenefit>
 PaymentsDataManager::GetFlatRateBenefitByInstrumentId(
-    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) {
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) const {
   return GetCreditCardBenefitByInstrumentId<CreditCardFlatRateBenefit>(
       instrument_id);
 }
@@ -491,9 +491,9 @@ PaymentsDataManager::GetFlatRateBenefitByInstrumentId(
 std::optional<CreditCardCategoryBenefit>
 PaymentsDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-    const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
+    const CreditCardCategoryBenefit::BenefitCategory benefit_category) const {
   return GetCreditCardBenefitByInstrumentId<CreditCardCategoryBenefit>(
-      instrument_id, [&benefit_category](CreditCardCategoryBenefit& b) {
+      instrument_id, [&benefit_category](const CreditCardCategoryBenefit& b) {
         return b.benefit_category() == benefit_category;
       });
 }
@@ -501,9 +501,9 @@ PaymentsDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
 std::optional<CreditCardMerchantBenefit>
 PaymentsDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-    const url::Origin& merchant_origin) {
+    const url::Origin& merchant_origin) const {
   return GetCreditCardBenefitByInstrumentId<CreditCardMerchantBenefit>(
-      instrument_id, [&merchant_origin](CreditCardMerchantBenefit& b) {
+      instrument_id, [&merchant_origin](const CreditCardMerchantBenefit& b) {
         return b.merchant_domains().contains(merchant_origin);
       });
 }

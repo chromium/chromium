@@ -88,7 +88,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Return the first valid flat rate benefit linked with the card with the
   // specific `instrument_id`.
   std::optional<CreditCardFlatRateBenefit> GetFlatRateBenefitByInstrumentId(
-      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id);
+      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) const;
 
   // Return the first valid category benefit for the specific
   // `benefit_category` and linked with the card with the specific
@@ -96,7 +96,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::optional<CreditCardCategoryBenefit>
   GetCategoryBenefitByInstrumentIdAndCategory(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      CreditCardCategoryBenefit::BenefitCategory benefit_category);
+      CreditCardCategoryBenefit::BenefitCategory benefit_category) const;
 
   // Return the first valid merchant benefit for the specific
   // `merchant_origin` and linked with the card with the specific
@@ -104,7 +104,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::optional<CreditCardMerchantBenefit>
   GetMerchantBenefitByInstrumentIdAndOrigin(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      const url::Origin& merchant_origin);
+      const url::Origin& merchant_origin) const;
 
   // Returns just LOCAL_CARD cards.
   virtual std::vector<CreditCard*> GetLocalCreditCards() const;
@@ -340,7 +340,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   template <typename T>
   std::optional<T> GetCreditCardBenefitByInstrumentId(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      base::FunctionRef<bool(T&)> filter = [](T&) { return true; });
+      base::FunctionRef<bool(const T&)> filter = [](const T&) {
+        return true;
+      }) const;
 
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;

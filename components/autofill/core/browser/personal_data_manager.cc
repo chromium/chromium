@@ -601,7 +601,7 @@ CreditCard* PersonalDataManager::GetCreditCardByServerId(
 
 std::optional<CreditCardFlatRateBenefit>
 PersonalDataManager::GetFlatRateBenefitByInstrumentId(
-    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) {
+    const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) const {
   return payments_data_manager_->GetFlatRateBenefitByInstrumentId(
       instrument_id);
 }
@@ -609,7 +609,7 @@ PersonalDataManager::GetFlatRateBenefitByInstrumentId(
 std::optional<CreditCardCategoryBenefit>
 PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-    const CreditCardCategoryBenefit::BenefitCategory benefit_category) {
+    const CreditCardCategoryBenefit::BenefitCategory benefit_category) const {
   return payments_data_manager_->GetCategoryBenefitByInstrumentIdAndCategory(
       instrument_id, benefit_category);
 }
@@ -617,7 +617,7 @@ PersonalDataManager::GetCategoryBenefitByInstrumentIdAndCategory(
 std::optional<CreditCardMerchantBenefit>
 PersonalDataManager::GetMerchantBenefitByInstrumentIdAndOrigin(
     const CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-    const url::Origin& merchant_origin) {
+    const url::Origin& merchant_origin) const {
   return payments_data_manager_->GetMerchantBenefitByInstrumentIdAndOrigin(
       instrument_id, merchant_origin);
 }

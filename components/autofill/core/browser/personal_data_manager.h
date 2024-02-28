@@ -361,7 +361,7 @@ class PersonalDataManager : public KeyedService,
   // Return the first valid flat rate benefit linked with the card with the
   // specific `instrument_id`.
   std::optional<CreditCardFlatRateBenefit> GetFlatRateBenefitByInstrumentId(
-      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id);
+      CreditCardBenefitBase::LinkedCardInstrumentId instrument_id) const;
 
   // Return the first valid category benefit for the specific
   // `benefit_category` and linked with the card with the specific
@@ -369,7 +369,7 @@ class PersonalDataManager : public KeyedService,
   std::optional<CreditCardCategoryBenefit>
   GetCategoryBenefitByInstrumentIdAndCategory(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      CreditCardCategoryBenefit::BenefitCategory benefit_category);
+      CreditCardCategoryBenefit::BenefitCategory benefit_category) const;
 
   // Return the first valid merchant benefit for the specific
   // `merchant_origin` and linked with the card with the specific
@@ -377,7 +377,7 @@ class PersonalDataManager : public KeyedService,
   std::optional<CreditCardMerchantBenefit>
   GetMerchantBenefitByInstrumentIdAndOrigin(
       CreditCardBenefitBase::LinkedCardInstrumentId instrument_id,
-      const url::Origin& merchant_origin);
+      const url::Origin& merchant_origin) const;
 
   // Add the credit-card-linked benefit to local cache for tests. This does
   // not affect data in the real database.

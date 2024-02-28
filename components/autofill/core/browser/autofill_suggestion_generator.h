@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -38,8 +39,7 @@ class PersonalDataManager;
 // address profile Autofill.
 class AutofillSuggestionGenerator {
  public:
-  AutofillSuggestionGenerator(AutofillClient& autofill_client,
-                              PersonalDataManager& personal_data);
+  explicit AutofillSuggestionGenerator(AutofillClient& autofill_client);
   ~AutofillSuggestionGenerator();
   AutofillSuggestionGenerator(const AutofillSuggestionGenerator&) = delete;
   AutofillSuggestionGenerator& operator=(const AutofillSuggestionGenerator&) =
@@ -278,12 +278,14 @@ class AutofillSuggestionGenerator {
   // `card`, false otherwise.
   bool ShouldShowVirtualCardOptionForServerCard(const CreditCard* card) const;
 
+  const PersonalDataManager& personal_data() const {
+    // The PDM outlives the ASG, hence this is safe.
+    return *autofill_client_->GetPersonalDataManager();
+  }
+
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
   base::raw_ref<AutofillClient> autofill_client_;
-
-  // personal_data_ should outlive the generator.
-  base::raw_ref<PersonalDataManager> personal_data_;
 };
 
 }  // namespace autofill
