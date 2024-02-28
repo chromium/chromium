@@ -83,13 +83,42 @@ public final class SigninUtils {
 
     /** Returns the accessibility label for the the account picker. */
     public static String getChooseAccountLabel(
-            final Context context, DisplayableProfileData profileData) {
+            final Context context,
+            DisplayableProfileData profileData,
+            boolean isCurrentlySelected) {
+        if (!isCurrentlySelected) {
+            return getAccountLabelForNonSelectedAccount(profileData, context);
+        }
+
         if (profileData.hasDisplayableEmailAddress()) {
+            if (TextUtils.isEmpty(profileData.getFullName())) {
+                return context.getString(
+                        R.string.signin_account_picker_description_with_email,
+                        profileData.getAccountEmail());
+            }
             return context.getString(
-                    R.string.signin_account_picker_description_with_email,
+                    R.string.signin_account_picker_description_with_name_and_email,
+                    profileData.getFullName(),
                     profileData.getAccountEmail());
         }
-        return context.getString(R.string.signin_account_picker_description);
+
+        if (TextUtils.isEmpty(profileData.getFullName())) {
+            return context.getString(
+                    R.string.signin_account_picker_description_without_name_or_email);
+        }
+        return context.getString(
+                R.string.signin_account_picker_description_with_name, profileData.getFullName());
+    }
+
+    private static String getAccountLabelForNonSelectedAccount(
+            DisplayableProfileData profileData, Context context) {
+        if (!profileData.hasDisplayableEmailAddress()) {
+            return profileData.getFullName();
+        }
+        return context.getString(
+                R.string.signin_account_label_for_non_selected_account,
+                profileData.getFullName(),
+                profileData.getAccountEmail());
     }
 
     /** Performs signin after confirming account management with the user, if necessary. */

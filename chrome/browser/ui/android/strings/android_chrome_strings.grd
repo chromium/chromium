@@ -3221,11 +3221,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_DIALOG_TITLE" desc="The title for the dialog that shows the list of accounts on the device and asks the user to select one of these accounts. [CHAR_LIMIT=27]">
         Choose an account
       </message>
-      <message name="IDS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog.">
-        Choose an account. Currently selected <ph name="EMAIL">%1$s<ex>john.doe@example.com</ex></ph>.
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog.">
+        <ph name="NAME">%1$s<ex>John Doe</ex></ph>, <ph name="EMAIL">%2$s<ex>john.doe@example.com</ex></ph> currently selected. Choose an account.
       </message>
-      <message name="IDS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog. Used when the user's email cannot be displayed.">
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog. Used when the user's name is not available.">
+        <ph name="EMAIL">%1$s<ex>john.doe@example.com</ex></ph> currently selected. Choose an account.
+      </message>
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog. Used when the user's email cannot be displayed.">
+        <ph name="NAME">%1$s<ex>John Doe</ex></ph> currently selected. Choose an account.
+      </message>
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITHOUT_NAME_OR_EMAIL" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog. Used when the user's name and email cannot be displayed.">
         Choose an account.
+      </message>
+      <message name="IDS_SIGNIN_ACCOUNT_LABEL_FOR_NON_SELECTED_ACCOUNT" is_accessibility_with_no_ui="true" desc="The content description for each account in the expanded account picker. Names the account that will be selected.">
+        <ph name="NAME">%1$s<ex>John Doe</ex></ph>, <ph name="EMAIL">%2$s<ex>john.doe@example.com</ex></ph>.
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_TITLE_FOR_SEND_TAB_TO_SELF" desc="The title for the bottom sheet that shows the list of accounts on the device and asks the user to select one of these accounts, when send-tab-to-self triggered the UI. [CHAR_LIMIT=27]">
         Sign in to Chrome

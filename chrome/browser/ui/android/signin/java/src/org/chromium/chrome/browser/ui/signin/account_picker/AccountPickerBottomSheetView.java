@@ -162,7 +162,8 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      */
     void updateSelectedAccount(DisplayableProfileData accountProfileData) {
         View view = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST);
-        ExistingAccountRowViewBinder.bindAccountView(accountProfileData, mSelectedAccountView);
+        ExistingAccountRowViewBinder.bindAccountView(
+                accountProfileData, mSelectedAccountView, /* isCurrentlySelected= */ true);
 
         ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
         continueButton.setText(

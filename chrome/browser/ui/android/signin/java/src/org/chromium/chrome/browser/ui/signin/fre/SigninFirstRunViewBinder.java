@@ -113,7 +113,7 @@ class SigninFirstRunViewBinder {
             view.getContinueButtonView().setText(R.string.signin_add_account_to_device);
         } else {
             ExistingAccountRowViewBinder.bindAccountView(
-                    profileData, view.getSelectedAccountView());
+                    profileData, view.getSelectedAccountView(), /* isCurrentlySelected= */ true);
             view.getContinueButtonView()
                     .setText(SigninUtils.getContinueAsButtonText(view.getContext(), profileData));
         }
