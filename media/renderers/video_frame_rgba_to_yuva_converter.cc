@@ -4,6 +4,7 @@
 
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -134,6 +135,16 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
     DLOG(ERROR) << "Raster context lost.";
     return false;
   }
+
+  // `supports_rgb_to_yuv_conversion` can be false either with RasterDecoder on
+  // Graphite or with validating command decoder. Validating command decoder is
+  // used only on android, but android always uses RasterDecoder.
+  DUMP_WILL_BE_CHECK(
+      provider->ContextCapabilities().supports_rgb_to_yuv_conversion ||
+      !provider->GrContext());
+
+  // It shouldn't be possible to reach here with legacy mailbox.
+  DUMP_WILL_BE_CHECK(src_mailbox_holder.mailbox.IsSharedImage());
 
   // With OOP raster, if RGB->YUV conversion is unsupported, the CopySharedImage
   // calls will fail on the service side with no ability to detect failure on
