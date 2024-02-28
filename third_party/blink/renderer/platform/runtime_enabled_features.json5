@@ -733,6 +733,7 @@
       // Resolve anchor*() functions computed-value time.
       name: "CSSAnchorPositioningComputeAnchor",
       depends_on: ["CSSAnchorPositioningCascadeFallback"],
+      status: "experimental",
     },
     {
       name: "CSSAnimationComposition",

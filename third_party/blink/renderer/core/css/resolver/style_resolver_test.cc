@@ -3683,6 +3683,10 @@ static const TreeScope* GetAnchorQueryTreeScope(const Length& length) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, ScopedAnchorFunction) {
+  // This test is not relevant with CSSAnchorPositioningComputeAnchor enabled,
+  // because anchor() functions are resolved computed-value time in that case.
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(false);
+
   GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       div { position: absolute; }
@@ -3758,6 +3762,9 @@ TEST_P(ParameterizedStyleResolverTest, ScopedAnchorFunction) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, ScopedAnchorSizeFunction) {
+  // See comment in test ScopedAnchorFunction.
+  ScopedCSSAnchorPositioningComputeAnchorForTest compute_anchor_feature(false);
+
   GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
     <style>
       div { position: absolute; }
