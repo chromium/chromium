@@ -85,10 +85,14 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
   const size_t kSampleSessionsCount = 2;
   const size_t kSampleTabsCount = 2;
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
+  std::vector<base::Time> timestamps = {base::Time::Now(),
+                                        base::Time::Now() - base::Minutes(1),
+                                        base::Time::Now() - base::Minutes(2),
+                                        base::Time::Now() - base::Minutes(3)};
   for (size_t i = 0; i < kSampleSessionsCount; i++) {
     sample_sessions.push_back(
         SampleSession(("Test Name " + base::NumberToString(i)).c_str(), 1,
-                      kSampleTabsCount, i));
+                      kSampleTabsCount, timestamps));
   }
 
   EXPECT_CALL(*mock_session_sync_service().GetOpenTabsUIDelegate(),
@@ -173,6 +177,11 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
                            ((kSampleSessionsCount * kSampleTabsCount - 1) - i) /
                            kSampleSessionsCount),
         tab_mojom->session_name);
+    // Assert that for a tab from 0 minutes ago the displayed text is 'Recently
+    // opened'. The first tab after ranking will have be 0 minutes ago.
+    if (i == 0) {
+      ASSERT_EQ("Recently opened", tab_mojom->relative_time_text);
+    }
     ASSERT_EQ(GURL(kSampleUrl), tab_mojom->url);
   }
 }
@@ -180,9 +189,13 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
 TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
   const size_t kSampleSessionsCount = 3;
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
+  std::vector<base::Time> timestamps = {base::Time::Now(),
+                                        base::Time::Now() - base::Minutes(1),
+                                        base::Time::Now() - base::Minutes(2),
+                                        base::Time::Now() - base::Minutes(3)};
   for (size_t i = 0; i < kSampleSessionsCount; i++) {
     sample_sessions.push_back(SampleSession(
-        ("Test Name " + base::NumberToString(i)).c_str(), 1, 1, i));
+        ("Test Name " + base::NumberToString(i)).c_str(), 1, 1, timestamps));
   }
 
   EXPECT_CALL(*mock_session_sync_service().GetOpenTabsUIDelegate(),
@@ -266,7 +279,7 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
     const auto& tab_mojom = tabs_mojom[i];
     ASSERT_TRUE(tab_mojom);
     // Ranking reverses the order due to setting timestamp as
-    // now - 1 hour + session_index * tab_index minutes.
+    // reverse order of timestamps array above.
     // Third entry is gone from blocklist so this starts at "Test Name 1".
     ASSERT_EQ("Test Name " + base::NumberToString(kSampleSessionsCount - i - 2),
               tab_mojom->session_name);
