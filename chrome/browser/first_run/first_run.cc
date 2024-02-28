@@ -46,13 +46,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
 
@@ -377,11 +375,6 @@ base::Time GetFirstRunSentinelCreationTime() {
 void ResetCachedSentinelDataForTesting() {
   g_cached_sentinel_creation_time = base::Time();
   g_first_run = first_run::internal::FIRST_RUN_UNKNOWN;
-}
-
-bool IsOnWelcomePage(content::WebContents* contents) {
-  return contents->GetVisibleURL().GetWithEmptyPath() ==
-         GURL(chrome::kChromeUIWelcomeURL);
 }
 
 void SetInitialPrefsPathForTesting(const base::FilePath& initial_prefs) {
