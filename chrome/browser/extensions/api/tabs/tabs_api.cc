@@ -1555,55 +1555,24 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 
   web_contents_ = contents;
 
-  // Check that the tab is not part of a SavedTabGroup.
-  if (contents &&
-      ExtensionTabUtil::TabIsInSavedTabGroup(web_contents_,
-                                             browser->tab_strip_model()) &&
-      !ExtensionHasLockedFullscreenPermission(extension())) {
-    return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
-  }
-
-  // TODO(rafaelw): handle setting remaining tab properties:
-  // -title
-  // -favIconUrl
-
-  // Navigate the tab to a new location if the url is different.
-  if (params->update_properties.url) {
-    std::string updated_url = *params->update_properties.url;
-    if (browser->profile()->IsIncognitoProfile() &&
-        !IsURLAllowedInIncognito(GURL(updated_url), browser->profile())) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          tabs_constants::kURLsNotAllowedInIncognitoError, updated_url)));
-    }
-
-    // Get last committed or pending URL.
-    std::string current_url = contents->GetVisibleURL().is_valid()
-                                  ? contents->GetVisibleURL().spec()
-                                  : std::string();
-
-    if (!UpdateURL(updated_url, tab_id, &error))
-      return RespondNow(Error(std::move(error)));
-
-    NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
-                             extension(), safe_browsing::TabsApiInfo::UPDATE,
-                             current_url, updated_url);
-  }
-
   bool active = false;
   // TODO(rafaelw): Setting |active| from js doesn't make much sense.
   // Move tab selection management up to window.
-  if (params->update_properties.selected)
+  if (params->update_properties.selected) {
     active = *params->update_properties.selected;
+  }
 
   // The 'active' property has replaced 'selected'.
-  if (params->update_properties.active)
+  if (params->update_properties.active) {
     active = *params->update_properties.active;
+  }
 
   if (active) {
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
-    // the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable())
+    // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+    // if the user is dragging tabs.
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
       return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+    }
 
     if (tab_strip->active_index() != tab_index) {
       tab_strip->ActivateTabAt(tab_index);
@@ -1612,28 +1581,16 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   }
 
   if (params->update_properties.highlighted) {
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
-    // the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable())
+    // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+    // if the user is dragging tabs.
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
       return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+    }
 
     bool highlighted = *params->update_properties.highlighted;
     if (highlighted != tab_strip->IsTabSelected(tab_index)) {
       tab_strip->ToggleSelectionAt(tab_index);
     }
-  }
-
-  if (params->update_properties.pinned) {
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
-    // the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable())
-      return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
-
-    bool pinned = *params->update_properties.pinned;
-    tab_strip->SetTabPinned(tab_index, pinned);
-
-    // Update the tab index because it may move when being pinned.
-    tab_index = tab_strip->GetIndexOfWebContents(contents);
   }
 
   if (params->update_properties.muted &&
@@ -1647,8 +1604,9 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   if (params->update_properties.opener_tab_id) {
     int opener_id = *params->update_properties.opener_tab_id;
     WebContents* opener_contents = nullptr;
-    if (opener_id == tab_id)
+    if (opener_id == tab_id) {
       return RespondNow(Error("Cannot set a tab's opener to itself."));
+    }
     if (!ExtensionTabUtil::GetTabById(opener_id, browser_context(),
                                       include_incognito_information(), nullptr,
                                       nullptr, &opener_contents, nullptr)) {
@@ -1656,10 +1614,11 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
           tabs_constants::kTabNotFoundError, base::NumberToString(opener_id))));
     }
 
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
-    // the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable())
+    // Bug fix for crbug.com/1197888. Don't let the extension update the tab
+    // if the user is dragging tabs.
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
       return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+    }
 
     if (tab_strip->GetIndexOfWebContents(opener_contents) ==
         TabStripModel::kNoTab) {
@@ -1674,6 +1633,62 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
         web_contents_)
         ->SetAutoDiscardable(state);
+  }
+
+  const bool contents_in_an_uneditable_saved_group =
+      contents && ExtensionTabUtil::TabIsInSavedTabGroup(
+                      web_contents_, browser->tab_strip_model()) &&
+                  !ExtensionHasLockedFullscreenPermission(extension());
+
+  if (params->update_properties.pinned) {
+    // Pinning will result in changes to the tabs index/group affiliation in
+    // some cases, Throw an error if a tab is attempting to be pinned.
+    if (contents_in_an_uneditable_saved_group) {
+      return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
+    }
+
+    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
+    // the user is dragging tabs.
+    if (!ExtensionTabUtil::IsTabStripEditable()) {
+      return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+    }
+
+    bool pinned = *params->update_properties.pinned;
+    tab_strip->SetTabPinned(tab_index, pinned);
+
+    // Update the tab index because it may move when being pinned.
+    tab_index = tab_strip->GetIndexOfWebContents(contents);
+  }
+
+  // TODO(rafaelw): handle setting remaining tab properties:
+  // -title
+  // -favIconUrl
+
+  // Navigate the tab to a new location if the url is different.
+  if (params->update_properties.url) {
+    if (contents_in_an_uneditable_saved_group) {
+      return RespondNow(Error(tabs_constants::kSavedTabGroupNotEditableError));
+    }
+
+    std::string updated_url = *params->update_properties.url;
+    if (browser->profile()->IsIncognitoProfile() &&
+        !IsURLAllowedInIncognito(GURL(updated_url), browser->profile())) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          tabs_constants::kURLsNotAllowedInIncognitoError, updated_url)));
+    }
+
+    // Get last committed or pending URL.
+    std::string current_url = contents->GetVisibleURL().is_valid()
+                                  ? contents->GetVisibleURL().spec()
+                                  : std::string();
+
+    if (!UpdateURL(updated_url, tab_id, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+
+    NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
+                             extension(), safe_browsing::TabsApiInfo::UPDATE,
+                             current_url, updated_url);
   }
 
   return RespondNow(GetResult());
