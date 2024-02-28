@@ -293,6 +293,7 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 
   base::Process process_;
   HResultOr<AppCommandRunner> app_command_runner_;
+  UpdaterScope scope_ = UpdaterScope::kSystem;
   std::string app_id_;
   bool send_pings_ = true;
 

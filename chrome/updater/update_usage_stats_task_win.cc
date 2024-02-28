@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
-#include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/constants.h"
@@ -48,7 +48,7 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
       continue;
     }
 
-    if (AppUsageStatsAllowed(scope, base::SysUTF8ToWide(app_id))) {
+    if (AppUsageStatsAllowed(scope, base::UTF8ToWide(app_id))) {
       VLOG(2) << "usagestats enabled by app " << app_id;
       return true;
     }
@@ -56,6 +56,36 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
 
   VLOG(2) << "No app enables usagestats.";
   return false;
+}
+
+bool AreRawUsageStatsEnabled(
+    UpdaterScope scope,
+    const std::vector<std::string>& include_only_these_app_ids) {
+  return OtherAppUsageStatsAllowed(
+      [&]() {
+        const HKEY root = UpdaterScopeToHKeyRoot(scope);
+        std::vector<std::wstring> subkeys;
+        if (IsSystemInstall(scope)) {
+          subkeys.push_back(CLIENT_STATE_MEDIUM_KEY);
+        }
+        subkeys.push_back(CLIENT_STATE_KEY);
+        std::vector<std::string> app_ids;
+        for (const auto& subkey : subkeys) {
+          for (base::win::RegistryKeyIterator it(root, subkey.c_str(),
+                                                 KEY_WOW64_32KEY);
+               it.Valid(); ++it) {
+            const std::string app_id = base::WideToUTF8(it.Name());
+            if (include_only_these_app_ids.empty() ||
+                base::ranges::find(include_only_these_app_ids, app_id) !=
+                    std::end(include_only_these_app_ids)) {
+              app_ids.push_back(app_id);
+            }
+          }
+        }
+
+        return app_ids;
+      }(),
+      scope);
 }
 
 }  // namespace updater

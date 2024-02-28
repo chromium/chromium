@@ -117,6 +117,7 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1");
   ClearAppUsageStats("app2");
   ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+  ASSERT_FALSE(AreRawUsageStatsEnabled(GetTestScope(), {"app1", "app2"}));
 }
 
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
@@ -126,6 +127,7 @@ TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
     SetAppUsageStats(key_path, "app1", true);
     SetAppUsageStats(key_path, "app2", false);
     ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+    ASSERT_TRUE(AreRawUsageStatsEnabled(GetTestScope(), {"app1", "app2"}));
   }
 }
 
@@ -136,6 +138,7 @@ TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
     SetAppUsageStats(key_path, "app1", false);
     SetAppUsageStats(key_path, "app2", false);
     ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
+    ASSERT_FALSE(AreRawUsageStatsEnabled(GetTestScope(), {"app1", "app2"}));
   }
 }
 
@@ -151,6 +154,7 @@ TEST_F(UpdateUsageStatsTaskTest,
   SetAppUsageStats(CLIENT_STATE_MEDIUM_KEY, "app1", true);
   SetAppUsageStats(CLIENT_STATE_KEY, "app1", false);
   ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1"}, GetTestScope()));
+  ASSERT_TRUE(AreRawUsageStatsEnabled(GetTestScope(), {"app1"}));
 }
 #elif !BUILDFLAG(IS_MAC) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Mac Google-branded builds may pick up Chrome or other Google software
