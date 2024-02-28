@@ -1822,9 +1822,11 @@ void BrowserCommandController::UpdatePrintingState() {
   bool print_enabled = CanPrint(browser_);
   command_updater_.UpdateCommandEnabled(IDC_PRINT, print_enabled);
   if (features::IsToolbarPinningEnabled()) {
-    actions::ActionManager::Get()
-        .FindAction(kActionPrint)
-        ->SetEnabled(print_enabled);
+    actions::ActionItem* const print_action =
+        actions::ActionManager::Get().FindAction(kActionPrint);
+    if (print_action) {
+      print_action->SetEnabled(print_enabled);
+    }
   }
 #if BUILDFLAG(ENABLE_PRINTING)
   command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT,

@@ -243,6 +243,7 @@ void BrowserActions::InitializeBrowserActions() {
                            },
                            base::Unretained(&(browser_.get()))),
                        kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
+          .SetEnabled(chrome::CanPrint(&(browser_.get())))
           .Build());
 
   root_action_item_->AddChild(
