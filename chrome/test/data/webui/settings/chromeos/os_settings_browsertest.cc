@@ -1514,25 +1514,25 @@ using OsPrivacyPageTestPrivacyHubSubpage =
     OSSettingsPrivacyTestPrivacyHubV0Enabled;
 
 IN_PROC_BROWSER_TEST_F(OsPrivacyPageTestPrivacyHubSubpage, AllBuilds) {
-  RunTest("settings/chromeos/os_privacy_page/privacy_hub_subpage_test.js",
-          "runMochaSuite('<settings-privacy-hub-subpage> AllBuilds')");
+  RunSettingsTest("os_privacy_page/privacy_hub_subpage_test.js",
+                  "runMochaSuite('<settings-privacy-hub-subpage> AllBuilds')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(OsPrivacyPageTestPrivacyHubSubpage, OfficialBuild) {
-  RunTest("settings/chromeos/os_privacy_page/privacy_hub_subpage_test.js",
-          "runMochaSuite('<os-settings-privacy-page> OfficialBuild')");
+  RunSettingsTest("os_privacy_page/privacy_hub_subpage_test.js",
+                  "runMochaSuite('<os-settings-privacy-page> OfficialBuild')");
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDnsInput) {
-  RunTest("settings/chromeos/os_privacy_page/secure_dns_test.js",
-          "runMochaSuite('SettingsSecureDnsInput')");
+  RunSettingsTest("os_privacy_page/secure_dns_test.js",
+                  "runMochaSuite('SettingsSecureDnsInput')");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDns) {
-  RunTest("settings/chromeos/os_privacy_page/secure_dns_test.js",
-          "runMochaSuite('SettingsSecureDns')");
+  RunSettingsTest("os_privacy_page/secure_dns_test.js",
+                  "runMochaSuite('SettingsSecureDns')");
 }
 
 class OSSettingsPrivacyTestDeprecateDnsDialogEnabled
@@ -1678,16 +1678,14 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsSettingsMenuItem) {
 using OsSettingsTestSearchBox = OSSettingsMochaTest;
 
 IN_PROC_BROWSER_TEST_F(OsSettingsTestSearchBox, AllBuilds) {
-  RunTest(
-      "settings/chromeos/os_settings_search_box/os_settings_search_box_test.js",
-      "runMochaSuite('<os-settings-search-box> AllBuilds')");
+  RunSettingsTest("os_settings_search_box/os_settings_search_box_test.js",
+                  "runMochaSuite('<os-settings-search-box> AllBuilds')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(OsSettingsTestSearchBox, OfficialBuild) {
-  RunTest(
-      "settings/chromeos/os_settings_search_box/os_settings_search_box_test.js",
-      "runMochaSuite('<os-settings-search-box> OfficialBuild')");
+  RunSettingsTest("os_settings_search_box/os_settings_search_box_test.js",
+                  "runMochaSuite('<os-settings-search-box> OfficialBuild')");
 }
 #endif
 
