@@ -191,7 +191,7 @@ std::string PasswordStoreAndroidLocalBackend::GetAccountToRetryOperation() {
 }
 
 PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
-PasswordStoreAndroidLocalBackend::GetStoreType() {
+PasswordStoreAndroidLocalBackend::GetStorageType() {
   return PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
       kLocal;
 }

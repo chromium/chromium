@@ -509,7 +509,7 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsInternal(
   LoginsOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForLoginsRetrieval(
           MethodName("FillMatchingLoginsAsync"), std::move(callback),
-          GetStoreType());
+          GetStorageType());
 
   // Create a barrier callback that aggregates results of a multiple
   // calls to GetLoginsInternal.
@@ -553,7 +553,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeInternal(
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
           MethodName("RemoveLoginsByURLAndTimeAsync"), std::move(callback),
-          GetStoreType());
+          GetStorageType());
 
   GetAllLoginsInternal(
       account,
@@ -573,7 +573,7 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenInternal(
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
           MethodName("RemoveLoginsCreatedBetweenAsync"), std::move(callback),
-          GetStoreType());
+          GetStorageType());
 
   GetAllLoginsInternal(
       account,
@@ -605,7 +605,7 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsInternal(
           },
           PasswordStoreBackendMetricsRecorder(
               BackendInfix("AndroidBackend"),
-              MethodName("DisableAutoSignInForOriginsAsync"), GetStoreType()),
+              MethodName("DisableAutoSignInForOriginsAsync"), GetStorageType()),
           std::move(completion));
 
   GetAllLoginsInternal(
@@ -901,7 +901,7 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
       job_id, JobReturnHandler(std::move(callback),
                                PasswordStoreBackendMetricsRecorder(
                                    BackendInfix("AndroidBackend"),
-                                   std::move(method_name), GetStoreType()),
+                                   std::move(method_name), GetStorageType()),
                                delay, operation));
 }
 

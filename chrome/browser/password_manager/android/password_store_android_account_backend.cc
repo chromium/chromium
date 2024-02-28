@@ -383,7 +383,7 @@ std::string PasswordStoreAndroidAccountBackend::GetAccountToRetryOperation() {
 }
 
 PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
-PasswordStoreAndroidAccountBackend::GetStoreType() {
+PasswordStoreAndroidAccountBackend::GetStorageType() {
   return PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
       kAccount;
 }

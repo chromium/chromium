@@ -87,7 +87,7 @@ class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
   void OnCallToGMSCoreSucceeded() override;
   std::string GetAccountToRetryOperation() override;
   PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
-  GetStoreType() override;
+  GetStorageType() override;
 
   base::WeakPtrFactory<PasswordStoreAndroidLocalBackend> weak_ptr_factory_{
       this};
