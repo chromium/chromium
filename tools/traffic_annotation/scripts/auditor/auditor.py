@@ -198,6 +198,17 @@ class Annotation:
 
     util.fill_proto_with_bogus(annotation.unique_id, annotation.proto.semantics,
                                archived.semantics_fields)
+    fields_by_name = \
+      traffic_annotation.TrafficSemantics.DESCRIPTOR.fields_by_name
+    if fields_by_name["internal"].number in archived.semantics_fields:
+      fake_contact = traffic_annotation.TrafficSemantics.Internal.Contact()
+      fake_contact.email = "[Archived]"
+      annotation.proto.semantics.internal.contacts.append(fake_contact)
+    if fields_by_name["user_data"].number in archived.semantics_fields:
+      annotation.proto.semantics.user_data.type.append(
+          traffic_annotation.TrafficSemantics.UserData.UserDataType.OTHER)
+    if fields_by_name["last_reviewed"].number in archived.semantics_fields:
+      annotation.proto.semantics.last_reviewed = "1970-01-01"
 
     util.fill_proto_with_bogus(annotation.unique_id, annotation.proto.policy,
                                archived.policy_fields)
