@@ -12,9 +12,6 @@ namespace user_education::features {
 
 namespace {
 
-inline constexpr char kTimeToIdleParamName[] = "time_to_idle";
-inline constexpr base::TimeDelta kDefaultTimeToIdle = base::Seconds(30);
-
 inline constexpr char kMinimumValidSessionLengthParamName[] =
     "minimum_valid_session_length";
 inline constexpr base::TimeDelta kDefaultMinimumValidSessionLength =
@@ -50,12 +47,6 @@ BASE_FEATURE(kUserEducationExperienceVersion2,
 
 bool IsUserEducationV2() {
   return base::FeatureList::IsEnabled(kUserEducationExperienceVersion2);
-}
-
-base::TimeDelta GetTimeToIdle() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kUserEducationExperienceVersion2, kTimeToIdleParamName,
-      kDefaultTimeToIdle);
 }
 
 base::TimeDelta GetMinimumValidSessionLength() {

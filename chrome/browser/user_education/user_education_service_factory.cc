@@ -5,6 +5,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 
 #include <memory>
+#include <optional>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
@@ -14,6 +15,22 @@
 #include "components/user_education/common/feature_promo_idle_policy.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
 #include "content/public/browser/browser_context.h"
+
+namespace {
+
+// Idle observer that doesn't do anything.
+class StubIdleObserver : public user_education::FeaturePromoIdleObserver {
+ public:
+  StubIdleObserver() = default;
+  ~StubIdleObserver() override = default;
+
+  // FeaturePromoIdleObserver:
+  std::optional<base::Time> MaybeGetNewLastActiveTime() const override {
+    return std::nullopt;
+  }
+};
+
+}  // namespace
 
 // This is found in chrome/browser/ui/user_education, so extern the factory
 // method to create the default idle observer type.
@@ -54,9 +71,8 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
           Profile::FromBrowserContext(context)));
   result->feature_promo_session_manager().Init(
       &result->feature_promo_storage_service(),
-      disable_idle_polling
-          ? std::make_unique<user_education::FeaturePromoIdleObserver>()
-          : CreatePollingIdleObserver(),
+      disable_idle_polling ? std::make_unique<StubIdleObserver>()
+                           : CreatePollingIdleObserver(),
       std::make_unique<user_education::FeaturePromoIdlePolicy>());
   return result;
 }

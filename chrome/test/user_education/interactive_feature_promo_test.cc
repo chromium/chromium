@@ -79,11 +79,10 @@ InteractiveFeaturePromoTestApi::AdvanceTime(NewTime time) {
 }
 
 InteractiveFeaturePromoTestApi::StepBuilder
-InteractiveFeaturePromoTestApi::UpdateIdleState(NewTime time,
-                                                bool application_is_active) {
-  return std::move(Do([this, time, application_is_active]() {
-                     test_impl().UpdateIdleState(time, application_is_active);
-                   }).SetDescription("UpdateIdleState()"));
+InteractiveFeaturePromoTestApi::SetLastActive(NewTime time) {
+  return std::move(Do([this, time]() {
+                     test_impl().SetLastActive(time);
+                   }).SetDescription("SetLastActive()"));
 }
 
 InteractiveFeaturePromoTestApi::MultiStep

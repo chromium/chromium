@@ -19,30 +19,17 @@ void FeaturePromoIdleObserver::Init(
 
 void FeaturePromoIdleObserver::StartObserving() {}
 
-FeaturePromoIdleObserver::IdleState FeaturePromoIdleObserver::GetCurrentState()
-    const {
-  return IdleState();
-}
-
 base::CallbackListSubscription FeaturePromoIdleObserver::AddUpdateCallback(
     UpdateCallback update_callback) {
   return update_callbacks_.Add(std::move(update_callback));
 }
 
-void FeaturePromoIdleObserver::NotifyIdleStateChanged(const IdleState& state) {
-  update_callbacks_.Notify(state);
+void FeaturePromoIdleObserver::NotifyLastActiveChanged(base::Time update) {
+  update_callbacks_.Notify(update);
 }
 
 base::Time FeaturePromoIdleObserver::GetCurrentTime() const {
   return storage_service_->GetCurrentTime();
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const FeaturePromoIdleObserver::IdleState& idle_state) {
-  os << "IdleState{ " << idle_state.last_active_time << ", "
-     << idle_state.application_active << " }";
-  return os;
 }
 
 }  // namespace user_education

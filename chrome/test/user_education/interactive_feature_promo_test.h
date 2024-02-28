@@ -69,14 +69,14 @@ class InteractiveFeaturePromoTestApi
   [[nodiscard]] MultiStep WaitForFeatureEngagementReady();
 
   // Returns a test step that advances time.
-  // Fails if not in `ClockMode::kUseTestClock`.
+  // Fails if not in `ClockMode::kUseTestClock` or if `time` is null.
   [[nodiscard]] StepBuilder AdvanceTime(NewTime time);
 
-  // Returns a test step that updates the idle session state based on the given
-  // parameters. If `time` is relative, the new value is based on the current
-  // time (either default or test clock).
-  [[nodiscard]] StepBuilder UpdateIdleState(NewTime time,
-                                            bool application_is_active = true);
+  // Returns a test step that updates the last active time reported by the idle
+  // observer based on the given parameters. If `time` is relative, the new
+  // value is based on the current time (either default or test clock). If
+  // `time` is null, there is no current active time.
+  [[nodiscard]] StepBuilder SetLastActive(NewTime time);
 
   // --------------------------------------------------------------------------
   // IMPORTANT NOTE: the following methods only work for Views help bubbles.

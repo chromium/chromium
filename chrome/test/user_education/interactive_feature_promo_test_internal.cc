@@ -35,13 +35,16 @@ namespace internal {
 
 namespace {
 
-base::Time CalculateNewTime(base::Time now,
-                            InteractiveFeaturePromoTestCommon::NewTime time) {
+std::optional<base::Time> CalculateNewTime(
+    base::Time now,
+    InteractiveFeaturePromoTestCommon::NewTime time) {
+  if (std::holds_alternative<std::nullopt_t>(time)) {
+    return std::nullopt;
+  }
   if (const auto* const rel_time = std::get_if<base::TimeDelta>(&time)) {
     return now + *rel_time;
-  } else {
-    return std::get<base::Time>(time);
   }
+  return std::get<base::Time>(time);
 }
 
 }  // namespace
@@ -101,16 +104,14 @@ void InteractiveFeaturePromoTestPrivate::AdvanceTime(NewTime new_time) {
   }
 }
 
-void InteractiveFeaturePromoTestPrivate::UpdateIdleState(
-    NewTime time,
-    bool application_is_active) {
+void InteractiveFeaturePromoTestPrivate::SetLastActive(NewTime time) {
   CHECK(test_time_.has_value());
   const auto last_active_time =
       CalculateNewTime(test_time_.value_or(base::Time::Now()), time);
   for (auto& [profile, data] : profile_data_) {
     if (data.test_util) {
-      data.test_util->UpdateIdleState(
-          {last_active_time, application_is_active});
+      data.test_util->UpdateLastActiveTime(last_active_time,
+                                           last_active_time.has_value());
     }
   }
 }
@@ -201,12 +202,6 @@ InteractiveFeaturePromoTestPrivate::CreateUserEducationService(
     user_education::FeaturePromoSessionData session_data;
     base::Time now = ptr->test_time_.value_or(base::Time::Now());
     switch (ptr->initial_session_state_) {
-      case InitialSessionState::kIdle:
-        session_data.most_recent_active_time =
-            now -
-            (user_education::features::GetTimeToIdle() + base::Minutes(5));
-        session_data.start_time = session_data.most_recent_active_time;
-        break;
       case InitialSessionState::kInsideGracePeriod:
         session_data.start_time =
             now - user_education::features::GetSessionStartGracePeriod() / 2;
@@ -223,7 +218,7 @@ InteractiveFeaturePromoTestPrivate::CreateUserEducationService(
     profile_data->test_util =
         std::make_unique<user_education::test::FeaturePromoSessionTestUtil>(
             service->feature_promo_session_manager(), session_data,
-            user_education::FeaturePromoPolicyData(), ptr->test_time_);
+            user_education::FeaturePromoPolicyData(), now, ptr->test_time_);
   }
 
   return service;

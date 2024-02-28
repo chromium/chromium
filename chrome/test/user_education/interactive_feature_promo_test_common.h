@@ -75,11 +75,9 @@ class InteractiveFeaturePromoTestCommon {
     kUseTestClock
   };
 
-  // Descrbies how the test should start. You can use `session_test_util()` to
+  // Describes how the test should start. You can use `session_test_util()` to
   // further update the session state.
   enum InitialSessionState {
-    // The browser has been idle for a while; most promos will not be shown.
-    kIdle,
     // The browser has started recently and only lightweight and high-priority
     // promos may be shown.
     kInsideGracePeriod,
@@ -90,6 +88,8 @@ class InteractiveFeaturePromoTestCommon {
 
   // Specifies a new time to update to when using the test clock.
   using NewTime = std::variant<
+      // No value; this specifies that there is no valid time.
+      std::nullopt_t,
       // An absolute time; should be later than the previous time specified.
       base::Time,
       // A relative time based on the current test time.

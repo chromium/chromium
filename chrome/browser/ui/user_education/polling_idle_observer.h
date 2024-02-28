@@ -5,13 +5,18 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_POLLING_IDLE_OBSERVER_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_POLLING_IDLE_OBSERVER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
 #include "ui/base/idle/idle_polling_service.h"
 
-// Used to observe the system/application idle state. Override virtual methods
-// for testing.
+// Used to observe the system/application idle state, for purposes of session
+// tracking for User Education. This implementation uses system calls to observe
+// the locked and idle state as well as the presence of a foregrounded browser
+// window.
 class PollingIdleObserver : public user_education::FeaturePromoIdleObserver,
                             public ui::IdlePollingService::Observer {
  public:
@@ -20,10 +25,7 @@ class PollingIdleObserver : public user_education::FeaturePromoIdleObserver,
 
   // IdleObserver:
   void StartObserving() override;
-
-  // Returns the current idle state. Used on startup and shutdown.
-  // Override for testing.
-  IdleState GetCurrentState() const override;
+  std::optional<base::Time> MaybeGetNewLastActiveTime() const override;
 
  private:
   // Returns whether the current application is active.

@@ -14,10 +14,6 @@
 
 namespace user_education {
 
-namespace test {
-class FeaturePromoSessionTestUtil;
-}
-
 class FeaturePromoIdlePolicy;
 class FeaturePromoStorageService;
 
@@ -26,8 +22,6 @@ class FeaturePromoStorageService;
 // session should start or end.
 class FeaturePromoSessionManager {
  public:
-  using IdleState = FeaturePromoIdleObserver::IdleState;
-
   FeaturePromoSessionManager();
   FeaturePromoSessionManager(const FeaturePromoSessionManager&) = delete;
   void operator=(const FeaturePromoSessionManager&) = delete;
@@ -40,10 +34,21 @@ class FeaturePromoSessionManager {
                     std::unique_ptr<FeaturePromoIdleObserver> observer,
                     std::unique_ptr<FeaturePromoIdlePolicy> policy);
 
-  // Determines whether the application is active. Inactive applications should
-  // not show promos. Default is always active as long as the application is
-  // running; override to modify behavior.
-  bool IsApplicationActive() const;
+  // Possibly updates the current session state, if there might be a new
+  // session.
+  void MaybeUpdateSessionState();
+
+  // Test-only methods.
+  FeaturePromoStorageService* storage_service_for_testing() {
+    return storage_service_;
+  }
+  template <typename T>
+    requires std::derived_from<T, FeaturePromoIdleObserver>
+  T* ReplaceIdleObserverForTesting(std::unique_ptr<T> new_observer) {
+    T* const observer_ptr = new_observer.get();
+    SetIdleObserver(std::move(new_observer));
+    return observer_ptr;
+  }
 
  protected:
   const FeaturePromoIdlePolicy* idle_policy() const {
@@ -56,25 +61,21 @@ class FeaturePromoSessionManager {
                             const base::Time old_active_time,
                             const base::Time new_active_time);
 
-  // Called whenever the idle state is updated, before the session data is
-  // updated in the storage service, so that both the current update and the
-  // previous state can be used. By default, does nothing. Override to (for
+  // Called whenever the most recent active time is updated, before the session
+  // data is updated in the storage service, so that both the current update and
+  // the previous state can be used. By default, does nothing. Override to (for
   // example) log metrics.
-  virtual void OnIdleStateUpdating(const IdleState& new_idle_state);
+  virtual void OnLastActiveTimeUpdating(base::Time new_last_active_time);
 
  private:
+  void SetIdleObserver(std::unique_ptr<FeaturePromoIdleObserver> new_observer);
+
   void RecordActivePeriodDuration(base::TimeDelta duration);
   void RecordIdlePeriodDuration(base::TimeDelta duration);
 
   friend class FeaturePromoSessionManagerTest;
-  friend test::FeaturePromoSessionTestUtil;
 
-  void UpdateIdleState(const IdleState& new_idle_state);
-
-  // Tracks whether the most recent update said the application was active or
-  // not (i.e. due to the screen being locked, or no browser window being in the
-  // foreground).
-  bool application_is_active_ = true;
+  void UpdateLastActiveTime(base::Time new_last_active_time);
 
   raw_ptr<FeaturePromoStorageService> storage_service_ = nullptr;
   std::unique_ptr<FeaturePromoIdleObserver> idle_observer_;

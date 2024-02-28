@@ -492,9 +492,9 @@ void FeaturePromoControllerCommon::MaybeShowQueuedPromo() {
                                 FeaturePromoSessionPolicy::PromoPriority::kHigh;
 
   // Coordinate with the product messaging system to make sure a promo will not
-  // attempt to be shown over a non-IPH leagal notice.
+  // attempt to be shown over a non-IPH legal notice.
   if (messaging_controller_->has_pending_notices()) {
-    // Does the FeautrePromoController have messaging priority?
+    // Does the FeaturePromoController have messaging priority?
     if (!messaging_priority_handle_) {
       // No, which means another non-IPH promo does. Request priority and quit
       // for now.

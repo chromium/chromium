@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/user_education/test/feature_promo_session_test_util.h"
+#include <memory>
 
 #include "base/callback_list.h"
 #include "base/time/default_clock.h"
@@ -10,6 +11,7 @@
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/test/feature_promo_session_mocks.h"
 
 namespace user_education::test {
 
@@ -17,26 +19,27 @@ FeaturePromoSessionTestUtil::FeaturePromoSessionTestUtil(
     FeaturePromoSessionManager& session_manager,
     const FeaturePromoSessionData& session_data,
     const FeaturePromoPolicyData& policy_data,
+    std::optional<base::Time> new_last_active_time,
     std::optional<base::Time> new_now)
-    : session_manager_(session_manager) {
+    : session_manager_(session_manager),
+      storage_service_(*session_manager.storage_service_for_testing()) {
   if (new_now) {
     clock_ = std::make_unique<base::SimpleTestClock>();
     clock_->SetNow(*new_now);
-    session_manager_->storage_service_->set_clock_for_testing(clock_.get());
+    storage_service_->set_clock_for_testing(clock_.get());
   }
-  session_manager_->storage_service_->SaveSessionData(session_data);
-  session_manager_->storage_service_->SavePolicyData(policy_data);
-  session_manager_->application_is_active_ = true;
+  storage_service_->SaveSessionData(session_data);
+  storage_service_->SavePolicyData(policy_data);
 
-  // Unsubscribe from the current idle poller and eliminate it.
-  session_manager_->idle_observer_subscription_ =
-      base::CallbackListSubscription();
-  session_manager_->idle_observer_.reset();
+  // Have to do this last so that the update happens after the session data is
+  // saved.
+  idle_observer_ = session_manager.ReplaceIdleObserverForTesting(
+      std::make_unique<TestIdleObserver>(new_last_active_time));
 }
 
 FeaturePromoSessionTestUtil::~FeaturePromoSessionTestUtil() {
   // Have to set this back to avoid a dangling reference.
-  session_manager_->storage_service_->set_clock_for_testing(
+  session_manager_->storage_service_for_testing()->set_clock_for_testing(
       base::DefaultClock::GetInstance());
 }
 
@@ -44,8 +47,10 @@ void FeaturePromoSessionTestUtil::SetNow(base::Time new_now) {
   clock_->SetNow(new_now);
 }
 
-void FeaturePromoSessionTestUtil::UpdateIdleState(const IdleState& idle_state) {
-  session_manager_->UpdateIdleState(idle_state);
+void FeaturePromoSessionTestUtil::UpdateLastActiveTime(
+    std::optional<base::Time> new_active_time,
+    bool send_update) {
+  idle_observer_->SetLastActiveTime(new_active_time, send_update);
 }
 
 }  // namespace user_education::test

@@ -17,18 +17,19 @@ namespace user_education::test {
 // updates only when `UpdateState()` is called.
 class TestIdleObserver : public FeaturePromoIdleObserver {
  public:
-  explicit TestIdleObserver(
-      FeaturePromoSessionManager::IdleState initial_state);
+  explicit TestIdleObserver(std::optional<base::Time> initial_active_time);
   ~TestIdleObserver() override;
 
-  // Call to modify the current state and send an update.
-  void UpdateState(const FeaturePromoSessionManager::IdleState& new_state);
+  // Call to modify the current state and optionally send an update.
+  void SetLastActiveTime(std::optional<base::Time> new_last_active_time,
+                         bool send_update);
 
  private:
+  // FeaturePromoIdleObserver:
   void StartObserving() final;
-  FeaturePromoSessionManager::IdleState GetCurrentState() const final;
+  std::optional<base::Time> MaybeGetNewLastActiveTime() const final;
 
-  FeaturePromoSessionManager::IdleState state_;
+  std::optional<base::Time> last_active_time_;
 };
 
 // Mock version of `IdlePolicy` that allows specific queries to be intercepted.
@@ -37,7 +38,6 @@ class MockIdlePolicy : public FeaturePromoIdlePolicy {
   MockIdlePolicy();
   ~MockIdlePolicy() override;
 
-  MOCK_METHOD(bool, IsActive, (base::Time), (const, override));
   MOCK_METHOD(bool,
               IsNewSession,
               (base::Time, base::Time, base::Time),
@@ -50,8 +50,7 @@ class MockFeaturePromoSessionManager : public FeaturePromoSessionManager {
  public:
   MockFeaturePromoSessionManager();
   ~MockFeaturePromoSessionManager() override;
-
-  MOCK_METHOD(void, OnIdleStateUpdating, (const IdleState&), (override));
+  MOCK_METHOD(void, OnLastActiveTimeUpdating, (base::Time), (override));
   MOCK_METHOD(void,
               OnNewSession,
               (const base::Time, const base::Time, const base::Time),

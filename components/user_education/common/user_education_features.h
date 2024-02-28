@@ -15,10 +15,6 @@ BASE_DECLARE_FEATURE(kUserEducationExperienceVersion2);
 // Returns whether User Education Version 2 policies are enabled.
 extern bool IsUserEducationV2();
 
-// Returns the amount of time the device or application must be inactive before
-// it is considered inactive for user education purposes.
-extern base::TimeDelta GetTimeToIdle();
-
 // Returns the minimum amount of time a session must last. If this is less than
 // `GetIdleTimeBetweenSessions()` then it will have no effect.
 extern base::TimeDelta GetMinimumValidSessionLength();

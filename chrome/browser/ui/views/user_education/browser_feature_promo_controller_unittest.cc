@@ -1729,18 +1729,24 @@ class BrowserFeaturePromoControllerPriorityTest
               UserEducationServiceFactory::GetForBrowserContext(
                   browser_view->GetProfile())
                   ->feature_promo_session_manager(),
-              session_data, policy_data, now_);
+              session_data, policy_data, session_data.most_recent_active_time,
+              now_);
         }).SetDescription("ResetSessionData"));
   }
 
-  auto AdvanceTime(base::TimeDelta until_last_active,
-                   base::TimeDelta idle_time = base::Seconds(1),
-                   bool application_is_active = true) {
-    return Do([this, until_last_active, idle_time, application_is_active]() {
-      const auto new_active_time = now_ + until_last_active;
-      now_ = new_active_time + idle_time;
+  auto AdvanceTime(std::optional<base::TimeDelta> until_new_last_active,
+                   base::TimeDelta until_new_now = base::Milliseconds(500),
+                   bool send_update = true) {
+    return Do([this, until_new_last_active, until_new_now, send_update]() {
+      const auto new_active_time =
+          until_new_last_active
+              ? std::make_optional(now_ + *until_new_last_active)
+              : std::nullopt;
+      now_ = new_active_time.value_or(now_) + until_new_now;
       test_util_->SetNow(now_);
-      test_util_->UpdateIdleState({new_active_time, application_is_active});
+      if (new_active_time) {
+        test_util_->UpdateLastActiveTime(*new_active_time, send_update);
+      }
     });
   }
 
@@ -1762,17 +1768,12 @@ class BrowserFeaturePromoControllerPriorityTest
       user_education::features::GetIdleTimeBetweenSessions() / 4;
   const base::TimeDelta kMoreThanNewSession =
       user_education::features::GetIdleTimeBetweenSessions() + base::Hours(1);
-  const base::TimeDelta kLessThanIdleTime =
-      user_education::features::GetTimeToIdle() / 4;
-  const base::TimeDelta kMoreThanIdleTime =
-      user_education::features::GetTimeToIdle() + base::Seconds(5);
 
  private:
   // Ensures some basic orderings of values to avoid triggering unexpected
   // behavior.
   void VerifyConstants() {
     CHECK_GT(kLessThanCooldown, kMoreThanNewSession);
-    CHECK_GT(kLessThanNewSession, kMoreThanIdleTime);
     CHECK_LT(kMoreThanGracePeriod + kLessThanCooldown,
              user_education::features::GetLowPriorityCooldown());
     CHECK_LT(kMoreThanAbortCooldown + kMoreThanGracePeriod,
@@ -1927,7 +1928,7 @@ TEST_F(BrowserFeaturePromoControllerPriorityTest,
       MaybeShowStartupPromo(std::move(second_params)),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
       ExpectShowingPromo(&kLegalNoticeFeature2),
-      // Requiest the notice and verify it doesn't pop.
+      // Request the notice and verify it doesn't pop.
       Do([&notice]() { notice.Request(kRequiredNoticeId); }), FlushEvents(),
       WaitForState(kNoticeCallbackState, false),
       // Close the promo and verify the notice (and not the other promo) pops.
@@ -1951,20 +1952,6 @@ class BrowserFeaturePromoControllerPolicyTest
   void TearDown() override {
     help_bubble_.reset();
     BrowserFeaturePromoControllerPriorityTest::TearDown();
-  }
-
-  auto CheckSessionActive(bool expected) {
-    return std::move(
-        CheckView(
-            kBrowserViewElementId,
-            [](BrowserView* browser_view) {
-              return UserEducationServiceFactory::GetForBrowserContext(
-                         browser_view->GetProfile())
-                  ->feature_promo_session_manager()
-                  .IsApplicationActive();
-            },
-            expected)
-            .SetDescription("CheckSessionActive()"));
   }
 
   auto SimulateSnoozes(const base::Feature& feature, int delta_from_max) {
@@ -2063,7 +2050,7 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest, TwoLegalNotices) {
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
        GracePeriodBlocksHeavyweightInV2) {
   RunTestSequence(
-      ResetSessionData(kLessThanGracePeriod), CheckSessionActive(true),
+      ResetSessionData(kLessThanGracePeriod),
       MaybeShowPromo(kTutorialIPHFeature,
                      UseV2() ? FeaturePromoResult::kBlockedByGracePeriod
                              : FeaturePromoResult::Success()));
@@ -2072,21 +2059,20 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
        GracePeriodDoesNotBlockLightweightInV2) {
   RunTestSequence(
-      ResetSessionData(kLessThanGracePeriod), CheckSessionActive(true),
+      ResetSessionData(kLessThanGracePeriod),
       MaybeShowPromo(kTestIPHFeature, FeaturePromoResult::Success()));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
        GracePeriodDoesNotBlockHeavyweightLegalNotice) {
   RunTestSequence(
-      ResetSessionData(kLessThanGracePeriod), CheckSessionActive(true),
+      ResetSessionData(kLessThanGracePeriod),
       MaybeShowPromo(kLegalNoticeFeature2, FeaturePromoResult::Success()));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
        GracePeriodDoesNotBlockActionableAlert) {
   RunTestSequence(ResetSessionData(kLessThanGracePeriod),
-                  CheckSessionActive(true),
                   MaybeShowPromo(kActionableAlertIPHFeature2,
                                  FeaturePromoResult::Success()));
 }
@@ -2095,7 +2081,6 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
        GracePeriodBlocksHeavyweightInV2AfterNewSession) {
   RunTestSequence(
       ResetSessionData(kLessThanGracePeriod), AdvanceTime(kMoreThanNewSession),
-      CheckSessionActive(true),
       MaybeShowPromo(kTutorialIPHFeature,
                      UseV2() ? FeaturePromoResult::kBlockedByGracePeriod
                              : FeaturePromoResult::Success()));
@@ -2105,29 +2090,8 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
        GracePeriodDoesNotBlocksHeavyweightLongAfterNewSession) {
   RunTestSequence(
       ResetSessionData(base::Seconds(60)), AdvanceTime(kMoreThanNewSession),
-      AdvanceTime(kMoreThanGracePeriod), CheckSessionActive(true),
+      AdvanceTime(kMoreThanGracePeriod),
       MaybeShowPromo(kTutorialIPHFeature, FeaturePromoResult::Success()));
-}
-
-TEST_P(BrowserFeaturePromoControllerPolicyTest, InactivePreventsPromoInV2) {
-  RunTestSequence(ResetSessionData(kLessThanGracePeriod),
-                  // Long idle time, but not locked.
-                  AdvanceTime(kLessThanNewSession, kMoreThanIdleTime),
-                  CheckSessionActive(false),
-                  MaybeShowPromo(kTutorialIPHFeature,
-                                 UseV2() ? FeaturePromoResult::kBlockedByUi
-                                         : FeaturePromoResult::Success()));
-}
-
-TEST_P(BrowserFeaturePromoControllerPolicyTest,
-       InactiveApplicationPreventsPromoInV2) {
-  RunTestSequence(ResetSessionData(kLessThanGracePeriod),
-                  // Short idle time, but locked.
-                  AdvanceTime(kLessThanNewSession, kLessThanIdleTime, false),
-                  CheckSessionActive(false),
-                  MaybeShowPromo(kTutorialIPHFeature,
-                                 UseV2() ? FeaturePromoResult::kBlockedByUi
-                                         : FeaturePromoResult::Success()));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest, CooldownPreventsPromoInV2) {
@@ -2185,7 +2149,7 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
-       AbortedPromoDoesntTriggerCooldown) {
+       AbortedPromoDoesNotTriggerCooldown) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   // Show an immediately close the promo without user
                   // interaction.
@@ -2206,7 +2170,7 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
-       AbortedPromoDoesntTriggerSnooze) {
+       AbortedPromoDoesNotTriggerSnooze) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), AbortPromo(),
                   AdvanceTime(kMoreThanAbortCooldown),
@@ -2221,7 +2185,7 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest, SnoozeButtonDisappearsInV2) {
       ResetSessionData(kMoreThanGracePeriod),
       // Simulate N-1 snoozes at some distant time in the past.
       SimulateSnoozes(kSnoozeIPHFeature, -1),
-      // Show a snoozable promo, verify the snooze button is
+      // Show a snoozeable promo, verify the snooze button is
       // present, and press it.
       MaybeShowPromo(kSnoozeIPHFeature),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -2232,7 +2196,7 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest, SnoozeButtonDisappearsInV2) {
       // Wait until after the snooze period expires. We should now
       // be at N snoozes.
       AdvanceTime(kMoreThanCooldown), AdvanceTime(kMoreThanGracePeriod),
-      // Show the promo again and veirfy that in V2 the snooze
+      // Show the promo again and verify that in V2 the snooze
       // button is *not* present.
       MaybeShowPromo(kSnoozeIPHFeature),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -2247,7 +2211,7 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
       ResetSessionData(kMoreThanGracePeriod),
       // Simulate N-1 snoozes at some distant time in the past.
       SimulateSnoozes(kTutorialIPHFeature, -1),
-      // Show a snoozable promo, verify the snooze button is
+      // Show a snoozeable promo, verify the snooze button is
       // present, and press it.
       MaybeShowPromo(kTutorialIPHFeature),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -2258,7 +2222,7 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
       // Wait until after the snooze period expires. We should now
       // be at N snoozes.
       AdvanceTime(kMoreThanCooldown), AdvanceTime(kMoreThanGracePeriod),
-      // Show the promo again and veirfy that in V2 the snooze
+      // Show the promo again and verify that in V2 the snooze
       // button is *not* present.
       MaybeShowPromo(kTutorialIPHFeature),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -2267,4 +2231,23 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
           &views::LabelButton::GetText,
           l10n_util::GetStringUTF16(UseV2() ? IDS_PROMO_DISMISS_BUTTON
                                             : IDS_PROMO_SNOOZE_BUTTON)));
+}
+
+TEST_P(BrowserFeaturePromoControllerPolicyTest, IdleAtStartupStillShowsPromo) {
+  RunTestSequence(
+      ResetSessionData(base::TimeDelta()),
+      AdvanceTime(std::nullopt, kLessThanNewSession, true),
+      AdvanceTime(base::Seconds(15), base::Milliseconds(100), false),
+      MaybeShowPromo(kTutorialIPHFeature));
+}
+
+TEST_P(BrowserFeaturePromoControllerPolicyTest,
+       IdleAtStartupPromoBlockedByNewSession) {
+  RunTestSequence(
+      ResetSessionData(base::TimeDelta()),
+      AdvanceTime(std::nullopt, kMoreThanNewSession, true),
+      AdvanceTime(base::Seconds(15), base::Milliseconds(100), false),
+      MaybeShowPromo(kTutorialIPHFeature,
+                     UseV2() ? FeaturePromoResult::kBlockedByGracePeriod
+                             : FeaturePromoResult::Success()));
 }

@@ -48,7 +48,7 @@ class FeaturePromoSessionPolicy {
   virtual ~FeaturePromoSessionPolicy();
 
   // Sets up the policy with its storage service.
-  virtual void Init(const FeaturePromoSessionManager* session_manager,
+  virtual void Init(FeaturePromoSessionManager* session_manager,
                     FeaturePromoStorageService* storage_service);
 
   // Indicates that a promo is being shown. Value must not be `NoPromo`.
@@ -72,18 +72,17 @@ class FeaturePromoSessionPolicy {
       std::optional<PromoInfo> currently_showing) const;
 
  protected:
-  const FeaturePromoSessionManager* session_manager() const {
+  FeaturePromoSessionManager* session_manager() const {
     return session_manager_;
   }
-  FeaturePromoStorageService* storage_service() { return storage_service_; }
-  const FeaturePromoStorageService* storage_service() const {
+  FeaturePromoStorageService* storage_service() const {
     return storage_service_;
   }
 
  private:
   friend test::FeaturePromoSessionTestUtil;
 
-  raw_ptr<const FeaturePromoSessionManager> session_manager_ = nullptr;
+  raw_ptr<FeaturePromoSessionManager> session_manager_ = nullptr;
   raw_ptr<FeaturePromoStorageService> storage_service_ = nullptr;
   std::optional<base::Time> current_promo_shown_time_;
 };

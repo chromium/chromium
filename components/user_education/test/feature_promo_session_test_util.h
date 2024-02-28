@@ -11,14 +11,17 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
 
 namespace user_education {
 struct FeaturePromoPolicyData;
 struct FeaturePromoSessionData;
+class FeaturePromoSessionManager;
+class FeaturePromoStorageService;
 }  // namespace user_education
 
 namespace user_education::test {
+
+class TestIdleObserver;
 
 // Class which seizes control of a `FeaturePromoSessionManager` and its
 // associated session data, and gives a test fine control over the clock and the
@@ -33,14 +36,13 @@ namespace user_education::test {
 // `InteractiveFeaturePromoTest[T]` instead of directly using this class.
 class FeaturePromoSessionTestUtil {
  public:
-  using IdleState = FeaturePromoSessionManager::IdleState;
-
   // Creates the util object and seizes control of the session manager.
   // If `new_now` is set, also replaces the system clock with a test clock.
   FeaturePromoSessionTestUtil(FeaturePromoSessionManager& session_manager,
                               const FeaturePromoSessionData& session_data,
                               const FeaturePromoPolicyData& policy_data,
-                              std::optional<base::Time> new_now = std::nullopt);
+                              std::optional<base::Time> new_last_active_time,
+                              std::optional<base::Time> new_now);
   virtual ~FeaturePromoSessionTestUtil();
 
   FeaturePromoSessionTestUtil(const FeaturePromoSessionTestUtil&) = delete;
@@ -51,10 +53,13 @@ class FeaturePromoSessionTestUtil {
 
   // Sets the current time if using a test clock; fails if using the real clock.
   void SetNow(base::Time new_now);
-  void UpdateIdleState(const IdleState& idle_state);
+  void UpdateLastActiveTime(std::optional<base::Time> new_active_time,
+                            bool send_update);
 
  private:
   const raw_ref<FeaturePromoSessionManager> session_manager_;
+  const raw_ref<FeaturePromoStorageService> storage_service_;
+  raw_ptr<TestIdleObserver> idle_observer_ = nullptr;
   std::unique_ptr<base::SimpleTestClock> clock_;
 };
 
