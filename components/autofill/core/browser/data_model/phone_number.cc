@@ -393,6 +393,23 @@ bool PhoneNumber::PhoneCombineHelper::ParseNumber(
                                     GetRegion(profile, app_locale), value);
 }
 
+// static
+bool PhoneNumber::ImportPhoneNumberToProfile(
+    const PhoneNumber::PhoneCombineHelper& combined_phone,
+    const std::string& app_locale,
+    AutofillProfile& profile) {
+  std::u16string constructed_number;
+  // If the phone number only consists of a single component, the
+  // `PhoneCombineHelper` won't try to parse it. This happens during `SetInfo()`
+  // in this case.
+  bool parsed_successfully =
+      combined_phone.ParseNumber(profile, app_locale, &constructed_number) &&
+      profile.SetInfoWithVerificationStatus(PHONE_HOME_WHOLE_NUMBER,
+                                            constructed_number, app_locale,
+                                            VerificationStatus::kObserved);
+  return parsed_successfully;
+}
+
 bool PhoneNumber::PhoneCombineHelper::IsEmpty() const {
   return phone_.empty() && whole_number_.empty();
 }

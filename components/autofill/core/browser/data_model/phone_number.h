@@ -96,6 +96,15 @@ class PhoneNumber : public FormGroup {
     std::u16string whole_number_;
   };
 
+  // Imports the `combined_phone` number into `profile`, interpreting it from
+  // the perspective of the the country stored in `profile` or (if that's empty)
+  // `app_locale`.
+  // Returns whether the phonenumber was successfully parsed and stored.
+  static bool ImportPhoneNumberToProfile(
+      const PhoneNumber::PhoneCombineHelper& combined_phone,
+      const std::string& app_locale,
+      AutofillProfile& profile);
+
  private:
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;

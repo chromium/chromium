@@ -627,14 +627,8 @@ TEST_P(PhoneImportAndGetTest, TestSettingAndParsing) {
     EXPECT_TRUE(number.SetInfo(AutofillType(field_type), value));
   }
 
-  // Step 1 of 2 in FormDataImporter::SetPhoneNumber: parsing the number
-  std::u16string parsed_phone;
-  ASSERT_TRUE(number.ParseNumber(profile, faked_app_locale, &parsed_phone));
-
-  // Step 2 of 2 in FormDataImporter::SetPhoneNumber: persisting the number
-  EXPECT_TRUE(profile.SetInfoWithVerificationStatus(
-      PHONE_HOME_WHOLE_NUMBER, parsed_phone, faked_app_locale,
-      VerificationStatus::kObserved));
+  ASSERT_TRUE(PhoneNumber::ImportPhoneNumberToProfile(number, faked_app_locale,
+                                                      profile));
 
   // Verify that the raw value stored is as expected.
   EXPECT_EQ(test.expected_stored_number,

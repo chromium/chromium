@@ -263,15 +263,9 @@ bool FormDataImporter::SetPhoneNumber(
     const PhoneNumber::PhoneCombineHelper& combined_phone) {
   if (combined_phone.IsEmpty())
     return true;
-  std::u16string constructed_number;
-  // If the phone number only consists of a single component, the
-  // `PhoneCombineHelper` won't try to parse it. This happens during `SetInfo()`
-  // in this case.
-  bool parsed_successfully =
-      combined_phone.ParseNumber(profile, app_locale_, &constructed_number) &&
-      profile.SetInfoWithVerificationStatus(PHONE_HOME_WHOLE_NUMBER,
-                                            constructed_number, app_locale_,
-                                            VerificationStatus::kObserved);
+
+  bool parsed_successfully = PhoneNumber::ImportPhoneNumberToProfile(
+      combined_phone, app_locale_, profile);
   autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
 }
