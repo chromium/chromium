@@ -2,42 +2,65 @@
 # cargo-vet audits file
 
 [criteria.crypto-safe]
-description = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#crypto-safe"
+description = """
+All crypto algorithms in this crate have been reviewed by a relevant expert.
+**Note**: If a crate does not implement crypto, use `does-not-implement-crypto`,
+which implies `crypto-safe`, but does not require expert review in order to
+audit for."""
 
 [criteria.does-not-implement-crypto]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#does-not-implement-crypto"
+description = """
+Inspection reveals that the crate in question does not attempt to implement any
+cryptographic algorithms on its own.
+Note that certification of this does not require an expert on all forms of
+cryptography: it's expected for crates we import to be \"good enough\" citizens,
+so they'll at least be forthcoming if they try to implement something
+cryptographic. When in doubt, please ask an expert."""
 implies = "crypto-safe"
 
-[criteria.rule-of-two-safe-to-deploy]
-description-url = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml#23"
-implies = ["safe-to-deploy", "ub-risk-1"]
-
 [criteria.ub-risk-0]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-0"
+description = """
+No unsafe code.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-0
+"""
 implies = "ub-risk-1"
 
 [criteria.ub-risk-1]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1"
-implies = "ub-risk-2"
+description = """
+Excellent soundness.
 
-[criteria.ub-risk-1-thorough]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1-thorough"
-implies = "ub-risk-1"
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1
+"""
+implies = "ub-risk-2"
 
 [criteria.ub-risk-2]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2"
+description = """
+Negligible unsoundness or average soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2
+"""
 implies = "ub-risk-3"
 
-[criteria.ub-risk-2-thorough]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2-thorough"
-implies = "ub-risk-2"
-
 [criteria.ub-risk-3]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-3"
+description = """
+Mild unsoundness or suboptimal soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-3
+"""
 implies = "ub-risk-4"
 
 [criteria.ub-risk-4]
-description-url = "https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-4"
+description = """
+Extreme unsoundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-4
+"""
 
 [[audits.aho-corasick]]
 who = "danakj@chromium.org"
