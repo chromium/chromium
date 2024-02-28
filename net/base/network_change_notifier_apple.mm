@@ -7,8 +7,10 @@
 #include <netinet/in.h>
 #include <resolv.h>
 
+#include "base/apple/bridging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -234,8 +236,7 @@ void NetworkChangeNotifierApple::SetInitialConnectionType() {
 
 void NetworkChangeNotifierApple::StartReachabilityNotifications() {
   // Called on notifier thread.
-  run_loop_.reset(CFRunLoopGetCurrent());
-  CFRetain(run_loop_.get());
+  run_loop_.reset(CFRunLoopGetCurrent(), base::scoped_policy::RETAIN);
 
   DCHECK(reachability_);
   SCNetworkReachabilityContext reachability_context = {
@@ -263,22 +264,19 @@ void NetworkChangeNotifierApple::SetDynamicStoreNotificationKeys(
   // SCDynamicStore API does not exist on iOS.
   NOTREACHED();
 #else
-  base::apple::ScopedCFTypeRef<CFMutableArrayRef> notification_keys(
-      CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
-  base::apple::ScopedCFTypeRef<CFStringRef> key(
-      SCDynamicStoreKeyCreateNetworkGlobalEntity(
-          nullptr, kSCDynamicStoreDomainState, kSCEntNetInterface));
-  CFArrayAppendValue(notification_keys.get(), key.get());
-  key.reset(SCDynamicStoreKeyCreateNetworkGlobalEntity(
-      nullptr, kSCDynamicStoreDomainState, kSCEntNetIPv4));
-  CFArrayAppendValue(notification_keys.get(), key.get());
-  key.reset(SCDynamicStoreKeyCreateNetworkGlobalEntity(
-      nullptr, kSCDynamicStoreDomainState, kSCEntNetIPv6));
-  CFArrayAppendValue(notification_keys.get(), key.get());
+  NSArray* notification_keys = @[
+    base::apple::CFToNSOwnershipCast(SCDynamicStoreKeyCreateNetworkGlobalEntity(
+        nullptr, kSCDynamicStoreDomainState, kSCEntNetInterface)),
+    base::apple::CFToNSOwnershipCast(SCDynamicStoreKeyCreateNetworkGlobalEntity(
+        nullptr, kSCDynamicStoreDomainState, kSCEntNetIPv4)),
+    base::apple::CFToNSOwnershipCast(SCDynamicStoreKeyCreateNetworkGlobalEntity(
+        nullptr, kSCDynamicStoreDomainState, kSCEntNetIPv6)),
+  ];
 
   // Set the notification keys.  This starts us receiving notifications.
-  bool ret = SCDynamicStoreSetNotificationKeys(store, notification_keys.get(),
-                                               /*patterns=*/nullptr);
+  bool ret = SCDynamicStoreSetNotificationKeys(
+      store, base::apple::NSToCFPtrCast(notification_keys),
+      /*patterns=*/nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 #endif  // BUILDFLAG(IS_IOS)
