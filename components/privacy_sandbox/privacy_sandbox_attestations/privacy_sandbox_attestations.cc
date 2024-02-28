@@ -484,8 +484,11 @@ void PrivacySandboxAttestations::OnAttestationsParsed(
 
   attestations_parse_progress_ = Progress::kFinished;
 
+  // Do not remove. There is an internal test that depends on the loggings.
   VLOG(1) << "Parsed Privacy Sandbox Attestation list version: "
           << file_version_;
+  VLOG(1) << "Number of attestation entries: "
+          << (attestations_map_ ? attestations_map_->size() : 0);
 
   NotifyObserversOnAttestationsLoaded();
 
