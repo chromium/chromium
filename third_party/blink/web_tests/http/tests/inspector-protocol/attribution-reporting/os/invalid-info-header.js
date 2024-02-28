@@ -11,7 +11,12 @@
   const issue = dp.Audits.onceIssueAdded();
 
   await dp.Runtime.evaluate({expression: `
-    fetch('/inspector-protocol/attribution-reporting/resources/register-with-invalid-info-header.php');
+    fetch('/inspector-protocol/attribution-reporting/resources/register-with-invalid-info-header.php',
+        {keepalive: true,
+         attributionReporting: {
+          eventSourceEligible: true,
+          triggerEligible: false,
+        }});
   `});
 
   testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);

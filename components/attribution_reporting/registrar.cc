@@ -28,8 +28,13 @@ base::expected<std::optional<Registrar>, PreferredPlatformError> ParseInfo(
     return base::unexpected(PreferredPlatformError());
   }
 
-  auto iter = dict->find(kPreferredPlatform);
-  if (iter == dict->end()) {
+  return ParseInfo(*dict);
+}
+
+base::expected<std::optional<Registrar>, PreferredPlatformError> ParseInfo(
+    const net::structured_headers::Dictionary& dict) {
+  auto iter = dict.find(kPreferredPlatform);
+  if (iter == dict.end()) {
     return std::nullopt;
   }
 

@@ -41,6 +41,8 @@ class GURL;
 namespace attribution_reporting {
 class SuitableOrigin;
 
+enum class Registrar;
+
 struct OsRegistrationItem;
 struct SourceRegistration;
 struct TriggerRegistration;
@@ -192,13 +194,23 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
   void OnReceiverDisconnected();
 
-  enum class Registrar;
-  struct RegistrarAndHeader;
   struct HeaderPendingDecode;
+  struct RegistrationDataHeaders;
+  struct PendingRegistrationData;
+
+  void HandleRegistrationData(base::flat_set<Registrations>::iterator,
+                              PendingRegistrationData);
+  void HandleNextRegistrationData(base::flat_set<Registrations>::iterator);
+  using InfoParseResult =
+      base::expected<net::structured_headers::Dictionary, std::string>;
+  void OnInfoHeaderParsed(RegistrationsId, InfoParseResult);
+  void HandlePreferredPlatform(base::flat_set<Registrations>::iterator,
+                               PendingRegistrationData,
+                               std::optional<attribution_reporting::Registrar>);
 
   void ParseHeader(base::flat_set<Registrations>::iterator,
                    HeaderPendingDecode,
-                   Registrar);
+                   attribution_reporting::Registrar);
   void HandleNextWebDecode(const Registrations&);
   void OnWebHeaderParsed(
       RegistrationsId,

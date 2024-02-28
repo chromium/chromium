@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -1514,6 +1515,58 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
         R"("https://r1.test/x", "https://r2.test/y"; debug-reporting)");
     register_response->Send(http_response->ToResponseString());
     register_response->Done();
+
+    run_loop.Run();
+  }
+}
+
+class AttributionSrcPreferredPlatformBrowserTest
+    : public AttributionSrcBrowserTest {
+ public:
+  AttributionSrcPreferredPlatformBrowserTest()
+      : AttributionSrcBrowserTest(/*enabled_features=*/{
+            features::kPrivacySandboxAdsAPIsOverride,
+            network::features::kAttributionReportingCrossAppWeb,
+            attribution_reporting::features::
+                kAttributionReportingPreferredPlatform}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionSrcPreferredPlatformBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcPreferredPlatformBrowserTest,
+                       WebAndOsHeaders_Registered) {
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
+
+  const char* kTestCases[] = {
+      "/register_source_headers_preferred_os.html",
+      "/register_trigger_headers_preferred_os.html",
+  };
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+
+  for (const char* path : kTestCases) {
+    SCOPED_TRACE(path);
+
+    EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+    GURL register_url = https_server()->GetURL("c.test", path);
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(
+        mock_attribution_manager(),
+        HandleOsRegistration(Field(
+            &OsRegistration::registration_items,
+            ElementsAre(Field(&attribution_reporting::OsRegistrationItem::url,
+                              GURL("https://r.test"))))))
+        .Times(1)
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+    EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                                 register_url)));
 
     run_loop.Run();
   }

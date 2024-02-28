@@ -35,6 +35,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
@@ -2942,6 +2943,9 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_SourceMetricsRecorded) {
   scoped_feature_list.InitAndEnableFeature(
       network::features::kAttributionReportingCrossAppWeb);
 
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
+
   auto reporting_url = GURL("https://report.test");
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
   base::StringPiece os_registration(R"("https://r.test/x")");
@@ -4239,11 +4243,11 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       //
       {.description = "os or web could be parsed (source)",
        .eligibility = RegistrationEligibility::kSource,
-       .expect_registration = false,
+       .expect_registration = true,
        .headers = {os_source, web_source}},
       {.description = "os or web could be parsed (trigger)",
        .eligibility = RegistrationEligibility::kTrigger,
-       .expect_registration = false,
+       .expect_registration = true,
        .headers = {os_trigger, web_trigger}},
   };
 
@@ -4275,6 +4279,391 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       task_environment_.FastForwardBy(base::TimeDelta());
     }
   }
+}
+
+struct PreferredPlatformTestCase {
+  bool feature_enabled = true;
+  const char* info_header;
+  bool has_web_header;
+  bool has_os_header;
+  network::mojom::AttributionSupport support;
+  bool expected_web;
+  bool expected_os;
+};
+
+const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
+    {
+        .feature_enabled = false,
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .feature_enabled = true,
+        .info_header = nullptr,
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .feature_enabled = true,
+        .info_header = nullptr,
+        .has_web_header = true,
+        .has_os_header = false,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = true,
+        .expected_os = false,
+    },
+    {
+        .feature_enabled = true,
+        .info_header = nullptr,
+        .has_web_header = false,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = false,
+        .expected_os = true,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = false,
+        .expected_os = true,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = true,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = true,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kNone,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = false,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = false,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = true,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = true,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = true,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kNone,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = false,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = false,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+};
+
+class AttributionDataHostManagerImplPreferredPlatformEnabledTest
+    : public AttributionDataHostManagerImplTest,
+      public ::testing::WithParamInterface<PreferredPlatformTestCase> {
+ public:
+  AttributionDataHostManagerImplPreferredPlatformEnabledTest() {
+    std::vector<base::test::FeatureRef> enabled_features(
+        {network::features::kAttributionReportingCrossAppWeb});
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().feature_enabled) {
+      enabled_features.emplace_back(attribution_reporting::features::
+                                        kAttributionReportingPreferredPlatform);
+    } else {
+      disabled_features.emplace_back(
+          attribution_reporting::features::
+              kAttributionReportingPreferredPlatform);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionDataHostManagerImplPreferredPlatformEnabledTest,
+    ::testing::ValuesIn(kPreferredPlatformTestCases));
+
+TEST_P(AttributionDataHostManagerImplPreferredPlatformEnabledTest,
+       NavigationRegistration) {
+  MockAttributionReportingContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  const auto& test_case = GetParam();
+
+  EXPECT_CALL(browser_client, GetAttributionSupport)
+      .WillRepeatedly(testing::Return(test_case.support));
+
+  const GURL reporter_url("https://report.test");
+  const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
+
+  EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.expected_web);
+  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(test_case.expected_os);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  if (test_case.has_web_header) {
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJson);
+  }
+  if (test_case.has_os_header) {
+    headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                       R"("https://r.test/x")");
+  }
+  if (test_case.info_header) {
+    headers->SetHeader(kAttributionReportingInfoHeader, test_case.info_header);
+  }
+
+  const blink::AttributionSrcToken attribution_src_token;
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      AttributionSuitableContext::CreateForTesting(
+          source_site,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+  data_host_manager_.NotifyNavigationRegistrationData(
+      attribution_src_token, headers.get(), reporter_url,
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+  data_host_manager_.NotifyNavigationRegistrationCompleted(
+      attribution_src_token);
+
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_P(AttributionDataHostManagerImplPreferredPlatformEnabledTest,
+       BeaconRegistration) {
+  MockAttributionReportingContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  const auto& test_case = GetParam();
+
+  EXPECT_CALL(browser_client, GetAttributionSupport)
+      .WillRepeatedly(testing::Return(test_case.support));
+
+  EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.expected_web);
+  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(test_case.expected_os);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  if (test_case.has_web_header) {
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJson);
+  }
+  if (test_case.has_os_header) {
+    headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                       R"("https://r.test/x")");
+  }
+  if (test_case.info_header) {
+    headers->SetHeader(kAttributionReportingInfoHeader, test_case.info_header);
+  }
+
+  data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
+      kBeaconId,
+      AttributionSuitableContext::CreateForTesting(
+          /*context_origin=*/*SuitableOrigin::Deserialize(
+              "https://source.test"),
+          /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
+      kNavigationId, kDevtoolsRequestId);
+
+  data_host_manager_.NotifyFencedFrameReportingBeaconData(
+      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+      /*reporting_url=*/GURL("https://report.test"), headers.get(),
+      /*is_final_response=*/true);
+
+  // Wait for parsing to finish.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+class
+    AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest
+    : public AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
+      public ::testing::WithParamInterface<PreferredPlatformTestCase> {
+ public:
+  AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().feature_enabled) {
+      enabled_features.emplace_back(attribution_reporting::features::
+                                        kAttributionReportingPreferredPlatform);
+    } else {
+      disabled_features.emplace_back(
+          attribution_reporting::features::
+              kAttributionReportingPreferredPlatform);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest,
+    ::testing::ValuesIn(kPreferredPlatformTestCases));
+
+TEST_P(
+    AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest,
+    BackgroundSource) {
+  MockAttributionReportingContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  const auto& test_case = GetParam();
+
+  EXPECT_CALL(browser_client, GetAttributionSupport)
+      .WillRepeatedly(testing::Return(test_case.support));
+
+  EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.expected_web);
+  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(test_case.expected_os);
+
+  const auto reporting_url = GURL("https://report.test");
+  const auto context_origin =
+      *SuitableOrigin::Deserialize("https://destination.test");
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  if (test_case.has_web_header) {
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJson);
+  }
+  if (test_case.has_os_header) {
+    headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
+                       R"("https://r.test/x")");
+  }
+  if (test_case.info_header) {
+    headers->SetHeader(kAttributionReportingInfoHeader, test_case.info_header);
+  }
+
+  data_host_manager_.NotifyBackgroundRegistrationStarted(
+      kBackgroundId,
+      AttributionSuitableContext::CreateForTesting(
+          context_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      RegistrationEligibility::kSourceOrTrigger,
+      /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
+
+  data_host_manager_.NotifyBackgroundRegistrationData(
+      kBackgroundId, headers.get(), reporting_url,
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+      /*trigger_verifications=*/{});
+  data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_P(
+    AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest,
+    BackgroundTrigger) {
+  MockAttributionReportingContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  const auto& test_case = GetParam();
+
+  EXPECT_CALL(browser_client, GetAttributionSupport)
+      .WillRepeatedly(testing::Return(test_case.support));
+
+  EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected_web);
+  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(test_case.expected_os);
+
+  const auto reporting_url = GURL("https://report.test");
+  const auto context_origin =
+      *SuitableOrigin::Deserialize("https://destination.test");
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  if (test_case.has_web_header) {
+    headers->SetHeader(kAttributionReportingRegisterTriggerHeader,
+                       kRegisterTriggerJson);
+  }
+  if (test_case.has_os_header) {
+    headers->SetHeader(kAttributionReportingRegisterOsTriggerHeader,
+                       R"("https://r.test/x")");
+  }
+  if (test_case.info_header) {
+    headers->SetHeader(kAttributionReportingInfoHeader, test_case.info_header);
+  }
+
+  data_host_manager_.NotifyBackgroundRegistrationStarted(
+      kBackgroundId,
+      AttributionSuitableContext::CreateForTesting(
+          context_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
+      RegistrationEligibility::kSourceOrTrigger,
+      /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
+
+  data_host_manager_.NotifyBackgroundRegistrationData(
+      kBackgroundId, headers.get(), reporting_url,
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+      /*trigger_verifications=*/{});
+  data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
+#include "net/http/structured_headers.h"
 
 namespace attribution_reporting {
 
@@ -36,6 +37,11 @@ struct PreferredPlatformError {
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<std::optional<Registrar>, PreferredPlatformError> ParseInfo(
     std::string_view);
+
+// Same as the above, but using an already-parsed structured-header dictionary.
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<std::optional<Registrar>, PreferredPlatformError> ParseInfo(
+    const net::structured_headers::Dictionary&);
 
 }  // namespace attribution_reporting
 

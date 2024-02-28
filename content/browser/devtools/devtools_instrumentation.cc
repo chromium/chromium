@@ -202,13 +202,16 @@ BuildAttributionReportingIssueViolationType(
       // This issue is not reported from the browser.
       NOTREACHED_NORETURN();
     case blink::mojom::AttributionReportingIssueType::kInvalidInfoHeader:
+      return AttributionReportingIssueTypeEnum::InvalidInfoHeader;
     case blink::mojom::AttributionReportingIssueType::kNoRegisterSourceHeader:
+      return AttributionReportingIssueTypeEnum::NoRegisterSourceHeader;
     case blink::mojom::AttributionReportingIssueType::kNoRegisterTriggerHeader:
+      return AttributionReportingIssueTypeEnum::NoRegisterTriggerHeader;
     case blink::mojom::AttributionReportingIssueType::kNoRegisterOsSourceHeader:
+      return AttributionReportingIssueTypeEnum::NoRegisterOsSourceHeader;
     case blink::mojom::AttributionReportingIssueType::
         kNoRegisterOsTriggerHeader:
-      // TODO(crbug.com/325103501): Support preferred platform in the browser.
-      NOTREACHED_NORETURN();
+      return AttributionReportingIssueTypeEnum::NoRegisterOsTriggerHeader;
   }
 }
 

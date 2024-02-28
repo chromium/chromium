@@ -7,17 +7,20 @@
 
 namespace content {
 
-constexpr char kAttributionReportingRegisterSourceHeader[] =
+inline constexpr char kAttributionReportingRegisterSourceHeader[] =
     "Attribution-Reporting-Register-Source";
 
-constexpr char kAttributionReportingRegisterTriggerHeader[] =
+inline constexpr char kAttributionReportingRegisterTriggerHeader[] =
     "Attribution-Reporting-Register-Trigger";
 
-constexpr char kAttributionReportingRegisterOsSourceHeader[] =
+inline constexpr char kAttributionReportingRegisterOsSourceHeader[] =
     "Attribution-Reporting-Register-OS-Source";
 
-constexpr char kAttributionReportingRegisterOsTriggerHeader[] =
+inline constexpr char kAttributionReportingRegisterOsTriggerHeader[] =
     "Attribution-Reporting-Register-OS-Trigger";
+
+inline constexpr char kAttributionReportingInfoHeader[] =
+    "Attribution-Reporting-Info";
 
 }  // namespace content
 

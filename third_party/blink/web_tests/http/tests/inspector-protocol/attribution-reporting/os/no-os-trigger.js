@@ -12,7 +12,8 @@
 
   await dp.Runtime.evaluate({expression: `
     fetch('/inspector-protocol/attribution-reporting/resources/register-web-trigger-prefer-os.php',
-        {attributionReporting: {
+        {keepalive: true,
+         attributionReporting: {
           eventSourceEligible: false,
           triggerEligible: true,
         }});
