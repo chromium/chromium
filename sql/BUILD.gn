@@ -102,8 +102,6 @@ test("sql_unittests") {
     "sqlite_result_code_unittest.cc",
     "statement_id_unittest.cc",
     "statement_unittest.cc",
-    "test/database_test_peer.cc",
-    "test/database_test_peer.h",
     "test/paths.cc",
     "test/paths.h",
     "test/run_all_unittests.cc",

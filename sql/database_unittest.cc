@@ -34,7 +34,6 @@
 #include "sql/recovery.h"
 #include "sql/sql_features.h"
 #include "sql/statement.h"
-#include "sql/test/database_test_peer.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
@@ -1576,8 +1575,7 @@ TEST_P(SQLDatabaseTest, AttachDatabase) {
   // Cannot see the attached database, yet.
   EXPECT_FALSE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
-  EXPECT_TRUE(DatabaseTestPeer::AttachDatabase(db_.get(), attach_path,
-                                               kAttachmentPoint));
+  EXPECT_TRUE(db_->AttachDatabase(attach_path, kAttachmentPoint));
   EXPECT_TRUE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   // Queries can touch both databases after the ATTACH.
@@ -1588,7 +1586,7 @@ TEST_P(SQLDatabaseTest, AttachDatabase) {
     EXPECT_EQ(1, select.ColumnInt(0));
   }
 
-  EXPECT_TRUE(DatabaseTestPeer::DetachDatabase(db_.get(), kAttachmentPoint));
+  EXPECT_TRUE(db_->DetachDatabase(kAttachmentPoint));
   EXPECT_FALSE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 }
 
@@ -1614,8 +1612,7 @@ TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
   // Attach succeeds in a transaction.
   Transaction transaction(db_.get());
   EXPECT_TRUE(transaction.Begin());
-  EXPECT_TRUE(DatabaseTestPeer::AttachDatabase(db_.get(), attach_path,
-                                               kAttachmentPoint));
+  EXPECT_TRUE(db_->AttachDatabase(attach_path, kAttachmentPoint));
   EXPECT_TRUE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   // Queries can touch both databases after the ATTACH.
@@ -1630,14 +1627,14 @@ TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_ERROR);
-    EXPECT_FALSE(DatabaseTestPeer::DetachDatabase(db_.get(), kAttachmentPoint));
+    EXPECT_FALSE(db_->DetachDatabase(kAttachmentPoint));
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
   EXPECT_TRUE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   // Detach succeeds when the transaction is closed.
   transaction.Rollback();
-  EXPECT_TRUE(DatabaseTestPeer::DetachDatabase(db_.get(), kAttachmentPoint));
+  EXPECT_TRUE(db_->DetachDatabase(kAttachmentPoint));
   EXPECT_FALSE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 }
 

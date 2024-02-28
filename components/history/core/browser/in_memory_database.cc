@@ -9,9 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
 
 namespace history {
 
@@ -60,16 +57,10 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   if (!InitDB())
     return false;
 
-  // Attach to the history database on disk.  (We can't ATTACH in the middle of
-  // a transaction.)
-  sql::Statement attach(GetDB().GetUniqueStatement("ATTACH ? AS history"));
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  attach.BindString(0, history_name.value());
-#else
-  attach.BindString(0, base::WideToUTF8(history_name.value()));
-#endif
-  if (!attach.Run())
+  // Attach to the history database on disk.
+  if (!db_.AttachDatabase(history_name, "history")) {
     return false;
+  }
 
   // Copy URL data to memory.
 
@@ -113,7 +104,7 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   }
 
   // Detach from the history database on disk.
-  if (!db_.Execute("DETACH history")) {
+  if (!db_.DetachDatabase("history")) {
     NOTREACHED() << "Unable to detach from history database.";
     return false;
   }

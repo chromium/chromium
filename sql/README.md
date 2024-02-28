@@ -619,15 +619,12 @@ reading / before writing the data.
 [Window functions](https://sqlite.org/windowfunctions.html#biwinfunc) are
 disabled in Chrome's SQLite build.
 
-#### ATTACH DATABASE statements {#no-attach}
+#### ATTACH DATABASE statements
 
 [`ATTACH DATABASE` statements](https://www.sqlite.org/lang_attach.html) should
-not be used. Each Chrome feature should store its data in a single database.
+be used thoughtfully. Each Chrome feature should store its data in a single database.
 Chrome code should not assume that transactions across multiple databases are
 atomic.
-
-We plan to remove all existing `ATTACH DATABASE` use from Chrome.
-
 
 ### Disabled features
 

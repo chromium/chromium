@@ -1277,8 +1277,7 @@ void Database::RollbackAllTransactions() {
 }
 
 bool Database::AttachDatabase(const base::FilePath& other_db_path,
-                              base::StringPiece attachment_point,
-                              InternalApiToken) {
+                              base::StringPiece attachment_point) {
   TRACE_EVENT0("sql", "Database::AttachDatabase");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1294,8 +1293,7 @@ bool Database::AttachDatabase(const base::FilePath& other_db_path,
   return statement.Run();
 }
 
-bool Database::DetachDatabase(base::StringPiece attachment_point,
-                              InternalApiToken) {
+bool Database::DetachDatabase(base::StringPiece attachment_point) {
   TRACE_EVENT0("sql", "Database::DetachDatabase");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

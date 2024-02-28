@@ -515,15 +515,14 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // `attachment_point` must only contain lowercase letters.
   //
-  // Attachment APIs are only exposed for use in recovery. General use is
-  // discouraged in Chrome. The README has more details.
+  // Use is generally discouraged in production code. The README has more
+  // details.
   //
   // On the SQLite version shipped with Chrome (3.21+, Oct 2017), databases can
   // be attached while a transaction is opened. However, these databases cannot
   // be detached until the transaction is committed or aborted.
   bool AttachDatabase(const base::FilePath& other_db_path,
-                      base::StringPiece attachment_point,
-                      InternalApiToken);
+                      base::StringPiece attachment_point);
 
   // Detaches a database that was previously attached with AttachDatabase().
   //
@@ -532,7 +531,7 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Attachment APIs are only exposed for use in recovery. General use is
   // discouraged in Chrome. The README has more details.
-  bool DetachDatabase(base::StringPiece attachment_point, InternalApiToken);
+  bool DetachDatabase(base::StringPiece attachment_point);
 
   // Statements ----------------------------------------------------------------
 
