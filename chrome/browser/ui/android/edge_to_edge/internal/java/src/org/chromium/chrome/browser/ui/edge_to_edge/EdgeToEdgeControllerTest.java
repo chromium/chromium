@@ -100,6 +100,7 @@ public class EdgeToEdgeControllerTest {
 
     @Mock private WindowInsetsCompat mWindowInsetsMock;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Captor private ArgumentCaptor<BrowserControlsStateProvider.Observer> mControlsObserverCaptor;
 
     @Implements(EdgeToEdgeControllerFactory.class)
     static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
@@ -127,6 +128,7 @@ public class EdgeToEdgeControllerTest {
                         mBrowserControlsStateProvider);
         assertNotNull(mEdgeToEdgeControllerImpl);
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
+        EdgeToEdgeControllerImpl.setTotallyEdgeToEdgeForTesting(false);
 
         doNothing().when(mTab).addObserver(any());
         when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
@@ -427,7 +429,8 @@ public class EdgeToEdgeControllerTest {
     void assertToEdgeExpectations() {
         mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
         // Pad the top only, bottom is ToEdge.
-        verify(mOsWrapper).setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0), eq(0));
+        verify(mOsWrapper)
+                .setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0), anyInt());
         verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.TRANSPARENT));
         verify(mOsWrapper).setDecorFitsSystemWindows(any(), eq(false));
         verify(mOsWrapper).setOnApplyWindowInsetsListener(any(), any());
@@ -456,6 +459,29 @@ public class EdgeToEdgeControllerTest {
         verify(tab, atLeastOnce()).getWebContents();
     }
 
-    // TODO: Verify that the value of the updated insets returned from the
-    //  OnApplyWindowInsetsListener is correct.
+    /** Use a live controller implementation to activate TotallyEdgeToEdge. */
+    @Test
+    public void onObservingDifferentTab_TotallyEdgeToEdge() {
+        EdgeToEdgeControllerImpl.setTotallyEdgeToEdgeForTesting(true);
+        ObservableSupplierImpl liveSupplier = new ObservableSupplierImpl();
+        EdgeToEdgeControllerImpl liveController =
+                (EdgeToEdgeControllerImpl)
+                        EdgeToEdgeControllerFactory.create(
+                                mActivity, liveSupplier, mBrowserControlsStateProvider);
+        assertNotNull(liveController);
+        assertFalse(liveController.isToEdge());
+        when(mTab.isNativePage()).thenReturn(false);
+        verify(mBrowserControlsStateProvider).addObserver(mControlsObserverCaptor.capture());
+        liveSupplier.set(mTab);
+        final int unused = 0;
+        mControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(100, unused, unused, unused, false);
+        shadowOf(Looper.getMainLooper()).idle();
+        verifyInteractions(mTab);
+        assertTrue(liveController.isToEdge());
+        // Check the Navigation Bar color, as an indicator that we really changed the window,
+        // since we didn't use the OS Wrapper mock.
+        assertEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
+    }
 }

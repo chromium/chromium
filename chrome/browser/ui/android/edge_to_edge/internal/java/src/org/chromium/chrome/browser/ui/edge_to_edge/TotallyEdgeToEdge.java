@@ -5,29 +5,36 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Explores further ideas to activate EdgeToEdge in various circumstances. */
 public class TotallyEdgeToEdge {
+    /** Adjusts edges for Edge To Edge to a given suggested padding fraction. */
+    interface EdgeAdjustor {
+        /** Suggests an adjustment of drawing to edges to the suggested fraction (0-1.0). */
+        void adjustEdges(float suggestedPadding);
+    }
+
     private static final String TAG = "E2E_TotallyE2E";
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private boolean mShouldDrawEdgeToEdge;
     private BrowserControlsStateProvider.Observer mObserver;
-    private Runnable mRunnable;
+    private EdgeAdjustor mEdgeAdjustor;
 
     /**
      * Creates a controller to enable Edge To Edge under conditions worth exploring.
      *
      * @param browserControlsStateProvider Provider for the Browser Controls (Toolbar) state.
-     * @param runnable A callback to activate when we should switch ToEdge or ToNormal.
+     * @param edgeAdjustor A callback to activate when we should adjust ToEdge or ToNormal.
      */
     public TotallyEdgeToEdge(
-            BrowserControlsStateProvider browserControlsStateProvider, Runnable runnable) {
+            BrowserControlsStateProvider browserControlsStateProvider, EdgeAdjustor edgeAdjustor) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mObserver =
                 new BrowserControlsStateProvider.Observer() {
+                    private int mMax;
+
                     @Override
                     public void onControlsOffsetChanged(
                             int topOffset,
@@ -35,13 +42,13 @@ public class TotallyEdgeToEdge {
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
                             boolean needsAnimate) {
-                        Log.v(TAG, "topOffset changed to %s", topOffset);
+                        if (Math.abs(topOffset) > mMax) mMax = Math.abs(topOffset);
                         mShouldDrawEdgeToEdge = topOffset != 0;
-                        mRunnable.run();
+                        mEdgeAdjustor.adjustEdges((Math.abs((float) topOffset) / mMax));
                     }
                 };
         browserControlsStateProvider.addObserver(mObserver);
-        mRunnable = runnable;
+        mEdgeAdjustor = edgeAdjustor;
     }
 
     /**
