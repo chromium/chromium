@@ -344,7 +344,7 @@ bool IsKeyboardAccessibleTooltipEnabled() {
 // TODO(https://b/288337080): Remove this flag once the feature is ready.
 BASE_FEATURE(kNotificationGesturesUpdate,
              "NotificationGesturesUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNotificationGesturesUpdateEnabled() {
   return base::FeatureList::IsEnabled(kNotificationGesturesUpdate);
