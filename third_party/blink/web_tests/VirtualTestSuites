@@ -2568,7 +2568,7 @@
   },
   {
     "prefix": "webnn-service-enabled",
-    "platforms": ["Win"],
+    "platforms": ["Linux", "Win"],
     "bases": [
       "external/wpt/webnn/gpu"
     ],

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] tanh float32 1D constant tensor
+  promise_test: Unhandled rejection with value: object "UnknownError: tanh is not implemented"
+[FAIL] tanh float32 1D tensor
+  promise_test: Unhandled rejection with value: object "UnknownError: tanh is not implemented"
+[FAIL] tanh float32 2D tensor
+  promise_test: Unhandled rejection with value: object "UnknownError: tanh is not implemented"
+[FAIL] tanh float32 3D tensor
+  promise_test: Unhandled rejection with value: object "UnknownError: tanh is not implemented"
+[FAIL] tanh float32 4D tensor
+  promise_test: Unhandled rejection with value: object "UnknownError: tanh is not implemented"
+[FAIL] tanh float32 5D tensor
+  promise_test: Unhandled rejection with value: object "UnknownError: tanh is not implemented"
+Harness: the test ran to completion.
+

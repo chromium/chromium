@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] split float32 1D constant tensor number splits default options
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 1D tensor number splits default options
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 2D tensor number splits default options
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 3D tensor number splits default options
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 4D tensor number splits default options
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 5D tensor number splits default options
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 4D tensor array splits default options
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 4D tensor number splits options.axis
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+[FAIL] split float32 5D tensor array splits options.axis
+  promise_test: Unhandled rejection with value: object "UnknownError: split is not implemented"
+Harness: the test ran to completion.
+
