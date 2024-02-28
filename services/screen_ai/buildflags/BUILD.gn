@@ -1,0 +1,15 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//services/screen_ai/buildflags/features.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "ENABLE_SCREEN_AI_BROWSERTESTS=$enable_screen_ai_browsertests",
+    "ENABLE_SCREEN_AI_SERVICE=$enable_screen_ai_service",
+    "USE_FAKE_SCREEN_AI=$use_fake_screen_ai",
+  ]
+}

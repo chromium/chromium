@@ -5306,12 +5306,12 @@ _ACCESSIBILITY_PATHS = (
     r"^chrome/browser/extensions/api/automation.*/",
     r"^chrome/renderer/extensions/accessibility_.*",
     r"^chrome/tests/data/accessibility/",
-    r"^components/services/screen_ai/",
     r"^content/browser/accessibility/",
     r"^content/renderer/accessibility/",
     r"^content/tests/data/accessibility/",
     r"^extensions/renderer/api/automation/",
     r"^services/accessibility/",
+    r"^services/screen_ai/",
     r"^ui/accessibility/",
     r"^ui/views/accessibility/",
 )

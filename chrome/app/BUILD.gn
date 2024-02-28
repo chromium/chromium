@@ -28,7 +28,7 @@ source_set("command_ids") {
   public_deps = [
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
-    "//components/services/screen_ai/buildflags",
+    "//services/screen_ai/buildflags",
   ]
   deps = [ "//ui/base:constants" ]
 }

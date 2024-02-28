@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 
 # One Big Target for services to register their unit test sources. This exists
@@ -100,6 +101,10 @@ test("services_unittests") {
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/network.shard.test-cml",
     ]
+  }
+
+  if (enable_screen_ai_service) {
+    deps += [ "//services/screen_ai:unit_tests" ]
   }
 }
 

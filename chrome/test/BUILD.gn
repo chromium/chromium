@@ -33,7 +33,6 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
 import("//components/safe_browsing/buildflags.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/soda/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//crypto/features.gni")
@@ -44,6 +43,7 @@ import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -2990,9 +2990,9 @@ if (!is_android) {
       deps += [
         "//chrome/browser/screen_ai:screen_ai_install_state",
         "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-        "//components/services/screen_ai:test_support",
-        "//components/services/screen_ai/public/cpp:utilities",
-        "//components/services/screen_ai/public/mojom",
+        "//services/screen_ai:test_support",
+        "//services/screen_ai/public/cpp:utilities",
+        "//services/screen_ai/public/mojom",
       ]
 
       if (enable_screen_ai_browsertests) {
@@ -7377,7 +7377,7 @@ test("unit_tests") {
   if (enable_screen_ai_service) {
     deps += [
       "../browser/screen_ai:screen_ai_install_state",
-      "//components/services/screen_ai:test_support",
+      "//services/screen_ai:test_support",
     ]
   }
 

@@ -11,13 +11,13 @@ import("//components/compose/features.gni")
 import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/repack.gni")
@@ -135,7 +135,6 @@ test("components_unittests") {
       "test/data/protocol_handler/",
       "test/data/resource_provider/",
       "test/data/safe_browsing/",
-      "test/data/screen_ai/",
       "test/data/search_engines/",
       "test/data/search_provider_logos/",
       "test/data/segmentation_platform/",
@@ -369,10 +368,6 @@ test("components_unittests") {
       "//components/allocation_recorder/crash_client:unit_tests",
       "//components/allocation_recorder/crash_handler:unit_tests",
     ]
-  }
-
-  if (enable_screen_ai_service) {
-    deps += [ "//components/services/screen_ai:unit_tests" ]
   }
 
   data_deps = [ "//testing/buildbot/filters:components_unittests_filters" ]
@@ -1044,9 +1039,9 @@ if (use_blink) {
 
     if (enable_screen_ai_service) {
       deps += [
-        "//components/services/screen_ai",
-        "//components/services/screen_ai:test_support",
-        "//components/services/screen_ai/public/mojom",
+        "//services/screen_ai",
+        "//services/screen_ai:test_support",
+        "//services/screen_ai/public/mojom",
         "//skia",
       ]
     }

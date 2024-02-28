@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//chrome/test/data/webui/build_webui_tests.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 assert(enable_pdf, "enable_pdf check failed")
 

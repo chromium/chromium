@@ -7,8 +7,8 @@
 
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace ash {
 class AXMediaAppUntrustedHandler;

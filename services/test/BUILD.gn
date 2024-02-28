@@ -28,6 +28,7 @@ source_set("run_all_unittests") {
 
   data_deps = [
     "//device/bluetooth/strings:bluetooth_test_strings",
+    "//services/strings:services_test_strings",
     "//ui/resources:ui_test_pak_data",
   ]
 

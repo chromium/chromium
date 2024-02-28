@@ -21,7 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/browser/mac_helpers.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -34,6 +33,7 @@
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace content {
 

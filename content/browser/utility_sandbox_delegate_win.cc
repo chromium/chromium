@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -21,6 +20,7 @@
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace content {
 namespace {

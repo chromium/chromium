@@ -17,9 +17,9 @@
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
-#include "components/services/screen_ai/public/cpp/utilities.h"
 #include "content/public/test/browser_test.h"
+#include "services/screen_ai/buildflags/buildflags.h"
+#include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 

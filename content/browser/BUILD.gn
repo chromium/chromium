@@ -98,7 +98,6 @@ source_set("browser") {
     "//components/power_monitor",
     "//components/services/filesystem:lib",
     "//components/services/quarantine:quarantine",
-    "//components/services/screen_ai/buildflags",
     "//components/services/storage",
     "//components/services/storage:filesystem_proxy_factory",
     "//components/services/storage/dom_storage:local_storage_proto",
@@ -211,6 +210,7 @@ source_set("browser") {
     "//services/network/public/mojom",
     "//services/resource_coordinator:lib",
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
+    "//services/screen_ai/buildflags",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/shape_detection:lib",
@@ -2815,8 +2815,8 @@ source_set("browser") {
     ]
     deps += [
       "//components/app_launch_prefetch",
-      "//components/services/screen_ai/public/cpp:utilities",
       "//content/utility:delegate_data",
+      "//services/screen_ai/public/cpp:utilities",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",

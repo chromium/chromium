@@ -28,7 +28,13 @@ This file contains strings for code in //services.
     <output filename="services_strings_en-GB.pak" type="data_package" lang="en-GB" />
     <output filename="services_strings_en-US.pak" type="data_package" lang="en" />
     <output filename="services_strings_es.pak" type="data_package" lang="es" />
-    <output filename="services_strings_es-419.pak" type="data_package" lang="es-419" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="services_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="services_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
     <output filename="services_strings_et.pak" type="data_package" lang="et" />
     <output filename="services_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="services_strings_fa.pak" type="data_package" lang="fa" />
@@ -69,7 +75,13 @@ This file contains strings for code in //services.
     <output filename="services_strings_nb.pak" type="data_package" lang="no" />
     <output filename="services_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="services_strings_pl.pak" type="data_package" lang="pl" />
-    <output filename="services_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="services_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="services_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
     <output filename="services_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
     <output filename="services_strings_or.pak" type="data_package" lang="or" />
     <output filename="services_strings_ro.pak" type="data_package" lang="ro" />
@@ -190,6 +202,14 @@ This file contains strings for code in //services.
       <message name="IDS_WINDOWS_SYSTEM_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process WinHttp proxy resolution.">
         WinHttp Proxy Resolver
       </message>
+      <if expr="enable_screen_ai_service">
+        <message name="IDS_PDF_OCR_RESULT_BEGIN" is_accessibility_with_no_ui="true" desc="Notification to inform the user of the beginning of OCR results.">
+          Start of extracted text
+        </message>
+        <message name="IDS_PDF_OCR_RESULT_END" is_accessibility_with_no_ui="true" desc="Notification to inform the user of the end of OCR results.">
+          End of extracted text
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

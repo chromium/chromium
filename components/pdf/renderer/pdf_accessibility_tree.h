@@ -12,11 +12,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/renderer/plugin_ax_tree_action_target_adapter.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_data_handler.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -29,8 +29,8 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "base/containers/queue.h"
 #include "base/sequence_checker.h"
-#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

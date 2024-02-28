@@ -25,7 +25,6 @@ import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -37,6 +36,7 @@ import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -2008,7 +2008,6 @@ static_library("browser") {
     "//components/payments/core:error_strings",
     "//components/policy/proto",
     "//components/safe_browsing:buildflags",
-    "//components/services/screen_ai/buildflags",
     "//components/services/storage/public/mojom",
     "//components/session_proto_db:session_proto_db",
     "//components/sync",
@@ -2020,6 +2019,7 @@ static_library("browser") {
     "//services/data_decoder/public/mojom",
     "//services/image_annotation/public/mojom",
     "//services/network/public/mojom",
+    "//services/screen_ai/buildflags",
     "//sql",
   ]
 
@@ -2414,7 +2414,6 @@ static_library("browser") {
     "//components/services/patch/content",
     "//components/services/quarantine",
     "//components/services/quarantine/public/mojom",
-    "//components/services/screen_ai/public/mojom:mojom",
     "//components/services/storage/public/cpp:prefs",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
@@ -2544,6 +2543,7 @@ static_library("browser") {
     "//services/proxy_resolver/public/mojom",
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
     "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
+    "//services/screen_ai/public/mojom:mojom",
     "//services/service_manager/public/cpp",
     "//services/shape_detection/public/mojom",
     "//services/strings",
@@ -2625,9 +2625,9 @@ static_library("browser") {
       "//chrome/browser/screen_ai:prefs",
       "//chrome/browser/screen_ai:screen_ai_install_state",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-      "//components/services/screen_ai",
-      "//components/services/screen_ai/public/cpp:utilities",
-      "//components/services/screen_ai/public/mojom",
+      "//services/screen_ai",
+      "//services/screen_ai/public/cpp:utilities",
+      "//services/screen_ai/public/mojom",
     ]
 
     if (is_chromeos) {

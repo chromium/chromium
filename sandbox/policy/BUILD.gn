@@ -7,8 +7,8 @@ import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 
 # Most consumers of sandbox::policy should depend on this target.
@@ -29,10 +29,10 @@ component("policy") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/services/screen_ai/buildflags",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//sandbox/policy/mojom",
+    "//services/screen_ai/buildflags",
   ]
   public_deps = [ "//sandbox:common" ]
   if (is_android) {

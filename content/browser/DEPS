@@ -18,8 +18,6 @@ include_rules = [
   "+components/services/filesystem",
   "+components/services/quarantine/test_support.h",
   "+components/services/quarantine/quarantine.h",
-  "+components/services/screen_ai/buildflags",
-  "+components/services/screen_ai/public/cpp",
   "+components/services/storage",
   "+components/services/storage/public",
   "+components/session_manager/core",
@@ -68,7 +66,7 @@ include_rules = [
   "+ui/strings/grit/ax_strings.h",
   "+ui/webui",
 
-  # TODO(crbug.com/1079201): Consider removing "+serivces". Each service should
+  # TODO(crbug.com/1079201): Consider removing "+services". Each service should
   # have explicit rules to allow services/*/public rather than adding a blanket
   # dependency.
   "+services",
@@ -81,6 +79,8 @@ include_rules = [
   "-services/cert_verifier",
   "+services/cert_verifier/public/cpp",
   "+services/cert_verifier/public/mojom",
+  "+services/screen_ai/buildflags",
+  "+services/screen_ai/public/cpp",
 
   # In general, //content shouldn't depend on //device.
   # This is the an exception.

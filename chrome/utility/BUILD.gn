@@ -8,10 +8,10 @@ import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 static_library("utility") {
   sources = [
@@ -48,7 +48,6 @@ static_library("utility") {
     "//components/services/language_detection",
     "//components/services/paint_preview_compositor",
     "//components/services/patch:lib",
-    "//components/services/screen_ai/buildflags",
     "//components/services/unzip:lib",
     "//components/strings",
     "//components/url_formatter",
@@ -63,6 +62,7 @@ static_library("utility") {
     "//printing/buildflags",
     "//services/data_decoder:lib",
     "//services/network:network_service",
+    "//services/screen_ai/buildflags",
     "//services/service_manager/public/cpp",
     "//skia",
     "//sql",
@@ -144,7 +144,7 @@ static_library("utility") {
   }
 
   if (enable_screen_ai_service) {
-    deps += [ "//components/services/screen_ai" ]
+    deps += [ "//services/screen_ai" ]
   }
 
   if (enable_extensions) {

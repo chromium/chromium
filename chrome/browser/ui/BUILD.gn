@@ -20,7 +20,6 @@ import("//components/metrics/generate_histograms_variants_allowlist.gni")
 import("//components/metrics/structured/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -28,6 +27,7 @@ import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
@@ -6270,7 +6270,6 @@ static_library("ui") {
       "//components/reading_list/features:flags",
       "//components/segmentation_platform/embedder/default_model:default_model",
       "//components/services/app_service",
-      "//components/services/screen_ai/buildflags",
       "//components/soda",
       "//components/soda:constants",
       "//components/ui_devtools/views",
@@ -6281,6 +6280,7 @@ static_library("ui") {
       "//device/vr/buildflags:buildflags",
       "//services/data_decoder/public/cpp",
       "//services/media_session/public/mojom",
+      "//services/screen_ai/buildflags",
       "//ui/base/dragdrop:types",
       "//ui/gfx/geometry",
       "//ui/lottie",

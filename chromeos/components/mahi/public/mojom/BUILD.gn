@@ -8,9 +8,9 @@ mojom("mojom") {
   sources = [ "content_extraction.mojom" ]
 
   public_deps = [
-    "//components/services/screen_ai/public/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//services/screen_ai/public/mojom",
     "//ui/accessibility/mojom",
   ]
 }

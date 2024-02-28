@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
-#include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/ax_tree.h"
 
 namespace mahi {

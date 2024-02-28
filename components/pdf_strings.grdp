@@ -380,12 +380,6 @@
     <message name="IDS_PDF_OCR_NO_RESULT" is_accessibility_with_no_ui="true" desc="Notification to inform the user that no text was converted by OCR from images.">
       This PDF is inaccessible. No text extracted
     </message>
-    <message name="IDS_PDF_OCR_RESULT_BEGIN" is_accessibility_with_no_ui="true" desc="Notification to inform the user of the beginning of OCR results.">
-      Start of extracted text
-    </message>
-    <message name="IDS_PDF_OCR_RESULT_END" is_accessibility_with_no_ui="true" desc="Notification to inform the user of the end of OCR results.">
-      End of extracted text
-    </message>
     <message name="IDS_PDF_OCR_POSTAMBLE_PAGE" is_accessibility_with_no_ui="true" desc="Notification that appears on a page on its own and which is used to inform the user that OCR is still in progress.">
       Extracting text in next few pages
     </message>

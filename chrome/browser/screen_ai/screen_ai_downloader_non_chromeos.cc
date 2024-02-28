@@ -10,9 +10,9 @@
 #include "chrome/browser/component_updater/screen_ai_component_installer.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/update_client/crx_update_item.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/screen_ai/public/cpp/utilities.h"
 
 namespace screen_ai {
 

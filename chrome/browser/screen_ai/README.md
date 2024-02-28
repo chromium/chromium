@@ -1,1 +1,1 @@
-See `components/services/screen_ai/README.md`
+See `services/screen_ai/README.md`

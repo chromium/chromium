@@ -13,7 +13,6 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
@@ -26,6 +25,7 @@
 #include "sandbox/policy/mac/network.sb.h"
 #include "sandbox/policy/mac/on_device_model_execution.sb.h"
 #include "sandbox/policy/mac/ppapi.sb.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "sandbox/policy/mac/print_backend.sb.h"
 #endif

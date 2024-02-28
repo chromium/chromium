@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 assert(enable_pdf)
 
@@ -31,8 +31,6 @@ static_library("renderer") {
     "//base",
     "//components/resources:components_resources",
     "//components/resources:components_scaled_resources",
-    "//components/services/screen_ai/buildflags",
-    "//components/services/screen_ai/public/mojom",
     "//components/strings",
     "//content/public/common",
     "//gin",
@@ -43,6 +41,8 @@ static_library("renderer") {
     "//pdf:features",
     "//pdf:pdf_view_web_plugin",
     "//printing/buildflags",
+    "//services/screen_ai/buildflags",
+    "//services/screen_ai/public/mojom",
     "//skia",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/strings:accessibility_strings",
