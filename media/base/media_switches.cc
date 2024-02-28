@@ -1461,6 +1461,11 @@ BASE_FEATURE(kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled,
 BASE_FEATURE(kExposeOutOfProcessVideoDecodingToLacros,
              "ExposeOutOfProcessVideoDecodingToLacros",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the new media player features.
+BASE_FEATURE(kBackgroundListening,
+             "BackgroundListening",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

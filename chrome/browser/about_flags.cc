@@ -9060,7 +9060,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBackgroundListeningName, flag_descriptions::kBackgroundListeningName,
      flag_descriptions::kBackgroundListeningDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBackgroundListening)},
+     FEATURE_VALUE_TYPE(media::kBackgroundListening)},
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
      flag_descriptions::kBorealisBigGlDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisBigGl)},

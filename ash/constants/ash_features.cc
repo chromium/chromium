@@ -248,11 +248,6 @@ BASE_FEATURE(kAutozoomNudgeSessionReset,
              "AutozoomNudgeSessionReset",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the new media player features.
-BASE_FEATURE(kBackgroundListening,
-             "BackgroundListening",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Make Battery Saver available.
 BASE_FEATURE(kBatterySaver,
              "CrosBatterySaver",
@@ -3178,10 +3173,6 @@ bool IsBackgroundBlurEnabled() {
 #else
   return enabled_by_feature_flag;
 #endif
-}
-
-bool IsBackgroundListeningEnabled() {
-  return base::FeatureList::IsEnabled(kBackgroundListening);
 }
 
 bool IsBatterySaverAvailable() {
