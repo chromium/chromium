@@ -270,11 +270,9 @@ class CORE_EXPORT ObjectPaintProperties {
   // [ ElementCaptureEffect ]
   // |     Isolated group to force an element to be painted separately.
   // +-[ Effect ]
-  // |     Isolated group to apply various CSS effects, including opacity,
-  // |     mix-blend-mode, backdrop-filter, and for isolation if a mask needs
-  // |     to be applied or backdrop-dependent children are present.
-  // +-[ Filter ]
-  // |     Isolated group for CSS filter.
+  //   |   Isolated group to apply various CSS effects, including opacity,
+  //  /    mix-blend-mode, backdrop-filter, and for isolation if a mask needs
+  // /     to be applied or backdrop-dependent children are present.
   // +-[ Mask ]
   // | |   Isolated group for painting the CSS mask or the mask-based CSS
   // | |   clip-path. This node will have SkBlendMode::kDstIn and shall paint
@@ -284,6 +282,10 @@ class CORE_EXPORT ObjectPaintProperties {
   // |     will have SkBlendMode::kDstIn and shall paint last, i.e. after
   // |     clipped contents. If there is no Mask node, then this node is a
   // |     direct child of the Effect node.
+  // +-[ Filter ]
+  // |     Isolated group for CSS filter. This is separate from Effect in case
+  // |     there are masks which should be applied to the output of the filter
+  // |     instead of the input.
   // +-[ VerticalScrollbarEffect / HorizontalScrollbarEffect / ScrollCorner ]
   // |     Overlay Scrollbars on Aura and Android need effect node for fade
   // |     animation. Also used in ViewTransitions to separate out scrollbars
