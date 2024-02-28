@@ -12866,6 +12866,53 @@
             ]
         }
     ],
+    "PasswordGenerationExperimentBatch1": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithEditPassword",
+                    "params": {
+                        "PasswordGenerationExperimentSurveyTriggedId": "4yPTnSKPN0ugnJ3q1cK0YJ18dkNR",
+                        "password_generation_variation": "edit_password",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "PasswordGenerationExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithTrustedAdvice",
+                    "params": {
+                        "PasswordGenerationExperimentSurveyTriggedId": "Vm6DB1ki50ugnJ3q1cK0SpkrheAJ",
+                        "password_generation_variation": "trusted_advice",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "PasswordGenerationExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithSafetyFirst",
+                    "params": {
+                        "PasswordGenerationExperimentSurveyTriggedId": "sD7hmDAoo0ugnJ3q1cK0VQ2Y8p6e",
+                        "password_generation_variation": "safety_first",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "PasswordGenerationExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordInfobarDisplayLength": [
         {
             "platforms": [
