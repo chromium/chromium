@@ -64,6 +64,7 @@ group("resources") {
     ":solid_white_color",
     ":static_blue_400_color",
     ":static_grey_300_color",
+    ":static_grey_900_color",
     ":tab_group_favicons_background_color",
     ":table_view_row_highlight_color",
     ":tertiary_background_color",
@@ -208,6 +209,10 @@ colorset("grey_900_color") {
 
 colorset("static_grey_300_color") {
   sources = [ "static_grey_300_color.colorset/Contents.json" ]
+}
+
+colorset("static_grey_900_color") {
+  sources = [ "static_grey_900_color.colorset/Contents.json" ]
 }
 
 colorset("red_50_color") {

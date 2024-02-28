@@ -197,6 +197,19 @@ void PositionView(UIView* view, CGPoint point) {
   }
 }
 
+- (void)didMoveToWindow {
+  if (self.window) {
+    if (self.theme == GridThemeLight) {
+      UIUserInterfaceStyle previousStyle =
+          self.window.overrideUserInterfaceStyle;
+      self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+      self.overrideUserInterfaceStyle =
+          self.window.traitCollection.userInterfaceStyle;
+      self.window.overrideUserInterfaceStyle = previousStyle;
+    }
+  }
+}
+
 #pragma mark - UICollectionViewCell
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -265,19 +278,6 @@ void PositionView(UIView* view, CGPoint point) {
   }
 
   _theme = theme;
-}
-
-- (void)didMoveToWindow {
-  if (self.window) {
-    if (self.theme == GridThemeLight) {
-      UIUserInterfaceStyle previousStyle =
-          self.window.overrideUserInterfaceStyle;
-      self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
-      self.overrideUserInterfaceStyle =
-          self.window.traitCollection.userInterfaceStyle;
-      self.window.overrideUserInterfaceStyle = previousStyle;
-    }
-  }
 }
 
 - (void)setIcon:(UIImage*)icon {

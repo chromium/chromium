@@ -110,7 +110,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   if (UIAccessibilityIsReduceTransparencyEnabled()) {
     self.view.backgroundColor = UIColor.blackColor;
   } else {
-    self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
+    self.view.backgroundColor = [[UIColor colorNamed:kStaticGrey900Color]
         colorWithAlphaComponent:kBackgroundAlpha];
     UIBlurEffect* blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
@@ -251,7 +251,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   _navigationBar.shadowImage = [[UIImage alloc] init];
   _navigationBar.translucent = YES;
 
-  _navigationBar.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+  _navigationBar.tintColor = UIColor.whiteColor;
   _navigationBar.delegate = self;
   [self.view addSubview:_navigationBar];
 
@@ -283,7 +283,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 // Returns the title label view.
 - (UILabel*)groupTitleView {
   UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
+  titleLabel.textColor = UIColor.whiteColor;
   titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleLargeTitle];
 
@@ -390,7 +390,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   [menuButton
       setImage:DefaultSymbolWithPointSize(kMenuSymbol, kThreeDotButtonSize)
       forState:UIControlStateNormal];
-  menuButton.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+  menuButton.tintColor = UIColor.whiteColor;
 
   [subTitleView addSubview:numberOfTabsLabel];
   [subTitleView addSubview:dotSeparation];

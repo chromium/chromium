@@ -138,6 +138,7 @@ extern NSString* const kGrey800Color;
 extern NSString* const kGrey900Color;
 // Static Grey palette (same color for light and dark modes).
 extern NSString* const kStaticGrey300Color;
+extern NSString* const kStaticGrey900Color;
 
 // **********************
 // Light Mode only colors (alpha = 0 in dark mode)

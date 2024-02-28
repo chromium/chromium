@@ -173,6 +173,19 @@ const CGFloat kGroupColorViewSize = 18;
   }
 }
 
+- (void)didMoveToWindow {
+  if (self.window) {
+    if (self.theme == GridThemeLight) {
+      UIUserInterfaceStyle previousStyle =
+          self.window.overrideUserInterfaceStyle;
+      self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+      self.overrideUserInterfaceStyle =
+          self.window.traitCollection.userInterfaceStyle;
+      self.window.overrideUserInterfaceStyle = previousStyle;
+    }
+  }
+}
+
 #pragma mark - UICollectionViewCell
 
 - (void)setHighlighted:(BOOL)highlighted {
