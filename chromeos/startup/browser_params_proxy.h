@@ -164,6 +164,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCaptivePortalPopupWindowEnabled() const;
 
+  bool IsFileSystemProviderCloudFileSystemEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

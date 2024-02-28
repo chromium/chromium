@@ -17,6 +17,10 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 namespace extensions {
 
 namespace {
@@ -144,8 +148,15 @@ TEST_F(OfdsConfigPrivateApiUnittest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(OfdsConfigPrivateApiUnittest, IsCloudFileSystemEnabled_Enabled) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_feature_list_.InitAndEnableFeature(
       chromeos::features::kFileSystemProviderCloudFileSystem);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_file_system_provider_cloud_file_system_enabled = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   auto function = base::MakeRefCounted<
       extensions::OdfsConfigPrivateIsCloudFileSystemEnabledFunction>();
   auto returned_is_file_system_provider_cloud_file_system_enabled_value =
@@ -158,8 +169,15 @@ TEST_F(OfdsConfigPrivateApiUnittest, IsCloudFileSystemEnabled_Enabled) {
 }
 
 TEST_F(OfdsConfigPrivateApiUnittest, IsCloudFileSystemEnabled_Disabled) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_feature_list_.InitAndDisableFeature(
       chromeos::features::kFileSystemProviderCloudFileSystem);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_file_system_provider_cloud_file_system_enabled = false;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   auto function = base::MakeRefCounted<
       extensions::OdfsConfigPrivateIsCloudFileSystemEnabledFunction>();
   auto returned_is_file_system_provider_cloud_file_system_enabled_value =

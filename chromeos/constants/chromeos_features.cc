@@ -325,7 +325,12 @@ bool IsEssentialSearchEnabled() {
 }
 
 bool IsFileSystemProviderCloudFileSystemEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()
+      ->IsFileSystemProviderCloudFileSystemEnabled();
+#else
   return base::FeatureList::IsEnabled(kFileSystemProviderCloudFileSystem);
+#endif
 }
 
 bool IsFileSystemProviderContentCacheEnabled() {

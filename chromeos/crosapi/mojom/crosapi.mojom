@@ -1142,8 +1142,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 78
-// Next id: 78
+// Next version: 79
+// Next id: 79
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1597,6 +1597,13 @@ struct BrowserInitParams {
   // If true, captive portal signin windows are opened as a popup window.
   [MinVersion=77]
   bool is_captive_portal_popup_window_enabled@77;
+
+  // Set to true when the
+  // `chromeos::features::kFileSystemProviderCloudFileSystem` flag is enabled
+  // in Ash.
+  [MinVersion=78]
+  bool is_file_system_provider_cloud_file_system_enabled@78;
+
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

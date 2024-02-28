@@ -355,4 +355,9 @@ bool BrowserParamsProxy::IsCaptivePortalPopupWindowEnabled() const {
   return BrowserInitParams::Get()->is_captive_portal_popup_window_enabled;
 }
 
+bool BrowserParamsProxy::IsFileSystemProviderCloudFileSystemEnabled() const {
+  return BrowserInitParams::Get()
+      ->is_file_system_provider_cloud_file_system_enabled;
+}
+
 }  // namespace chromeos

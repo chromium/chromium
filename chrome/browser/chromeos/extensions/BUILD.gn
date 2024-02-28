@@ -15,6 +15,9 @@ source_set("constants") {
     "//chrome/common:constants",
   ]
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//chromeos/crosapi/mojom",
+    ]
   }
 }
