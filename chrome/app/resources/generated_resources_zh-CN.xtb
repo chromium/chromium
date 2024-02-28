@@ -1332,7 +1332,7 @@
 <translation id="199191324030140441">关闭“勿扰”模式</translation>
 <translation id="1992397118740194946">未设置</translation>
 <translation id="1994173015038366702">网站网址</translation>
-<translation id="1995916364271252349">控制网站可以使用和显示什么信息（如位置信息、摄像头、弹出式窗口及其他）</translation>
+<translation id="1995916364271252349">控制网站可以使用和显示的信息（位置信息、摄像头、弹出式窗口等）</translation>
 <translation id="1997433994358798851">Chrome 需要获得使用蓝牙的权限，才能连接到您的设备</translation>
 <translation id="1997616988432401742">您的证书</translation>
 <translation id="1999115740519098545">启动时</translation>
@@ -1663,7 +1663,7 @@
 <translation id="2247870315273396641">语音试听</translation>
 <translation id="2249111429176737533">在标签页窗口中打开</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
-<translation id="2249635629516220541">自定义要让网站使用什么信息向您展示广告</translation>
+<translation id="2249635629516220541">自定义网站可用来向您投放广告的信息</translation>
 <translation id="2250624716625396929">此标签页正在使用摄像头和麦克风</translation>
 <translation id="2251218783371366160">使用系统查看器打开</translation>
 <translation id="225163402930830576">刷新网络</translation>
@@ -4267,7 +4267,7 @@
 <translation id="4254414375763576535">大号指针</translation>
 <translation id="4254813446494774748">翻译语言：</translation>
 <translation id="425573743389990240">电池放电率（单位为瓦，负值表示电池正在充电）</translation>
-<translation id="4256316378292851214">视频存储为(&amp;V)...</translation>
+<translation id="4256316378292851214">将视频另存为(&amp;V)...</translation>
 <translation id="4258348331913189841">文件系统</translation>
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？按 Shift+F6 可切换到“下载内容栏”区域。</translation>

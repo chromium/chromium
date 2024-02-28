@@ -744,7 +744,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4991110219272367918">Suljetun verkkosivuston hyväksymisen tai hyväksymättä jättämisen vaihtoehto</translation>
 <translation id="499724277181351974">Siirry: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seuraa sivustoa valitsemalla tämä</translation>
-<translation id="5004416275253351869">Google-toimintojen hallinta</translation>
+<translation id="5004416275253351869">Google-toiminnan hallinta</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5010886807652684893">Visuaalinen näkymä</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> haluaa muodostaa yhteyden</translation>
@@ -1455,7 +1455,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8505766168025405649">Katso ilmoitus latauksen tilasta</translation>
 <translation id="8506357771923193001">Löydät lataukset täältä</translation>
 <translation id="8514477925623180633">Vie Chromeen tallennetut salasanat</translation>
-<translation id="8516012719330875537">Kuvanmuokkausohjelma</translation>
+<translation id="8516012719330875537">Kuvaeditori</translation>
 <translation id="8523928698583292556">Poista tallennettu salasana</translation>
 <translation id="8526855376374973824">Ilmoitusluvan työnkulku</translation>
 <translation id="8540136935098276800">Lisää oikein muotoiltu URL-osoite</translation>

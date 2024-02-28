@@ -658,7 +658,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
 <translation id="4637420359569396807">Bei der Erfolgsmessung von Anzeigen können nur manche Datentypen zwischen Websites und Apps geteilt werden, beispielsweise die Tageszeit, zu der dir Werbung präsentiert wurde.</translation>
-<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gehacktes Passwort}other{# gehackte Passwörter}}</translation>
+<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kompromittiertes Passwort}other{# kompromittierte Passwörter}}</translation>
 <translation id="4645146721047390964">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
 <translation id="465657074423018424">Safe Browsing schützt dich vor betrügerischen Websites. Wenn du Safe Browsing deaktivierst, solltest du besonders vorsichtig sein, wenn du im Internet surfst, besonders wenn du Passwörter eingibst.</translation>
@@ -960,7 +960,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="6150320133806434356">Lesezeichen ist gespeichert</translation>
 <translation id="6154478581116148741">Aktiviere die Displaysperre unter „Einstellungen“, um deine Passwörter aus dem Gerät zu exportieren</translation>
 <translation id="6162892189396105610">In Chrome werden Seiten vorab geladen, die du wahrscheinlich aufrufen wirst.</translation>
-<translation id="6186394685773237175">Keine gehackten Passwörter gefunden</translation>
+<translation id="6186394685773237175">Keine kompromittierten Passwörter gefunden</translation>
 <translation id="6192907950379606605">Bildbeschreibungen abrufen</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6196315980958524839">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert</translation>

@@ -2993,11 +2993,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6898699227549475383">O (Organização)</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6908168784986658395">Quando você fecha todas as guias anônimas do Chromium, suas atividades nelas são apagadas deste dispositivo:
-          <ph name="BEGIN_LIST" />
-            <ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" />Histórico de pesquisa<ph name="END_LIST_ITEM" />
-            <ph name="LIST_ITEM" /><ph name="END_LIST_ITEM" />Informações inseridas em formulários
-          <ph name="END_LIST" /></translation>
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Atividade de navegação<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Histórico de pesquisa<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Informações inseridas em formulários<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" />
+</translation>
 <translation id="691024665142758461">Fazer o download de vários arquivos</translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6916193791494646625">Informe o motivo do download (obrigatório)</translation>

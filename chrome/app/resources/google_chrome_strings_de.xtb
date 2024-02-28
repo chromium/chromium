@@ -302,7 +302,7 @@
 <translation id="5941711191222866238">Minimieren</translation>
 <translation id="5941830788786076944">Google Chrome als Standardbrowser festlegen</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>
-<translation id="6014316319780893079">Mit den <ph name="BEGIN_LINK" />Tools von Chrome<ph name="END_LINK" /> kannst du unbeschwert surfen und die Kontrolle behalten</translation>
+<translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome enthält Tools<ph name="END_LINK" />, die dir helfen, sicher zu surfen und die Kontrolle zu behalten</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
 <translation id="6025087594896450715">Google Chrome wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -430,7 +430,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8255190535488645436">Google Chrome verwendet deine Kamera und dein Mikrofon.</translation>
-<translation id="8267953129876836456">Chrome hat einige Sicherheitsempfehlungen gefunden, die du überprüfen solltest</translation>
+<translation id="8267953129876836456">Chrome hat einige Sicherheitsempfehlungen gefunden, die du dir ansehen solltest</translation>
 <translation id="8270775718612349140">Von Chrome verwaltete Zertifikate</translation>
 <translation id="8286862437124483331">Google Chrome möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8290100596633877290">Google Chrome ist abgestürzt. Jetzt neu starten?</translation>

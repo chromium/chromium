@@ -488,7 +488,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1376771218494401509">Fenster &amp;benennen…</translation>
 <translation id="1377600615067678409">Zunächst überspringen</translation>
 <translation id="1378613616312864539">Diese Einstellung wird von <ph name="NAME" /> gesteuert</translation>
-<translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Keine gehackten Passwörter}=1{1 gehacktes Passwort}other{{NUM_COMPROMISED} gehackte Passwörter}}</translation>
+<translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Keine kompromittierten Passwörter}=1{1 kompromittiertes Passwort}other{{NUM_COMPROMISED} kompromittierte Passwörter}}</translation>
 <translation id="1380028686461971526">Verbindung mit Netzwerk automatisch herstellen</translation>
 <translation id="1381567580865186407">Sprachaufnahmen auf <ph name="LANGUAGE" /> werden zur Verarbeitung an Google gesendet</translation>
 <translation id="1383065744946263511">An Symbolleiste anpinnen</translation>
@@ -6110,7 +6110,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5713158217420111469">Verbunden mit <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Eingabestil für Leerzeichen</translation>
 <translation id="5715711091495208045">Plug-in-Broker: <ph name="PLUGIN_NAME" /></translation>
-<translation id="5718049162805123412">Wir empfehlen, sie jetzt zu ändern</translation>
+<translation id="5718049162805123412">Du solltest dieses Passwort bzw. diese Passwörter jetzt ändern</translation>
 <translation id="5719854774000914513">Websites dürfen nachfragen, wenn sie eine Verbindung mit HID-Geräten herstellen möchten</translation>
 <translation id="572155275267014074">Android-Einstellungen</translation>
 <translation id="5722086096420375088">Grün und Weiß</translation>
@@ -6548,7 +6548,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6071181508177083058">Passwort bestätigen</translation>
 <translation id="6071576563962215370">Das System konnte die Attributsperre für die Geräteinstallationszeit nicht vornehmen.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> Arbeitsspeicher gespart</translation>
-<translation id="6071995715087444295">Melde dich in deinem Google-Konto an, um nach gehackten Passwörtern zu suchen</translation>
+<translation id="6071995715087444295">Melde dich in deinem Google-Konto an, um nach den kompromittierten Passwörtern zu suchen</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> ist auf diesem Gerät nicht zulässig. Wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073292342939316679">Tastaturhelligkeit verringern</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
@@ -7207,11 +7207,11 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6593881952206664229">Urheberrechtlich geschützte Medien werden möglicherweise nicht wiedergegeben</translation>
 <translation id="6594011207075825276">Serielle Geräte werden gesucht…</translation>
 <translation id="6595322909015878027">Dürfen den Bild-im-Bild-Modus nicht automatisch aktivieren</translation>
-<translation id="6595408197871512625">{COUNT,plural, =1{Das gehackte Passwort wurde erfolgreich geändert.
+<translation id="6595408197871512625">{COUNT,plural, =1{Das kompromittierte Passwort wurde erfolgreich geändert.
 
-Du hast # weiteres gehacktes Passwort. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu prüfen.}other{Das gehackte Passwort wurde erfolgreich geändert.
+Du hast # weiteres kompromittiertes Passwort. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu prüfen.}other{Das kompromittierte Passwort wurde erfolgreich geändert.
 
-Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, diese Passwörter jetzt zu prüfen.}}</translation>
+Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfiehlt, diese Passwörter jetzt zu prüfen.}}</translation>
 <translation id="6596325263575161958">Verschlüsselungsoptionen</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6596916244504302242">Diese Seite aktualisieren, um die neuen Erweiterungseinstellungen auf dieser Website zu übernehmen</translation>
@@ -7859,7 +7859,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7098447629416471489">Hier werden andere gespeicherte Suchmaschinen angezeigt</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{App entfernen}other{Apps entfernen}}</translation>
 <translation id="7099337801055912064">Große PPD-Datei kann nicht geladen werden. Die Maximalgröße beträgt 250 KB.</translation>
-<translation id="7099739618316136113">{COUNT,plural, =0{Keine gehackten Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Keine kompromittierten Passwörter}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
 <translation id="7100379916748214860">Chrome hat gerade den Download einer gefährlichen Datei blockiert. Mit dem erweiterten Schutz kannst du noch mehr Sicherheit erhalten.</translation>
 <translation id="710047887584828070">Der Inhalt dieses Tabs wird geteilt</translation>
 <translation id="710224247908684995">Safe Browsing wurde durch eine Erweiterung deaktiviert</translation>
@@ -8685,7 +8685,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="77381465218432215">Akzente und Sonderzeichen anzeigen</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Du kannst bei bestimmten Websites die maximale oder minimale Vergrößerungsstufe für die Websitedarstellung festlegen</translation>
-<translation id="7742726773290359702">{NUM_SITES,plural, =1{1 gehacktes Passwort gefunden}other{{NUM_SITES} gehackte Passwörter gefunden}}</translation>
+<translation id="7742726773290359702">{NUM_SITES,plural, =1{1 kompromittiertes Passwort gefunden}other{{NUM_SITES} kompromittierte Passwörter gefunden}}</translation>
 <translation id="7742879569460013116">Link teilen über</translation>
 <translation id="774377079771918250">Speicherort auswählen</translation>
 <translation id="7744047395460924128">Druckverlauf anzeigen</translation>
@@ -8970,7 +8970,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7945703887991230167">Bevorzugte Stimme</translation>
 <translation id="7946586320617670168">Quelle muss sicher sein</translation>
 <translation id="794676567536738329">Berechtigungen bestätigen</translation>
-<translation id="7947962633355574091">Videoadresse k&amp;opieren</translation>
+<translation id="7947962633355574091">Videolink k&amp;opieren</translation>
 <translation id="7947964080535614577">Websites zeigen normalerweise Werbung an, um Inhalte oder Dienste kostenlos anbieten zu können. Allerdings gibt es auch Websites, auf denen bekanntermaßen aufdringliche oder irreführende Werbung erscheint.</translation>
 <translation id="7948407723851303488">Alle Seiten von <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Grund: Die Unterstützung älterer Browser funktioniert nur mit URLs, die http://, https:// und file:// enthalten.</translation>
@@ -9246,7 +9246,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154790740888707867">Keine Datei</translation>
 <translation id="815491593104042026">Hoppla! Bei der Authentifizierung ist ein Fehler aufgetreten, weil in der Konfiguration eine unsichere URL angegeben wurde (<ph name="BLOCKED_URL" />). Bitte wende dich an deinen Administrator.</translation>
-<translation id="8155676038687609779">{COUNT,plural, =0{Keine gehackten Passwörter gefunden}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
+<translation id="8155676038687609779">{COUNT,plural, =0{Keine kompromittierten Passwörter gefunden}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
 <translation id="8157248655669507702">Damit du ein eSIM-Profil installieren kannst, musst du mobile Daten aktivieren</translation>
 <translation id="8157704005178149728">Elternaufsicht wird eingerichtet</translation>
 <translation id="8158117992543756526">Dieses Gerät erhält seit <ph name="MONTH_AND_YEAR" /> keine automatischen Software- und Sicherheitsupdates mehr. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>

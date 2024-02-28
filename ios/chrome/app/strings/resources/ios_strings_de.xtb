@@ -156,7 +156,7 @@
 <translation id="1820259098641718022">Zur Leseliste hinzugefügt</translation>
 <translation id="1822994441903263130">FedEx</translation>
 <translation id="1827529786398596735">Halte den Startbildschirm gedrückt</translation>
-<translation id="1829392566394960110">{COUNT,plural, =0{Gehackte Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{kompromittierte Passwörter}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
 <translation id="1836891464494477513">{count,plural, =1{Das Lesezeichen wurde in deinem Google-Konto ({email}) gespeichert}other{Die Lesezeichen wurden in deinem Google-Konto ({email}) gespeichert}}</translation>
 <translation id="183878838231635348">Auf dieser Karte werden alle Datenschutz- oder Sicherheitsprobleme angezeigt, die der Sicherheitscheck automatisch erkennt.</translation>
@@ -300,7 +300,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2577522251608256362">Stadtteil</translation>
 <translation id="2578571896248130439">Webseite senden</translation>
 <translation id="2584132361465095047">Konto hinzufügen...</translation>
-<translation id="2587010742985678408">{count,plural, =0{Keine gehackten Passwörter}=1{{count} gehacktes Passwort}other{{count} gehackte Passwörter}}</translation>
+<translation id="2587010742985678408">{count,plural, =0{Keine kompromittierten Passwörter}=1{{count} kompromittiertes Passwort}other{{count} kompromittiertes Passwörter}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Geöffnete Tabs, die einen Tag oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}other{Geöffnete Tabs, die {COUNT} Tage oder länger nicht verwendet wurden, werden in die inaktiven Tabs verschoben. So kannst du dich besser auf die Tabs konzentrieren, die du am häufigsten verwendest. Du kannst dies jederzeit in den Einstellungen ändern.}}</translation>
 <translation id="2600682495497606169">Website-Cookies löschen</translation>
 <translation id="260378315836159338">Tippe oben auf dem Bildschirm auf +</translation>
@@ -688,7 +688,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4650125387981512669">Weiter als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
-<translation id="4652817563047461855">Prüfe, ob deine Passwörter sicher sind, finde heraus, ob sie gehackt wurden, und informiere dich darüber, wie du dich im Internet besser schützen kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="4652817563047461855">Prüfe, ob deine Passwörter sicher sind, finde heraus, ob sie kompromittiert wurden, und informiere dich darüber, wie du dich im Internet besser schützen kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Speichern</translation>
 <translation id="4659194143325814340">{count,plural, =1{{count} Seite in deiner Leseliste}other{{count} Seiten in deiner Leseliste}}</translation>
 <translation id="4659667755519643272">Tab-Wechsler starten</translation>
@@ -884,13 +884,13 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5669617676038747374">QR-Code erstellen</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern.</translation>
-<translation id="5684761169742812828">Dieses Passwort wurde aufgrund einer Datenpanne im Internet preisgegeben. Falls du gerade keine Zeit hast, das Passwort zu ändern, empfiehlt Google, diese Warnung beizubehalten, damit du später daran erinnert wirst.</translation>
+<translation id="5684761169742812828">Dieses Passwort wurde aufgrund einer Datenpanne im Internet preisgegeben. Falls du gerade keine Zeit hast, das Passwort zu ändern, empfiehlt Google, diese Warnung offen zu lassen, damit du später daran erinnert wirst.</translation>
 <translation id="5694848685995373177">In Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="5701270923492462699">Kamerazugriff gewährt</translation>
 <translation id="5702108177581350218">Wenn du eine Kopie deines Nutzernamens und deines Passworts teilst, können Familienmitglieder sie mit dem Google Passwortmanager ausfüllen.</translation>
 <translation id="5704908597376970822">Anmeldung nicht möglich.</translation>
 <translation id="5706552126692816153">Vor 1 Tag aktiv</translation>
-<translation id="5718049162805123412">Wir empfehlen, sie jetzt zu ändern</translation>
+<translation id="5718049162805123412">Du solltest dieses Passwort bzw. diese Passwörter jetzt ändern</translation>
 <translation id="5724941645893276623">Füge einen neuen Tab hinzu, um privat im Web zu surfen</translation>
 <translation id="5728700505257787410">Beim Anmelden in deinem Konto ist ein Fehler aufgetreten.</translation>
 <translation id="5737974891429562743">Die Anmeldeinformationen für das Konto sind veraltet. Aktualisiere sie zur Synchronisierung.</translation>
@@ -1446,7 +1446,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8533670235862049797">Safe Browsing ist aktiviert</translation>
 <translation id="8534481786647257214">Google+ Beitrag gepostet</translation>
 <translation id="8548878600947630424">Auf Seite suchen...</translation>
-<translation id="854938212724803178">Du hast 1 gehacktes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
+<translation id="854938212724803178">Du hast 1 kompromittiertes Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du hast {count} Warnung geschlossen}other{Du hast {count} Warnungen geschlossen}}</translation>
 <translation id="8560253818350321773">Häufig verwendete Elemente zuerst anzeigen</translation>
 <translation id="8569721750632860947">Welche URL möchtest du deiner Leseliste hinzufügen?</translation>
@@ -1462,7 +1462,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8626393685701737946">Du kannst unter Einstellungen &gt; Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="8637431369725868556">Schütze dich bestmöglich vor gefährlichen Websites.</translation>
-<translation id="8638151046944329622">{COUNT,plural, =0{Keine gehackten Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{Keine kompromittierten Passwörter}=1{{COUNT} kompromittiertes Passwort}other{{COUNT} kompromittierte Passwörter}}</translation>
 <translation id="8640430998629397789">„Desktopwebsite anfordern“ ausblenden</translation>
 <translation id="8654802032646794042">Abbrechen</translation>
 <translation id="8663764600409216912">Du verwendest Passwörter, die nicht einfach zu erraten sein dürften</translation>

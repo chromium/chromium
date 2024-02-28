@@ -76,7 +76,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2384373936468275798">Chromium OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Auf 1 HID-Gerät wurde von mindestens einer Chromium-Erweiterung zugegriffen}=1{Auf 1 HID-Gerät wird von mindestens einer Chromium-Erweiterung zugegriffen}other{Auf # HID-Geräte wird von mindestens einer Chromium-Erweiterung zugegriffen}}</translation>
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
-<translation id="2440750600860946460">Mit den <ph name="BEGIN_LINK" />Tools von Chromium<ph name="END_LINK" /> kannst du unbeschwert surfen und die Kontrolle behalten</translation>
+<translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chrome enthält Tools<ph name="END_LINK" />, die dir helfen, sicher zu surfen und die Kontrolle zu behalten</translation>
 <translation id="2451727308784734061">Mit dieser Verknüpfung gelangst du schnell zum Passwortmanager. Du kannst sie auf den Startbildschirm oder in den App Launcher deines Computers verschieben.</translation>
 <translation id="2478295928299953161">Chromium wird bald geschlossen</translation>
 <translation id="2483889755041906834">In Chromium</translation>
@@ -135,7 +135,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3406848076815591792">Zu bestehendem Chromium-Profil wechseln?</translation>
 <translation id="3412460710772753638">Im Passwortmanager auf diesem Gerät</translation>
 <translation id="3430503420100763906">Mit Chromium-Profilen kannst du deine Chromium-Inhalte voneinander trennen. Erstelle Profile für Freunde und Familie oder teile deine Inhalte in Arbeit und Freizeit ein.</translation>
-<translation id="347328004046849135">Wenn du dich mit einem Passwort anmeldest, das gehackt wurde, benachrichtigt dich Chromium entsprechend.</translation>
+<translation id="347328004046849135">Wenn du dich mit einem Passwort anmeldest, das kompromittiert wurde, benachrichtigt dich Chromium entsprechend.</translation>
 <translation id="3474745554856756813">Dadurch werden <ph name="ITEMS_COUNT" /> Elemente von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="3497319089134299931">Mit <ph name="SHORTCUT" /> kann zwischen Chromium-Profilen gewechselt werden</translation>
 <translation id="3509308970982693815">Schließe bitte alle Chromium-Fenster und versuche es erneut.</translation>

@@ -28,7 +28,7 @@
 <translation id="1147031633655575115">Đã đăng nhập bằng tên <ph name="USER" /></translation>
 <translation id="1150989369772528668">Lịch</translation>
 <translation id="1154984953698510061">Xem các thẻ khác</translation>
-<translation id="1161340988127985692">Yêu cầu Mở đường liên kết từ các Ứng dụng khác ở Chế độ ẩn danh</translation>
+<translation id="1161340988127985692">Yêu cầu mở đường liên kết từ các ứng dụng khác ở chế độ ẩn danh</translation>
 <translation id="1164064664035028907">Dùng mật khẩu mạnh:</translation>
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
 <translation id="1165039591588034296">Lỗi</translation>
@@ -123,7 +123,7 @@
 <translation id="1605658421715042784">Sao chép hình ảnh</translation>
 <translation id="1608337082864370066">Tìm kiếm hình ảnh đã sao chép</translation>
 <translation id="1612730193129642006">Hiển thị lưới thẻ</translation>
-<translation id="1620510694547887537">Máy ảnh</translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Chọn "Thêm vào Lịch Google" hoặc "Thêm vào Lịch Apple".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> mật khẩu trùng lặp</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
@@ -1110,7 +1110,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="672735642903863329">Sử dụng dấu trang, mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn.</translation>
 <translation id="6730682669179532099">Không thể xuất mật khẩu</translation>
-<translation id="6732087373923685049">máy ảnh</translation>
+<translation id="6732087373923685049">camera</translation>
 <translation id="6738233953537186295">Chia sẻ bản sao mật khẩu của bạn</translation>
 <translation id="6746338529702829275">Kiểm tra dữ liệu tài khoản của bạn</translation>
 <translation id="6748108480210050150">Từ</translation>

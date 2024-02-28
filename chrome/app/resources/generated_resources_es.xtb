@@ -4254,7 +4254,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4242145785130247982">No se admite el uso de varios certificados de cliente.</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4242577469625748426">Se ha producido un error al instalar la configuración de política en el dispositivo (<ph name="VALIDATION_ERROR" />).</translation>
-<translation id="4242825475818569385"><ph name="DOMAIN" /> <ph name="BEGIN_LINK" />gestiona tu navegador y tu perfil<ph name="END_LINK" /></translation>
+<translation id="4242825475818569385"><ph name="BEGIN_LINK" />Tu navegador y tu perfil los gestiona<ph name="END_LINK" /> <ph name="DOMAIN" /></translation>
 <translation id="4243504193894350135">La impresora está en pausa</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, grado <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Buscar más aplicaciones para el lápiz óptico</translation>

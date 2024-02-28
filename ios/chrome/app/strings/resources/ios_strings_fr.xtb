@@ -1374,7 +1374,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8114753159095730575">Vous pouvez télécharger des fichiers. Différentes options sont disponibles au bas de l'écran.</translation>
 <translation id="81313319706244542">2. Appuyez sur "Mots de passe"</translation>
 <translation id="8132598642024322408"><ph name="PRICE" /> (précédemment à <ph name="PREVIOUS_PRICE" />).</translation>
-<translation id="813370552429173916">Choisissez un mot de passe différent pour chaque site ou appli. Si quelqu'un découvre un mot de passe réutilisé, il pourra s'en servir pour accéder à vos autres comptes. Cliquez pour ouvrir le site Web et le modifier immédiatement.</translation>
+<translation id="813370552429173916">Choisissez un mot de passe différent pour chaque site ou appli. Si quelqu'un découvre un mot de passe réutilisé, il pourra s'en servir pour accéder à vos autres comptes. Cliquez pour ouvrir le site Web et modifier le mot de passe immédiatement.</translation>
 <translation id="8156478151976189188">Password Sync ne fonctionne pas</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> comptes</translation>
 <translation id="8159358225423560600">à l'instant</translation>
@@ -1473,7 +1473,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="868773710103052534">Vous avez terminé</translation>
 <translation id="8692689525339542358">Protégez-vous contre les sites, extensions et téléchargements dangereux.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
-<translation id="8703536910991780768">Vos mots de passe semblent sécurisés</translation>
+<translation id="8703536910991780768">Vos mots de passe semblent sûrs</translation>
 <translation id="8706253136355675497">Température</translation>
 <translation id="8709409604518538305">Les onglets ont été fermés</translation>
 <translation id="8712637175834984815">OK</translation>
