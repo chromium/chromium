@@ -3288,7 +3288,7 @@ class TestActivationManager::ConditionInserter {
     // crbug.com/1226442.
     auto* request = NavigationRequest::From(&handle);
     if (!request->IsServedFromBackForwardCache() &&
-        !request->is_potentially_prerendered_page_activation_for_testing()) {
+        !request->is_running_potential_prerender_activation_checks()) {
       return nullptr;
     }
 
@@ -3372,7 +3372,7 @@ CommitDeferringCondition::Result TestActivationManager::FirstConditionCallback(
 
   DCHECK(!request_);
   request_ = NavigationRequest::From(&condition.GetNavigationHandle());
-  DCHECK(request_->is_potentially_prerendered_page_activation_for_testing() ||
+  DCHECK(request_->is_running_potential_prerender_activation_checks() ||
          request_->IsServedFromBackForwardCache())
       << "TestActivationManager should only be used for for page "
          "activations. For regular navigations, use TestNavigationManager.";

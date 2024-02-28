@@ -53,9 +53,9 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
 
   const url::Origin& current_request_origin = rfh->GetLastCommittedOrigin();
   const url::Origin& new_request_origin =
-      navigation_request.state() >= NavigationRequest::WILL_PROCESS_RESPONSE
-          ? navigation_request.GetOriginToCommit().value_or(url::Origin())
-          : navigation_request.GetTentativeOriginAtRequestTime();
+      navigation_request.is_running_potential_prerender_activation_checks()
+          ? navigation_request.GetTentativeOriginAtRequestTime()
+          : *navigation_request.GetOriginToCommit();
   // Only support same origin.
   // TODO(khushalsagar): We need to be able to deal with redirects.
   // https://github.com/WICG/view-transitions/issues/200

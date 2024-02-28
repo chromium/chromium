@@ -2352,7 +2352,7 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
       *this,
       CommitDeferringCondition::NavigationType::kPrerenderedPageActivation,
       candidate_prerender_frame_tree_node_id);
-  is_potentially_prerendered_page_activation_for_testing_ = true;
+  is_running_potential_prerender_activation_checks_ = true;
 
   // Post a task to run the conditions in case BeginNavigation() is not expected
   // to run synchronously. OnPrerenderingActivationChecksComplete() will be
@@ -2388,8 +2388,15 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
   prerender_frame_tree_node_id_ =
       GetPrerenderHostRegistry().ReserveHostToActivate(
           *this, candidate_prerender_frame_tree_node_id.value());
-  if (prerender_frame_tree_node_id_.value() !=
+  if (prerender_frame_tree_node_id_.value() ==
       RenderFrameHost::kNoFrameTreeNodeId) {
+    // If we ran commit deferring conditions for a potential pre-render which
+    // eventually wasn't activated, abort the ViewTransition. The state was
+    // cached assuming this navigation will be same-origin which might not be
+    // the case now that we need to make a network request.
+    // TODO(khushalsagar): Also clear the cached textures in the GPU process.
+    commit_params_->view_transition_state.reset();
+  } else {
     // The reserved host should match with the potential host. Otherwise the
     // reserved host may not be ready for activation yet as we haven't run
     // PrerenderCommitDeferringCondition for the host to finish navigation in
@@ -2397,7 +2404,7 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
     DCHECK_EQ(prerender_frame_tree_node_id_.value(),
               candidate_prerender_frame_tree_node_id.value());
   }
-  is_potentially_prerendered_page_activation_for_testing_ = false;
+  is_running_potential_prerender_activation_checks_ = false;
   commit_deferrer_.reset();
 
   // We can only activate top-level pages, which can never be at a fenced frame
@@ -5770,7 +5777,11 @@ bool NavigationRequest::ShouldDispatchPageConcealEvent() const {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(blink::features::kPageConcealEvent);
+  if (!base::FeatureList::IsEnabled(blink::features::kPageConcealEvent)) {
+    return false;
+  }
+
+  return !did_fire_page_conceal_;
 }
 
 void NavigationRequest::CommitNavigation() {
@@ -5798,7 +5809,7 @@ void NavigationRequest::CommitNavigation() {
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
 
   AddOldPageInfoToCommitParamsIfNeeded();
-  if (ShouldDispatchPageConcealEvent() && !did_fire_page_conceal_) {
+  if (ShouldDispatchPageConcealEvent()) {
     frame_tree_node_->current_frame_host()
         ->GetAssociatedLocalFrame()
         ->DispatchPageConceal(WillDispatchPageConceal());
@@ -10307,7 +10318,6 @@ bool NavigationRequest::HasLoader() const {
 
 blink::mojom::PageConcealEventParamsPtr
 NavigationRequest::WillDispatchPageConceal() {
-  CHECK(!did_fire_page_conceal_);
   CHECK(ShouldDispatchPageConcealEvent());
 
   did_fire_page_conceal_ = true;
@@ -10315,11 +10325,11 @@ NavigationRequest::WillDispatchPageConceal() {
   // The `pageconceal` event is fired on the old Document to provide information
   // about the new Document. The information shared must be restricted to
   // same-origin Documents.
-  // TODO(khushalsagar): This needs to use `GetOriginToCommit()` except in the
-  // context of commit deferring conditions for pre-render. See
-  // crbug.com/326265171.
   const bool is_same_origin =
-      frame_tree_node_->current_origin().IsSameOriginWith(common_params_->url);
+      frame_tree_node_->current_origin().IsSameOriginWith(
+          is_running_potential_prerender_activation_checks_
+              ? GetTentativeOriginAtRequestTime()
+              : *GetOriginToCommit());
   if (!is_same_origin) {
     return nullptr;
   }

@@ -1054,8 +1054,8 @@ class CONTENT_EXPORT NavigationRequest
 
   base::WeakPtr<NavigationRequest> GetWeakPtr();
 
-  bool is_potentially_prerendered_page_activation_for_testing() const {
-    return is_potentially_prerendered_page_activation_for_testing_;
+  bool is_running_potential_prerender_activation_checks() const {
+    return is_running_potential_prerender_activation_checks_;
   }
 
   int prerender_frame_tree_node_id() const {
@@ -1328,7 +1328,7 @@ class CONTENT_EXPORT NavigationRequest
   blink::mojom::PageConcealEventParamsPtr WillDispatchPageConceal();
 
   // Returns true if this navigation is eligible for dispatching a `pageconceal`
-  // event on the old Document.
+  // event on the old Document and the event has not been dispatched already.
   bool ShouldDispatchPageConcealEvent() const;
 
  private:
@@ -2531,7 +2531,7 @@ class CONTENT_EXPORT NavigationRequest
   // activation. This is needed as PrerenderHost hasn't been reserved and
   // prerender_frame_tree_node_id() is not available yet while they are
   // running.
-  bool is_potentially_prerendered_page_activation_for_testing_ = false;
+  bool is_running_potential_prerender_activation_checks_ = false;
 
   // Set to true before the fenced frame url mapping. Reset to false when the
   // mapping finishes. If the initial mapping state of the urn:uuid is pending,

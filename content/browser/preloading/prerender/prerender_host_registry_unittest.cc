@@ -146,7 +146,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     std::move(setup_callback).Run(navigation.get());
     navigation->Start();
     NavigationRequest* navigation_request = navigation->GetNavigationHandle();
-    // Use is_potentially_prerendered_page_activation_for_testing() instead of
+    // Use is_running_potential_prerender_activation_checks() instead of
     // IsPrerenderedPageActivation() because the NavigationSimulator does not
     // proceed past CommitDeferringConditions on potential activations,
     // so IsPrerenderedPageActivation() will fail with a CHECK because
@@ -154,7 +154,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     // TODO(https://crbug.com/1239220): Fix NavigationSimulator to wait for
     // commit deferring conditions as it does throttles.
     return navigation_request
-        ->is_potentially_prerendered_page_activation_for_testing();
+        ->is_running_potential_prerender_activation_checks();
   }
 
   // Helper method to perform a prerender activation that includes specialized
