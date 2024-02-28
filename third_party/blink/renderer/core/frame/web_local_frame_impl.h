@@ -151,9 +151,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetReferrerForRequest(WebURLRequest&, const WebURL& referrer) override;
   bool IsNavigationScheduledWithin(base::TimeDelta interval) const override;
   void BlinkFeatureUsageReport(blink::mojom::WebFeature feature) override;
-  PageSizeType GetPageSizeType(uint32_t page_index) override;
-  void GetPageDescription(uint32_t page_index,
-                          WebPrintPageDescription*) override;
+  WebPrintPageDescription GetPageDescription(uint32_t page_index) override;
   void ExecuteScript(const WebScriptSource&) override;
   void ExecuteScriptInIsolatedWorld(
       int32_t world_id,
@@ -332,13 +330,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   const std::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(
-      const WebPrintParams&,
       const WebVector<uint32_t>& pages) override;
-  gfx::Size SpoolSizeInPixelsForTesting(const WebPrintParams&,
-                                        uint32_t page_count) override;
+  gfx::Size SpoolSizeInPixelsForTesting(uint32_t page_count) override;
   void PrintPagesForTesting(
       cc::PaintCanvas*,
-      const WebPrintParams&,
       const gfx::Size& spool_size_in_pixels,
       const WebVector<uint32_t>* pages = nullptr) override;
   gfx::Rect GetSelectionBoundsRectForTesting() const override;

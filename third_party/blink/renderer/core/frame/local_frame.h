@@ -68,6 +68,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
@@ -399,8 +400,7 @@ class CORE_EXPORT LocalFrame final
   // Begin printing.
   // If too large (in the inline direction), the frame content will fit to the
   // page size with the specified maximum shrink ratio.
-  void StartPrinting(const WebPrintPageDescription&,
-                     float maximum_shrink_ratio = 0);
+  void StartPrinting(const WebPrintParams&, float maximum_shrink_ratio = 0);
   void StartPrinting(const gfx::SizeF& page_size = gfx::SizeF(),
                      float maximum_shrink_ratio = 0);
 
@@ -930,6 +930,8 @@ class CORE_EXPORT LocalFrame final
   // Can only be called while the frame is not detached.
   bool ScriptEnabled();
 
+  const WebPrintParams& GetPrintParams() const;
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1193,6 +1195,8 @@ class CORE_EXPORT LocalFrame final
   // not so it can block BFCache.
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
+
+  WebPrintParams print_params_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

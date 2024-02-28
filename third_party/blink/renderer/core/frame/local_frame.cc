@@ -1329,18 +1329,16 @@ scoped_refptr<InspectorTaskRunner> LocalFrame::GetInspectorTaskRunner() {
   return inspector_task_runner_;
 }
 
-void LocalFrame::StartPrinting(
-    const WebPrintPageDescription& default_page_description,
-    float maximum_shrink_ratio) {
+void LocalFrame::StartPrinting(const WebPrintParams& print_params,
+                               float maximum_shrink_ratio) {
   DCHECK(!saved_scroll_offsets_);
-  LayoutView* layout_view = GetDocument()->GetLayoutView();
-  layout_view->SetDefaultPageDescription(default_page_description);
+  print_params_ = print_params;
   SetPrinting(true, maximum_shrink_ratio);
 }
 
 void LocalFrame::StartPrinting(const gfx::SizeF& page_size,
                                float maximum_shrink_ratio) {
-  StartPrinting(WebPrintPageDescription(page_size), maximum_shrink_ratio);
+  StartPrinting(WebPrintParams(page_size), maximum_shrink_ratio);
 }
 
 void LocalFrame::EndPrinting() {
@@ -3886,6 +3884,13 @@ bool LocalFrame::ScriptEnabled() {
   bool allow_script_renderer = GetSettings()->GetScriptEnabled();
   bool allow_script_content_setting = GetContentSettings()->allow_script;
   return allow_script_renderer && allow_script_content_setting;
+}
+
+const WebPrintParams& LocalFrame::GetPrintParams() const {
+  // If this fails, it's probably because nobody called StartPrinting().
+  DCHECK(GetDocument()->Printing());
+
+  return print_params_;
 }
 
 }  // namespace blink

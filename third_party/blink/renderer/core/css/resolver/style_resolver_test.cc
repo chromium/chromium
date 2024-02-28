@@ -2107,11 +2107,10 @@ TEST_P(ParameterizedStyleResolverTest, CascadeLayersAndPageRules) {
     </style>
   )HTML");
 
-  GetDocument().GetFrame()->StartPrinting();
+  GetDocument().GetFrame()->StartPrinting(gfx::SizeF(800, 600));
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
 
-  WebPrintPageDescription description(gfx::SizeF(800, 600));
-  GetDocument().GetPageDescription(0, &description);
+  WebPrintPageDescription description = GetDocument().GetPageDescription(0);
 
   // The layered declaraion should win the cascading.
   EXPECT_EQ(100, description.margin_top);

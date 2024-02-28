@@ -19,7 +19,6 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
-#include "third_party/blink/public/common/css/page_size_type.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
@@ -339,15 +338,14 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
 
   // CSS3 Paged Media ----------------------------------------------------
 
-  // Returns the type of @page size styling for the given page.
-  virtual PageSizeType GetPageSizeType(uint32_t page_index) = 0;
-
   // Gets the description for the specified page. This includes preferred page
   // size and margins in pixels, assuming 96 pixels per inch. The size and
   // margins must be initialized to the default values that are used if auto is
   // specified.
-  virtual void GetPageDescription(uint32_t page_index,
-                                  WebPrintPageDescription*) = 0;
+  //
+  // This function must be called after having called PrintBegin() at some
+  // point, and before PrintEnd() is called.
+  virtual WebPrintPageDescription GetPageDescription(uint32_t page_index) = 0;
 
   // Scripting --------------------------------------------------------------
 
@@ -877,17 +875,14 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Get the total spool size (the bounding box of all the pages placed after
   // oneanother vertically), when printing for testing.
   virtual gfx::Size SpoolSizeInPixelsForTesting(
-      const WebPrintParams&,
       const WebVector<uint32_t>& pages) = 0;
-  virtual gfx::Size SpoolSizeInPixelsForTesting(const WebPrintParams&,
-                                                uint32_t page_count) = 0;
+  virtual gfx::Size SpoolSizeInPixelsForTesting(uint32_t page_count) = 0;
 
   // Prints the given pages of the frame into the canvas, with page boundaries
   // drawn as one pixel wide blue lines. By default, all pages are printed. This
   // method exists to support web tests.
   virtual void PrintPagesForTesting(
       cc::PaintCanvas*,
-      const WebPrintParams&,
       const gfx::Size& spool_size_in_pixels,
       const WebVector<uint32_t>* pages = nullptr) = 0;
 

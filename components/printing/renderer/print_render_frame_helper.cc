@@ -176,8 +176,7 @@ mojom::PageOrientation FromBlinkPageOrientation(
 }
 
 blink::WebPrintPageDescription GetDefaultPageDescription(
-    const mojom::PrintParams& page_params,
-    bool ignore_css_margins) {
+    const mojom::PrintParams& page_params) {
   int dpi = GetDPI(page_params);
 
   blink::WebPrintPageDescription description;
@@ -196,21 +195,19 @@ blink::WebPrintPageDescription GetDefaultPageDescription(
       dpi, kPixelsPerInch);
   description.margin_left =
       ConvertUnitFloat(page_params.margin_left, dpi, kPixelsPerInch);
-  description.ignore_css_margins = ignore_css_margins;
-  description.ignore_page_size =
-      ShouldIgnoreCssPageSize(ignore_css_margins, page_params);
 
   return description;
 }
 
 mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
                                         uint32_t page_index,
-                                        const mojom::PrintParams& page_params,
-                                        bool ignore_css_margins) {
-  blink::WebPrintPageDescription description =
-      GetDefaultPageDescription(page_params, ignore_css_margins);
-  if (frame)
-    frame->GetPageDescription(page_index, &description);
+                                        const mojom::PrintParams& page_params) {
+  blink::WebPrintPageDescription description;
+  if (frame) {
+    description = frame->GetPageDescription(page_index);
+  } else {
+    description = GetDefaultPageDescription(page_params);
+  }
 
   float new_content_width = description.size.width() - description.margin_left -
                             description.margin_right;
@@ -360,6 +357,10 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
   webkit_print_params.printer_dpi = dpi;
   webkit_print_params.scale_factor = print_params.scale_factor;
 
+  webkit_print_params.ignore_css_margins = ignore_css_margins;
+  webkit_print_params.ignore_page_size =
+      ShouldIgnoreCssPageSize(ignore_css_margins, print_params);
+
   if (source_is_pdf) {
 #if BUILDFLAG(IS_APPLE)
     // For Mac, GetDPI() returns a value that avoids DPI-based scaling. This is
@@ -387,7 +388,7 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
   webkit_print_params.pages_per_sheet = print_params.pages_per_sheet;
 
   webkit_print_params.default_page_description =
-      GetDefaultPageDescription(print_params, ignore_css_margins);
+      GetDefaultPageDescription(print_params);
 
   return webkit_print_params;
 }
@@ -419,7 +420,7 @@ void GetPageSizeAndOrientationInfo(blink::WebLocalFrame* frame,
   // the respective options in the print preview UI should be hidden (since they
   // will have no effect).
   for (uint32_t i = 0; i < total_page_count; ++i) {
-    auto page_size_type = frame->GetPageSizeType(i);
+    auto page_size_type = frame->GetPageDescription(i).page_size_type;
     // A "fixed" page size implies that both page size and orientation are set,
     // also when well-known page sizes (such as A4) are specified.
     if (page_size_type != blink::PageSizeType::kFixed) {
@@ -548,7 +549,7 @@ ParamWithFitToPageScale<mojom::PageSizeMarginsPtr> ComputePageLayoutForCss(
     const mojom::PrintParams& page_params,
     bool ignore_css_margins) {
   mojom::PrintParamsPtr css_params =
-      GetCssPrintParams(frame, page_index, page_params, ignore_css_margins);
+      GetCssPrintParams(frame, page_index, page_params);
 
   double fit_to_page_scale_factor = 1.0f;
   if (!ignore_css_margins && IsPrintScalingOptionFitToPage(page_params)) {
@@ -1762,8 +1763,8 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
 
       blink::WebLocalFrame* frame = print_preview_context_.prepared_frame();
       if (frame) {
-        blink::WebPrintPageDescription description;
-        frame->GetPageDescription(page_index, &description);
+        blink::WebPrintPageDescription description =
+            frame->GetPageDescription(page_index);
         print_pages_params_->params->page_orientation =
             FromBlinkPageOrientation(description.orientation);
       }

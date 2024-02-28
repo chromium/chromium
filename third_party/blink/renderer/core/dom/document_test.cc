@@ -1123,8 +1123,7 @@ TEST_F(DocumentTest, AtPageMarginWithDeviceScaleFactor) {
   GetDocument().GetFrame()->StartPrinting(initial_page_size);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
 
-  WebPrintPageDescription description;
-  GetDocument().GetPageDescription(0, &description);
+  WebPrintPageDescription description = GetDocument().GetPageDescription(0);
 
   EXPECT_EQ(50, description.margin_top);
   EXPECT_EQ(50, description.margin_right);

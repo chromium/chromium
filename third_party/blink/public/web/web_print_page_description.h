@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRINT_PAGE_DESCRIPTION_H_
 
 #include "third_party/blink/public/common/css/page_orientation.h"
+#include "third_party/blink/public/common/css/page_size_type.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -24,15 +25,7 @@ struct WebPrintPageDescription {
   float margin_bottom = 0;
   float margin_left = 0;
   PageOrientation orientation = PageOrientation::kUpright;
-
-  // This will be set when the margins provided should be preserved, and not be
-  // overridden by @page margin declarations.
-  bool ignore_css_margins = false;
-
-  // This will be set when the page size provided should be preserved, and not
-  // be overridden by @page size declarations. Regardless of this setting,
-  // though, landscape / portrait will still be honored.
-  bool ignore_page_size = false;
+  PageSizeType page_size_type = PageSizeType::kAuto;
 };
 
 }  // namespace blink

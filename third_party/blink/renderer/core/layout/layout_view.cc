@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -703,8 +704,8 @@ PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
   NOT_DESTROYED();
   const ComputedStyle* page_style =
       GetDocument().StyleForPage(page_index, page_name);
-  WebPrintPageDescription description = default_page_description_;
-  GetDocument().GetPageDescriptionNoLifecycleUpdate(*page_style, &description);
+  WebPrintPageDescription description =
+      GetDocument().GetPageDescriptionNoLifecycleUpdate(*page_style);
 
   gfx::SizeF page_size(
       std::max(.0f, description.size.width() -
@@ -914,13 +915,15 @@ gfx::SizeF LayoutView::DynamicViewportSizeForViewportUnits() const {
 
 gfx::SizeF LayoutView::DefaultPageAreaSize() const {
   NOT_DESTROYED();
+  const WebPrintPageDescription& default_page_description =
+      frame_view_->GetFrame().GetPrintParams().default_page_description;
   return gfx::SizeF(
-      std::max(.0f, default_page_description_.size.width() -
-                        (default_page_description_.margin_left +
-                         default_page_description_.margin_right)),
-      std::max(.0f, default_page_description_.size.height() -
-                        (default_page_description_.margin_top +
-                         default_page_description_.margin_bottom)));
+      std::max(.0f, default_page_description.size.width() -
+                        (default_page_description.margin_left +
+                         default_page_description.margin_right)),
+      std::max(.0f, default_page_description.size.height() -
+                        (default_page_description.margin_top +
+                         default_page_description.margin_bottom)));
 }
 
 void LayoutView::WillBeDestroyed() {

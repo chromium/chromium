@@ -339,6 +339,10 @@ class ChromePrintContext : public PrintContext {
 
   ~ChromePrintContext() override = default;
 
+  virtual WebPrintPageDescription GetPageDescription(uint32_t page_index) {
+    return GetFrame()->GetDocument()->GetPageDescription(page_index);
+  }
+
   void SpoolSinglePage(cc::PaintCanvas* canvas, wtf_size_t page_number) {
     DispatchEventsForPrintingOnAllFrames();
     if (!GetFrame()->GetDocument() ||
@@ -364,7 +368,6 @@ class ChromePrintContext : public PrintContext {
   }
 
   void SpoolPagesWithBoundariesForTesting(cc::PaintCanvas* canvas,
-                                          const WebPrintParams& print_params,
                                           const gfx::Size& spool_size_in_pixels,
                                           const WebVector<uint32_t>* pages) {
     DispatchEventsForPrintingOnAllFrames();
@@ -411,8 +414,7 @@ class ChromePrintContext : public PrintContext {
       }
 
       WebPrintPageDescription description =
-          print_params.default_page_description;
-      GetFrame()->GetDocument()->GetPageDescription(page_index, &description);
+          GetFrame()->GetDocument()->GetPageDescription(page_index);
 
       AffineTransform transform;
       transform.Translate(description.margin_left,
@@ -522,9 +524,17 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 
   const gfx::Rect& PageRect(wtf_size_t) const = delete;
 
+  WebPrintPageDescription GetPageDescription(uint32_t page_index) override {
+    // Plug-ins aren't really able to provide any page description apart from
+    // the "default" one. Yet, the printing code calls this function for
+    // plug-ins, which isn't ideal, but something we have to cope with for now.
+    return default_page_description_;
+  }
+
   wtf_size_t PageCount() const override { return page_count_; }
 
   void BeginPrintMode(const WebPrintParams& print_params) override {
+    default_page_description_ = print_params.default_page_description;
     page_count_ = plugin_->PrintBegin(print_params);
   }
 
@@ -552,6 +562,8 @@ class ChromePluginPrintContext final : public ChromePrintContext {
  private:
   // Set when printing.
   Member<WebPluginContainerImpl> plugin_;
+
+  WebPrintPageDescription default_page_description_;
 
   wtf_size_t page_count_ = 0;
 };
@@ -1964,18 +1976,12 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
   return success;
 }
 
-PageSizeType WebLocalFrameImpl::GetPageSizeType(uint32_t page_index) {
-  return GetFrame()->GetDocument()->StyleForPage(page_index)->GetPageSizeType();
-}
-
-void WebLocalFrameImpl::GetPageDescription(
-    uint32_t page_index,
-    WebPrintPageDescription* description) {
-  GetFrame()->GetDocument()->GetPageDescription(page_index, description);
+WebPrintPageDescription WebLocalFrameImpl::GetPageDescription(
+    uint32_t page_index) {
+  return print_context_->GetPageDescription(page_index);
 }
 
 gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
-    const WebPrintParams& print_params,
     const WebVector<uint32_t>& pages) {
   int spool_width = 0;
   int spool_height = 0;
@@ -1985,8 +1991,8 @@ gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
     if (page_index != pages.front())
       spool_height++;
 
-    WebPrintPageDescription description = print_params.default_page_description;
-    GetFrame()->GetDocument()->GetPageDescription(page_index, &description);
+    WebPrintPageDescription description =
+        GetFrame()->GetDocument()->GetPageDescription(page_index);
     gfx::Size page_size = gfx::ToCeiledSize(description.size);
     if (description.orientation == PageOrientation::kUpright) {
       spool_width = std::max(spool_width, page_size.width());
@@ -1999,23 +2005,20 @@ gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
   return gfx::Size(spool_width, spool_height);
 }
 
-gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
-    const WebPrintParams& print_params,
-    uint32_t page_count) {
+gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(uint32_t page_count) {
   WebVector<uint32_t> pages(page_count);
   std::iota(pages.begin(), pages.end(), 0);
-  return SpoolSizeInPixelsForTesting(print_params, pages);
+  return SpoolSizeInPixelsForTesting(pages);
 }
 
 void WebLocalFrameImpl::PrintPagesForTesting(
     cc::PaintCanvas* canvas,
-    const WebPrintParams& print_params,
     const gfx::Size& spool_size_in_pixels,
     const WebVector<uint32_t>* pages) {
   DCHECK(print_context_);
 
   print_context_->SpoolPagesWithBoundariesForTesting(
-      canvas, print_params, spool_size_in_pixels, pages);
+      canvas, spool_size_in_pixels, pages);
 }
 
 gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {

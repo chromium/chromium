@@ -2900,39 +2900,44 @@ void Document::EnsurePaintLocationDataValidForNode(
   UpdateStyleAndLayoutForNode(node, reason);
 }
 
-void Document::GetPageDescription(uint32_t page_index,
-                                  WebPrintPageDescription* description) {
+WebPrintPageDescription Document::GetPageDescription(uint32_t page_index) {
   View()->UpdateLifecycleToLayoutClean(DocumentUpdateReason::kUnknown);
-  GetPageDescriptionNoLifecycleUpdate(*StyleForPage(page_index), description);
+  return GetPageDescriptionNoLifecycleUpdate(*StyleForPage(page_index));
 }
 
-void Document::GetPageDescriptionNoLifecycleUpdate(
-    const ComputedStyle& style,
-    WebPrintPageDescription* description) {
+WebPrintPageDescription Document::GetPageDescriptionNoLifecycleUpdate(
+    const ComputedStyle& style) {
   DocumentLifecycle::DisallowTransitionScope scope(Lifecycle());
-  const WebPrintPageDescription input_description = *description;
+  const WebPrintParams& print_params = GetFrame()->GetPrintParams();
+  WebPrintPageDescription description = print_params.default_page_description;
+
+  // TODO(mstensho): We may want to adjust page_size_type accordingly if we
+  // decide to disregard the specified @page size below.
+  description.page_size_type = style.GetPageSizeType();
 
   switch (style.GetPageSizeType()) {
     case PageSizeType::kAuto:
       break;
     case PageSizeType::kLandscape:
-      if (description->size.width() < description->size.height())
-        description->size.Transpose();
+      if (description.size.width() < description.size.height()) {
+        description.size.Transpose();
+      }
       break;
     case PageSizeType::kPortrait:
-      if (description->size.width() > description->size.height())
-        description->size.Transpose();
+      if (description.size.width() > description.size.height()) {
+        description.size.Transpose();
+      }
       break;
     case PageSizeType::kFixed: {
       gfx::SizeF css_size = style.PageSize();
-      if (!description->ignore_page_size) {
-        description->size = css_size;
+      if (!print_params.ignore_page_size) {
+        description.size = css_size;
         break;
       }
       if ((css_size.width() > css_size.height()) !=
-          (description->size.width() > description->size.height())) {
+          (description.size.width() > description.size.height())) {
         // Keep the page size, but match orientation.
-        description->size.Transpose();
+        description.size.Transpose();
       }
       break;
     }
@@ -2940,41 +2945,41 @@ void Document::GetPageDescriptionNoLifecycleUpdate(
       NOTREACHED();
   }
 
-  if (!description->ignore_css_margins) {
+  if (!print_params.ignore_css_margins) {
     if (!style.MarginTop().IsAuto()) {
-      description->margin_top =
-          IntValueForLength(style.MarginTop(), description->size.height());
+      description.margin_top =
+          IntValueForLength(style.MarginTop(), description.size.height());
     }
     if (!style.MarginRight().IsAuto()) {
-      description->margin_right =
-          IntValueForLength(style.MarginRight(), description->size.width());
+      description.margin_right =
+          IntValueForLength(style.MarginRight(), description.size.width());
     }
     if (!style.MarginBottom().IsAuto()) {
-      description->margin_bottom =
-          IntValueForLength(style.MarginBottom(), description->size.height());
+      description.margin_bottom =
+          IntValueForLength(style.MarginBottom(), description.size.height());
     }
     if (!style.MarginLeft().IsAuto()) {
-      description->margin_left =
-          IntValueForLength(style.MarginLeft(), description->size.width());
+      description.margin_left =
+          IntValueForLength(style.MarginLeft(), description.size.width());
     }
   }
 
-  float page_area_width =
-      description->size.width() -
-      (description->margin_left + description->margin_right);
-  float page_area_height =
-      description->size.height() -
-      (description->margin_top + description->margin_bottom);
+  float page_area_width = description.size.width() -
+                          (description.margin_left + description.margin_right);
+  float page_area_height = description.size.height() -
+                           (description.margin_top + description.margin_bottom);
 
   if (page_area_width < 1 || page_area_height < 1) {
     // The resulting page area size would become zero (or very close to
     // it). Ignore CSS, and use the default values provided as input. There are
     // tests that currently expect this behavior. But see
     // https://github.com/w3c/csswg-drafts/issues/8335
-    *description = input_description;
+    description = print_params.default_page_description;
   }
 
-  description->orientation = style.GetPageOrientation();
+  description.orientation = style.GetPageOrientation();
+
+  return description;
 }
 
 void Document::SetIsXrOverlay(bool val, Element* overlay_element) {

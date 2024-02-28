@@ -62,8 +62,7 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
 
   blink::WebVector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));
-  gfx::Size spool_size =
-      web_frame->SpoolSizeInPixelsForTesting(print_params, pages);
+  gfx::Size spool_size = web_frame->SpoolSizeInPixelsForTesting(pages);
 
   bool is_opaque = false;
 
@@ -79,7 +78,7 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
                                   printing::PrintSettings::NewCookie());
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.SetPrintingMetafile(&metafile);
-  web_frame->PrintPagesForTesting(&canvas, print_params, spool_size, &pages);
+  web_frame->PrintPagesForTesting(&canvas, spool_size, &pages);
   web_frame->PrintEnd();
   return bitmap;
 }

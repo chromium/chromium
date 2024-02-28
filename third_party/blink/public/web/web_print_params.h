@@ -55,6 +55,15 @@ struct WebPrintParams {
   // Specifies the scale factor.
   float scale_factor = 1.0f;
 
+  // This will be set when the margins provided should be preserved, and not be
+  // overridden by @page margin declarations.
+  bool ignore_css_margins = false;
+
+  // This will be set when the page size provided should be preserved, and not
+  // be overridden by @page size declarations. Regardless of this setting,
+  // though, landscape / portrait will still be honored.
+  bool ignore_page_size = false;
+
   // Specifies whether to print PDFs as image.
   bool rasterize_pdf = false;
 

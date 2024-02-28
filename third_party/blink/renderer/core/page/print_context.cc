@@ -119,8 +119,7 @@ void PrintContext::BeginPrintMode(const WebPrintParams& print_params) {
 
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.
-  frame_->StartPrinting(print_params.default_page_description,
-                        maximum_shink_factor);
+  frame_->StartPrinting(print_params, maximum_shink_factor);
 }
 
 void PrintContext::EndPrintMode() {

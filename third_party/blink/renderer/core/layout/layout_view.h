@@ -25,7 +25,6 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
-#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
@@ -185,15 +184,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
                            const PhysicalOffset&) const override;
 
   bool IsFragmentationContextRoot() const override;
-
-  void SetDefaultPageDescription(const WebPrintPageDescription& description) {
-    NOT_DESTROYED();
-    default_page_description_ = description;
-  }
-  const WebPrintPageDescription& DefaultPageDescription() const {
-    NOT_DESTROYED();
-    return default_page_description_;
-  }
 
   void SetInitialContainingBlockSizeForPagination(PhysicalSize size) {
     NOT_DESTROYED();
@@ -371,9 +361,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
     NOT_DESTROYED();
     return false;
   }
-
-  // Default page description (size and margins):
-  WebPrintPageDescription default_page_description_;
 
   // The page area (content area) size of the first page, when printing.
   PhysicalSize initial_containing_block_size_for_pagination_;

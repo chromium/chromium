@@ -772,9 +772,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // size and margins in pixels, assuming 96 pixels per inch. The size and
   // margins must be initialized to the default values that are used if auto is
   // specified. Updates layout as needed to get the description.
-  void GetPageDescription(uint32_t page_index, WebPrintPageDescription*);
-  void GetPageDescriptionNoLifecycleUpdate(const ComputedStyle&,
-                                           WebPrintPageDescription*);
+  WebPrintPageDescription GetPageDescription(uint32_t page_index);
+  WebPrintPageDescription GetPageDescriptionNoLifecycleUpdate(
+      const ComputedStyle&);
 
   ResourceFetcher* Fetcher() const { return fetcher_.Get(); }
 

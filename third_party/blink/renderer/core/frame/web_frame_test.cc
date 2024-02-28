@@ -13595,8 +13595,7 @@ static void TestFramePrinting(WebLocalFrameImpl* frame) {
   WebPrintParams print_params((gfx::SizeF(page_size)));
   EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
   cc::PaintRecorder recorder;
-  frame->PrintPagesForTesting(recorder.beginRecording(), print_params,
-                              page_size);
+  frame->PrintPagesForTesting(recorder.beginRecording(), page_size);
   frame->PrintEnd();
 }
 
@@ -13660,8 +13659,7 @@ std::vector<TextRunDOMNodeIdInfo> GetPrintedTextRunDOMNodeIds(
 
   frame->PrintBegin(print_params, WebNode());
   cc::PaintRecorder recorder;
-  frame->PrintPagesForTesting(recorder.beginRecording(), print_params,
-                              page_size, pages);
+  frame->PrintPagesForTesting(recorder.beginRecording(), page_size, pages);
   frame->PrintEnd();
 
   cc::PaintRecord paint_record = recorder.finishRecordingAsPicture();
@@ -13817,8 +13815,9 @@ TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
   EXPECT_EQ(0, WebView().VisualViewportOffset().y());
 }
 
-TEST_F(WebFrameSimTest, GetPageSizeType) {
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 500));
+TEST_F(WebFrameSimTest, PageSizeType) {
+  gfx::Size page_size(500, 500);
+  WebView().MainFrameViewWidget()->Resize(page_size);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -13853,19 +13852,21 @@ TEST_F(WebFrameSimTest, GetPageSizeType) {
   CSSStyleDeclaration* style_decl =
       To<CSSPageRule>(sheet->cssRules(ASSERT_NO_EXCEPTION)->item(0))->style();
 
-  // GetPageSizeType() requires layout to be up-to-date.
-  WebView().MainFrameWidget()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
-
+  auto* frame = WebView().MainFrame()->ToWebLocalFrame();
+  WebPrintParams print_params((gfx::SizeF(page_size)));
+  frame->PrintBegin(print_params, WebNode());
   // Initially empty @page rule.
-  EXPECT_EQ(PageSizeType::kAuto, main_frame->GetPageSizeType(1));
+  EXPECT_EQ(PageSizeType::kAuto,
+            main_frame->GetPageDescription(1).page_size_type);
+  frame->PrintEnd();
 
   for (const auto& test : test_cases) {
     style_decl->setProperty(doc->GetExecutionContext(), "size", test.size, "",
                             ASSERT_NO_EXCEPTION);
-    WebView().MainFrameWidget()->UpdateAllLifecyclePhases(
-        DocumentUpdateReason::kTest);
-    EXPECT_EQ(test.page_size_type, main_frame->GetPageSizeType(1));
+    frame->PrintBegin(print_params, WebNode());
+    EXPECT_EQ(test.page_size_type,
+              main_frame->GetPageDescription(1).page_size_type);
+    frame->PrintEnd();
   }
 }
 
@@ -13901,18 +13902,16 @@ TEST_F(WebFrameSimTest, PageOrientation) {
   WebPrintParams print_params((gfx::SizeF(page_size)));
   EXPECT_EQ(4u, frame->PrintBegin(print_params, WebNode()));
 
-  WebPrintPageDescription description;
-
-  frame->GetPageDescription(0, &description);
+  WebPrintPageDescription description = frame->GetPageDescription(0);
   EXPECT_EQ(description.orientation, PageOrientation::kUpright);
 
-  frame->GetPageDescription(1, &description);
+  description = frame->GetPageDescription(1);
   EXPECT_EQ(description.orientation, PageOrientation::kRotateLeft);
 
-  frame->GetPageDescription(2, &description);
+  description = frame->GetPageDescription(2);
   EXPECT_EQ(description.orientation, PageOrientation::kRotateRight);
 
-  frame->GetPageDescription(3, &description);
+  description = frame->GetPageDescription(3);
   EXPECT_EQ(description.orientation, PageOrientation::kUpright);
 
   frame->PrintEnd();
