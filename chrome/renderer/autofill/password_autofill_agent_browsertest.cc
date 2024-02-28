@@ -2530,6 +2530,31 @@ TEST_F(PasswordAutofillAgentTest,
   base::RunLoop().RunUntilIdle();
 }
 
+// Tests that the popup is suppressed when the user selects address or payments
+// fallback even when the triggering field that is classified as password.
+TEST_F(PasswordAutofillAgentTest,
+       NoPopupOnPasswordFieldWhereAddressOrPaymentsManualFallbackWasSelected) {
+  SimulateOnFillPasswordForm(fill_data_);
+  // This call is necessary to setup the autofill agent appropriate for the
+  // user selection; simulates the menu actually popping up.
+  SimulatePointClick(gfx::Point(1, 1));
+
+  // No popup when using address/payment manual fallback.
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
+  autofill_agent_->TriggerSuggestions(
+      form_util::GetFieldRendererId(username_element_),
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  autofill_agent_->TriggerSuggestions(
+      form_util::GetFieldRendererId(username_element_),
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+
+  // However popup is shown otherwise.
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
+  autofill_agent_->TriggerSuggestions(
+      form_util::GetFieldRendererId(username_element_),
+      AutofillSuggestionTriggerSource::kTextFieldDidChange);
+}
+
 TEST_F(PasswordAutofillAgentTest,
        NoPopupOnPasswordFieldWithoutSuggestionsByDefault) {
   ClearUsernameAndPasswordFieldValues();
@@ -2539,7 +2564,6 @@ TEST_F(PasswordAutofillAgentTest,
   // what informs the agent whether it should show the popup even without
   // suggestions. In this test, that call hasn't happened yet, so the popup
   // should NOT show up without suggestions.
-
   SimulateElementClick(kPasswordName);
 
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
