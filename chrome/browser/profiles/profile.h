@@ -72,15 +72,6 @@ class ProfileObserver;
 // http://dev.chromium.org/developers/design-documents/profile-architecture
 class Profile : public content::BrowserContext {
  public:
-  enum CreateStatus {
-    // Profile services were not created due to a local error (e.g., disk full).
-    CREATE_STATUS_LOCAL_FAIL,
-    // Profile created but before initializing extensions and promo resources.
-    CREATE_STATUS_CREATED,
-    // Profile is created, extensions and promo resources are initialized.
-    CREATE_STATUS_INITIALIZED,
-  };
-
   enum CreateMode {
     CREATE_MODE_SYNCHRONOUS,
     CREATE_MODE_ASYNCHRONOUS
