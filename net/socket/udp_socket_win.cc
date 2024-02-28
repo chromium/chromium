@@ -66,6 +66,10 @@ class UDPSocketWin::Core : public base::RefCounted<Core> {
   // The buffers used in Read() and Write().
   scoped_refptr<IOBuffer> read_iobuffer_;
   scoped_refptr<IOBuffer> write_iobuffer_;
+  // The struct for packet metadata passed to WSARecvMsg().
+  std::unique_ptr<WSAMSG> read_message_ = nullptr;
+  // Big enough for IP_ECN or IPV6_ECN, nothing more.
+  char read_control_buffer_[WSA_CMSG_SPACE(sizeof(int))];
 
   // The address storage passed to WSARecvFrom().
   SockaddrStorage recv_addr_storage_;
@@ -589,21 +593,49 @@ int UDPSocketWin::SetDoNotFragment() {
   return rv == 0 ? OK : MapSystemError(WSAGetLastError());
 }
 
+LPFN_WSARECVMSG UDPSocketWin::GetRecvMsgPointer() {
+  LPFN_WSARECVMSG rv;
+  GUID message_code = WSAID_WSARECVMSG;
+  DWORD size;
+  if (WSAIoctl(socket_, SIO_GET_EXTENSION_FUNCTION_POINTER, &message_code,
+               sizeof(message_code), &rv, sizeof(rv), &size, NULL,
+               NULL) == SOCKET_ERROR) {
+    return nullptr;
+  }
+  return rv;
+}
+
+LPFN_WSASENDMSG UDPSocketWin::GetSendMsgPointer() {
+  LPFN_WSASENDMSG rv;
+  GUID message_code = WSAID_WSASENDMSG;
+  DWORD size;
+  if (WSAIoctl(socket_, SIO_GET_EXTENSION_FUNCTION_POINTER, &message_code,
+               sizeof(message_code), &rv, sizeof(rv), &size, NULL,
+               NULL) == SOCKET_ERROR) {
+    return nullptr;
+  }
+  return rv;
+}
+
 int UDPSocketWin::SetRecvTos() {
   DCHECK_NE(socket_, INVALID_SOCKET);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  int rv;
-  unsigned int ecn = 1;
-  if (addr_family_ == AF_INET6) {
-    rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_RECVTCLASS,
-                    reinterpret_cast<const char*>(&ecn), sizeof(ecn));
-  } else {
-    DCHECK_EQ(addr_family_, AF_INET);
-    rv = setsockopt(socket_, IPPROTO_IP, IP_RECVTOS,
-                    reinterpret_cast<const char*>(&ecn), sizeof(ecn));
+  int rv = WSASetRecvIPEcn(socket_, TRUE);
+  if (rv != 0) {
+    int os_error = WSAGetLastError();
+    int result = MapSystemError(os_error);
+    LogRead(result, nullptr, nullptr);
+    return result;
   }
-  return rv == 0 ? OK : MapSystemError(WSAGetLastError());
+  wsa_recv_msg_ = GetRecvMsgPointer();
+  if (wsa_recv_msg_ == nullptr) {
+    int os_error = WSAGetLastError();
+    int result = MapSystemError(os_error);
+    LogRead(result, nullptr, nullptr);
+    return result;
+  }
+  report_ecn_ = true;
+  return 0;
 }
 
 void UDPSocketWin::SetMsgConfirm(bool confirm) {}
@@ -671,9 +703,13 @@ void UDPSocketWin::DidCompleteRead() {
     } else {
       result = ERR_ADDRESS_INVALID;
     }
+    if (core_->read_message_ != nullptr) {
+      SetLastTosFromWSAMSG(*core_->read_message_);
+    }
   }
   LogRead(result, core_->read_iobuffer_->data(), address_to_log);
   core_->read_iobuffer_ = nullptr;
+  core_->read_message_ = nullptr;
   recv_from_address_ = nullptr;
   DoReadCallback(result);
 }
@@ -797,10 +833,50 @@ void UDPSocketWin::LogWrite(int result,
   }
 }
 
+void UDPSocketWin::PopulateWSAMSG(WSAMSG& message,
+                                  SockaddrStorage& storage,
+                                  WSABUF* data_buffer,
+                                  WSABUF& control_buffer,
+                                  bool send) {
+  bool is_ipv6 = addr_family_ == AF_INET6;
+  message.name = storage.addr;
+  message.namelen = storage.addr_len;
+  message.lpBuffers = data_buffer;
+  message.dwBufferCount = 1;
+  message.Control.buf = control_buffer.buf;
+  message.dwFlags = 0;
+  if (send) {
+    message.Control.len = 0;
+    WSACMSGHDR* cmsg;
+    message.Control.len += WSA_CMSG_SPACE(sizeof(int));
+    cmsg = WSA_CMSG_FIRSTHDR(&message);
+    cmsg->cmsg_len = WSA_CMSG_LEN(sizeof(int));
+    cmsg->cmsg_level = is_ipv6 ? IPPROTO_IPV6 : IPPROTO_IP;
+    cmsg->cmsg_type = is_ipv6 ? IPV6_ECN : IP_ECN;
+    *(int*)WSA_CMSG_DATA(cmsg) = static_cast<int>(send_ecn_);
+  } else {
+    message.Control.len = control_buffer.len;
+  }
+}
+
+void UDPSocketWin::SetLastTosFromWSAMSG(WSAMSG& message) {
+  int ecn = 0;
+  for (WSACMSGHDR* cmsg = WSA_CMSG_FIRSTHDR(&message); cmsg != NULL;
+       cmsg = WSA_CMSG_NXTHDR(&message, cmsg)) {
+    if ((cmsg->cmsg_level == IPPROTO_IPV6 && cmsg->cmsg_type == IPV6_ECN) ||
+        (cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_ECN)) {
+      ecn = *(int*)WSA_CMSG_DATA(cmsg);
+      break;
+    }
+  }
+  last_tos_.ecn = static_cast<EcnCodePoint>(ecn);
+}
+
 int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
                                              int buf_len,
                                              IPEndPoint* address) {
   DCHECK(!core_->read_iobuffer_.get());
+  DCHECK(!core_->read_message_.get());
   SockaddrStorage& storage = core_->recv_addr_storage_;
   storage.addr_len = sizeof(storage.addr_storage);
 
@@ -811,8 +887,26 @@ int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
   DWORD flags = 0;
   DWORD num;
   CHECK_NE(INVALID_SOCKET, socket_);
-  int rv = WSARecvFrom(socket_, &read_buffer, 1, &num, &flags, storage.addr,
-                       &storage.addr_len, &core_->read_overlapped_, nullptr);
+  int rv;
+  std::unique_ptr<WSAMSG> message;
+  if (report_ecn_) {
+    WSABUF control_buffer;
+    control_buffer.buf = core_->read_control_buffer_;
+    control_buffer.len = sizeof(core_->read_control_buffer_);
+    message = std::make_unique<WSAMSG>();
+    if (message == nullptr) {
+      return WSA_NOT_ENOUGH_MEMORY;
+    }
+    PopulateWSAMSG(*message, storage, &read_buffer, control_buffer, false);
+    rv = wsa_recv_msg_(socket_, message.get(), &num, &core_->read_overlapped_,
+                       nullptr);
+    if (rv == 0) {
+      SetLastTosFromWSAMSG(*message);
+    }
+  } else {
+    rv = WSARecvFrom(socket_, &read_buffer, 1, &num, &flags, storage.addr,
+                     &storage.addr_len, &core_->read_overlapped_, nullptr);
+  }
   if (rv == 0) {
     if (ResetEventIfSignaled(core_->read_overlapped_.hEvent)) {
       int result = num;
@@ -842,6 +936,7 @@ int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
   }
   core_->WatchForRead();
   core_->read_iobuffer_ = buf;
+  core_->read_message_ = std::move(message);
   return ERR_IO_PENDING;
 }
 
@@ -869,8 +964,20 @@ int UDPSocketWin::InternalSendToOverlapped(IOBuffer* buf,
 
   DWORD flags = 0;
   DWORD num;
-  int rv = WSASendTo(socket_, &write_buffer, 1, &num, flags, addr,
-                     storage.addr_len, &core_->write_overlapped_, nullptr);
+  int rv;
+  if (send_ecn_ != ECN_NOT_ECT) {
+    WSABUF control_buffer;
+    char raw_control_buffer[WSA_CMSG_SPACE(sizeof(int))];
+    control_buffer.buf = raw_control_buffer;
+    control_buffer.len = sizeof(raw_control_buffer);
+    WSAMSG message;
+    PopulateWSAMSG(message, storage, &write_buffer, control_buffer, true);
+    rv = wsa_send_msg_(socket_, &message, flags, &num,
+                       &core_->write_overlapped_, nullptr);
+  } else {
+    rv = WSASendTo(socket_, &write_buffer, 1, &num, flags, addr,
+                   storage.addr_len, &core_->write_overlapped_, nullptr);
+  }
   if (rv == 0) {
     if (ResetEventIfSignaled(core_->write_overlapped_.hEvent)) {
       int result = num;
@@ -899,8 +1006,29 @@ int UDPSocketWin::InternalRecvFromNonBlocking(IOBuffer* buf,
   storage.addr_len = sizeof(storage.addr_storage);
 
   CHECK_NE(INVALID_SOCKET, socket_);
-  int rv = recvfrom(socket_, buf->data(), buf_len, 0, storage.addr,
-                    &storage.addr_len);
+
+  int rv;
+  if (report_ecn_) {
+    WSABUF read_buffer;
+    read_buffer.buf = buf->data();
+    read_buffer.len = buf_len;
+    WSABUF control_buffer;
+    char raw_control_buffer[WSA_CMSG_SPACE(sizeof(INT))];
+    control_buffer.buf = raw_control_buffer;
+    control_buffer.len = sizeof(raw_control_buffer);
+    WSAMSG message;
+    DWORD bytes_read;
+    PopulateWSAMSG(message, storage, &read_buffer, control_buffer, false);
+    rv = wsa_recv_msg_(socket_, &message, &bytes_read, nullptr, nullptr);
+    SetLastTosFromWSAMSG(message);
+    if (rv == 0) {
+      rv = bytes_read;  // WSARecvMsg() returns zero on delivery, but recvfrom
+                        // returns the number of bytes received.
+    }
+  } else {
+    rv = recvfrom(socket_, buf->data(), buf_len, 0, storage.addr,
+                  &storage.addr_len);
+  }
   if (rv == SOCKET_ERROR) {
     int os_error = WSAGetLastError();
     if (os_error == WSAEWOULDBLOCK) {
@@ -946,7 +1074,25 @@ int UDPSocketWin::InternalSendToNonBlocking(IOBuffer* buf,
     storage.addr_len = 0;
   }
 
-  int rv = sendto(socket_, buf->data(), buf_len, 0, addr, storage.addr_len);
+  int rv;
+  if (send_ecn_ != ECN_NOT_ECT) {
+    char raw_control_buffer[WSA_CMSG_SPACE(sizeof(INT))];
+    WSABUF write_buffer;
+    write_buffer.buf = buf->data();
+    write_buffer.len = buf_len;
+    WSABUF control_buffer;
+    control_buffer.buf = raw_control_buffer;
+    control_buffer.len = sizeof(raw_control_buffer);
+    WSAMSG message;
+    DWORD bytes_read;
+    PopulateWSAMSG(message, storage, &write_buffer, control_buffer, true);
+    rv = wsa_send_msg_(socket_, &message, 0, &bytes_read, nullptr, nullptr);
+    if (rv == 0) {
+      rv = bytes_read;
+    }
+  } else {
+    rv = sendto(socket_, buf->data(), buf_len, 0, addr, storage.addr_len);
+  }
   if (rv == SOCKET_ERROR) {
     int os_error = WSAGetLastError();
     if (os_error == WSAEWOULDBLOCK) {
@@ -1191,30 +1337,40 @@ QOS_TRAFFIC_TYPE DscpToTrafficType(DiffServCodePoint dscp) {
 }
 
 int UDPSocketWin::SetDiffServCodePoint(DiffServCodePoint dscp) {
-  if (dscp == DSCP_NO_CHANGE)
-    return OK;
+  return SetTos(dscp, ECN_NO_CHANGE);
+}
 
+int UDPSocketWin::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
   if (!is_connected())
     return ERR_SOCKET_NOT_CONNECTED;
 
-  QwaveApi* api = GetQwaveApi();
+  if (dscp != DSCP_NO_CHANGE) {
+    QwaveApi* api = GetQwaveApi();
 
-  if (!api->qwave_supported())
-    return ERR_NOT_IMPLEMENTED;
+    if (!api->qwave_supported()) {
+      return ERR_NOT_IMPLEMENTED;
+    }
 
-  if (!dscp_manager_)
-    dscp_manager_ = std::make_unique<DscpManager>(api, socket_);
+    if (!dscp_manager_) {
+      dscp_manager_ = std::make_unique<DscpManager>(api, socket_);
+    }
 
-  dscp_manager_->Set(dscp);
-  if (remote_address_)
-    return dscp_manager_->PrepareForSend(*remote_address_.get());
-
+    dscp_manager_->Set(dscp);
+    if (remote_address_) {
+      int rv = dscp_manager_->PrepareForSend(*remote_address_.get());
+      if (rv != OK) {
+        return rv;
+      }
+    }
+  }
+  if (ecn == ECN_NO_CHANGE) {
+    return OK;
+  }
+  if (wsa_send_msg_ == nullptr) {
+    wsa_send_msg_ = GetSendMsgPointer();
+  }
+  send_ecn_ = ecn;
   return OK;
-}
-
-// TODO(crbug.com/1521435): a stub for future ECN support in Windows.
-int UDPSocketWin::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
-  return SetDiffServCodePoint(dscp);
 }
 
 int UDPSocketWin::SetIPv6Only(bool ipv6_only) {
