@@ -32,12 +32,12 @@ suite('SeaPen reducers', () => {
     assertDeepEquals(
         [
           beginLoadRecentSeaPenImagesAction(),
-          setRecentSeaPenImagesAction(seaPenProvider.recentImages),
+          setRecentSeaPenImagesAction(seaPenProvider.recentImageIds),
         ],
         personalizationStore.actions, 'recent images action');
 
     assertDeepEquals(
-        seaPenProvider.recentImages,
+        seaPenProvider.recentImageIds,
         personalizationStore.data.wallpaper.seaPen.recentImages,
         'recent images set in store');
   });

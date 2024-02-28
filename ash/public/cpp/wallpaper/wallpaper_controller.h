@@ -250,20 +250,20 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Calls `callback` with boolean success. Can fail if `account_id` is not
   // allowed to set wallpaper, or the image failed to decode.
   virtual void SetSeaPenWallpaperFromFile(const AccountId& account_id,
-                                          const base::FilePath& file_path,
+                                          uint32_t id,
                                           SetWallpaperCallback callback) = 0;
 
-  // Extracts SeaPen metadata from a image `file_path`. Calls `callback` with
-  // the extracted data. Will run `callback`with std::nullopt if the
-  // `file_path`does not exist or reading metadata fails.
+  // Extracts SeaPen metadata from the saved image with `id`. Calls `callback`
+  // with the extracted data. Will run `callback`with std::nullopt if the `id`
+  // does not exist or reading metadata fails.
   virtual void GetSeaPenMetadata(const AccountId& account_id,
-                                 const base::FilePath& file_path,
+                                 uint32_t id,
                                  GetSeaPenMetadataCallback callback) = 0;
 
   // Removes the selected Sea Pen image from Sea Pen directory.
   virtual void DeleteRecentSeaPenImage(
       const AccountId& account_id,
-      const base::FilePath& file_path,
+      uint32_t id,
       DeleteRecentSeaPenImageCallback callback) = 0;
 
   // Confirms the wallpaper being previewed to be set as the actual user

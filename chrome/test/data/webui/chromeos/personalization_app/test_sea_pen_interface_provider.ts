@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {RecentSeaPenData} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSeaPenProvider extends TestBrowserProxy implements
@@ -28,22 +30,22 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     },
   ];
 
-  recentImages: FilePath[] = [
-    {path: '/sea_pen/111.jpg'},
-    {path: '/sea_pen/222.jpg'},
-    {path: '/sea_pen/333.jpg'},
+  recentImageIds: SeaPenImageId[] = [
+    111,
+    222,
+    333,
   ];
 
-  recentImageData: Record<string, RecentSeaPenData> = {
-    '/sea_pen/111.jpg': {
+  recentImageData: Record<SeaPenImageId, RecentSeaPenData> = {
+    111: {
       url: {url: 'data:image/jpeg;base64,image111data'},
       queryInfo: 'query 1',
     },
-    '/sea_pen/222.jpg': {
+    222: {
       url: {url: 'data:image/jpeg;base64,image222data'},
       queryInfo: 'query 2',
     },
-    '/sea_pen/333.jpg': {
+    333: {
       url: {url: 'data:image/jpeg;base64,image333data'},
       queryInfo: 'query 3',
     },
@@ -76,29 +78,37 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
     });
   }
 
-  selectSeaPenThumbnail(id: number) {
+  selectSeaPenThumbnail(id: SeaPenImageId) {
+    assertTrue(
+        isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
     this.methodCalled('selectSeaPenThumbnail', id);
     return this.selectSeaPenThumbnailResponse;
   }
 
-  selectRecentSeaPenImage(filePath: FilePath) {
-    this.methodCalled('selectRecentSeaPenImage', filePath);
+  selectRecentSeaPenImage(id: SeaPenImageId) {
+    assertTrue(
+        isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
+    this.methodCalled('selectRecentSeaPenImage', id);
     return Promise.resolve({success: true});
   }
 
   getRecentSeaPenImages() {
     this.methodCalled('getRecentSeaPenImages');
-    return Promise.resolve({images: this.recentImages});
+    return Promise.resolve({ids: this.recentImageIds});
   }
 
-  getRecentSeaPenImageThumbnail(filePath: FilePath) {
-    this.methodCalled('getRecentSeaPenImageThumbnail', filePath);
-    return Promise.resolve({url: this.recentImageData[filePath.path]!.url});
+  getRecentSeaPenImageThumbnail(id: SeaPenImageId) {
+    assertTrue(
+        isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
+    this.methodCalled('getRecentSeaPenImageThumbnail', id);
+    return Promise.resolve({url: this.recentImageData[id]!.url});
   }
 
-  deleteRecentSeaPenImage(filePath: FilePath) {
-    this.methodCalled('deleteRecentSeaPenImage', filePath);
-    this.recentImages.splice(this.recentImages.indexOf(filePath), 1);
+  deleteRecentSeaPenImage(id: SeaPenImageId) {
+    assertTrue(
+        isSeaPenImageId(id), `id must be SeaPenImageId but received: ${id}`);
+    this.methodCalled('deleteRecentSeaPenImage', id);
+    this.recentImageIds = this.recentImageIds.filter(x => x !== id);
     return Promise.resolve({success: true});
   }
 

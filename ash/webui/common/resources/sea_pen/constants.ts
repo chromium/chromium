@@ -10,6 +10,10 @@ import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_
 
 export type Query = 'Query';
 
+// SeaPen images are identified by a positive integer. For a newly generated
+// thumbnail, this is `SeaPenThumbnail.id`.
+export type SeaPenImageId = number;
+
 /**
  * An interface for the data of a recent sea pen image.
  */

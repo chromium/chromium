@@ -269,10 +269,10 @@ class PersonalizationAppWallpaperProviderImpl
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
 
-  void FindSeaPenWallpaperAttribution(const base::FilePath& user_file_path);
+  void FindSeaPenWallpaperAttribution(uint32_t id);
 
   void SendSeaPenWallpaperAttribution(
-      const base::FilePath& user_file_path,
+      uint32_t id,
       std::optional<base::Value::Dict> sea_pen_metadata);
 
   void SendGooglePhotosAttribution(

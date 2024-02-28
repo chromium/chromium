@@ -5,11 +5,15 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_UTILS_SEA_PEN_METADATA_UTILS_H_
 #define ASH_WALLPAPER_WALLPAPER_UTILS_SEA_PEN_METADATA_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
+#include "base/files/file_path.h"
 #include "base/values.h"
 
 namespace ash {
@@ -51,6 +55,19 @@ ASH_EXPORT std::string QueryDictToXmpString(
 // RecentSeaPenImageInfo.
 ASH_EXPORT personalization_app::mojom::RecentSeaPenImageInfoPtr
 SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& query_dict);
+
+// Extract the id from a sea pen file name. SeaPen images must be saved to disk
+// as `/path/to/file/{id}.jpg` where id is a positive integer. `file_path` can
+// either include or omit the extension, and can include or omit leading
+// directories.
+ASH_EXPORT std::optional<uint32_t> GetIdFromFileName(
+    const base::FilePath& file_path);
+
+// Extract the valid ids from a vector of file paths. Filters out invalid
+// FilePaths, so may return a smaller vector than the input.
+ASH_EXPORT std::vector<uint32_t> GetIdsFromFilePaths(
+    const std::vector<base::FilePath>& file_paths);
+
 }  // namespace ash
 
 #endif  // ASH_WALLPAPER_WALLPAPER_UTILS_SEA_PEN_METADATA_UTILS_H_

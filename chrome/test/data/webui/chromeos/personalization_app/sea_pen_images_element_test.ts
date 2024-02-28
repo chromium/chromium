@@ -124,7 +124,7 @@ suite('SeaPenImagesElementTest', function() {
         seaPenProvider.images;
     // Index 1 is currently set as wallpaper.
     personalizationStore.data.wallpaper.seaPen.currentSelected =
-        `${seaPenProvider.images[1]!.id}.jpg`;
+        seaPenProvider.images[1]!.id;
 
     seaPenImagesElement = initElement(SeaPenImagesElement);
     await waitAfterNextRender(seaPenImagesElement);
@@ -198,8 +198,8 @@ suite('SeaPenImagesElementTest', function() {
     selectSeaPenThumbnailResolver.resolve({success: true});
     await waitAfterNextRender(seaPenImagesElement);
     // Simulate receiving a confirmation that the sea pen image was selected.
-    personalizationStore.dispatch(setSelectedRecentSeaPenImageAction(
-        `/files/${seaPenProvider.images[0]!.id}.jpg`));
+    personalizationStore.dispatch(
+        setSelectedRecentSeaPenImageAction(seaPenProvider.images[0]!.id));
     await waitAfterNextRender(seaPenImagesElement);
 
     thumbnails = getWallpaperGridItems();

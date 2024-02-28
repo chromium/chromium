@@ -64,7 +64,7 @@ suite('WallpaperObserverTest', function() {
     const selectedSeaPenWallpaper = {
       descriptionContent: 'test content',
       descriptionTitle: 'test title',
-      key: '/test/seapen/111.jpg',
+      key: '111',
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kSeaPen,
     };
@@ -84,7 +84,44 @@ suite('WallpaperObserverTest', function() {
                       SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE) as
         SetSelectedRecentSeaPenImageAction;
 
-    assertEquals(selectedSeaPenWallpaper.key, key, 'selected key should match');
+    assertEquals(
+        parseInt(selectedSeaPenWallpaper.key, 10), key,
+        'selected key should match');
+  });
+
+  test('sets sea pen wallpaper null if not integer >= 0', async () => {
+    // Make sure state starts as expected.
+    assertDeepEquals(emptyState(), personalizationStore.data);
+
+    for (const value
+             of ['1.5', '-23', 'not a number', `${Number.POSITIVE_INFINITY}`]) {
+      const selectedSeaPenWallpaper = {
+        descriptionContent: 'test content',
+        descriptionTitle: 'test title',
+        key: value,
+        layout: WallpaperLayout.kCenter,
+        type: WallpaperType.kSeaPen,
+      };
+
+      personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
+      personalizationStore.expectAction(
+          SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE);
+
+      wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
+          selectedSeaPenWallpaper);
+
+      const {image} =
+          await personalizationStore.waitForAction(
+              WallpaperActionName.SET_SELECTED_IMAGE) as SetSelectedImageAction;
+      assertDeepEquals(
+          selectedSeaPenWallpaper, image,
+          'selected image should be a SeaPen image');
+
+      const {key} = await personalizationStore.waitForAction(
+                        SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE) as
+          SetSelectedRecentSeaPenImageAction;
+      assertEquals(null, key, 'sea pen selected set to null');
+    }
   });
 
   test('sets selected wallpaper if null', async () => {

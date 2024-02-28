@@ -14,9 +14,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -376,28 +378,33 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
       scoped_temp_dir.GetPath().Append("sea_pen").Append(
           GetTestAccountId().GetAccountIdKey());
   ASSERT_TRUE(base::CreateDirectory(sea_pen_dir1));
-  base::FilePath sea_pen_file_path1 = sea_pen_dir1.Append("111.jpg");
-  ASSERT_TRUE(base::WriteFile(sea_pen_file_path1, "test image 1"));
-  base::FilePath sea_pen_file_path2 = sea_pen_dir1.Append("222.jpg");
-  ASSERT_TRUE(base::WriteFile(sea_pen_file_path2, "test image 2"));
+  uint32_t sea_pen_id_1 = 111;
+  base::FilePath sea_pen_file_path_1 =
+      sea_pen_dir1.Append(base::NumberToString(sea_pen_id_1))
+          .AddExtension(".jpg");
+  ASSERT_TRUE(base::WriteFile(sea_pen_file_path_1, "test image 1"));
+  uint32_t sea_pen_id_2 = 222;
+  base::FilePath sea_pen_file_path_2 =
+      sea_pen_dir1.Append(base::NumberToString(sea_pen_id_2))
+          .AddExtension(".jpg");
+  ASSERT_TRUE(base::WriteFile(sea_pen_file_path_2, "test image 2"));
 
-  base::test::TestFuture<const std::vector<base::FilePath>&>
-      recent_images_future;
+  base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
   sea_pen_provider_remote()->GetRecentSeaPenImages(
       recent_images_future.GetCallback());
 
-  std::vector<base::FilePath> recent_images = recent_images_future.Take();
-  ASSERT_EQ(2u, recent_images.size());
-  EXPECT_TRUE(base::Contains(recent_images, sea_pen_file_path1));
-  EXPECT_TRUE(base::Contains(recent_images, sea_pen_file_path2));
+  std::vector<uint32_t> recent_images = recent_images_future.Take();
+  EXPECT_THAT(recent_images,
+              testing::UnorderedElementsAre(sea_pen_id_1, sea_pen_id_2));
 
   // Log in the second user, get the list of recent images.
   SetUpProfileForTesting(kFakeTestEmail2, GetTestAccountId2());
   sea_pen_provider_remote()->GetRecentSeaPenImages(
       recent_images_future.GetCallback());
   ASSERT_EQ(0u, recent_images_future.Take().size());
-  ASSERT_TRUE(base::PathExists(sea_pen_file_path1));
-  ASSERT_TRUE(base::PathExists(sea_pen_file_path2));
+  // The images still exist in first user's folder.
+  ASSERT_TRUE(base::PathExists(sea_pen_file_path_1));
+  ASSERT_TRUE(base::PathExists(sea_pen_file_path_2));
 
   // Create an image in the Sea Pen directory for second user, then get the list
   // of recent images again.
@@ -405,14 +412,16 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
       scoped_temp_dir.GetPath().Append("sea_pen").Append(
           GetTestAccountId2().GetAccountIdKey());
   ASSERT_TRUE(base::CreateDirectory(sea_pen_dir2));
-  base::FilePath sea_pen_file_path3 = sea_pen_dir2.Append("111.jpg");
-  ASSERT_TRUE(base::WriteFile(sea_pen_file_path3, "test image 3"));
+  uint32_t sea_pen_id_3 = 111;
+  base::FilePath sea_pen_file_path_3 =
+      sea_pen_dir2.Append(base::NumberToString(111)).AddExtension(".jpg");
+  ASSERT_TRUE(base::WriteFile(sea_pen_file_path_3, "test image 3"));
 
   sea_pen_provider_remote()->GetRecentSeaPenImages(
       recent_images_future.GetCallback());
   recent_images = recent_images_future.Take();
-  ASSERT_EQ(1u, recent_images.size());
-  EXPECT_TRUE(base::Contains(recent_images, sea_pen_file_path3));
+  EXPECT_THAT(recent_images,
+              testing::ContainerEq(std::vector<uint32_t>({sea_pen_id_3})));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,

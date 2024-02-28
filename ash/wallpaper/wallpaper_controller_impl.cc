@@ -63,6 +63,7 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -173,6 +174,12 @@ base::FilePath GetUserSeaPenWallpaperDir(const AccountId& account_id) {
   DCHECK(account_id.HasAccountIdKey());
   return GlobalChromeOSSeaPenWallpapersDir().Append(
       account_id.GetAccountIdKey());
+}
+
+base::FilePath GetSeaPenFilePathFromId(const AccountId& account_id,
+                                       uint32_t id) {
+  auto directory = GetUserSeaPenWallpaperDir(account_id);
+  return directory.Append(base::NumberToString(id)).AddExtension(".jpg");
 }
 
 // Returns wallpaper subdirectory name for current resolution.
@@ -1120,10 +1127,8 @@ void WallpaperControllerImpl::SetSeaPenWallpaper(
     return;
   }
 
-  const std::string sea_pen_file_name =
-      base::NumberToString(sea_pen_image.id) + ".jpg";
   const base::FilePath sea_pen_wallpaper_path =
-      GetUserSeaPenWallpaperDir(account_id).Append(sea_pen_file_name);
+      GetSeaPenFilePathFromId(account_id, sea_pen_image.id);
 
   sea_pen_wallpaper_manager_.DecodeAndSaveSeaPenImage(
       sea_pen_image, GetUserSeaPenWallpaperDir(account_id), query,
@@ -1134,7 +1139,7 @@ void WallpaperControllerImpl::SetSeaPenWallpaper(
 
 void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
     const AccountId& account_id,
-    const base::FilePath& file_path,
+    const uint32_t id,
     SetWallpaperCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(account_id)) {
@@ -1145,6 +1150,7 @@ void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
     return;
   }
 
+  const base::FilePath file_path = GetSeaPenFilePathFromId(account_id, id);
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   wallpaper_file_manager_->LoadWallpaper(
@@ -1156,28 +1162,23 @@ void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
 
 void WallpaperControllerImpl::GetSeaPenMetadata(
     const AccountId& account_id,
-    const base::FilePath& file_path,
+    const uint32_t id,
     GetSeaPenMetadataCallback callback) {
-  if (!GetUserSeaPenWallpaperDir(account_id).IsParent(file_path)) {
-    LOG(WARNING) << "Called " << __func__
-                 << " on invalid file path: " << file_path;
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  wallpaper_file_manager_->GetSeaPenMetadata(file_path, std::move(callback));
+  wallpaper_file_manager_->GetSeaPenMetadata(
+      GetSeaPenFilePathFromId(account_id, id), std::move(callback));
 }
 
 void WallpaperControllerImpl::DeleteRecentSeaPenImage(
     const AccountId& account_id,
-    const base::FilePath& file_path,
+    const uint32_t id,
     DeleteRecentSeaPenImageCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(account_id)) {
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  wallpaper_file_manager_->RemoveImageFromDisk(std::move(callback), file_path);
+  wallpaper_file_manager_->RemoveImageFromDisk(
+      std::move(callback), GetSeaPenFilePathFromId(account_id, id));
 }
 
 void WallpaperControllerImpl::ConfirmPreviewWallpaper() {

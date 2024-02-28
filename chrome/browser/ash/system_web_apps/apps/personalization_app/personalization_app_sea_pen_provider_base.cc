@@ -101,7 +101,7 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
   // Get high resolution image.
   const auto it = sea_pen_images_.find(id);
   if (it == sea_pen_images_.end()) {
-    sea_pen_receiver_.ReportBadMessage("Unknown wallpaper image selected");
+    sea_pen_receiver_.ReportBadMessage("Unknown sea pen image selected");
     return;
   }
 
@@ -118,10 +118,10 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
-    const base::FilePath& path,
+    const uint32_t id,
     SelectRecentSeaPenImageCallback callback) {
-  if (recent_sea_pen_images_.count(path) == 0) {
-    sea_pen_receiver_.ReportBadMessage("Unknown wallpaper image selected");
+  if (recent_sea_pen_image_ids_.count(id) == 0) {
+    sea_pen_receiver_.ReportBadMessage("Unknown recent sea pen image selected");
     return;
   }
 
@@ -133,7 +133,7 @@ void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
   pending_select_recent_sea_pen_image_callback_ = std::move(callback);
 
   SelectRecentSeaPenImageInternal(
-      path,
+      id,
       base::BindOnce(
           &PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected,
           weak_ptr_factory_.GetWeakPtr()));
@@ -147,19 +147,18 @@ void PersonalizationAppSeaPenProviderBase::GetRecentSeaPenImages(
 }
 
 void PersonalizationAppSeaPenProviderBase::GetRecentSeaPenImageThumbnail(
-    const base::FilePath& path,
+    const uint32_t id,
     GetRecentSeaPenImageThumbnailCallback callback) {
-  if (recent_sea_pen_images_.count(path) == 0) {
+  if (recent_sea_pen_image_ids_.count(id) == 0) {
     LOG(ERROR) << __func__ << " Invalid sea pen image received";
     std::move(callback).Run(GURL());
     return;
   }
 
   GetRecentSeaPenImageThumbnailInternal(
-      path,
-      base::BindOnce(&PersonalizationAppSeaPenProviderBase::
-                         OnGetRecentSeaPenImageThumbnail,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      id, base::BindOnce(&PersonalizationAppSeaPenProviderBase::
+                             OnGetRecentSeaPenImageThumbnail,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 wallpaper_handlers::SeaPenFetcher*
@@ -211,10 +210,9 @@ void PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected(
 
 void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImages(
     GetRecentSeaPenImagesCallback callback,
-    const std::vector<base::FilePath>& images) {
-  recent_sea_pen_images_ =
-      std::set<base::FilePath>(images.begin(), images.end());
-  std::move(callback).Run(images);
+    const std::vector<uint32_t>& ids) {
+  recent_sea_pen_image_ids_ = std::set<uint32_t>(ids.begin(), ids.end());
+  std::move(callback).Run(ids);
 }
 
 void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(

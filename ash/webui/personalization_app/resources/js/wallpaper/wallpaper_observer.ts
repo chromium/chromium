@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {setSelectedRecentSeaPenImageAction} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 
 import {CurrentAttribution, CurrentWallpaper, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
@@ -10,6 +12,17 @@ import {PersonalizationStore} from '../personalization_store.js';
 import {setAttributionAction, setFullscreenEnabledAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './wallpaper_actions.js';
 import {getDailyRefreshState} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+
+function parseSeaPenImageIdOrNull(str: string): SeaPenImageId|null {
+  // Use `parseFloat` even though `str` is expected to be an integer because
+  // `parseInt` will discard everything after a decimal point.
+  const parsed = parseFloat(str);
+  if (!isSeaPenImageId(parsed)) {
+    console.warn('Unable to parse to SeaPenImageId:', str);
+    return null;
+  }
+  return parsed;
+}
 
 let instance: WallpaperObserver|null = null;
 let initialLoadTimeout: number|null = null;
@@ -79,7 +92,8 @@ export class WallpaperObserver implements WallpaperObserverInterface {
     store.dispatch(setSelectedImageAction(currentWallpaper));
 
     if (currentWallpaper && currentWallpaper.type == WallpaperType.kSeaPen) {
-      store.dispatch(setSelectedRecentSeaPenImageAction(currentWallpaper.key));
+      store.dispatch(setSelectedRecentSeaPenImageAction(
+          parseSeaPenImageIdOrNull(currentWallpaper.key)));
     } else {
       store.dispatch(setSelectedRecentSeaPenImageAction(null));
     }

@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {RecentSeaPenData} from './constants.js';
+import {RecentSeaPenData, SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';
 import {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
@@ -29,20 +28,19 @@ function loadingReducer(
         recentImages: true,
       };
     case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
-      const newRecentImages: FilePath[] =
+      const newRecentImages: SeaPenImageId[] =
           Array.isArray(action.recentImages) ? action.recentImages : [];
       // Only keep loading state for most recent Sea Pen images.
       return {
         ...state,
         recentImageData: newRecentImages.reduce(
             (result, next) => {
-              const path = next.path;
-              if (state.recentImageData.hasOwnProperty(path)) {
-                result[path] = state.recentImageData[path];
+              if (state.recentImageData.hasOwnProperty(next)) {
+                result[next] = state.recentImageData[next];
               }
               return result;
             },
-            {} as Record<FilePath['path'], boolean>),
+            {} as Record<SeaPenImageId, boolean>),
         // Recent image list is done loading.
         recentImages: false,
       };
@@ -63,24 +61,15 @@ function loadingReducer(
         },
       };
     case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
-      return {
-        ...state,
-        setImage: state.setImage + 1,
-      };
+      return {...state, setImage: state.setImage + 1};
     case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
     case SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL:
       if (state.setImage <= 0) {
         console.error('Impossible state for loading.setImage');
         // Reset to 0.
-        return {
-          ...state,
-          setImage: 0,
-        };
+        return {...state, setImage: 0};
       }
-      return {
-        ...state,
-        setImage: state.setImage - 1,
-      };
+      return {...state, setImage: state.setImage - 1};
     case SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE:
       return {
         ...state,
@@ -113,7 +102,7 @@ function thumbnailResponseStatusCodeReducer(
 }
 
 function currentSelectedReducer(
-    state: string|null, action: SeaPenActions): string|null {
+    state: SeaPenImageId|null, action: SeaPenActions): SeaPenImageId|null {
   switch (action.name) {
     case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
       return action.key;
@@ -133,11 +122,11 @@ function currentSelectedReducer(
  * selected state.
  */
 function pendingSelectedReducer(
-    state: FilePath|SeaPenThumbnail|null, action: SeaPenActions,
-    globalState: SeaPenState): FilePath|SeaPenThumbnail|null {
+    state: SeaPenImageId|SeaPenThumbnail|null, action: SeaPenActions,
+    globalState: SeaPenState): SeaPenImageId|SeaPenThumbnail|null {
   switch (action.name) {
     case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
-      return action.image;
+      return action.id;
     case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
       const {key} = action;
       if (state && !key) {
@@ -165,7 +154,7 @@ function pendingSelectedReducer(
 }
 
 function recentImagesReducer(
-    state: FilePath[]|null, action: SeaPenActions): FilePath[]|null {
+    state: SeaPenImageId[]|null, action: SeaPenActions): SeaPenImageId[]|null {
   switch (action.name) {
     case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
       return action.recentImages;
@@ -175,16 +164,15 @@ function recentImagesReducer(
 }
 
 function recentImageDataReducer(
-    state: Record<FilePath['path'], RecentSeaPenData>,
-    action: SeaPenActions): Record<FilePath['path'], RecentSeaPenData> {
+    state: Record<SeaPenImageId, RecentSeaPenData>,
+    action: SeaPenActions): Record<SeaPenImageId, RecentSeaPenData> {
   switch (action.name) {
     case SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES:
-      const newRecentImages: FilePath[] =
+      const newRecentImages: SeaPenImageId[] =
           Array.isArray(action.recentImages) ? action.recentImages : [];
-      return newRecentImages.reduce((result, next) => {
-        const key = next.path;
-        if (key && state.hasOwnProperty(key)) {
-          result[key] = state[key];
+      return newRecentImages.reduce((result, id) => {
+        if (id && state.hasOwnProperty(id)) {
+          result[id] = state[id];
         }
         return result;
       }, {} as typeof state);

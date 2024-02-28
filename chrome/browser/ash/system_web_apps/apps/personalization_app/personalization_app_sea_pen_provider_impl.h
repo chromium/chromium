@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
-#include "base/files/file_path.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -40,20 +39,20 @@ class PersonalizationAppSeaPenProviderImpl
 
   // ::ash::personalization_app::mojom::SeaPenProvider:
   void DeleteRecentSeaPenImage(
-      const base::FilePath& path,
+      uint32_t id,
       DeleteRecentSeaPenImageCallback callback) override;
 
  private:
   // ::ash::personalization_app::PersonalizationAppSeaPenProviderBase:
   void SelectRecentSeaPenImageInternal(
-      const base::FilePath& path,
+      uint32_t id,
       SelectRecentSeaPenImageCallback callback) override;
 
   void GetRecentSeaPenImagesInternal(
       GetRecentSeaPenImagesCallback callback) override;
 
   void GetRecentSeaPenImageThumbnailInternal(
-      const base::FilePath& path,
+      uint32_t id,
       DecodeImageCallback callback) override;
 
   void OnFetchWallpaperDoneInternal(

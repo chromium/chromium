@@ -843,7 +843,7 @@ class WallpaperControllerTestBase : public AshTestBase {
     RunAllTasksUntilIdle();
   }
 
-  void SetSeaPenWallpaper(gfx::ImageSkia* image, SkColor color) {
+  void SetSeaPenWallpaper(gfx::ImageSkia* image, SkColor color, uint32_t id) {
     TestWallpaperControllerObserver observer(controller_);
     std::string jpg_bytes = CreateEncodedImageForTesting(
         {1, 1}, color, data_decoder::mojom::ImageCodec::kDefault, image);
@@ -851,7 +851,7 @@ class WallpaperControllerTestBase : public AshTestBase {
 
     base::test::TestFuture<bool> set_wallpaper_future;
     controller_->SetSeaPenWallpaper(
-        kAccountId1, {std::move(jpg_bytes), /*id=*/5},
+        kAccountId1, {std::move(jpg_bytes), id},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("search_query"),
         set_wallpaper_future.GetCallback());
 
@@ -2085,10 +2085,18 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaper) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
 
   gfx::ImageSkia expected_image;
-  SetSeaPenWallpaper(&expected_image, SK_ColorGREEN);
+  SetSeaPenWallpaper(&expected_image, SK_ColorGREEN, /*id=*/777u);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+  EXPECT_EQ("777", wallpaper_info.location);
+  EXPECT_EQ(online_wallpaper_dir_.GetPath()
+                .Append("sea_pen")
+                .Append(kAccountId1.GetAccountIdKey())
+                .Append("777")
+                .AddExtension(".jpg")
+                .value(),
+            wallpaper_info.user_file_path);
 
   // Use `AreBitmapsClose` because jpg encoding/decoding can alter the color
   // channels +- 1.
@@ -2105,10 +2113,18 @@ TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
 
   gfx::ImageSkia expected_image;
-  SetSeaPenWallpaper(&expected_image, SK_ColorBLUE);
+  SetSeaPenWallpaper(&expected_image, SK_ColorBLUE, 888u);
   EXPECT_TRUE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
   EXPECT_EQ(WallpaperType::kSeaPen, wallpaper_info.type);
+  EXPECT_EQ("888", wallpaper_info.location);
+  EXPECT_EQ(online_wallpaper_dir_.GetPath()
+                .Append("sea_pen")
+                .Append(kAccountId1.GetAccountIdKey())
+                .Append("888")
+                .AddExtension(".jpg")
+                .value(),
+            wallpaper_info.user_file_path);
 
   // Simulates device reboot.
   controller_->ReloadWallpaperForTesting(/*clear_cache=*/true);
@@ -2158,7 +2174,7 @@ TEST_P(WallpaperControllerTest, DISABLED_SetSeaPenWallpaperFromFile) {
   base::Time old_last_modified_time = GetLastModifiedTime(file_path);
 
   base::test::TestFuture<bool> set_wallpaper_future;
-  controller_->SetSeaPenWallpaperFromFile(kAccountId1, file_path,
+  controller_->SetSeaPenWallpaperFromFile(kAccountId1, 111u,
                                           set_wallpaper_future.GetCallback());
 
   EXPECT_TRUE(set_wallpaper_future.Take());
@@ -2459,20 +2475,41 @@ TEST_P(WallpaperControllerTest, SetDefaultWallpaperCallbackTiming) {
 }
 
 TEST_P(WallpaperControllerTest, DeleteRecentSeaPenImage) {
-  SimulateUserLogin(kAccountId1);
-  TestWallpaperControllerObserver observer(controller_);
+  {
+    // File does not exist yet. Deleting it should fail.
+    base::test::TestFuture<bool> delete_sea_pen_image_future;
+    controller_->DeleteRecentSeaPenImage(
+        kAccountId1, 111u, delete_sea_pen_image_future.GetCallback());
+    EXPECT_FALSE(delete_sea_pen_image_future.Get());
+  }
 
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = scoped_temp_dir.GetPath().Append("111.jpg");
-  ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+  // Drop a folder
+  base::FilePath account_id_1_sea_pen_dir =
+      online_wallpaper_dir_.GetPath().Append("sea_pen").Append(
+          kAccountId1.GetAccountIdKey());
+  ASSERT_TRUE(base::CreateDirectory(account_id_1_sea_pen_dir));
+  base::FilePath account_id_1_sea_pen_file =
+      account_id_1_sea_pen_dir.Append("111").AddExtension(".jpg");
+  ASSERT_TRUE(base::WriteFile(account_id_1_sea_pen_file, "test data"));
 
-  base::test::TestFuture<bool> delete_sea_pen_image_future;
-  controller_->DeleteRecentSeaPenImage(
-      kAccountId1, file_path, delete_sea_pen_image_future.GetCallback());
+  {
+    // File exists but for `kAccountId1`. Deleting for `kAccountId2` should
+    // fail.
+    base::test::TestFuture<bool> delete_sea_pen_image_future;
+    controller_->DeleteRecentSeaPenImage(
+        kAccountId2, 111u, delete_sea_pen_image_future.GetCallback());
+    EXPECT_FALSE(delete_sea_pen_image_future.Get());
+    ASSERT_TRUE(base::PathExists(account_id_1_sea_pen_file));
+  }
 
-  EXPECT_TRUE(delete_sea_pen_image_future.Get());
-  EXPECT_FALSE(base::PathExists(file_path));
+  {
+    // File exists and should be deleted by `kAccountId1`.
+    base::test::TestFuture<bool> delete_sea_pen_image_future;
+    controller_->DeleteRecentSeaPenImage(
+        kAccountId1, 111u, delete_sea_pen_image_future.GetCallback());
+    EXPECT_TRUE(delete_sea_pen_image_future.Get());
+    EXPECT_FALSE(base::PathExists(account_id_1_sea_pen_file));
+  }
 }
 
 TEST_P(WallpaperControllerTest, GetSeaPenMetadata) {
@@ -2489,7 +2526,7 @@ TEST_P(WallpaperControllerTest, GetSeaPenMetadata) {
   {
     base::test::TestFuture<std::optional<base::Value::Dict>>
         get_sea_pen_metadata_future;
-    controller_->GetSeaPenMetadata(kAccountId1, file_path,
+    controller_->GetSeaPenMetadata(kAccountId1, 111u,
                                    get_sea_pen_metadata_future.GetCallback());
 
     EXPECT_EQ(metadata, get_sea_pen_metadata_future.Get());
@@ -2500,8 +2537,8 @@ TEST_P(WallpaperControllerTest, GetSeaPenMetadata) {
         get_sea_pen_metadata_future;
     // Now try an invalid path with known good metadata.
     const auto invalid_file_path =
-        WriteSeaPenWallpaperMetadata("../111.jpg", metadata);
-    controller_->GetSeaPenMetadata(kAccountId1, invalid_file_path,
+        WriteSeaPenWallpaperMetadata("../333.jpg", metadata);
+    controller_->GetSeaPenMetadata(kAccountId1, 333u,
                                    get_sea_pen_metadata_future.GetCallback());
     EXPECT_FALSE(get_sea_pen_metadata_future.Get().has_value());
   }
@@ -2520,7 +2557,7 @@ TEST_P(WallpaperControllerTest, GetSeaPenMetadataInvalidJson) {
 
   base::test::TestFuture<std::optional<base::Value::Dict>>
       get_sea_pen_metadata_future;
-  controller_->GetSeaPenMetadata(kAccountId1, file_path,
+  controller_->GetSeaPenMetadata(kAccountId1, 8888u,
                                  get_sea_pen_metadata_future.GetCallback());
 
   EXPECT_FALSE(get_sea_pen_metadata_future.Take().has_value());

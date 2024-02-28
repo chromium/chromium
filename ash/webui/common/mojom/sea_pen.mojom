@@ -20,8 +20,8 @@ struct SeaPenThumbnail {
     uint32 id;
 };
 
-// The query information that was recently used to search for Sea Pen
-// images including the visible prompt text and template title from the UI.
+// The query information that was recently used to search for SeaPen images
+// including the visible prompt text and template title from the UI.
 // The strings were translated based on the localization that the user was in
 // when they ran the query.
 struct SeaPenUserVisibleQuery {
@@ -64,7 +64,7 @@ union SeaPenQuery {
   SeaPenTemplateQuery template_query;
 };
 
-// The information of a recent Sea Pen image including the query information
+// The information of a recent SeaPen image including the query information
 // and its creation time.
 struct RecentSeaPenImageInfo {
   // The visible query information that the user used to generate the recent
@@ -118,29 +118,33 @@ interface SeaPenProvider {
         (array<SeaPenThumbnail>? images, MantaStatusCode statusCode);
 
     // Select a thumbnail and set as the system wallpaper for the current user.
+    // `id` must be a valid id from a previous call to `SearchWallpaper`.
     SelectSeaPenThumbnail(uint32 id) => (bool success);
 
-    // Sets the given Sea Pen image as the user's background.
-    SelectRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+    // Gets the available previously selected SeaPen wallpapers. `ids` will be
+    // empty if no thumbnails have been previously selected, or in case of disk
+    // or other failure.
+    GetRecentSeaPenImages() => (array<uint32> ids);
 
-    // Gets the recently used sea pen wallpapers. `images` will be empty
-    // on failure.
-    GetRecentSeaPenImages() => (array<mojo_base.mojom.FilePath> images);
+    // Sets the given SeaPen image id as the user's background. Must be a valid
+    // id from a previous call to `GetRecentSeaPenImages`.
+    SelectRecentSeaPenImage(uint32 id) => (bool success);
 
-    // Fetch a thumbnail data url for the given recent sea pen image path.
-    // `url` will be empty on failure.
-    GetRecentSeaPenImageThumbnail(mojo_base.mojom.FilePath path) =>
-        (url.mojom.Url url);
+    // Fetch a thumbnail data url for the given recent SeaPen image id.
+    // `url` will be empty on failure. `id` must be a valid id from a previous
+    // call to `GetRecentSeaPenImages`.
+    GetRecentSeaPenImageThumbnail(uint32 id) => (url.mojom.Url url);
 
-    // Deletes the selected Sea Pen image from Sea Pen directory.
-    DeleteRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
+    // Deletes the selected SeaPen image from SeaPen directory. `id` must be a
+    // valid id from a previous call to `GetRecentSeaPenImages`.
+    DeleteRecentSeaPenImage(uint32 id) => (bool success);
 
     // Pops up a feedback dialog when user clicks feedback buttons.
     OpenFeedbackDialog(SeaPenFeedbackMetadata metadata);
 
-    // Determines whether to show the reviewing Sea Pen terms of service dialog.
+    // Determines whether to show the reviewing SeaPen terms of service dialog.
     ShouldShowSeaPenTermsOfServiceDialog() => (bool should_show_dialog);
 
-    // Called when the user accepts the terms of service for Sea Pen wallpaper.
+    // Called when the user accepts the terms of service for SeaPen wallpaper.
     HandleSeaPenTermsOfServiceAccepted();
 };

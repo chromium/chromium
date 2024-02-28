@@ -4,11 +4,16 @@
 
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 
+#include <string>
+
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/values_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time_override.h"
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -183,6 +188,26 @@ TEST(SeaPenMetadataUtilsTest,
       SeaPenQueryDictToRecentImageInfo(invalid_template_query_dict);
 
   EXPECT_FALSE(recent_image_info);
+}
+
+TEST(SeaPenMetadataUtilsTest, GetIdFromValidFilePath) {
+  std::vector<std::pair<std::string, uint32_t>> cases = {
+      {"97531", 97531u},
+      {
+
+          "24680.jpg", 24680},
+      {"abcd/1234.jpg", 1234u},
+      {"a/b/c/d/575757.png", 575757u}};
+  for (const auto& [path, expected] : cases) {
+    EXPECT_EQ(expected, GetIdFromFileName(base::FilePath(path)));
+  }
+}
+
+TEST(SeaPenMetadataUtilsTest, GetIdFromInvalidFilePath) {
+  std::vector<std::string> cases = {"a", "b.jpg", "-21", "a/21.jpg/c"};
+  for (const auto& path : cases) {
+    EXPECT_FALSE(GetIdFromFileName(base::FilePath(path)).has_value());
+  }
 }
 
 }  // namespace

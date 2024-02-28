@@ -13,6 +13,7 @@
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
@@ -30,11 +31,6 @@
 
 namespace ash::vc_background_ui {
 namespace {
-
-constexpr const base::FilePath::CharType* kExistingFileImage[] = {
-    FILE_PATH_LITERAL("a.jpg"),
-    FILE_PATH_LITERAL("b.jpg"),
-};
 
 // Create fake Jpg image bytes.
 std::string CreateJpgBytes() {
@@ -99,9 +95,11 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
 
     // Create fake background images.
     const base::Time time = base::Time::Now();
-    for (std::size_t i = 0; i < existing_file_images_.size(); ++i) {
+    for (std::size_t i = 0; i < existing_image_ids_.size(); ++i) {
       const auto filename =
-          camera_background_img_dir.Append(existing_file_images_[i]);
+          camera_background_img_dir
+              .Append(base::NumberToString(existing_image_ids_[i]))
+              .AddExtension(".jpg");
       ASSERT_TRUE(base::WriteFile(filename, CreateJpgBytes()));
       // Change file modification time so that the first file is the latest.
       ASSERT_TRUE(base::TouchFile(filename, time - base::Minutes(i),
@@ -116,18 +114,15 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
       sea_pen_provider_remote_;
   std::unique_ptr<VcBackgroundUISeaPenProviderImpl> sea_pen_provider_;
 
-  const std::vector<base::FilePath> existing_file_images_{
-      base::FilePath(kExistingFileImage[0]),
-      base::FilePath(kExistingFileImage[1]),
-  };
+  const std::vector<uint32_t> existing_image_ids_{19, 23};
 };
 
 IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Get all background images.
   base::RunLoop run_loop;
   sea_pen_provider_->GetRecentSeaPenImages(
-      base::BindLambdaForTesting([&](const std::vector<base::FilePath>& paths) {
-        EXPECT_EQ(paths, existing_file_images_);
+      base::BindLambdaForTesting([&](const std::vector<uint32_t>& ids) {
+        EXPECT_EQ(existing_image_ids_, ids);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -135,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Select an image as background.
   base::RunLoop run_loop2;
   sea_pen_provider_->SelectRecentSeaPenImage(
-      base::FilePath(existing_file_images_[0]),
+      existing_image_ids_[0],
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_TRUE(call_succeeded);
         run_loop2.Quit();
@@ -145,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Get the content of the image.
   base::RunLoop run_loop3;
   sea_pen_provider_->GetRecentSeaPenImageThumbnail(
-      base::FilePath(existing_file_images_[0]),
+      existing_image_ids_[0],
       base::BindLambdaForTesting([&](const ::GURL& url) {
         EXPECT_FALSE(url.is_empty());
         run_loop3.Quit();
@@ -156,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Delete an existing image should return true.
   base::RunLoop run_loop4;
   sea_pen_provider_->DeleteRecentSeaPenImage(
-      base::FilePath(existing_file_images_[1]),
+      existing_image_ids_[1],
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_TRUE(call_succeeded);
 
@@ -168,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Select an deleted image should return false.
   base::RunLoop run_loop5;
   sea_pen_provider_->SelectRecentSeaPenImage(
-      base::FilePath(existing_file_images_[1]),
+      existing_image_ids_[1],
       base::BindLambdaForTesting([&](bool call_succeeded) {
         EXPECT_FALSE(call_succeeded);
         run_loop5.Quit();
@@ -178,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, AllTests) {
   // Get content of an deleted image should return empty
   base::RunLoop run_loop6;
   sea_pen_provider_->GetRecentSeaPenImageThumbnail(
-      base::FilePath(existing_file_images_[1]),
+      existing_image_ids_[1],
       base::BindLambdaForTesting([&](const ::GURL& url) {
         EXPECT_TRUE(url.is_empty());
         run_loop6.Quit();

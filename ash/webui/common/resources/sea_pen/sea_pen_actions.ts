@@ -4,9 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {Action} from 'chrome://resources/js/store.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {RecentSeaPenData} from './constants.js';
+import {RecentSeaPenData, SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 
 /**
@@ -87,13 +86,13 @@ export function beginLoadRecentSeaPenImagesAction():
 
 export interface SetRecentSeaPenImagesAction extends Action {
   name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES;
-  recentImages: FilePath[]|null;
+  recentImages: SeaPenImageId[]|null;
 }
 
 /**
  * Sets the recent sea pen images.
  */
-export function setRecentSeaPenImagesAction(recentImages: FilePath[]|
+export function setRecentSeaPenImagesAction(recentImages: SeaPenImageId[]|
                                             null): SetRecentSeaPenImagesAction {
   return {
     name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGES,
@@ -103,23 +102,23 @@ export function setRecentSeaPenImagesAction(recentImages: FilePath[]|
 
 export interface BeginLoadRecentSeaPenImageDataAction extends Action {
   name: SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA;
-  id: string;
+  id: SeaPenImageId;
 }
 
 /**
  * Begins load the recent sea pen image data.
  */
-export function beginLoadRecentSeaPenImageDataAction(image: FilePath):
+export function beginLoadRecentSeaPenImageDataAction(id: SeaPenImageId):
     BeginLoadRecentSeaPenImageDataAction {
   return {
     name: SeaPenActionName.BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA,
-    id: image.path,
+    id,
   };
 }
 
 export interface SetRecentSeaPenImageDataAction extends Action {
   name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA;
-  id: string;
+  id: SeaPenImageId;
   data: RecentSeaPenData;
 }
 
@@ -127,34 +126,33 @@ export interface SetRecentSeaPenImageDataAction extends Action {
  * Sets the recent sea pen image data.
  */
 export function setRecentSeaPenImageDataAction(
-    filePath: FilePath,
-    data: RecentSeaPenData): SetRecentSeaPenImageDataAction {
+    id: SeaPenImageId, data: RecentSeaPenData): SetRecentSeaPenImageDataAction {
   return {
     name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA,
-    id: filePath.path,
+    id,
     data,
   };
 }
 
 export interface BeginSelectRecentSeaPenImageAction extends Action {
   name: SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE;
-  image: FilePath;
+  id: SeaPenImageId;
 }
 
 /**
  * Begins selecting a recent Sea Pen image.
  */
-export function beginSelectRecentSeaPenImageAction(image: FilePath):
+export function beginSelectRecentSeaPenImageAction(id: SeaPenImageId):
     BeginSelectRecentSeaPenImageAction {
   return {
     name: SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE,
-    image: image,
+    id,
   };
 }
 
 export interface EndSelectRecentSeaPenImageAction extends Action {
   name: SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE;
-  image: FilePath;
+  id: SeaPenImageId;
   success: boolean;
 }
 
@@ -162,10 +160,10 @@ export interface EndSelectRecentSeaPenImageAction extends Action {
  * Ends selecting a recent Sea Pen image.
  */
 export function endSelectRecentSeaPenImageAction(
-    image: FilePath, success: boolean): EndSelectRecentSeaPenImageAction {
+    id: SeaPenImageId, success: boolean): EndSelectRecentSeaPenImageAction {
   return {
     name: SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE,
-    image,
+    id,
     success,
   };
 }
@@ -184,17 +182,18 @@ export function beginLoadSelectedRecentSeaPenImageAction():
 
 export interface SetSelectedRecentSeaPenImageAction extends Action {
   name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE;
-  key: string|null;
+  key: SeaPenImageId|null;
 }
 
 /**
  * Sets the selected recent Sea Pen image.
+ * Key is the id of the thumbnail that was used to generate this image.
  */
-export function setSelectedRecentSeaPenImageAction(key: string|null):
+export function setSelectedRecentSeaPenImageAction(key: SeaPenImageId|null):
     SetSelectedRecentSeaPenImageAction {
   return {
     name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE,
-    key: key,
+    key,
   };
 }
 

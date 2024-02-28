@@ -4,12 +4,23 @@
 
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 
-#include "ash/webui/common/mojom/sea_pen_generated.mojom-shared.h"
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/mojom/sea_pen_generated.mojom.h"
+#include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "base/values.h"
 
 namespace ash {
 
@@ -105,6 +116,28 @@ SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& query_dict) {
       personalization_app::mojom::SeaPenUserVisibleQuery::New(
           *user_visible_query_text, *user_visible_query_template),
       GetCreationTimeInfo(*creation_time));
+}
+
+std::optional<uint32_t> GetIdFromFileName(const base::FilePath& file_path) {
+  const std::string name = file_path.BaseName().RemoveExtension().value();
+  uint32_t value;
+  if (base::StringToUint(name, &value)) {
+    return value;
+  }
+  LOG(WARNING) << "Invalid SeaPen file_path: " << file_path;
+  return std::nullopt;
+}
+
+std::vector<uint32_t> GetIdsFromFilePaths(
+    const std::vector<base::FilePath>& file_paths) {
+  std::vector<uint32_t> result;
+  for (const auto& file_path : file_paths) {
+    std::optional<uint32_t> id = GetIdFromFileName(file_path);
+    if (id.has_value()) {
+      result.push_back(id.value());
+    }
+  }
+  return result;
 }
 
 }  // namespace ash

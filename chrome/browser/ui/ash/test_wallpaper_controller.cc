@@ -10,14 +10,13 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "base/containers/adapters.h"
-#include "base/files/file_util.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/values_test_util.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "test_wallpaper_controller.h"
@@ -221,39 +220,46 @@ void TestWallpaperController::SetSeaPenWallpaper(
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     SetWallpaperCallback callback) {
   ++sea_pen_wallpaper_count_;
+
+  const std::string sea_pen_id_str = base::NumberToString(sea_pen_image.id);
+
   wallpaper_info_ = ash::WallpaperInfo();
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
+  wallpaper_info_->location = sea_pen_id_str;
+  wallpaper_info_->user_file_path =
+      base::FilePath(sea_pen_id_str).AddExtension(".jpg").value();
+
   sea_pen_query_ = query.Clone();
   std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperController::SetSeaPenWallpaperFromFile(
     const AccountId& account_id,
-    const base::FilePath& sea_pen_file_path,
+    const uint32_t id,
     SetWallpaperCallback callback) {
   ++sea_pen_wallpaper_count_;
+
+  const std::string sea_pen_id_str = base::NumberToString(id);
+
   wallpaper_info_ = ash::WallpaperInfo();
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
-  wallpaper_info_->user_file_path = sea_pen_file_path.value();
+  wallpaper_info_->location = sea_pen_id_str;
+  wallpaper_info_->user_file_path =
+      base::FilePath(sea_pen_id_str).AddExtension(".jpg").value();
   std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperController::GetSeaPenMetadata(
     const AccountId& account_id,
-    const base::FilePath& sea_pen_file_path,
+    const uint32_t id,
     GetSeaPenMetadataCallback callback) {
   std::move(callback).Run(std::move(sea_pen_metadata_));
 }
 
 void TestWallpaperController::DeleteRecentSeaPenImage(
     const AccountId& account_id,
-    const base::FilePath& sea_pen_file_path,
+    const uint32_t id,
     DeleteRecentSeaPenImageCallback callback) {
-  if (base::PathExists(sea_pen_file_path) &&
-      base::DeleteFile(sea_pen_file_path)) {
-    std::move(callback).Run(/*success=*/true);
-    return;
-  }
   std::move(callback).Run(/*success=*/false);
 }
 

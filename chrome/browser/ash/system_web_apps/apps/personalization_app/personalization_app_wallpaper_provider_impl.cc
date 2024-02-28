@@ -426,14 +426,21 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
       return;
     }
     case ash::WallpaperType::kSeaPen: {
+      const base::FilePath path(info->location);
+      const std::optional<uint32_t> id = GetIdFromFileName(path);
+      if (!id.has_value()) {
+        NotifyWallpaperChanged(nullptr);
+        NotifyAttributionChanged(nullptr);
+        return;
+      }
       // TODO(b/307757290) send a unique key and set description content.
-      const std::string key = info->user_file_path;
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(
-              info->layout, info->type, key,
+              info->layout, info->type,
+              /*key=*/base::NumberToString(id.value()),
               /*description_title=*/std::string(),
               /*description_content=*/std::string()));
-      FindSeaPenWallpaperAttribution(base::FilePath(info->user_file_path));
+      FindSeaPenWallpaperAttribution(id.value());
       return;
     }
     case ash::WallpaperType::kCount:
@@ -1091,25 +1098,28 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
 }
 
 void PersonalizationAppWallpaperProviderImpl::FindSeaPenWallpaperAttribution(
-    const base::FilePath& user_file_path) {
+    const uint32_t id) {
   auto* wallpaper_controller = WallpaperController::Get();
   DCHECK(wallpaper_controller);
 
   wallpaper_controller->GetSeaPenMetadata(
-      GetAccountId(profile_), user_file_path,
+      GetAccountId(profile_), id,
       base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                          SendSeaPenWallpaperAttribution,
-                     weak_ptr_factory_.GetWeakPtr(), user_file_path));
+                     weak_ptr_factory_.GetWeakPtr(), id));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
-    const base::FilePath& user_file_path,
+    const uint32_t id,
     std::optional<base::Value::Dict> sea_pen_metadata) {
+  DVLOG(3) << __func__ << " id: " << id << " metadata: "
+           << (sea_pen_metadata.has_value() ? sea_pen_metadata->DebugString()
+                                            : "null");
   if (!sea_pen_metadata.has_value()) {
     DVLOG(1) << __func__ << " the extracted metadata is not in JSON format";
     NotifyAttributionChanged(
         ash::personalization_app::mojom::CurrentAttribution::New(
-            std::vector<std::string>(), user_file_path.value()));
+            std::vector<std::string>(), base::NumberToString(id)));
     return;
   }
 
@@ -1118,7 +1128,7 @@ void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
   if (!sea_pen_image_info) {
     NotifyAttributionChanged(
         ash::personalization_app::mojom::CurrentAttribution::New(
-            std::vector<std::string>(), user_file_path.value()));
+            std::vector<std::string>(), base::NumberToString(id)));
     return;
   }
 
@@ -1131,7 +1141,7 @@ void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
   }
   NotifyAttributionChanged(
       ash::personalization_app::mojom::CurrentAttribution::New(
-          attribution, user_file_path.value()));
+          attribution, base::NumberToString(id)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(

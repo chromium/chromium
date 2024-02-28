@@ -22,6 +22,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
@@ -192,8 +193,8 @@ base::FilePath WriteImageToBackgroundDir(
     const base::FilePath& camera_background_img_dir,
     SeaPenImage&& sea_pen_image,
     const std::string& metadata) {
-  const auto basename =
-      base::FilePath(base::NumberToString(sea_pen_image.id) + ".jpg");
+  const base::FilePath basename =
+      CameraEffectsController::SeaPenIdToRelativePath(sea_pen_image.id);
   const base::FilePath background_image_filepath =
       camera_background_img_dir.Append(basename);
   const base::FilePath background_metadata_filepath =
@@ -357,6 +358,30 @@ void SetBackgroundReplaceUiVisible(bool visible) {
 
 }  // namespace
 
+// static
+void CameraEffectsController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  if (!features::IsVideoConferenceEnabled()) {
+    return;
+  }
+
+  // We have to register all camera effects prefs; because we need use them to
+  // construct the cros::mojom::EffectsConfigPtr.
+  registry->RegisterIntegerPref(prefs::kBackgroundBlur,
+                                BackgroundBlurPrefValue::kOff);
+
+  registry->RegisterBooleanPref(prefs::kBackgroundReplace, false);
+
+  registry->RegisterBooleanPref(prefs::kPortraitRelighting, false);
+
+  registry->RegisterFilePathPref(prefs::kBackgroundImagePath, base::FilePath());
+}
+
+// static
+base::FilePath CameraEffectsController::SeaPenIdToRelativePath(uint32_t id) {
+  return base::FilePath(base::NumberToString(id)).AddExtension(".jpg");
+}
+
 BackgroundImageInfo::BackgroundImageInfo(const BackgroundImageInfo& info) =
     default;
 BackgroundImageInfo::BackgroundImageInfo(const base::Time& creation_time,
@@ -406,25 +431,6 @@ CameraEffectsController::~CameraEffectsController() {
 
 cros::mojom::EffectsConfigPtr CameraEffectsController::GetCameraEffects() {
   return current_effects_.Clone();
-}
-
-// static
-void CameraEffectsController::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  if (!features::IsVideoConferenceEnabled()) {
-    return;
-  }
-
-  // We have to register all camera effects prefs; because we need use them to
-  // construct the cros::mojom::EffectsConfigPtr.
-  registry->RegisterIntegerPref(prefs::kBackgroundBlur,
-                                BackgroundBlurPrefValue::kOff);
-
-  registry->RegisterBooleanPref(prefs::kBackgroundReplace, false);
-
-  registry->RegisterBooleanPref(prefs::kPortraitRelighting, false);
-
-  registry->RegisterFilePathPref(prefs::kBackgroundImagePath, base::FilePath());
 }
 
 void CameraEffectsController::SetBackgroundImage(

@@ -14,6 +14,7 @@
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -85,6 +86,11 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
                         const std::string& metadata);
   };
 
+  // Called inside ash/ash_prefs.cc to register related prefs.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  static base::FilePath SeaPenIdToRelativePath(uint32_t id);
+
   CameraEffectsController();
 
   CameraEffectsController(const CameraEffectsController&) = delete;
@@ -100,9 +106,6 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // Returns currently applied camera effects.
   // Should only be called after user logs in.
   cros::mojom::EffectsConfigPtr GetCameraEffects();
-
-  // Called inside ash/ash_prefs.cc to register related prefs.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sets an image as the camera background.
   // The `relative_path` is relative to `camera_background_img_dir_` and the

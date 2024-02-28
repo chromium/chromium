@@ -2,31 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-
+import {SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';
-import {isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
+import {isNonEmptyArray} from './sea_pen_utils.js';
 
 export async function selectRecentSeaPenImage(
-    image: FilePath, provider: SeaPenProviderInterface,
+    id: SeaPenImageId, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
   // Returns if the selected image is the current wallpaper.
-  if (isNonEmptyFilePath(image) && image.path === store.data.currentSelected) {
+  if (id === store.data.currentSelected) {
     return;
   }
   // Batch these changes together to reduce polymer churn as multiple state
   // fields change quickly.
   store.beginBatchUpdate();
-  store.dispatch(seaPenAction.beginSelectRecentSeaPenImageAction(image));
+  store.dispatch(seaPenAction.beginSelectRecentSeaPenImageAction(id));
   store.dispatch(seaPenAction.beginLoadSelectedRecentSeaPenImageAction());
   store.endBatchUpdate();
 
-  const {success} = await provider.selectRecentSeaPenImage(image);
+  const {success} = await provider.selectRecentSeaPenImage(id);
 
   store.beginBatchUpdate();
-  store.dispatch(seaPenAction.endSelectRecentSeaPenImageAction(image, success));
+  store.dispatch(seaPenAction.endSelectRecentSeaPenImageAction(id, success));
   if (!success) {
     console.warn('Error setting wallpaper');
   }
@@ -57,7 +56,7 @@ export async function selectSeaPenWallpaper(
     // thumbnail as set.
     // TODO(b/321252838) improve this with an async observer for VC Background.
     store.dispatch(seaPenAction.setSelectedRecentSeaPenImageAction(
-        success ? `${thumbnail.id}.jpg` : null));
+        success ? thumbnail.id : null));
   }
   // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
   // successfully, which means the file has been downloaded successfully.
@@ -71,9 +70,9 @@ export async function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
 }
 
 export async function deleteRecentSeaPenImage(
-    image: FilePath, provider: SeaPenProviderInterface,
+    id: SeaPenImageId, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
-  const {success} = await provider.deleteRecentSeaPenImage(image);
+  const {success} = await provider.deleteRecentSeaPenImage(id);
   // Re-fetches the recent Sea Pen images if recent Sea Pen image is removed
   // successfully.
   if (success) {
@@ -86,12 +85,12 @@ export async function getRecentSeaPenImages(
     store: SeaPenStoreInterface): Promise<void> {
   store.dispatch(seaPenAction.beginLoadRecentSeaPenImagesAction());
 
-  const {images} = await provider.getRecentSeaPenImages();
-  if (images == null) {
+  const {ids} = await provider.getRecentSeaPenImages();
+  if (ids == null) {
     console.warn('Failed to fetch recent sea pen images');
   }
 
-  store.dispatch(seaPenAction.setRecentSeaPenImagesAction(images));
+  store.dispatch(seaPenAction.setRecentSeaPenImagesAction(ids));
 }
 
 /**
@@ -113,7 +112,7 @@ export async function fetchRecentSeaPenData(
  * on page load and on window focus, multiple "threads" can be fetching
  * data simultaneously. Synchronize them with a task queue.
  */
-const recentSeaPenImageDataToFetch = new Set<FilePath['path']>();
+const recentSeaPenImageDataToFetch = new Set<SeaPenImageId>();
 
 /**
  * Get an sea pen data one at a time for every recent Sea Pen image that does
@@ -129,33 +128,32 @@ async function getMissingRecentSeaPenImageData(
   // Set correct loading state for each image thumbnail. Do in a batch update to
   // reduce number of times that polymer must re-render.
   store.beginBatchUpdate();
-  for (const image of store.data.recentImages) {
-    if (store.data.recentImageData[image.path] ||
-        store.data.loading.recentImageData[image.path] ||
-        recentSeaPenImageDataToFetch.has(image.path)) {
+  for (const id of store.data.recentImages) {
+    if (store.data.recentImageData[id] ||
+        store.data.loading.recentImageData[id] ||
+        recentSeaPenImageDataToFetch.has(id)) {
       // Do not re-load thumbnail if already present, or already loading.
       continue;
     }
-    recentSeaPenImageDataToFetch.add(image.path);
-    store.dispatch(seaPenAction.beginLoadRecentSeaPenImageDataAction(image));
+    recentSeaPenImageDataToFetch.add(id);
+    store.dispatch(seaPenAction.beginLoadRecentSeaPenImageDataAction(id));
   }
   store.endBatchUpdate();
 
   // There may be multiple async tasks triggered that pull off this queue.
   while (recentSeaPenImageDataToFetch.size) {
-    await Promise.all(
-        Array.from(recentSeaPenImageDataToFetch).map(async path => {
-          recentSeaPenImageDataToFetch.delete(path);
-          const {url} = await provider.getRecentSeaPenImageThumbnail({path});
-          // TODO(b/312783231): add real API to get the image query info.
-          const queryInfo =
-              'query ' + Math.floor(Math.random() * 100 + 1).toString();
-          if (!url) {
-            console.warn('Failed to fetch recent Sea Pen image data', path);
-          }
-          store.dispatch(seaPenAction.setRecentSeaPenImageDataAction(
-              {path}, {url, queryInfo}));
-        }));
+    await Promise.all(Array.from(recentSeaPenImageDataToFetch).map(async id => {
+      recentSeaPenImageDataToFetch.delete(id);
+      const {url} = await provider.getRecentSeaPenImageThumbnail(id);
+      // TODO(b/312783231): add real API to get the image query info.
+      const queryInfo =
+          'query ' + Math.floor(Math.random() * 100 + 1).toString();
+      if (!url) {
+        console.warn('Failed to fetch recent Sea Pen image data', id);
+      }
+      store.dispatch(
+          seaPenAction.setRecentSeaPenImageDataAction(id, {url, queryInfo}));
+    }));
   }
 }
 

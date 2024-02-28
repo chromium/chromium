@@ -5,7 +5,7 @@
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
+import {parseTemplateText, SeaPenImageId, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 
 // Returns true if `maybeDataUrl` is a Url that contains a base64 encoded image.
@@ -14,6 +14,13 @@ export function isImageDataUrl(maybeDataUrl: unknown): maybeDataUrl is Url {
       'url' in maybeDataUrl && typeof maybeDataUrl.url === 'string' &&
       (maybeDataUrl.url.startsWith('data:image/png;base64') ||
        maybeDataUrl.url.startsWith('data:image/jpeg;base64'));
+}
+
+// SeaPenImageId must always be a positive
+export function isSeaPenImageId(maybeSeaPenImageId: unknown):
+    maybeSeaPenImageId is SeaPenImageId {
+  return typeof maybeSeaPenImageId === 'number' &&
+      Number.isInteger(maybeSeaPenImageId) && maybeSeaPenImageId >= 0;
 }
 
 // Returns true if `maybeArray` is an array with at least one item.

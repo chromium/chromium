@@ -55,6 +55,7 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   // Either file name of migrated wallpaper including first directory level
   // (corresponding to user wallpaper_files_id), online wallpaper URL, or
   // Google Photos id.
+  // For SeaPen wallpaper, location is a uint32 id as a string.
   std::string location;
   // user_file_path is the full path of the wallpaper file and is used as
   // the new CurrentWallpaper key. This field is required as the old key which

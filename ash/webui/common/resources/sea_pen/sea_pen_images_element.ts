@@ -18,16 +18,14 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import './sea_pen_feedback_element.js';
 import './sea_pen_image_loading_element.js';
 
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-
-import {Query} from './constants.js';
+import {Query, SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {isNonEmptyArray, isNonEmptyFilePath, logSeaPenTemplateFeedback} from './sea_pen_utils.js';
+import {isNonEmptyArray, isSeaPenImageId, logSeaPenTemplateFeedback} from './sea_pen_utils.js';
 
 const kLoadingPlaceholderCount = 8;
 
@@ -72,7 +70,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       },
 
       currentSelected_: {
-        type: String,
+        type: Number,
         value: null,
       },
 
@@ -95,8 +93,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
   private tiles_: Tile[];
-  private currentSelected_: string|null;
-  private pendingSelected_: SeaPenThumbnail|FilePath|null;
+  private currentSelected_: SeaPenImageId|null;
+  private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
   private thumbnailResponseStatusCode_: MantaStatusCode|null;
   private showError_: boolean;
 
@@ -222,9 +220,9 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private isThumbnailSelected_(
-      thumbnail: Tile|undefined, currentSelected: string|null,
-      pendingSelected: FilePath|SeaPenThumbnail|null): boolean {
-    if (!thumbnail || !this.isSeaPenThumbnail_(thumbnail)) {
+      thumbnail: Tile|undefined, currentSelected: SeaPenImageId|null,
+      pendingSelected: SeaPenImageId|SeaPenThumbnail|null): boolean {
+    if (!thumbnail || thumbnail === 'loading') {
       return false;
     }
 
@@ -233,23 +231,21 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       return true;
     }
 
-    const fileName = `${thumbnail.id}.jpg`;
-
     // Image was previously selected, and was just clicked again via the "Recent
     // Images" section. This can arise if the user quickly navigates back and
     // forth from SeaPen root and results page while selecting images.
-    if (isNonEmptyFilePath(pendingSelected)) {
-      return pendingSelected.path.endsWith(fileName);
+    if (isSeaPenImageId(pendingSelected)) {
+      return thumbnail.id === pendingSelected;
     }
 
     // No pending image in progress. Currently selected image matches the
     // thumbnail id.
-    return pendingSelected === null && !!currentSelected?.endsWith(fileName);
+    return pendingSelected === null && currentSelected === thumbnail.id;
   }
 
   private isThumbnailPendingSelected_(
       thumbnail: Tile|undefined,
-      pendingSelected: FilePath|SeaPenThumbnail|null): boolean {
+      pendingSelected: SeaPenImageId|SeaPenThumbnail|null): boolean {
     return this.isSeaPenThumbnail_(thumbnail) && !!thumbnail &&
         thumbnail === pendingSelected;
   }

@@ -14,19 +14,18 @@ import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {RecentSeaPenData} from './constants.js';
+import {RecentSeaPenData, SeaPenImageId} from './constants.js';
 import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from './sea_pen_utils.js';
+import {isImageDataUrl, isNonEmptyArray, isSeaPenImageId} from './sea_pen_utils.js';
 
 export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   static get is() {
@@ -62,19 +61,19 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
         value: null,
       },
 
-      currentSelected_: String,
+      currentSelected_: Number,
 
       pendingSelected_: Object,
     };
   }
 
-  private recentImages_: FilePath[]|null;
-  private recentImageData_: Record<FilePath['path'], RecentSeaPenData>;
-  private recentImageDataLoading_: Record<FilePath['path'], boolean>;
-  private recentImagesToDisplay_: FilePath[];
+  private recentImages_: SeaPenImageId[]|null;
+  private recentImageData_: Record<SeaPenImageId, RecentSeaPenData>;
+  private recentImageDataLoading_: Record<SeaPenImageId, boolean>;
+  private recentImagesToDisplay_: SeaPenImageId[];
   private currentShowWallpaperInfoDialog_: number|null;
-  private currentSelected_: string|null;
-  private pendingSelected_: FilePath|SeaPenThumbnail|null;
+  private currentSelected_: SeaPenImageId|null;
+  private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];
@@ -102,10 +101,10 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
    * Sets `recentImagesToDisplay` when a new set of recent Sea Pen images
    * loads.
    */
-  private onRecentImagesChanged_(recentImages: FilePath[]|null) {
-    this.recentImagesToDisplay_ = (recentImages || []).filter(image => {
-      if (this.recentImageDataLoading_[image.path] === false) {
-        const data = this.recentImageData_[image.path];
+  private onRecentImagesChanged_(recentImages: SeaPenImageId[]|null) {
+    this.recentImagesToDisplay_ = (recentImages || []).filter(id => {
+      if (this.recentImageDataLoading_[id] === false) {
+        const data = this.recentImageData_[id];
         return data && data.queryInfo && data.url;
       }
       return true;
@@ -117,8 +116,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
    * from the list of displayed images if it has failed to load.
    */
   private onRecentImageLoaded_(
-      recentImageData: Record<FilePath['path'], RecentSeaPenData>,
-      recentImageDataLoading: Record<FilePath['path'], boolean>) {
+      recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageDataLoading: Record<SeaPenImageId, boolean>) {
     if (!recentImageData || !recentImageDataLoading) {
       return;
     }
@@ -126,9 +125,9 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     // Iterate backwards in case we need to splice to remove from
     // `recentImagesToDisplay` while iterating.
     for (let i = this.recentImagesToDisplay_.length - 1; i >= 0; i--) {
-      const image = this.recentImagesToDisplay_[i];
-      const failed = image && recentImageDataLoading[image.path] === false &&
-          !isImageDataUrl(recentImageData[image.path].url);
+      const id = this.recentImagesToDisplay_[i];
+      const failed = id && recentImageDataLoading[id] === false &&
+          !isImageDataUrl(recentImageData[id].url);
       if (failed) {
         this.recentImagesToDisplay_.splice(i, 1);
       }
@@ -136,26 +135,26 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private isRecentImageLoading_(
-      recentImage: FilePath|null,
-      recentImageDataLoading: Record<FilePath['path'], boolean>): boolean {
+      recentImage: SeaPenImageId|null,
+      recentImageDataLoading: Record<SeaPenImageId, boolean>): boolean {
     if (!recentImage || !recentImageDataLoading) {
       return true;
     }
     // If key is not present, then loading has not yet started. Still show a
     // loading tile in this case.
-    return !recentImageDataLoading.hasOwnProperty(recentImage.path) ||
-        recentImageDataLoading[recentImage.path] === true;
+    return !recentImageDataLoading.hasOwnProperty(recentImage) ||
+        recentImageDataLoading[recentImage] === true;
   }
 
   private getRecentImageUrl_(
-      recentImage: FilePath,
-      recentImageData: Record<FilePath['path'], RecentSeaPenData>,
-      recentImageDataLoading: Record<FilePath['path'], boolean>): Url|null {
+      recentImage: SeaPenImageId,
+      recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageDataLoading: Record<SeaPenImageId, boolean>): Url|null {
     if (!recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
       return null;
     }
-    const data = recentImageData[recentImage.path];
+    const data = recentImageData[recentImage];
     if (!data || !isImageDataUrl(data.url)) {
       return {url: ''};
     }
@@ -163,9 +162,9 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private getWallpaperInfoPromptMessage_(
-      recentImage: FilePath,
-      _recentImageData: Record<FilePath['path'], RecentSeaPenData>,
-      recentImageDataLoading: Record<FilePath['path'], boolean>): string|null {
+      recentImage: SeaPenImageId,
+      _recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageDataLoading: Record<SeaPenImageId, boolean>): string|null {
     if (!recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
       return null;
@@ -175,9 +174,9 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   }
 
   private getWallpaperInfoDateMessage_(
-      recentImage: FilePath,
-      _recentImageData: Record<FilePath['path'], RecentSeaPenData>,
-      recentImageDataLoading: Record<FilePath['path'], boolean>): string|null {
+      recentImage: SeaPenImageId,
+      _recentImageData: Record<SeaPenImageId, RecentSeaPenData>,
+      recentImageDataLoading: Record<SeaPenImageId, boolean>): string|null {
     if (!recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
       return null;
@@ -191,40 +190,31 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     return i + 1;
   }
 
-  private shouldShowRecentlyUsedWallpapers_(recentImages: FilePath[]|null) {
+  private shouldShowRecentlyUsedWallpapers_(recentImages: SeaPenImageId[]|
+                                            null) {
     return isNonEmptyArray(recentImages);
   }
 
   private isRecentImageSelected_(
-      image: FilePath|null, currentSelected: string|null,
-      pendingSelected: FilePath|SeaPenThumbnail|null) {
-    if (!isNonEmptyFilePath(image)) {
+      id: SeaPenImageId|null, currentSelected: SeaPenImageId|null,
+      pendingSelected: SeaPenImageId|SeaPenThumbnail|null) {
+    if (!isSeaPenImageId(id)) {
       return false;
-    }
-
-    if (isNonEmptyFilePath(pendingSelected)) {
-      // User just clicked on a recent image.
-      return image.path === pendingSelected.path;
     }
 
     if (pendingSelected !== null) {
-      // User just clicked on a new thumbnail that will be saved as a recent
-      // image soon.
-      return false;
+      // User just clicked on a recent image.
+      return id === pendingSelected;
     }
 
-    if (!currentSelected) {
-      return false;
-    }
-
-    return image.path.endsWith(currentSelected);
+    return id === currentSelected;
   }
 
   private onRecentImageSelected_(event: WallpaperGridItemSelectedEvent&
-                                 {model: {image: FilePath}}) {
+                                 {model: {image: SeaPenImageId}}) {
     assert(
-        isNonEmptyFilePath(event.model.image),
-        'recent Sea Pen image is a file path');
+        isSeaPenImageId(event.model.image),
+        'recent Sea Pen image is a positive number');
     selectRecentSeaPenImage(
         event.model.image, getSeaPenProvider(), this.getStore());
   }
@@ -254,12 +244,13 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     // TODO(b/304581483): make "More like this" button functional.
   }
 
-  private onClickDeleteWallpaper_(event: Event&{model: {image: FilePath}}) {
+  private onClickDeleteWallpaper_(event: Event&
+                                  {model: {image: SeaPenImageId}}) {
     // TODO (b/315069374): confirm if currently set Sea Pen wallpaper can be
     // removed.
     assert(
-        isNonEmptyFilePath(event.model.image),
-        'selected Sea Pen image is a file path');
+        isSeaPenImageId(event.model.image),
+        'selected Sea Pen image is a positive number');
     deleteRecentSeaPenImage(
         event.model.image, getSeaPenProvider(), this.getStore());
     this.closeAllActionMenus_();
@@ -290,5 +281,6 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     this.currentShowWallpaperInfoDialog_ = null;
   }
 }
+
 customElements.define(
     SeaPenRecentWallpapersElement.is, SeaPenRecentWallpapersElement);

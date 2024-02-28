@@ -166,14 +166,14 @@ class TestWallpaperController : public ash::WallpaperController {
       const ash::personalization_app::mojom::SeaPenQueryPtr& query,
       SetWallpaperCallback callback) override;
   void SetSeaPenWallpaperFromFile(const AccountId& account_id,
-                                  const base::FilePath& sea_pen_file_path,
+                                  uint32_t id,
                                   SetWallpaperCallback callback) override;
   void GetSeaPenMetadata(const AccountId& account_id,
-                         const base::FilePath& sea_pen_file_path,
+                         uint32_t id,
                          GetSeaPenMetadataCallback callback) override;
   void DeleteRecentSeaPenImage(
       const AccountId& account_id,
-      const base::FilePath& sea_pen_file_path,
+      uint32_t id,
       DeleteRecentSeaPenImageCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
