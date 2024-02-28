@@ -604,6 +604,10 @@ const char kIPHiOSTabGridSwipeRightForIncognitoDescription[] =
     "Enables displaying the gesture IPH instructing users to swipe right on "
     "regular tab grid to view incognito tabs to new users.";
 
+const char kLinkedServicesSettingIosName[] = "Linked Services Setting";
+const char kLinkedServicesSettingIosDescription[] =
+    "Add Linked Services Setting to the Sync Settings page.";
+
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "

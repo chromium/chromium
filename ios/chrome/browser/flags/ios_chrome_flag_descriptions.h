@@ -528,6 +528,11 @@ extern const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[];
 extern const char kIPHiOSTabGridSwipeRightForIncognitoName[];
 extern const char kIPHiOSTabGridSwipeRightForIncognitoDescription[];
 
+// Title and description for the flag to add Linked Services Setting to the Sync
+// Settings page.
+extern const char kLinkedServicesSettingIosName[];
+extern const char kLinkedServicesSettingIosDescription[];
+
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
