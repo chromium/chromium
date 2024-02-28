@@ -133,7 +133,6 @@ TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
     : session_context_(session_context),
       quick_start_connectivity_service_(quick_start_connectivity_service),
       connection_factory_(std::move(connection_factory)) {
-  is_resume_after_update_ = session_context_->is_resume_after_update();
   GetBluetoothAdapter();
 }
 
@@ -208,7 +207,7 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
   use_pin_authentication_ = use_pin_authentication;
   connection_lifecycle_listener_ = listener;
 
-  if (is_resume_after_update_) {
+  if (session_context_->is_resume_after_update()) {
     StartNearbyConnectionsAdvertising(std::move(on_start_advertising_callback));
   } else {
     // This will start Nearby Connections advertising if Fast Pair advertising
@@ -363,7 +362,7 @@ void TargetDeviceConnectionBrokerImpl::OnStartNearbyConnectionsAdvertising(
   bool success =
       status == NearbyConnectionsManager::ConnectionsStatus::kSuccess;
 
-  if (success && is_resume_after_update_) {
+  if (success && session_context_->is_resume_after_update()) {
     nearby_connections_advertisement_after_update_timeout_timer_.Start(
         FROM_HERE, kNearbyConnectionsAdvertisementAfterUpdateTimeout,
         base::BindOnce(&TargetDeviceConnectionBrokerImpl::
@@ -388,7 +387,7 @@ void TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising(
 void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info) {
-  if (is_resume_after_update_) {
+  if (session_context_->is_resume_after_update()) {
     QS_LOG(INFO) << "Skipped manual verification and will attempt an "
                     "\"automatic handshake\": endpoint_id="
                  << endpoint_id;
@@ -435,7 +434,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
           &TargetDeviceConnectionBrokerImpl::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));
 
-  if (use_pin_authentication_ && !is_resume_after_update_) {
+  if (use_pin_authentication_ && !session_context_->is_resume_after_update()) {
     QS_LOG(INFO) << "Pin authentication completed!";
     connection_->MarkConnectionAuthenticated(
         Connection::AuthenticationMethod::kPin);
@@ -462,14 +461,14 @@ void TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted(bool success) {
 
   QS_LOG(INFO) << "Handshake succeeded!";
   connection_->MarkConnectionAuthenticated(
-      is_resume_after_update_
+      session_context_->is_resume_after_update()
           ? Connection::AuthenticationMethod::kResumeAfterUpdate
           : Connection::AuthenticationMethod::kQR);
 }
 
 void TargetDeviceConnectionBrokerImpl::
     OnNearbyConnectionsAdvertisementAfterUpdateTimeout() {
-  is_resume_after_update_ = false;
+  session_context_->CancelResume();
   QS_LOG(ERROR) << "The Nearby Connections advertisement timed out during "
                    "attempt to automatically resume after an update. Will now "
                    "attempt to stop Nearby Connections advertising and "

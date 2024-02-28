@@ -27,7 +27,7 @@ constexpr char kPrepareForUpdateAdvertisingIdKey[] = "advertising_id";
 constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
 
-bool IsResumeAfterUpdate() {
+bool ShouldResumeAfterUpdate() {
   const base::Value::Dict& maybe_info =
       g_browser_process->local_state()->GetDict(
           prefs::kResumeQuickStartAfterRebootInfo);
@@ -37,18 +37,7 @@ bool IsResumeAfterUpdate() {
 
 }  // namespace
 
-SessionContext::SessionContext() {
-  is_resume_after_update_ = IsResumeAfterUpdate();
-  QS_LOG(INFO)
-      << "Going to fetch/generate session context. is_resume_after_update_: "
-      << is_resume_after_update_;
-
-  if (is_resume_after_update_) {
-    FetchPersistedSessionContext();
-  } else {
-    PopulateRandomSessionContext();
-  }
-}
+SessionContext::SessionContext() = default;
 
 SessionContext::SessionContext(SessionId session_id,
                                AdvertisingId advertising_id,
@@ -68,9 +57,21 @@ SessionContext& SessionContext::operator=(const SessionContext& other) =
 
 SessionContext::~SessionContext() = default;
 
-void SessionContext::ResetSession() {
+void SessionContext::FillOrResetSession() {
+  is_resume_after_update_ = ShouldResumeAfterUpdate();
+  QS_LOG(INFO)
+      << "Going to fetch/generate session context. is_resume_after_update_: "
+      << is_resume_after_update_;
+
+  if (is_resume_after_update_) {
+    FetchPersistedSessionContext();
+  } else {
+    PopulateRandomSessionContext();
+  }
+}
+
+void SessionContext::CancelResume() {
   is_resume_after_update_ = false;
-  PopulateRandomSessionContext();
 }
 
 base::Value::Dict SessionContext::GetPrepareForUpdateInfo() {

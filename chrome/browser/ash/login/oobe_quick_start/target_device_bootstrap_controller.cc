@@ -91,6 +91,7 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
   CHECK(connection_broker_->GetFeatureSupportStatus() ==
         TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
   CHECK_EQ(status_.step, Step::NONE);
+  session_context_.FillOrResetSession();
 
   bool use_pin_authentication =
       !accessibility_manager_wrapper_->AllowQRCodeUX();
@@ -344,7 +345,6 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
 
 void TargetDeviceBootstrapController::Cleanup() {
   status_ = Status();
-  session_context_.ResetSession();
   CleanupIfNeeded();
 }
 

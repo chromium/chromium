@@ -36,6 +36,7 @@ class SessionContextTest : public testing::Test {
 
   void SetUp() override {
     session_context_ = std::make_unique<SessionContext>();
+    session_context_->FillOrResetSession();
   }
 
   PrefService* GetLocalState() { return local_state_.Get(); }
@@ -69,6 +70,8 @@ TEST_F(SessionContextTest, GetPrepareForUpdateInfo) {
 }
 
 TEST_F(SessionContextTest, ResumeAfterUpdate) {
+  ASSERT_FALSE(session_context_->is_resume_after_update());
+
   // The bootstrap controller expects this pref to be set if resuming after an
   // update.
   GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
@@ -84,15 +87,32 @@ TEST_F(SessionContextTest, ResumeAfterUpdate) {
   // To simulate "update" behavior, re-instantiate |session_context| with proper
   // local state prefs set.
   session_context_ = std::make_unique<SessionContext>();
+  session_context_->FillOrResetSession();
 
-  ASSERT_EQ(expected_session_id, session_context_->session_id());
-  ASSERT_EQ(expected_advertising_id,
+  EXPECT_TRUE(session_context_->is_resume_after_update());
+  EXPECT_EQ(expected_session_id, session_context_->session_id());
+  EXPECT_EQ(expected_advertising_id,
             session_context_->advertising_id().ToString());
-  ASSERT_EQ(expected_shared_secret, session_context_->shared_secret());
+  EXPECT_EQ(expected_shared_secret, session_context_->shared_secret());
   // Pref should be cleared after the |bootstrap_controller_| construction.
-  ASSERT_TRUE(GetLocalState()
+  EXPECT_TRUE(GetLocalState()
                   ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
                   .empty());
+}
+
+TEST_F(SessionContextTest, CancelResume) {
+  ASSERT_FALSE(session_context_->is_resume_after_update());
+
+  // Simulate resume after update.
+  GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
+                           session_context_->GetPrepareForUpdateInfo());
+  session_context_ = std::make_unique<SessionContext>();
+  session_context_->FillOrResetSession();
+  ASSERT_TRUE(session_context_->is_resume_after_update());
+
+  session_context_->CancelResume();
+
+  EXPECT_FALSE(session_context_->is_resume_after_update());
 }
 
 }  // namespace ash::quick_start

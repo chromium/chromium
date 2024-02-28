@@ -121,8 +121,6 @@ class TargetDeviceConnectionBrokerImpl
   std::unique_ptr<Connection::Factory> connection_factory_;
   std::unique_ptr<Connection> connection_;
 
-  bool is_resume_after_update_;
-
   base::OneShotTimer
       nearby_connections_advertisement_after_update_timeout_timer_;
 
