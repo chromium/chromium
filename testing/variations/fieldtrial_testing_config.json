@@ -2046,6 +2046,29 @@
             ]
         }
     ],
+    "AutofillUserPerceptionSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "Q13fLRHym0ugnJ3q1cK0Tm5d8fMW",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillAddressUserPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomaticLazyFrameLoading": [
         {
             "platforms": [
