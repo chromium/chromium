@@ -23,7 +23,10 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SharedStorageWorklet* Create(ScriptState*);
+  static SharedStorageWorklet* Create(ScriptState*,
+                                      bool cross_origin_script_allowed);
+
+  explicit SharedStorageWorklet(bool cross_origin_script_allowed);
 
   ~SharedStorageWorklet() override = default;
 
@@ -64,6 +67,8 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
       worklet_host_{nullptr};
 
   bool keep_alive_after_operation_ = true;
+
+  bool cross_origin_script_allowed_ = false;
 };
 
 }  // namespace blink

@@ -774,7 +774,8 @@ ScriptPromise SharedStorage::createWorklet(ScriptState* script_state,
                                            const String& module_url,
                                            const WorkletOptions* options,
                                            ExceptionState& exception_state) {
-  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(script_state);
+  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(
+      script_state, /*cross_origin_script_allowed=*/true);
   return worklet->AddModuleHelper(script_state, module_url, options,
                                   exception_state,
                                   /*resolve_to_worklet=*/true);
@@ -783,7 +784,8 @@ ScriptPromise SharedStorage::createWorklet(ScriptState* script_state,
 SharedStorageWorklet* SharedStorage::worklet(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   if (!shared_storage_worklet_) {
-    shared_storage_worklet_ = SharedStorageWorklet::Create(script_state);
+    shared_storage_worklet_ = SharedStorageWorklet::Create(
+        script_state, /*cross_origin_script_allowed=*/false);
   }
 
   return shared_storage_worklet_.Get();

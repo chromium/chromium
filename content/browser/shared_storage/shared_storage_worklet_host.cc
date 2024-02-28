@@ -171,9 +171,8 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
         worklet_host,
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback callback)
     : driver_(std::make_unique<SharedStorageRenderThreadWorkletDriver>(
-          &(static_cast<RenderFrameHostImpl&>(
-                document_service.render_frame_host())
-                .GetAgentSchedulingGroup()))),
+          document_service.render_frame_host(),
+          script_source_url)),
       document_service_(document_service.GetWeakPtr()),
       page_(
           static_cast<PageImpl&>(document_service.render_frame_host().GetPage())
@@ -185,8 +184,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
           storage_partition_->GetSharedStorageWorkletHostManager()),
       browser_context_(
           document_service.render_frame_host().GetBrowserContext()),
-      shared_storage_origin_(
-          document_service.render_frame_host().GetLastCommittedOrigin()),
+      shared_storage_origin_(url::Origin::Create(script_source_url)),
       shared_storage_site_(net::SchemefulSite(shared_storage_origin_)),
       main_frame_origin_(document_service.main_frame_origin()),
       creation_time_(base::TimeTicks::Now()) {

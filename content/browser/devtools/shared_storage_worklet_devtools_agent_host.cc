@@ -95,7 +95,11 @@ void SharedStorageWorkletDevToolsAgentHost::WorkletReadyForInspection(
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>
         agent_host_receiver) {
-  CHECK(worklet_host_->GetProcessHost());
+  // The process can be null here when the worklet is in its keep-alive stage
+  // and the browser is shutting down.
+  if (!worklet_host_->GetProcessHost()) {
+    return;
+  }
 
   GetRendererChannel()->SetRenderer(std::move(agent_remote),
                                     std::move(agent_host_receiver),

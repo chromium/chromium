@@ -74,8 +74,11 @@ bool IsValidFencedFrameReportingURL(const KURL& url) {
 }  // namespace
 
 // static
-SharedStorageWorklet* SharedStorageWorklet::Create(ScriptState* script_state) {
-  return MakeGarbageCollected<SharedStorageWorklet>();
+SharedStorageWorklet* SharedStorageWorklet::Create(
+    ScriptState* script_state,
+    bool cross_origin_script_allowed) {
+  return MakeGarbageCollected<SharedStorageWorklet>(
+      cross_origin_script_allowed);
 }
 
 void SharedStorageWorklet::Trace(Visitor* visitor) const {
@@ -132,7 +135,8 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
   scoped_refptr<SecurityOrigin> script_security_origin =
       SecurityOrigin::Create(script_source_url);
 
-  if (!execution_context->GetSecurityOrigin()->IsSameOriginWith(
+  if (!cross_origin_script_allowed_ &&
+      !execution_context->GetSecurityOrigin()->IsSameOriginWith(
           script_security_origin.get())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
@@ -593,5 +597,8 @@ ScriptPromise SharedStorageWorklet::run(
 
   return promise;
 }
+
+SharedStorageWorklet::SharedStorageWorklet(bool cross_origin_script_allowed)
+    : cross_origin_script_allowed_(cross_origin_script_allowed) {}
 
 }  // namespace blink
