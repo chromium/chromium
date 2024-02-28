@@ -378,7 +378,7 @@ void BuiltInBackendToAndroidBackendMigrator::
   //    to the |android_backend_|.
   // 2. If |F| already exists in both |android_backend_|, then
   //    the most recent version of |F| will be kept in |android_backend_|.
-  // TODO (b/321217242): No changes to |built_in_backend_| should be done.
+  // No changes are made to the |built_in_backend_|.
 
   // Callbacks are chained like in a stack way by passing 'callback_chain' as a
   // completion for the next operation. At the end, update pref to mark
@@ -416,32 +416,7 @@ void BuiltInBackendToAndroidBackendMigrator::
           &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
           weak_ptr_factory_.GetWeakPtr(), android_backend_, *login,
           std::move(callbacks_chain));
-    } else {
-      // TODO (b/321217242): No changes to |built_in_backend_| should be done.
-      callbacks_chain = base::BindOnce(
-          &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
-          weak_ptr_factory_.GetWeakPtr(), built_in_backend_, *android_login,
-          std::move(callbacks_chain));
     }
-  }
-
-  // TODO (b/321217242): Remove this.
-  // At this point, we have processed all passwords from the |built_in_backend_|
-  // In addition, we also have processed all passwords from the
-  // |android_backend_| which exist in the |built_in_backend_|. What's remaining
-  // is to process passwords from |android_backend_| that don't exist in the
-  // |built_in_backend_|.
-  for (auto* const android_login : android_logins) {
-    if (built_in_backend_logins.contains(android_login)) {
-      continue;
-    }
-
-    // Add to the |built_in_backend_| any passwords from the |android_backend_|
-    // that doesn't exist in the |built_in_backend_|.
-    callbacks_chain = base::BindOnce(
-        &BuiltInBackendToAndroidBackendMigrator::AddLoginToBackend,
-        weak_ptr_factory_.GetWeakPtr(), built_in_backend_, *android_login,
-        std::move(callbacks_chain));
   }
 
   std::move(callbacks_chain).Run();

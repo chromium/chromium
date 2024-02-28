@@ -527,14 +527,20 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
-  for (auto* const backend : {&android_backend(), &built_in_backend()}) {
-    base::MockCallback<LoginsOrErrorReply> mock_reply;
-    EXPECT_CALL(
-        mock_reply,
-        Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetMergedLogins()))));
-    backend->GetAllLoginsAsync(mock_reply.Get());
-    RunUntilIdle();
-  }
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetMergedLogins()))));
+  android_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
+
+  // After local passwords migration, the credentials in the built in backend
+  // should stay unchanged.
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetBuiltInLogins()))));
+  built_in_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
 }
 
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
