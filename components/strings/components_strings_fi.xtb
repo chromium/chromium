@@ -1108,7 +1108,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3145945101586104090">Vastauksen purkaminen epäonnistui</translation>
 <translation id="3147941219998826815">Edulliset matkat ja äkkilähdöt</translation>
 <translation id="3150653042067488994">Tilapäinen palvelinvirhe</translation>
-<translation id="3150889484970506196">Luo taulukko ‑painike, aktivoi luodaksesi uusi Google-taulukko nopeasti</translation>
+<translation id="3150889484970506196">Luo taulukko ‑painike, aktivoi luodaksesi uusi Google Sheets -taulukko nopeasti</translation>
 <translation id="3154506275960390542">Tällä sivulla on taulukko, jota ei ehkä voi lähettää turvallisesti. Muut voivat nähdä lähettämäsi tiedot siirron aikana tai hyökkääjä voi muuttaa niitä, ennen kuin ne saapuvat palvelimelle.</translation>
 <translation id="3154987252551138431">Jotain meni pieleen käytettäessä lähijakamista</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> ylläpitää tiliäsi.</translation>
@@ -1973,7 +1973,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4816492930507672669">Sovita sivulle</translation>
 <translation id="4819347708020428563">Muokataanko merkintöjä oletusnäkymässä?</translation>
 <translation id="4822493756793346865">Tyypilliset hinnat perustuvat verkossa olevien kauppojen hintoihin 90 viime päivän aikana.</translation>
-<translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi Google-taulukko nopeasti painamalla sarkainta ja sitten Enter</translation>
+<translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi Google Sheets -taulukko nopeasti painamalla sarkainta ja sitten Enter</translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
 <translation id="4827283332383516812">Poista kortti</translation>
 <translation id="4831993743164297314">Valoladontatulostimen paperi</translation>
@@ -3648,7 +3648,7 @@ Lisätietoja:
 <translation id="8070495475341517754">Nähtävyyskierrokset</translation>
 <translation id="8073647227500388356">Itseohjautuvat ajoneuvot</translation>
 <translation id="8075588646978457437">Tarrapaperi</translation>
-<translation id="8075736640322370409">Luo uusi Google-taulukko nopeasti</translation>
+<translation id="8075736640322370409">Luo uusi Google Sheets -taulukko nopeasti</translation>
 <translation id="8075898834294118863">Muuta sivustoasetuksia</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8077669823243888800">Kirjekuori kiinalainen #8</translation>

@@ -4306,7 +4306,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4254414375763576535">Big pointer</translation>
 <translation id="4254813446494774748">Translation Language:</translation>
 <translation id="425573743389990240">Battery Discharge Rate in Watts (Negative value means battery is charging)</translation>
-<translation id="4256316378292851214">Sa&amp;ve Video As...</translation>
+<translation id="4256316378292851214">Sa&amp;ve video as...</translation>
 <translation id="4258348331913189841">File System</translation>
 <translation id="4259388776256904261">This may take a while</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> may be dangerous. Send to Google Advanced Protection for scanning? Press Shift + F6 to cycle to the downloads bar area.</translation>
@@ -4801,7 +4801,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4639390152280993480">To see a simplified view of this page, go to More Tools &gt; Reading mode</translation>
 <translation id="4641539339823703554">Chrome was unable to set the system time. Please check the time below and correct it if needed.</translation>
 <translation id="4642587497923912728">Steam for Chromebook (Beta) is only available for the account that signed in first on this Chromebook.</translation>
-<translation id="4643612240819915418">&amp;Open Video in New Tab</translation>
+<translation id="4643612240819915418">&amp;Open video in new tab</translation>
 <translation id="4643833688073835173">Your Chromebook uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google.</translation>
 <translation id="4644205769234414680">Allow in Incognito</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
@@ -9030,7 +9030,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7945703887991230167">Preferred voice</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>
 <translation id="794676567536738329">Confirm Permission</translation>
-<translation id="7947962633355574091">C&amp;opy Video Address</translation>
+<translation id="7947962633355574091">C&amp;opy video address</translation>
 <translation id="7947964080535614577">Sites usually show ads so that they can provide content or services free of charge. But, some sites are known to show intrusive or misleading ads.</translation>
 <translation id="7948407723851303488">All pages of <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Reason: LBS only supports http://, https:// and file:// URLs.</translation>

@@ -287,6 +287,7 @@
 <translation id="2473876017985765807">כבר שמרת סיסמה לאתר <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">לא נבחר</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
+<translation id="2480445180439820402">היסטוריה</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2484459871750294497">איך אפשר להפעיל את התכונה הזו?</translation>
 <translation id="2496626742194544812">מעבר לכרטיסייה הראשונה</translation>
@@ -577,6 +578,7 @@
 <translation id="3962326069546168954">שמירה</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3968505803272650567">ניהול תחומי עניין</translation>
+<translation id="3976922811715736829">כרטיסיות אחרונות</translation>
 <translation id="3989635538409502728">יציאה</translation>
 <translation id="3994422733891749358">אילו התראות היית רוצה לקבל?</translation>
 <translation id="3995521777587992544">סרגל התקדמות של טעינת דף, <ph name="EMAIL" /> נטענו.</translation>
@@ -635,6 +637,7 @@
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4282944936010261425">אין בעיות אבטחה שצריך לתקן.</translation>
 <translation id="4286718549648564014">הכתובת הועברה לחשבון שלך, <ph name="USER_EMAIL" /></translation>
+<translation id="428768789042547925">מה חדש</translation>
 <translation id="4293080268407233932">חיפוש</translation>
 <translation id="4302248187517737842">אין שם משתמש ••••••••</translation>
 <translation id="4302415908542657649">מתבצע שיתוף הסיסמה</translation>
@@ -689,6 +692,7 @@
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4588014171431912783">הגדרות הסנכרון ישוחזרו על סמך הגיבוי האחרון שלך. <ph name="BEGIN_LINK" />אלו הדברים שאפשר לסנכרן<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">מקלדת</translation>
+<translation id="4596899661486753028">רשימת קריאה</translation>
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606247758155004938">הדפדפן מנוהל על ידי הארגון שלך.</translation>
 <translation id="4607887340472970274">מעקב מחירים</translation>
@@ -1155,6 +1159,7 @@
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="6822587385560699678">כשההגדרה מופעלת, הסיסמאות נשמרות בחשבון <ph name="ACCOUNT" />. כשההגדרה מושבתת, הסיסמאות נשמרות רק במכשיר הזה.</translation>
+<translation id="6824350924364057989">הגדרות</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>
 <translation id="6851516051005285358">בקשת אתר למחשב</translation>
@@ -1193,6 +1198,7 @@
 <translation id="7004499039102548441">כרטיסיות אחרונות</translation>
 <translation id="7006788746334555276">הגדרות תוכן</translation>
 <translation id="7016070607649558507">יש לך סיסמה חלשה אחת. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.</translation>
+<translation id="7022197654033719543">פרטי האתר</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="704692552158601232">אפליקציית ברירת המחדל לדפדפן</translation>
 <translation id="7062545763355031412">אישור והחלפת חשבונות</translation>
@@ -1292,6 +1298,7 @@
 <translation id="7603852183842204213">חלונות קופצים שנחסמו (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">קבוצות של כרטיסיות</translation>
 <translation id="7607521702806708809">מחיקת הסיסמה</translation>
+<translation id="7609559547731036746">סימניות</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
 <translation id="7640669552036055091">‏כרטיסיות מ-Android</translation>
 <translation id="7646263789464975852">תפריט ← הגדרות ← בדיקת אבטחה</translation>
@@ -1329,8 +1336,10 @@
 <translation id="7781069478569868053">דף 'כרטיסייה חדשה'</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{אחרי יום אחד}one{אחרי {COUNT} ימים}two{אחרי יומיים ({COUNT})}other{אחרי {COUNT} ימים}}</translation>
+<translation id="7788868432173225918">סגירת התצוגה המורחבת</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7792549458069452436">הורדת האפליקציה</translation>
+<translation id="7800723706644914607">מנהל הסיסמאות</translation>
 <translation id="7807060072011926525">‏סופק על ידי Google</translation>
 <translation id="7812377703891978671">כדי לגשת לכל היסטוריית הגלישה, אפשר ללחוץ על <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">הורדות</translation>
@@ -1403,6 +1412,7 @@
 <translation id="81313319706244542">2. מקישים על 'סיסמאות'</translation>
 <translation id="8132598642024322408">עכשיו במחיר <ph name="PRICE" />, היה <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">יש להשתמש בסיסמה ייחודית לכל אתר או אפליקציה. אם מישהו יגלה סיסמה שהשתמשת בה במקומות שונים, הוא יוכל להשתמש בה כדי להיכנס גם לשאר החשבונות שלך. יש ללחוץ כדי לפתוח את האתר ולשנות את הסיסמאות עכשיו.</translation>
+<translation id="814463369662540460">מעקב אחר מחירים</translation>
 <translation id="8156478151976189188">סנכרון הסיסמאות לא פועל</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> חשבונות</translation>
 <translation id="8159358225423560600">ממש עכשיו</translation>
@@ -1510,6 +1520,7 @@
 <translation id="8703536910991780768">הסיסמאות נראות חזקות</translation>
 <translation id="8706253136355675497">טמפרטורה</translation>
 <translation id="8709409604518538305">הכרטיסיות נסגרו</translation>
+<translation id="8709773186849937451">הורדות</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
 <translation id="8721297211384281569">התפריט 'כלים'</translation>
