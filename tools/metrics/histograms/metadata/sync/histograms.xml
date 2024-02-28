@@ -700,7 +700,7 @@ chromium-metrics-reviews@google.com.
     Recorded whenever an error card is shown to the user, and if the user
     interacts with the card (i.e. presses the button to resolve the error).
   </summary>
-  <token key="SyncErrorReason"/>
+  <token key="SyncErrorReason" variants="SyncErrorReason"/>
 </histogram>
 
 <histogram name="Sync.IdentityErrorMessage{SyncErrorReason}"
@@ -718,7 +718,7 @@ chromium-metrics-reviews@google.com.
     with the message(i.e. either dismissing the message or pressing the button
     to resolve the error).
   </summary>
-  <token key="SyncErrorReason"/>
+  <token key="SyncErrorReason" variants="SyncErrorReason"/>
 </histogram>
 
 <histogram name="Sync.IncomingInvalidationStatus"
