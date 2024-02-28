@@ -1852,6 +1852,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.EmailPredictionCorrectness.Recall"
+    enum="EmailPredictionConfusionMatrix" expires_after="2024-12-12">
+  <owner>vizcay@chromium.org</owner>
+  <owner>jkeitel@chromium.org</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs the recall of an EMAIL_ADDRESS field prediction. Emitted at form
+    submission time for every field for which its value matches the email
+    format.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ErrorDialogShown" enum="AutofillErrorDialogType"
     expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>

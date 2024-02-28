@@ -1190,19 +1190,29 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
 
 void AutofillMetrics::LogEmailFieldPredictionMetrics(
     const AutofillField& field) {
-  // If the field has no email prediction, there is no need to record the
-  // metric.
-  if (field.Type().GetStorableType() != EMAIL_ADDRESS || field.value.empty()) {
+  // If the field has no value, there is no need to record any of the metrics.
+  if (field.value.empty()) {
     return;
   }
 
-  EmailPredictionConfusionMatrix prediction =
-      IsValidEmailAddress(field.value)
-          ? EmailPredictionConfusionMatrix::kTruePositive
-          : EmailPredictionConfusionMatrix::kFalsePositive;
-  base::UmaHistogramEnumeration("Autofill.EmailPredictionCorrectness.Precision",
-                                prediction);
-  // TODO(b/324108545): Introduce recall metric.
+  bool is_valid_email = IsValidEmailAddress(field.value);
+  bool is_email_prediction = field.Type().GetStorableType() == EMAIL_ADDRESS;
+
+  if (is_email_prediction) {
+    EmailPredictionConfusionMatrix prediction_precision =
+        is_valid_email ? EmailPredictionConfusionMatrix::kTruePositive
+                       : EmailPredictionConfusionMatrix::kFalsePositive;
+    base::UmaHistogramEnumeration(
+        "Autofill.EmailPredictionCorrectness.Precision", prediction_precision);
+  }
+
+  if (is_valid_email) {
+    EmailPredictionConfusionMatrix prediction_recall =
+        is_email_prediction ? EmailPredictionConfusionMatrix::kTruePositive
+                            : EmailPredictionConfusionMatrix::kFalseNegative;
+    base::UmaHistogramEnumeration("Autofill.EmailPredictionCorrectness.Recall",
+                                  prediction_recall);
+  }
 }
 
 // static

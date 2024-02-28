@@ -975,6 +975,59 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessPrecisionMetric) {
   }
 }
 
+// Tests that recall metric is recorded for email field predictions.
+TEST_F(QualityMetricsTest, EmailPredictionCorrectnessRecallMetric) {
+  FormData form = CreateForm(
+      {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address", "address", "3734 Elvis Presley Blvd.",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email", "email", "buddy@gmail.com",
+                           FormControlType::kInputText)});
+
+  std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                        EMAIL_ADDRESS};
+  autofill_manager().AddSeenForm(form, field_types);
+
+  std::string precision_histogram =
+      "Autofill.EmailPredictionCorrectness.Recall";
+
+  // Check that the metric records true positive.
+  {
+    base::HistogramTester histogram_tester;
+    FillTestProfile(form);
+    SubmitForm(form);
+
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(precision_histogram),
+        BucketsAre(Bucket(EmailPredictionConfusionMatrix::kTruePositive, 1)));
+  }
+
+  // Check that the metric records false negative. (The predicted type is not
+  // email).
+  {
+    base::HistogramTester histogram_tester;
+    autofill_manager().ClearFormStructures();
+    // Wrong field type predicted (i.e. not email).
+    field_types[2] = COMPANY_NAME;
+    autofill_manager().AddSeenForm(form, field_types);
+    FillTestProfile(form);
+    SubmitForm(form);
+
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(precision_histogram),
+        BucketsAre(Bucket(EmailPredictionConfusionMatrix::kFalseNegative, 1)));
+  }
+  // Check that the metric is not recorded for empty values.
+  {
+    base::HistogramTester histogram_tester;
+    form.fields[2].value = u"";
+    FillTestProfile(form);
+    SubmitForm(form);
+    histogram_tester.ExpectTotalCount(precision_histogram, 0);
+  }
+}
+
 }  // namespace autofill_metrics
 
 }  // namespace autofill
