@@ -3,13 +3,10 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -26,41 +23,30 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
-#include "chrome/browser/sessions/session_service_test_helper.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
-#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
@@ -71,17 +57,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
-#include "url/url_constants.h"
-
-// TODO(b/280753754): Convert these tests to interactive ui tests.
 
 using testing::_;
 using EntryPoint = SearchEngineChoiceDialogService::EntryPoint;
 
 namespace {
-
-constexpr char kCustomSearchEngineDomain[] = "bar.com";
-constexpr char16_t kCustomSearchEngineKeyword[] = u"bar.com";
 
 // Class that mocks `SearchEngineChoiceDialogService`.
 class MockSearchEngineChoiceDialogService
@@ -135,23 +115,6 @@ class MockSearchEngineChoiceDialogService
  private:
   unsigned int number_of_browsers_with_dialogs_open_ = 0;
 };
-
-void SetUserSelectedDefaultSearchProvider(
-    TemplateURLService* template_url_service) {
-  TemplateURLData data;
-  data.SetShortName(kCustomSearchEngineKeyword);
-  data.SetKeyword(kCustomSearchEngineKeyword);
-  data.SetURL(base::StringPrintf("https://%s/url?bar={searchTerms}",
-                                 kCustomSearchEngineDomain));
-  data.new_tab_url =
-      base::StringPrintf("https://%s/newtab", kCustomSearchEngineDomain);
-  data.alternate_urls.push_back(base::StringPrintf(
-      "https://%s/alt#quux={searchTerms}", kCustomSearchEngineDomain));
-
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-}
 
 webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
@@ -625,33 +588,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       1);
 }
 #endif
-
-// This test is disabled because we currently don't want to show the dialog for
-// users who have custom search engines.
-// TODO(b/302687046): Modify the test based on the decision towards custom
-// search engines.
-IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       DISABLED_ChooseCustomDefaultSearchProvider) {
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
-  SetUserSelectedDefaultSearchProvider(template_url_service);
-  auto* search_engine_choice_dialog_service =
-      static_cast<MockSearchEngineChoiceDialogService*>(
-          SearchEngineChoiceDialogServiceFactory::GetForProfile(
-              browser()->profile()));
-
-  // Navigate to a URL to display the dialog.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(kCustomSearchEngineDomain),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-
-  search_engine_choice_dialog_service->NotifyChoiceMade(
-      /*prepopulate_id=*/0, EntryPoint::kDialog);
-  const TemplateURL* default_search_provider =
-      template_url_service->GetDefaultSearchProvider();
-  EXPECT_EQ(default_search_provider->short_name(), kCustomSearchEngineKeyword);
-}
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        DialogDoesNotShowWithExtensionEnabledThatOverridesDSE) {
