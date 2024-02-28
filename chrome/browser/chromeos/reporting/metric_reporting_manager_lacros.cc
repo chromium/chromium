@@ -146,10 +146,10 @@ void MetricReportingManagerLacros::OnDeviceSettingsUpdated() {
 
 void MetricReportingManagerLacros::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  periodic_collectors_.clear();
   website_usage_observer_.reset();
   samplers_.clear();
   event_observer_managers_.clear();
-  periodic_collectors_.clear();
   website_event_report_queue_.reset();
   telemetry_report_queue_.reset();
 }
