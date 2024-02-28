@@ -3286,6 +3286,9 @@
       # TODO (crbug.com/1278617) Re-enable once fixed
       'mac-osxbeta-rel': {
         'experiment_percentage': 100,
+        'swarming': {
+          'shards': 4,
+        },
       },
       'mac-rel-cft': {
         'args': [
