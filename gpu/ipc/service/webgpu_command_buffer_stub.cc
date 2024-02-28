@@ -158,6 +158,10 @@ MemoryTracker* WebGPUCommandBufferStub::GetContextGroupMemoryTracker() const {
   return nullptr;
 }
 
+base::WeakPtr<CommandBufferStub> WebGPUCommandBufferStub::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WebGPUCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 
 }  // namespace gpu

@@ -66,8 +66,7 @@ class SyncPointClientState;
 class GPU_IPC_SERVICE_EXPORT CommandBufferStub
     : public CommandBufferServiceClient,
       public DecoderClient,
-      public mojom::CommandBuffer,
-      public base::SupportsWeakPtr<CommandBufferStub> {
+      public mojom::CommandBuffer {
  public:
   class DestructionObserver {
    public:
@@ -115,6 +114,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   MemoryTracker* GetMemoryTracker() const;
   virtual MemoryTracker* GetContextGroupMemoryTracker() const = 0;
+
+  virtual base::WeakPtr<CommandBufferStub> AsWeakPtr() = 0;
 
   // Executes a DeferredRequest routed to this command buffer by a GpuChannel.
   void ExecuteDeferredRequest(

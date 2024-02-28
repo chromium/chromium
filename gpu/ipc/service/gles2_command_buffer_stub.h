@@ -17,10 +17,9 @@ namespace gpu {
 
 struct Mailbox;
 
-class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
+class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
     : public CommandBufferStub,
-      public ImageTransportSurfaceDelegate,
-      public base::SupportsWeakPtr<GLES2CommandBufferStub> {
+      public ImageTransportSurfaceDelegate {
  public:
   GLES2CommandBufferStub(GpuChannel* channel,
                          const mojom::CreateCommandBufferParams& init_params,
@@ -42,6 +41,8 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
       const mojom::CreateCommandBufferParams& init_params,
       base::UnsafeSharedMemoryRegion shared_state_shm) override;
   MemoryTracker* GetContextGroupMemoryTracker() const override;
+
+  base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
   // DecoderClient implementation.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;

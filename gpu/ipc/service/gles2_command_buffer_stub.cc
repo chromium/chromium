@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -406,6 +407,10 @@ const GpuPreferences& GLES2CommandBufferStub::GetGpuPreferences() const {
 
 MemoryTracker* GLES2CommandBufferStub::GetContextGroupMemoryTracker() const {
   return context_group_->memory_tracker();
+}
+
+base::WeakPtr<CommandBufferStub> GLES2CommandBufferStub::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void GLES2CommandBufferStub::OnGpuSwitched(
