@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -131,30 +130,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         mTabContentManager = tabContentManager;
         mModalDialogManager = modalDialogManager;
         mParentTabSupplier = parentTabSupplier;
-        if (tabSwitcherType == TabSwitcherType.GRID) {
-            assert incognitoReauthControllerSupplier != null
-                    : "Valid Incognito re-auth controller supplier needed to create GTS.";
-            mTabSwitcher =
-                    TabManagementDelegateProvider.getDelegate()
-                            .createGridTabSwitcher(
-                                    activity,
-                                    activityLifecycleDispatcher,
-                                    tabModelSelector,
-                                    tabContentManager,
-                                    browserControlsStateProvider,
-                                    tabCreatorManager,
-                                    menuOrKeyboardActionController,
-                                    mView.getBodyViewContainer(),
-                                    multiWindowModeStateDispatcher,
-                                    scrimCoordinator,
-                                    rootView,
-                                    dynamicResourceLoaderSupplier,
-                                    snackbarManager,
-                                    modalDialogManager,
-                                    incognitoReauthControllerSupplier,
-                                    /* backPressManager= */ null,
-                                    /* layoutStateProviderSupplier= */ null);
-        } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
+        if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher =
                     new SingleTabSwitcherCoordinator(
                             activity,

@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -153,9 +152,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     // Non-null in SurfaceMode.SINGLE_PANE mode to show more tabs.
     @Nullable
     private PropertyModelChangeProcessor mSecondaryTasksSurfacePropertyModelChangeProcessor;
-
-    // Non-null in SurfaceMode.NO_START_SURFACE to show the tabs.
-    @Nullable private TabSwitcher mGridTabSwitcher;
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
     @Nullable private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
@@ -338,32 +334,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         Runnable initializeMVTilesRunnable = null;
         View logoContainerView = null;
         ViewGroup feedPlaceholderParentView = null;
-        if (!mIsStartSurfaceEnabled && !mIsStartSurfaceRefactorEnabled) {
-            // Create Tab switcher directly to save one layer in the view hierarchy.
-            mGridTabSwitcher =
-                    TabManagementDelegateProvider.getDelegate()
-                            .createGridTabSwitcher(
-                                    activity,
-                                    activityLifecycleDispatcher,
-                                    tabModelSelector,
-                                    tabContentManager,
-                                    browserControlsManager,
-                                    tabCreatorManager,
-                                    menuOrKeyboardActionController,
-                                    containerView,
-                                    multiWindowModeStateDispatcher,
-                                    scrimCoordinator,
-                                    /* rootView= */ containerView,
-                                    dynamicResourceLoaderSupplier,
-                                    snackbarManager,
-                                    modalDialogManager,
-                                    incognitoReauthControllerSupplier,
-                                    backPressManager,
-                                    /* layoutStateProviderSupplier= */ null);
-            mTabSwitcherCustomViewManagerSupplier.set(
-                    mGridTabSwitcher.getTabSwitcherCustomViewManager());
-            controller = mGridTabSwitcher.getController();
-        } else if (!mIsStartSurfaceRefactorEnabled) {
+        if (!mIsStartSurfaceRefactorEnabled) {
             assert mIsStartSurfaceEnabled;
 
             // createSwipeRefreshLayout has to be called before creating any surface.
@@ -409,7 +380,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                                         mModuleRegistrySupplier.get()),
                         mParentTabSupplier,
                         logoContainerView,
-                        mGridTabSwitcher == null ? backPressManager : null,
+                        backPressManager,
                         feedPlaceholderParentView,
                         mActivityLifecycleDispatcher,
                         mProfileSupplier);
@@ -523,8 +494,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mStartSurfaceMediator.setOnTabSelectingListener(listener);
         if (mTasksSurface != null) {
             mTasksSurface.setOnTabSelectingListener(mStartSurfaceMediator);
-        } else if (mGridTabSwitcher != null) {
-            mGridTabSwitcher.setOnTabSelectingListener(mStartSurfaceMediator);
         } else if (mTabSwitcherModule != null) {
             mTabSwitcherModule.setOnTabSelectingListener(mStartSurfaceMediator);
         }
@@ -576,9 +545,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                 UserPrefs.get(ProfileManager.getLastUsedRegularProfile()),
                 mSnackbarManager);
 
-        if (mGridTabSwitcher != null) {
-            mGridTabSwitcher.initWithNative();
-        }
         if (mTasksSurface != null) {
             mTasksSurface.onFinishNativeInitialization(
                     mActivity,
@@ -663,9 +629,6 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public boolean onBackPressed() {
-        if (mGridTabSwitcher != null) {
-            return mGridTabSwitcher.getController().onBackPressed();
-        }
         return mStartSurfaceMediator.onBackPressed();
     }
 
@@ -717,16 +680,13 @@ public class StartSurfaceCoordinator implements StartSurface {
                         initializeSecondaryTasksSurface());
             }
             return mSecondaryTasksSurface.getTabListDelegate();
-        } else {
-            return mGridTabSwitcher.getTabListDelegate();
         }
+        return null;
     }
 
     @Override
     public int getTabSwitcherTabListModelSize() {
-        if (mGridTabSwitcher != null) {
-            return mGridTabSwitcher.getTabSwitcherTabListModelSize();
-        } else if (mSecondaryTasksSurface != null) {
+        if (mSecondaryTasksSurface != null) {
             return mSecondaryTasksSurface.getTabSwitcherTabListModelSize();
         }
         return 0;
@@ -734,9 +694,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {
-        if (mGridTabSwitcher != null) {
-            mGridTabSwitcher.setTabSwitcherRecyclerViewPosition(recyclerViewPosition);
-        } else if (mSecondaryTasksSurface != null) {
+        if (mSecondaryTasksSurface != null) {
             mSecondaryTasksSurface.setTabSwitcherRecyclerViewPosition(recyclerViewPosition);
         }
     }
@@ -757,11 +715,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        // If TabSwitcher has been created directly, use the TabGridDialogVisibilitySupplier from
-        // TabSwitcher.
-        if (mGridTabSwitcher != null) {
-            return mGridTabSwitcher.getTabGridDialogVisibilitySupplier();
-        } else if (mTabSwitcherModule != null) {
+        if (mTabSwitcherModule != null) {
             return () -> mTabSwitcherModule.getTabGridDialogVisibilitySupplier() != null;
         }
         return () -> {
