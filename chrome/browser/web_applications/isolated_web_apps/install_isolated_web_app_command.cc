@@ -97,8 +97,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
               .message = std::string("System shutting down.")})),
       command_helper_(std::move(command_helper)),
       url_info_(url_info),
-      source_location_(location),
       expected_version_(expected_version),
+      source_location_(location),
       web_contents_(std::move(web_contents)),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
@@ -113,7 +113,7 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
   GetMutableDebugValue().Set(
       "bundle_type", static_cast<int>(url_info_.web_bundle_id().type()));
   GetMutableDebugValue().Set(
-      "source_location", IsolatedWebAppLocationAsDebugValue(source_location_));
+      "source_location", IsolatedWebAppLocationAsDebugValue(*source_location_));
   GetMutableDebugValue().Set("expected_version",
                              expected_version_.has_value()
                                  ? expected_version_->GetString()
@@ -121,9 +121,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
 }
 
 InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() {
-  if (lazy_destination_location_.has_value()) {
-    CleanupLocationIfOwned(profile().GetPath(),
-                           lazy_destination_location_.value(),
+  if (destination_location_.has_value()) {
+    CleanupLocationIfOwned(profile().GetPath(), *destination_location_,
                            base::DoNothing());
   }
 }
@@ -138,7 +137,6 @@ void InstallIsolatedWebAppCommand::StartWithLock(
   RunChainedCallbacks(
       base::BindOnce(&InstallIsolatedWebAppCommand::CopyToProfileDirectory,
                      weak_ptr),
-      base::BindOnce(&InstallIsolatedWebAppCommand::UpdateLocation, weak_ptr),
       base::BindOnce(&InstallIsolatedWebAppCommand::CheckTrustAndSignatures,
                      weak_ptr),
       base::BindOnce(&InstallIsolatedWebAppCommand::CreateStoragePartition,
@@ -157,29 +155,33 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 }
 
 void InstallIsolatedWebAppCommand::CopyToProfileDirectory(
-    base::OnceCallback<void(base::expected<IsolatedWebAppLocation,
-                                           std::string>)> next_step_callback) {
-  CopyLocationToProfileDirectory(profile().GetPath(), source_location_,
-                                 std::move(next_step_callback));
+    base::OnceClosure next_step_callback) {
+  CopyLocationToProfileDirectory(
+      profile().GetPath(), *source_location_,
+      base::BindOnce(&InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(next_step_callback)));
 }
 
-void InstallIsolatedWebAppCommand::UpdateLocation(
+void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
     base::OnceClosure next_step_callback,
     base::expected<IsolatedWebAppLocation, std::string> new_location) {
-  ASSIGN_OR_RETURN(lazy_destination_location_, new_location,
+  ASSIGN_OR_RETURN(destination_location_, new_location,
                    &InstallIsolatedWebAppCommand::ReportFailure, this);
+  // Make sure that `source_location_`, which is now outdated, can no longer be
+  // accessed.
+  source_location_.reset();
 
   GetMutableDebugValue().Set(
-      "lazy_destination_location",
-      IsolatedWebAppLocationAsDebugValue(lazy_destination_location_.value()));
+      "destination_location",
+      IsolatedWebAppLocationAsDebugValue(*destination_location_));
   std::move(next_step_callback).Run();
 }
 
 void InstallIsolatedWebAppCommand::CheckTrustAndSignatures(
     base::OnceClosure next_step_callback) {
-  CHECK(lazy_destination_location_);
   command_helper_->CheckTrustAndSignatures(
-      *lazy_destination_location_, &profile(),
+      *destination_location_, &profile(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<void>,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -193,9 +195,8 @@ void InstallIsolatedWebAppCommand::CreateStoragePartition(
 
 void InstallIsolatedWebAppCommand::LoadInstallUrl(
     base::OnceClosure next_step_callback) {
-  CHECK(lazy_destination_location_);
   command_helper_->LoadInstallUrl(
-      *lazy_destination_location_, *web_contents_.get(), *url_loader_.get(),
+      *destination_location_, *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<void>,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -227,7 +228,7 @@ void InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo(
   CHECK(!expected_version_ ||
         *expected_version_ == install_info.isolated_web_app_version);
   actual_version_ = install_info.isolated_web_app_version;
-  GetMutableDebugValue().Set("actual_version", actual_version_.GetString());
+  GetMutableDebugValue().Set("actual_version", actual_version_->GetString());
 
   command_helper_->RetrieveIconsAndPopulateInstallInfo(
       std::move(install_info), *web_contents_.get(),
@@ -240,8 +241,7 @@ void InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo(
 void InstallIsolatedWebAppCommand::FinalizeInstall(WebAppInstallInfo info) {
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
-  CHECK(lazy_destination_location_);
-  options.isolated_web_app_location = *lazy_destination_location_;
+  options.isolated_web_app_location = *destination_location_;
 
   lock_->install_finalizer().FinalizeInstall(
       info, options,
@@ -275,12 +275,12 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GetMutableDebugValue().Set("result", "success");
-  // Move the location so that it isn't cleaned up in the destructor.
-  IsolatedWebAppLocation location = lazy_destination_location_.value();
-  lazy_destination_location_ = std::nullopt;
-  CompleteAndSelfDestruct(
-      CommandResult::kSuccess,
-      InstallIsolatedWebAppCommandSuccess(actual_version_, location));
+  // Reset `destination_location_` to prevent cleanup in the destructor.
+  IsolatedWebAppLocation location =
+      std::exchange(destination_location_, std::nullopt).value();
+  CompleteAndSelfDestruct(CommandResult::kSuccess,
+                          InstallIsolatedWebAppCommandSuccess(
+                              *actual_version_, std::move(location)));
 }
 
 Profile& InstallIsolatedWebAppCommand::profile() {

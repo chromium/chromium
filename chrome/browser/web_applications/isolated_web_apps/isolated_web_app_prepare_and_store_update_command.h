@@ -93,10 +93,6 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
       return expected_version_;
     }
 
-    void set_location(IsolatedWebAppLocation location) {
-      location_ = std::move(location);
-    }
-
    private:
     IsolatedWebAppLocation location_;
     std::optional<base::Version> expected_version_;
@@ -161,11 +157,9 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   Profile& profile();
 
-  void CopyToProfileDirectory(
-      base::OnceCallback<void(base::expected<IsolatedWebAppLocation,
-                                             std::string>)> next_step_callback);
+  void CopyToProfileDirectory(base::OnceClosure next_step_callback);
 
-  void UpdateLocation(
+  void OnCopiedToProfileDirectory(
       base::OnceClosure next_step_callback,
       base::expected<IsolatedWebAppLocation, std::string> new_location);
 
@@ -197,19 +191,21 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<AppLock> lock_;
-
-  UpdateInfo source_update_info_;
-  IsolatedWebAppUrlInfo url_info_;
-  base::Version installed_version_;
-  std::optional<UpdateInfo> lazy_destination_update_info_;
-
-  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> url_loader_;
 
-  std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
-  std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
+  const std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
-  std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
+  const IsolatedWebAppUrlInfo url_info_;
+  const std::optional<base::Version> expected_version_;
+
+  std::optional<IsolatedWebAppLocation> source_location_;
+  std::optional<IsolatedWebAppLocation> destination_location_;
+  std::optional<base::Version> installed_version_;
+
+  std::unique_ptr<content::WebContents> web_contents_;
+
+  const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
+  const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
   base::WeakPtrFactory<IsolatedWebAppUpdatePrepareAndStoreCommand>
       weak_factory_{this};
