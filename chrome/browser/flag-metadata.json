@@ -4451,7 +4451,7 @@
   {
     "name": "force-resync-drive",
     "owners": [ "cassycc@chromium.org", "petermarshall@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 126
   },
   {
     "name": "force-show-update-menu-badge",
