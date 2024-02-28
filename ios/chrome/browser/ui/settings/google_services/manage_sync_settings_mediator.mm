@@ -47,7 +47,7 @@
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
+#import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
@@ -169,6 +169,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         signin::ConsentLevel::kSignin);
     _prefService = prefService;
     _initialAccountState = initialAccountState;
+    // Register for font size change notifications
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(preferredContentSizeChanged:)
+               name:UIContentSizeCategoryDidChangeNotification
+             object:nil];
   }
   return self;
 }
@@ -182,6 +188,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   _accountManagerServiceObserver.reset();
   _prefService = nullptr;
   _signedInIdentity = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)autofillAlertConfirmed:(BOOL)value {
@@ -201,31 +208,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 }
 
 #pragma mark - Loads sync data type section
-
-// Loads the centered identity account section.
-- (void)loadIdentityAccountSection {
-  TableViewModel* model = self.consumer.tableViewModel;
-  switch (self.syncAccountState) {
-    case SyncSettingsAccountState::kSignedOut:
-    case SyncSettingsAccountState::kSyncing:
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-      return;
-    case SyncSettingsAccountState::kSignedIn:
-      [model addSectionWithIdentifier:AccountSectionIdentifier];
-      CHECK(_signedInIdentity);
-      TableViewCentralAccountItem* identityAccountItem =
-          [[TableViewCentralAccountItem alloc]
-              initWithType:IdentityAccountItemType];
-      identityAccountItem.avatarImage =
-          _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
-              _signedInIdentity, IdentityAvatarSize::Large);
-      identityAccountItem.name = _signedInIdentity.userFullName;
-      identityAccountItem.email = _signedInIdentity.userEmail;
-      [model addItem:identityAccountItem
-          toSectionWithIdentifier:AccountSectionIdentifier];
-      break;
-  }
-}
 
 // Loads the sync data type section.
 - (void)loadSyncDataTypeSection {
@@ -338,27 +320,22 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
 }
 
-- (void)updateIdentityAccountSection {
-  if (![self.consumer.tableViewModel
-          hasItemForItemType:IdentityAccountItemType
-           sectionIdentifier:AccountSectionIdentifier]) {
-    return;
+// Updates the consumer when the primary account is updated.
+- (void)updatePrimaryAccountDetails {
+  switch (self.syncAccountState) {
+    case SyncSettingsAccountState::kSignedOut:
+    case SyncSettingsAccountState::kSyncing:
+    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
+      return;
+    case SyncSettingsAccountState::kSignedIn:
+      [self.consumer
+          updatePrimaryAccountWithAvatarImage:
+              _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
+                  _signedInIdentity, IdentityAvatarSize::Large)
+                                         name:_signedInIdentity.userFullName
+                                        email:_signedInIdentity.userEmail];
+      break;
   }
-
-  NSIndexPath* accountCellIndexPath = [self.consumer.tableViewModel
-      indexPathForItemType:IdentityAccountItemType
-         sectionIdentifier:AccountSectionIdentifier];
-  TableViewCentralAccountItem* identityAccountItem =
-      base::apple::ObjCCast<TableViewCentralAccountItem>(
-          [self.consumer.tableViewModel itemAtIndexPath:accountCellIndexPath]);
-  CHECK(identityAccountItem);
-  CHECK(_signedInIdentity);
-  identityAccountItem.avatarImage =
-      _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
-          _signedInIdentity, IdentityAvatarSize::Large);
-  identityAccountItem.name = _signedInIdentity.userFullName;
-  identityAccountItem.email = _signedInIdentity.userEmail;
-  [self.consumer reloadItem:identityAccountItem];
 }
 
 // Updates all the sync data type items, and notify the consumer if
@@ -835,16 +812,16 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   TableViewModel* model = self.consumer.tableViewModel;
   DCHECK(![model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
 
-  // During some signout flows, it can happen that the Account section doesn't
-  // exist at this point. In that case, there's nothing to update here.
-  if (![model hasSectionForSectionIdentifier:AccountSectionIdentifier]) {
-    return;
+  switch (self.syncAccountState) {
+    case SyncSettingsAccountState::kSignedOut:
+    case SyncSettingsAccountState::kSyncing:
+    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
+      return;
+    case SyncSettingsAccountState::kSignedIn:
+      break;
   }
 
-  NSInteger previousSection =
-      [model sectionForSectionIdentifier:AccountSectionIdentifier];
-  DCHECK_NE(NSNotFound, previousSection);
-  NSInteger batchUploadSectionIndex = previousSection + 1;
+  NSInteger batchUploadSectionIndex = 0;
 
   BOOL batchUploadSectionAlreadyExists = self.batchUploadItem;
   if (!batchUploadSectionAlreadyExists) {
@@ -972,6 +949,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
 }
 
+// Updates the consumer when the content size is updated.
+- (void)preferredContentSizeChanged:(NSNotification*)notification {
+  [self updatePrimaryAccountDetails];
+}
+
 #pragma mark - Properties
 
 - (BOOL)disabledBecauseOfSyncError {
@@ -1052,7 +1034,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     // closing and should not re-load the model.
     return;
   }
-  [self loadIdentityAccountSection];
   [self loadSyncErrorsSection];
   [self loadBatchUploadSection];
   [self loadSyncDataTypeSection];
@@ -1060,6 +1041,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self loadAdvancedSettingsSection];
   [self loadSignOutAndManageAccountsSection];
   [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:YES];
+  // Loading the header asks the consumer to reload the data, so it should be
+  // done after all sections are initially loaded.
+  [self updatePrimaryAccountDetails];
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -1086,7 +1070,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       _signedInIdentity = _authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
-      [self updateIdentityAccountSection];
+      [self updatePrimaryAccountDetails];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       // Temporary state, we can ignore this event, until the UI is signed out.
@@ -1099,7 +1083,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
   if ([_signedInIdentity isEqual:identity]) {
-    [self updateIdentityAccountSection];
+    [self updatePrimaryAccountDetails];
     [self updateSyncItemsNotifyConsumer:YES];
     [self updateSyncErrorsSection:YES];
     [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:NO];
@@ -1213,7 +1197,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       case SyncDisabledByAdministratorErrorItemType:
       case SignOutItemFooterType:
       case TypesListHeaderOrFooterType:
-      case IdentityAccountItemType:
       case AccountErrorMessageItemType:
       case BatchUploadButtonItemType:
       case BatchUploadRecommendationItemType:
@@ -1293,7 +1276,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case SyncDisabledByAdministratorErrorItemType:
     case SignOutItemFooterType:
     case TypesListHeaderOrFooterType:
-    case IdentityAccountItemType:
     case AccountErrorMessageItemType:
     case BatchUploadRecommendationItemType:
       // Nothing to do.
@@ -1470,10 +1452,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         [self createSyncErrorIconItemWithItemType:type.value()];
   }
 
-  NSInteger syncErrorSectionIndex =
-      self.syncAccountState == SyncSettingsAccountState::kSignedIn
-          ? [model sectionForSectionIdentifier:AccountSectionIdentifier] + 1
-          : 0;
+  NSInteger syncErrorSectionIndex = 0;
   if (!errorSectionAlreadyExists) {
     if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
         type.value() != SyncDisabledByAdministratorErrorItemType) {

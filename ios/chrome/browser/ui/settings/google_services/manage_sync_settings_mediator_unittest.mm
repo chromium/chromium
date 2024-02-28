@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_mock.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
+#import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -445,32 +445,6 @@ TEST_F(ManageSyncSettingsMediatorTest,
   }
 }
 
-// Tests that the account details item is showing for a signed in not syncing
-// account.
-TEST_F(ManageSyncSettingsMediatorTest,
-       CheckAccountItemForSignedInNotSyncingAccount) {
-  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSignedIn);
-  SimulateFirstSetupSyncOffWithSignedInAccount();
-
-  // Loads the Sync page.
-  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
-
-  // Get account item.
-  NSArray* account_item = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:AccountSectionIdentifier];
-
-  EXPECT_EQ(1UL, account_item.count);
-
-  TableViewCentralAccountItem* account_details =
-      base::apple::ObjCCastStrict<TableViewCentralAccountItem>(account_item[0]);
-
-  EXPECT_EQ(account_details.type,
-            SyncSettingsItemType::IdentityAccountItemType);
-  EXPECT_TRUE(account_details.avatarImage);
-  EXPECT_NSEQ(account_details.name, fakeSystemIdentity_.userFullName);
-  EXPECT_NSEQ(account_details.email, fakeSystemIdentity_.userEmail);
-}
-
 // Tests that the sign out item exists in the SignOutSectionIdentifier for a
 // signed in not syncing account along with manage accounts items.
 TEST_F(ManageSyncSettingsMediatorTest,
@@ -550,7 +524,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
       hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
                                          SignOutSectionIdentifier]);
   // Verify the number of section shown in the kSignedIn state.
-  ASSERT_EQ(4, [mediator_.consumer.tableViewModel numberOfSections]);
+  ASSERT_EQ(3, [mediator_.consumer.tableViewModel numberOfSections]);
 
   // Set sign out expectation with empty account info.
   ON_CALL(*sync_service_mock_, GetAccountInfo())
@@ -567,5 +541,5 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
 
   // Expected sections from the previous kSignedIn state should be showing and
   // no new sections are added in the kSignedOut state.
-  EXPECT_EQ(4, [mediator_.consumer.tableViewModel numberOfSections]);
+  EXPECT_EQ(3, [mediator_.consumer.tableViewModel numberOfSections]);
 }

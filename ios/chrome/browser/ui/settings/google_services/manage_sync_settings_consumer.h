@@ -31,6 +31,11 @@
 // Reloads `sections`. Does nothing if the model is not loaded yet.
 - (void)reloadSections:(NSIndexSet*)sections;
 
+// Updates the primary account details.
+- (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
+                                       name:(NSString*)name
+                                      email:(NSString*)email;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSUMER_H_

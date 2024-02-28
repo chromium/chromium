@@ -6,6 +6,8 @@ import("//build/config/chrome_build.gni")
 
 source_set("cells") {
   sources = [
+    "central_account_view.h",
+    "central_account_view.mm",
     "signin_promo_view.h",
     "signin_promo_view.mm",
     "signin_promo_view_configurator.h",
@@ -14,8 +16,6 @@ source_set("cells") {
     "signin_promo_view_delegate.h",
     "table_view_account_item.h",
     "table_view_account_item.mm",
-    "table_view_central_account_item.h",
-    "table_view_central_account_item.mm",
     "table_view_identity_cell.h",
     "table_view_identity_cell.mm",
     "table_view_identity_item.h",
@@ -54,9 +54,9 @@ source_set("cells") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "central_account_view_unittest.mm",
     "signin_promo_view_unittest.mm",
     "table_view_account_item_unittest.mm",
-    "table_view_central_account_item_unittest.mm",
   ]
   deps = [
     ":cells",

@@ -6,9 +6,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -23,13 +25,12 @@
 namespace {
 
 // Table view customized header heights.
-CGFloat kAccountSectionHeaderHeightPointSize = 22.17;
 CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 48.;
 CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
 CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
+CGFloat kDefaultSectionHeaderHeightPointSize = 10.;
 
 // Table view customized footer heights.
-CGFloat kAccountSectionFooterHeightPointSize = 28.;
 CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 }  // namespace
@@ -203,6 +204,18 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                 withRowAnimation:UITableViewRowAnimationNone];
 }
 
+- (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
+                                       name:(NSString*)name
+                                      email:(NSString*)email {
+  CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
+      initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+        avatarImage:avatarImage
+               name:name
+              email:email];
+  self.tableView.tableHeaderView = identityAccountItem;
+  [self.tableView reloadData];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -220,8 +233,6 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     NSInteger sectionIdentifier =
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
-      case AccountSectionIdentifier:
-        return kAccountSectionHeaderHeightPointSize;
       case SyncDataTypeSectionIdentifier:
         return kSyncDataTypeSectionHeaderHeightPointSize;
       case AdvancedSettingsSectionIdentifier:
@@ -233,7 +244,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
         }
         break;
       case SyncErrorsSectionIdentifier:
-        break;
+      case BatchUploadSectionIdentifier:
+        return kDefaultSectionHeaderHeightPointSize;
     }
   }
   return ChromeTableViewHeightForHeaderInSection(section);
@@ -245,8 +257,6 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     NSInteger sectionIdentifier =
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
-      case AccountSectionIdentifier:
-        return kAccountSectionFooterHeightPointSize;
       case SyncDataTypeSectionIdentifier:
       case SignOutSectionIdentifier:
         return UITableViewAutomaticDimension;

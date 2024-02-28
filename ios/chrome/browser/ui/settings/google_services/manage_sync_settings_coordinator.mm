@@ -170,14 +170,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       self.authService->GetServiceStatus() ==
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
 
-  // For kSignedIn state the view will include the account details item with a
-  // transparent background, InsetGrouped should be used in this case to prevent
-  // grey lines from showing around this item with large fonts.
-  UITableViewStyle style = _accountState == SyncSettingsAccountState::kSignedIn
-                               ? UITableViewStyleInsetGrouped
-                               : ChromeTableViewStyle();
   ManageSyncSettingsTableViewController* viewController =
-      [[ManageSyncSettingsTableViewController alloc] initWithStyle:style];
+      [[ManageSyncSettingsTableViewController alloc]
+          initWithStyle:ChromeTableViewStyle()];
   self.viewController = viewController;
 
   NSString* title = self.mediator.overrideViewControllerTitle;
