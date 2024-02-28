@@ -14,6 +14,7 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
 import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
+import {getHidPreservingController} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -91,6 +92,14 @@ export class SettingsBluetoothSummaryElement extends
         },
         readOnly: true,
       },
+
+      isBluetoothDisconnectWarningEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('bluetoothDisconnectWarningFlag');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -101,6 +110,7 @@ export class SettingsBluetoothSummaryElement extends
   private isBluetoothToggleOn_: boolean;
   private isSecondaryUser_: boolean;
   private primaryUserEmail_: string;
+  private isBluetoothDisconnectWarningEnabled_: boolean;
 
   constructor() {
     super();
@@ -150,7 +160,13 @@ export class SettingsBluetoothSummaryElement extends
     if (this.isToggleDisabled_()) {
       return;
     }
-    getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
+
+    if (this.isBluetoothDisconnectWarningEnabled_) {
+      getHidPreservingController().tryToSetBluetoothEnabledState(
+          this.isBluetoothToggleOn_);
+    } else {
+      getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
+    }
   }
 
   private isToggleDisabled_(): boolean {

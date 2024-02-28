@@ -13,10 +13,11 @@ import './settings_fast_pair_toggle.js';
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {getHidPreservingController} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -92,6 +93,14 @@ export class SettingsBluetoothDevicesSubpageElement extends
         type: Array,
         value: [],
       },
+
+      isBluetoothDisconnectWarningEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('bluetoothDisconnectWarningFlag');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -103,6 +112,7 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private lastSelectedDeviceId_: string|null;
   private savedDevicesSublabel_: string;
   private unconnectedDevices_: PairedBluetoothDeviceProperties[];
+  private isBluetoothDisconnectWarningEnabled_: boolean;
 
   constructor() {
     super();
@@ -216,11 +226,18 @@ export class SettingsBluetoothDevicesSubpageElement extends
     if (oldValue === undefined) {
       return;
     }
+
     // If the toggle value changed but the toggle is disabled, the change came
     // from CrosBluetoothConfig, not the user. Don't attempt to update the
     // enabled state.
     if (!this.isToggleDisabled_()) {
-      getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
+      if (this.isBluetoothDisconnectWarningEnabled_) {
+        getHidPreservingController().tryToSetBluetoothEnabledState(
+            this.isBluetoothToggleOn_);
+      } else {
+        getBluetoothConfig().setBluetoothEnabledState(
+            this.isBluetoothToggleOn_);
+      }
     }
     this.announceBluetoothStateChange_();
   }

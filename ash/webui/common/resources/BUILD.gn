@@ -133,6 +133,7 @@ non_web_component_files_ts = [
   "bluetooth/bluetooth_types.ts",
   "bluetooth/bluetooth_utils.ts",
   "bluetooth/cros_bluetooth_config.ts",
+  "bluetooth/hid_preserving_bluetooth_state_controller.ts",
   "connectivity/mojo_connectivity_provider.ts",
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
@@ -145,6 +146,7 @@ non_web_component_files_ts = [
 ]
 
 mojo_files_ts = [
+  "bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.ts",
   "connectivity/passpoint.mojom-webui.ts",
   "hotspot/cros_hotspot_config.mojom-webui.ts",
   "shortcut_input_ui/accelerator_actions.mojom-webui.ts",
@@ -251,6 +253,7 @@ ts_library("build_ts") {
     ":generate_definitions",
     ":preprocess",
     ":preprocess_ts",
+    "bluetooth:copy_mojo_files",
     "connectivity:copy_mojo_files",
     "hotspot:copy_mojo_files",
     "shortcut_input_ui:copy_mojo_files",

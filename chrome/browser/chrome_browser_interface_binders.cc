@@ -249,6 +249,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
@@ -1299,6 +1300,14 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ntp::tab_resumption::mojom::PageHandler, NewTabPageUI>(map);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsBluetoothDisconnectWarningEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::mojom::HidPreservingBluetoothStateController,
+        ash::settings::OSSettingsUI>(map);
+  }
+#endif  // defined(IS_CHROMEOS_ASH)
 
   RegisterWebUIControllerInterfaceBinder<
       reading_list::mojom::PageHandlerFactory, ReadingListUI>(map);

@@ -3608,6 +3608,7 @@ source_set("ash") {
     "//ash/public/cpp/external_arc",
     "//ash/public/mojom",
     "//ash/public/mojom:accelerator_info",
+    "//ash/public/mojom:hid_preserving_bluetooth_state_controller",
     "//ash/quick_pair/common",
     "//ash/webui/camera_app_ui",
     "//ash/webui/common/mojom:sea_pen",

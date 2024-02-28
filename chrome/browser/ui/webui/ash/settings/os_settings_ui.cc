@@ -13,6 +13,8 @@
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
+#include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_service.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
@@ -389,6 +391,13 @@ void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
         receiver) {
   ash::GetPasspointService(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<ash::mojom::HidPreservingBluetoothStateController>
+        receiver) {
+  DCHECK(features::IsBluetoothDisconnectWarningEnabled());
+  GetHidPreservingBluetoothStateControllerService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom-forward.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
 #include "base/time/time.h"
@@ -207,6 +208,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // Binds to the cros Passpoint service.
   void BindInterface(
       mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
+          receiver);
+
+  // Binds HidPreservingBluetoothStateController service.
+  void BindInterface(
+      mojo::PendingReceiver<ash::mojom::HidPreservingBluetoothStateController>
           receiver);
 
  private:

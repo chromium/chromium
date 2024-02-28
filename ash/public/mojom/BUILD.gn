@@ -12,7 +12,6 @@ mojom("mojom") {
 
   sources = [
     "assistant_volume_control.mojom",
-    "hid_preserving_bluetooth_state_controller.mojom",
     "tray_action.mojom",
   ]
 
@@ -38,6 +37,12 @@ mojom("mojom") {
   export_class_attribute = "ASH_PUBLIC_EXPORT"
   export_define = "ASH_PUBLIC_IMPLEMENTATION=1"
   export_header = "ash/public/cpp/ash_public_export.h"
+}
+
+mojom("hid_preserving_bluetooth_state_controller") {
+  sources = [ "hid_preserving_bluetooth_state_controller.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "chrome://resources/ash/common/"
 }
 
 # This is a separate target so that downstream WebUI targets can take

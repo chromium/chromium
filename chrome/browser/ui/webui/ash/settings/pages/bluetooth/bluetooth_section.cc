@@ -334,6 +334,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "bluetoothRevampHatsSurveyFlag",
       base::FeatureList::IsEnabled(
           ::features::kHappinessTrackingSystemBluetoothRevamp));
+  html_source->AddBoolean("bluetoothDisconnectWarningFlag",
+                          features::IsBluetoothDisconnectWarningEnabled());
   bluetooth::AddLoadTimeData(html_source);
 }
 

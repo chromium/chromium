@@ -3667,6 +3667,7 @@ static_library("ui") {
       "//ash/public/cpp/app_list/vector_icons",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/public/mojom",
+      "//ash/public/mojom:hid_preserving_bluetooth_state_controller",
       "//ash/quick_pair/common",
       "//ash/quick_pair/keyed_service",
       "//ash/quick_pair/proto:fastpair_proto",

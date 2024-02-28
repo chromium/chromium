@@ -28,6 +28,7 @@ ts_library("build_ts") {
     "bluetooth/fake_bluetooth_config.ts",
     "bluetooth/fake_bluetooth_discovery_delegate.ts",
     "bluetooth/fake_device_pairing_handler.ts",
+    "bluetooth/fake_hid_preserving_bluetooth_state_controller.ts",
     "cellular_setup/activation_code_page_test.ts",
     "cellular_setup/base_page_test.ts",
     "cellular_setup/button_bar_test.ts",
