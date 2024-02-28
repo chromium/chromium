@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,16 +39,19 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
   void OnMenuClosed() override;
 
  private:
+  friend class QuickAnswersMenuObserverTest;
+
   void OnTextSurroundingSelectionAvailable(
       const std::u16string& selected_text,
       const std::u16string& surrounding_text,
       uint32_t start_offset,
       uint32_t end_offset);
 
-  void OnFetchController(
+  void OnFetchControllers(
       const content::ContextMenuParams& params,
       const gfx::Rect& bounds_in_screen,
-      base::WeakPtr<chromeos::ReadWriteCardController> controller);
+      std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
+          controllers);
 
   // The interface to add a context-menu item and update it.
   raw_ptr<RenderViewContextMenuProxy, DanglingUntriaged> proxy_;
@@ -60,8 +64,8 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
   // Whether commands other than quick answers is executed.
   bool is_other_command_executed_ = false;
 
-  raw_ptr<chromeos::ReadWriteCardController> read_write_card_controller_ =
-      nullptr;
+  std::vector<raw_ptr<chromeos::ReadWriteCardController>>
+      read_write_card_controllers_;
 
   base::WeakPtrFactory<QuickAnswersMenuObserver> weak_factory_{this};
 };

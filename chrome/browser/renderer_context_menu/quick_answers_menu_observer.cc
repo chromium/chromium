@@ -5,6 +5,7 @@
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
@@ -37,27 +38,33 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
 
   cards_manager->FetchController(
       params, proxy_->GetBrowserContext(),
-      base::BindOnce(&QuickAnswersMenuObserver::OnFetchController,
+      base::BindOnce(&QuickAnswersMenuObserver::OnFetchControllers,
                      weak_factory_.GetWeakPtr(), params, bounds_in_screen));
 }
 
 void QuickAnswersMenuObserver::OnContextMenuViewBoundsChanged(
     const gfx::Rect& bounds_in_screen) {
-  if (!read_write_card_controller_) {
-    return;
-  }
+  for (auto controller : read_write_card_controllers_) {
+    if (!controller) {
+      continue;
+    }
 
-  bounds_in_screen_ = bounds_in_screen;
-  read_write_card_controller_->OnAnchorBoundsChanged(bounds_in_screen);
+    bounds_in_screen_ = bounds_in_screen;
+
+    controller->OnAnchorBoundsChanged(bounds_in_screen);
+  }
 }
 
 void QuickAnswersMenuObserver::OnMenuClosed() {
-  if (!read_write_card_controller_) {
-    return;
+  for (auto controller : read_write_card_controllers_) {
+    if (!controller) {
+      continue;
+    }
+
+    controller->OnDismiss(is_other_command_executed_);
   }
 
-  read_write_card_controller_->OnDismiss(is_other_command_executed_);
-  read_write_card_controller_ = nullptr;
+  read_write_card_controllers_.clear();
   is_other_command_executed_ = false;
 }
 
@@ -70,29 +77,43 @@ void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
     const std::u16string& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
-  if (!read_write_card_controller_) {
-    return;
-  }
+  for (auto controller : read_write_card_controllers_) {
+    if (!controller) {
+      continue;
+    }
 
-  read_write_card_controller_->OnTextAvailable(
-      bounds_in_screen_, base::UTF16ToUTF8(selected_text),
-      base::UTF16ToUTF8(surrounding_text));
+    controller->OnTextAvailable(bounds_in_screen_,
+                                base::UTF16ToUTF8(selected_text),
+                                base::UTF16ToUTF8(surrounding_text));
+  }
 }
 
-void QuickAnswersMenuObserver::OnFetchController(
+void QuickAnswersMenuObserver::OnFetchControllers(
     const content::ContextMenuParams& params,
     const gfx::Rect& bounds_in_screen,
-    base::WeakPtr<chromeos::ReadWriteCardController> controller) {
-  read_write_card_controller_ = controller.get();
-  if (read_write_card_controller_ == nullptr) {
+    std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> controllers) {
+  if (controllers.empty()) {
+    read_write_card_controllers_.clear();
     return;
   }
 
   bounds_in_screen_ = bounds_in_screen;
+
   content::RenderFrameHost* focused_frame =
       proxy_->GetWebContents()->GetFocusedFrame();
+
+  for (auto controller : controllers) {
+    if (!controller) {
+      continue;
+    }
+
+    if (focused_frame) {
+      controller->OnContextMenuShown(profile_);
+    }
+    read_write_card_controllers_.emplace_back(controller.get());
+  }
+
   if (focused_frame) {
-    read_write_card_controller_->OnContextMenuShown(profile_);
     focused_frame->RequestTextSurroundingSelection(
         base::BindOnce(
             &QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable,

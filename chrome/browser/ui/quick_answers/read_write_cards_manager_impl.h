@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_READ_WRITE_CARDS_MANAGER_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_cards_manager.h"
@@ -44,21 +45,23 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   // ReadWriteCardController:
   void FetchController(const content::ContextMenuParams& params,
                        content::BrowserContext* context,
-                       editor_menu::FetchControllerCallback callback) override;
+                       editor_menu::FetchControllersCallback callback) override;
 
   chromeos::editor_menu::EditorMenuControllerImpl* editor_menu_for_testing() {
     return editor_menu_controller_.get();
   }
 
  private:
+  friend class ReadWriteCardsManagerImplTest;
+
   void OnEditorPanelContextCallback(
       const content::ContextMenuParams& params,
-      editor_menu::FetchControllerCallback callback,
+      editor_menu::FetchControllersCallback callback,
       content::BrowserContext* context,
       const crosapi::mojom::EditorPanelContextPtr editor_panel_context);
 
-  base::WeakPtr<chromeos::ReadWriteCardController>
-  GetMahiOrQuickAnswerControllerIfEligible(
+  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
+  GetMahiOrQuickAnswerControllersIfEligible(
       const content::ContextMenuParams& params);
 
   std::unique_ptr<QuickAnswersControllerImpl> quick_answers_controller_;
