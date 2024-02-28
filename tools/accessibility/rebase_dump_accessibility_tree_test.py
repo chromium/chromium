@@ -89,8 +89,14 @@ def ParseLog(logdata):
       if line[:3] != '---':
         start = start + 1  # Skip separator line of hyphens
       actual = [Fix(line) for line in lines[start : i] if line]
+
+      actual_text = '\n'.join(actual)
+      # Make sure the text ends with a newline.
+      if actual[-1][-1] != '\n':
+        actual_text += '\n'
+
       fp = open(dst_fullpath, 'w')
-      fp.write('\n'.join(actual))
+      fp.write(actual_text)
       fp.close()
       print("* %s" % os.path.relpath(dst_fullpath))
       completed_files.add(dst_fullpath)
