@@ -25,8 +25,8 @@ export function keyTypeToString(keyType: KeyType): string {
   return KeyTypeStringMap[keyType] || 'invalid';
 }
 
-export function keySyncCodeToString(syncKeyResponseCode: Int32Value|
-                                    undefined): string {
+export function keySyncCodeToString(
+    syncKeyResponseCode: (Int32Value|null|undefined)): string {
   if (!syncKeyResponseCode) {
     return 'Undefined';
   }

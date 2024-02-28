@@ -70,13 +70,13 @@ function createSampleCluster(overrides: Partial<Cluster>): Cluster {
       {
         id: BigInt(111),
         label: '',
+        imageUrl: null,
         tabGroupName: 'My Tab Group Name',
         labelMatchPositions: [],
         visits: [],
         relatedSearches: [],
-        imageUrl: undefined,
         fromPersistence: false,
-        debugInfo: undefined,
+        debugInfo: null,
       },
       overrides);
 }

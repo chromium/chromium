@@ -232,7 +232,7 @@ suite('acceleratorEditDialogTest', function() {
     assertEquals(0, provider.getRestoreDefaultCallCount());
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
 
     provider.setFakeRestoreDefaultResult(fakeResult);
@@ -468,7 +468,7 @@ suite('acceleratorEditDialogTest', function() {
     // Set the fake `AddAccelerator` mojom result.
     const fakeAddResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
     provider.setFakeAddAcceleratorResult(fakeAddResult);
 

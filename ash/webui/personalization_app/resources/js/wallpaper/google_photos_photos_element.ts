@@ -45,6 +45,8 @@ function getPlaceholders(): GooglePhotosPhotosRow[] {
       name: '',
       date: {data: []},
       url: {url: ''},
+      dedupKey: null,
+      location: null,
     };
   }).forEach((placeholder, i) => {
     let row = placeholders[placeholders.length - 1];

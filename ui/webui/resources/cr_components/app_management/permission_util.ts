@@ -11,6 +11,7 @@ export function createPermission(
     permissionType: PermissionType, value: PermissionValue,
     isManaged: boolean): Permission {
   return {
+    details: null,
     permissionType,
     value,
     isManaged,

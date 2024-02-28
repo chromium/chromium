@@ -81,7 +81,7 @@ suite('AppManagementFileHandlingItemTest', function() {
 
     // Clear the learn more url; it should now be handled by the browser proxy.
     const app2 = createTestApp('app');
-    app2.fileHandlingState!.learnMoreUrl = undefined;
+    app2.fileHandlingState!.learnMoreUrl = null;
     fileHandlingItem.app = app2;
     await flushTasks();
     link = learnMore.shadowRoot!.querySelector<HTMLAnchorElement>('a');

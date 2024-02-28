@@ -38,7 +38,7 @@ async function doTest(): Promise<boolean> {
   {
     const testStruct: OptionalNumericsStruct = {
       optionalBool: true,
-      optionalUint8: undefined,
+      optionalUint8: null,
       optionalEnum: TestEnum.kOne,
     };
 
@@ -65,9 +65,9 @@ async function doTest(): Promise<boolean> {
   }
   {
     const testStruct: OptionalNumericsStruct = {
-      optionalBool: undefined,
+      optionalBool: null,
       optionalUint8: 1,
-      optionalEnum: undefined,
+      optionalEnum: null,
     };
 
     const {optionalBool, optionalUint8, optionalEnum, optionalNumerics} =

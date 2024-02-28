@@ -41,9 +41,10 @@ function createSampleCluster(
         label: '',
         labelMatchPositions: [],
         relatedSearches: createRelatedSearches(numRelatedSearches),
-        imageUrl: undefined,
+        imageUrl: null,
         fromPersistence: false,
-        debugInfo: undefined,
+        debugInfo: null,
+        tabGroupName: null,
       },
       overrides);
 

@@ -277,6 +277,10 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     bodyIconName: 'lightbulb_outline',
     bodyIconAltText: BODY_ICON_ALT_TEXT,
     buttons: [],
+    focusOnShowHint: null,
+    titleText: null,
+    progress: null,
+    timeout: null,
   };
 
   test('help bubble mixin shows bubble when called directly', () => {
@@ -406,7 +410,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
 
   test(
       'help bubble mixin does not use body icon when not defined', async () => {
-        const noIconParams = {...defaultParams, bodyIconName: undefined};
+        const noIconParams = {...defaultParams, bodyIconName: null};
         testProxy.getCallbackRouterRemote().showHelpBubble(noIconParams);
         await waitAfterNextRender(container);
         assertTrue(container.isHelpBubbleShowing());
@@ -463,6 +467,11 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           position: HelpBubbleArrowPosition.BOTTOM_CENTER,
           bodyText: 'This is a help bubble.',
           buttons: [],
+          bodyIconName: null,
+          focusOnShowHint: null,
+          progress: null,
+          timeout: null,
+          titleText: null,
         };
 
         testProxy.getCallbackRouterRemote().showHelpBubble(params);
@@ -621,6 +630,10 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     bodyText: 'This is another help bubble.',
     titleText: 'This is a title',
     buttons: [],
+    bodyIconName: null,
+    focusOnShowHint: null,
+    progress: null,
+    timeout: null,
   };
 
   test('help bubble mixin shows multiple bubbles', async () => {
@@ -662,6 +675,10 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     bodyText: 'This is another help bubble.',
     progress: {current: 1, total: 3},
     buttons: [],
+    bodyIconName: null,
+    focusOnShowHint: null,
+    timeout: null,
+    titleText: null,
   };
 
   test(
@@ -721,6 +738,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
     bodyIconAltText: BODY_ICON_ALT_TEXT,
     position: HelpBubbleArrowPosition.TOP_CENTER,
+    bodyIconName: null,
     bodyText: 'This is another help bubble.',
     titleText: 'This is a title',
     buttons: [
@@ -733,6 +751,9 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         isDefault: true,
       },
     ],
+    focusOnShowHint: null,
+    progress: null,
+    timeout: null,
   };
 
   test('help bubble mixin sends action button clicked event', async () => {
@@ -757,11 +778,15 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const timeoutParams: HelpBubbleParams = {
     nativeIdentifier: PARAGRAPH_NATIVE_ID,
     closeButtonAltText: CLOSE_BUTTON_ALT_TEXT,
+    bodyIconName: null,
     bodyIconAltText: BODY_ICON_ALT_TEXT,
     position: HelpBubbleArrowPosition.TOP_CENTER,
     bodyText: 'This is another help bubble.',
     titleText: 'This is a title',
     buttons: [],
+    focusOnShowHint: null,
+    progress: null,
+    timeout: null,
   };
 
   // It is hard to guarantee the correct timing on various test systems,

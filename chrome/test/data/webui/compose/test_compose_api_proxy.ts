@@ -12,6 +12,7 @@ function getDefaultComposeState(): ComposeState {
     webuiState: '',
     feedback: UserFeedback.kUserFeedbackUnspecified,
     hasPendingRequest: false,
+    response: null,
   };
 }
 

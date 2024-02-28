@@ -254,7 +254,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private isEditSubmitEnabled_: boolean;
   private isSubmitEnabled_: boolean;
   private loading_: boolean;
-  private response_: ComposeResponse|undefined;
+  private response_: ComposeResponse|null;
   private partialResponse_: PartialComposeResponse|undefined;
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
@@ -618,7 +618,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.$.body.scrollTop = 0;
     this.loading_ = true;
     this.animator_.transitionInLoading();
-    this.response_ = undefined;
+    this.response_ = null;
     this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.compose(this.input_, inputEdited);
@@ -631,7 +631,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const resultHeight = this.$.resultContainer.offsetHeight;
     this.$.body.scrollTop = 0;
     this.loading_ = true;
-    this.response_ = undefined;
+    this.response_ = null;
     this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.rewrite(style);

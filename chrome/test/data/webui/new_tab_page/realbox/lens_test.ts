@@ -20,7 +20,9 @@ function createAutocompleteMatch(): AutocompleteMatch {
     a11yLabel: mojoString16(''),
     actions: [],
     allowedToBeDefaultMatch: false,
+    answer: null,
     isSearchType: false,
+    isWeatherAnswerSuggestion: null,
     swapContentsAndDescription: false,
     supportsDeletion: false,
     suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
@@ -35,6 +37,7 @@ function createAutocompleteMatch(): AutocompleteMatch {
     imageDominantColor: '',
     imageUrl: '',
     removeButtonA11yLabel: mojoString16(''),
+    tailSuggestCommonPrefix: null,
     type: '',
     isRichSuggestion: false,
   };

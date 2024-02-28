@@ -21,12 +21,12 @@ function createTheme(): Theme {
   return {
     hasBackgroundImage: false,
     hasThirdPartyTheme: false,
-    backgroundImageMainColor: undefined,
+    backgroundImageMainColor: null,
     isDarkMode: false,
     seedColor: {value: 0xff0000ff},
     seedColorHue: 0,
     backgroundColor: {value: 0xffff0000},
-    foregroundColor: undefined,
+    foregroundColor: null,
     colorPickerIconColor: {value: 0xffff0000},
     colorsManagedByPolicy: false,
     isGreyBaseline: false,
@@ -135,7 +135,7 @@ suite('ChromeColorsTest', () => {
     const theme = createTheme();
 
     // Set default color.
-    theme.foregroundColor = undefined;
+    theme.foregroundColor = null;
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
     await waitAfterNextRender(chromeColorsElement);

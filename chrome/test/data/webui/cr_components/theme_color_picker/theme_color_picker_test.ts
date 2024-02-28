@@ -24,12 +24,12 @@ function createTheme(isDarkMode = false): Theme {
   return {
     hasBackgroundImage: false,
     hasThirdPartyTheme: false,
-    backgroundImageMainColor: undefined,
+    backgroundImageMainColor: null,
     isDarkMode,
     seedColor: {value: 0xff0000ff},
     seedColorHue: 0,
     backgroundColor: {value: 0xffff0000},
-    foregroundColor: undefined,
+    foregroundColor: null,
     colorPickerIconColor: {value: 0xffff0000},
     colorsManagedByPolicy: false,
     isGreyBaseline: false,
@@ -139,7 +139,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
   test('sets default color', async () => {
     initializeElement();
     const theme = createTheme();
-    theme.foregroundColor = undefined;
+    theme.foregroundColor = null;
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
     await waitAfterNextRender(colorsElement);
@@ -153,7 +153,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     document.documentElement.toggleAttribute('chrome-refresh-2023', true);
     initializeElement();
     const theme = createTheme();
-    theme.foregroundColor = undefined;
+    theme.foregroundColor = null;
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
     await waitAfterNextRender(colorsElement);
@@ -349,7 +349,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     const otherTheme = createTheme();
     otherTheme.seedColor = {value: 0xff00ff00};
     otherTheme.backgroundColor = {value: 0xffffffff};
-    otherTheme.foregroundColor = undefined;  // Makes a default theme.
+    otherTheme.foregroundColor = null;  // Makes a default theme.
     otherTheme.colorPickerIconColor = {value: 0xffffffff};
     callbackRouter.setTheme(otherTheme);
     await callbackRouter.$.flushForTesting();
@@ -395,7 +395,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     // Set a theme that is not a custom color theme.
     const otherTheme = createTheme();
     otherTheme.backgroundColor = {value: 0xffffffff};
-    otherTheme.foregroundColor = undefined;  // Makes a default theme.
+    otherTheme.foregroundColor = null;  // Makes a default theme.
     otherTheme.colorPickerIconColor = {value: 0xffffffff};
     callbackRouter.setTheme(otherTheme);
     await callbackRouter.$.flushForTesting();
@@ -433,7 +433,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     const theme = createTheme();
 
     // Set default color.
-    theme.foregroundColor = undefined;
+    theme.foregroundColor = null;
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
     await waitAfterNextRender(colorsElement);
@@ -545,10 +545,10 @@ suite('CrComponentsThemeColorPickerTest', () => {
       });
 
   ([
-    ['#defaultColor', undefined, undefined],
+    ['#defaultColor', null, null],
     ['#mainColor', 7, 7],
-    ['.chrome-color', 3, undefined],
-    ['#customColor', 10, undefined],
+    ['.chrome-color', 3, null],
+    ['#customColor', 10, null],
   ] as Array<[string, number?, number?]>)
       .forEach(([selector, foregroundColor, mainColor]) => {
         test(`respects policy for ${selector}`, async () => {

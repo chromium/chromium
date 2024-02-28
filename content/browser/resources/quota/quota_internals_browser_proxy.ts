@@ -68,6 +68,7 @@ export class QuotaInternalsBrowserProxy {
       scheme: originUrl.protocol.replace(/:$/, ''),
       host: originUrl.host,
       port: urlPort(originUrl),
+      nonceIfOpaque: null,
     };
 
     this.handler.simulateStoragePressure(newOrigin);

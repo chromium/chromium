@@ -66,6 +66,7 @@ suite('TabOrganizationPageTest', () => {
           active: false,
           alertStates: [],
           index: -1,
+          faviconUrl: null,
           tabId: -1,
           groupId: -1,
           pinned: false,

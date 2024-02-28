@@ -121,7 +121,7 @@ suite('acceleratorEditViewTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
@@ -192,7 +192,7 @@ suite('acceleratorEditViewTest', function() {
 
     const fakeResult2: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
 
     provider.setFakeReplaceAcceleratorResult(fakeResult2);

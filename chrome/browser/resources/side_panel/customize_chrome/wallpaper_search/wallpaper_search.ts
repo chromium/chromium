@@ -637,7 +637,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_HISTORY_IMAGE_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToHistoryImage(
-        e.model.item.id, e.model.item.descriptors ?? {});
+        e.model.item.id,
+        e.model.item.descriptors ??
+            {subject: null, style: null, mood: null, color: null});
   }
 
   private onInspirationGroupTitleClick_(e: DomRepeatEvent<InspirationGroup>) {
@@ -705,9 +707,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     announcer.announce(this.i18n('wallpaperSearchLoadingA11yMessage'));
     const descriptors: ResultDescriptors = {
       subject: this.selectedDescriptorA_!,
-      style: this.selectedDescriptorB_ ?? undefined,
-      mood: this.selectedDescriptorC_ ?? undefined,
-      color: this.selectedDescriptorD_ ?? undefined,
+      style: this.selectedDescriptorB_ ?? null,
+      mood: this.selectedDescriptorC_ ?? null,
+      color: this.selectedDescriptorD_ ?? null,
     };
     this.resultsPromises_.push(
         this.wallpaperSearchHandler_.getWallpaperSearchResults(descriptors));

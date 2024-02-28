@@ -56,6 +56,13 @@ export function installMock<T extends object>(
 export function createBackgroundImage(url: string): BackgroundImage {
   return {
     url: {url},
+    url2x: null,
+    attributionUrl: null,
+    size: null,
+    repeatX: null,
+    repeatY: null,
+    positionX: null,
+    positionY: null,
     imageSource: NtpBackgroundImageSource.kNoImage,
   };
 }
@@ -68,10 +75,13 @@ export function createTheme(isDark: boolean = false): Theme {
   };
   return {
     backgroundColor: {value: 0xffff0000},
+    backgroundImage: null,
+    backgroundImageAttributionUrl: null,
     backgroundImageAttribution1: '',
     backgroundImageAttribution2: '',
     dailyRefreshEnabled: false,
     backgroundImageCollectionId: '',
+    logoColor: null,
     isBaseline: true,
     isDark,
     mostVisited: mostVisited,

@@ -134,8 +134,8 @@ suite('GooglePhotosAlbumsElementTest', function() {
       (dismissFromUser:
            boolean) => test('displays error when albums fail to load', async () => {
         // Set values returned by |wallpaperProvider|.
-        wallpaperProvider.setGooglePhotosAlbums(undefined);
-        wallpaperProvider.setGooglePhotosSharedAlbums(undefined);
+        wallpaperProvider.setGooglePhotosAlbums(null);
+        wallpaperProvider.setGooglePhotosSharedAlbums(null);
 
         // Initialize |googlePhotosAlbumsElement|.
         googlePhotosAlbumsElement =
@@ -312,8 +312,8 @@ suite('GooglePhotosAlbumsElementTest', function() {
         }));
 
     // Set the next albums resume token returned by |wallpaperProvider|. When
-    // resume token is undefined, it indicates no additional albums exist.
-    wallpaperProvider.setGooglePhotosAlbumsResumeToken(undefined);
+    // resume token is null, it indicates no additional albums exist.
+    wallpaperProvider.setGooglePhotosAlbumsResumeToken(null);
 
     // Restrict the viewport so that |googlePhotosAlbumsElement| will lazily
     // create albums instead of creating them all at once.

@@ -18,6 +18,7 @@ const newTabAcceleratorInfo: MojoAcceleratorInfo = {
   locked: true,
   layoutProperties: {
     standardAccelerator: {
+      originalAccelerator: null,
       keyDisplay: stringToMojoString16('t'),
       accelerator: {
         modifiers: Modifier.CONTROL,
@@ -73,6 +74,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       locked: true,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('['),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -91,6 +93,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16(']'),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -109,6 +112,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('+'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -127,6 +131,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('-'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -145,6 +150,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('LaunchApplication2'),
           accelerator: {
             modifiers: Modifier.NONE,
@@ -163,6 +169,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('esc'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.CONTROL,
@@ -182,6 +189,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
         locked: false,
         layoutProperties: {
           standardAccelerator: {
+            originalAccelerator: null,
             keyDisplay: stringToMojoString16('a'),
             accelerator: {
               modifiers: Modifier.COMMAND,
@@ -199,6 +207,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
         locked: false,
         layoutProperties: {
           standardAccelerator: {
+            originalAccelerator: null,
             keyDisplay: stringToMojoString16('LaunchAssistant'),
             accelerator: {
               modifiers: Modifier.NONE,
@@ -318,6 +327,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
       locked: true,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('['),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -346,6 +356,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16(']'),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -374,6 +385,7 @@ export const fakeSearchResults: MojoSearchResult[] = [
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('+'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -409,6 +421,7 @@ export const TakeScreenshotSearchResult: MojoSearchResult = {
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('LaunchApplication1'),  // overview
           accelerator: {
             modifiers: Modifier.CONTROL,
@@ -426,6 +439,7 @@ export const TakeScreenshotSearchResult: MojoSearchResult = {
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('PrintScreen'),  // screenshot
           accelerator: {
             modifiers: 0,
@@ -475,6 +489,7 @@ export const createFakeMojoAccelInfo =
         locked: true,
         layoutProperties: {
           standardAccelerator: {
+            originalAccelerator: null,
             keyDisplay: stringToMojoString16(keyDisplay),
             accelerator: {
               modifiers: 0,

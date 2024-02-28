@@ -184,8 +184,8 @@ function reportStatusToText(status: ReportStatus) {
 }
 
 class Report extends Selectable {
-  // `undefined` indicates a report that wasn't stored/scheduled.
-  id: AggregatableReportRequestID|undefined;
+  // `null` indicates a report that wasn't stored/scheduled.
+  id: AggregatableReportRequestID|null;
   reportBody: string;
   reportUrl: string;
   reportTime: Date;

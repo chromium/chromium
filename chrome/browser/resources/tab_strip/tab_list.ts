@@ -665,7 +665,8 @@ export class TabListElement extends CustomElement implements
   }
 
   placeTabElement(
-      element: TabElement, index: number, pinned: boolean, groupId?: string) {
+      element: TabElement, index: number, pinned: boolean,
+      groupId: string|null) {
     const isInserting = !element.isConnected;
 
     const previousIndex = isInserting ? -1 : this.getIndexOfTab(element);
@@ -782,7 +783,8 @@ export class TabListElement extends CustomElement implements
   }
 
   private updateTabElementDomPosition_(
-      element: TabElement, index: number, pinned: boolean, groupId?: string) {
+      element: TabElement, index: number, pinned: boolean,
+      groupId: string|null) {
     // Remove the element if it already exists in the DOM. This simplifies
     // the way indices work as it does not have to count its old index in
     // the initial layout of the DOM.

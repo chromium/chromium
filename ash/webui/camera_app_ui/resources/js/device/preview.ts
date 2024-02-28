@@ -664,7 +664,14 @@ export class Preview {
       }
 
       assert(metadata.entries !== undefined);
-      for (const entry of metadata.entries) {
+      // Disabling check because this code assumes that metadata.entries is
+      // either undefined or defined, but at runtime Mojo will always set this
+      // to null or defined.
+      // TODO(crbug.com/1442785): If this function only handles data
+      // from Mojo, the assertion above should be changed to null and the
+      // null error suppression can be removed.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      for (const entry of metadata.entries!) {
         if (entry.count === 0) {
           continue;
         }

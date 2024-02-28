@@ -697,6 +697,7 @@ suite('<settings-internet-detail-subpage>', () => {
         domains: [],
         provisioningSource: '',
         expirationEpochMs: 0n,
+        trustedCa: null,
       });
 
       mojoApi.resetForTest();
@@ -788,6 +789,7 @@ suite('<settings-internet-detail-subpage>', () => {
           domains: [],
           provisioningSource: '',
           expirationEpochMs: 0n,
+          trustedCa: null,
         });
         mojoApi.resetForTest();
         mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
@@ -855,6 +857,7 @@ suite('<settings-internet-detail-subpage>', () => {
         domains: [],
         provisioningSource: '',
         expirationEpochMs: 0n,
+        trustedCa: null,
       });
       mojoApi.resetForTest();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);

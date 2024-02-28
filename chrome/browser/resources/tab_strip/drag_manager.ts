@@ -54,13 +54,9 @@ function getDefaultTabData(): Tab {
     showIcon: true,
     title: '',
     url: {url: ''},
-
-    // TODO(crbug.com/1293911): Remove once Mojo can produce proper TypeScript
-    // or TypeScript definitions, so that these properties are recognized as
-    // optional.
-    faviconUrl: undefined,
-    activeFaviconUrl: undefined,
-    groupId: undefined,
+    faviconUrl: null,
+    activeFaviconUrl: null,
+    groupId: null,
   };
 }
 
@@ -69,7 +65,7 @@ export interface DragManagerDelegate {
 
   placeTabElement(
       element: TabElement, index: number, pinned: boolean,
-      groupId?: string): void;
+      groupId: string|null): void;
 
   placeTabGroupElement(element: TabGroupElement, index: number): void;
 
@@ -83,13 +79,13 @@ class DragSession {
   private element_: TabElement|TabGroupElement;
 
   srcIndex: number;
-  srcGroup?: string;
+  srcGroup: string|null;
 
   private tabsProxy_: TabsApiProxy = TabsApiProxyImpl.getInstance();
 
   constructor(
       delegate: DragManagerDelegateElement, element: TabElement|TabGroupElement,
-      srcIndex: number, srcGroup?: string) {
+      srcIndex: number, srcGroup: string|null) {
     this.delegate_ = delegate;
     this.element_ = element;
 
@@ -103,14 +99,15 @@ class DragSession {
     if (isTabGroupElement(element)) {
       return new DragSession(
           delegate, element,
-          delegate.getIndexOfTab(element.firstElementChild as TabElement));
+          delegate.getIndexOfTab(element.firstElementChild as TabElement),
+          null);
     }
 
     const srcIndex = delegate.getIndexOfTab(element as TabElement);
     const srcGroup =
         (element.parentElement && isTabGroupElement(element.parentElement)) ?
-        element.parentElement.dataset['groupId'] :
-        undefined;
+        element.parentElement.dataset['groupId']! :
+        null;
     return new DragSession(delegate, element, srcIndex, srcGroup);
   }
 
@@ -123,7 +120,7 @@ class DragSession {
       placeholderTabElement.tab = Object.assign(
           getDefaultTabData(), {id: PLACEHOLDER_TAB_ID, pinned: isPinned});
       placeholderTabElement.setDragging(true);
-      delegate.placeTabElement(placeholderTabElement, -1, isPinned);
+      delegate.placeTabElement(placeholderTabElement, -1, isPinned, null);
       return DragSession.createFromElement(delegate, placeholderTabElement);
     }
 
@@ -373,8 +370,8 @@ class DragSession {
 
     const previousGroupId = (tabElement.parentElement &&
                              isTabGroupElement(tabElement.parentElement)) ?
-        tabElement.parentElement.dataset['groupId'] :
-        undefined;
+        tabElement.parentElement.dataset['groupId']! :
+        null;
 
     const dragOverTabGroup =
         composedPath.find(isTabGroupElement) as TabGroupElement | undefined;
@@ -383,13 +380,12 @@ class DragSession {
         dragOverTabGroup.isValidDragOverTarget) {
       this.delegate_.placeTabElement(
           tabElement, this.dstIndex, false,
-          dragOverTabGroup.dataset['groupId']);
+          dragOverTabGroup.dataset['groupId'] || null);
       return;
     }
 
     if (!dragOverTabGroup && previousGroupId) {
-      this.delegate_.placeTabElement(
-          tabElement, this.dstIndex, false, undefined);
+      this.delegate_.placeTabElement(tabElement, this.dstIndex, false, null);
       return;
     }
 

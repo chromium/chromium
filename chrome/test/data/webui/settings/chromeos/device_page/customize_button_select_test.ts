@@ -130,7 +130,7 @@ suite('<customize-button-select>', () => {
     select.selectedValue = 'none';
     await flushTasks();
     assertEquals(buttonRemappingChangedEventCount, 2);
-    assertEquals(select.get('buttonRemapping_')?.remappingAction, undefined);
+    assertEquals(select.get('buttonRemapping_')?.remappingAction, null);
 
     // Update select from no remapping back to normal remapping action.
     select.selectedValue = 'acceleratorAction2';

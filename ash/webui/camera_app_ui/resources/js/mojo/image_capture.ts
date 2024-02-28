@@ -172,7 +172,14 @@ export class CrosImageCapture {
       const parsedMetadata: Record<string, unknown> = {};
       // TODO(b/215648588): Make CameraMetadata.entries mandatory.
       assert(metadata.entries !== undefined);
-      for (const entry of metadata.entries) {
+      // Disabling check because this code assumes that metadata.entries is
+      // either undefined or defined, but at runtime Mojo will always set this
+      // to null or defined.
+      // TODO(crbug.com/1442785): If this function only handles data
+      // from Mojo, the assertion above should be changed to null and the
+      // null error suppression can be removed.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      for (const entry of metadata.entries!) {
         const key = cameraMetadataTagInverseLookup[entry.tag];
         if (key === undefined) {
           // TODO(kaihsien): Add support for vendor tags.

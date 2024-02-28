@@ -65,6 +65,7 @@ export class FakeReceiveManager extends TestBrowserProxy implements
         shareType: 0,
       },
       forSelfShare: false,
+      imageUrl: null,
     };
     const metadata: TransferMetadata = {
       status: TransferStatus.kAwaitingLocalConfirmation,

@@ -41,6 +41,7 @@ export class FakeAppPermissionHandler implements
       permissionType: PermissionType.kUnknown,
       isManaged: false,
       value: {},
+      details: null,
     };
     this.lastOpenedBrowserPermissionSettingsType_ = PermissionType.kUnknown;
     this.nativeSettingsOpenedCount_ = 0;

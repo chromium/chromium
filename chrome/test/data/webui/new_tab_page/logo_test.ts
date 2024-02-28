@@ -43,6 +43,8 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
   return {
     image: {
       light: {
+        animationUrl: null,
+        animationImpressionLogUrl: null,
         imageUrl: {url: createImageDataUrl(width, height, 'red')},
         shareButton: {
           backgroundColor: {value: 0xddff0000},
@@ -56,6 +58,8 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
         imageImpressionLogUrl: {url: 'https://log.com'},
       },
       dark: {
+        animationUrl: null,
+        animationImpressionLogUrl: null,
         imageUrl: {url: createImageDataUrl(width, height, 'blue')},
         shareButton: {
           backgroundColor: {value: 0xee00ff00},
@@ -72,6 +76,7 @@ function createImageDoodle(width: number = 500, height: number = 200): Doodle {
       shareUrl: {url: 'https://foo.com'},
     },
     description: '',
+    interactive: null,
   };
 }
 
@@ -153,7 +158,7 @@ suite('NewTabPageLogoTest', () => {
       const doodle = createImageDoodle();
       assertTrue(!!doodle.image);
       const imageDoodle = dark ? doodle.image.dark : doodle.image.light;
-      delete imageDoodle!.shareButton;
+      imageDoodle!.shareButton = null;
 
       // Act.
       const logo = await createLogo(doodle);
@@ -226,7 +231,7 @@ suite('NewTabPageLogoTest', () => {
   test('dark mode and no dark doodle shows logo', async () => {
     // Arrange.
     const doodle = createImageDoodle();
-    delete doodle.image!.dark;
+    doodle.image!.dark = null;
 
     // Act.
     const logo = await createLogo(doodle);
@@ -297,6 +302,7 @@ suite('NewTabPageLogoTest', () => {
         height: 100,
       },
       description: '',
+      image: null,
     });
     logo.dark = false;
 
@@ -328,6 +334,7 @@ suite('NewTabPageLogoTest', () => {
         height: 100,
       },
       description: '',
+      image: null,
     });
 
     // Assert (no mode).
@@ -422,6 +429,7 @@ suite('NewTabPageLogoTest', () => {
             height: 500,
           },
           description: '',
+          image: null,
         });
 
         // Assert.
@@ -443,6 +451,7 @@ suite('NewTabPageLogoTest', () => {
         height: 100,
       },
       description: '',
+      image: null,
     });
     const transitionend = eventToPromise('transitionend', $$(logo, '#iframe')!);
 
@@ -481,6 +490,7 @@ suite('NewTabPageLogoTest', () => {
         height: 100,
       },
       description: '',
+      image: null,
     });
     const height = $$<HTMLElement>(logo, '#iframe')!.offsetHeight;
     const width = $$<HTMLElement>(logo, '#iframe')!.offsetWidth;
@@ -510,6 +520,7 @@ suite('NewTabPageLogoTest', () => {
         height: 100,
       },
       description: '',
+      image: null,
     });
     logo.dark = false;
     windowProxy.resetResolver('postMessage');
@@ -532,7 +543,7 @@ suite('NewTabPageLogoTest', () => {
     test(`clicking simple doodle ${with_out} URL`, async () => {
       // Arrange.
       const doodle = createImageDoodle();
-      doodle.image!.onClickUrl = hasUrl ? {url: 'https://foo.com'} : undefined;
+      doodle.image!.onClickUrl = hasUrl ? {url: 'https://foo.com'} : null;
       const logo = await createLogo(doodle);
 
       // Act.
@@ -551,8 +562,7 @@ suite('NewTabPageLogoTest', () => {
       test(`pressing ${key} on simple doodle ${with_out} URL`, async () => {
         // Arrange.
         const doodle = createImageDoodle();
-        doodle.image!.onClickUrl =
-            hasUrl ? {url: 'https://foo.com'} : undefined;
+        doodle.image!.onClickUrl = hasUrl ? {url: 'https://foo.com'} : null;
         const logo = await createLogo(doodle);
 
         // Act.
@@ -573,7 +583,7 @@ suite('NewTabPageLogoTest', () => {
       const doodle = createImageDoodle();
       assertTrue(!!doodle.image);
       doodle.image.light.animationUrl = {url: 'https://foo.com'};
-      doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : undefined;
+      doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : null;
       const logo = await createLogo(doodle);
       assertEquals(0, $$<HTMLElement>(logo, '#imageDoodle')!.tabIndex);
 
@@ -609,7 +619,7 @@ suite('NewTabPageLogoTest', () => {
       assertTrue(!!doodle.image);
       assertTrue(!!doodle.image.light);
       doodle.image.light.animationUrl = {url: 'https://foo.com'};
-      doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : undefined;
+      doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : null;
       const logo = await createLogo(doodle);
       $$<HTMLElement>(logo, '#image')!.click();
 

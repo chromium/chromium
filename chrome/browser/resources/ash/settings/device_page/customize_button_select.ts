@@ -414,11 +414,12 @@ export class CustomizeButtonSelectElement extends
       const updatedRemapping: ButtonRemapping = {
         name: this.buttonRemapping_.name,
         button: this.buttonRemapping_.button,
+        remappingAction: null,
       };
       return updatedRemapping;
     }
     // Otherwise the button is remapped to a remappingAction.
-    let remappingAction: RemappingAction|undefined = undefined;
+    let remappingAction: RemappingAction|null = null;
     if (this.selectedValue.startsWith(ACCELERATOR_ACTION_PREFIX)) {
       // Remove the acceleratorAction prefix to get the real enum value.
       remappingAction = {

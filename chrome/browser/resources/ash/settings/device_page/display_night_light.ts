@@ -224,15 +224,30 @@ export class SettingsDisplayNightLightElement extends
       isInternalDisplay: boolean,
       nightLightSchedule: DisplaySettingsNightLightScheduleOption): void {
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        DisplaySettingsType.kNightLightSchedule,
-        {isInternalDisplay, nightLightSchedule});
+        DisplaySettingsType.kNightLightSchedule, {
+          isInternalDisplay,
+          nightLightSchedule,
+          displayId: null,
+          orientation: null,
+          nightLightStatus: null,
+          mirrorModeStatus: null,
+          unifiedModeStatus: null,
+        });
   }
 
   // Records metrics when users toggle the night light status.
   private recordTogglingNightLightStatus(
       isInternalDisplay: boolean, nightLightStatus: boolean): void {
     this.displaySettingsProvider.recordChangingDisplaySettings(
-        DisplaySettingsType.kNightLight, {isInternalDisplay, nightLightStatus});
+        DisplaySettingsType.kNightLight, {
+          isInternalDisplay,
+          nightLightStatus,
+          displayId: null,
+          orientation: null,
+          nightLightSchedule: null,
+          mirrorModeStatus: null,
+          unifiedModeStatus: null,
+        });
   }
 
   private computeShouldShowGeolocationWarningText_(): boolean {

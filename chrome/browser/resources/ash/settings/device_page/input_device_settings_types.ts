@@ -63,9 +63,7 @@ export type KeyboardSettings = InputDeviceSettingsTypes.KeyboardSettings;
 export type Keyboard = InputDeviceSettingsTypes.Keyboard;
 
 export type Touchpad = InputDeviceSettingsTypes.Touchpad;
-export type Mouse = Omit<InputDeviceSettingsTypes.Mouse, 'settings'>&{
-  settings: MouseSettings,
-};
+export type Mouse = InputDeviceSettingsTypes.Mouse;
 export type PointingStick = InputDeviceSettingsTypes.PointingStick;
 
 export interface Stylus {
@@ -93,10 +91,7 @@ export interface GraphicsTabletSettings {
 }
 
 export type TouchpadSettings = InputDeviceSettingsTypes.TouchpadSettings;
-export type MouseSettings =
-    Omit<InputDeviceSettingsTypes.MouseSettings, 'buttonRemappings'>&{
-      buttonRemappings: ButtonRemapping[],
-    };
+export type MouseSettings = InputDeviceSettingsTypes.MouseSettings;
 export type PointingStickSettings =
     InputDeviceSettingsTypes.PointingStickSettings;
 export type DeviceSettings =
@@ -135,15 +130,9 @@ export interface FakeKeyEvent {
 }
 
 export type Button = InputDeviceSettingsTypes.Button;
-export type ButtonRemapping =
-    Omit<InputDeviceSettingsTypes.ButtonRemapping, 'remappingAction'>&{
-      remappingAction?: RemappingAction,
-    };
+export type ButtonRemapping = InputDeviceSettingsTypes.ButtonRemapping;
 
-export type RemappingAction =
-    Omit<InputDeviceSettingsTypes.RemappingAction, 'keyEvent'>&{
-      keyEvent?: KeyEvent,
-    };
+export type RemappingAction = InputDeviceSettingsTypes.RemappingAction;
 
 export type KeyEvent =
     Required<InputDeviceSettingsTypes.KeyEvent>&Partial<FakeKeyEvent>;

@@ -53,7 +53,7 @@ suite('GooglePhotosCollectionElementTest', function() {
 
   test('displays only photos content', async () => {
     // Tabs and albums content are not displayed if albums are absent.
-    wallpaperProvider.setGooglePhotosAlbums(undefined);
+    wallpaperProvider.setGooglePhotosAlbums(null);
     wallpaperProvider.setGooglePhotosPhotos([{
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',

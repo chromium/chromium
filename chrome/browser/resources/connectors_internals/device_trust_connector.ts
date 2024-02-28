@@ -52,7 +52,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
     this.setValueToElement('#policy-enabled-levels', `${policyLevels}`);
   }
 
-  set consentMetadata(consentMetadata: ConsentMetadata|undefined) {
+  set consentMetadata(consentMetadata: ConsentMetadata|null) {
     const consentDetailsEl = (this.$('#consent-details') as HTMLElement);
     const noConsentDetailsEl = (this.$('#no-consent') as HTMLElement);
     if (!consentMetadata) {

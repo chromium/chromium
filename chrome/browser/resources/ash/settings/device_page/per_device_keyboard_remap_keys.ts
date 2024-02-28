@@ -36,9 +36,9 @@ interface PrefPolicyFields {
   recommendedValue?: ExtendedFkeysModifier|SixPackShortcutModifier;
 }
 
-function getPrefPolicyFields(
-    policy?: InputDeviceSettingsFkeyPolicy|
-    InputDeviceSettingsSixPackKeyPolicy): PrefPolicyFields {
+function getPrefPolicyFields(policy: InputDeviceSettingsFkeyPolicy|
+                             InputDeviceSettingsSixPackKeyPolicy|
+                             null): PrefPolicyFields {
   if (policy) {
     const enforcement = policy.policyStatus === PolicyStatus.kManaged ?
         chrome.settingsPrivate.Enforcement.ENFORCED :
@@ -646,7 +646,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   private setSixPackKeyRemappings(): void {
-    const sixPackKeyRemappings: SixPackKeyInfo|undefined =
+    const sixPackKeyRemappings: SixPackKeyInfo|null =
         this.keyboard.settings?.sixPackKeyRemappings;
     if (!sixPackKeyRemappings) {
       return;

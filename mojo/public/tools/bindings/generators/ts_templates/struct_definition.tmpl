@@ -59,11 +59,11 @@ export interface {{struct.name}} {
 {%-       set original_field = packed_field.original_field %}
 {%-       set name = original_field.name %}
 {%-       set kind = original_field.kind %}
-  {{name}}{% if original_field.kind.is_nullable %}?{% endif %}: {{original_field.kind|ts_type}};
+  {{name}}: {{kind|ts_type_maybe_nullable}};
 {%-     endif %}
 {%-   else %}
   {% set f = packed_field.field -%}
-  {{f.name}}{% if f.kind.is_nullable %}?{% endif %}: {{f.kind|ts_type}};
+  {{f.name}}: {{f.kind|ts_type_maybe_nullable}};
 {%-   endif %}
 {%- endfor %}
 }

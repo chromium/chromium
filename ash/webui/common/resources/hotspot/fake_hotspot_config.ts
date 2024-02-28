@@ -66,7 +66,7 @@ export class FakeHotspotConfig implements CrosHotspotConfigInterface {
   // Update the hotspot config and notify observers.
   setFakeHotspotConfig(config: HotspotConfig|undefined): void {
     assert(this.hotspotInfo_);
-    this.hotspotInfo_.config = config;
+    this.hotspotInfo_.config = config !== undefined ? config : null;
     this.hotspotInfo_ = {...this.hotspotInfo_};
     this.notifyHotspotInfoUpdated_();
   }

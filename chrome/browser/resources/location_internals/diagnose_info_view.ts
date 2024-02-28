@@ -46,7 +46,7 @@ function mojoTimeToDate(mojoTime: Time) {
 }
 
 // Returns a string representation of `mojoTime`.
-function stringifyMojoTime(mojoTime?: Time) {
+function stringifyMojoTime(mojoTime: Time|null) {
   if (!mojoTime) {
     return 'None';
   }
@@ -55,7 +55,7 @@ function stringifyMojoTime(mojoTime?: Time) {
 
 // Returns a string representation of `mojoGeopositionResult`.
 function stringifyMojoGeopositionResult(
-    mojoGeopositionResult?: GeopositionResult) {
+    mojoGeopositionResult: GeopositionResult|null) {
   if (!mojoGeopositionResult) {
     return 'None';
   }
@@ -228,8 +228,8 @@ export class DiagnoseInfoViewElement extends CustomElement {
     return tableData;
   }
 
-  updateNetworkLocationDiagnostics(networkLocationDiagnostics?:
-                                       NetworkLocationDiagnostics) {
+  updateNetworkLocationDiagnostics(networkLocationDiagnostics:
+                                       NetworkLocationDiagnostics|null) {
     if (!networkLocationDiagnostics) {
       this.wifiDataTable_.hideTable();
       return;
@@ -250,8 +250,8 @@ export class DiagnoseInfoViewElement extends CustomElement {
         WIFI_DATA_TABLE_ID, wifiData, footerMessage);
   }
 
-  updatePositionCacheDiagnostics(positionCacheDiagnostics?:
-                                     PositionCacheDiagnostics) {
+  updatePositionCacheDiagnostics(positionCacheDiagnostics:
+                                     PositionCacheDiagnostics|null) {
     if (!positionCacheDiagnostics) {
       this.positionCacheTable_.hideTable();
       return;
@@ -276,7 +276,7 @@ export class DiagnoseInfoViewElement extends CustomElement {
     this.watchPositionTable_.updateTable(WATCH_TABLE_ID, [data], footerMessage);
   }
 
-  updateWifiPollingPolicyTable(data?: WifiPollingPolicyDiagnostics) {
+  updateWifiPollingPolicyTable(data: WifiPollingPolicyDiagnostics|null) {
     if (!data) {
       this.wifiPollingPolicyTable_.hideTable();
       return;

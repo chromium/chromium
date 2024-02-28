@@ -29,6 +29,9 @@ export function createAutocompleteMatch(): AutocompleteMatch {
     removeButtonA11yLabel: {data: []},
     type: '',
     isRichSuggestion: false,
+    isWeatherAnswerSuggestion: null,
+    answer: null,
+    tailSuggestCommonPrefix: null,
   };
 }
 

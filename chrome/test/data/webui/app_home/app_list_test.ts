@@ -66,6 +66,7 @@ suite('AppListTest', () => {
           mayUninstall: true,
           openInWindow: false,
           isDeprecatedApp: false,
+          storePageUrl: null,
         },
         {
           id: 'ahfgeienlihckogmotestdlkjgocpleb',
@@ -81,6 +82,7 @@ suite('AppListTest', () => {
           mayUninstall: false,
           openInWindow: false,
           isDeprecatedApp: false,
+          storePageUrl: null,
         },
       ],
     };
@@ -99,6 +101,7 @@ suite('AppListTest', () => {
       openInWindow: false,
       mayUninstall: true,
       isDeprecatedApp: false,
+      storePageUrl: null,
     };
     deprecatedAppInfo = {
       id: 'mplpmdejoamenolpcojgegminhcnmibo',

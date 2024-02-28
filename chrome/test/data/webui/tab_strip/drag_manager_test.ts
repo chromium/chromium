@@ -19,7 +19,8 @@ class MockDelegate extends HTMLElement implements DragManagerDelegate {
   }
 
   placeTabElement(
-      element: TabElement, index: number, _pinned: boolean, groupId?: string) {
+      element: TabElement, index: number, _pinned: boolean,
+      groupId: string|null) {
     element.remove();
 
     const parent =

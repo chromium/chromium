@@ -48,6 +48,8 @@ export const fakeKeyboards: Keyboard[] = [
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
   },
   {
@@ -117,6 +119,8 @@ export const fakeKeyboards: Keyboard[] = [
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: false,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
   },
   {
@@ -160,6 +164,8 @@ export const fakeKeyboards: Keyboard[] = [
         home: SixPackShortcutModifier.kAlt,
         end: SixPackShortcutModifier.kAlt,
       },
+      f11: null,
+      f12: null,
     },
   },
 ];
@@ -199,6 +205,8 @@ export const fakeKeyboards2: Keyboard[] = [
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
   },
   {
@@ -232,6 +240,8 @@ export const fakeKeyboards2: Keyboard[] = [
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
       sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
     },
   },
 ];

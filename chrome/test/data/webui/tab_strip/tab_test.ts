@@ -268,7 +268,7 @@ suite('Tab', function() {
       'sets the favicon to the default favicon URL if there is none provided',
       () => {
         const updatedTab = createTabData();
-        delete updatedTab.faviconUrl;
+        updatedTab.faviconUrl = null;
         tabElement.tab = updatedTab;
         const faviconElement =
             tabElement.shadowRoot!.querySelector<HTMLElement>('#favicon')!;

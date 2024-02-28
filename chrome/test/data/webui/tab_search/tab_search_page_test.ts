@@ -232,6 +232,7 @@ suite('TabSearchAppTest', () => {
       url: {url: 'https://www.paypal.com'},
       lastActiveElapsedText: '',
       lastActiveTime: {internalValue: BigInt(11)},
+      groupId: null,
     };
 
     await setupTest(createProfileData({
@@ -491,6 +492,7 @@ suite('TabSearchAppTest', () => {
     testProxy.getCallbackRouterRemote().tabsRemoved({
       tabIds: [1],
       recentlyClosedTabs: [{
+        groupId: null,
         tabId: 3,
         title: `SampleTab`,
         url: {url: 'https://www.sampletab.com'},

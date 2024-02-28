@@ -184,6 +184,7 @@ suite('<settings-internet-known-networks-subpage>', () => {
         domains: [],
         provisioningSource: '',
         expirationEpochMs: 0n,
+        trustedCa: null,
       });
       const preferredWifi =
           OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi2');
@@ -242,6 +243,7 @@ suite('<settings-internet-known-networks-subpage>', () => {
         domains: [],
         provisioningSource: '',
         expirationEpochMs: 0n,
+        trustedCa: null,
       });
       passpointServiceApi.addSubscription({
         id: 'passpoint_id_2',
@@ -249,6 +251,7 @@ suite('<settings-internet-known-networks-subpage>', () => {
         domains: [],
         provisioningSource: '',
         expirationEpochMs: 0n,
+        trustedCa: null,
       });
       const preferredWifi =
           OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi2');
@@ -293,6 +296,7 @@ suite('<settings-internet-known-networks-subpage>', () => {
         domains: [],
         provisioningSource: '',
         expirationEpochMs: 0n,
+        trustedCa: null,
       });
       const preferredWifi =
           OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi2');

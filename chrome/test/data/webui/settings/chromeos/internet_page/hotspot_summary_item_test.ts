@@ -78,6 +78,7 @@ suite('<hotspot-summary-item>', () => {
       allowedWifiSecurityModes: [
         WiFiSecurityMode.MIN_VALUE,
       ],
+      config: null,
     });
     await flushAsync();
   });

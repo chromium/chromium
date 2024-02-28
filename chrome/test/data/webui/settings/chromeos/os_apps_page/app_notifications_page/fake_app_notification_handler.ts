@@ -32,6 +32,7 @@ export class FakeAppNotificationHandler implements
       permissionType: PermissionType.kUnknown,
       isManaged: false,
       value: {},
+      details: null,
     };
     this.apps_ = [];
 
@@ -51,6 +52,7 @@ export class FakeAppNotificationHandler implements
       permissionType: PermissionType.kUnknown,
       isManaged: false,
       value: {},
+      details: null,
     };
 
     this.resolverMap_.set('addObserver', new PromiseResolver());

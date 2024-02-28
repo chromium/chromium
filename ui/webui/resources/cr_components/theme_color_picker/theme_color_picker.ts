@@ -163,8 +163,9 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
                                     LIGHT_BASELINE_GREY_COLOR;
   }
 
-  private computeMainColor_(): SkColor|undefined {
-    return this.theme_ && this.theme_.backgroundImageMainColor;
+  private computeMainColor_(): SkColor|null {
+    return (!!this.theme_ && !!this.theme_.backgroundImageMainColor) ?
+        this.theme_.backgroundImageMainColor : null;
   }
 
   private computeSelectedColor_(): SelectedColor {

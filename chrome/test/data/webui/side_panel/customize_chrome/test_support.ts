@@ -43,7 +43,7 @@ export function createBackgroundImage(url: string): BackgroundImage {
     url: {url},
     snapshotUrl: {url},
     isUploadedImage: false,
-    localBackgroundId: undefined,
+    localBackgroundId: null,
     title: '',
     collectionId: '',
     dailyRefreshEnabled: false,
@@ -60,10 +60,10 @@ export function createThirdPartyThemeInfo(
 
 export function createTheme(): Theme {
   return {
-    backgroundImage: undefined,
-    thirdPartyThemeInfo: undefined,
+    backgroundImage: null,
+    thirdPartyThemeInfo: null,
     backgroundColor: {value: 0xffff0000},
-    foregroundColor: undefined,
+    foregroundColor: null,
     backgroundManagedByPolicy: false,
     followDeviceTheme: false,
   };

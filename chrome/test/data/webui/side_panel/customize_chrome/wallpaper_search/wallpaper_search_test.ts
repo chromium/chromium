@@ -225,8 +225,7 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
       await flushTasks();
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
-      assertEquals(
-          undefined, handler.getArgs('getWallpaperSearchResults')[0].color);
+      assertEquals(null, handler.getArgs('getWallpaperSearchResults')[0].color);
     });
 
     test('unselects hue', async () => {
@@ -259,8 +258,7 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
       await flushTasks();
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
-      assertEquals(
-          undefined, handler.getArgs('getWallpaperSearchResults')[0].color);
+      assertEquals(null, handler.getArgs('getWallpaperSearchResults')[0].color);
     });
   });
 
@@ -373,9 +371,9 @@ suite('WallpaperSearchTest', () => {
       const resultDescriptors: ResultDescriptors =
           handler.getArgs('getWallpaperSearchResults')[0];
       assertEquals('bar', resultDescriptors.subject);
-      assertEquals(undefined, resultDescriptors.style);
-      assertEquals(undefined, resultDescriptors.mood);
-      assertEquals(undefined, resultDescriptors.color);
+      assertEquals(null, resultDescriptors.style);
+      assertEquals(null, resultDescriptors.mood);
+      assertEquals(null, resultDescriptors.color);
     });
 
     test('empty result shows no tiles', async () => {
@@ -542,8 +540,16 @@ suite('WallpaperSearchTest', () => {
       handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
         status: WallpaperSearchStatus.kOk,
         results: [
-          {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-          {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+          {
+            image: '123',
+            id: {high: BigInt(10), low: BigInt(1)},
+            descriptors: null,
+          },
+          {
+            image: '456',
+            id: {high: BigInt(8), low: BigInt(2)},
+            descriptors: null,
+          },
         ],
       }));
       createWallpaperSearchElementWithDescriptors();
@@ -810,8 +816,16 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!wallpaperSearchElement.$.historyCard.hidden);
 
       wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        {
+          image: '123',
+          id: {high: BigInt(10), low: BigInt(1)},
+          descriptors: null,
+        },
+        {
+          image: '456',
+          id: {high: BigInt(8), low: BigInt(2)},
+          descriptors: null,
+        },
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -841,9 +855,14 @@ suite('WallpaperSearchTest', () => {
             subject: 'foo',
             mood: 'bar',
             style: 'foobar',
+            color: null,
           },
         },
-        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        {
+          image: '456',
+          id: {high: BigInt(8), low: BigInt(2)},
+          descriptors: null,
+        },
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -865,8 +884,16 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElement();
 
       wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        {
+          image: '123',
+          id: {high: BigInt(10), low: BigInt(1)},
+          descriptors: null,
+        },
+        {
+          image: '456',
+          id: {high: BigInt(8), low: BigInt(2)},
+          descriptors: null,
+        },
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -906,12 +933,19 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElement();
 
       wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {
+          image: '123',
+          id: {high: BigInt(10), low: BigInt(1)},
+          descriptors: null,
+        },
         {
           image: '456',
           id: {high: BigInt(8), low: BigInt(2)},
           descriptors: {
             subject: 'foo',
+            style: null,
+            mood: null,
+            color: null,
           },
         },
         {
@@ -920,6 +954,8 @@ suite('WallpaperSearchTest', () => {
           descriptors: {
             subject: 'foo',
             mood: 'bar',
+            style: null,
+            color: null,
           },
         },
         {
@@ -928,6 +964,8 @@ suite('WallpaperSearchTest', () => {
           descriptors: {
             subject: 'foo',
             style: 'foobar',
+            mood: null,
+            color: null,
           },
         },
         {
@@ -937,6 +975,7 @@ suite('WallpaperSearchTest', () => {
             subject: 'foo',
             mood: 'bar',
             style: 'foobar',
+            color: null,
           },
         },
       ]);
@@ -1004,8 +1043,16 @@ suite('WallpaperSearchTest', () => {
         createWallpaperSearchElement();
 
         wallpaperSearchCallbackRouterRemote.setHistory([
-          {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-          {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+          {
+            image: '123',
+            id: {high: BigInt(10), low: BigInt(1)},
+            descriptors: null,
+          },
+          {
+            image: '456',
+            id: {high: BigInt(8), low: BigInt(2)},
+            descriptors: null,
+          },
         ]);
         await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -1030,9 +1077,9 @@ suite('WallpaperSearchTest', () => {
               {
                 descriptors: {
                   subject: 'foobar',
-                  style: undefined,
-                  mood: undefined,
-                  color: undefined,
+                  style: null,
+                  mood: null,
+                  color: null,
                 },
                 inspirations: [
                   {
@@ -1069,9 +1116,9 @@ suite('WallpaperSearchTest', () => {
                   {
                     descriptors: {
                       subject: 'foobar',
-                      style: undefined,
-                      mood: undefined,
-                      color: undefined,
+                      style: null,
+                      mood: null,
+                      color: null,
                     },
                     inspirations: [
                       {
@@ -1085,8 +1132,16 @@ suite('WallpaperSearchTest', () => {
                 ]);
 
             wallpaperSearchCallbackRouterRemote.setHistory([
-              {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-              {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+              {
+                image: '123',
+                id: {high: BigInt(10), low: BigInt(1)},
+                descriptors: null,
+              },
+              {
+                image: '456',
+                id: {high: BigInt(8), low: BigInt(2)},
+                descriptors: null,
+              },
             ]);
             await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -1146,8 +1201,16 @@ suite('WallpaperSearchTest', () => {
 
         windowProxy.setResultFor('onLine', false);
         wallpaperSearchCallbackRouterRemote.setHistory([
-          {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-          {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+          {
+            image: '123',
+            id: {high: BigInt(10), low: BigInt(1)},
+            descriptors: null,
+          },
+          {
+            image: '456',
+            id: {high: BigInt(8), low: BigInt(2)},
+            descriptors: null,
+          },
         ]);
         await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -1262,8 +1325,16 @@ suite('WallpaperSearchTest', () => {
         await flushTasks();
 
         wallpaperSearchCallbackRouterRemote.setHistory([
-          {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-          {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+          {
+            image: '123',
+            id: {high: BigInt(10), low: BigInt(1)},
+            descriptors: null,
+          },
+          {
+            image: '456',
+            id: {high: BigInt(8), low: BigInt(2)},
+            descriptors: null,
+          },
         ]);
         await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
         wallpaperSearchElement.$.submitButton.click();
@@ -1292,9 +1363,9 @@ suite('WallpaperSearchTest', () => {
         createWallpaperSearchElementWithDescriptors([{
           descriptors: {
             subject: 'foobar',
-            style: undefined,
-            mood: undefined,
-            color: undefined,
+            style: null,
+            mood: null,
+            color: null,
           },
           inspirations: [
             {
@@ -1335,9 +1406,9 @@ suite('WallpaperSearchTest', () => {
             createWallpaperSearchElementWithDescriptors([{
               descriptors: {
                 subject: 'foobar',
-                style: undefined,
-                mood: undefined,
-                color: undefined,
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -1351,8 +1422,16 @@ suite('WallpaperSearchTest', () => {
             await flushTasks();
 
             wallpaperSearchCallbackRouterRemote.setHistory([
-              {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-              {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+              {
+                image: '123',
+                id: {high: BigInt(10), low: BigInt(1)},
+                descriptors: null,
+              },
+              {
+                image: '456',
+                id: {high: BigInt(8), low: BigInt(2)},
+                descriptors: null,
+              },
             ]);
             await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
             wallpaperSearchElement.$.submitButton.click();
@@ -1539,8 +1618,16 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElement();
 
       wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        {
+          image: '123',
+          id: {high: BigInt(10), low: BigInt(1)},
+          descriptors: null,
+        },
+        {
+          image: '456',
+          id: {high: BigInt(8), low: BigInt(2)},
+          descriptors: null,
+        },
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -1722,9 +1809,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'foobar',
-                style: undefined,
-                mood: undefined,
-                color: undefined,
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -1779,9 +1866,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'foobar',
-                style: undefined,
-                mood: undefined,
-                color: undefined,
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -1801,9 +1888,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'baz',
-                style: undefined,
-                mood: undefined,
-                color: undefined,
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -1881,9 +1968,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'foo',
-                style: undefined,
+                style: null,
                 mood: 'baz',
-                color: undefined,
+                color: null,
               },
               inspirations: [
                 {
@@ -1915,9 +2002,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'foobar',
-                style: undefined,
-                mood: undefined,
-                color: undefined,
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -1978,6 +2065,8 @@ suite('WallpaperSearchTest', () => {
               descriptors: {
                 subject: 'bar',
                 mood: 'baz',
+                style: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -2080,6 +2169,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'bar',
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -2222,8 +2314,16 @@ suite('WallpaperSearchTest', () => {
 
       // Card collapses if there is history.
       wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+        {
+          image: '123',
+          id: {high: BigInt(10), low: BigInt(1)},
+          descriptors: null,
+        },
+        {
+          image: '456',
+          id: {high: BigInt(8), low: BigInt(2)},
+          descriptors: null,
+        },
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
 
@@ -2246,9 +2346,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'foobar',
-                style: undefined,
-                mood: undefined,
-                color: undefined,
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {
@@ -2273,9 +2373,9 @@ suite('WallpaperSearchTest', () => {
             {
               descriptors: {
                 subject: 'foobar',
-                style: undefined,
-                mood: undefined,
-                color: undefined,
+                style: null,
+                mood: null,
+                color: null,
               },
               inspirations: [
                 {

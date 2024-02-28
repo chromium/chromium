@@ -73,9 +73,10 @@ suite('history-clusters', () => {
       label: '',
       labelMatchPositions: [],
       relatedSearches: [],
-      imageUrl: undefined,
+      imageUrl: null,
       fromPersistence: false,
-      debugInfo: undefined,
+      debugInfo: null,
+      tabGroupName: null,
     };
 
     const cluster2: Cluster = {
@@ -84,9 +85,10 @@ suite('history-clusters', () => {
       label: '',
       labelMatchPositions: [],
       relatedSearches: [],
-      imageUrl: undefined,
+      imageUrl: null,
       fromPersistence: false,
-      debugInfo: undefined,
+      debugInfo: null,
+      tabGroupName: null,
     };
 
     const queryResult: QueryResult = {

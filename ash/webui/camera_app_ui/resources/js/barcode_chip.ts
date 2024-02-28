@@ -174,6 +174,11 @@ function parseWifi(s: string): WifiConfig|null {
     return {
       ssid: ssid,
       security: WifiSecurityType.kNone,
+      password: null,
+      eapMethod: null,
+      eapPhase2Method: null,
+      eapIdentity: null,
+      eapAnonymousIdentity: null,
     };
   } else if (password === null) {
     return null;
@@ -182,12 +187,20 @@ function parseWifi(s: string): WifiConfig|null {
       ssid: ssid,
       security: WifiSecurityType.kWep,
       password: password,
+      eapMethod: null,
+      eapPhase2Method: null,
+      eapIdentity: null,
+      eapAnonymousIdentity: null,
     };
   } else if (securityType === 'WPA') {
     return {
       ssid: ssid,
       security: WifiSecurityType.kWpa,
       password: password,
+      eapMethod: null,
+      eapPhase2Method: null,
+      eapIdentity: null,
+      eapAnonymousIdentity: null,
     };
   } else if (
       eapMethod !== null && anonIdentity !== null && identity !== null &&

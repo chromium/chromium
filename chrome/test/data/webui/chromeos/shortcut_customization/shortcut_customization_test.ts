@@ -438,7 +438,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     const fakeResult2: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
     provider.setFakeReplaceAcceleratorResult(fakeResult2);
 
@@ -549,7 +549,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Press a different shortcut, this time with the success state.
     const fakeResult3: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
     provider.setFakeAddAcceleratorResult(fakeResult3);
 
@@ -684,7 +684,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
@@ -744,7 +744,7 @@ suite('shortcutCustomizationAppTest', function() {
     // Now fix the conflict.
     const fakeResult2: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
     provider.setFakeAddAcceleratorResult(fakeResult2);
 
@@ -1234,6 +1234,7 @@ suite('shortcutCustomizationAppTest', function() {
                   internalValue: BigInt(0),
                 },
               },
+              originalAccelerator: null,
             },
           },
         }],
@@ -1276,6 +1277,7 @@ suite('shortcutCustomizationAppTest', function() {
                     internalValue: BigInt(0),
                   },
                 },
+                originalAccelerator: null,
               },
             },
           },
@@ -1294,6 +1296,7 @@ suite('shortcutCustomizationAppTest', function() {
                     internalValue: BigInt(0),
                   },
                 },
+                originalAccelerator: null,
               },
             },
           },

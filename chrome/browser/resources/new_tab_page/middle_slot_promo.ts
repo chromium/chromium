@@ -41,7 +41,7 @@ export function recordPromoDismissAction(action: PromoDismissAction) {
  * returned.
  */
 export async function renderPromo(promo: Promo):
-    Promise<{container: Element, id: string | undefined}|null> {
+    Promise<{container: Element, id: string | null}|null> {
   const browserHandler = NewTabPageProxy.getInstance().handler;
   const promoBrowserCommandHandler = BrowserCommandProxy.getInstance().handler;
   if (!promo) {

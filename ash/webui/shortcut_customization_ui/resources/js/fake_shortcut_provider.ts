@@ -172,8 +172,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
     // Always return kSuccess in this fake.
-    const result:
-        AcceleratorResultData = {result: AcceleratorConfigResult.kSuccess};
+    const result: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: null,
+    };
     this.methods.setResult('restoreAllDefaults', {result});
     return this.methods.resolveMethod('restoreAllDefaults');
   }

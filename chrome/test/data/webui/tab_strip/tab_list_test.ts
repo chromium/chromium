@@ -227,11 +227,11 @@ suite('TabList', () => {
 
   test('PlacesTabElement', () => {
     const pinnedTab = document.createElement('tabstrip-tab');
-    tabList.placeTabElement(pinnedTab, 0, true, undefined);
+    tabList.placeTabElement(pinnedTab, 0, true, null);
     assertEquals(pinnedTab, getPinnedTabs()[0]);
 
     const unpinnedUngroupedTab = document.createElement('tabstrip-tab');
-    tabList.placeTabElement(unpinnedUngroupedTab, 1, false, undefined);
+    tabList.placeTabElement(unpinnedUngroupedTab, 1, false, null);
     let unpinnedTabs = getUnpinnedTabs();
     assertEquals(4, unpinnedTabs.length);
     assertEquals(unpinnedUngroupedTab, unpinnedTabs[0]);
@@ -278,7 +278,7 @@ suite('TabList', () => {
     const unpinnedTabs = getUnpinnedTabs();
 
     const movedTab = unpinnedTabs[indexToMove]!;
-    tabList.placeTabElement(movedTab, newIndex, false, undefined);
+    tabList.placeTabElement(movedTab, newIndex, false, null);
     testPlaceElementAnimationParams(
         movedTab, -1 * direction * Math.abs(newIndex - indexToMove), 0);
 
@@ -316,7 +316,7 @@ suite('TabList', () => {
     // to index 2, it should move vertically down 2 places. Tabs at index 1 and
     // index 2 should move up 1 space.
     const pinnedTabs = getPinnedTabs();
-    tabList.placeTabElement(pinnedTabs[0]!, 2, /*pinned=*/ true);
+    tabList.placeTabElement(pinnedTabs[0]!, 2, /*pinned=*/ true, null);
     await Promise.all([
       testPlaceElementAnimationParams(pinnedTabs[0]!, 0, -2),
       testPlaceElementAnimationParams(pinnedTabs[1]!, 0, 1),
@@ -340,7 +340,7 @@ suite('TabList', () => {
         await tabList.animationPromises;
 
         const pinnedTabs = getPinnedTabs();
-        tabList.placeTabElement(pinnedTabs[2]!, 6, /*pinned=*/ true);
+        tabList.placeTabElement(pinnedTabs[2]!, 6, /*pinned=*/ true, null);
         await Promise.all([
           testPlaceElementAnimationParams(pinnedTabs[2]!, -2, 2),
           testPlaceElementAnimationParams(pinnedTabs[3]!, 1, -2),
@@ -366,7 +366,7 @@ suite('TabList', () => {
         await tabList.animationPromises;
 
         const pinnedTabs = getPinnedTabs();
-        tabList.placeTabElement(pinnedTabs[3]!, 0, /*pinned=*/ true);
+        tabList.placeTabElement(pinnedTabs[3]!, 0, /*pinned=*/ true, null);
         await Promise.all([
           testPlaceElementAnimationParams(pinnedTabs[3]!, 1, 0),
           testPlaceElementAnimationParams(pinnedTabs[2]!, -1, 2),

@@ -60,8 +60,8 @@ interface PrefPolicyFields {
   recommendedValue?: boolean;
 }
 
-export function getPrefPolicyFields(policy?: InputDeviceSettingsPolicy):
-    PrefPolicyFields {
+export function getPrefPolicyFields(policy: InputDeviceSettingsPolicy|
+                                    null): PrefPolicyFields {
   if (policy) {
     const enforcement = policy.policyStatus === PolicyStatus.kManaged ?
         chrome.settingsPrivate.Enforcement.ENFORCED :

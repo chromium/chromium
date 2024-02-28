@@ -53,6 +53,9 @@ suite('AppSettingsAppTest', () => {
       formattedOrigin: '',
       scopeExtensions: [],
       supportedLocales: [],
+      isPinned: null,
+      isPolicyPinned: null,
+      selectedLocale: null,
       showSystemNotificationsSettingsLink: false,
     };
 
