@@ -15,6 +15,7 @@
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
@@ -134,42 +135,69 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
 
 }  // namespace
 
-ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
+BundledIsolatedWebApp::BundledIsolatedWebApp(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::vector<uint8_t> serialized_bundle,
+    const base::FilePath path,
     std::optional<ManifestBuilder> manifest_builder)
-    : web_bundle_id_(web_bundle_id), manifest_builder_(manifest_builder) {
+    : web_bundle_id_(web_bundle_id),
+      path_(std::move(path)),
+      manifest_builder_(manifest_builder) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  CHECK(bundle_file_.Create());
-  CHECK(base::WriteFile(bundle_file_.path(), serialized_bundle));
+  CHECK(base::WriteFile(path_, std::move(serialized_bundle)));
 }
 
-ScopedBundledIsolatedWebApp::~ScopedBundledIsolatedWebApp() = default;
+BundledIsolatedWebApp::~BundledIsolatedWebApp() = default;
 
-void ScopedBundledIsolatedWebApp::TrustSigningKey() {
+void BundledIsolatedWebApp::TrustSigningKey() {
   AddTrustedWebBundleIdForTesting(web_bundle_id_);
 }
 
-IsolatedWebAppUrlInfo ScopedBundledIsolatedWebApp::InstallChecked(
-    Profile* profile) {
+IsolatedWebAppUrlInfo BundledIsolatedWebApp::InstallChecked(Profile* profile) {
   auto result = Install(profile);
   CHECK(result.has_value()) << result.error();
   return *result;
 }
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
-ScopedBundledIsolatedWebApp::Install(Profile* profile) {
+BundledIsolatedWebApp::Install(Profile* profile) {
   return ::web_app::Install(profile, web_bundle_id_,
                             InstalledBundle{.path = path()});
 }
 
-void ScopedBundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
+void BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
   CHECK(manifest_builder_.has_value());
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
   ::web_app::FakeInstallPageState(
       profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
 }
+
+// static
+std::unique_ptr<ScopedBundledIsolatedWebApp>
+ScopedBundledIsolatedWebApp::Create(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    std::optional<ManifestBuilder> manifest_builder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempFile bundle_file;
+  CHECK(bundle_file.Create());
+
+  return base::WrapUnique(new ScopedBundledIsolatedWebApp(
+      web_bundle_id, std::move(serialized_bundle), std::move(bundle_file),
+      std::move(manifest_builder)));
+}
+
+ScopedBundledIsolatedWebApp::ScopedBundledIsolatedWebApp(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<uint8_t> serialized_bundle,
+    base::ScopedTempFile bundle_file,
+    std::optional<ManifestBuilder> manifest_builder)
+    : BundledIsolatedWebApp(web_bundle_id,
+                            std::move(serialized_bundle),
+                            bundle_file.path(),
+                            std::move(manifest_builder)),
+      bundle_file_(std::move(bundle_file)) {}
 
 ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
     std::unique_ptr<net::EmbeddedTestServer> proxy_server,
@@ -487,10 +515,25 @@ IsolatedWebAppBuilder::BuildBundle() {
 
 std::unique_ptr<ScopedBundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
     const web_package::WebBundleSigner::KeyPair& key_pair) {
-  return std::make_unique<ScopedBundledIsolatedWebApp>(
+  return ScopedBundledIsolatedWebApp::Create(
       web_package::SignedWebBundleId::CreateForEd25519PublicKey(
           key_pair.public_key),
       BuildInMemoryBundle(key_pair), manifest_builder_);
+}
+
+std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
+    const base::FilePath& bundle_path) {
+  return BuildBundle(bundle_path,
+                     web_package::WebBundleSigner::KeyPair::CreateRandom());
+}
+
+std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
+    const base::FilePath& bundle_path,
+    const web_package::WebBundleSigner::KeyPair& key_pair) {
+  return std::make_unique<BundledIsolatedWebApp>(
+      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+          key_pair.public_key),
+      BuildInMemoryBundle(key_pair), bundle_path, manifest_builder_);
 }
 
 std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(

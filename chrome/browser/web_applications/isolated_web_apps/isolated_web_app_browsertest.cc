@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -277,12 +278,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, FallsBackToOldManifestPath) {
                       {{":status", "200"}, {"content-type", "image/png"}},
                       CreateSerializedIcon());
 
-  ScopedBundledIsolatedWebApp app(web_bundle_id,
-                                  web_package::WebBundleSigner::SignBundle(
-                                      builder.CreateBundle(), {key_pair}));
-  auto result = app.Install(profile());
-  ASSERT_TRUE(result.has_value()) << result.error();
-  IsolatedWebAppUrlInfo url_info = result.value();
+  auto app = ScopedBundledIsolatedWebApp::Create(
+      web_bundle_id, web_package::WebBundleSigner::SignBundle(
+                         builder.CreateBundle(), {key_pair}));
+  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(url_info.app_id()),
             "fallback manifest");
