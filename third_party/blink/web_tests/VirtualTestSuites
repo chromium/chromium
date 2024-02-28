@@ -1473,7 +1473,6 @@
       "external/wpt/html/semantics/popovers/popover-attribute-basic.html",
       "external/wpt/html/semantics/popovers/popover-beforetoggle-opening-event.html",
       "external/wpt/html/semantics/popovers/popover-change-type.html",
-      "external/wpt/html/semantics/popovers/popover-css-properties.tentative.html",
       "external/wpt/html/semantics/popovers/popover-document-open.html",
       "external/wpt/html/semantics/popovers/popover-events.html",
       "external/wpt/html/semantics/popovers/popover-focus-2.html",
@@ -1486,7 +1485,6 @@
       "external/wpt/html/semantics/popovers/popover-removal-2.html",
       "external/wpt/html/semantics/popovers/popover-removal.html",
       "external/wpt/html/semantics/popovers/popover-shadow-dom.html",
-      "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html",
       "external/wpt/html/semantics/popovers/popover-types-with-hints.tentative.html",
       "external/wpt/html/semantics/popovers/popover-types.html",
       "external/wpt/html/semantics/popovers/popover-hint-crash.tentative.html",
@@ -2733,5 +2731,17 @@
     "args": ["--enable-features=PageConcealEvent"],
     "expires": "June 1, 2024",
     "owners": ["khushalsagar@chromium.org", "vmpstr@chromium.org"]
+  },
+  {
+    "prefix": "popover-hover-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/semantics/popovers/popover-css-properties.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html"
+    ],
+    "args": ["--disable-blink-features=HTMLPopoverActionHover",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "expires": "Feb 1, 2025"
   }
 ]

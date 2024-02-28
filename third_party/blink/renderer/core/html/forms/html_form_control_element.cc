@@ -402,7 +402,7 @@ HTMLFormControlElement::popoverTargetElement() {
     action = PopoverTriggerAction::kShow;
   } else if (action_value == "hide") {
     action = PopoverTriggerAction::kHide;
-  } else if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled() &&
+  } else if (RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled() &&
              action_value == "hover") {
     action = PopoverTriggerAction::kHover;
   }
@@ -432,7 +432,7 @@ AtomicString HTMLFormControlElement::popoverTargetAction() const {
              attribute_value == keywords::kShow ||
              attribute_value == keywords::kHide) {
     return attribute_value;  // ReflectOnly
-  } else if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled() &&
+  } else if (RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled() &&
              attribute_value == keywords::kHover) {
     return attribute_value;  // ReflectOnly (with HTMLPopoverHint enabled)
   } else {
@@ -515,7 +515,7 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
           action = keywords::kHidePopover;
           break;
         case PopoverTriggerAction::kHover:
-          CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+          CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
           action = keywords::kShowPopover;
           break;
         case PopoverTriggerAction::kNone:
@@ -544,7 +544,7 @@ void HTMLFormControlElement::HandlePopoverInvokerHovered(bool hovered) {
   if (!target_popover || target_info.action != PopoverTriggerAction::kHover) {
     return;
   }
-  CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
 
   if (hovered) {
     // If we've just hovered an element (or the descendant of an element), see

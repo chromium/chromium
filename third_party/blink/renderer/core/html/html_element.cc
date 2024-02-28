@@ -1545,7 +1545,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   original_document.AllOpenPopovers().insert(this);
 
   // Queue a delayed hide event, if necessary.
-  if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
+  if (RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled()) {
     if (!GetDocument().HoverElement() ||
         !IsNodePopoverDescendant(*GetDocument().HoverElement())) {
       MaybeQueuePopoverHideEvent();
@@ -2214,7 +2214,7 @@ void HTMLElement::InvokePopover(Element& invoker) {
 // `popover-hide-delay` CSS property, which works for all popover types, and
 // needs to keep popovers open when a descendant is hovered.
 bool HTMLElement::IsNodePopoverDescendant(const Node& node) const {
-  CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
   CHECK(HasPopoverAttribute());
   const HTMLElement* ancestor = FindTopmostRelatedPopover(
       node, {PopoverAncestorOptions::kIncludeManualPopovers});
@@ -2231,7 +2231,7 @@ bool HTMLElement::IsNodePopoverDescendant(const Node& node) const {
 }
 
 void HTMLElement::MaybeQueuePopoverHideEvent() {
-  CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled());
   CHECK(HasPopoverAttribute());
   // If the popover isn't showing, or it has an infinite PopoverHideDelay, do
   // nothing.
@@ -2273,7 +2273,7 @@ void HTMLElement::MaybeQueuePopoverHideEvent() {
 // static
 void HTMLElement::HoveredElementChanged(Element* old_element,
                                         Element* new_element) {
-  if (!RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
+  if (!RuntimeEnabledFeatures::HTMLPopoverActionHoverEnabled()) {
     return;
   }
   if (old_element) {

@@ -3145,7 +3145,7 @@
     },
     {
       name: "popover-show-delay",
-      runtime_flag: "HTMLPopoverHint",
+      runtime_flag: "HTMLPopoverActionHover",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "primitive",
@@ -3158,7 +3158,7 @@
     },
     {
       name: "popover-hide-delay",
-      runtime_flag: "HTMLPopoverHint",
+      runtime_flag: "HTMLPopoverActionHover",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "primitive",
