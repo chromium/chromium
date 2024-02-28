@@ -15,21 +15,7 @@
   #readingListList {
     max-height: none;
     overflow: auto;
-  }
-
-  :host-context([chrome-refresh-2023]) #readingListList {
     padding-block-start: var(--sp-body-padding);
-  }
-
-  :host-context(html:not([chrome-refresh-2023])) #currentPageActionButton {
-    --disabled-border-color: var(--border-color);
-    --hover-bg-color: var(--cr-icon-button-hover-background-color,
-            var(--cr-hover-background-color));
-    --hover-border-color: var(--border-color);
-    border-radius: 4px;
-    font-size: var(--mwb-primary-text-font-size);
-    padding: 8px;
-    transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   sp-heading {
