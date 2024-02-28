@@ -4,9 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 
-#include <variant>
-
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace blink {
 
@@ -48,7 +47,7 @@ MLActivation::MLActivation(MLGraphBuilder* builder,
     : operator_(
           MakeGarbageCollected<MLOperator>(builder,
                                            ActivationKindToOperationKind(kind),
-                                           /*sub_kind=*/std::monostate{},
+                                           /*sub_kind=*/absl::monostate{},
                                            options)) {}
 
 MLActivation::~MLActivation() = default;

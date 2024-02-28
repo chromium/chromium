@@ -4,9 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 
-#include <variant>
-
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
@@ -18,7 +17,7 @@ String MLOperator::OperatorKindToString(
     OperationSubKind sub_kind) {
   switch (kind) {
     case webnn::mojom::blink::Operation::Tag::kArgMinMax: {
-      switch (std::get<webnn::mojom::blink::ArgMinMax::Kind>(sub_kind)) {
+      switch (absl::get<webnn::mojom::blink::ArgMinMax::Kind>(sub_kind)) {
         case webnn::mojom::blink::ArgMinMax::Kind::kMin:
           return "argMin";
         case webnn::mojom::blink::ArgMinMax::Kind::kMax:
@@ -26,11 +25,11 @@ String MLOperator::OperatorKindToString(
       }
     }
     case webnn::mojom::blink::Operation::Tag::kBatchNormalization:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "batchNormalization";
     case webnn::mojom::blink::Operation::Tag::kElementWiseBinary: {
       switch (
-          std::get<webnn::mojom::blink::ElementWiseBinary::Kind>(sub_kind)) {
+          absl::get<webnn::mojom::blink::ElementWiseBinary::Kind>(sub_kind)) {
         case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
           return "add";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
@@ -58,13 +57,13 @@ String MLOperator::OperatorKindToString(
       }
     }
     case webnn::mojom::blink::Operation::Tag::kClamp:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "clamp";
     case webnn::mojom::blink::Operation::Tag::kConcat:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "concat";
     case webnn::mojom::blink::Operation::Tag::kConv2d: {
-      switch (std::get<webnn::mojom::blink::Conv2d::Type>(sub_kind)) {
+      switch (absl::get<webnn::mojom::blink::Conv2d::Type>(sub_kind)) {
         case webnn::mojom::blink::Conv2d::Type::kDirect:
           return "conv2d";
         case webnn::mojom::blink::Conv2d::Type::kTransposed:
@@ -72,7 +71,8 @@ String MLOperator::OperatorKindToString(
       }
     }
     case webnn::mojom::blink::Operation::Tag::kElementWiseUnary: {
-      switch (std::get<webnn::mojom::blink::ElementWiseUnary::Kind>(sub_kind)) {
+      switch (
+          absl::get<webnn::mojom::blink::ElementWiseUnary::Kind>(sub_kind)) {
         case webnn::mojom::blink::ElementWiseUnary::Kind::kAbs:
           return "abs";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kCast:
@@ -106,40 +106,40 @@ String MLOperator::OperatorKindToString(
       }
     }
     case webnn::mojom::blink::Operation::Tag::kInstanceNormalization:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "instanceNormalization";
     case webnn::mojom::blink::Operation::Tag::kLayerNormalization:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "layerNormalization";
     case webnn::mojom::blink::Operation::Tag::kLeakyRelu:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "leakyRelu";
     case webnn::mojom::blink::Operation::Tag::kLinear:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "linear";
 
       // TODO: crbug.com/40206287 - Add the LSTM operation to mojo.
 
     case webnn::mojom::blink::Operation::Tag::kElu:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "elu";
     case webnn::mojom::blink::Operation::Tag::kExpand:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "expand";
     case webnn::mojom::blink::Operation::Tag::kGather:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "gather";
     case webnn::mojom::blink::Operation::Tag::kGemm:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "gemm";
     case webnn::mojom::blink::Operation::Tag::kHardSigmoid:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "hardSigmoid";
     case webnn::mojom::blink::Operation::Tag::kHardSwish:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "hardSwish";
     case webnn::mojom::blink::Operation::Tag::kPool2d: {
-      switch (std::get<webnn::mojom::blink::Pool2d::Kind>(sub_kind)) {
+      switch (absl::get<webnn::mojom::blink::Pool2d::Kind>(sub_kind)) {
         case webnn::mojom::blink::Pool2d::Kind::kAveragePool2d:
           return "averagePool2d";
         case webnn::mojom::blink::Pool2d::Kind::kL2Pool2d:
@@ -149,16 +149,16 @@ String MLOperator::OperatorKindToString(
       }
     }
     case webnn::mojom::blink::Operation::Tag::kMatmul:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "matmul";
     case webnn::mojom::blink::Operation::Tag::kPad:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "pad";
     case webnn::mojom::blink::Operation::Tag::kPrelu:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "prelu";
     case webnn::mojom::blink::Operation::Tag::kReduce: {
-      switch (std::get<webnn::mojom::blink::Reduce::Kind>(sub_kind)) {
+      switch (absl::get<webnn::mojom::blink::Reduce::Kind>(sub_kind)) {
         case webnn::mojom::blink::Reduce::Kind::kL1:
           return "reduceL1";
         case webnn::mojom::blink::Reduce::Kind::kL2:
@@ -182,40 +182,40 @@ String MLOperator::OperatorKindToString(
       }
     }
     case webnn::mojom::blink::Operation::Tag::kRelu:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "relu";
     case webnn::mojom::blink::Operation::Tag::kReshape:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "reshape";
     case webnn::mojom::blink::Operation::Tag::kResample2d:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "resample2d";
     case webnn::mojom::blink::Operation::Tag::kSigmoid:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "sigmoid";
     case webnn::mojom::blink::Operation::Tag::kSoftsign:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "softsign";
     case webnn::mojom::blink::Operation::Tag::kSlice:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "slice";
     case webnn::mojom::blink::Operation::Tag::kSoftmax:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "softmax";
     case webnn::mojom::blink::Operation::Tag::kSoftplus:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "softplus";
     case webnn::mojom::blink::Operation::Tag::kSplit:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "split";
     case webnn::mojom::blink::Operation::Tag::kTanh:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "tanh";
     case webnn::mojom::blink::Operation::Tag::kTranspose:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "transpose";
     case webnn::mojom::blink::Operation::Tag::kWhere:
-      CHECK(std::holds_alternative<std::monostate>(sub_kind));
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "where";
   }
 }
@@ -285,7 +285,7 @@ MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
                              const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kPad,
-                 /*sub_kind=*/std::monostate{},
+                 /*sub_kind=*/absl::monostate{},
                  options),
       beginning_padding_(beginning_padding),
       ending_padding_(ending_padding) {}
@@ -303,9 +303,7 @@ const Vector<uint32_t>& MLPadOperator::EndingPadding() const {
 MLSliceOperator::MLSliceOperator(MLGraphBuilder* builder,
                                  const Vector<uint32_t>& starts,
                                  const Vector<uint32_t>& sizes)
-    : MLOperator(builder,
-                 webnn::mojom::blink::Operation::Tag::kSlice,
-                 /*sub_kind=*/std::monostate{}),
+    : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kSlice),
       starts_(starts),
       sizes_(sizes) {}
 
@@ -324,7 +322,7 @@ MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
                                  const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kSplit,
-                 /*sub_kind=*/std::monostate{},
+                 /*sub_kind=*/absl::monostate{},
                  options),
       is_even_split_(true),
       split_number_(splits) {}
@@ -334,7 +332,7 @@ MLSplitOperator::MLSplitOperator(MLGraphBuilder* builder,
                                  const bindings::DictionaryBase* options)
     : MLOperator(builder,
                  webnn::mojom::blink::Operation::Tag::kSplit,
-                 /*sub_kind=*/std::monostate{},
+                 /*sub_kind=*/absl::monostate{},
                  options),
       is_even_split_(false),
       split_sizes_(splits) {}

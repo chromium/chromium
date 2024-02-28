@@ -61,6 +61,7 @@ _CONFIG = [
             'absl::in_place',
             'absl::in_place_type',
             'absl::int128',
+            'absl::monostate',
             'absl::uint128',
             'absl::variant',
             'absl::visit',

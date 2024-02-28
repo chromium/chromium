@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 
 #include <algorithm>
-#include <variant>
 
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
@@ -587,7 +586,7 @@ MLOperand* BuildUnaryOperator(
 
   auto* unary =
       MakeGarbageCollected<MLOperator>(builder, kind,
-                                       /*sub_kind=*/std::monostate{}, options);
+                                       /*sub_kind=*/absl::monostate{}, options);
   auto output = MLOperand::ValidateAndCreateOutput(builder, input->DataType(),
                                                    input->Dimensions(), unary);
   if (!output.has_value()) {
@@ -791,7 +790,7 @@ MLOperand* MLGraphBuilder::batchNormalization(
   // batchNormalization operator to its input and output operands.
   auto* batch_normalization = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kBatchNormalization,
-      /*sub_kind=*/std::monostate{}, options);
+      /*sub_kind=*/absl::monostate{}, options);
   HeapVector<Member<const MLOperand>> inputs = {input, mean, variance};
   // Adding the optional operands into inputs ensures the graph traversal
   // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
@@ -1126,7 +1125,7 @@ MLOperand* MLGraphBuilder::gather(const MLOperand* input,
 
   auto* gather = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kGather,
-      /*sub_kind=*/std::monostate{}, options);
+      /*sub_kind=*/absl::monostate{}, options);
   HeapVector<Member<const MLOperand>> inputs = {input, indices};
   auto output = MLOperand::ValidateAndCreateOutput(
       this, ComponentOperandTypeToBlink(validated_output->data_type),
@@ -1156,7 +1155,7 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
   }
   auto* gemm = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kGemm,
-      /*sub_kind=*/std::monostate{}, options);
+      /*sub_kind=*/absl::monostate{}, options);
   HeapVector<Member<const MLOperand>> inputs = {a, b};
   if (options->hasC()) {
     inputs.push_back(options->c());
@@ -1233,7 +1232,7 @@ MLOperand* MLGraphBuilder::instanceNormalization(
 
   auto* instance_normalization = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kInstanceNormalization,
-      /*sub_kind=*/std::monostate{}, options);
+      /*sub_kind=*/absl::monostate{}, options);
   HeapVector<Member<const MLOperand>> inputs = {input};
   // Adding the optional operands into inputs ensures the graph traversal
   // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
@@ -1279,7 +1278,7 @@ MLOperand* MLGraphBuilder::layerNormalization(
 
   auto* layer_normalization = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kLayerNormalization,
-      /*sub_kind=*/std::monostate{}, options);
+      /*sub_kind=*/absl::monostate{}, options);
   HeapVector<Member<const MLOperand>> inputs = {input};
   // Adding the optional operands into inputs ensures the graph traversal
   // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
@@ -1475,7 +1474,7 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
 
   auto* prelu = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kPrelu,
-      /*sub_kind=*/std::monostate{});
+      /*sub_kind=*/absl::monostate{});
   auto output = MLOperand::ValidateAndCreateOutput(
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), prelu);
@@ -1585,7 +1584,7 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
   // operator to its input and output operands.
   auto* resample2d = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kResample2d,
-      /*sub_kind=*/std::monostate{}, options);
+      /*sub_kind=*/absl::monostate{}, options);
   auto output = MLOperand::ValidateAndCreateOutput(
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), resample2d);
@@ -1830,7 +1829,7 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
 
   auto* transpose = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kTranspose,
-      /*sub_kind=*/std::monostate{}, options);
+      /*sub_kind=*/absl::monostate{}, options);
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose, the output
   // tensor of transpose has the same data type as its input.

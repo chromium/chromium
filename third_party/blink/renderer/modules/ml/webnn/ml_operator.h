@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
 
-#include <variant>
-
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -23,18 +22,18 @@ class MLOperand;
 class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
   using OperationSubKind =
-      std::variant<webnn::mojom::blink::ArgMinMax::Kind,
-                   // TODO: crbug.com/325598628 - Rename Type -> Kind.
-                   webnn::mojom::blink::Conv2d::Type,
-                   webnn::mojom::blink::ElementWiseBinary::Kind,
-                   webnn::mojom::blink::ElementWiseUnary::Kind,
-                   webnn::mojom::blink::Pool2d::Kind,
-                   webnn::mojom::blink::Reduce::Kind,
-                   std::monostate>;
+      absl::variant<webnn::mojom::blink::ArgMinMax::Kind,
+                    // TODO: crbug.com/325598628 - Rename Type -> Kind.
+                    webnn::mojom::blink::Conv2d::Type,
+                    webnn::mojom::blink::ElementWiseBinary::Kind,
+                    webnn::mojom::blink::ElementWiseUnary::Kind,
+                    webnn::mojom::blink::Pool2d::Kind,
+                    webnn::mojom::blink::Reduce::Kind,
+                    absl::monostate>;
 
   static String OperatorKindToString(
       webnn::mojom::blink::Operation::Tag kind,
-      OperationSubKind sub_kind = std::monostate{});
+      OperationSubKind sub_kind = absl::monostate{});
 
   // It is safe for a caller, usually a MLGraphBuidler operation build method,
   // that passes the reference of the options dictionary argument received from
@@ -50,7 +49,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   // MLGraphBuilder operation build method.
   MLOperator(MLGraphBuilder* builder,
              webnn::mojom::blink::Operation::Tag kind,
-             OperationSubKind sub_kind = std::monostate{},
+             OperationSubKind sub_kind = absl::monostate{},
              const bindings::DictionaryBase* options = nullptr);
 
   MLOperator(const MLOperator&) = delete;
@@ -64,7 +63,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   OperationSubKind SubKind() const;
   template <typename MojomKind>
   MojomKind SubKind() const {
-    return std::get<MojomKind>(SubKind());
+    return absl::get<MojomKind>(SubKind());
   }
 
   const bindings::DictionaryBase* Options() const;
