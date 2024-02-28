@@ -15047,6 +15047,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="16" label="FIS auth error"/>
 </enum>
 
+<enum name="GestureNavigationDirection">
+  <int value="0" label="Gesture navigation back"/>
+  <int value="1" label="Gesture navigation forward"/>
+</enum>
+
 <enum name="GestureNavigationType">
   <int value="0" label="OS system Gesture navigation"/>
   <int value="1" label="Chrome custom Gesture navigation"/>

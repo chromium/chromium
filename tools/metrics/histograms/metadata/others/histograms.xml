@@ -6011,9 +6011,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GestureNavigation.Type" enum="GestureNavigationType"
-    expires_after="2022-08-21">
-  <owner>jinsukkim@chromium.org</owner>
+<histogram name="GestureNavigation.Activated2"
+    enum="GestureNavigationDirection" expires_after="2024-10-21">
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Overscroll gesture was made beyond a threshold big enough to regard it as a
+    valid gesture navigation i.e. at least 1/3 of the arrow puck is visible.
+    Similar to 'Triggered' but is used in pair with 'Cancelled' on M81 forward
+    to measure cancellation rate. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="GestureNavigation.Cancelled2"
+    enum="GestureNavigationDirection" expires_after="2024-10-21">
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Overscroll gestures that were cancelled before they were completed. Similar
+    to 'Abandoned' but is used in pair with 'Activated' on M81 forward to
+    measure cancellation rate. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="GestureNavigation.Completed2"
+    enum="GestureNavigationDirection" expires_after="2024-10-21">
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Navigations that were triggered due to completed overscroll gesture.
+    Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="GestureNavigation.Reversed2" enum="GestureNavigationDirection"
+    expires_after="2024-10-21">
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Overscroll gesture was made to trigger navigation, but within 3 seconds user
+    used overscroll gesture to navigate back to the page. Implemented for
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="GestureNavigation.Type2" enum="GestureNavigationType"
+    expires_after="2024-10-21">
+  <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Gesture navigation type. It can be either Chrome's own gesture UI that
