@@ -3428,7 +3428,10 @@ bool Element::SkipStyleRecalcForContainer(
   // We are both a size container and trying to compute interleaved styles
   // from out-of-flow layout. Our children should be the first opportunity to
   // skip recalc.
-  if (style_recalc_context.is_interleaved_oof) {
+  //
+  // Note that anchor_evaluator will be non-null only for the root element
+  // of the interleaved style recalc.
+  if (style_recalc_context.anchor_evaluator) {
     return false;
   }
 
@@ -3543,7 +3546,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
-  child_recalc_context.is_interleaved_oof = false;
   // If we're in StyleEngine::UpdateStyleForOutOfFlow, then anchor_evaluator
   // may be non-nullptr to allow evaluation of anchor() and anchor-size()
   // queries. Descendants of the current out-of-flow element must not be
@@ -4034,6 +4036,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
       if (layout_style->CompositablePaintAnimationChanged()) {
         apply_changes = LayoutObject::ApplyStyleChanges::kYes;
+      }
+    }
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
+      if (style_recalc_context.is_interleaved_oof) {
+        // If we're in interleaved style recalc from out-of-flow,
+        // we're already in the middle of laying out the objects
+        // we would mark for layout.
+        apply_changes = LayoutObject::ApplyStyleChanges::kNo;
       }
     }
     layout_object->SetStyle(layout_style, apply_changes);
