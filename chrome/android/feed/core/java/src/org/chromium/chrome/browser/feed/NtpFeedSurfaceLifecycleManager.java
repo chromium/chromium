@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -144,7 +143,7 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
 
     private PrefService getPrefService() {
         if (sPrefServiceForTesting != null) return sPrefServiceForTesting;
-        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+        return UserPrefs.get(mTab.getProfile());
     }
 
     static void setPrefServiceForTesting(PrefService prefServiceForTesting) {
