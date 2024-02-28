@@ -26,7 +26,6 @@ class InputMethodSurfaceManager;
 class Surface;
 class ToastSurface;
 class ToastSurfaceManager;
-class Buffer;
 
 namespace test {
 
@@ -75,12 +74,6 @@ class ExoTestHelper {
   // Creates a GpuMemoryBuffer instance that can be used for tests.
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
-      gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
-
-  // Creates an exo::Buffer that has the size of the given
-  // shell surface.
-  std::unique_ptr<Buffer> CreateBuffer(
-      ShellSurfaceBase* shell_surface,
       gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
 
   std::unique_ptr<ClientControlledShellSurface>
