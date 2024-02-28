@@ -7,10 +7,12 @@
 #import "base/task/cancelable_task_tracker.h"
 #import "base/task/single_thread_task_runner.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
@@ -100,24 +102,28 @@ void CleanCertificatePolicyCache(
 }
 
 - (void)appDidEnterBackground {
-  // TODO(crbug.com/325613163): Iterate over all browser states.
-  ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
 
-  // Evict all the certificate policies except for the current entries of the
-  // active sessions, for the regular and incognito browsers.
-  CleanCertificatePolicyCache(
-      &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
-      web::BrowserState::GetCertificatePolicyCache(browserState),
-      browserState->AsWeakPtr(),
-      /*incognito=*/false);
-
-  if (browserState->HasOffTheRecordChromeBrowserState()) {
-    ChromeBrowserState* incognitoBrowserState =
-        browserState->GetOffTheRecordChromeBrowserState();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    // Evict all the certificate policies except for the current entries of the
+    // active sessions, for the regular and incognito browsers.
     CleanCertificatePolicyCache(
         &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
-        web::BrowserState::GetCertificatePolicyCache(incognitoBrowserState),
-        browserState->AsWeakPtr(), /*incognito=*/true);
+        web::BrowserState::GetCertificatePolicyCache(browserState),
+        browserState->AsWeakPtr(),
+        /*incognito=*/false);
+
+    if (browserState->HasOffTheRecordChromeBrowserState()) {
+      ChromeBrowserState* incognitoBrowserState =
+          browserState->GetOffTheRecordChromeBrowserState();
+      CleanCertificatePolicyCache(
+          &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
+          web::BrowserState::GetCertificatePolicyCache(incognitoBrowserState),
+          browserState->AsWeakPtr(), /*incognito=*/true);
+    }
   }
 }
 

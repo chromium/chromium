@@ -16,9 +16,11 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/block_cleanup_test.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -52,14 +54,19 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
 
     TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        test_cbs_builder.Build());
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+
+    chrome_browser_state_ = browser_state_manager_->GetLastUsedBrowserState();
 
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
 
     app_state_ =
         [[AppState alloc] initWithStartupInformation:startup_information_mock_];
-    app_state_.mainBrowserState = chrome_browser_state_.get();
 
     // Create two regular and one OTR browsers.
     regular_browser_1_ =
@@ -220,10 +227,11 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
   web::WebTaskEnvironment task_environment_;
   AppState* app_state_;
   CertificatePolicyAppAgent* app_agent_;
-  std::unique_ptr<ChromeBrowserState> chrome_browser_state_;
+  raw_ptr<ChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestBrowser> regular_browser_1_;
   std::unique_ptr<TestBrowser> regular_browser_2_;
   std::unique_ptr<TestBrowser> incognito_browser_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 
   scoped_refptr<net::X509Certificate> cert_;
   net::CertStatus status_;
