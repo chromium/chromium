@@ -10,7 +10,6 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/power_monitor/power_monitor.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -27,8 +26,7 @@ namespace viz {
 class DisplayResourceProvider;
 
 class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
-    : public gl::DirectCompositionOverlayCapsObserver,
-      public base::PowerStateObserver {
+    : public gl::DirectCompositionOverlayCapsObserver {
  public:
   using FilterOperationsMap =
       base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>;
@@ -83,32 +81,18 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
 
   // DirectCompositionOverlayCapsObserver implementation.
   void OnOverlayCapsChanged() override;
-  // base::PowerStateObserver implementation.
-  void OnPowerStateChange(bool on_battery_power) override;
-
   void UpdateHasHwOverlaySupport();
   void UpdateSystemHDRStatus();
   void UpdateP010VideoProcessorSupport();
-  void UpdateAutoHDRVideoProcessorSupport();
 
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
     frames_since_last_qualified_multi_overlays_ = value;
   }
-  void set_system_hdr_enabled_for_testing(bool value) {
+  void set_system_hdr_enabled_for_testing(int value) {
     system_hdr_enabled_ = value;
   }
-  void set_has_p010_video_processor_support_for_testing(bool value) {
+  void set_has_p010_video_processor_support_for_testing(int value) {
     has_p010_video_processor_support_ = value;
-  }
-  void set_has_auto_hdr_video_processor_support_for_testing(bool value) {
-    has_auto_hdr_video_processor_support_ = value;
-  }
-  void set_is_on_battery_power_for_testing(bool value) {
-    is_on_battery_power_ = value;
-  }
-  bool force_overlay_for_auto_hdr() {
-    return system_hdr_enabled_ && has_auto_hdr_video_processor_support_ &&
-           !is_on_battery_power_;
   }
   size_t get_previous_frame_render_pass_count() const {
     CHECK_IS_TEST();
@@ -334,13 +318,11 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
 
   bool has_overlay_support_;
   bool has_p010_video_processor_support_ = false;
-  bool has_auto_hdr_video_processor_support_ = false;
   bool system_hdr_enabled_ = false;
   const int allowed_yuv_overlay_count_;
   uint64_t frames_since_last_qualified_multi_overlays_ = 0;
 
   bool allow_promotion_hinting_ = false;
-  bool is_on_battery_power_ = false;
 
   // Information about overlays from the previous frame.
   base::flat_map<AggregatedRenderPassId, RenderPassPreviousFrameState>
