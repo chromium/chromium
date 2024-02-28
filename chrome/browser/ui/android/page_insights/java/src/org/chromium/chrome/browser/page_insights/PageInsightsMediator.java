@@ -66,7 +66,9 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -90,6 +92,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             "page_insights_can_autotrigger_while_in_motion";
     static final String PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION =
             "page_insights_can_return_to_peek_after_expansion";
+    private static final List<Integer> USER_DISMISSAL_REASONS =
+            Arrays.asList(
+                    StateChangeReason.SWIPE,
+                    StateChangeReason.BACK_PRESS,
+                    StateChangeReason.TAP_SCRIM);
 
     private final PageInsightsSheetContent mSheetContent;
     private final ManagedBottomSheetController mSheetController;
@@ -411,7 +418,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             mSheetContent.showFeedPage();
             mIsShowingChildView = false;
         } else if (!mSheetController.collapseSheet(true)) {
-            mSheetController.hideContent(mSheetContent, true);
+            mSheetController.hideContent(mSheetContent, true, StateChangeReason.BACK_PRESS);
         }
         return true;
     }
@@ -674,7 +681,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             mWillHandleBackPressSupplier.set(false);
             if (mResizeInSync) mSheetInset.set(0);
             setBottomControlsHeight(mSheetController.getCurrentOffset());
-            handleDismissal(mOldPihState);
+            handleDismissal(mOldPihState, reason);
         } else if (newPihState == PageInsightsSheetState.PEEK) {
             mWillHandleBackPressSupplier.set(false);
             if (mResizeInSync) mSheetInset.set(0);
@@ -711,7 +718,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         }
     }
 
-    private void handleDismissal(@PageInsightsSheetState int oldState) {
+    private void handleDismissal(
+            @PageInsightsSheetState int oldState, @StateChangeReason int reason) {
         mIsShowingChildView = false;
 
         if (mCurrentFeedView != null) {
@@ -723,13 +731,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             mCurrentChildView = null;
         }
 
-        if (oldState == PageInsightsSheetState.PEEK) {
-            logPageInsightsEvent(PageInsightsEvent.DISMISS_PEEK);
-            getSurfaceRenderer().onEvent(DISMISSED_FROM_PEEKING_STATE);
-        } else if (oldState == PageInsightsSheetState.EXPANDED) {
-            logPageInsightsEvent(PageInsightsEvent.DISMISS_EXPANDED);
+        if (USER_DISMISSAL_REASONS.contains(reason)) {
+            if (oldState == PageInsightsSheetState.PEEK) {
+                logPageInsightsEvent(PageInsightsEvent.DISMISS_PEEK);
+                getSurfaceRenderer().onEvent(DISMISSED_FROM_PEEKING_STATE);
+            } else if (oldState == PageInsightsSheetState.EXPANDED) {
+                logPageInsightsEvent(PageInsightsEvent.DISMISS_EXPANDED);
+            }
         }
-
         getSurfaceRenderer().onSurfaceClosed();
     }
 

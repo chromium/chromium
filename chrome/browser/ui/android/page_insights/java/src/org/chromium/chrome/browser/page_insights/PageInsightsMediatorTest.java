@@ -1200,7 +1200,10 @@ public class PageInsightsMediatorTest {
 
         assertFalse(handled);
         verify(mBottomSheetController, never())
-                .hideContent(eq(mMediator.getSheetContent()), anyBoolean());
+                .hideContent(
+                        eq(mMediator.getSheetContent()),
+                        anyBoolean(),
+                        eq(StateChangeReason.BACK_PRESS));
     }
 
     @Test
@@ -1216,7 +1219,10 @@ public class PageInsightsMediatorTest {
 
         assertFalse(handled);
         verify(mBottomSheetController, never())
-                .hideContent(eq(mMediator.getSheetContent()), anyBoolean());
+                .hideContent(
+                        eq(mMediator.getSheetContent()),
+                        anyBoolean(),
+                        eq(StateChangeReason.BACK_PRESS));
     }
 
     @Test
@@ -1233,7 +1239,8 @@ public class PageInsightsMediatorTest {
 
         assertTrue(handled);
         verify(mBottomSheetController).collapseSheet(true);
-        verify(mBottomSheetController, never()).hideContent(any(), anyBoolean());
+        verify(mBottomSheetController, never())
+                .hideContent(any(), anyBoolean(), eq(StateChangeReason.BACK_PRESS));
     }
 
     @Test
@@ -1249,7 +1256,8 @@ public class PageInsightsMediatorTest {
         boolean handled = mMediator.getSheetContent().handleBackPress();
 
         assertTrue(handled);
-        verify(mBottomSheetController).hideContent(mMediator.getSheetContent(), true);
+        verify(mBottomSheetController)
+                .hideContent(mMediator.getSheetContent(), true, StateChangeReason.BACK_PRESS);
     }
 
     @Test
@@ -1283,7 +1291,10 @@ public class PageInsightsMediatorTest {
                         .findViewById(R.id.page_insights_feed_header)
                         .getVisibility());
         verify(mBottomSheetController, never())
-                .hideContent(eq(mMediator.getSheetContent()), anyBoolean());
+                .hideContent(
+                        eq(mMediator.getSheetContent()),
+                        anyBoolean(),
+                        eq(StateChangeReason.BACK_PRESS));
     }
 
     @Test
