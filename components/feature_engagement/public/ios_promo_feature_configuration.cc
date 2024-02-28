@@ -28,7 +28,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 365);
     config->trigger =
@@ -36,6 +35,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kChromeOpened,
                     Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
+    return config;
   }
 
   if (kIPHiOSPromoWhatsNewFeature.name == feature->name) {
@@ -45,7 +45,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("whats_new_promo_used", Comparator(ANY, 0), 365, 365);
     // What's New promo should be trigger no more than once every 14 days.
@@ -57,6 +56,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kChromeOpened,
                     Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
+    return config;
   }
 
   if (kIPHiOSPromoDefaultBrowserFeature.name == feature->name) {
@@ -66,7 +66,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config->used =
         EventConfig("default_browser_promo_used", Comparator(ANY, 0), 365, 365);
@@ -82,6 +81,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
       config->trigger = EventConfig("default_browser_promo_trigger",
                                     Comparator(LESS_THAN, 4), 365, 365);
     }
+    return config;
   }
 
   if (kIPHiOSPromoGenericDefaultBrowserFeature.name == feature->name) {
@@ -89,7 +89,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
 
     if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
@@ -115,6 +114,8 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
           EventConfig("generic_default_browser_promo_conditions_met",
                       Comparator(GREATER_THAN, 0), 21, 365));
     }
+
+    return config;
   }
 
   if (kIPHiOSPromoAllTabsFeature.name == feature->name) {
@@ -124,7 +125,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config->groups.push_back(kiOSTailoredDefaultBrowserPromosGroup.name);
 
@@ -134,6 +134,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
                     feature_engagement::kMaxStoragePeriod);
     config->event_configs.insert(EventConfig(
         "all_tabs_promo_conditions_met", Comparator(GREATER_THAN, 0), 21, 365));
+    return config;
   }
 
   if (kIPHiOSPromoMadeForIOSFeature.name == feature->name) {
@@ -143,7 +144,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config->groups.push_back(kiOSTailoredDefaultBrowserPromosGroup.name);
 
@@ -154,6 +154,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(
         EventConfig("made_for_ios_promo_conditions_met",
                     Comparator(GREATER_THAN, 0), 21, 365));
+    return config;
   }
 
   if (kIPHiOSPromoStaySafeFeature.name == feature->name) {
@@ -163,7 +164,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config->groups.push_back(kiOSTailoredDefaultBrowserPromosGroup.name);
 
@@ -174,6 +174,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(EventConfig("stay_safe_promo_conditions_met",
                                              Comparator(GREATER_THAN, 0), 21,
                                              365));
+    return config;
   }
 
   if (kIPHiOSPromoCredentialProviderExtensionFeature.name == feature->name) {
@@ -184,7 +185,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used = EventConfig("credential_provider_extension_promo_used",
                                Comparator(ANY, 0), 365, 365);
     config->trigger = EventConfig("credential_provider_extension_promo_trigger",
@@ -197,12 +197,12 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->event_configs.insert(
         EventConfig("credential_provider_extension_promo_snoozed",
                     Comparator(EQUAL, 0), 1, 365));
+    return config;
   }
 
   if (kIPHiOSPromoOmniboxPositionFeature.name == feature->name) {
     // Shown only once.
     config = FeatureConfig();
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
@@ -219,6 +219,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig(events::kOmniboxPositionPromoShown, Comparator(EQUAL, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod));
+    return config;
   }
 
   if (kIPHiOSDockingPromoFeature.name == feature->name) {
@@ -226,13 +227,13 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used = EventConfig("docking_promo_used", Comparator(EQUAL, 0),
                                feature_engagement::kMaxStoragePeriod,
                                feature_engagement::kMaxStoragePeriod);
     config->trigger = EventConfig("docking_promo_trigger", Comparator(EQUAL, 0),
                                   feature_engagement::kMaxStoragePeriod,
                                   feature_engagement::kMaxStoragePeriod);
+    return config;
   }
 
   if (kIPHiOSPostDefaultAbandonmentPromoFeature.name == feature->name) {
@@ -240,7 +241,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config->used = EventConfig("post_default_abandonment_promo_used",
                                Comparator(ANY, 0), 365, 365);
@@ -251,12 +251,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
-  // All standard promos can only be shown once per month.
-  if (config) {
-    config->event_configs.insert(
-        EventConfig(config->trigger.name, Comparator(EQUAL, 0), 30, 365));
-    return config;
-  }
   return std::nullopt;
 }
 
@@ -353,6 +347,11 @@ std::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     const base::Feature* feature) {
   std::optional<FeatureConfig> config = GetStandardPromoConfig(feature);
   if (config) {
+    // All standard promos can only be shown once per month, and must belong to
+    // the full-screen promo group.
+    config->event_configs.insert(
+        EventConfig(config->trigger.name, Comparator(EQUAL, 0), 30, 365));
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     return config;
   }
   config = GetCustomConfig(feature);
