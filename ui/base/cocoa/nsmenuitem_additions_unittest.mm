@@ -517,7 +517,7 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   ExpectKeyFiresItem(key, MenuItem(@"2", NSEventModifierFlagCommand),
                      /*compare_cocoa=*/false);
 
-  // In Hebrew layout, make sure Cmd-q works.
+  // In Hebrew layout, make sure ⌘Q works.
   key = KeyEvent(0x100110, @"q", @"/", 12);
   ExpectKeyDoesntFireItem(key, MenuItem(@"q", NSEventModifierFlagCommand),
                           /*compare_cocoa=*/false);
@@ -528,6 +528,20 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
                      /*compare_cocoa=*/false);
 
   SetIsInputSourceCommandHebrewForTesting(false);
+
+  // In Arabic layout, make sure ⇧⌘V works. Note that modifierFlags and keyCode
+  // came from examining said fields in the incoming key event during
+  // development.
+  key = KeyEvent(0x12010A, @"V", @"{", 9);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"V", NSEventModifierFlagCommand),
+                          /*compare_cocoa=*/false);
+
+  SetIsInputSourceCommandArabicForTesting(true);
+
+  ExpectKeyFiresItem(key, MenuItem(@"V", NSEventModifierFlagCommand),
+                     /*compare_cocoa=*/false);
+
+  SetIsInputSourceCommandArabicForTesting(false);
 }
 
 // With the Persian - Standard layout, pressing Cmd W without Shift but with

@@ -39,6 +39,9 @@ void COMPONENT_EXPORT(UI_BASE)
 void COMPONENT_EXPORT(UI_BASE)
     SetIsInputSourceCommandHebrewForTesting(bool is_command_hebrew);
 
+void COMPONENT_EXPORT(UI_BASE)
+    SetIsInputSourceCommandArabicForTesting(bool is_command_arabic);
+
 // Returns whether the named keyboard layout has the command-qwerty behavior,
 // meaning that the layout acts as though it was QWERTY when the command key is
 // held.
