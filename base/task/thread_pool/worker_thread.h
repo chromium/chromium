@@ -97,6 +97,14 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 
     static constexpr TimeDelta kPurgeThreadCacheIdleDelay = Seconds(1);
 
+    // Do not wake up to purge within the first minute of process lifetime. In
+    // short lived processes this will avoid waking up to try and save memory
+    // for a heap that will be going away soon. For longer lived processes this
+    // should allow for better performance at process startup since even if a
+    // worker goes to sleep for kPurgeThreadCacheIdleDelay it's very likely it
+    // will be needed soon after because of heavy startup workloads.
+    static constexpr TimeDelta kFirstSleepDurationBeforePurge = Minutes(1);
+
    protected:
     friend WorkerThread;
     static bool IsDelayFirstWorkerSleepEnabled();
@@ -108,9 +116,16 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
     // Returns the desired sleep time before the worker has to wake up to purge
-    // the cache thread or reclaim itself. |min_sleep_time| contains the minimal
-    // acceptable amount of time to sleep.
-    static TimeDelta GetSleepTimeBeforePurge(TimeDelta min_sleep_time);
+    // the cache thread or reclaim itself.
+    virtual TimeDelta GetSleepDurationBeforePurge(TimeTicks now);
+
+    void set_first_sleep_time_for_testing(TimeTicks first_sleep_time) {
+      first_sleep_time_for_testing_ = first_sleep_time;
+    }
+
+    // Simulated time at which the worker first attempts to go to sleep.
+    TimeTicks first_sleep_time_for_testing_;
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
   };

@@ -27,7 +27,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);
 
 // This feature controls whether ThreadPool WorkerThreads should hold off waking
 // up to purge partition alloc within the first minute of their lifetime. See
-// base::internal::GetSleepTimeBeforePurge.
+// base::internal::GetSleepDurationBeforePurge.
 BASE_EXPORT BASE_DECLARE_FEATURE(kDelayFirstWorkerWake);
 
 // Under this feature, a non-zero leeway is added to delayed tasks. Along with

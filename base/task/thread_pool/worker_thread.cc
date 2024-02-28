@@ -50,7 +50,7 @@ WorkerThread::ThreadLabel WorkerThread::Delegate::GetThreadLabel() const {
 }
 
 void WorkerThread::Delegate::WaitForWork() {
-  const TimeDelta sleep_time = GetSleepTimeout();
+  const TimeDelta sleep_duration_before_worker_reclaim = GetSleepTimeout();
 
   // When a thread goes to sleep, the memory retained by its thread cache is
   // trapped there for as long as the thread sleeps. To prevent that, we can
@@ -68,26 +68,26 @@ void WorkerThread::Delegate::WaitForWork() {
   // many times.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-  TimeDelta min_sleep_time = std::min(sleep_time, kPurgeThreadCacheIdleDelay);
+  const TimeDelta sleep_duration_before_purge =
+      GetSleepDurationBeforePurge(base::TimeTicks::Now());
 
-  if (IsDelayFirstWorkerSleepEnabled()) {
-    min_sleep_time = GetSleepTimeBeforePurge(min_sleep_time);
-  }
-
-  const bool was_signaled = TimedWait(min_sleep_time);
+  const bool was_signaled = TimedWait(std::min(
+      sleep_duration_before_purge, sleep_duration_before_worker_reclaim));
   // Timed out.
   if (!was_signaled) {
     partition_alloc::ThreadCache::PurgeCurrentThread();
 
     // The thread woke up to purge before its standard reclaim time. Sleep for
     // what's remaining until then.
-    if (sleep_time > min_sleep_time) {
-      TimedWait(sleep_time.is_max() ? TimeDelta::Max()
-                                    : sleep_time - min_sleep_time);
+    if (sleep_duration_before_worker_reclaim > sleep_duration_before_purge) {
+      TimedWait(sleep_duration_before_worker_reclaim.is_max()
+                    ? TimeDelta::Max()
+                    : sleep_duration_before_worker_reclaim -
+                          sleep_duration_before_purge);
     }
   }
 #else
-  TimedWait(sleep_time);
+  TimedWait(sleep_duration_before_worker_reclaim);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
@@ -99,39 +99,43 @@ bool WorkerThread::Delegate::IsDelayFirstWorkerSleepEnabled() {
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-// Returns the desired sleep time before the worker has to wake up to purge
-// the cache thread or reclaim itself. |min_sleep_time| contains the minimal
-// acceptable amount of time to sleep.
-TimeDelta WorkerThread::Delegate::GetSleepTimeBeforePurge(
-    TimeDelta min_sleep_time) {
-  const TimeTicks now = TimeTicks::Now();
+TimeDelta WorkerThread::Delegate::GetSleepDurationBeforePurge(TimeTicks now) {
+  base::TimeDelta sleep_duration_before_purge = kPurgeThreadCacheIdleDelay;
 
-  // Do not wake up to purge within the first minute of process lifetime. In
-  // short lived processes this will avoid waking up to try and save memory
-  // for a heap that will be going away soon. For longer lived processes this
-  // should allow for better performance at process startup since even if a
-  // worker goes to sleep for kPurgeThreadCacheIdleDelay it's very likely it
-  // will be needed soon after because of heavy startup workloads.
-  constexpr TimeDelta kFirstSleepLength = Minutes(1);
+  if (!IsDelayFirstWorkerSleepEnabled()) {
+    return sleep_duration_before_purge;
+  }
 
   // Use the first time a worker goes to sleep in this process as an
   // approximation of the process creation time.
   static const TimeTicks first_sleep_time = now;
+  const TimeTicks first_sleep_time_to_use =
+      !first_sleep_time_for_testing_.is_null() ? first_sleep_time_for_testing_
+                                               : first_sleep_time;
+  const base::TimeTicks first_wake_time =
+      first_sleep_time_to_use + kFirstSleepDurationBeforePurge;
 
-  // A sleep that occurs within `kFirstSleepLength` of the
-  // first sleep lasts at least `kFirstSleepLength`.
-  if (now <= first_sleep_time + kFirstSleepLength) {
-    min_sleep_time = std::max(kFirstSleepLength, min_sleep_time);
+  // A sleep that occurs within `kFirstSleepDurationBeforePurge` of the
+  // first sleep lasts at least `kFirstSleepDurationBeforePurge`.
+  if (now <= first_wake_time) {
+    // Avoid sleeping for less than `sleep_duration_before_purge` since that is
+    // the shortest expected duration to wait for a purge.
+    sleep_duration_before_purge =
+        std::max(kFirstSleepDurationBeforePurge, sleep_duration_before_purge);
   }
 
   // Align wakeups for purges to reduce the chances of taking the CPU out of
-  // sleep multiple times for these operations.
-  const TimeTicks snapped_wake =
-      (now + min_sleep_time)
+  // sleep multiple times for these operations. This can happen if many workers
+  // in the same process scheduled wakeups. This can create a situation where
+  // any one worker wakes every `kPurgeThreadCacheIdleDelay` / N where N is the
+  // number of workers.
+  const TimeTicks snapped_purge_time =
+      (now + sleep_duration_before_purge)
           .SnappedToNextTick(TimeTicks(), kPurgeThreadCacheIdleDelay);
 
-  return snapped_wake - now;
+  return snapped_purge_time - now;
 }
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 

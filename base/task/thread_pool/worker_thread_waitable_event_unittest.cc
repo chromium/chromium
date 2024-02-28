@@ -999,6 +999,11 @@ namespace {
 NOINLINE void FreeForTest(void* data) {
   free(data);
 }
+
+using ::testing::AllOf;
+using ::testing::Ge;
+using ::testing::Le;
+
 }  // namespace
 
 template <typename WorkerType>
@@ -1011,6 +1016,45 @@ class WorkerThreadThreadCacheDelegate
   explicit WorkerThreadThreadCacheDelegate(Semaphore* semaphore)
     requires UsingSemaphore<WorkerType>
       : WorkerThreadDefaultDelegate<WorkerType>(semaphore) {}
+
+  void PrepareForTesting() {
+    TimeTicks now = TimeTicks::Now();
+    WorkerThreadDefaultDelegate<WorkerType>::set_first_sleep_time_for_testing(
+        now);
+    first_sleep_time_for_testing_ = now;
+  }
+
+  TimeDelta GetSleepDurationBeforePurge(TimeTicks) override {
+    // Expect `GetSleepDurationBeforePurge()` to return
+    // `kFirstSleepDurationBeforePurge` when invoked within
+    // `kFirstSleepDurationBeforePurge` of the first sleep (with
+    // `kPurgeThreadCacheIdleDelay` tolerance due to alignment).
+    EXPECT_THAT(
+        WorkerThreadDefaultDelegate<WorkerType>::GetSleepDurationBeforePurge(
+            /* now=*/first_sleep_time_for_testing_),
+        AllOf(Ge(WorkerThread::Delegate::kFirstSleepDurationBeforePurge),
+              Le(WorkerThread::Delegate::kFirstSleepDurationBeforePurge +
+                 WorkerThread::Delegate::kPurgeThreadCacheIdleDelay)));
+
+    // Expect `GetSleepDurationBeforePurge()` to return
+    // `WorkerThread::Delegate::kPurgeThreadCacheIdleDelay` when invoked later
+    // than `kFirstSleepDurationBeforePurge` after the first sleep (with
+    // `kPurgeThreadCacheIdleDelay` tolerance due to alignment).
+    constexpr base::TimeDelta kEpsilon = base::Microseconds(1);
+    EXPECT_THAT(
+        WorkerThreadDefaultDelegate<WorkerType>::GetSleepDurationBeforePurge(
+            /* now=*/first_sleep_time_for_testing_ +
+            WorkerThread::Delegate::kFirstSleepDurationBeforePurge + kEpsilon),
+        AllOf(Ge(WorkerThread::Delegate::kPurgeThreadCacheIdleDelay),
+              Le(WorkerThread::Delegate::kPurgeThreadCacheIdleDelay +
+                 WorkerThread::Delegate::kPurgeThreadCacheIdleDelay)));
+
+    // The output of this function is used to drive real sleep in tests.
+    // Return a constant so that the tests can validate the wakeups without
+    // timing out.
+    return GetSleepTimeout();
+  }
+
   void WaitForWork() override {
     // Fill several buckets before going to sleep.
     for (size_t size = 8;
@@ -1042,7 +1086,7 @@ class WorkerThreadThreadCacheDelegate
   }
 
   // Avoid using the default sleep timeout which is infinite and prevents the
-  // tests for completing.
+  // tests from completing.
   TimeDelta GetSleepTimeout() override {
     return WorkerThread::Delegate::kPurgeThreadCacheIdleDelay +
            TestTimeouts::tiny_timeout();
@@ -1052,6 +1096,7 @@ class WorkerThreadThreadCacheDelegate
     purge_expected_ = purge_expected;
   }
 
+  TimeTicks first_sleep_time_for_testing_;
   bool test_done_ = false;
   bool purge_expected_ = false;
   base::WaitableEvent wakeup_done_;
@@ -1068,6 +1113,7 @@ TYPED_TEST(ThreadPoolWorkerTest, WorkerThreadCacheNoPurgeOnSignal) {
   auto* delegate = static_cast<
       WorkerThreadThreadCacheDelegate<typename TestFixture::WorkerType>*>(
       this->delegate_raw_);
+  delegate->PrepareForTesting();
 
   // No purge is expected on waking up from a signal.
   delegate->SetPurgeExpectation(false);
@@ -1092,6 +1138,7 @@ TYPED_TEST(ThreadPoolWorkerTest, PurgeOnUninteruptedSleep) {
   auto* delegate = static_cast<
       WorkerThreadThreadCacheDelegate<typename TestFixture::WorkerType>*>(
       this->delegate_raw_);
+  delegate->PrepareForTesting();
 
   // A purge will take place
   delegate->SetPurgeExpectation(true);
