@@ -1226,6 +1226,15 @@ chromium-metrics-reviews@google.com.
     way to compare any system level memory metric across platforms due to the
     different nature of memory management on each platform.
 
+    WARNING: This metric does not include the footprint of the graphics buffers
+    on all platforms. Concretely, this means that on these platforms, this
+    metric will drastically underestimate the true cost of rendering. On devices
+    with unified memory (most Android, laptop and desktop clients with
+    integrated graphics, and all ARM64 mac clients), graphics buffers come from
+    the same memory pool as system RAM. For more details, alternative metrics to
+    monitor, and the state of various platforms, see
+    docs/memory/graphics_metrics.md.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
