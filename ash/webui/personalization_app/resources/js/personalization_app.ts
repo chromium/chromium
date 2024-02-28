@@ -124,6 +124,7 @@ export {getRecentSeaPenImages, selectRecentSeaPenImage, searchSeaPenThumbnails} 
 export {SeaPenImageLoadingElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_image_loading_element.js';
 export {SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';
 export {SeaPenInputQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_input_query_element.js';
+export {SeaPenOptionsElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
 export {SeaPenRecentWallpapersElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_recent_wallpapers_element.js';
 export {SeaPenRouterElement, SeaPenPaths} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 export {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';

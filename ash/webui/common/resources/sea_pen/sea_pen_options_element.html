@@ -1,0 +1,40 @@
+<style include="common cros-button-style">
+  #options {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-block: var(--cr-section-padding);
+    /* Leave 4px of padding for chip outlines. */
+    padding: 4px;
+    width: calc(100% - 8px);
+  }
+
+  #options cr-button {
+    background-color: var(--cros-bg-color);
+    border-radius: 12px;
+    height: 36px;
+    padding: 4px, 12px;
+  }
+
+  #options cr-button[aria-selected] {
+    --text-color: var(--cros-button-label-color-primary);
+    background-color: var(--cros-button-background-color-primary);
+    border-radius: 10px;
+    outline: 2px solid var(--cros-button-background-color-primary);
+    outline-offset: 2px;
+  }
+</style>
+<template is="dom-if" if="[[shouldShowOptions_(options)]]">
+  <div id="options">
+    <template is="dom-repeat" items="[[options]]" as="option">
+      <cr-button
+          on-click="onClickOption_"
+          aria-selected$="[[isSelected_(option, selectedChip, selectedOptions)]]">
+        [[option.translation]]
+      </cr-button>
+    </template>
+  </div>
+</template>

@@ -11,6 +11,7 @@ import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
@@ -22,7 +23,7 @@ import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
-import {ChipToken, getDefaultOptions, getTemplateTokens, isNonEmptyArray, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
+import {ChipToken, getDefaultOptions, getTemplateTokens, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
 
 export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
@@ -50,6 +51,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
       // option on the UI.
       selectedOptions_: {
         type: Object,
+        observer: 'onSelectedOptionsChanged_',
       },
 
       // The tokens generated from `seaPenTemplate_` and `selectedOptions_`.
@@ -116,32 +118,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
   }
 
-  private onClickOption_(event: Event&{model: {option: SeaPenOption}}) {
-    const option = event.model.option;
-    // Notifies the selected chip's translation has changed to the UI.
-    this.set('selectedChip_.translation', option.translation);
-    // Notifies the selected options has changed to the UI by overriding Polymer
-    // dirty check
-    this.selectedOptions_.set(this.selectedChip_!.id, option);
-    const selectedOptions = this.selectedOptions_;
-    this.selectedOptions_ = new Map<SeaPenTemplateChip, SeaPenOption>();
-    this.selectedOptions_ = selectedOptions;
-    this.templateTokens_ =
-        getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
-  }
-
-  private shouldShowOptions_(options: SeaPenOption[]|null): boolean {
-    return isNonEmptyArray(options);
-  }
-
-  private isSelected_(
-      option: SeaPenOption, selectedChip: ChipToken|null,
-      selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>): boolean {
-    return !!selectedOptions && !!selectedChip &&
-        selectedOptions.has(selectedChip!.id) &&
-        option === selectedOptions.get(selectedChip.id);
-  }
-
   private onClickInspire_() {
     this.selectedOptions_ =
         getDefaultOptions(this.seaPenTemplate_, /*random=*/ true);
@@ -162,6 +138,11 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     this.selectedChip_ = null;
     this.options_ = null;
     this.selectedOptions_ = selectedOptions;
+    this.templateTokens_ =
+        getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
+  }
+
+  private onSelectedOptionsChanged_() {
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
   }

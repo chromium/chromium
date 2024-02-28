@@ -11,32 +11,6 @@
     height: 40px;
   }
 
-  #options {
-    align-items: center;
-    color: var(--cros-text-color-primary);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    padding-block: var(--cr-section-padding);
-    width: 100%;
-  }
-
-  #options cr-button {
-    background-color: var(--cros-bg-color);
-    border-radius: 12px;
-    height: 36px;
-    padding: 4px, 12px;
-  }
-
-  #options cr-button[aria-selected] {
-    --text-color: var(--cros-button-label-color-primary);
-    background-color: var(--cros-button-background-color-primary);
-    border-radius: 10px;
-    outline: 2px solid var(--cros-button-background-color-primary);
-    outline-offset: 2px;
-  }
-
   #template {
     align-items: start;
     border-bottom-color: var(--cros-text-color-primary);
@@ -131,18 +105,11 @@
   }
 </style>
 <div class="main">
-  <!-- TODO(b/326299109): Extract into a separate component. -->
-  <template is="dom-if" if="[[shouldShowOptions_(options_)]]">
-    <div id="options">
-      <template is="dom-repeat" items="[[options_]]" as="option">
-        <cr-button
-            on-click="onClickOption_"
-            aria-selected$="[[isSelected_(option, selectedChip_, selectedOptions_)]]">
-          [[option.translation]]
-        </cr-button>
-      </template>
-    </div>
-  </template>
+  <sea-pen-options
+      options="[[options_]]"
+      selected-chip="[[selectedChip_]]"
+      selected-options="{{selectedOptions_}}">
+  </sea-pen-options>
   <div id="template">
     <template is="dom-repeat" items="[[templateTokens_]]" as="token">
       <template is="dom-if" if="[[isChip_(token)]]">
