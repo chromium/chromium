@@ -4976,11 +4976,10 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
                       "no destination ArrayBufferView");
     return;
   }
-  base::CheckedNumeric<GLuint> offset_in_bytes = offset;
+  base::CheckedNumeric<size_t> offset_in_bytes = offset;
   offset_in_bytes *= pixels->TypeSize();
   if (!offset_in_bytes.IsValid() ||
-      static_cast<size_t>(offset_in_bytes.ValueOrDie()) >
-          pixels->byteLength()) {
+      offset_in_bytes.ValueOrDie() > pixels->byteLength()) {
     SynthesizeGLError(GL_INVALID_VALUE, "readPixels",
                       "destination offset out of range");
     return;
