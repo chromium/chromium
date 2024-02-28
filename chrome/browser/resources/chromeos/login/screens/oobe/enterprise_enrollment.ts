@@ -371,7 +371,7 @@ export class EnterpriseEnrollmentElement extends
       if (data.gaia_buttons_type) {
         this.gaiaDialogButtonsType = data.gaia_buttons_type;
       }
-      if (this.gaiaDialogButtonsType ==
+      if (this.gaiaDialogButtonsType ===
           OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED) {
         this.licenseType = OobeTypes.LicenseType.KIOSK;
       }

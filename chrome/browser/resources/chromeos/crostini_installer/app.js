@@ -367,9 +367,9 @@ Polymer({
    * @private
    */
   showInstallButton_(state, error) {
-    // eslint-disable-next-line eqeqeq
     return state === State.CONFIGURE ||
         (state === State.ERROR && error !== NoDiskSpaceError &&
+         // eslint-disable-next-line eqeqeq
          error != InstallerError.kNeedUpdate);
   },
 

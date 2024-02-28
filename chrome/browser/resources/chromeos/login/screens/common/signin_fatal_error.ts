@@ -140,7 +140,7 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
    * user based on the error
    */
   private computeButtonKey(errorState: OobeTypes.FatalErrorCode) {
-    if (errorState == OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED) {
+    if (errorState === OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED) {
       return 'fatalErrorDoneButton';
     }
 

@@ -195,7 +195,7 @@ Polymer({
    * @private
    */
   invalidNewPassword_() {
-    return this.currentValidationError_ ==
+    return this.currentValidationError_ ===
         ValidationErrorType.MISSING_NEW_PASSWORD;
   },
 

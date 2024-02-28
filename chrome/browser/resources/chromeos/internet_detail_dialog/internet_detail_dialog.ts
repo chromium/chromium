@@ -281,7 +281,7 @@ export class InternetDetailDialogElement extends
       return;
     }
     // If the network was or is active, request an update.
-    if (this.managedProperties_.connectionState !=
+    if (this.managedProperties_.connectionState !==
             ConnectionStateType.kNotConnected ||
         networks.find(network => network.guid === this.guid)) {
       this.getNetworkDetails_();

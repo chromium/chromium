@@ -78,7 +78,7 @@ export class KeyboardUtils {
     // See crbug.com/1083145
     if (document.activeElement ===
             document.getElementById('network-selection') &&
-        document.activeElement?.shadowRoot?.activeElement?.tagName ==
+        document.activeElement?.shadowRoot?.activeElement?.tagName ===
             'NETWORK-SELECT-LOGIN' &&
         (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
       return;

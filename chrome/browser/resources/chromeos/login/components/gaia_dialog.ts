@@ -541,7 +541,7 @@ export class GaiaDialog extends GaiaDialogBase {
       canGoBack: boolean,
       gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
     return canGoBack &&
-        gaiaDialogButtonsType ==
+        gaiaDialogButtonsType ===
         OobeTypes.GaiaDialogButtonsType.ENTERPRISE_PREFERRED;
   }
 
@@ -553,7 +553,7 @@ export class GaiaDialog extends GaiaDialogBase {
       canGoBack: boolean,
       gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
     return canGoBack &&
-        gaiaDialogButtonsType ==
+        gaiaDialogButtonsType ===
         OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED;
   }
 }
