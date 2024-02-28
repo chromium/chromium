@@ -455,7 +455,11 @@ class SharedStorageWorkletRunKeysStory(SharedStorageStory):
   }, {
       'type': 'workletKeys'
   }]
-  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "3 + self.SIZE"
+  # Expect to iterate over `3 + self.SIZE` keys, each with a call to
+  # `GetNextIterationResult()`, then make one last call to
+  # `GetNextIterationResult()` to terminate the iteration with
+  # `MakeEndOfIteration()`.
+  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "4 + self.SIZE"
 
 
 class SharedStorageWorkletSelectURLKeysStory(SharedStorageStory):
@@ -495,7 +499,11 @@ class SharedStorageWorkletSelectURLKeysStory(SharedStorageStory):
   }, {
       'type': 'workletKeys'
   }]
-  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "3 + self.SIZE"
+  # Expect to iterate over `3 + self.SIZE` keys, each with a call to
+  # `GetNextIterationResult()`, then make one last call to
+  # `GetNextIterationResult()` to terminate the iteration with
+  # `MakeEndOfIteration()`.
+  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "4 + self.SIZE"
 
 
 class SharedStorageWorkletRunEntriesStory(SharedStorageStory):
@@ -534,7 +542,11 @@ class SharedStorageWorkletRunEntriesStory(SharedStorageStory):
   }, {
       'type': 'workletEntries'
   }]
-  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "3 + self.SIZE"
+  # Expect to iterate over `3 + self.SIZE` entries, each with a call to
+  # `GetNextIterationResult()`, then make one last call to
+  # `GetNextIterationResult()` to terminate the iteration with
+  # `MakeEndOfIteration()`.
+  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "4 + self.SIZE"
 
 
 class SharedStorageWorkletSelectURLEntriesStory(SharedStorageStory):
@@ -574,7 +586,11 @@ class SharedStorageWorkletSelectURLEntriesStory(SharedStorageStory):
   }, {
       'type': 'workletEntries'
   }]
-  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "3 + self.SIZE"
+  # Expect to iterate over `3 + self.SIZE` entries, each with a call to
+  # `GetNextIterationResult()`, then make one last call to
+  # `GetNextIterationResult()` to terminate the iteration with
+  # `MakeEndOfIteration()`.
+  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "4 + self.SIZE"
 
 
 class SharedStorageWorkletRunRemainingBudgetStory(SharedStorageStory):
