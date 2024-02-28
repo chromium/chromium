@@ -542,8 +542,15 @@ crbug.com/326283382 [ mac angle-metal graphite-enabled ] conformance/context/con
 
 ## SkiaGraphite on on SwANGLE ##
 
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Failure ]
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/context/context-hidden-alpha.html [ Failure ]
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/context/context-no-alpha-fbo-with-alpha.html [ Failure ]
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/offscreencanvas/context-attribute-preserve-drawing-buffer.html [ Failure ]
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/rendering/scissor-rect-repeated-rendering.html [ Failure ]
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textures/misc/copy-tex-image-2d-formats.html [ Failure ]
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textures/webgl_canvas/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
@@ -553,6 +560,7 @@ crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textur
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/41495039 [ mac angle-swiftshader graphite-enabled ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 ## Mac AMD failures ##
 
