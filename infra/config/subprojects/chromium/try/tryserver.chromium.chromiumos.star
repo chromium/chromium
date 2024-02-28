@@ -28,6 +28,7 @@ try_.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -112,7 +113,6 @@ try_.orchestrator_builder(
     compilator = "chromeos-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(
         equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
         equivalent_builder_percentage = 100,
@@ -149,7 +149,6 @@ try_.orchestrator_builder(
     compilator = "chromeos-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(
         omit_from_luci_cv = True,
     ),
@@ -171,7 +170,6 @@ try_.compilator_builder(
     ],
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.compilator_builder(
@@ -188,7 +186,6 @@ try_.compilator_builder(
     ],
     contact_team_email = "chromeos-sw-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -215,7 +212,6 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -248,7 +244,6 @@ try_.orchestrator_builder(
     compilator = "lacros-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
     # TODO(crbug.com/1471166) Enable on CQ.
     tryjob = try_.job(
         equivalent_builder = "try/lacros-amd64-generic-rel-gtest-and-tast",
@@ -286,7 +281,6 @@ try_.orchestrator_builder(
     compilator = "lacros-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(
         omit_from_luci_cv = True,
     ),
@@ -308,7 +302,6 @@ try_.compilator_builder(
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.compilator_builder(
@@ -325,7 +318,6 @@ try_.compilator_builder(
     ],
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -371,7 +363,6 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_enabled = True,
     tryjob = try_.job(),
 )
 
@@ -521,7 +512,6 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -531,7 +521,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = 32,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -542,7 +531,6 @@ try_.builder(
         "ci/linux-lacros-dbg",
     ],
     gn_args = "ci/linux-lacros-dbg",
-    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
@@ -573,7 +561,6 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -583,7 +570,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.CROS_BRANCHES,
     cores = 32,
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -599,7 +585,6 @@ try_.builder(
             "ci/linux-chromeos-dbg",
         ],
     ),
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -619,7 +604,6 @@ try_.builder(
             "enable_backup_ref_ptr_feature_flag",
         ],
     ),
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -634,7 +618,6 @@ try_.builder(
         ],
     ),
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    siso_enabled = True,
     tryjob = try_.job(
         location_filters = [
             "chromeos/ash/components/chromebox_for_meetings/.+",
