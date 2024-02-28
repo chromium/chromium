@@ -73,6 +73,11 @@ enum SchemaOnErrorStrategy {
 constexpr int kSchemaOptionsNone = 0;
 constexpr int kSchemaOptionsIgnoreUnknownAttributes = 1 << 0;
 
+// String used to hide sensitive policy values.
+// It should be consistent with the mask |NetworkConfigurationPolicyHandler|
+// uses for network credential fields.
+extern const char kSensitiveValueMask[];
+
 class Schema;
 
 typedef std::vector<Schema> SchemaList;

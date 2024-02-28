@@ -61,6 +61,11 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Set to drop the policies of which value is a default one set by the policy
   // provider. Disabled by default.
   void SetDropDefaultValues(bool enabled);
+  // Set to show policy values set by machine scope sources including CBCM or
+  // GPO. When set to false, policies are still included, but values and errors
+  // will be hidden. Used when caller don't have permission to view those
+  // values. Enabled by default.
+  void EnableShowMachineValues(bool enabled);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::Value::Dict ConvertUpdaterPolicies(
@@ -122,7 +127,8 @@ class POLICY_EXPORT PolicyConversionsClient {
   // |convert_values_enabled_|), converts some values to a representation that
   // i18n_template.js will display.
   base::Value CopyAndMaybeConvert(const base::Value& value,
-                                  const std::optional<Schema>& schema) const;
+                                  const std::optional<Schema>& schema,
+                                  PolicyScope scope) const;
 
   // Creates a description of the policy |policy_name| using |policy| and the
   // optional errors in |errors| to determine the status of each policy.
@@ -173,6 +179,12 @@ class POLICY_EXPORT PolicyConversionsClient {
   std::string GetPolicyScope(const std::string& policy_name,
                              const PolicyScope& policy_scope) const;
 
+  std::u16string GetPolicyError(
+      const std::string& policy_name,
+      const PolicyMap::Entry& policy,
+      PolicyErrorMap* errors,
+      std::optional<Schema> known_policy_schema) const;
+
   bool convert_types_enabled_ = true;
   bool convert_values_enabled_ = false;
   bool device_local_account_policies_enabled_ = false;
@@ -180,6 +192,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool pretty_print_enabled_ = true;
   bool user_policies_enabled_ = true;
   bool drop_default_values_enabled_ = false;
+  bool show_machine_values_ = true;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void PopulatePerProfileMap();

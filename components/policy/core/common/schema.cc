@@ -58,6 +58,8 @@ std::string ErrorPathToString(const std::string& policy_name,
   return error_path_string.str();
 }
 
+const char kSensitiveValueMask[] = "********";
+
 namespace {
 
 struct ReferencesAndIDs {
@@ -84,11 +86,6 @@ struct StorageSizes {
   size_t int_enums = 0;
   size_t string_enums = 0;
 };
-
-// |Schema::MaskSensitiveValues| will replace sensitive values with this string.
-// It should be consistent with the mask |NetworkConfigurationPolicyHandler|
-// uses for network credential fields.
-constexpr char kSensitiveValueMask[] = "********";
 
 // An invalid index, indicating that a node is not present; similar to a NULL
 // pointer.

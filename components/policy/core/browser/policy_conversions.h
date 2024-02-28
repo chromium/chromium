@@ -101,6 +101,11 @@ class POLICY_EXPORT PolicyConversions {
   // Set to drop the policies of which value is a default one set by the policy
   // provider. Disabled by default.
   PolicyConversions& SetDropDefaultValues(bool enabled);
+  // Set to show policy values set by machine scope sources including CBCM or
+  // GPO. When set to false, policies are still included, but values and errors
+  // will be hidden. Used when caller don't have permission to view those
+  // values. Enabled by default.
+  PolicyConversions& EnableShowMachineValues(bool enabled);
 
   // Switch to Chrome policy conversion to get Chrome policies.
   // Chrome policy conversion can't be used to return device local account
