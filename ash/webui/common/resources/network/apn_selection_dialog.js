@@ -13,11 +13,13 @@ import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
+import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {ApnProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './apn_selection_dialog.html.js';
+import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 
 /**
  * @constructor
@@ -45,11 +47,23 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
         value: [],
       },
 
+      /** The GUID of the network to select known APNs for. */
+      guid: String,
+
       /** @type {ApnProperties} */
       selectedApn_: {
         type: Object,
       },
     };
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!CrosNetworkConfigInterface} */
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
   /**
@@ -68,7 +82,14 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
    * @private
    */
   onActionButtonClicked_(event) {
-    // TODO(b/325487350): Implement.
+    assert(this.guid);
+
+    if (!this.selectedApn_) {
+      return;
+    }
+
+    this.networkConfig_.createExclusivelyEnabledCustomApn(
+        this.guid, this.selectedApn_);
     this.$.apnSelectionDialog.close();
   }
 

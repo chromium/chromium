@@ -41,11 +41,14 @@
   </div>
   <!-- TODO(b/325487350): Add a11y. -->
   <div slot="button-container">
-      <cr-button class="cancel-button"
+      <cr-button id="apnSelectionCancelBtn"
+          class="cancel-button"
           on-click="onCancelClicked_">
         [[i18n('apnDetailDialogCancel')]]
       </cr-button>
-      <cr-button class="action-button"
+      <cr-button id="apnSelectionActionBtn"
+          disabled="[[!selectedApn_]]"
+          class="action-button"
           on-click="onActionButtonClicked_">
         Use this APN
       </cr-button>

@@ -6,24 +6,45 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/apn_selection_dialog.js';
 
 import {ApnSelectionDialog} from 'chrome://resources/ash/common/network/apn_selection_dialog.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+/** @type {!ApnProperties} */
+const TEST_APN = {
+  accessPointName: 'apn',
+  username: 'username',
+  password: 'password',
+  authenticationType: ApnAuthenticationType.kAutomatic,
+  ipType: ApnIpType.kAutomatic,
+  apnTypes: [ApnType.kDefault],
+};
 
 suite('ApnSelectionDialog', () => {
   /** @type {ApnSelectionDialog} */
   let apnSelectionDialog = null;
 
+  /** @type {FakeNetworkConfig} */
+  let mojoApi = null;
+
   setup(function() {
+    mojoApi = new FakeNetworkConfig();
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        mojoApi);
     apnSelectionDialog = document.createElement('apn-selection-dialog');
+    apnSelectionDialog.guid = 'fake-guid';
     document.body.appendChild(apnSelectionDialog);
     return waitAfterNextRender(apnSelectionDialog);
   });
 
   teardown(() => {
     apnSelectionDialog.remove();
+    mojoApi.resetForTest();
   });
 
   test('Element contains dialog', () => {
@@ -78,9 +99,11 @@ suite('ApnSelectionDialog', () => {
     // De-select the APN.
     listItems[1].click();
     await flushTasks();
-    assertNull(ironList.selectedItem);
-    assertFalse(listItems[0].selected);
-    assertFalse(listItems[1].selected);
+    assertNull(ironList.selectedItem, `List has a non-null selected item`);
+    assertFalse(
+        listItems[0].selected, `apn1 is selected when it shouldn\'t be`);
+    assertFalse(
+        listItems[1].selected, `apn2 is selected when it shouldn\'t be`);
   });
 
   test('Clicking the cancel button fires the close event', async () => {
@@ -95,5 +118,75 @@ suite('ApnSelectionDialog', () => {
         apnSelectionDialog.shadowRoot.querySelector('#apnSelectionDialog');
     assertTrue(!!crDialogElement);
     assertFalse(crDialogElement.open);
+  });
+
+  test('Clicking on use this APN button adds APN', async () => {
+    const apnList = [TEST_APN];
+    apnSelectionDialog.apnList = apnList;
+    await flushTasks();
+
+    const actionBtn =
+        apnSelectionDialog.shadowRoot.querySelector('.action-button');
+    const cancelBtn =
+        apnSelectionDialog.shadowRoot.querySelector('.cancel-button');
+
+    assertTrue(!!actionBtn, `action button does not exist`);
+    assertTrue(!!cancelBtn, `cancel button does not exist`);
+
+    // No APN selected, so action button is disabled.
+    const ironList = apnSelectionDialog.shadowRoot.querySelector('iron-list');
+    assertEquals(1, ironList.items.length, `Iron list items don't match`);
+    assertTrue(actionBtn.disabled, `action button is not disabled`);
+    assertFalse(cancelBtn.disabled, `cancel button is disabled`);
+
+    const listItems = apnSelectionDialog.shadowRoot.querySelectorAll(
+        'apn-selection-dialog-list-item');
+
+    // Select the known APN.
+    listItems[0].click();
+    assertTrue(OncMojo.apnMatch(TEST_APN, ironList.selectedItem));
+
+    assertFalse(actionBtn.disabled);
+    assertFalse(cancelBtn.disabled);
+
+    // Case: clicking on the action button calls the correct method
+    const network = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, apnSelectionDialog.guid);
+    mojoApi.setManagedPropertiesForTest(network);
+    await flushTasks();
+
+    /**
+     * @type {!ManagedProperties}
+     */
+    const managedProperties =
+        await mojoApi.getManagedProperties(apnSelectionDialog.guid);
+    assertTrue(!!managedProperties);
+    assertFalse(
+        !!managedProperties.result.typeProperties.cellular.customApnList);
+
+    const closeEventPromise = eventToPromise('close', window);
+    actionBtn.click();
+    await flushTasks();
+    await mojoApi.whenCalled('createExclusivelyEnabledCustomApn');
+
+    await closeEventPromise;
+    const crDialogElement =
+        apnSelectionDialog.shadowRoot.querySelector('#apnSelectionDialog');
+    assertTrue(!!crDialogElement);
+    assertFalse(crDialogElement.open);
+
+    assertEquals(
+        1,
+        managedProperties.result.typeProperties.cellular.customApnList.length);
+
+    const apn =
+        managedProperties.result.typeProperties.cellular.customApnList[0];
+    assertEquals(TEST_APN.accessPointName, apn.accessPointName);
+    assertEquals(TEST_APN.username, apn.username);
+    assertEquals(TEST_APN.password, apn.password);
+    assertEquals(TEST_APN.authenticationType, apn.authenticationType);
+    assertEquals(TEST_APN.ipType, apn.ipType);
+    assertEquals(TEST_APN.apnTypes.length, apn.apnTypes.length);
+    assertEquals(TEST_APN.apnTypes[0], apn.apnTypes[0]);
   });
 });

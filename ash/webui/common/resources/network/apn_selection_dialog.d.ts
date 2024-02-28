@@ -10,6 +10,8 @@ export class ApnSelectionDialog extends I18nMixin
 (PolymerElement) {
 apnList:
   ApnProperties[];
+guid:
+  string;
 }
 
 declare global {
