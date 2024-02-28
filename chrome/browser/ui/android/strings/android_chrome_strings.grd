@@ -6011,6 +6011,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
         Passkey confirmation sheet closed
       </message>
+
+      <!-- Safety Hub -->
+      <message name="IDS_PREFS_SAFETY_HUB" desc="Title of the Safety hub element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">
+        Safety hub
+      </message>
     </messages>
   </release>
 </grit>

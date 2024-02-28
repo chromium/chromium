@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -216,12 +217,13 @@ public class MainSettingsFragmentTest {
     /**
      * Test for the "Account" section.
      *
-     * <p>TODO(crbug.com/1098205): remove code to explicitly enable Safety Check and Password check,
-     * once the flags are on by default.
+     * <p>TODO(b/324562205): update to check for Safety Hub instead of Safety Check once it's fully
+     * launched.
      */
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testStartup() {
         launchSettingsActivity();
 
@@ -781,6 +783,48 @@ public class MainSettingsFragmentTest {
         Assert.assertNull(
                 "Home modules config setting should not be shown on automotive",
                 mMainSettings.findPreference(MainSettings.PREF_HOME_MODULES_CONFIG));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    public void testSafetyHubFlagOn() {
+        launchSettingsActivity();
+        if (BuildInfo.getInstance().isAutomotive) {
+            Assert.assertNull(
+                    "Safety hub should not be shown on automotive",
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
+            Assert.assertNull(
+                    "Safety check should not be shown on automotive",
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+        } else {
+            assertSettingsExists(MainSettings.PREF_SAFETY_HUB, SafetyHubFragment.class);
+            // Safety check should be hidden when safety hub is enabled.
+            Assert.assertNull(
+                    "Safety check setting should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+        }
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SAFETY_HUB)
+    public void testSafetyHubFlagOff() {
+        launchSettingsActivity();
+        if (BuildInfo.getInstance().isAutomotive) {
+            Assert.assertNull(
+                    "Safety hub should not be shown on automotive",
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
+            Assert.assertNull(
+                    "Safety check should not be shown on automotive",
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+        } else {
+            assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
+            // Safety hub should be hidden when the flag is disabled.
+            Assert.assertNull(
+                    "Safety hub setting should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
+        }
     }
 
     private void launchSettingsActivity() {
