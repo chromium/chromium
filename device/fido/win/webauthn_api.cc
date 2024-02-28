@@ -726,6 +726,8 @@ AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
     }
     return {true, {}};
   }
+  FIDO_LOG(DEBUG) << "WebAuthNGetCredentialList returned "
+                  << credentials->cCredentialDetails << " credential(s)";
   return {true, WinCredentialDetailsListToCredentialMetadata(*credentials)};
 }
 
