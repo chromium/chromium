@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 
 #include "base/run_loop.h"
@@ -105,23 +106,26 @@ class MockPeerConnectionHandler : public RTCPeerConnectionHandler {
  public:
   MockPeerConnectionHandler()
       : MockPeerConnectionHandler(
-            MakeGarbageCollected<MockPeerConnectionDependencyFactory>()) {}
+            MakeGarbageCollected<MockPeerConnectionDependencyFactory>(),
+            MakeGarbageCollected<MockRTCPeerConnectionHandlerClient>()) {}
   MOCK_METHOD0(CloseClientPeerConnection, void());
   MOCK_METHOD1(OnThermalStateChange, void(mojom::blink::DeviceThermalState));
   MOCK_METHOD1(OnSpeedLimitChange, void(int));
 
  private:
   explicit MockPeerConnectionHandler(
-      MockPeerConnectionDependencyFactory* factory)
+      MockPeerConnectionDependencyFactory* factory,
+      MockRTCPeerConnectionHandlerClient* client)
       : RTCPeerConnectionHandler(
-            &client_,
+            client,
             factory,
             blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
             /*encoded_insertable_streams=*/false),
-        factory_(factory) {}
+        factory_(factory),
+        client_(client) {}
 
   Persistent<MockPeerConnectionDependencyFactory> factory_;
-  MockRTCPeerConnectionHandlerClient client_;
+  Persistent<MockRTCPeerConnectionHandlerClient> client_;
 };
 
 webrtc::PeerConnectionInterface::RTCConfiguration DefaultConfig() {
