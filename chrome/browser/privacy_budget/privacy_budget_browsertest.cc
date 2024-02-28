@@ -712,7 +712,9 @@ class PrivacyBudgetAssignedBlockSamplingConfigTest
 // correctly from the field trial parameters.
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
                        LoadsSettingsFromFieldTrialParameters) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      features::kIdentifiabilityStudyMetaExperiment));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
 
   const auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
@@ -720,16 +722,12 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
   EXPECT_TRUE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kCanvasReadback));
 
-  // Blocked surfaces. See fieldtrial_testing_config.json#IdentifiabilityStudy.
-  EXPECT_FALSE(settings->ShouldSampleSurface(kBlockedSurface));
-
-  // Some random surface that shouldn't be blocked.
+  // All surfaces are sampled when the meta experiment is active.
+  EXPECT_TRUE(settings->ShouldSampleSurface(kBlockedSurface));
   EXPECT_TRUE(settings->ShouldSampleSurface(kAllowedInactiveSurface));
-
-  // Blocked types
-  EXPECT_FALSE(settings->ShouldSampleType(
+  EXPECT_TRUE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter));
-  EXPECT_FALSE(settings->ShouldSampleType(
+  EXPECT_TRUE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
 }
 
