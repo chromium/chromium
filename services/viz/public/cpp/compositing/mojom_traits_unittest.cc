@@ -597,9 +597,11 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
                    .AddDefaultRenderPass()
                    .Build();
 
+  NavigationId navigation_id = base::UnguessableToken::Create();
   CompositorFrameTransitionDirective::SharedElement element;
   element.render_pass_id = frame.render_pass_list.front()->id;
-  NavigationID navigation_id = base::UnguessableToken::Create();
+  element.view_transition_element_resource_id =
+      ViewTransitionElementResourceId(navigation_id, 1);
   uint32_t sequence_id = 1u;
   frame.metadata.transition_directives.push_back(
       CompositorFrameTransitionDirective::CreateSave(navigation_id, sequence_id,

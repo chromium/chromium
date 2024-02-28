@@ -41,7 +41,7 @@ uint32_t ViewTransitionRequest::s_next_sequence_id_ = 1;
 std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateCapture(
     uint32_t document_tag,
     uint32_t shared_element_count,
-    viz::NavigationID navigation_id,
+    viz::NavigationId navigation_id,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
     base::OnceClosure commit_callback) {
   return base::WrapUnique(new ViewTransitionRequest(
@@ -52,7 +52,7 @@ std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateCapture(
 // static
 std::unique_ptr<ViewTransitionRequest>
 ViewTransitionRequest::CreateAnimateRenderer(uint32_t document_tag,
-                                             viz::NavigationID navigation_id) {
+                                             viz::NavigationId navigation_id) {
   return base::WrapUnique(
       new ViewTransitionRequest(Type::kAnimateRenderer, document_tag, 0u,
                                 navigation_id, {}, base::OnceClosure()));
@@ -61,7 +61,7 @@ ViewTransitionRequest::CreateAnimateRenderer(uint32_t document_tag,
 // static
 std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateRelease(
     uint32_t document_tag,
-    viz::NavigationID navigation_id) {
+    viz::NavigationId navigation_id) {
   return base::WrapUnique(
       new ViewTransitionRequest(Type::kRelease, document_tag, 0u, navigation_id,
                                 {}, base::OnceClosure()));
@@ -71,7 +71,7 @@ ViewTransitionRequest::ViewTransitionRequest(
     Type type,
     uint32_t document_tag,
     uint32_t shared_element_count,
-    viz::NavigationID navigation_id,
+    viz::NavigationId navigation_id,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
     base::OnceClosure commit_callback)
     : type_(type),
@@ -127,6 +127,15 @@ ViewTransitionRequest::ConstructDirective(
                     it->second.resource_id),
         capture_resource_ids.end());
   }
+
+  // The loop below will replace empty resource id shared elements by inserting
+  // a new entry. Remove all empty entries first to ensure we don't end up with
+  // duplicates.
+  std::erase_if(shared_elements,
+                [](const viz::CompositorFrameTransitionDirective::SharedElement&
+                       element) {
+                  return !element.view_transition_element_resource_id.IsValid();
+                });
 
   // Add invalid render pass id for each empty resource id left in capture ids.
   for (auto& empty_resource_id : capture_resource_ids) {

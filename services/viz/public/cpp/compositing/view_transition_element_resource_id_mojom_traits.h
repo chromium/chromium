@@ -14,14 +14,24 @@ namespace mojo {
 template <>
 struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
                     viz::ViewTransitionElementResourceId> {
-  static uint32_t id(const viz::ViewTransitionElementResourceId& resource_id) {
-    return resource_id.id();
+  static uint32_t local_id(
+      const viz::ViewTransitionElementResourceId& resource_id) {
+    return resource_id.local_id();
+  }
+
+  static const base::UnguessableToken& transition_id(
+      const viz::ViewTransitionElementResourceId& resource_id) {
+    return resource_id.transition_id();
   }
 
   static bool Read(viz::mojom::ViewTransitionElementResourceIdDataView data,
                    viz::ViewTransitionElementResourceId* out) {
-    *out = viz::ViewTransitionElementResourceId(data.id());
-    return true;
+    base::UnguessableToken transition_id;
+    if (!data.ReadTransitionId(&transition_id)) {
+      return false;
+    }
+    *out = viz::ViewTransitionElementResourceId(transition_id, data.local_id());
+    return out->IsValid();
   }
 };
 

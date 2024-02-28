@@ -706,13 +706,15 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, SimpleFrame) {
 
 // Tests that SharedElement quads are skipped during aggregation.
 TEST_F(SurfaceAggregatorValidSurfaceTest, SharedElementQuad) {
+  auto transition_id = base::UnguessableToken::Create();
+  ViewTransitionElementResourceId vt_resource_id(transition_id, 1);
+
   CompositorFrame frame =
       CompositorFrameBuilder()
-          .AddRenderPass(RenderPassBuilder(kSurfaceSize)
-                             .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kRed)
-                             .AddSharedElementQuad(
-                                 gfx::Rect(5, 5),
-                                 ViewTransitionElementResourceId::Generate()))
+          .AddRenderPass(
+              RenderPassBuilder(kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kRed)
+                  .AddSharedElementQuad(gfx::Rect(5, 5), vt_resource_id))
           .Build();
 
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),

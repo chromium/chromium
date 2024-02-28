@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -15,6 +16,10 @@
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
+
+namespace viz {
+using NavigationId = base::UnguessableToken;
+}
 
 namespace mojo {
 
@@ -74,7 +79,7 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
          viz::CompositorFrameTransitionDirective* out) {
   uint32_t sequence_id = data.sequence_id();
 
-  std::optional<viz::NavigationID> navigation_id;
+  std::optional<viz::NavigationId> navigation_id;
   viz::CompositorFrameTransitionDirective::Type type;
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements;
@@ -90,7 +95,7 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return false;
   }
 
-  auto navigation_id_parsed = navigation_id.value_or(viz::NavigationID::Null());
+  auto navigation_id_parsed = navigation_id.value_or(viz::NavigationId::Null());
   switch (type) {
     case viz::CompositorFrameTransitionDirective::Type::kSave:
       *out = viz::CompositorFrameTransitionDirective::CreateSave(

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_STYLE_TRACKER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/unguessable_token.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -74,7 +75,8 @@ class ViewTransitionStyleTracker
     gfx::Transform snapshot_matrix;
   };
 
-  explicit ViewTransitionStyleTracker(Document& document);
+  explicit ViewTransitionStyleTracker(Document& document,
+                                      const viz::TransitionId& transition_id);
   ViewTransitionStyleTracker(Document& document, ViewTransitionState);
   ~ViewTransitionStyleTracker();
 
@@ -313,10 +315,14 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
+  viz::ViewTransitionElementResourceId GenerateResourceId() const;
+
   Member<Document> document_;
 
   // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;
+
+  const viz::TransitionId transition_id_;
 
   // Set if this style tracker was created by deserializing captured state
   // instead of running through the capture phase. This is done for transitions
@@ -367,6 +373,10 @@ class ViewTransitionStyleTracker
   // transition. This is a purely performance optimization since this check is
   // used in hot code-paths.
   bool is_root_transitioning_ = false;
+
+  // Returns true if GetViewTransitionState() has already been called. This is
+  // used only to enforce additional captures don't happen after that.
+  mutable bool state_extracted_ = false;
 };
 
 }  // namespace blink

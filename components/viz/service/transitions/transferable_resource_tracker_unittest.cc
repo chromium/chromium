@@ -21,7 +21,7 @@ namespace {
 std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult() {
   CompositorFrameTransitionDirective::SharedElement element;
   auto directive = CompositorFrameTransitionDirective::CreateSave(
-      NavigationID::Null(), 1, {element});
+      NavigationId::Null(), 1, {element});
   auto frame = std::make_unique<SurfaceSavedFrame>(
       std::move(directive),
       base::BindRepeating([](const CompositorFrameTransitionDirective&) {}));

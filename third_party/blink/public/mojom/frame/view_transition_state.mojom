@@ -64,12 +64,19 @@ struct ViewTransitionState {
   // The shared element state for elements participating in the transition.
   array<ViewTransitionElement> elements;
 
-  // The navigation id. It is used to identify this transition when retrieving
-  // captured pixel state in viz.
-  mojo_base.mojom.UnguessableToken navigation_id;
+  // The transition id. It is used to preserve the identity of the transition
+  // between old and new documents so they can share captured pixel state in
+  // viz.
+  mojo_base.mojom.UnguessableToken transition_id;
 
   // Geometry information for the root capture.
   gfx.mojom.Size snapshot_root_size_at_capture;
   float device_pixel_ratio;
+
+  // The next resource id that the new document should use for generating
+  // resources. This ensures the new document uses a sequence that doesn't
+  // collide with ids already used for resources from the old document.
+  uint32 next_element_resource_id;
+
   // TODO(khushalsagar): Add opaque blob from old Document.
 };

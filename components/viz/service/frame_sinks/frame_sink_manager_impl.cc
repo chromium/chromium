@@ -866,7 +866,7 @@ void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
 }
 
 void FrameSinkManagerImpl::CacheSurfaceAnimationManager(
-    NavigationID navigation_id,
+    NavigationId navigation_id,
     std::unique_ptr<SurfaceAnimationManager> manager) {
   if (navigation_to_animation_manager_.contains(navigation_id)) {
     LOG(ERROR)
@@ -879,7 +879,7 @@ void FrameSinkManagerImpl::CacheSurfaceAnimationManager(
 }
 
 std::unique_ptr<SurfaceAnimationManager>
-FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationID navigation_id) {
+FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationId navigation_id) {
   auto it = navigation_to_animation_manager_.find(navigation_id);
   if (it == navigation_to_animation_manager_.end()) {
     LOG(ERROR) << "SurfaceAnimationManager missing for |navigation_id| : "
@@ -893,7 +893,7 @@ FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationID navigation_id) {
 }
 
 void FrameSinkManagerImpl::ClearSurfaceAnimationManager(
-    NavigationID navigation_id) {
+    NavigationId navigation_id) {
   navigation_to_animation_manager_.erase(navigation_id);
 }
 

@@ -151,9 +151,11 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kScript),
       document_(document),
       delegate_(delegate),
+      transition_id_(viz::TransitionId::Create()),
       document_tag_(NextDocumentTag()),
       style_tracker_(
-          MakeGarbageCollected<ViewTransitionStyleTracker>(*document_)),
+          MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
+                                                           transition_id_)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *document->GetExecutionContext(),
           *this,
@@ -197,10 +199,11 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kForSnapshot),
       document_(document),
       delegate_(delegate),
-      navigation_id_(viz::NavigationID::Create()),
+      transition_id_(viz::TransitionId::Create()),
       document_tag_(NextDocumentTag()),
       style_tracker_(
-          MakeGarbageCollected<ViewTransitionStyleTracker>(*document_)),
+          MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
+                                                           transition_id_)),
       transition_state_callback_(std::move(callback)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *document_->GetExecutionContext(),
@@ -227,7 +230,7 @@ ViewTransition::ViewTransition(PassKey,
       creation_type_(CreationType::kFromSnapshot),
       document_(document),
       delegate_(delegate),
-      navigation_id_(transition_state.navigation_id),
+      transition_id_(transition_state.transition_id),
       document_tag_(NextDocumentTag()),
       style_tracker_(MakeGarbageCollected<ViewTransitionStyleTracker>(
           *document_,
@@ -265,8 +268,8 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (static_cast<int>(state_) >
           static_cast<int>(State::kCaptureTagDiscovery) &&
       creation_type_ != CreationType::kForSnapshot) {
-    delegate_->AddPendingRequest(
-        ViewTransitionRequest::CreateRelease(document_tag_, navigation_id_));
+    delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
+        document_tag_, CrossDocumentNavigationId()));
   }
 
   // We always need to call the transition state callback (mojo seems to require
@@ -274,7 +277,7 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (transition_state_callback_) {
     CHECK_EQ(creation_type_, CreationType::kForSnapshot);
     ViewTransitionState view_transition_state;
-    view_transition_state.navigation_id = navigation_id_;
+    view_transition_state.transition_id = transition_id_;
     std::move(transition_state_callback_).Run(std::move(view_transition_state));
   }
 
@@ -453,7 +456,8 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateCapture(
-            document_tag_, style_tracker_->CapturedTagCount(), navigation_id_,
+            document_tag_, style_tracker_->CapturedTagCount(),
+            CrossDocumentNavigationId(),
             style_tracker_->TakeCaptureResourceIds(),
             ConvertToBaseOnceCallback(
                 CrossThreadBindOnce(&ViewTransition::NotifyCaptureFinished,
@@ -485,7 +489,7 @@ void ViewTransition::ProcessCurrentState() {
           DCHECK(transition_state_callback_);
           ViewTransitionState view_transition_state =
               style_tracker_->GetViewTransitionState();
-          view_transition_state.navigation_id = navigation_id_;
+          CHECK_EQ(view_transition_state.transition_id, transition_id_);
 
           process_next_state =
               AdvanceTo(State::kTransitionStateCallbackDispatched);
@@ -575,8 +579,8 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         delegate_->AddPendingRequest(
-            ViewTransitionRequest::CreateAnimateRenderer(document_tag_,
-                                                         navigation_id_));
+            ViewTransitionRequest::CreateAnimateRenderer(
+                document_tag_, CrossDocumentNavigationId()));
         process_next_state = AdvanceTo(State::kAnimating);
         DCHECK(!process_next_state);
 
@@ -606,7 +610,7 @@ void ViewTransition::ProcessCurrentState() {
         script_delegate_->DidFinishAnimating();
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-            document_tag_, navigation_id_));
+            document_tag_, CrossDocumentNavigationId()));
         delegate_->OnTransitionFinished(this);
 
         style_tracker_ = nullptr;
@@ -702,6 +706,17 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success) {
 
   // Succeed or fail, rendering must be resumed after this.
   CHECK(!rendering_paused_scope_);
+}
+
+viz::NavigationId ViewTransition::CrossDocumentNavigationId() const {
+  if (!IsForNavigationOnNewDocument() && !IsForNavigationSnapshot()) {
+    return viz::NavigationId();
+  }
+
+  // Since the transition_id is unique across transitions and preserved between
+  // new and old for a cross-document transition, we can use it as the
+  // navigation ID on cross document requests.
+  return transition_id_;
 }
 
 bool ViewTransition::NeedsViewTransitionEffectNode(

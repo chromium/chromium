@@ -30,7 +30,8 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace viz {
-using NavigationID = base::UnguessableToken;
+using NavigationId = base::UnguessableToken;
+using TransitionId = base::UnguessableToken;
 }
 
 namespace blink {
@@ -323,12 +324,17 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void OnRenderingPausedTimeout();
   void ResumeRendering();
 
+  // Returns the navigation id to use when creating a capture request. This id
+  // is the same for captures on both old and new documents of a cross-document
+  // transition. It is an empty id if the transition is not cross document.
+  viz::NavigationId CrossDocumentNavigationId() const;
+
   State state_ = State::kInitial;
   const CreationType creation_type_;
 
   Member<Document> document_;
   Delegate* const delegate_ = nullptr;
-  const viz::NavigationID navigation_id_;
+  const viz::TransitionId transition_id_;
 
   // The document tag identifies the document to which this transition
   // belongs. It's unique among other local documents.

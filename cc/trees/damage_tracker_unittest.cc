@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/view_transition_content_layer_impl.h"
@@ -1455,6 +1456,8 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromDescendantSurface) {
 TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromViewTransitionLayer) {
   ClearLayersAndProperties();
 
+  base::UnguessableToken transition_id = base::UnguessableToken::Create();
+
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(500, 500));
   root->layer_tree_impl()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
@@ -1464,7 +1467,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromViewTransitionLayer) {
   LayerImpl* child1 = AddLayer<TestLayerImpl>();
   LayerImpl* grand_child1 = AddLayer<TestLayerImpl>();
   LayerImpl* child2 = AddLayer<TestViewTransitionContentLayerImpl>(
-      viz::ViewTransitionElementResourceId(3), false);
+      viz::ViewTransitionElementResourceId(transition_id, 3), false);
 
   // child 1 of the root - live render surface.
   child1->SetBounds(gfx::Size(80, 80));

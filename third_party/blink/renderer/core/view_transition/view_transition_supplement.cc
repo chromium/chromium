@@ -275,9 +275,7 @@ ViewTransition* ViewTransitionSupplement::GetTransition() {
 }
 
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
-    : Supplement<Document>(document),
-      cross_document_opt_in_(
-          mojom::blink::ViewTransitionSameOriginOptIn::kDisabled) {}
+    : Supplement<Document>(document) {}
 
 ViewTransitionSupplement::~ViewTransitionSupplement() = default;
 
@@ -373,6 +371,22 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
   // @view-transition should be applied.
 
   return transition_->GetScriptDelegate();
+}
+
+viz::ViewTransitionElementResourceId
+ViewTransitionSupplement::GenerateResourceId(
+    const viz::TransitionId& transition_id) {
+  CHECK(!transition_id.is_empty());
+  return viz::ViewTransitionElementResourceId(transition_id,
+                                              ++resource_local_id_sequence_);
+}
+
+void ViewTransitionSupplement::InitializeResourceIdSequence(
+    uint32_t next_local_id) {
+  CHECK_GT(next_local_id,
+           viz::ViewTransitionElementResourceId::kInvalidLocalId);
+  resource_local_id_sequence_ =
+      std::max(next_local_id - 1, resource_local_id_sequence_);
 }
 
 }  // namespace blink

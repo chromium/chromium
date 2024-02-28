@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
@@ -9939,7 +9940,7 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
     layer_tree_host()->AddViewTransitionRequest(
         ViewTransitionRequest::CreateCapture(
             /*document_tag=*/0, /*shared_element_count=*/0,
-            viz::NavigationID::Null(), {},
+            viz::NavigationId::Null(), {},
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
   }
 
@@ -10873,7 +10874,8 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
         layer_with_view_transition_content_rect_.OffsetFromOrigin());
     root->AddChild(layer_with_view_transition_content_);
 
-    resource_id_ = viz::ViewTransitionElementResourceId::Generate();
+    base::UnguessableToken transition_id = base::UnguessableToken::Create();
+    resource_id_ = viz::ViewTransitionElementResourceId(transition_id, 1);
     view_transition_layer_ = ViewTransitionContentLayer::Create(
         resource_id_, /*is_live_content_layer=*/true);
     CopyProperties(root, view_transition_layer_.get());

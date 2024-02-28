@@ -271,11 +271,11 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // CompositorFrameSink but animations are executed on a different
   // CompositorFrameSink.
   void CacheSurfaceAnimationManager(
-      NavigationID navigation_id,
+      NavigationId navigation_id,
       std::unique_ptr<SurfaceAnimationManager> manager);
   std::unique_ptr<SurfaceAnimationManager> TakeSurfaceAnimationManager(
-      NavigationID navigation_id);
-  void ClearSurfaceAnimationManager(NavigationID navigation_id);
+      NavigationId navigation_id);
+  void ClearSurfaceAnimationManager(NavigationId navigation_id);
 
   FrameCounter* frame_counter() {
     return frame_counter_ ? &frame_counter_.value() : nullptr;
@@ -415,7 +415,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                  base::UniquePtrComparator>
       video_capturers_;
 
-  base::flat_map<NavigationID, std::unique_ptr<SurfaceAnimationManager>>
+  base::flat_map<NavigationId, std::unique_ptr<SurfaceAnimationManager>>
       navigation_to_animation_manager_;
 
   // The ids of the frame sinks that are currently being captured.

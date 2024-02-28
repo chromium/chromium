@@ -77,9 +77,9 @@ struct BLINK_COMMON_EXPORT
     return r.elements;
   }
 
-  static const base::UnguessableToken& navigation_id(
+  static const viz::TransitionId& transition_id(
       const blink::ViewTransitionState& r) {
-    return r.navigation_id;
+    return r.transition_id;
   }
 
   static const gfx::Size& snapshot_root_size_at_capture(
@@ -89,6 +89,11 @@ struct BLINK_COMMON_EXPORT
 
   static float device_pixel_ratio(const blink::ViewTransitionState& r) {
     return r.device_pixel_ratio;
+  }
+
+  static uint32_t next_element_resource_id(
+      const blink::ViewTransitionState& r) {
+    return r.next_element_resource_id;
   }
 
   static bool Read(blink::mojom::ViewTransitionStateDataView r,

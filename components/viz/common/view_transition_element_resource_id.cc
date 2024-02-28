@@ -4,37 +4,30 @@
 
 #include "components/viz/common/view_transition_element_resource_id.h"
 
-#include "base/atomic_sequence_num.h"
+#include "base/check_op.h"
 #include "base/strings/stringprintf.h"
 
 namespace viz {
-namespace {
 
-static base::AtomicSequenceNumber s_view_transition_element_resource_id;
-
-constexpr uint32_t kInvalidId = 0u;
-
-}  // namespace
-
-ViewTransitionElementResourceId ViewTransitionElementResourceId::Generate() {
-  return ViewTransitionElementResourceId(
-      s_view_transition_element_resource_id.GetNext() + 1);
-}
-
-ViewTransitionElementResourceId::ViewTransitionElementResourceId()
-    : ViewTransitionElementResourceId(kInvalidId) {}
-
+ViewTransitionElementResourceId::ViewTransitionElementResourceId() = default;
 ViewTransitionElementResourceId::~ViewTransitionElementResourceId() = default;
 
-ViewTransitionElementResourceId::ViewTransitionElementResourceId(uint32_t id)
-    : id_(id) {}
+ViewTransitionElementResourceId::ViewTransitionElementResourceId(
+    const TransitionId& transition_id,
+    uint32_t local_id)
+    : transition_id_(transition_id), local_id_(local_id) {
+  CHECK_NE(local_id, kInvalidLocalId);
+  CHECK(!transition_id.is_empty());
+}
 
 bool ViewTransitionElementResourceId::IsValid() const {
-  return id_ != kInvalidId;
+  return local_id_ != kInvalidLocalId;
 }
 
 std::string ViewTransitionElementResourceId::ToString() const {
-  return base::StringPrintf("ViewTransitionElementResourceId : %u", id_);
+  return base::StringPrintf(
+      "ViewTransitionElementResourceId : %u [transition: %s]", local_id_,
+      transition_id_.ToString().c_str());
 }
 
 }  // namespace viz

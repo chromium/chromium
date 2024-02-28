@@ -84,7 +84,7 @@ TEST(CompositorFrameMetadata, Clone) {
       gfx::PointF(88.8, 44.4), 1.f, SK_ColorRED,
       base::TimeTicks() + base::Seconds(125), gfx::RectF(1, 2, 3, 4), true);
   metadata.transition_directives.emplace_back(
-      CompositorFrameTransitionDirective::CreateSave(NavigationID::Create(), 4u,
+      CompositorFrameTransitionDirective::CreateSave(NavigationId::Create(), 4u,
                                                      {}));
 
   CompositorFrameMetadata clone = metadata.Clone();

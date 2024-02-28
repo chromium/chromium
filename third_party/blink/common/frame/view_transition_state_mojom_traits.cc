@@ -36,8 +36,9 @@ bool StructTraits<blink::mojom::ViewTransitionStateDataView,
     Read(blink::mojom::ViewTransitionStateDataView data,
          blink::ViewTransitionState* out) {
   out->device_pixel_ratio = data.device_pixel_ratio();
+  out->next_element_resource_id = data.next_element_resource_id();
   return data.ReadElements(&out->elements) &&
-         data.ReadNavigationId(&out->navigation_id) &&
+         data.ReadTransitionId(&out->transition_id) &&
          data.ReadSnapshotRootSizeAtCapture(
              &out->snapshot_root_size_at_capture);
 }

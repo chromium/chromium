@@ -12,10 +12,15 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/unguessable_token.h"
 #include "cc/cc_export.h"
 #include "cc/view_transition/view_transition_element_id.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+
+namespace viz {
+using NavigationId = base::UnguessableToken;
+}
 
 namespace cc {
 
@@ -36,22 +41,24 @@ class CC_EXPORT ViewTransitionRequest {
   using Type = viz::CompositorFrameTransitionDirective::Type;
 
   // Creates a Type::kCapture type of request.
+  // `navigation_id` is an identifier that uniquely identifies a cross-document
+  // transition, it is an empty id for same-document transitions.
   static std::unique_ptr<ViewTransitionRequest> CreateCapture(
       uint32_t document_tag,
       uint32_t shared_element_count,
-      viz::NavigationID navigation_id,
+      viz::NavigationId navigation_id,
       std::vector<viz::ViewTransitionElementResourceId> capture_ids,
       base::OnceClosure commit_callback);
 
   // Creates a Type::kAnimateRenderer type of request.
   static std::unique_ptr<ViewTransitionRequest> CreateAnimateRenderer(
       uint32_t document_tag,
-      viz::NavigationID navigation_id);
+      viz::NavigationId navigation_id);
 
   // Creates a Type::kRelease type of request.
   static std::unique_ptr<ViewTransitionRequest> CreateRelease(
       uint32_t document_tag,
-      viz::NavigationID navigation_id);
+      viz::NavigationId navigation_id);
 
   ViewTransitionRequest(ViewTransitionRequest&) = delete;
   ~ViewTransitionRequest();
@@ -85,14 +92,14 @@ class CC_EXPORT ViewTransitionRequest {
       Type type,
       uint32_t document_tag,
       uint32_t shared_element_count,
-      viz::NavigationID navigation_id,
+      viz::NavigationId navigation_id,
       std::vector<viz::ViewTransitionElementResourceId> capture_ids,
       base::OnceClosure commit_callback);
 
   const Type type_;
   const uint32_t document_tag_;
   const uint32_t shared_element_count_;
-  const viz::NavigationID navigation_id_;
+  const viz::NavigationId navigation_id_;
   base::OnceClosure commit_callback_;
   const uint32_t sequence_id_;
   const std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_;

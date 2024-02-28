@@ -64,9 +64,10 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
                                    ViewTransitionState>;
 
   std::vector<ViewTransitionElement> elements;
-  base::UnguessableToken navigation_id;
+  viz::TransitionId transition_id;
   gfx::Size snapshot_root_size_at_capture;
   float device_pixel_ratio = 1.f;
+  uint32_t next_element_resource_id = 0;
 };
 
 }  // namespace blink

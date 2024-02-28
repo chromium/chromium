@@ -72,9 +72,12 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->subtree_size;
   }
 
-  static viz::ViewTransitionElementResourceId
+  static std::optional<viz::ViewTransitionElementResourceId>
   view_transition_element_resource_id(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
+    if (!input->view_transition_element_resource_id.IsValid()) {
+      return std::nullopt;
+    }
     return input->view_transition_element_resource_id;
   }
 

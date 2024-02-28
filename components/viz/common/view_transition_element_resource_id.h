@@ -9,42 +9,46 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 #include <vector>
 
+#include "base/unguessable_token.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
 
-// See share_element_resource_id.mojom for details.
+using TransitionId = base::UnguessableToken;
+
+// See view_transition_element_resource_id.mojom for details.
 class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
  public:
-  // Generates a new id.
-  static ViewTransitionElementResourceId Generate();
+  static constexpr uint32_t kInvalidLocalId = 0;
 
-  // For mojo deserialization.
-  explicit ViewTransitionElementResourceId(uint32_t id);
+  ViewTransitionElementResourceId(const TransitionId& transition_id,
+                                  uint32_t local_id);
 
   // Creates an invalid id.
   ViewTransitionElementResourceId();
   ~ViewTransitionElementResourceId();
 
-  bool operator==(const ViewTransitionElementResourceId& o) const {
-    return id_ == o.id_;
-  }
-  bool operator!=(const ViewTransitionElementResourceId& o) const {
-    return !(*this == o);
-  }
-  bool operator<(const ViewTransitionElementResourceId& o) const {
-    return id_ < o.id_;
-  }
+  friend bool operator==(const ViewTransitionElementResourceId&,
+                         const ViewTransitionElementResourceId&) = default;
+  friend auto operator<=>(const ViewTransitionElementResourceId&,
+                          const ViewTransitionElementResourceId&) = default;
 
   bool IsValid() const;
   std::string ToString() const;
 
-  uint32_t id() const { return id_; }
+  uint32_t local_id() const { return local_id_; }
+  const TransitionId& transition_id() const { return transition_id_; }
 
  private:
-  uint32_t id_;
+  // Refers to a specific view transition - globally unique.
+  TransitionId transition_id_;
+
+  // Refers to a specific snapshot resource within a specific transition
+  // Unique only with respect to a given `transition_id_`.
+  uint32_t local_id_ = kInvalidLocalId;
 };
 
 }  // namespace viz

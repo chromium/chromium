@@ -266,7 +266,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
                                   /*flags=*/0));
   }
 
-  bool HasAnimationManagerForNavigation(NavigationID id) const {
+  bool HasAnimationManagerForNavigation(NavigationId id) const {
     return manager_.navigation_to_animation_manager_.contains(id);
   }
 
@@ -2061,7 +2061,7 @@ TEST_F(CompositorFrameSinkSupportTest,
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
-  NavigationID navigation_id = NavigationID::Create();
+  NavigationId navigation_id = NavigationId::Create();
   Surface* surface = support_->GetLastCreatedSurfaceForTesting();
   ASSERT_TRUE(surface);
 

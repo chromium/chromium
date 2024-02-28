@@ -12,7 +12,7 @@ namespace {
 using Type = CompositorFrameTransitionDirective::Type;
 
 TEST(CompositorFrameTransitionDirective, GettersReflectParameters) {
-  auto navigation_id = NavigationID::Create();
+  auto navigation_id = NavigationId::Create();
   auto save_directive =
       CompositorFrameTransitionDirective::CreateSave(navigation_id, 1u, {});
 
