@@ -241,9 +241,7 @@
 
     <request name="set_frame_colors" since="3">
       <description summary="set the frame colors of this surface">
-	Set the frame colors. This must be set before the initial
-	commit first, otherwise the subsequent request may not be
-	fulfilled.
+	Set the frame colors.
       </description>
       <arg name="active_color" type="uint" summary="32 bit ARGB color value, not premultiplied"/>
       <arg name="inactive_color" type="uint" summary="32 bit ARGB color value, not premultiplied"/>
@@ -987,10 +985,8 @@
     <request name="set_decoration" since="35">
       <description summary="request a decoration for surface">
         Clients are allowed to request a particular decoration for a
-        zaura_toplevel. The server is not required to honor this
-        request. See decoration_type for available options. This must
-        be set before the initial commit first, otherwise the
-        subsequent request may not be fulfilled. Available since M105.
+        zaura_toplevel. The server is not required to honor this request. See
+        decoration_type for available options. Available since M105.
       </description>
       <arg name="type" type="uint" summary="the new frame type"/>
     </request>
