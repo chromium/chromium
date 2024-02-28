@@ -427,9 +427,9 @@ RootWebArea
     none
       *combobox
         MenuListPopup
-          menuitem "Options should be"
-          menuitem "sent down even though"
-          menuitem "they are grandchildren"
+          option "Options should be"
+          option "sent down even though"
+          option "they are grandchildren"
 {
     childIds : <object>
     chromeRole : {
@@ -507,7 +507,7 @@ RootWebArea
     none
       combobox
         MenuListPopup
-          *menuitem "Options should be"
+          *option "Options should be"
 {
     childIds : <object>
     chromeRole : {
@@ -557,7 +557,7 @@ RootWebArea
     ]
     role : {
         type : role
-        value : menuitem
+        value : option
     }
 }
 

@@ -426,16 +426,18 @@ const RoleEntry kAriaRoles[] = {
     {"treegrid", ax::mojom::blink::Role::kTreeGrid},
     {"treeitem", ax::mojom::blink::Role::kTreeItem}};
 
-// More friendly names for debugging. These are roles which don't map from
-// the ARIA role name to the internal role when building the tree, but when
-// debugging, we want to show the ARIA role name, since it is close in meaning.
+// More friendly names for debugging, and for WPT tests.
+// These are roles which map from the ARIA role name to the internal role when
+// building the tree, but in DevTools or testing, we want to show the ARIA
+// role name, since that is the publicly visible concept.
 const RoleEntry kReverseRoles[] = {
     {"banner", ax::mojom::blink::Role::kHeader},
     {"button", ax::mojom::blink::Role::kToggleButton},
     {"button", ax::mojom::blink::Role::kPopUpButton},
     {"contentinfo", ax::mojom::blink::Role::kFooter},
+    {"option", ax::mojom::blink::Role::kMenuListOption},
+    {"option", ax::mojom::blink::Role::kListBoxOption},
     {"group", ax::mojom::blink::Role::kDetails},
-    {"menuitem", ax::mojom::blink::Role::kMenuListOption},
     {"combobox", ax::mojom::blink::Role::kComboBoxMenuButton},
     {"combobox", ax::mojom::blink::Role::kComboBoxSelect},
     {"combobox", ax::mojom::blink::Role::kTextFieldWithComboBox}};
