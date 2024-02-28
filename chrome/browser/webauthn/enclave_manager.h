@@ -162,11 +162,9 @@ class EnclaveManager : public KeyedService {
   // to disk. Only a single write happens at a time. If a write is already
   // happening, the request will be queued. If a request is already queued, this
   // call will replace that queued write.
-  void WriteState();
+  void WriteState(webauthn_pb::EnclaveLocalState* new_state);
   void DoWriteState(std::string serialized);
   void WriteStateComplete(bool success);
-
-  webauthn_pb::EnclaveLocalState_User* current_user_state() const;
 
   // Accessors for the HW and UV keys, invoking the supplied callbacks with
   // the result. These can complete synchronously if the respective key is
@@ -189,7 +187,7 @@ class EnclaveManager : public KeyedService {
 
   std::unique_ptr<webauthn_pb::EnclaveLocalState> local_state_;
   bool loading_ = false;
-  raw_ptr<webauthn_pb::EnclaveLocalState_User> user_ = nullptr;
+  raw_ptr<const webauthn_pb::EnclaveLocalState_User> user_ = nullptr;
   std::unique_ptr<CoreAccountInfo> primary_account_info_;
   std::unique_ptr<IdentityObserver> identity_observer_;
 

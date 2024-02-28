@@ -670,12 +670,21 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
 
 }  // namespace
 
+// StateMachine performs a sequence of actions, as specified by the public
+// `set_` functions, when `Start` is called. It always operates within the
+// context of a specific Google account and will be destroyed by the
+// EnclaveManager if the currently signed-in user changes. It works on a copy of
+// the EnclaveLocalState and writes updated versions to the EnclaveManager
+// once they are ready. A StateMachine is owned by the EnclaveManager and at
+// most one exists at any given time.
 class EnclaveManager::StateMachine {
  public:
   explicit StateMachine(EnclaveManager* manager,
-                        webauthn_pb::EnclaveLocalState_User* user,
+                        webauthn_pb::EnclaveLocalState local_state,
                         std::unique_ptr<CoreAccountInfo> primary_account_info)
       : manager_(manager),
+        local_state_(std::move(local_state)),
+        user_(StateForUser(&local_state_, *primary_account_info)),
         primary_account_info_(std::move(primary_account_info)) {}
 
   void set_want_registration() { want_registration_ = true; }
@@ -952,31 +961,31 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if ((want_registration_ || store_keys_args_ || !pending_pin_.empty()) &&
-        !user()->registered()) {
+        !user_->registered()) {
       want_registration_ = false;
       StartEnclaveRegistration();
       return;
     }
 
-    if (user()->registered() && store_keys_args_) {
+    if (user_->registered() && store_keys_args_) {
       CHECK_EQ(primary_account_info_->gaia, store_keys_args_->gaia_id);
       auto store_keys_args = std::move(store_keys_args_);
       store_keys_args_.reset();
 
       new_security_domain_secrets_ =
-          GetNewSecretsToStore(*user(), *store_keys_args);
+          GetNewSecretsToStore(*user_, *store_keys_args);
       if (!new_security_domain_secrets_.empty()) {
         state_ = State::kWaitingForEnclaveTokenForWrapping;
         store_keys_args_for_joining_ = std::move(store_keys_args);
         GetAccessTokenInternal(GaiaConstants::kPasskeysEnclaveOAuth2Scope);
-      } else if (!user()->joined() && !user()->member_public_key().empty()) {
+      } else if (!user_->joined() && !user_->member_public_key().empty()) {
         store_keys_args_for_joining_ = std::move(store_keys_args);
         JoinDomain();
       }
       return;
     }
 
-    if (user()->registered() && !pending_pin_.empty()) {
+    if (user_->registered() && !pending_pin_.empty()) {
       state_ = State::kHashingPIN;
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
@@ -1027,9 +1036,9 @@ class EnclaveManager::StateMachine {
     // TODO(enclave): Reusing the label makes sense on Windows because it will
     // overwrite the existing key with a new one. This might be different on
     // other platforms.
-    if (!user()->wrapped_uv_private_key().empty()) {
+    if (!user_->wrapped_uv_private_key().empty()) {
       key_label =
-          UserVerifyingKeyLabelFromString(user()->wrapped_uv_private_key());
+          UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
     }
     if (!key_label) {
       key_label = CreateUserVerifyingKeyLabel();
@@ -1052,8 +1061,8 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(state_ == State::kGeneratingKeys);
     std::optional<std::vector<uint8_t>> existing_key_id;
-    if (!user()->wrapped_hardware_private_key().empty()) {
-      existing_key_id = ToVector(user()->wrapped_hardware_private_key());
+    if (!user_->wrapped_hardware_private_key().empty()) {
+      existing_key_id = ToVector(user_->wrapped_hardware_private_key());
     }
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
@@ -1101,7 +1110,7 @@ class EnclaveManager::StateMachine {
     manager_->hardware_key_ =
         std::move(absl::get_if<KeyReady>(&event)->value().second);
 
-    EnclaveLocalState::User* const user_state = user();
+    EnclaveLocalState::User* const user_state = user_;
     if (manager_->user_verifying_key_) {
       const std::vector<uint8_t> uv_public_key =
           manager_->user_verifying_key_->GetPublicKey();
@@ -1128,7 +1137,7 @@ class EnclaveManager::StateMachine {
     }
 
     if (state_dirty) {
-      manager_->WriteState();
+      manager_->WriteState(&local_state_);
     }
 
     state_ = State::kWaitingForEnclaveTokenForRegistration;
@@ -1148,14 +1157,13 @@ class EnclaveManager::StateMachine {
 
     state_ = State::kRegisteringWithEnclave;
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
-    enclave::Transact(
-        manager_->network_context_, enclave::GetEnclaveIdentity(),
-        std::move(token),
-        BuildRegistrationMessage(user()->device_id(),
-                                 manager_->hardware_key_.get()),
-        enclave::SigningCallback(),
-        base::BindOnce(&StateMachine::OnEnclaveResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
+    enclave::Transact(manager_->network_context_, enclave::GetEnclaveIdentity(),
+                      std::move(token),
+                      BuildRegistrationMessage(user_->device_id(),
+                                               manager_->hardware_key_.get()),
+                      enclave::SigningCallback(),
+                      base::BindOnce(&StateMachine::OnEnclaveResponse,
+                                     weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoRegisteringWithEnclave(Event event) {
@@ -1176,18 +1184,18 @@ class EnclaveManager::StateMachine {
     }
 
     if (!SetSecurityDomainMemberKey(
-            user(), response.GetArray()[1]
-                        .GetMap()
-                        .find(cbor::Value(enclave::kResponseSuccessKey))
-                        ->second)) {
+            user_, response.GetArray()[1]
+                       .GetMap()
+                       .find(cbor::Value(enclave::kResponseSuccessKey))
+                       ->second)) {
       FIDO_LOG(ERROR) << "Wrapped member key was invalid: "
                       << cbor::DiagnosticWriter::Write(response);
       state_ = State::kNextAction;
       return;
     }
 
-    user()->set_registered(true);
-    manager_->WriteState();
+    user_->set_registered(true);
+    manager_->WriteState(&local_state_);
     state_ = State::kNextAction;
   }
 
@@ -1244,16 +1252,16 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    if (!StoreWrappedSecrets(user(), new_security_domain_secrets, response)) {
+    if (!StoreWrappedSecrets(user_, new_security_domain_secrets, response)) {
       FIDO_LOG(ERROR) << "Failed to store wrapped secrets";
       state_ = State::kStop;
       return;
     }
 
-    if (!user()->joined()) {
+    if (!user_->joined()) {
       JoinDomain();
     } else {
-      manager_->WriteState();
+      manager_->WriteState(&local_state_);
       state_ = State::kNextAction;
     }
   }
@@ -1264,7 +1272,7 @@ class EnclaveManager::StateMachine {
     state_ = State::kJoiningDomain;
     const auto secure_box_pub_key =
         trusted_vault::SecureBoxPublicKey::CreateByImport(
-            ToSpan(user()->member_public_key()));
+            ToSpan(user_->member_public_key()));
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_, store_keys_args_for_joining_->keys,
         store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
@@ -1295,14 +1303,14 @@ class EnclaveManager::StateMachine {
     switch (status) {
       case trusted_vault::TrustedVaultRegistrationStatus::kSuccess:
       case trusted_vault::TrustedVaultRegistrationStatus::kAlreadyRegistered:
-        user()->set_joined(true);
+        user_->set_joined(true);
         break;
       default:
-        user()->mutable_wrapped_security_domain_secrets()->clear();
+        user_->mutable_wrapped_security_domain_secrets()->clear();
         break;
     }
 
-    manager_->WriteState();
+    manager_->WriteState(&local_state_);
     state_ = State::kNextAction;
   }
 
@@ -1521,11 +1529,13 @@ class EnclaveManager::StateMachine {
     }
   }
 
-  EnclaveLocalState::User* user() const {
-    return manager_->current_user_state();
-  }
-
   const raw_ptr<EnclaveManager> manager_;
+  // local_state_ contains a copy of the EnclaveManager's state from when this
+  // StateMachine was created.
+  webauthn_pb::EnclaveLocalState local_state_;
+  // user_ points within `local_state_` to the state for the user specified in
+  // `primary_account_info_`.
+  const raw_ptr<webauthn_pb::EnclaveLocalState::User> user_;
   const std::unique_ptr<CoreAccountInfo> primary_account_info_;
 
   State state_ = State::kInit;
@@ -2048,8 +2058,11 @@ void EnclaveManager::Act() {
   }
 
   if (!state_machine_) {
+    EnclaveLocalState copy;
+    copy.CopyFrom(*local_state_);
     state_machine_ = std::make_unique<StateMachine>(
-        this, user_, std::make_unique<CoreAccountInfo>(*primary_account_info_));
+        this, std::move(copy),
+        std::make_unique<CoreAccountInfo>(*primary_account_info_));
   }
 
   if (pending_actions_->want_registration) {
@@ -2148,10 +2161,14 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     if (primary_account_info_) {
       to_remove.erase(primary_account_info_->gaia);
     }
+    // A `StateMachine` can also mutate the enclave state. Thus if we're about
+    // to mutate it ourselves, confirm that any `StateMachine` is about to be
+    // stopped and thus cannot overwrite these changes.
+    CHECK(need_to_stop);
     for (const auto& gaia_id : to_remove) {
       CHECK(local_state_->mutable_users()->erase(gaia_id));
     }
-    WriteState();
+    WriteState(local_state_.get());
   }
 
   if (need_to_stop && !is_post_load) {
@@ -2168,10 +2185,10 @@ void EnclaveManager::Stopped() {
   }
 }
 
-void EnclaveManager::WriteState() {
+void EnclaveManager::WriteState(EnclaveLocalState* new_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const auto& it : local_state_->users()) {
+  for (const auto& it : new_state->users()) {
     std::optional<int> error_line = CheckInvariants(it.second);
     CHECK(!error_line.has_value())
         << "State invariant failed on line " << *error_line;
@@ -2179,7 +2196,15 @@ void EnclaveManager::WriteState() {
 
   std::string serialized;
   serialized.reserve(1024);
-  local_state_->AppendToString(&serialized);
+  new_state->AppendToString(&serialized);
+
+  if (new_state != local_state_.get()) {
+    user_ = nullptr;
+    local_state_ = std::make_unique<EnclaveLocalState>();
+    CHECK(local_state_->ParseFromString(serialized));
+    user_ = StateForUser(local_state_.get(), *primary_account_info_);
+  }
+
   const std::array<uint8_t, crypto::kSHA256Length> digest =
       crypto::SHA256Hash(base::as_bytes(base::make_span(serialized)));
   serialized.append(std::begin(kHashPrefix), std::end(kHashPrefix));
@@ -2228,9 +2253,4 @@ void EnclaveManager::WriteStateComplete(bool success) {
   if (write_finished_callback_) {
     std::move(write_finished_callback_).Run();
   }
-}
-
-EnclaveLocalState::User* EnclaveManager::current_user_state() const {
-  DCHECK(user_);
-  return user_;
 }
