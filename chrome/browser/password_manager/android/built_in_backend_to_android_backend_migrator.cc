@@ -149,7 +149,7 @@ BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
 BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
-void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary(
+void BuiltInBackendToAndroidBackendMigrator::StartAccountMigrationIfNecessary(
     bool should_attempt_upm_reenrollment) {
   // Don't try to migrate passwords if there was an attempt earlier today.
   base::TimeDelta time_passed_since_last_migration_attempt =
@@ -169,6 +169,21 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary(
       GetMigrationType(should_attempt_upm_reenrollment);
   if (migration_type != MigrationType::kNone)
     PrepareForMigration(migration_type);
+}
+
+void BuiltInBackendToAndroidBackendMigrator::StartMigrationOfLocalPasswords() {
+  CHECK_EQ(MigrationType::kNone, migration_in_progress_type_);
+
+  // Don't try to migrate passwords if there was an attempt earlier today.
+  base::TimeDelta time_passed_since_last_migration_attempt =
+      base::Time::Now() -
+      base::Time::FromTimeT(prefs_->GetDouble(
+          password_manager::prefs::kTimeOfLastMigrationAttempt));
+  if (time_passed_since_last_migration_attempt < kMigrationThreshold) {
+    return;
+  }
+
+  PrepareForMigration(MigrationType::kForLocalUsers);
 }
 
 void BuiltInBackendToAndroidBackendMigrator::OnSyncServiceInitialized(
@@ -212,17 +227,6 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
     return IsSyncFeatureEnabledIncludingPasswords(sync_service_)
                ? MigrationType::kNonSyncableToAndroidBackend
                : MigrationType::kNonSyncableToBuiltInBackend;
-  }
-
-  // Once the local storage is supported, the initial migration is needed.
-  bool upm_migration_for_local_needed =
-      prefs_->GetInteger(
-          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores) ==
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
-              kOffAndMigrationPending);
-  if (upm_migration_for_local_needed) {
-    return MigrationType::kForLocalUsers;
   }
 
   // No other migration should be executed.

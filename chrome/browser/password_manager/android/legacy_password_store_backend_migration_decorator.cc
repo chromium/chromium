@@ -139,10 +139,10 @@ void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
                        reenrollment_attempts + 1);
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary,
-            migrator_->GetWeakPtr(),
-            /*should_attempt_reenrollment=*/true),
+        base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
+                           StartAccountMigrationIfNecessary,
+                       migrator_->GetWeakPtr(),
+                       /*should_attempt_reenrollment=*/true),
         base::Seconds(kMigrationToAndroidBackendDelay));
   }
 }
@@ -211,13 +211,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::Shutdown(
 }
 
 bool LegacyPasswordStoreBackendMigrationDecorator::IsAbleToSavePasswords() {
-  // Suppress saving while the migration of local passwords is ongoing, to avoid
-  // the migration "forgetting" any new passwords. In fact the same concern
-  // applies to all migration types, but it's scary to change behavior now.
-  return active_backend_->IsAbleToSavePasswords() &&
-         !(migrator_ && migrator_->migration_in_progress_type() ==
-                            BuiltInBackendToAndroidBackendMigrator::
-                                MigrationType::kForLocalUsers);
+  return active_backend_->IsAbleToSavePasswords();
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
@@ -363,7 +357,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
     return;
   }
 
-  migrator_->StartMigrationIfNecessary(
+  migrator_->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
 }
 
@@ -373,7 +367,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
 
   sync_settings_helper_.SyncStatusChangeApplied();
   // Non-syncable data needs to be migrated to the new active backend.
-  migrator_->StartMigrationIfNecessary(
+  migrator_->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
 
   // TODO(crbug.com/1312387): Delete all the passwords from GMS Core

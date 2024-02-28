@@ -137,7 +137,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   Init();
   InitSyncService(/*is_password_sync_enabled=*/true);
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -154,7 +154,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   InitSyncService(/*is_password_sync_enabled=*/false);
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -176,8 +176,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   InitSyncService(/*is_password_sync_enabled=*/false);
 
-  migrator()->StartMigrationIfNecessary(
-      /*should_attempt_upm_reenrollment=*/false);
+  migrator()->StartMigrationOfLocalPasswords();
   RunUntilIdle();
 
   EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
@@ -195,7 +194,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       password_manager::prefs::kTimeOfLastMigrationAttempt,
       (base::Time::Now() - base::Hours(2)).InSecondsFSinceUnixEpoch());
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -210,7 +209,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        LastAttemptUnchangedWhenRollingMigrationDisabled) {
   Init(/*current_migration_version=*/1);
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -256,7 +255,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   form_with_local_data.skip_zero_click = true;
   built_in_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -285,7 +284,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   form_with_local_data.skip_zero_click = true;
   android_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -316,7 +315,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   form_1.password_value.clear();
   built_in_backend().AddLoginAsync(form_2, base::DoNothing());
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -347,7 +346,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   android_backend().AddLoginAsync(form_1, base::DoNothing());
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -382,7 +381,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   form_with_local_data.skip_zero_click = true;
   built_in_backend().AddLoginAsync(form_with_local_data, base::DoNothing());
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/true);
   RunUntilIdle();
 
@@ -478,7 +477,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -523,8 +522,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary(
-      /*should_attempt_upm_reenrollment=*/false);
+  migrator()->StartMigrationOfLocalPasswords();
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -566,7 +564,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -607,7 +605,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
   RunUntilIdle();
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -760,8 +758,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
         .WillOnce(WithArg<1>(Invoke(test_migration_callback)));
   }
 
-  migrator()->StartMigrationIfNecessary(GetParam().expected_migration_type ==
-                                        "ReenrollmentAttemptMigration");
+  migrator()->StartAccountMigrationIfNecessary(
+      GetParam().expected_migration_type == "ReenrollmentAttemptMigration");
   FastForwardBy(kLatencyDelta);
 
   histogram_tester.ExpectTotalCount(latency_metric_, 1);
@@ -885,7 +883,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   // executed. Check that exactly one UpdateLoginAsync() is called.
   EXPECT_CALL(android_backend_, UpdateLoginAsync).Times(1);
 
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
 
   // Migration version is still 0 since migration didn't complete.
@@ -931,8 +929,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   // executed. Check that exactly one AddLoginAsync() is called.
   EXPECT_CALL(android_backend_, AddLoginAsync).Times(1);
 
-  migrator()->StartMigrationIfNecessary(
-      /*should_attempt_upm_reenrollment=*/false);
+  migrator()->StartMigrationOfLocalPasswords();
 
   // Local migration should still be pending since it didn' t complete
   // successfully.
@@ -951,8 +948,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   PasswordForm form = CreateTestPasswordForm();
   built_in_backend().AddLoginAsync(form, base::DoNothing());
 
-  // Call StartMigrationIfNecessary for the first time.
-  migrator()->StartMigrationIfNecessary(
+  // Call StartAccountMigrationIfNecessary for the first time.
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
@@ -963,9 +960,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   // Simulate some time passing before the second migration is triggered.
   FastForwardBy(base::Milliseconds(123u));
 
-  // Call StartMigrationIfNecessary for the second time before the first
+  // Call StartAccountMigrationIfNecessary for the second time before the first
   // migration finishes in an attempt to reenroll.
-  migrator()->StartMigrationIfNecessary(
+  migrator()->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/true);
   RunUntilIdle();
 

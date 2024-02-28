@@ -25,6 +25,7 @@
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
+#include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -61,7 +62,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     // the GMS core local store.
     case UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
       return std::make_unique<
-          password_manager::LegacyPasswordStoreBackendMigrationDecorator>(
+          password_manager::PasswordStoreBackendMigrationDecorator>(
           std::move(built_in_backend),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
               prefs, affiliations_prefetcher),

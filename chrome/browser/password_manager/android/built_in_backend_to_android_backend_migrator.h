@@ -67,7 +67,12 @@ class BuiltInBackendToAndroidBackendMigrator {
       BuiltInBackendToAndroidBackendMigrator&&) = delete;
   ~BuiltInBackendToAndroidBackendMigrator();
 
-  void StartMigrationIfNecessary(bool should_attempt_upm_reenrollment);
+  // TODO: b/323880741 - Call explicitly required migration.
+  void StartAccountMigrationIfNecessary(bool should_attempt_upm_reenrollment);
+
+  // Starts migration from |built_in_backend| to |android_backend| if time from
+  // last attempt is enough.
+  void StartMigrationOfLocalPasswords();
 
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
