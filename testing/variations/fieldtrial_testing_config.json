@@ -8942,21 +8942,6 @@
             ]
         }
     ],
-    "IOSFeedContainment": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableFeedContainment"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFeedSignedOutViewDemotion": [
         {
             "platforms": [
