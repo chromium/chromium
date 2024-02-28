@@ -223,15 +223,12 @@ Buffer::Texture::Texture(
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // These SharedImages are used over the raster interface as both the source
-  // and destination of writes. Add GLES2 usage as they might be used by
-  // RasterImplementationGLES.
-  // TODO(crbug.com/1508447): Remove GLES2 usage once the browser main thread
-  // using the RasterDecoder implementation has definitively landed.
+  // and destination of writes. Note that as the browser process raster
+  // interface uses RasterImplementation (and not RasterImplementationGLES) as
+  // its implementation, GLES2 usage is not needed.
   const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                         gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   shared_image_ =
       sii->CreateSharedImage({viz::SinglePlaneFormat::kRGBA_8888, size,
