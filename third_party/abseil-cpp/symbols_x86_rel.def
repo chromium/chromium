@@ -230,12 +230,14 @@ EXPORTS
     ??0KernelTimeout@synchronization_internal@absl@@QAE@VDuration@2@@Z
     ??0KernelTimeout@synchronization_internal@absl@@QAE@VTime@2@@Z
     ??0LogMessage@log_internal@absl@@QAE@PBDHUErrorTag@012@@Z
+    ??0LogMessage@log_internal@absl@@QAE@PBDHUFatalTag@012@@Z
     ??0LogMessage@log_internal@absl@@QAE@PBDHUInfoTag@012@@Z
     ??0LogMessage@log_internal@absl@@QAE@PBDHUWarningTag@012@@Z
     ??0LogMessage@log_internal@absl@@QAE@PBDHW4LogSeverity@2@@Z
     ??0LogMessageData@LogMessage@log_internal@absl@@QAE@PBDHW4LogSeverity@3@VTime@3@@Z
     ??0LogMessageFatal@log_internal@absl@@QAE@PBDH@Z
     ??0LogMessageFatal@log_internal@absl@@QAE@PBDHV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
+    ??0LogMessageQuietly@log_internal@absl@@QAE@PBDH@Z
     ??0LogMessageQuietlyFatal@log_internal@absl@@QAE@PBDH@Z
     ??0LogMessageQuietlyFatal@log_internal@absl@@QAE@PBDHV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??0OstreamView@LogMessage@log_internal@absl@@QAE@AAULogMessageData@123@@Z
@@ -278,6 +280,7 @@ EXPORTS
     ??1HashtablezInfo@container_internal@absl@@QAE@XZ
     ??1LogMessage@log_internal@absl@@QAE@XZ
     ??1LogMessageFatal@log_internal@absl@@QAE@XZ
+    ??1LogMessageQuietly@log_internal@absl@@QAE@XZ
     ??1LogMessageQuietlyFatal@log_internal@absl@@QAE@XZ
     ??1Mutex@absl@@QAE@XZ
     ??1Notification@absl@@QAE@XZ
@@ -734,7 +737,7 @@ EXPORTS
     ?Head@CordzInfo@cord_internal@absl@@SAPAV123@ABVCordzSnapshot@23@@Z
     ?HexStringToBytes@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?HexStringToBytes@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
-    ?IDivDuration@time_internal@absl@@YA_J_NVDuration@2@1PAV32@@Z
+    ?IDivDuration@absl@@YA_JVDuration@1@0PAV21@@Z
     ?In@Time@absl@@QBE?AUBreakdown@12@VTimeZone@2@@Z
     ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@QBEKXZ
     ?InNanosecondsFromNow@KernelTimeout@synchronization_internal@absl@@ABE_JXZ

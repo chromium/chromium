@@ -800,10 +800,10 @@ TYPED_TEST_P(SmallTableResizeTest, InsertIntoSmallTable) {
 }
 
 TYPED_TEST_P(SmallTableResizeTest, ResizeGrowSmallTables) {
-  TypeParam t;
   for (size_t source_size = 0; source_size < 32; ++source_size) {
     for (size_t target_size = source_size; target_size < 32; ++target_size) {
       for (bool rehash : {false, true}) {
+        TypeParam t;
         for (size_t i = 0; i < source_size; ++i) {
           t.insert(static_cast<int>(i));
         }
@@ -822,9 +822,10 @@ TYPED_TEST_P(SmallTableResizeTest, ResizeGrowSmallTables) {
 }
 
 TYPED_TEST_P(SmallTableResizeTest, ResizeReduceSmallTables) {
-  TypeParam t;
   for (size_t source_size = 0; source_size < 32; ++source_size) {
     for (size_t target_size = 0; target_size <= source_size; ++target_size) {
+      TypeParam t;
+      t.reserve(source_size);
       size_t inserted_count = std::min<size_t>(source_size, 5);
       for (size_t i = 0; i < inserted_count; ++i) {
         t.insert(static_cast<int>(i));
@@ -2282,20 +2283,34 @@ TEST(Table, IterationOrderChangesByInstance) {
 }
 
 TEST(Table, IterationOrderChangesOnRehash) {
-  std::vector<IntTable> garbage;
-  for (int i = 0; i < 5000; ++i) {
-    auto t = MakeSimpleTable(20);
-    const auto reference = OrderOfIteration(t);
-    // Force rehash to the same size.
-    t.rehash(0);
-    auto trial = OrderOfIteration(t);
-    if (trial != reference) {
-      // We are done.
-      return;
+  // We test different sizes with many small numbers, because small table
+  // resize has a different codepath.
+  // Note: iteration order for size() <= 1 is always the same.
+  for (size_t size : std::vector<size_t>{2, 3, 6, 7, 12, 15, 20, 50}) {
+    for (size_t rehash_size : {
+             size_t{0},  // Force rehash is guaranteed.
+             size * 10   // Rehash to the larger capacity is guaranteed.
+         }) {
+      std::vector<IntTable> garbage;
+      bool ok = false;
+      for (int i = 0; i < 5000; ++i) {
+        auto t = MakeSimpleTable(size);
+        const auto reference = OrderOfIteration(t);
+        // Force rehash.
+        t.rehash(rehash_size);
+        auto trial = OrderOfIteration(t);
+        if (trial != reference) {
+          // We are done.
+          ok = true;
+          break;
+        }
+        garbage.push_back(std::move(t));
+      }
+      EXPECT_TRUE(ok)
+          << "Iteration order remained the same across many attempts " << size
+          << "->" << rehash_size << ".";
     }
-    garbage.push_back(std::move(t));
   }
-  FAIL() << "Iteration order remained the same across many attempts.";
 }
 
 // Verify that pointers are invalidated as soon as a second element is inserted.

@@ -1490,12 +1490,14 @@ EXPORTS
     ??0LockHolder@synchronization_internal@absl@@QEAA@PEAU_RTL_SRWLOCK@@@Z
     ??0LogEntry@absl@@AEAA@XZ
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHUErrorTag@012@@Z
+    ??0LogMessage@log_internal@absl@@QEAA@PEBDHUFatalTag@012@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHUInfoTag@012@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHUWarningTag@012@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@2@@Z
     ??0LogMessageData@LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@3@VTime@3@@Z
     ??0LogMessageFatal@log_internal@absl@@QEAA@PEBDH@Z
     ??0LogMessageFatal@log_internal@absl@@QEAA@PEBDHV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
+    ??0LogMessageQuietly@log_internal@absl@@QEAA@PEBDH@Z
     ??0LogMessageQuietlyFatal@log_internal@absl@@QEAA@PEBDH@Z
     ??0LogMessageQuietlyFatal@log_internal@absl@@QEAA@PEBDHV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??0LogSink@absl@@IEAA@XZ
@@ -1681,6 +1683,7 @@ EXPORTS
     ??1LogMessage@log_internal@absl@@QEAA@XZ
     ??1LogMessageData@LogMessage@log_internal@absl@@QEAA@XZ
     ??1LogMessageFatal@log_internal@absl@@QEAA@XZ
+    ??1LogMessageQuietly@log_internal@absl@@QEAA@XZ
     ??1LogMessageQuietlyFatal@log_internal@absl@@QEAA@XZ
     ??1LogSink@absl@@UEAA@XZ
     ??1Mutex@absl@@QEAA@XZ
@@ -2690,7 +2693,6 @@ EXPORTS
     ?HideMask@base_internal@absl@@YA_KXZ
     ?HighestBitSet@?$NonIterableBitMask@G$0BA@$0A@@container_internal@absl@@QEBAIXZ
     ?IDivDuration@absl@@YA_JVDuration@1@0PEAV21@@Z
-    ?IDivDuration@time_internal@absl@@YA_J_NVDuration@2@1PEAV32@@Z
     ?In@Time@absl@@QEBA?AUBreakdown@12@VTimeZone@2@@Z
     ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@QEBAKXZ
     ?InNanosecondsFromNow@KernelTimeout@synchronization_internal@absl@@AEBA_JXZ

@@ -240,6 +240,8 @@ LogMessage::LogMessage(const char* file, int line, WarningTag)
     : LogMessage(file, line, absl::LogSeverity::kWarning) {}
 LogMessage::LogMessage(const char* file, int line, ErrorTag)
     : LogMessage(file, line, absl::LogSeverity::kError) {}
+LogMessage::LogMessage(const char* file, int line, FatalTag)
+    : LogMessage(file, line, absl::LogSeverity::kFatal) {}
 
 LogMessage::~LogMessage() {
 #ifdef ABSL_MIN_LOG_LEVEL
@@ -587,8 +589,8 @@ LogMessageFatal::LogMessageFatal(const char* file, int line,
   *this << "Check failed: " << failure_msg << " ";
 }
 
-// ABSL_ATTRIBUTE_NORETURN doesn't seem to work on destructors with msvc, so
-// disable msvc's warning about the d'tor never returning.
+// We intentionally don't return from these destructors. Disable MSVC's warning
+// about the destructor never returning as we do so intentionally here.
 #if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(push)
 #pragma warning(disable : 4722)
@@ -597,28 +599,26 @@ LogMessageFatal::~LogMessageFatal() {
   Flush();
   FailWithoutStackTrace();
 }
-#if defined(_MSC_VER) && !defined(__clang__)
-#pragma warning(pop)
-#endif
 
-LogMessageQuietlyFatal::LogMessageQuietlyFatal(const char* file, int line)
+LogMessageQuietly::LogMessageQuietly(const char* file, int line)
     : LogMessage(file, line, absl::LogSeverity::kFatal) {
   SetFailQuietly();
 }
+
+LogMessageQuietly::~LogMessageQuietly() {
+  Flush();
+  FailQuietly();
+}
+
+LogMessageQuietlyFatal::LogMessageQuietlyFatal(const char* file, int line)
+    : LogMessageQuietly(file, line) {}
 
 LogMessageQuietlyFatal::LogMessageQuietlyFatal(const char* file, int line,
                                                absl::string_view failure_msg)
-    : LogMessage(file, line, absl::LogSeverity::kFatal) {
-  SetFailQuietly();
-  *this << "Check failed: " << failure_msg << " ";
+    : LogMessageQuietly(file, line) {
+    *this << "Check failed: " << failure_msg << " ";
 }
 
-// ABSL_ATTRIBUTE_NORETURN doesn't seem to work on destructors with msvc, so
-// disable msvc's warning about the d'tor never returning.
-#if defined(_MSC_VER) && !defined(__clang__)
-#pragma warning(push)
-#pragma warning(disable : 4722)
-#endif
 LogMessageQuietlyFatal::~LogMessageQuietlyFatal() {
   Flush();
   FailQuietly();

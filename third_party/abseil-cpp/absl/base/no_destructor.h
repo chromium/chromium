@@ -85,7 +85,7 @@ ABSL_NAMESPACE_BEGIN
 // such objects should be const initialized:
 //
 //    // Global or namespace scope.
-//    ABSL_CONST_INIT absl::NoDestructor<MyRegistry> reg{"foo", "bar", 8008};
+//    constinit absl::NoDestructor<MyRegistry> reg{"foo", "bar", 8008};
 //
 // Note that if your object already has a trivial destructor, you don't need to
 // use NoDestructor<T>.
