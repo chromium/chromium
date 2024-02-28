@@ -95,13 +95,12 @@ std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
 // interface on top of Apple's Secure Enclave.
 class UnexportableSigningKeyMac : public UnexportableSigningKey {
  public:
-  explicit UnexportableSigningKeyMac(CFDictionaryRef key_data)
-      : key_(base::apple::GetValueFromDictionary<SecKeyRef>(key_data,
-                                                            kSecValueRef),
-             base::scoped_policy::RETAIN),
+  UnexportableSigningKeyMac(base::apple::ScopedCFTypeRef<SecKeyRef> key,
+                            CFDictionaryRef key_attributes)
+      : key_(std::move(key)),
         application_label_(
             CFDataToVec(base::apple::GetValueFromDictionary<CFDataRef>(
-                key_data,
+                key_attributes,
                 kSecAttrApplicationLabel))) {
     base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
         AppleKeychainV2::GetInstance().KeyCopyPublicKey(key_.get()));
@@ -234,7 +233,8 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
     }
     base::apple::ScopedCFTypeRef<CFDictionaryRef> key_metadata =
         AppleKeychainV2::GetInstance().KeyCopyAttributes(private_key.get());
-    return std::make_unique<UnexportableSigningKeyMac>(key_metadata.get());
+    return std::make_unique<UnexportableSigningKeyMac>(std::move(private_key),
+                                                       key_metadata.get());
   }
 
   std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
@@ -258,7 +258,12 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
     if (!key_attributes) {
       return nullptr;
     }
-    return std::make_unique<UnexportableSigningKeyMac>(key_attributes);
+    base::apple::ScopedCFTypeRef<SecKeyRef> key(
+        base::apple::GetValueFromDictionary<SecKeyRef>(key_attributes,
+                                                       kSecValueRef),
+        base::scoped_policy::RETAIN);
+    return std::make_unique<UnexportableSigningKeyMac>(std::move(key),
+                                                       key_attributes);
   }
 
  private:
