@@ -169,30 +169,10 @@ BASE_FEATURE(kPageContentAnnotations,
 BASE_FEATURE(kRemotePageMetadata,
              "RemotePageMetadata",
              enabled_by_default_desktop_only);
-
-// Enables the page entities model to be annotated on every page load.
-BASE_FEATURE(kPageEntitiesPageContentAnnotations,
-             "PageEntitiesPageContentAnnotations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the page visibility model to be annotated on every page load.
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Enables the text embedding model to be annotated on every page load.
-BASE_FEATURE(kTextEmbeddingPageContentAnnotations,
-             "TextEmbeddingPageContentAnnotations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature flag does not allow for the entities model to load the name and
-// prefix filters.
-BASE_FEATURE(kPageEntitiesModelBypassFilters,
-             "PageEntitiesModelBypassFilters",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This feature flag enables resetting the entities model on shutdown.
-BASE_FEATURE(kPageEntitiesModelResetOnShutdown,
-             "PageEntitiesModelResetOnShutdown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables push notification of hints.
 BASE_FEATURE(kPushNotifications,
@@ -689,24 +669,11 @@ bool ShouldExtractRelatedSearches() {
   return kContentAnnotationsExtractRelatedSearchesParam.Get();
 }
 
-bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale) {
-  return base::FeatureList::IsEnabled(kPageEntitiesPageContentAnnotations) &&
-         IsSupportedLocaleForFeature(locale,
-                                     kPageEntitiesPageContentAnnotations);
-}
-
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
   return base::FeatureList::IsEnabled(kPageVisibilityPageContentAnnotations) &&
          IsSupportedLocaleForFeature(locale,
                                      kPageVisibilityPageContentAnnotations,
                                      /*default_value=*/"en");
-}
-
-bool ShouldExecuteTextEmbeddingModelOnPageContent(const std::string& locale) {
-  return (base::FeatureList::IsEnabled(kTextEmbeddingPageContentAnnotations) ||
-          TextEmbeddingBatchAnnotationsEnabled()) &&
-         IsSupportedLocaleForFeature(locale,
-                                     kTextEmbeddingPageContentAnnotations);
 }
 
 bool RemotePageMetadataEnabled(const std::string& locale,

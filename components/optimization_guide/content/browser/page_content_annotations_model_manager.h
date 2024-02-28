@@ -73,13 +73,6 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
     kComplete = 3,
   };
 
-  // Set up the machinery for execution of the page entities model. This should
-  // only be run at construction. Runs |callback(true)| when the model executor
-  // has a model file or |callback(false)| if the model executor is not
-  // available.
-  void SetUpPageEntitiesModel(OptimizationGuideModelProvider* model_provider,
-                              base::OnceCallback<void(bool)> callback);
-
   // Set up the machinery for execution of the page visibility model. This
   // should only be run at construction.
   void SetUpPageVisibilityModel(

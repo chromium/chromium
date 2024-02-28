@@ -60,10 +60,6 @@ extern const base::FilePath::CharType
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[];
 
-// The folder where the page entities metadata store will be stored on disk.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType kPageEntitiesMetadataStore[];
-
 // Files expected to be in the on device model bundle.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kSpModelFile[];

@@ -125,10 +125,6 @@ bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
          model_metadata.type_url() ==
              "type.googleapis.com/"
              "google.internal.chrome.optimizationguide.v1."
-             "PageEntitiesModelMetadata" ||
-         model_metadata.type_url() ==
-             "type.googleapis.com/"
-             "google.internal.chrome.optimizationguide.v1."
              "PageTopicsModelMetadata" ||
          model_metadata.type_url() ==
              "type.googleapis.com/"

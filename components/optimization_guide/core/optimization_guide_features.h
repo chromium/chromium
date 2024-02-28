@@ -43,15 +43,7 @@ BASE_DECLARE_FEATURE(kOptimizationGuideModelDownloading);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotations);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kPageEntitiesPageContentAnnotations);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kTextEmbeddingPageContentAnnotations);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPageTextExtraction);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -60,8 +52,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideMetadataValidation);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kTextEmbeddingBatchAnnotations);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -80,8 +70,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kQueryInMemoryTextEmbeddings);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -373,11 +361,6 @@ bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);
 
-// Returns whether the text embedding model should be executed on page content
-// for a user using |locale| as their browser language.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldExecuteTextEmbeddingModelOnPageContent(const std::string& locale);
-
 // Returns whether page metadata should be retrieved from the remote
 // Optimization Guide service.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -411,10 +394,6 @@ bool ShouldMetadataValidationFetchHostKeyed();
 // Returns if Page Visibility Batch Annotations are enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool PageVisibilityBatchAnnotationsEnabled();
-
-// Returns if Text Embedding Batch Annotations are enabled.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool TextEmbeddingBatchAnnotationsEnabled();
 
 // The number of visits batch before running the page content annotation
 // models. A size of 1 is equivalent to annotating one page load at time
@@ -459,10 +438,6 @@ bool ShouldCheckFailedComponentVersionPref();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldPersistSalientImageMetadata(const std::string& locale,
                                        const std::string& country_code);
-
-// Returns whether to query text embeddings coming from history service.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldQueryEmbeddings();
 
 // Whether logging of model quality is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
