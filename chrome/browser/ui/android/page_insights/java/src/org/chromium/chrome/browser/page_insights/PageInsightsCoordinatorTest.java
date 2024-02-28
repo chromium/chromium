@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.protobuf.ByteString;
 
@@ -366,9 +367,11 @@ public class PageInsightsCoordinatorTest {
     public void testBackgroundColorAtExpandedStateAfterPeekState() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
-        setAutoTriggerTimerFinished();
 
+        setAutoTriggerTimerFinished();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         hideTopBar(); // Signal for auto triggering the PIH in Peek state
+
         View view = mBottomSheetContainer.findViewById(R.id.background);
         mBackgroundDrawable = (GradientDrawable) view.getBackground();
         assertEquals(
@@ -464,9 +467,11 @@ public class PageInsightsCoordinatorTest {
     @MediumTest
     public void testAutoTrigger() throws Exception {
         createPageInsightsCoordinator();
-        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
-        setAutoTriggerTimerFinished();
 
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+
+        setAutoTriggerTimerFinished();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
@@ -515,10 +520,12 @@ public class PageInsightsCoordinatorTest {
     @MediumTest
     public void testAutoTrigger_scrimNotShown() throws Exception {
         createPageInsightsCoordinator();
+
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
         assertFalse(mScrimCoordinator.isShowingScrim());
-        setAutoTriggerTimerFinished();
 
+        setAutoTriggerTimerFinished();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
@@ -530,10 +537,12 @@ public class PageInsightsCoordinatorTest {
     public void testDismissAfterAutoTrigger_scrimNotShown() throws Exception {
         createPageInsightsCoordinator();
         mScrimCoordinator.disableAnimationForTesting(true);
+
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
         assertFalse(mScrimCoordinator.isShowingScrim());
-        setAutoTriggerTimerFinished();
 
+        setAutoTriggerTimerFinished();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
