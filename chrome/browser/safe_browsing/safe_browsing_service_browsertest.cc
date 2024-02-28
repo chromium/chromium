@@ -124,23 +124,10 @@ const char kMaliciousResource[] = "/malware/script.js";
 const char kEmptyPage[] = "/empty.html";
 const char kMalwareFile[] = "/downloads/dangerous/dangerous.exe";
 const char kMalwarePage[] = "/safe_browsing/malware.html";
-const char kMalwareDelayedLoadsPage[] =
-    "/safe_browsing/malware_delayed_loads.html";
-const char kMalwareIFrame[] = "/safe_browsing/malware_iframe.html";
-const char kMalwareImg[] = "/safe_browsing/malware_image.png";
 const char kMalwareJsRequestPage[] = "/safe_browsing/malware_js_request.html";
 const char kMalwareWebSocketPath[] = "/safe_browsing/malware-ws";
-const char kNeverCompletesPath[] = "/never_completes";
 const char kPrefetchMalwarePage[] = "/safe_browsing/prefetch_malware.html";
 const char kBillingInterstitialPage[] = "/safe_browsing/billing.html";
-
-std::unique_ptr<net::test_server::HttpResponse> HandleNeverCompletingRequests(
-    const net::test_server::HttpRequest& request) {
-  if (!base::StartsWith(request.relative_url, kNeverCompletesPath,
-                        base::CompareCase::SENSITIVE))
-    return nullptr;
-  return std::make_unique<net::test_server::HungResponse>();
-}
 
 // This is not a proper WebSocket server. It does the minimum necessary to make
 // the browser think the handshake succeeded.
@@ -565,8 +552,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     base::FilePath test_data_dir;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
     embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&HandleNeverCompletingRequests));
-    embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&HandleWebSocketRequests));
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -620,23 +605,6 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 #endif
 };
-
-// Ensures that if an image is marked as UwS, the main page doesn't show an
-// interstitial.
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, UnwantedImgIgnored) {
-  GURL main_url = embedded_test_server()->GetURL(kMalwarePage);
-  GURL img_url = embedded_test_server()->GetURL(kMalwareImg);
-
-  // Add the img url as coming from a site serving UwS and then load the parent
-  // page.
-  MarkUrlForUwsUnexpired(img_url);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
-  EXPECT_FALSE(got_warning_shown_report());
-}
 
 // Proceeding through an interstitial should cause it to get allowlisted for
 // that user.
@@ -733,269 +701,6 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MainFrameHitWithReferrer) {
   EXPECT_EQ(bad_url, report().url());
   EXPECT_EQ(bad_url, report().page_url());
   EXPECT_EQ(first_url, report().referrer_url());
-}
-
-// TODO(https://crbug.com/1399454): Test is flaky.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SubResourceHitWithMainFrameReferrer \
-  DISABLED_SubResourceHitWithMainFrameReferrer
-#else
-#define MAYBE_SubResourceHitWithMainFrameReferrer \
-  SubResourceHitWithMainFrameReferrer
-#endif
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
-                       MAYBE_SubResourceHitWithMainFrameReferrer) {
-  GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
-  GURL second_url = embedded_test_server()->GetURL(kMalwarePage);
-  GURL bad_url = embedded_test_server()->GetURL(kMalwareImg);
-
-  MarkUrlForMalwareUnexpired(bad_url);
-
-  // Navigate to first, safe page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
-  EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
-  EXPECT_FALSE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
-
-  // Navigate to page which has malware subresource, should show interstitial
-  // and have first page in referrer. This happens only if the feature
-  // |kSafeBrowsingSkipSubresources| is disabled.
-  bool check_subresources =
-      !base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources);
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
-      .Times(check_subresources ? 1 : 0);
-
-  NavigateParams params(browser(), second_url, ui::PAGE_TRANSITION_LINK);
-  params.referrer.url = first_url;
-  ui_test_utils::NavigateToURL(&params);
-
-  if (check_subresources) {
-    EXPECT_TRUE(ShowingInterstitialPage());
-    EXPECT_TRUE(got_hit_report());
-    EXPECT_EQ(bad_url, hit_report().malicious_url);
-    EXPECT_EQ(second_url, hit_report().page_url);
-    EXPECT_EQ(first_url, hit_report().referrer_url);
-    EXPECT_TRUE(hit_report().is_subresource);
-    EXPECT_TRUE(got_warning_shown_report());
-    EXPECT_EQ(bad_url, report().url());
-    EXPECT_EQ(second_url, report().page_url());
-    EXPECT_EQ(first_url, report().referrer_url());
-  } else {
-    EXPECT_FALSE(ShowingInterstitialPage());
-    EXPECT_FALSE(got_hit_report());
-    EXPECT_FALSE(got_warning_shown_report());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
-                       SubResourceHitWithMainFrameRendererInitiatedSlowLoad) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
-  GURL second_url = embedded_test_server()->GetURL(kMalwareDelayedLoadsPage);
-  GURL third_url = embedded_test_server()->GetURL(kNeverCompletesPath);
-  GURL bad_url = embedded_test_server()->GetURL(kMalwareImg);
-
-  MarkUrlForMalwareUnexpired(bad_url);
-
-  // Navigate to first, safe page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
-  EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
-  EXPECT_FALSE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
-
-  // Navigate to malware page. The malware subresources haven't loaded yet, so
-  // no interstitial should show yet.
-  NavigateParams params(browser(), second_url, ui::PAGE_TRANSITION_LINK);
-  params.referrer.url = first_url;
-  ui_test_utils::NavigateToURL(&params);
-
-  EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
-  EXPECT_FALSE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
-
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
-      .Times(1);
-
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  content::LoadStopObserver load_stop_observer(contents);
-  // Run javascript function in the page which starts a timer to load the
-  // malware image, and also starts a renderer-initiated top-level navigation to
-  // a site that does not respond.  Should show interstitial and have first page
-  // in referrer.
-  contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"navigateAndLoadMalwareImage()", base::NullCallback());
-  load_stop_observer.Wait();
-
-  EXPECT_TRUE(ShowingInterstitialPage());
-  EXPECT_TRUE(got_hit_report());
-  // Report URLs should be for the current page, not the pending load.
-  EXPECT_EQ(bad_url, hit_report().malicious_url);
-  EXPECT_EQ(second_url, hit_report().page_url);
-  EXPECT_EQ(first_url, hit_report().referrer_url);
-  EXPECT_TRUE(hit_report().is_subresource);
-  EXPECT_TRUE(got_warning_shown_report());
-  EXPECT_EQ(bad_url, report().url());
-  EXPECT_EQ(second_url, report().page_url());
-  EXPECT_EQ(first_url, report().referrer_url());
-}
-
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
-                       SubResourceHitWithMainFrameBrowserInitiatedSlowLoad) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
-  GURL second_url = embedded_test_server()->GetURL(kMalwareDelayedLoadsPage);
-  GURL third_url = embedded_test_server()->GetURL(kNeverCompletesPath);
-  GURL bad_url = embedded_test_server()->GetURL(kMalwareImg);
-
-  MarkUrlForMalwareUnexpired(bad_url);
-
-  // Navigate to first, safe page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
-  EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
-  EXPECT_FALSE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
-
-  // Navigate to malware page. The malware subresources haven't loaded yet, so
-  // no interstitial should show yet.
-  NavigateParams params(browser(), second_url, ui::PAGE_TRANSITION_LINK);
-  params.referrer.url = first_url;
-  ui_test_utils::NavigateToURL(&params);
-
-  EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
-  EXPECT_FALSE(got_warning_shown_report());
-  Mock::VerifyAndClear(&observer_);
-
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
-      .Times(1);
-
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
-  content::LoadStopObserver load_stop_observer(contents);
-  // Start a browser initiated top-level navigation to a site that does not
-  // respond.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), third_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-
-  // While the top-level navigation is pending, run javascript
-  // function in the page which loads the malware image.
-  rfh->ExecuteJavaScriptForTests(u"loadMalwareImage()", base::NullCallback());
-
-  // Wait for interstitial to show.
-  load_stop_observer.Wait();
-
-  EXPECT_TRUE(ShowingInterstitialPage());
-  EXPECT_TRUE(got_hit_report());
-  // Report URLs should be for the current page, not the pending load.
-  EXPECT_EQ(bad_url, hit_report().malicious_url);
-  EXPECT_EQ(second_url, hit_report().page_url);
-  EXPECT_EQ(first_url, hit_report().referrer_url);
-  EXPECT_TRUE(hit_report().is_subresource);
-  EXPECT_TRUE(got_warning_shown_report());
-  EXPECT_EQ(bad_url, report().url());
-  EXPECT_EQ(second_url, report().page_url());
-  EXPECT_EQ(first_url, report().referrer_url());
-}
-
-#if (BUILDFLAG(IS_LINUX))
-// TODO(crbug.com/1463452): Address Linux-specific flaky failure.
-#define MAYBE_SubResourceHitOnFreshTab DISABLED_SubResourceHitOnFreshTab
-#else
-#define MAYBE_SubResourceHitOnFreshTab SubResourceHitOnFreshTab
-#endif
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
-                       MAYBE_SubResourceHitOnFreshTab) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  // Allow popups.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
-                                 CONTENT_SETTING_ALLOW);
-
-  // Add |kMalwareImg| to fake safebrowsing db.
-  GURL img_url = embedded_test_server()->GetURL(kMalwareImg);
-  MarkUrlForMalwareUnexpired(img_url);
-
-  // Have the current tab open a new tab with window.open().
-  WebContents* main_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderFrameHost* main_rfh = main_contents->GetPrimaryMainFrame();
-
-  content::WebContentsAddedObserver web_contents_added_observer;
-  main_rfh->ExecuteJavaScriptForTests(u"w=window.open();",
-                                      base::NullCallback());
-  WebContents* new_tab_contents = web_contents_added_observer.GetWebContents();
-  content::RenderFrameHost* new_tab_rfh =
-      new_tab_contents->GetPrimaryMainFrame();
-  // A fresh WebContents should be on the initial NavigationEntry.
-  EXPECT_TRUE(new_tab_contents->GetController()
-                  .GetLastCommittedEntry()
-                  ->IsInitialEntry());
-  EXPECT_EQ(nullptr, new_tab_contents->GetController().GetPendingEntry());
-
-  // Run javascript in the blank new tab to load the malware image.
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(img_url)))
-      .Times(1);
-  // Wait for 2 navigations to finish: the synchronous about:blank commit
-  // triggered by the window.open() above, and the interstitial page
-  // navigation triggered by Safe Browsing code for the image load below.
-  content::TestNavigationObserver observer(new_tab_contents, 2);
-  new_tab_rfh->ExecuteJavaScriptForTests(
-      u"var img=new Image();"
-      u"img.src=\"" +
-          base::ASCIIToUTF16(img_url.spec()) +
-          u"\";"
-          u"document.body.appendChild(img);",
-      base::NullCallback());
-  // Wait for interstitial to show.
-  observer.WaitForNavigationFinished();
-  Mock::VerifyAndClearExpectations(&observer_);
-  EXPECT_TRUE(ShowingInterstitialPage());
-  EXPECT_TRUE(got_hit_report());
-  EXPECT_EQ(img_url, hit_report().malicious_url);
-  EXPECT_TRUE(hit_report().is_subresource);
-  // Page report URLs should be about:blank, as the last committed navigation is
-  // the synchronous about:blank commit.
-  EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().page_url);
-  EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().referrer_url);
-  EXPECT_TRUE(got_warning_shown_report());
-  EXPECT_EQ(img_url, report().url());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), report().page_url());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), report().referrer_url());
-
-  // Proceed through it.
-  security_interstitials::SecurityInterstitialTabHelper* helper =
-      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-          new_tab_contents);
-  ASSERT_TRUE(helper);
-  security_interstitials::SecurityInterstitialPage* interstitial =
-      helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
-  ASSERT_TRUE(interstitial);
-  // TODO(carlosil): 1 is CMD_PROCEED, this should be changed to the enum
-  // values once CommandReceived is changed to accept integers.
-  content::TestNavigationObserver proceed_observer(new_tab_contents);
-  interstitial->CommandReceived("1");
-  proceed_observer.WaitForNavigationFinished();
-  EXPECT_FALSE(ShowingInterstitialPage());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1171,60 +876,9 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWarningShownCSBRRsDisabled,
 
 // Parameterised fixture to permit running the same test for Window and Worker
 // scopes.
-class V4SafeBrowsingServiceJsRequestTest
+class V4SafeBrowsingServiceJsRequestNoInterstitialTest
     : public ::testing::WithParamInterface<JsRequestTestParam>,
       public V4SafeBrowsingServiceTest {};
-
-using V4SafeBrowsingServiceJsRequestInterstitialTest =
-    V4SafeBrowsingServiceJsRequestTest;
-
-IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
-                       MalwareBlocked) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  GURL base_url = embedded_test_server()->GetURL(kMalwareJsRequestPage);
-  JsRequestTestParam param = GetParam();
-  GURL js_request_url = ConstructJsRequestURL(base_url, param.request_type);
-  GURL page_url = AddJsRequestParam(base_url, param);
-
-  MarkUrlForMalwareUnexpired(js_request_url);
-
-  EXPECT_CALL(observer_,
-              OnSafeBrowsingHit(IsUnsafeResourceFor(js_request_url)));
-
-  content::TestNavigationObserver error_observer(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      net::ERR_BLOCKED_BY_CLIENT);
-  error_observer.set_wait_event(
-      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
-  error_observer.WaitForNavigationFinished();
-
-  EXPECT_TRUE(ShowingInterstitialPage());
-  EXPECT_TRUE(got_hit_report());
-  EXPECT_EQ(js_request_url, hit_report().malicious_url);
-  EXPECT_EQ(page_url, hit_report().page_url);
-  EXPECT_TRUE(hit_report().is_subresource);
-  EXPECT_TRUE(got_warning_shown_report());
-  EXPECT_EQ(js_request_url, report().url());
-  EXPECT_EQ(page_url, report().page_url());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    V4SafeBrowsingServiceJsRequestInterstitialTest,
-    ::testing::Values(
-        JsRequestTestParam(ContextType::kWindow, JsRequestType::kWebSocket),
-        JsRequestTestParam(ContextType::kWorker, JsRequestType::kWebSocket),
-        JsRequestTestParam(ContextType::kWindow, JsRequestType::kFetch),
-        JsRequestTestParam(ContextType::kWorker, JsRequestType::kFetch)));
-
-using V4SafeBrowsingServiceJsRequestNoInterstitialTest =
-    V4SafeBrowsingServiceJsRequestTest;
 
 IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
                        MalwareBlocked) {
@@ -1237,23 +891,19 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
   auto new_title = JsRequestTestNavigateAndWaitForTitle(
       browser(), AddJsRequestParam(base_url, param));
 
-  // When |kSafeBrowsingSkipSubresources| is enabled, do not show a warning for
-  // |JsRequestType::kFetch|.
-  // When |kSafeBrowsingSkipSubresources2| is enabled, do not show a warning for
-  // |JsRequestType::kWebSocket|.
-  if ((base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources) &&
-       param.request_type == JsRequestType::kFetch) ||
-      (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2) &&
-       param.request_type == JsRequestType::kWebSocket)) {
-    EXPECT_EQ("NOT BLOCKED", new_title);
-    EXPECT_FALSE(ShowingInterstitialPage());
-    EXPECT_FALSE(got_hit_report());
-    EXPECT_FALSE(got_warning_shown_report());
-  } else {
+  // When |kSafeBrowsingSkipSubresources2| is disabled and request_type is
+  // |JsRequestType::kWebSocket|, show a warning.
+  if (!base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2) &&
+      param.request_type == JsRequestType::kWebSocket) {
     EXPECT_EQ("ERROR", new_title);
     EXPECT_FALSE(ShowingInterstitialPage());
 
     // got_hit_report() is only set when an interstitial is shown.
+    EXPECT_FALSE(got_hit_report());
+    EXPECT_FALSE(got_warning_shown_report());
+  } else {
+    EXPECT_EQ("NOT BLOCKED", new_title);
+    EXPECT_FALSE(ShowingInterstitialPage());
     EXPECT_FALSE(got_hit_report());
     EXPECT_FALSE(got_warning_shown_report());
   }
@@ -1262,35 +912,6 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     V4SafeBrowsingServiceJsRequestNoInterstitialTest,
-    ::testing::Values(JsRequestTestParam(ContextType::kSharedWorker,
-                                         JsRequestType::kWebSocket),
-                      JsRequestTestParam(ContextType::kServiceWorker,
-                                         JsRequestType::kWebSocket),
-                      JsRequestTestParam(ContextType::kSharedWorker,
-                                         JsRequestType::kFetch),
-                      JsRequestTestParam(ContextType::kServiceWorker,
-                                         JsRequestType::kFetch)));
-
-using V4SafeBrowsingServiceJsRequestSafeTest =
-    V4SafeBrowsingServiceJsRequestTest;
-
-IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestSafeTest,
-                       RequestNotBlocked) {
-  GURL base_url = embedded_test_server()->GetURL(kMalwareJsRequestPage);
-
-  // Load the parent page without marking the JS request as malware.
-  auto new_title = JsRequestTestNavigateAndWaitForTitle(
-      browser(), AddJsRequestParam(base_url, GetParam()));
-
-  EXPECT_EQ("NOT BLOCKED", new_title);
-  EXPECT_FALSE(ShowingInterstitialPage());
-  EXPECT_FALSE(got_hit_report());
-  EXPECT_FALSE(got_warning_shown_report());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    V4SafeBrowsingServiceJsRequestSafeTest,
     ::testing::Values(
         JsRequestTestParam(ContextType::kWindow, JsRequestType::kWebSocket),
         JsRequestTestParam(ContextType::kWorker, JsRequestType::kWebSocket),
@@ -1408,92 +1029,6 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareMainFrame) {
   EXPECT_EQ(url, report().url());
   EXPECT_EQ(url, report().page_url());
   EXPECT_EQ(GURL(), report().referrer_url());
-}
-
-// Irrespective of the threat_type classification, if the iframe URL is marked
-// as Malware, an interstitial should be shown.
-IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareIFrame) {
-  GURL main_url = embedded_test_server()->GetURL(kMalwarePage);
-  GURL iframe_url = embedded_test_server()->GetURL(kMalwareIFrame);
-
-  // Add the iframe url as malware and then load the parent page.
-  MarkUrlForMalwareUnexpired(iframe_url, GetParam());
-
-  bool check_subresources =
-      !base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources);
-  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(iframe_url)))
-      .Times(check_subresources ? 1 : 0);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  if (check_subresources) {
-    // All types should show the interstitial.
-    EXPECT_TRUE(ShowingInterstitialPage());
-
-    EXPECT_TRUE(got_hit_report());
-    EXPECT_EQ(iframe_url, hit_report().malicious_url);
-    EXPECT_EQ(main_url, hit_report().page_url);
-    EXPECT_EQ(GURL(), hit_report().referrer_url);
-    EXPECT_TRUE(hit_report().is_subresource);
-    EXPECT_TRUE(got_warning_shown_report());
-    EXPECT_EQ(iframe_url, report().url());
-    EXPECT_EQ(main_url, report().page_url());
-    EXPECT_EQ(GURL(), report().referrer_url());
-  } else {
-    EXPECT_FALSE(ShowingInterstitialPage());
-    EXPECT_FALSE(got_hit_report());
-    EXPECT_FALSE(got_warning_shown_report());
-  }
-}
-
-// Depending on the threat_type classification, if an embedded resource is
-// marked as Malware, an interstitial may be shown.
-// TODO(crbug.com/1320123): Re-enable this test
-IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, DISABLED_MalwareImg) {
-  GURL main_url = embedded_test_server()->GetURL(kMalwarePage);
-  GURL img_url = embedded_test_server()->GetURL(kMalwareImg);
-
-  // Add the img url as malware and then load the parent page.
-  MarkUrlForMalwareUnexpired(img_url, GetParam());
-
-  switch (GetParam()) {
-    case ThreatPatternType::NONE:  // Falls through.
-    case ThreatPatternType::MALWARE_DISTRIBUTION:
-      EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(img_url)))
-          .Times(1);
-      break;
-    case ThreatPatternType::MALWARE_LANDING:
-      // No interstitial shown, so no notifications expected.
-      break;
-    default:
-      break;
-  }
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  // Subresource which is tagged as a landing page should not show an
-  // interstitial, the other types should.
-  switch (GetParam()) {
-    case ThreatPatternType::NONE:  // Falls through.
-    case ThreatPatternType::MALWARE_DISTRIBUTION:
-      EXPECT_TRUE(ShowingInterstitialPage());
-      EXPECT_TRUE(got_hit_report());
-      EXPECT_EQ(img_url, hit_report().malicious_url);
-      EXPECT_EQ(main_url, hit_report().page_url);
-      EXPECT_EQ(GURL(), hit_report().referrer_url);
-      EXPECT_TRUE(hit_report().is_subresource);
-      EXPECT_TRUE(got_warning_shown_report());
-      EXPECT_EQ(img_url, report().url());
-      EXPECT_EQ(main_url, report().page_url());
-      EXPECT_EQ(GURL(), report().referrer_url());
-      break;
-    case ThreatPatternType::MALWARE_LANDING:
-      EXPECT_FALSE(ShowingInterstitialPage());
-      EXPECT_FALSE(got_hit_report());
-      EXPECT_FALSE(got_warning_shown_report());
-      break;
-    default:
-      break;
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
