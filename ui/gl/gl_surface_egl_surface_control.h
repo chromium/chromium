@@ -92,11 +92,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
     gfx::ColorSpace color_space;
     std::optional<gfx::HDRMetadata> hdr_metadata;
 
-    // Indicates whether buffer for this layer was updated in the currently
-    // pending transaction, or the last transaction submitted if there isn't
-    // one pending.
-    bool buffer_updated_in_pending_transaction = true;
-
     // Indicates whether the |surface| will be visible or hidden.
     bool visibility = true;
     scoped_refptr<gfx::SurfaceControl::Surface> surface;

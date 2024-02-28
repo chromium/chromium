@@ -293,9 +293,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     resource_ref.scoped_buffer = std::move(scoped_hardware_buffer);
   }
 
-  surface_state.buffer_updated_in_pending_transaction =
-      uninitialized || surface_state.hardware_buffer != hardware_buffer;
-  if (surface_state.buffer_updated_in_pending_transaction) {
+  if (uninitialized || surface_state.hardware_buffer != hardware_buffer) {
     surface_state.hardware_buffer = hardware_buffer;
 
     if (gpu_fence && surface_state.hardware_buffer) {
