@@ -63,6 +63,7 @@ struct DesktopSessionProxyTraits;
 class IpcAudioCapturer;
 class IpcMouseCursorMonitor;
 class IpcKeyboardLayoutMonitor;
+class IpcSharedBufferCore;
 class IpcVideoFrameCapturer;
 class ScreenControls;
 
@@ -208,8 +209,6 @@ class DesktopSessionProxy
   friend class base::DeleteHelper<DesktopSessionProxy>;
   friend struct DesktopSessionProxyTraits;
 
-  class IpcSharedBufferCore;
-  class IpcSharedBuffer;
   typedef std::map<int, scoped_refptr<IpcSharedBufferCore>> SharedBuffers;
 
   ~DesktopSessionProxy() override;

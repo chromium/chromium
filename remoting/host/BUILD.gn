@@ -400,6 +400,8 @@ static_library("common") {
     "token_validator_base.h",
     "token_validator_factory_impl.cc",
     "token_validator_factory_impl.h",
+    "video_memory_utils.cc",
+    "video_memory_utils.h",
     "xmpp_register_support_host_request.cc",
     "xmpp_register_support_host_request.h",
     "xsession_chooser_ui.inc",

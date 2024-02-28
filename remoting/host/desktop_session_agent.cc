@@ -37,6 +37,7 @@
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
+#include "remoting/host/video_memory_utils.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/audio.pb.h"
@@ -49,101 +50,8 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "base/memory/writable_shared_memory_region.h"
-#endif
 
 namespace remoting {
-
-// webrtc::SharedMemory implementation that creates a
-// base::ReadOnlySharedMemoryRegion along with a writable mapping.
-//
-// This is declared outside the anonymous namespace so that it can be friended
-// with base::WritableSharedMemoryRegion. It is not exported in the header.
-class SharedMemoryImpl : public webrtc::SharedMemory {
- public:
-  static std::unique_ptr<SharedMemoryImpl>
-  Create(size_t size, int id, base::OnceClosure on_deleted_callback) {
-    webrtc::SharedMemory::Handle handle = webrtc::SharedMemory::kInvalidHandle;
-#if BUILDFLAG(IS_WIN)
-    // webrtc::ScreenCapturer uses webrtc::SharedMemory::handle() only on
-    // windows. This handle must be writable. A WritableSharedMemoryRegion is
-    // created, and then it is converted to read-only.  On the windows platform,
-    // it happens to be the case that converting a region to read-only does not
-    // change the status of existing handles. This is not true on all other
-    // platforms, so please don't emulate this behavior!
-    base::WritableSharedMemoryRegion region =
-        base::WritableSharedMemoryRegion::Create(size);
-    if (!region.IsValid()) {
-      return nullptr;
-    }
-    base::WritableSharedMemoryMapping mapping = region.Map();
-    // Converting |region| to read-only will close its associated handle, so we
-    // must duplicate it into the handle used for |webrtc::ScreenCapturer|.
-    HANDLE process = ::GetCurrentProcess();
-    BOOL success =
-        ::DuplicateHandle(process, region.UnsafeGetPlatformHandle(), process,
-                          &handle, 0, FALSE, DUPLICATE_SAME_ACCESS);
-    if (!success) {
-      return nullptr;
-    }
-    base::ReadOnlySharedMemoryRegion read_only_region =
-        base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
-#else
-    base::MappedReadOnlyRegion region_mapping =
-        base::ReadOnlySharedMemoryRegion::Create(size);
-    base::ReadOnlySharedMemoryRegion read_only_region =
-        std::move(region_mapping.region);
-    base::WritableSharedMemoryMapping mapping =
-        std::move(region_mapping.mapping);
-#endif
-    if (!mapping.IsValid()) {
-      return nullptr;
-    }
-    // The SharedMemoryImpl ctor is private, so std::make_unique can't be
-    // used.
-    return base::WrapUnique(
-        new SharedMemoryImpl(std::move(read_only_region), std::move(mapping),
-                             handle, id, std::move(on_deleted_callback)));
-  }
-
-  SharedMemoryImpl(const SharedMemoryImpl&) = delete;
-  SharedMemoryImpl& operator=(const SharedMemoryImpl&) = delete;
-
-  ~SharedMemoryImpl() override { std::move(on_deleted_callback_).Run(); }
-
-  const base::ReadOnlySharedMemoryRegion& region() const { return region_; }
-
- private:
-  SharedMemoryImpl(base::ReadOnlySharedMemoryRegion region,
-                   base::WritableSharedMemoryMapping mapping,
-                   webrtc::SharedMemory::Handle handle,
-                   int id,
-                   base::OnceClosure on_deleted_callback)
-      : SharedMemory(mapping.memory(), mapping.size(), handle, id),
-        on_deleted_callback_(std::move(on_deleted_callback))
-#if BUILDFLAG(IS_WIN)
-        ,
-        writable_handle_(handle)
-#endif
-  {
-    region_ = std::move(region);
-    mapping_ = std::move(mapping);
-  }
-
-  base::OnceClosure on_deleted_callback_;
-  base::ReadOnlySharedMemoryRegion region_;
-  base::WritableSharedMemoryMapping mapping_;
-#if BUILDFLAG(IS_WIN)
-  // Owns the handle passed to the base class which is used by
-  // webrtc::ScreenCapturer.
-  base::win::ScopedHandle writable_handle_;
-#endif
-};
 
 namespace {
 
@@ -179,53 +87,6 @@ void DesktopSessionClipboardStub::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
   desktop_session_agent_->OnClipboardEvent(event);
 }
-
-class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
- public:
-  using SharedMemoryCreatedCallback = base::RepeatingCallback<
-      void(int id, base::ReadOnlySharedMemoryRegion, uint32_t size)>;
-  using SharedMemoryReleasedCallback = base::RepeatingCallback<void(int id)>;
-
-  SharedMemoryFactoryImpl(
-      SharedMemoryCreatedCallback shared_memory_created_callback,
-      SharedMemoryReleasedCallback shared_memory_released_callback)
-      : shared_memory_created_callback_(
-            std::move(shared_memory_created_callback)),
-        shared_memory_released_callback_(
-            std::move(shared_memory_released_callback)) {}
-
-  SharedMemoryFactoryImpl(const SharedMemoryFactoryImpl&) = delete;
-  SharedMemoryFactoryImpl& operator=(const SharedMemoryFactoryImpl&) = delete;
-
-  std::unique_ptr<webrtc::SharedMemory> CreateSharedMemory(
-      size_t size) override {
-    base::OnceClosure release_buffer_callback = base::BindOnce(
-        shared_memory_released_callback_, next_shared_buffer_id_);
-    std::unique_ptr<SharedMemoryImpl> buffer = SharedMemoryImpl::Create(
-        size, next_shared_buffer_id_, std::move(release_buffer_callback));
-    if (buffer) {
-      // |next_shared_buffer_id_| starts from 1 and incrementing it by 2 makes
-      // sure it is always odd and therefore zero is never used as a valid
-      // buffer ID.
-      //
-      // It is very unlikely (though theoretically possible) to allocate the
-      // same ID for two different buffers due to integer overflow. It should
-      // take about a year of allocating 100 new buffers every second.
-      // Practically speaking it never happens.
-      next_shared_buffer_id_ += 2;
-
-      shared_memory_created_callback_.Run(
-          buffer->id(), buffer->region().Duplicate(), buffer->size());
-    }
-
-    return std::move(buffer);
-  }
-
- private:
-  int next_shared_buffer_id_ = 1;
-  SharedMemoryCreatedCallback shared_memory_created_callback_;
-  SharedMemoryReleasedCallback shared_memory_released_callback_;
-};
 
 }  // namespace
 
@@ -417,7 +278,7 @@ void DesktopSessionAgent::Start(
   video_capturer_ = desktop_environment_->CreateVideoCapturer();
   video_capturer_->Start(this);
   video_capturer_->SetSharedMemoryFactory(
-      std::make_unique<SharedMemoryFactoryImpl>(
+      std::make_unique<SharedVideoMemoryFactory>(
           base::BindPostTask(
               caller_task_runner_,
               base::BindRepeating(

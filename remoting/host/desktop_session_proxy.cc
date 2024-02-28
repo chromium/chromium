@@ -34,6 +34,7 @@
 #include "remoting/host/ipc_video_frame_capturer.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/remote_open_url/remote_open_url_util.h"
+#include "remoting/host/video_memory_utils.h"
 #include "remoting/host/webauthn/remote_webauthn_delegated_state_change_notifier.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
@@ -44,60 +45,10 @@
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/scoped_handle.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace remoting {
 
 using SetUpUrlForwarderResponse =
     protocol::UrlForwarderControl::SetUpUrlForwarderResponse;
-
-class DesktopSessionProxy::IpcSharedBufferCore
-    : public base::RefCountedThreadSafe<IpcSharedBufferCore> {
- public:
-  IpcSharedBufferCore(int id, base::ReadOnlySharedMemoryRegion region)
-      : id_(id) {
-    mapping_ = region.Map();
-    if (!mapping_.IsValid()) {
-      LOG(ERROR) << "Failed to map a shared buffer: id=" << id
-                 << ", size=" << region.GetSize();
-    }
-    // After being mapped, |region| is no longer needed and can be discarded.
-  }
-
-  IpcSharedBufferCore(const IpcSharedBufferCore&) = delete;
-  IpcSharedBufferCore& operator=(const IpcSharedBufferCore&) = delete;
-
-  int id() const { return id_; }
-  size_t size() const { return mapping_.size(); }
-  const void* memory() const { return mapping_.memory(); }
-
- private:
-  virtual ~IpcSharedBufferCore() = default;
-  friend class base::RefCountedThreadSafe<IpcSharedBufferCore>;
-
-  int id_;
-  base::ReadOnlySharedMemoryMapping mapping_;
-};
-
-class DesktopSessionProxy::IpcSharedBuffer : public webrtc::SharedMemory {
- public:
-  // Note that the webrtc::SharedMemory class is used for both read-only and
-  // writable shared memory, necessitating the ugly const_cast here.
-  IpcSharedBuffer(scoped_refptr<IpcSharedBufferCore> core)
-      : SharedMemory(const_cast<void*>(core->memory()),
-                     core->size(),
-                     0,
-                     core->id()),
-        core_(core) {}
-
-  IpcSharedBuffer(const IpcSharedBuffer&) = delete;
-  IpcSharedBuffer& operator=(const IpcSharedBuffer&) = delete;
-
- private:
-  scoped_refptr<IpcSharedBufferCore> core_;
-};
 
 DesktopSessionProxy::DesktopSessionProxy(
     scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
@@ -654,8 +605,8 @@ DesktopSessionProxy::~DesktopSessionProxy() {
   }
 }
 
-scoped_refptr<DesktopSessionProxy::IpcSharedBufferCore>
-DesktopSessionProxy::GetSharedBufferCore(int id) {
+scoped_refptr<IpcSharedBufferCore> DesktopSessionProxy::GetSharedBufferCore(
+    int id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   SharedBuffers::const_iterator i = shared_buffers_.find(id);
@@ -683,8 +634,8 @@ void DesktopSessionProxy::OnSharedMemoryRegionCreated(
     uint32_t size) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  scoped_refptr<IpcSharedBufferCore> shared_buffer =
-      new IpcSharedBufferCore(id, std::move(region));
+  auto shared_buffer =
+      base::MakeRefCounted<IpcSharedBufferCore>(id, std::move(region));
 
   if (shared_buffer->memory() != nullptr &&
       !shared_buffers_.insert(std::make_pair(id, shared_buffer)).second) {
