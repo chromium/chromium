@@ -326,7 +326,6 @@ HighlightPainter::HighlightPainter(
     const PaintInfo& paint_info,
     const InlineCursor& cursor,
     const FragmentItem& fragment_item,
-    const std::optional<AffineTransform> writing_mode_rotation,
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,

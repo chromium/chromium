@@ -78,7 +78,7 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
                                              rotated_rect, selection);
     HighlightPainter highlight_painter(
         cursor.Current()->TextPaintInfo(cursor.Items()), text_painter,
-        decoration_painter, paint_info, cursor, text_item, {}, physical_offset,
+        decoration_painter, paint_info, cursor, text_item, physical_offset,
         style, text_style, selection);
 
     EXPECT_EQ(highlight_painter.PaintCase(), expected)

@@ -413,10 +413,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   TextDecorationPainter decoration_painter(text_painter, inline_context_,
                                            paint_info, style, text_style,
                                            rotated_box, selection);
-  HighlightPainter highlight_painter(fragment_paint_info, text_painter,
-                                     decoration_painter, paint_info, cursor_,
-                                     text_item, rotation, physical_box.offset,
-                                     style, text_style, selection);
+  HighlightPainter highlight_painter(
+      fragment_paint_info, text_painter, decoration_painter, paint_info,
+      cursor_, text_item, physical_box.offset, style, text_style, selection);
   if (paint_info.phase == PaintPhase::kForeground) {
     if (auto* mf_checker = MobileFriendlinessChecker::From(document)) {
       if (auto* text = DynamicTo<LayoutText>(*layout_object)) {
