@@ -119,7 +119,6 @@ class TabListMediator {
     // screen.
     private boolean mVisible;
     private boolean mShownIPH;
-    private boolean mIsClosingGroup;
     private Tab mTabToAddDelayed;
 
     /** An interface to handle requests about updating TabGridDialog. */
@@ -944,27 +943,25 @@ class TabListMediator {
                         // If the tab closed was part of a tab group and the closure was triggered
                         // from the tab switcher, update the group to reflect the closure instead of
                         // closing the tab.
-                        // TODO(crbug/325917738): This causes the tab group to visibly flicker
-                        // to single tab state before removal when closing a group. For now skip
-                        // this behavior when closing a whole group.
-                        if (!mIsClosingGroup
-                                && mActionsOnAllRelatedTabs
+                        if (mActionsOnAllRelatedTabs
                                 && (mCurrentTabModelFilterSupplier.get()
                                         instanceof TabGroupModelFilter groupFilter)
                                 && groupFilter.tabGroupExistsForRootId(tab.getRootId())) {
                             int groupIndex = groupFilter.indexOf(tab);
                             Tab groupTab = groupFilter.getTabAt(groupIndex);
-                            final int currentSelectedTabId =
-                                    TabModelUtils.getCurrentTabId(groupFilter.getTabModel());
-                            boolean isSelected = currentSelectedTabId == groupTab.getId();
-                            updateTab(
-                                    groupIndex,
-                                    PseudoTab.fromTab(groupTab),
-                                    isSelected,
-                                    true,
-                                    false);
+                            if (!groupTab.isClosing()) {
+                                final int currentSelectedTabId =
+                                        TabModelUtils.getCurrentTabId(groupFilter.getTabModel());
+                                boolean isSelected = currentSelectedTabId == groupTab.getId();
+                                updateTab(
+                                        groupIndex,
+                                        PseudoTab.fromTab(groupTab),
+                                        isSelected,
+                                        true,
+                                        false);
 
-                            return;
+                                return;
+                            }
                         }
 
                         if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
@@ -998,10 +995,8 @@ class TabListMediator {
                         if (mActionsOnAllRelatedTabs) {
                             List<Tab> related = getRelatedTabsForId(tabId);
                             if (related.size() > 1) {
-                                mIsClosingGroup = true;
                                 onGroupClosedFrom(tabId);
                                 tabModel.closeMultipleTabs(related, true);
-                                mIsClosingGroup = false;
                                 return;
                             }
                         }
@@ -1228,11 +1223,6 @@ class TabListMediator {
         var oldValue = mActionsOnAllRelatedTabs;
         mActionsOnAllRelatedTabs = actionOnAllRelatedTabs;
         ResettersForTesting.register(() -> mActionsOnAllRelatedTabs = oldValue);
-    }
-
-    void setIsClosingGroupForTesting(boolean isClosingGroup) {
-        mIsClosingGroup = isClosingGroup;
-        ResettersForTesting.register(() -> mIsClosingGroup = false);
     }
 
     private List<Tab> getRelatedTabsForId(int id) {
