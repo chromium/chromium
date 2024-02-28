@@ -21,6 +21,10 @@
 #include "services/webnn/coreml/context_impl.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "services/webnn/tflite/context_impl.h"
+#endif
+
 namespace webnn {
 
 namespace {
@@ -67,6 +71,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                                               std::move(callback));
     return;
   }
+#if BUILDFLAG(IS_WIN)
   if (!is_gpu_supported_) {
     std::move(callback).Run(ToError<mojom::CreateContextResult>(
         mojom::Error::Code::kNotSupportedError,
@@ -74,7 +79,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     DLOG(ERROR) << "WebNN is not compatible with GPU.";
     return;
   }
-#if BUILDFLAG(IS_WIN)
   // Get the default `Adapter` instance which is created for the adapter queried
   // from ANGLE. At the current stage, all `ContextImpl` share this instance.
   //
@@ -112,6 +116,13 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         "WebNN Service is not supported on this platform."));
     DLOG(ERROR) << "WebNN Service is not supported on this platform.";
   }
+#elif BUILDFLAG(IS_LINUX)
+  // The remote sent to the renderer.
+  mojo::PendingRemote<mojom::WebNNContext> blink_remote;
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new tflite::ContextImpl(
+      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+  std::move(callback).Run(
+      mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #else
   // TODO(crbug.com/1273291): Supporting WebNN Service on the platform.
   std::move(callback).Run(ToError<mojom::CreateContextResult>(

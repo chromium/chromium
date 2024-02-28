@@ -5,5 +5,7 @@ include_rules = [
   "+third_party/fp16/src/include/fp16.h",
   "+ui/gl/gl_angle_util_win.h",
   "+ui/gl/init/gl_factory.h",
-  "+third_party/coremltools/mlmodel/format"
+  "+third_party/coremltools/mlmodel/format",
+  "+third_party/flatbuffers/src/include/flatbuffers",
+  "+third_party/tflite/src/tensorflow/lite",
 ]

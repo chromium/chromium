@@ -45,10 +45,13 @@ class WebNNContextProviderImplTest : public testing::Test {
 // For Windows platform, `dml::ContextImpl` is implemented by the DirectML
 // backend. It relies on a real GPU adapter and is tested by
 // `WebNNContextDMLImplTest`.
+//
+// For Linux platform, `tflite::ContextImpl` is implemented using TFLite which
+// is always available.
 
-#if !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
 
-TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
+TEST_F(WebNNContextProviderImplTest, NotSupported) {
 #if BUILDFLAG(IS_MAC)
   if (base::mac::MacOSVersion() >= 13'00'00) {
     GTEST_SKIP() << "Skipping test because WebNN is supported on Mac OS "
@@ -74,6 +77,9 @@ TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
 
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Checking for GPU compatibility is Windows-specific because only the DirectML
+// implementation unconditionally depends on a GPU.
 TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
@@ -89,5 +95,6 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
   EXPECT_EQ(create_context_error->message, "WebNN is not compatible with GPU.");
 }
+#endif
 
 }  // namespace webnn

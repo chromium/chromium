@@ -6,6 +6,7 @@
 #include <cmath>
 #include <type_traits>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -38,7 +39,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
-#include "base/containers/fixed_flat_set.h"
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -74,6 +74,8 @@ void BuildAndCompute(
     webnn_context_remote.Bind(
         std::move(create_context_result->get_context_remote()));
   }
+  EXPECT_FALSE(create_context_result->is_error())
+      << create_context_result->get_error()->message;
   EXPECT_TRUE(webnn_context_remote.is_bound());
 
   // The GraphImpl should be built successfully.
@@ -95,6 +97,8 @@ void BuildAndCompute(
     base::RunLoop().RunUntilIdle();
     return;
   }
+  EXPECT_FALSE(create_graph_result->is_error())
+      << create_graph_result->get_error()->message;
   EXPECT_TRUE(webnn_graph_remote.is_bound());
 
   // The GraphImpl should compute successfully.
@@ -323,6 +327,33 @@ void WebNNGraphImplBackendTest::SetUp() {
       webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+class WebNNGraphImplBackendTest : public testing::Test {
+ public:
+  void SetUp() override;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+};
+
+void WebNNGraphImplBackendTest::SetUp() {
+  const std::string_view current_test_name =
+      ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
+      "BuildAndComputeSingleOperatorElementWiseBinary",
+      "BuildAndComputeSingleOperatorElementWiseUnary",
+      "BuildAndComputeSingleOperatorConcat",
+      "BuildAndComputeConcatWithConstants",
+  });
+  if (!kSupportedTests.contains(current_test_name)) {
+    GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
+  }
+  scoped_feature_list_.InitAndEnableFeature(
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 template <typename T>
 struct ArgMinMaxTester {
@@ -1782,6 +1813,10 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {-1, 0, 1, 2, 3, 4}}}
         .Test();
   }
+
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
+  // after adding support for other binary operators.
+#if !BUILDFLAG(IS_LINUX)
   // Test building and computing a graph with single operator equal.
   {
     ElementWiseBinaryTester<float, uint8_t>{
@@ -1947,6 +1982,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 1, 1, 1, 0, 0}}}
         .Test();
   }
+#endif  // !BUILDFLAG(IS_LINUX)
 #endif  // !BUILDFLAG(IS_MAC)
 }
 
@@ -2000,6 +2036,10 @@ TEST_F(WebNNGraphImplBackendTest,
       .type = mojom::Operand::DataType::kUint8,
       .dimensions = {1, 2, 3, 1},
       .values = {0, 2, 0, 4, 5, 120}};
+
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
+  // after adding support for other unary operators.
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<uint8_t>{
         .input = {.type = mojom::Operand::DataType::kUint8,
@@ -2053,6 +2093,8 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = test_operand_info_uint8}
         .Test();
   }
+#endif  // !BUILDFLAG(IS_LINUX)
+
   {
     // Test Sqrt with 0-D scalar input.
     ElementWiseUnaryTester<float>{
@@ -2076,6 +2118,10 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {0, 2, 5, 4, 8, 7}}}
         .Test();
   }
+
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
+  // after adding support for float16 and other unary operators.
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2134,6 +2180,8 @@ TEST_F(WebNNGraphImplBackendTest,
                         std::numeric_limits<float>::infinity()})}}
         .Test();
   }
+#endif  // !BUILDFLAG(IS_LINUX)
+
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2178,6 +2226,10 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {exp(1.f), exp(-2.f), exp(3.f), exp(-4.f)}}}
         .Test();
   }
+
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
+  // after adding support for other unary operators.
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2189,6 +2241,8 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = Float16FromFloat32({-2, 0, 1, -3, 0, 2})}}
         .Test();
   }
+#endif  // !BUILDFLAG(IS_LINUX)
+
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2222,6 +2276,10 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {sin(1.f), sin(-2.f), sin(3.f), sin(-4.f)}}}
         .Test();
   }
+
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
+  // after adding support for other unary operators.
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2233,6 +2291,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {tan(1.f), tan(-2.f), tan(3.f), tan(-4.f)}}}
         .Test();
   }
+#endif  // !BUILDFLAG(IS_LINUX)
 }
 
 template <typename T>
