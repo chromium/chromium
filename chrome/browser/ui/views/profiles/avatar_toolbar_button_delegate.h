@@ -47,7 +47,6 @@ enum class ButtonState;
 //   intercept bubbles are displayed.
 // - Sync paused/error state.
 class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
-                                    public signin::IdentityManager::Observer,
                                     public syncer::SyncServiceObserver {
  public:
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Browser* browser);
@@ -76,17 +75,12 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
 #endif
   void ShowDefaultText();
 
-  // Should be called when the icon is updated. This may trigger the identity
-  // pill animation if the delegate is waiting for the image.
-  void MaybeShowIdentityAnimation();
-
-  // Enables or disables the IPH highlight.
-  void SetHasInProductHelpPromo(bool has_promo);
-
   // Called by the AvatarToolbarButton to notify the delegate about events.
-  void OnMouseExited();
-  void OnBlur();
   void OnThemeChanged(const ui::ColorProvider* color_provider);
+
+  // Overrides the duration of the avatar toolbar button text that is displayed
+  // for a specific amount of time.
+  static void SetTextDurationForTesting(base::TimeDelta duration);
 
  private:
   // Internal text state
@@ -101,40 +95,12 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
   internal::ButtonState ComputeState() const;
 
   // ProfileAttributesStorage::Observer:
-  void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
-  void OnProfileHighResAvatarLoaded(
-      const base::FilePath& profile_path) override;
-  void OnProfileNameChanged(const base::FilePath& profile_path,
-                            const std::u16string& old_profile_name) override;
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override;
-
-  // IdentityManager::Observer:
-  // Needed if the first sync promo account should be displayed.
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event) override;
-  void OnRefreshTokensLoaded() override;
-  void OnAccountsInCookieUpdated(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-      const GoogleServiceAuthError& error) override;
-  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
-  void OnIdentityManagerShutdown(signin::IdentityManager*) override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService*) override;
   void OnSyncShutdown(syncer::SyncService*) override;
-
-  // Initiates showing the identity.
-  void OnUserIdentityChanged();
-
-  void OnIdentityAnimationTimeout();
-  // Called after the user interacted with the button or after some timeout.
-  void MaybeHideIdentityAnimation();
-
-  // Shows the identity pill animation. If the animation is already showing,
-  // this extends the duration of the current animation.
-  void ShowIdentityAnimation();
 
   TextState GetDefaultTextState() const;
 
@@ -151,30 +117,20 @@ class AvatarToolbarButtonDelegate : public ProfileAttributesStorage::Observer,
   // Callback used to remove the explicit text shown and reset to the default.
   void ClearExplicitText();
 
+  void OnEnterpriseTextShownTimeout();
+
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
 
   const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
   TextState button_text_state_ = TextState::kNotShowing;
 
-  // Count of identity pill animation timeouts that are currently scheduled.
-  // Multiple timeouts are scheduled when multiple animation triggers happen
-  // in a quick sequence (before the first timeout passes). The identity pill
-  // tries to close when this reaches 0.
-  int identity_animation_timeout_count_ = 0;
-
   bool enterprise_text_hide_scheduled_ = false;
-
-  bool refresh_tokens_loaded_ = false;
-  bool has_in_product_help_promo_ = false;
 
   // Caches the value of the last error so the class can detect when it
   // changes and notify |avatar_toolbar_button_|.

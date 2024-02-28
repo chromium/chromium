@@ -111,26 +111,15 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
 AvatarToolbarButton::~AvatarToolbarButton() = default;
 
 void AvatarToolbarButton::UpdateIcon() {
-  // If widget isn't set, the button doesn't have access to the theme provider
-  // to set colors. Defer updating until AddedToWidget(). This may get called as
-  // a result of OnUserIdentityChanged() called from the constructor when the
-  // button is not yet added to the ToolbarView's hierarchy.
   if (!GetWidget()) {
     return;
   }
 
-  const int icon_size = GetIconSize();
-  for (auto state : kButtonStates) {
-    SetImageModel(
-        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
-  }
-  // If `OnUserIdentityChanged()` has been called and the image is not empty,
-  // show the animation. If the animation is shown, also resets the delegate's
-  // `TextState` so that the animation will not be triggered again.
-  // TODO(b/324018028): This call should be moved within the delegate.
-  delegate_->MaybeShowIdentityAnimation();
+  UpdateIconWithoutObservers();
 
-  SetInsets();
+  for (auto& observer : observer_list_) {
+    observer.OnIconUpdated();
+  }
 }
 
 void AvatarToolbarButton::Layout(PassKey) {
@@ -153,6 +142,24 @@ void AvatarToolbarButton::Layout(PassKey) {
   gfx::Size image_size = image->GetImage().size();
   image_size.Enlarge(1, 1);
   image->SetSize(image_size);
+}
+
+void AvatarToolbarButton::UpdateIconWithoutObservers() {
+  // If widget isn't set, the button doesn't have access to the theme provider
+  // to set colors. Defer updating until AddedToWidget(). This may get called as
+  // a result of OnUserIdentityChanged() called from the constructor when the
+  // button is not yet added to the ToolbarView's hierarchy.
+  if (!GetWidget()) {
+    return;
+  }
+
+  const int icon_size = GetIconSize();
+  for (auto state : kButtonStates) {
+    SetImageModel(
+        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
+  }
+
+  SetInsets();
 }
 
 void AvatarToolbarButton::UpdateText() {
@@ -304,12 +311,16 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
-  delegate_->OnMouseExited();
+  for (auto& observer : observer_list_) {
+    observer.OnMouseExited();
+  }
   ToolbarButton::OnMouseExited(event);
 }
 
 void AvatarToolbarButton::OnBlur() {
-  delegate_->OnBlur();
+  for (auto& observer : observer_list_) {
+    observer.OnBlur();
+  }
   ToolbarButton::OnBlur();
 }
 
@@ -326,6 +337,11 @@ void AvatarToolbarButton::OnThemeChanged() {
 void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
     base::TimeDelta delay) {
   g_iph_min_delay_after_creation = delay;
+}
+
+// static
+void AvatarToolbarButton::SetTextDurationForTesting(base::TimeDelta duration) {
+  AvatarToolbarButtonDelegate::SetTextDurationForTesting(duration);
 }
 
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
@@ -346,8 +362,10 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
                                               int64_t old_value) {
   if (key == user_education::kHasInProductHelpPromoKey) {
-    delegate_->SetHasInProductHelpPromo(
-        GetProperty(user_education::kHasInProductHelpPromoKey));
+    for (auto& observer : observer_list_) {
+      observer.OnIPHPromoChanged(
+          GetProperty(user_education::kHasInProductHelpPromoKey));
+    }
   }
   ToolbarButton::AfterPropertyChange(key, old_value);
 }
@@ -410,6 +428,26 @@ int AvatarToolbarButton::GetIconSize() const {
 
   return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
                                          : kIconSizeForNonTouchUi;
+}
+
+void AvatarToolbarButton::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void AvatarToolbarButton::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void AvatarToolbarButton::NotifyShowNameEndedForTesting() const {
+  for (auto& observer : observer_list_) {
+    observer.OnShowNameEndedForTesting();  // IN-TEST
+  }
+}
+
+void AvatarToolbarButton::NotifyShowEnterpriseTextEndedForTesting() const {
+  for (auto& observer : observer_list_) {
+    observer.OnShowEnterpriseTextEndedForTesting();  // IN-TEST
+  }
 }
 
 BEGIN_METADATA(AvatarToolbarButton)

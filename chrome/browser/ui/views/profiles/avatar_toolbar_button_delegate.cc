@@ -40,9 +40,45 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+
+namespace {
+
+static std::optional<base::TimeDelta> kTestingDuration;
+
+constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr base::TimeDelta kEnterpriseTextTransientDuration = base::Seconds(30);
+#endif
+
+ProfileAttributesStorage& GetProfileAttributesStorage() {
+  return g_browser_process->profile_manager()->GetProfileAttributesStorage();
+}
+
+ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
+  return GetProfileAttributesStorage().GetProfileAttributesWithPath(
+      profile->GetPath());
+}
+
+gfx::Image GetGaiaAccountImage(Profile* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager
+        ->FindExtendedAccountInfoByAccountId(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin))
+        .account_image;
+  }
+  return gfx::Image();
+}
+
+}  // namespace
 
 namespace internal {
 
@@ -54,7 +90,7 @@ enum class ButtonState {
   kGuestSession,
   kIncognitoProfile,
   kExplicitTextShowing,
-  kAnimatedUserIdentity,
+  kShowIdentityName,
   kSyncPaused,
   // An error in sync-the-feature or sync-the-transport.
   kSyncError,
@@ -71,9 +107,13 @@ enum class ElementToUpdate {
   kAll,
 };
 
+class StateProvider;
+
 class StateObserver {
  public:
-  virtual void Update(ElementToUpdate element_to_update) = 0;
+  virtual void OnStateProviderUpdateRequest(
+      StateProvider* state_provider,
+      ElementToUpdate element_to_update) = 0;
 
   virtual ~StateObserver() = default;
 };
@@ -86,12 +126,15 @@ class StateProvider {
   explicit StateProvider(StateObserver& state_observer)
       : state_observer_(state_observer) {}
 
+  // TODO(b/324018028): Consider changing `IsActive()` to be non-virtual and
+  // return a member variable `is_active_` that can be controlled by the derived
+  // classes that sets the active/inactive state when needed, also requesting
+  // updates on state change. This way we would make sure not to miss updates
+  // when a state activation changes.
   virtual bool IsActive() const = 0;
 
-  void NotifyUpdate(ElementToUpdate element_to_update) {
-    if (IsActive()) {
-      state_observer_->Update(element_to_update);
-    }
+  void RequestUpdate(ElementToUpdate element_to_update) {
+    state_observer_->OnStateProviderUpdateRequest(this, element_to_update);
   }
 
   virtual ~StateProvider() = default;
@@ -115,10 +158,10 @@ class PrivateStateProvider : public StateProvider, public BrowserListObserver {
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override {
-    NotifyUpdate(ElementToUpdate::kAll);
+    RequestUpdate(ElementToUpdate::kAll);
   }
   void OnBrowserRemoved(Browser* browser) override {
-    NotifyUpdate(ElementToUpdate::kAll);
+    RequestUpdate(ElementToUpdate::kAll);
   }
 
  private:
@@ -140,6 +183,7 @@ class ExplicitStateProvider : public StateProvider {
   // or when overriding the explicit state by another one.
   void Clear() {
     if (!active_) {
+      RequestUpdate(ElementToUpdate::kAll);
       return;
     }
 
@@ -164,6 +208,246 @@ class ExplicitStateProvider : public StateProvider {
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
 
+class ShowIdentityNameStateProvider
+    : public StateProvider,
+      public signin::IdentityManager::Observer,
+      public AvatarToolbarButton::Observer,
+      public ProfileAttributesStorage::Observer {
+ public:
+  explicit ShowIdentityNameStateProvider(
+      StateObserver& state_observer,
+      Profile& profile,
+      AvatarToolbarButton& avatar_toolbar_button)
+      : StateProvider(state_observer),
+        profile_(profile),
+        avatar_toolbar_button_(avatar_toolbar_button) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(&profile);
+    CHECK(identity_manager);
+    identity_manager_observation_.Observe(identity_manager);
+    if (identity_manager->AreRefreshTokensLoaded()) {
+      OnRefreshTokensLoaded();
+    }
+
+    avatar_button_observation_.Observe(&avatar_toolbar_button);
+    profile_observation_.Observe(&GetProfileAttributesStorage());
+  }
+
+  ~ShowIdentityNameStateProvider() override {
+    avatar_button_observation_.Reset();
+  }
+
+  bool IsActive() const override {
+    return waiting_for_image_ || show_identity_request_count_ > 0;
+  }
+
+  // IdentityManager::Observer:
+  // Needed if the first sync promo account should be displayed.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+        signin::PrimaryAccountChangeEvent::Type::kSet) {
+      return;
+    }
+    OnUserIdentityChanged();
+  }
+
+  void OnRefreshTokensLoaded() override {
+    // TODO(b/324018028): This check can be removed as `OnRefreshTokensLoaded()`
+    // is called when first observing and not as a result of
+    // `IdentityManager::OnRefreshTokensLoaded()`. So double call should not
+    // happen anymore.
+    if (refresh_tokens_loaded_) {
+      // This is possible, if `AvatarToolbarButtonDelegate`  constructor  is
+      // called within the loop in
+      //  `IdentityManager::OnRefreshTokensLoaded()` to notify observers. In
+      //  that case, |OnRefreshTokensLoaded| will be called twice, once from
+      //  AvatarToolbarButtonDelegate` constructor and another time from the
+      //  `IdentityManager`. This happens for new signed in profiles. See
+      //  https://crbug.com/1035480
+      return;
+    }
+
+    refresh_tokens_loaded_ = true;
+    if (!signin_ui_util::ShouldShowAnimatedIdentityOnOpeningWindow(
+            GetProfileAttributesStorage(), &profile_.get())) {
+      return;
+    }
+
+    CoreAccountInfo account =
+        IdentityManagerFactory::GetForProfile(&profile_.get())
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    if (account.IsEmpty()) {
+      return;
+    }
+
+    OnUserIdentityChanged();
+  }
+
+  void OnAccountsInCookieUpdated(const signin::AccountsInCookieJarInfo&,
+                                 const GoogleServiceAuthError&) override {
+    UpdateButtonIcon();
+  }
+
+  void OnExtendedAccountInfoUpdated(const AccountInfo&) override {
+    UpdateButtonIcon();
+  }
+
+  void OnExtendedAccountInfoRemoved(const AccountInfo&) override {
+    UpdateButtonIcon();
+  }
+
+  void OnIdentityManagerShutdown(signin::IdentityManager*) override {
+    identity_manager_observation_.Reset();
+  }
+
+  // AvatarToolbarButton::Observer
+  void OnMouseExited() override { MaybeHideIdentityAnimation(); }
+
+  void OnBlur() override { MaybeHideIdentityAnimation(); }
+
+  void OnIPHPromoChanged(bool has_promo) override {
+    if (has_in_product_help_promo_ == has_promo) {
+      return;
+    }
+
+    has_in_product_help_promo_ = has_promo;
+    // Trigger a new animation, even if the IPH is being removed. This keeps the
+    // pill open a little more and avoids jankiness caused by the two animations
+    // (IPH and identity pill) happening concurrently.
+    // See https://crbug.com/1198907
+    ShowIdentityName();
+  }
+
+  void OnIconUpdated() override { MaybeShowIdentityName(); }
+
+  //  ProfileAttributesStorage::Observer:
+  void OnProfileAvatarChanged(const base::FilePath&) override {
+    UpdateButtonIcon();
+  }
+
+  void OnProfileHighResAvatarLoaded(const base::FilePath&) override {
+    UpdateButtonIcon();
+  }
+
+  void OnProfileNameChanged(const base::FilePath&,
+                            const std::u16string&) override {
+    RequestUpdate(ElementToUpdate::kText);
+  }
+
+ private:
+  void UpdateButtonIcon() {
+    if (!avatar_toolbar_button_->GetWidget()) {
+      return;
+    }
+
+    RequestUpdate(ElementToUpdate::kIcon);
+
+    // Try to show the name if we were waiting for an image.
+    MaybeShowIdentityName();
+  }
+
+  // Initiates showing the identity.
+  void OnUserIdentityChanged() {
+    signin_ui_util::RecordAnimatedIdentityTriggered(&profile_.get());
+    // On any following icon update the name will be attempted to be shown when
+    // the image is ready.
+    waiting_for_image_ = true;
+    UpdateButtonIcon();
+  }
+
+  // Should be called when the icon is updated. This may trigger theshowing of
+  // the identity name.
+  void MaybeShowIdentityName() {
+    if (!waiting_for_image_ ||
+        ::GetGaiaAccountImage(&profile_.get()).IsEmpty()) {
+      return;
+    }
+
+    // Check that the user is still signed in. See https://crbug.com/1025674
+    if (!IdentityManagerFactory::GetForProfile(&profile_.get())
+             ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      Clear();
+      return;
+    }
+
+    ShowIdentityName();
+  }
+
+  // Shows the name in the identity pill. If the name is already showing, this
+  // extends the duration.
+  void ShowIdentityName() {
+    ++show_identity_request_count_;
+    waiting_for_image_ = false;
+
+    RequestUpdate(ElementToUpdate::kText);
+
+    // Hide the pill after a while.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ShowIdentityNameStateProvider::OnIdentityAnimationTimeout,
+            weak_ptr_factory_.GetWeakPtr()),
+        kTestingDuration.value_or(kIdentityAnimationDuration));
+  }
+
+  void OnIdentityAnimationTimeout() {
+    --show_identity_request_count_;
+    MaybeHideIdentityAnimation();
+  }
+
+  // Called after the user interacted with the button or after some timeout.
+  void MaybeHideIdentityAnimation() {
+    if (show_identity_request_count_ > 0) {
+      return;
+    }
+
+    // Keep identity visible if this button is in use (hovered or has focus) or
+    // has an associated In-Product-Help promo. We should not move things around
+    // when the user wants to click on `this` or another button in the parent.
+    if (avatar_toolbar_button_->IsMouseHovered() ||
+        avatar_toolbar_button_->HasFocus() || has_in_product_help_promo_) {
+      return;
+    }
+
+    Clear();
+    avatar_toolbar_button_->NotifyShowNameEndedForTesting();  // IN-TEST
+  }
+
+  // Clears the effects of the state being active.
+  void Clear() {
+    show_identity_request_count_ = 0;
+    waiting_for_image_ = false;
+    show_identity_request_count_ = false;
+    has_in_product_help_promo_ = false;
+
+    RequestUpdate(ElementToUpdate::kAll);
+  }
+
+  const raw_ref<Profile> profile_;
+  const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
+
+  // Count of the show identity pill name timeouts that are currently scheduled.
+  // Multiple timeouts are scheduled when multiple show requests triggers happen
+  // in a quick sequence (before the first timeout passes). The identity pill
+  // tries to close when this reaches 0.
+  int show_identity_request_count_ = 0;
+  bool waiting_for_image_ = false;
+  bool has_in_product_help_promo_ = false;
+  bool refresh_tokens_loaded_ = false;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
+      avatar_button_observation_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_observation_{this};
+
+  base::WeakPtrFactory<ShowIdentityNameStateProvider> weak_ptr_factory_{this};
+};
+
 // TO BE USED at the end of the imlpementation.
 class NormalStateProvider : public StateProvider {
  public:
@@ -178,8 +462,11 @@ class NormalStateProvider : public StateProvider {
 
 // Container of all the states and returns the active state with the highest
 // priority.
-// `kExplicitTextShowing` with `ExplicitStateProvider` is the only state that
-// can change dynamically.
+// All states are initialized at construction based on the Profile type.
+// Exception for `ButtonState::kExplicitTextShowing` with
+// `ExplicitStateProvider`  which is the only state that can be added
+// dynamically and controlled externally. It has to be part of the
+// `StateManager` however to properly compute the current active state.
 class StateManager : public StateObserver {
  public:
   explicit StateManager(AvatarToolbarButton& avatar_toolbar_button,
@@ -188,7 +475,11 @@ class StateManager : public StateObserver {
     // Add each possible state for each Profile type, since this structure is
     // tied to Browser, in which a Profile cannot change, it is correct to
     // compute the Profile type once.
-    if (profile->IsGuestSession()) {
+    if (profile->IsRegularProfile()) {
+      states_[ButtonState::kShowIdentityName] =
+          std::make_unique<ShowIdentityNameStateProvider>(
+              /*state_observer=*/*this, *profile, avatar_toolbar_button);
+    } else if (profile->IsGuestSession()) {
       states_[ButtonState::kGuestSession] =
           std::make_unique<PrivateStateProvider>(
               /*state_observer=*/*this);
@@ -206,13 +497,14 @@ class StateManager : public StateObserver {
   }
   ~StateManager() override = default;
 
-  // Returns the current active state with the highest priority.
+  // Computes and returns the current active state with the highest priority.
   // Multiple states could be active at the same time.
-  std::optional<ButtonState> GetActiveState() {
+  std::optional<ButtonState> ComputeButtonActiveState() {
     // Traverse the map of states sorted by their priority set in `ButtonState`.
     for (auto& state_pair : states_) {
       // Return the first state that is active.
       if (state_pair.second->IsActive()) {
+        current_active_state_ = state_pair.second.get();
         // TODO(b/324018028): this could return the state provider itself, if
         // the information can be get from it later.
         return state_pair.first;
@@ -221,6 +513,7 @@ class StateManager : public StateObserver {
 
     // TODO(b/324018028): At the end of the implementation this should not be
     // expected anymore and be replaced by a `NOTREACHED_NORETURN()`.
+    current_active_state_ = nullptr;
     return std::nullopt;
   }
 
@@ -238,44 +531,60 @@ class StateManager : public StateObserver {
   }
 
   // StateObserver:
-  void Update(ElementToUpdate element_to_update) override {
+  void OnStateProviderUpdateRequest(
+      StateProvider* requesting_state,
+      ElementToUpdate element_to_update) override {
+    if (!requesting_state->IsActive()) {
+      // Updates everything if the requesting state was the current button
+      // active state, clearing it, otherwise we just ignore the request.
+      if (current_active_state_ == requesting_state) {
+        // Will recompute the new button active state as we are clearing the
+        // requesting state effects.
+        Update(ElementToUpdate::kAll);
+      }
+      return;
+    }
+
+    // Updates `current_active_state_`, and does not alter the states active
+    // status. In that case, `requesting_state` remains active at this point but
+    // is not necessarily the one with the highest priority.
+    ComputeButtonActiveState();
+    // Ignore the request if the requested state is not the button active one
+    // because the requesting state despite being active, does not have the
+    // highest current active priority, meaning that it's update request should
+    // not have any effect.
+    if (current_active_state_ != requesting_state) {
+      return;
+    }
+
+    Update(element_to_update);
+  }
+
+ private:
+  // This method will compute the button active state again with
+  // `ComputeButtonActiveState()` through the delegate.
+  void Update(ElementToUpdate element_to_update) {
     if (element_to_update == ElementToUpdate::kAll ||
         element_to_update == ElementToUpdate::kText) {
       avatar_toolbar_button_->UpdateText();
     }
     if (element_to_update == ElementToUpdate::kAll ||
         element_to_update == ElementToUpdate::kIcon) {
-      avatar_toolbar_button_->UpdateIcon();
+      avatar_toolbar_button_->UpdateIconWithoutObservers();
     }
   }
 
- private:
   base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
   raw_ref<AvatarToolbarButton> avatar_toolbar_button_;
+
+  // Active state per the last request to `ComputeButtonActiveState()`.
+  raw_ptr<StateProvider> current_active_state_ = nullptr;
 };
 
 }  // namespace internal
 
 using ButtonState = internal::ButtonState;
 using ExplicitStateProvider = internal::ExplicitStateProvider;
-
-namespace {
-constexpr base::TimeDelta kIdentityAnimationDuration = base::Seconds(3);
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-constexpr base::TimeDelta kEnterpriseTextTransientDuration = base::Seconds(30);
-#endif
-
-ProfileAttributesStorage& GetProfileAttributesStorage() {
-  return g_browser_process->profile_manager()->GetProfileAttributesStorage();
-}
-
-ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
-  return GetProfileAttributesStorage().GetProfileAttributesWithPath(
-      profile->GetPath());
-}
-
-}  // namespace
 
 AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     AvatarToolbarButton* button,
@@ -293,26 +602,18 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     sync_service_observation_.Observe(sync_service);
   }
 
-  bool is_incognito = profile_->IsOffTheRecord();
-  if (!is_incognito && !profile_->IsGuestSession()) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_);
-    identity_manager_observation_.Observe(identity_manager);
-    if (identity_manager->AreRefreshTokensLoaded()) {
-      OnRefreshTokensLoaded();
-    }
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS this button should only show as badging for Incognito, Guest and
   // captivie portal signin. It's only enabled for non captive portal Incognito
   // where a menu is available for closing all Incognito windows.
   avatar_toolbar_button_->SetEnabled(
-      is_incognito && !profile_->GetOTRProfileID().IsCaptivePortal());
+      profile_->IsOffTheRecord() &&
+      !profile_->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros we need to disable the button for captivie portal signin.
   avatar_toolbar_button_->SetEnabled(
-      !is_incognito || !profile_->GetOTRProfileID().IsCaptivePortal());
+      !profile_->IsOffTheRecord() ||
+      !profile_->GetOTRProfileID().IsCaptivePortal());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -334,17 +635,7 @@ std::u16string AvatarToolbarButtonDelegate::GetShortProfileName() const {
 }
 
 gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  if (identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return identity_manager
-        ->FindExtendedAccountInfoByAccountId(
-            identity_manager->GetPrimaryAccountId(
-                signin::ConsentLevel::kSignin))
-        .account_image;
-  }
-  return gfx::Image();
+  return ::GetGaiaAccountImage(profile_);
 }
 
 gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
@@ -392,15 +683,12 @@ int AvatarToolbarButtonDelegate::GetWindowCount() const {
 ButtonState AvatarToolbarButtonDelegate::ComputeState() const {
   // TODO(b/324018028): adapt each state to be part of a `StateProvider`. When
   // all states are migrated, remove the optional part of
-  // `StateManager::GetActiveState()` as we should always have at least one
-  // active state at all time.
-  std::optional<ButtonState> active_state = state_manager_->GetActiveState();
+  // `StateManager::ComputeButtonActiveState()` as we should always have at
+  // least one active state at all time.
+  std::optional<ButtonState> active_state =
+      state_manager_->ComputeButtonActiveState();
   if (active_state.has_value()) {
     return active_state.value();
-  }
-
-  if (button_text_state_ == TextState::kShowingName) {
-    return ButtonState::kAnimatedUserIdentity;
   }
 
   if (!last_avatar_error_ &&
@@ -451,44 +739,6 @@ AvatarToolbarButtonDelegate::GetAvatarSyncErrorType() const {
   return last_avatar_error_;
 }
 
-void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation() {
-  const gfx::Image gaia_account_image = GetGaiaAccountImage();
-  if (button_text_state_ != TextState::kWaitingForImage ||
-      gaia_account_image.IsEmpty()) {
-    return;
-  }
-
-  // Check that the user is still signed in. See https://crbug.com/1025674
-  if (!IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-          signin::ConsentLevel::kSignin)) {
-    ShowDefaultText();
-    return;
-  }
-
-  ShowIdentityAnimation();
-}
-
-void AvatarToolbarButtonDelegate::SetHasInProductHelpPromo(bool has_promo) {
-  if (has_in_product_help_promo_ == has_promo) {
-    return;
-  }
-
-  has_in_product_help_promo_ = has_promo;
-  // Trigger a new animation, even if the IPH is being removed. This keeps the
-  // pill open a little more and avoids jankiness caused by the two animations
-  // (IPH and identity pill) happening concurrently.
-  // See https://crbug.com/1198907
-  ShowIdentityAnimation();
-}
-
-void AvatarToolbarButtonDelegate::OnMouseExited() {
-  MaybeHideIdentityAnimation();
-}
-
-void AvatarToolbarButtonDelegate::OnBlur() {
-  MaybeHideIdentityAnimation();
-}
-
 void AvatarToolbarButtonDelegate::OnThemeChanged(
     const ui::ColorProvider* color_provider) {
   // Update avatar color information in profile attributes.
@@ -523,82 +773,11 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
 #endif
 }
 
-void AvatarToolbarButtonDelegate::OnProfileAvatarChanged(
-    const base::FilePath& profile_path) {
-  avatar_toolbar_button_->UpdateIcon();
-}
-
-void AvatarToolbarButtonDelegate::OnProfileHighResAvatarLoaded(
-    const base::FilePath& profile_path) {
-  avatar_toolbar_button_->UpdateIcon();
-}
-
-void AvatarToolbarButtonDelegate::OnProfileNameChanged(
-    const base::FilePath& profile_path,
-    const std::u16string& old_profile_name) {
-  avatar_toolbar_button_->UpdateText();
-}
-
 void AvatarToolbarButtonDelegate::OnProfileUserManagementAcceptanceChanged(
     const base::FilePath& profile_path) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   MaybeShowEnterpriseText();
 #endif
-}
-
-void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-      signin::PrimaryAccountChangeEvent::Type::kSet) {
-    return;
-  }
-  OnUserIdentityChanged();
-}
-
-void AvatarToolbarButtonDelegate::OnRefreshTokensLoaded() {
-  if (refresh_tokens_loaded_) {
-    // This is possible, if |AvatarToolbarButtonDelegate::Init| is called within
-    // the loop in |IdentityManager::OnRefreshTokensLoaded()| to notify
-    // observers. In that case, |OnRefreshTokensLoaded| will be called twice,
-    // once from |AvatarToolbarButtonDelegate::Init| and another time from the
-    // |IdentityManager|. This happens for new signed in profiles.
-    // See https://crbug.com/1035480
-    return;
-  }
-
-  refresh_tokens_loaded_ = true;
-  if (!signin_ui_util::ShouldShowAnimatedIdentityOnOpeningWindow(
-          GetProfileAttributesStorage(), profile_)) {
-    return;
-  }
-  CoreAccountInfo account =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
-  if (account.IsEmpty()) {
-    return;
-  }
-  OnUserIdentityChanged();
-}
-
-void AvatarToolbarButtonDelegate::OnAccountsInCookieUpdated(
-    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-    const GoogleServiceAuthError& error) {
-  avatar_toolbar_button_->UpdateIcon();
-}
-
-void AvatarToolbarButtonDelegate::OnExtendedAccountInfoUpdated(
-    const AccountInfo& info) {
-  avatar_toolbar_button_->UpdateIcon();
-}
-
-void AvatarToolbarButtonDelegate::OnExtendedAccountInfoRemoved(
-    const AccountInfo& info) {
-  avatar_toolbar_button_->UpdateIcon();
-}
-
-void AvatarToolbarButtonDelegate::OnIdentityManagerShutdown(
-    signin::IdentityManager*) {
-  identity_manager_observation_.Reset();
 }
 
 void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
@@ -615,64 +794,6 @@ void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
 
 void AvatarToolbarButtonDelegate::OnSyncShutdown(syncer::SyncService*) {
   sync_service_observation_.Reset();
-}
-
-void AvatarToolbarButtonDelegate::OnUserIdentityChanged() {
-  signin_ui_util::RecordAnimatedIdentityTriggered(profile_);
-  button_text_state_ = TextState::kWaitingForImage;
-  // If we already have a gaia image, the pill will be immediately displayed by
-  // `UpdateIcon()`. If not, it can still be displayed later, since the button
-  // text state is now set to `TextState::kWaitingForImage`. This state
-  // will trigger the animation in `MaybeShowIdentityAnimation(...)`.
-  avatar_toolbar_button_->UpdateIcon();
-}
-
-void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout() {
-  --identity_animation_timeout_count_;
-  // If the count is > 0, there's at least one more pending
-  // OnIdentityAnimationTimeout() that will hide it after the proper delay.
-  // Also return if the button is showing the signin text rather than the name.
-  if (identity_animation_timeout_count_ > 0 ||
-      button_text_state_ == TextState::kShowingExplicitText ||
-      button_text_state_ == TextState::kShowingEnterpriseText) {
-    return;
-  }
-
-  DCHECK_EQ(button_text_state_, TextState::kShowingName);
-  MaybeHideIdentityAnimation();
-}
-
-void AvatarToolbarButtonDelegate::MaybeHideIdentityAnimation() {
-  // No-op if not showing or if the timeout hasn't passed, yet.
-  if (button_text_state_ != TextState::kShowingName ||
-      identity_animation_timeout_count_ > 0) {
-    return;
-  }
-
-  // Keep identity visible if this button is in use (hovered or has focus) or
-  // has an associated In-Product-Help promo. We should not move things around
-  // when the user wants to click on |this| or another button in the parent.
-  if (avatar_toolbar_button_->IsMouseHovered() ||
-      avatar_toolbar_button_->HasFocus() || has_in_product_help_promo_) {
-    return;
-  }
-
-  // Update the text to the pre-shown state. This also makes sure that we now
-  // reflect changes that happened while the identity pill was shown.
-  ShowDefaultText();
-}
-
-void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
-  button_text_state_ = TextState::kShowingName;
-  avatar_toolbar_button_->UpdateText();
-
-  // Hide the pill after a while.
-  ++identity_animation_timeout_count_;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kIdentityAnimationDuration);
 }
 
 base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
@@ -723,13 +844,19 @@ void AvatarToolbarButtonDelegate::MaybeShowEnterpriseText() {
   if (transient && !enterprise_text_hide_scheduled_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&AvatarToolbarButtonDelegate::ShowDefaultText,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kEnterpriseTextTransientDuration);
+        base::BindOnce(
+            &AvatarToolbarButtonDelegate::OnEnterpriseTextShownTimeout,
+            weak_ptr_factory_.GetWeakPtr()),
+        kTestingDuration.value_or(kEnterpriseTextTransientDuration));
     enterprise_text_hide_scheduled_ = true;
   }
 }
 #endif
+
+void AvatarToolbarButtonDelegate::OnEnterpriseTextShownTimeout() {
+  ShowDefaultText();
+  avatar_toolbar_button_->NotifyShowEnterpriseTextEndedForTesting();  // IN-TEST
+}
 
 void AvatarToolbarButtonDelegate::ShowDefaultText() {
   button_text_state_ = GetDefaultTextState();
@@ -773,7 +900,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       }
       break;
     }
-    case ButtonState::kAnimatedUserIdentity:
+    case ButtonState::kShowIdentityName:
       text = GetShortProfileName();
       break;
     case ButtonState::kExplicitTextShowing: {
@@ -841,7 +968,7 @@ std::optional<SkColor> AvatarToolbarButtonDelegate::GetHighlightTextColor(
       break;
     case ButtonState::kGuestSession:
     case ButtonState::kExplicitTextShowing:
-    case ButtonState::kAnimatedUserIdentity:
+    case ButtonState::kShowIdentityName:
       color = color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
       break;
@@ -864,7 +991,7 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
     case ButtonState::kGuestSession:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
-    case ButtonState::kAnimatedUserIdentity:
+    case ButtonState::kShowIdentityName:
       return GetShortProfileName();
     // kSyncPaused is just a type of sync error with different color, but should
     // still use GetAvatarSyncErrorDescription() as tooltip.
@@ -901,7 +1028,7 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
       case ButtonState::kSyncError:
       case ButtonState::kGuestSession:
       case ButtonState::kExplicitTextShowing:
-      case ButtonState::kAnimatedUserIdentity:
+      case ButtonState::kShowIdentityName:
         break;
       case ButtonState::kSyncPaused:
         ripple_color_id = kColorAvatarButtonNormalRipple;
@@ -931,7 +1058,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     case ButtonState::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
     case ButtonState::kExplicitTextShowing:
-    case ButtonState::kAnimatedUserIdentity:
+    case ButtonState::kShowIdentityName:
     case ButtonState::kSyncError:
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon
     // should be different.
@@ -948,7 +1075,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
 bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
   switch (ComputeState()) {
     case ButtonState::kGuestSession:
-    case ButtonState::kAnimatedUserIdentity:
+    case ButtonState::kShowIdentityName:
     case ButtonState::kNormal:
       return true;
     case ButtonState::kIncognitoProfile:
@@ -959,4 +1086,10 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
     case ButtonState::kSyncError:
       return false;
   }
+}
+
+// static
+void AvatarToolbarButtonDelegate::SetTextDurationForTesting(
+    base::TimeDelta duration) {
+  kTestingDuration = duration;
 }

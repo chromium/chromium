@@ -7,10 +7,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -33,6 +37,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -58,6 +63,54 @@ std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
 }
+
+constexpr base::TimeDelta kTestingDuration = base::Milliseconds(10);
+
+class AvatarToolbarButtonTestObserver : public AvatarToolbarButton::Observer {
+ public:
+  explicit AvatarToolbarButtonTestObserver(AvatarToolbarButton* avatar_button) {
+    scoped_avatar_observation_.Observe(avatar_button);
+  }
+
+  void WaitForShowNameEnded() {
+    if (show_name_ended_) {
+      return;
+    }
+
+    CHECK(!show_name_run_loop_.running());
+    show_name_run_loop_.Run();
+  }
+
+  void WaitForShowEnterpriseTextEnded() {
+    if (show_enterprise_text_ended_) {
+      return;
+    }
+
+    CHECK(!show_enterprise_text_run_loop_.running());
+    show_enterprise_text_run_loop_.Run();
+  }
+
+ private:
+  void OnShowNameEndedForTesting() override {
+    show_name_ended_ = true;
+    show_name_run_loop_.Quit();
+  }
+
+  void OnShowEnterpriseTextEndedForTesting() override {
+    show_enterprise_text_ended_ = true;
+    show_enterprise_text_run_loop_.Quit();
+  }
+
+  base::RunLoop show_name_run_loop_;
+  bool show_name_ended_ = false;
+
+  base::RunLoop show_enterprise_text_run_loop_;
+  bool show_enterprise_text_ended_ = false;
+
+  base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
+      scoped_avatar_observation_{this};
+};
+
 }  // namespace
 
 class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
@@ -67,7 +120,9 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
             BrowserContextDependencyManager::GetInstance()
                 ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
                     &AvatarToolbarButtonBrowserTest::SetTestingFactories,
-                    base::Unretained(this)))) {}
+                    base::Unretained(this)))) {
+    AvatarToolbarButton::SetTextDurationForTesting(kTestingDuration);
+  }
   AvatarToolbarButtonBrowserTest(const AvatarToolbarButtonBrowserTest&) =
       delete;
   AvatarToolbarButtonBrowserTest& operator=(
@@ -104,10 +159,28 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     return IdentityManagerFactory::GetForProfile(browser()->profile());
   }
 
-  AccountInfo Signin(const std::u16string& email) {
-    return signin::MakePrimaryAccountAvailable(GetIdentityManager(),
-                                               base::UTF16ToUTF8(email),
-                                               signin::ConsentLevel::kSignin);
+  // Make account primary account with `consent_level` set and sets the account
+  // name to `name`.
+  AccountInfo MakePrimaryAccountAvailableWithName(
+      signin::ConsentLevel consent_level,
+      const std::u16string& email,
+      const std::u16string& name) {
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        GetIdentityManager(), base::UTF16ToUTF8(email), consent_level);
+    EXPECT_FALSE(account_info.IsEmpty());
+
+    account_info.given_name = base::UTF16ToUTF8(name);
+    account_info.full_name = base::UTF16ToUTF8(name);
+
+    signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
+
+    return account_info;
+  }
+
+  // Signs in to Chrome with `email` and set the `name` to the account name.
+  AccountInfo Signin(const std::u16string& email, const std::u16string& name) {
+    return MakePrimaryAccountAvailableWithName(signin::ConsentLevel::kSignin,
+                                               email, name);
   }
 
   void AddImage(CoreAccountId account_id) {
@@ -116,10 +189,24 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
         gfx::Image(gfx::test::CreateImageSkia(96, 96)));
   }
 
-  void EnableSync(const std::u16string& email) {
-    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-        GetIdentityManager(), base::UTF16ToUTF8(email),
-        signin::ConsentLevel::kSync);
+  // Enables sync for account with `email` and set the `name` to the account
+  // name.
+  AccountInfo EnableSync(const std::u16string& email,
+                         const std::u16string name) {
+    return MakePrimaryAccountAvailableWithName(signin::ConsentLevel::kSync,
+                                               email, name);
+  }
+
+  // Enables Sync and Wait for the name to stop showing.
+  AccountInfo EnableSyncAndWait(const std::u16string& email) {
+    // Name does not matter here since we are waiting.
+    AccountInfo account_info = EnableSync(email, u"");
+
+    AvatarToolbarButtonTestObserver observer(GetAvatarToolbarButton(browser()));
+    AddImage(account_info.account_id);
+    observer.WaitForShowNameEnded();
+
+    return account_info;
   }
 
   void SimulateSyncPaused() {
@@ -169,6 +256,15 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
         false);
     GetTestSyncService()->SetHasSyncConsent(true);
     GetTestSyncService()->FireStateChanged();
+  }
+
+  // Waits for 2 * kTestingDuration.
+  void WaitTwiceShowTextDuration() {
+    base::RunLoop waiting_run_loop;
+    base::OneShotTimer timer;
+    timer.Start(FROM_HERE, 2 * kTestingDuration,
+                waiting_run_loop.QuitClosure());
+    waiting_run_loop.Run();
   }
 
  private:
@@ -257,20 +353,51 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, ShowEmail) {
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       ShowNameOnSignin_ThenSync) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
 
+  AvatarToolbarButtonTestObserver observer(avatar_button);
   std::u16string email(u"test@gmail.com");
-  AccountInfo account_info = Signin(email);
+  std::u16string name(u"TestName");
+  AccountInfo account_info = Signin(email, name);
   // The button is in a waiting for image state, the name is not yet displayed.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 
   // The name will only show when the image is loaded.
   AddImage(account_info.account_id);
-  // Having no name in the account shows the email instead.
-  EXPECT_EQ(avatar_button->GetText(), email);
+  EXPECT_EQ(avatar_button->GetText(), name);
+
+  observer.WaitForShowNameEnded();
+  // Once the name is not shown anymore, we expect no text.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+
+  // Enabling Sync after already being signed in does not show the name again.
+  EnableSync(email, name);
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, ShowNameOnSync) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  AvatarToolbarButtonTestObserver observer(avatar_button);
+  std::u16string email(u"test@gmail.com");
+  std::u16string name(u"TestName");
+  AccountInfo account_info = EnableSync(email, name);
+  // The button is in a waiting for image state, the name is not yet displayed.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+
+  // The name will only show when the image is loaded.
+  AddImage(account_info.account_id);
+  EXPECT_EQ(avatar_button->GetText(), name);
+
+  observer.WaitForShowNameEnded();
+  // Once the name is not shown anymore, we expect no text.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
@@ -278,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  EnableSync(u"test@gmail.com");
+  AccountInfo account_info = EnableSyncAndWait(u"test@gmail.com");
   SimulateSyncPaused();
   ExpectSyncPaused(avatar_button);
 
@@ -291,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncError) {
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  EnableSync(u"test@gmail.com");
+  EnableSyncAndWait(u"test@gmail.com");
   SimulateSyncError();
   EXPECT_EQ(avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR));
@@ -307,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  EnableSync(u"test@gmail.com");
+  EnableSyncAndWait(u"test@gmail.com");
   SimulateSyncPaused();
   ExpectSyncPaused(avatar_button);
 
@@ -328,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  EnableSync(u"test@gmail.com");
+  EnableSyncAndWait(u"test@gmail.com");
   std::u16string profile_switch_text(u"Profile Switch?");
   base::ScopedClosureRunner hide_callback =
       avatar_button->ShowExplicitText(profile_switch_text);
@@ -601,14 +728,47 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkNewBrowserShowsBadge) {
+                       WorkBadgeOnTranientModeTimesOut) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SetTransientModePref(true);
+
+  std::u16string work_label = u"Work";
+  AvatarToolbarButtonTestObserver observer(avatar_button);
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+  EXPECT_EQ(avatar_button->GetText(), work_label);
+
+  observer.WaitForShowEnterpriseTextEnded();
+  // After timoue the normal state is expect - no text.
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkBadgeOnNonTranientModeDoesNotTimesOut) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SetTransientModePref(false);
 
   std::u16string work_label = u"Work";
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
       browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
+
+  // Simulate waiting for some time, twice the expected duration of showing the
+  // badge in normal in transient mode.
+  WaitTwiceShowTextDuration();
+  // Work label is still expected as it should be permanent.
+  EXPECT_EQ(avatar_button->GetText(), work_label);
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkNewBrowserShowsBadge) {
+  std::u16string work_label = u"Work";
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
 
   Browser* second_browser = CreateBrowser(browser()->profile());
   AvatarToolbarButton* second_browser_avatar_button =
@@ -628,18 +788,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
       browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
-  EnableSync(u"work@managed.com");
+  EnableSyncAndWait(u"work@managed.com");
   SimulateSyncPaused();
   // Sync Paused has priority over the Work badge.
   ExpectSyncPaused(avatar_button);
 
   ClearSyncPaused();
   // Non transient mode should permanently show the work badge by default.
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-  // TODO(b/322796016): This is probably a bug, we should expect the work_label
-  // as follows:
-  // EXPECT_EQ(avatar_button->GetText(), work_label);
-  // To be fixed in a following CL.
+  // TODO(b/324018028): This test result might change with the ongoing changes.
+  // At the end, the exact behavior could be set again. To review.
+  EXPECT_EQ(avatar_button->GetText(), work_label);
 }
 
 // Sync Pause/Error has priority over WorkBadge.
@@ -654,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
       browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
-  EnableSync(u"work@managed.com");
+  EnableSyncAndWait(u"work@managed.com");
   SimulateSyncPaused();
   // Sync Paused has priority over the Work badge.
   ExpectSyncPaused(avatar_button);

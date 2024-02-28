@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -30,12 +31,27 @@ class AvatarToolbarButton : public ToolbarButton {
   METADATA_HEADER(AvatarToolbarButton, ToolbarButton)
 
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnMouseExited() {}
+    virtual void OnBlur() {}
+    virtual void OnIPHPromoChanged(bool has_promo) {}
+    virtual void OnIconUpdated() {}
+
+    // Helper functions for testing.
+    virtual void OnShowNameEndedForTesting() {}
+    virtual void OnShowEnterpriseTextEndedForTesting() {}
+
+    ~Observer() override = default;
+  };
+
   explicit AvatarToolbarButton(BrowserView* browser);
   AvatarToolbarButton(const AvatarToolbarButton&) = delete;
   AvatarToolbarButton& operator=(const AvatarToolbarButton&) = delete;
   ~AvatarToolbarButton() override;
 
   void UpdateText();
+  void UpdateIconWithoutObservers();
 
   // Expands the pill to show the intercept text.
   // Returns a callback to be used when the shown text should be hidden.
@@ -78,8 +94,19 @@ class AvatarToolbarButton : public ToolbarButton {
 
   void ButtonPressed(bool is_source_accelerator = false);
 
+  // Methods to register or remove observers.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
+  // Overrides the duration of the avatar toolbar button text that is displayed
+  // for a specific amount of time.
+  static void SetTextDurationForTesting(base::TimeDelta duration);
+
+  // Used by the delegate when showing text timed events ended.
+  void NotifyShowNameEndedForTesting() const;
+  void NotifyShowEnterpriseTextEndedForTesting() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,
@@ -99,6 +126,9 @@ class AvatarToolbarButton : public ToolbarButton {
 
   // Used as a callback to reset the explicit button action.
   void ResetButtonAction();
+
+  // Lists of observers.
+  base::ObserverList<Observer, true> observer_list_;
 
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
