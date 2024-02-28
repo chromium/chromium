@@ -12,33 +12,33 @@
 // below.
 enum class PageActionIconType {
   kBookmarkStar = 0,
-  kClickToCall,
-  kCookieControls,
-  kFileSystemAccess,
-  kFind,
-  kMemorySaver,
-  kIntentPicker,
-  kLocalCardMigration,
-  kManagePasswords,
-  kPaymentsOfferNotification,
-  kPriceTracking,
-  kPwaInstall,
-  kQRCodeGenerator,
-  kReaderMode,
-  kSaveAutofillAddress,
-  kSaveCard,
-  kSendTabToSelf,
-  kSharingHub,
-  kSideSearch,
-  kSmsRemoteFetcher,
-  kTranslate,
-  kVirtualCardEnroll,
-  kVirtualCardManualFallback,
-  kZoom,
-  kSaveIban,
-  kMandatoryReauth,
-  kPriceInsights,
-  kReadAnything,
+  kClickToCall = 1,
+  kCookieControls = 2,
+  kFileSystemAccess = 3,
+  kFind = 4,
+  kMemorySaver = 5,
+  kIntentPicker = 6,
+  kLocalCardMigration = 7,
+  kManagePasswords = 8,
+  kPaymentsOfferNotification = 9,
+  kPriceTracking = 10,
+  kPwaInstall = 11,
+  kQRCodeGenerator = 12,
+  // DEPRECATED: kReaderMode = 13,
+  kSaveAutofillAddress = 14,
+  kSaveCard = 15,
+  kSendTabToSelf = 16,
+  kSharingHub = 17,
+  kSideSearch = 18,
+  kSmsRemoteFetcher = 19,
+  kTranslate = 20,
+  kVirtualCardEnroll = 21,
+  kVirtualCardManualFallback = 22,
+  kZoom = 23,
+  kSaveIban = 24,
+  kMandatoryReauth = 25,
+  kPriceInsights = 26,
+  kReadAnything = 27,
   kMaxValue = kReadAnything,
 };
 
@@ -56,7 +56,6 @@ static_assert(
 static_assert(static_cast<int>(PageActionIconType::kPriceTracking) == 10);
 static_assert(static_cast<int>(PageActionIconType::kPwaInstall) == 11);
 static_assert(static_cast<int>(PageActionIconType::kQRCodeGenerator) == 12);
-static_assert(static_cast<int>(PageActionIconType::kReaderMode) == 13);
 static_assert(static_cast<int>(PageActionIconType::kSaveAutofillAddress) == 14);
 static_assert(static_cast<int>(PageActionIconType::kSaveCard) == 15);
 static_assert(static_cast<int>(PageActionIconType::kSendTabToSelf) == 16);

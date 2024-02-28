@@ -5749,8 +5749,6 @@ static_library("ui") {
       "views/qrcode_generator/qrcode_generator_bubble.h",
       "views/qrcode_generator/qrcode_generator_icon_view.cc",
       "views/qrcode_generator/qrcode_generator_icon_view.h",
-      "views/reader_mode/reader_mode_icon_view.cc",
-      "views/reader_mode/reader_mode_icon_view.h",
       "views/relaunch_notification/relaunch_notification_controller.cc",
       "views/relaunch_notification/relaunch_notification_controller.h",
       "views/relaunch_notification/relaunch_required_timer.cc",

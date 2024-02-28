@@ -361,9 +361,6 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kZoom);
     params.types_enabled.push_back(PageActionIconType::kFileSystemAccess);
 
-    if (dom_distiller::IsDomDistillerEnabled() && browser_->is_type_normal()) {
-      params.types_enabled.push_back(PageActionIconType::kReaderMode);
-    }
     if (features::IsReadAnythingOmniboxIconEnabled()) {
       params.types_enabled.push_back(PageActionIconType::kReadAnything);
     }

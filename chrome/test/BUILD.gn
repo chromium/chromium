@@ -2290,7 +2290,6 @@ if (!is_android) {
       "../browser/direct_sockets/direct_sockets_apitest.cc",
       "../browser/dom_distiller/distillable_page_utils_browsertest.cc",
       "../browser/dom_distiller/dom_distiller_viewer_source_browsertest.cc",
-      "../browser/dom_distiller/tab_utils_browsertest.cc",
       "../browser/dom_distiller/test_distillation_observers.cc",
       "../browser/dom_distiller/test_distillation_observers.h",
       "../browser/domain_reliability/browsertest.cc",
@@ -2782,7 +2781,6 @@ if (!is_android) {
       "../browser/ui/views/intent_picker_dialog_browsertest.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc",
       "../browser/ui/views/profiles/avatar_toolbar_button_browsertest.cc",
-      "../browser/ui/views/reader_mode/reader_mode_icon_view_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
       "../browser/ui/views/sharing/shared_clipboard_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.cc",
@@ -2904,6 +2902,10 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
+
+    if (is_android) {
+      sources += [ "../browser/dom_distiller/tab_utils_browsertest.cc" ]
+    }
 
     if (!is_chrome_for_testing) {
       sources += [ "../browser/search_engine_choice/search_engine_choice_dialog_browsertest.cc" ]

@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_icon_view.h"
-#include "chrome/browser/ui/views/reader_mode/reader_mode_icon_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
@@ -202,14 +201,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                                        params.command_updater, params.browser,
                                        params.icon_label_bubble_delegate,
                                        params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kReaderMode:
-        DCHECK(params.command_updater);
-        add_page_action_icon(
-            type, std::make_unique<ReaderModeIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate,
-                      params.browser->profile()->GetPrefs()));
         break;
       case PageActionIconType::kSaveAutofillAddress:
         add_page_action_icon(

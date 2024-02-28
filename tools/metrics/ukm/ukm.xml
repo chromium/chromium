@@ -22937,6 +22937,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ReaderModeActivated" singular="True">
+  <obsolete>
+    Deprecated as of 02/2024.
+  </obsolete>
   <owner>gilmanmh@google.com</owner>
   <owner>kjbooker@google.com</owner>
   <owner>dtseng@chromium.org</owner>
@@ -22959,6 +22962,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ReaderModeReceivedDistillability">
+  <obsolete>
+    Deprecated as of 02/2024.
+  </obsolete>
   <owner>gilmanmh@google.com</owner>
   <owner>kjbooker@google.com</owner>
   <owner>dtseng@chromium.org</owner>

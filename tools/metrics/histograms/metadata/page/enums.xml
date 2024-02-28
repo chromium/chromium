@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Price Tracking"/>
   <int value="11" label="PWA Install"/>
   <int value="12" label="QR Code Generator"/>
-  <int value="13" label="Reader Mode"/>
+  <int value="13" label="(Deprecated) Reader Mode"/>
   <int value="14" label="Save Autofill Address"/>
   <int value="15" label="Save Card"/>
   <int value="16" label="Send Tab to Self"/>
