@@ -124,9 +124,8 @@
 
   // Check that the navigation bar has both the security's page title and the
   // page URL.
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_PAGE_INFO_CONNECTION_SECURITY))]
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PAGE_INFO_SECURITY))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:
                  grey_text([NSString

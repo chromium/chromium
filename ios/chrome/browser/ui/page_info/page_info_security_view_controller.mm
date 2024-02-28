@@ -54,7 +54,7 @@ enum ItemIdentifier {
   [super viewDidLoad];
   CHECK(!_pageInfoSecurityDescription.isEmpty);
 
-  self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_CONNECTION_SECURITY);
+  self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY);
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
   self.navigationItem.prompt = _pageInfoSecurityDescription.siteURL;

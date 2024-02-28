@@ -2870,9 +2870,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_CONNECTION" desc="Title of the button opening the connection information (in page info)">
         Connection
       </message>
-      <message name="IDS_IOS_PAGE_INFO_CONNECTION_SECURITY" desc="Title of the navigation controller to display when the page's security is presented.">
-        Connection Security
-      </message>
       <message name="IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE" desc="Title of the button opening the About This Page (in page info)">
         About This Page
       </message>
@@ -2890,6 +2887,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PAGE_INFO_RELOAD" desc="Button title in the page info bubble that allows to reload the current page.">
         Reload
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_SECURITY" desc="Title of the navigation controller to display when the page's security is presented.">
+        Security
       </message>
       <message name="IDS_IOS_PAGE_INFO_SECURITY_BUTTON_ACCESSIBILITY_LABEL" desc="The accessibility text for the page security info button">
         Page Security Info
