@@ -4,7 +4,9 @@
 
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace password_manager {
 
@@ -125,7 +127,11 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       // TODO(b/324242001): Trigger password details dialog.
       break;
     case autofill::PopupItemId::kAllSavedPasswordsEntry:
-      // TODO(b/321678448): Open password settings.
+      password_client_->NavigateToManagePasswordsPage(
+          ManagePasswordsReferrer::kPasswordDropdown);
+      metrics_util::LogPasswordDropdownItemSelected(
+          metrics_util::PasswordDropdownSelectedOption::kShowAll,
+          password_client_->IsOffTheRecord());
       break;
     default:
       // Other suggestion types are not supported.

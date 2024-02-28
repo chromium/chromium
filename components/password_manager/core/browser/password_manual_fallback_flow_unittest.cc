@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -63,6 +64,16 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (override));
 };
 
+class MockPasswordManagerClient : public StubPasswordManagerClient {
+ public:
+  MockPasswordManagerClient() = default;
+  ~MockPasswordManagerClient() override = default;
+  MOCK_METHOD(void,
+              NavigateToManagePasswordsPage,
+              (ManagePasswordsReferrer),
+              (override));
+};
+
 class PasswordManualFallbackFlowTest : public ::testing::Test {
  public:
   PasswordManualFallbackFlowTest() {
@@ -93,7 +104,7 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
 
   MockAutofillClient& autofill_client() { return *autofill_client_; }
 
-  StubPasswordManagerClient& password_manager_client() {
+  MockPasswordManagerClient& password_manager_client() {
     return *password_manager_client_;
   }
 
@@ -116,8 +127,9 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
       std::make_unique<NiceMock<MockPasswordManagerDriver>>();
   std::unique_ptr<NiceMock<MockAutofillClient>> autofill_client_ =
       std::make_unique<NiceMock<MockAutofillClient>>();
-  std::unique_ptr<StubPasswordManagerClient> password_manager_client_ =
-      std::make_unique<StubPasswordManagerClient>();
+  std::unique_ptr<NiceMock<MockPasswordManagerClient>>
+      password_manager_client_ =
+          std::make_unique<NiceMock<MockPasswordManagerClient>>();
   std::unique_ptr<affiliations::FakeAffiliationService> affiliation_service_ =
       std::make_unique<affiliations::FakeAffiliationService>();
   scoped_refptr<TestPasswordStore> profile_password_store_ =
@@ -282,6 +294,43 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
           PopupItemId::kPasswordFieldByFieldFilling, u"username@example.com"),
       AutofillPopupDelegate::SuggestionPosition{.row = 0,
                                                 .sub_popup_level = 1});
+}
+
+// Test that selecting "Manage passwords" suggestion doesn't trigger navigation.
+TEST_F(PasswordManualFallbackFlowTest, SelectManagePasswordsEntry) {
+  ProcessPasswordStoreUpdates();
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(password_manager_client(), NavigateToManagePasswordsPage)
+      .Times(0);
+  base::HistogramTester histograms;
+  flow().DidSelectSuggestion(autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kAllSavedPasswordsEntry, u"Manage passwords"));
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownItemSelected",
+      metrics_util::PasswordDropdownSelectedOption::kShowAll, 0);
+}
+
+// Test that selecting "Manage passwords" suggestion triggers page navigation
+// and metric recording.
+TEST_F(PasswordManualFallbackFlowTest, AcceptManagePasswordsEntry) {
+  ProcessPasswordStoreUpdates();
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(password_manager_client(),
+              NavigateToManagePasswordsPage(
+                  ManagePasswordsReferrer::kPasswordDropdown));
+  base::HistogramTester histograms;
+  flow().DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          PopupItemId::kAllSavedPasswordsEntry, u"Manage passwords"),
+      AutofillPopupDelegate::SuggestionPosition{.row = 1,
+                                                .sub_popup_level = 0});
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownItemSelected",
+      metrics_util::PasswordDropdownSelectedOption::kShowAll, 1);
 }
 
 }  // namespace password_manager
