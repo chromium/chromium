@@ -26,6 +26,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -865,9 +866,20 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       /*is_primary_account=*/false,
       password_manager::metrics_util::GaiaPasswordHashChange::
           CHANGED_IN_CONTENT_AREA);
-  ASSERT_EQ(2u, profile->GetPrefs()
-                    ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    .size());
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLocalStateEnterprisePasswordHashes)) {
+    ASSERT_EQ(1u, profile->GetPrefs()
+                      ->GetList(password_manager::prefs::kPasswordHashDataList)
+                      .size());
+    ASSERT_EQ(1u,
+              g_browser_process->local_state()
+                  ->GetList(password_manager::prefs::kLocalPasswordHashDataList)
+                  .size());
+  } else {
+    ASSERT_EQ(2u, profile->GetPrefs()
+                      ->GetList(password_manager::prefs::kPasswordHashDataList)
+                      .size());
+  }
 
   // Turn off trigger
   profile->GetPrefs()->SetInteger(
@@ -876,6 +888,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 
   password_manager::HashPasswordManager hash_password_manager;
   hash_password_manager.set_prefs(profile->GetPrefs());
+  hash_password_manager.set_local_prefs(g_browser_process->local_state());
   EXPECT_FALSE(hash_password_manager.HasPasswordHash(
       "username@domain.com", /*is_gaia_password=*/false));
   EXPECT_FALSE(
