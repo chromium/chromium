@@ -1130,7 +1130,12 @@ def _ParseClassFiles(jar_file, class_files, args):
   return ret
 
 
-def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
+def _CreateSrcJar(srcjar_path,
+                  gen_jni_class,
+                  jni_objs,
+                  *,
+                  script_name,
+                  generate_gen_jni=True):
   with common.atomic_output(srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       for jni_obj in jni_objs:
@@ -1142,7 +1147,7 @@ def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
         zip_path = f'{jni_obj.java_class.class_without_prefix.full_name_with_slashes}Jni.java'
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
-      if gen_jni_class is not None:
+      if generate_gen_jni:
         content = placeholder_gen_jni_java.Generate(jni_objs,
                                                     gen_jni_class=gen_jni_class,
                                                     script_name=script_name)
@@ -1167,7 +1172,9 @@ def _CreatePlaceholderSrcJar(srcjar_path, gen_jni_class, jni_objs, *,
         content = placeholder_java_type.Generate(
             main_class,
             jni_obj.type_resolver.nested_classes,
-            script_name=script_name)
+            script_name=script_name,
+            proxy_interface=jni_obj.proxy_interface,
+            proxy_natives=jni_obj.proxy_natives)
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
         for java_class in jni_obj.type_resolver.imports:
           # java.** are not separate deps and can be assumed to be available in
@@ -1223,9 +1230,10 @@ def GenerateFromSource(parser, args):
   if args.srcjar_path:
     if jni_objs_with_proxy_natives:
       _CreateSrcJar(args.srcjar_path,
-                    (None if args.placeholder_srcjar_path else gen_jni_class),
+                    gen_jni_class,
                     jni_objs_with_proxy_natives,
-                    script_name=GetScriptName())
+                    script_name=GetScriptName(),
+                    generate_gen_jni=not args.placeholder_srcjar_path)
     else:
       # Only @CalledByNatives.
       zipfile.ZipFile(args.srcjar_path, 'w').close()

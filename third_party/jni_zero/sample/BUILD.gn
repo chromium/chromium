@@ -23,10 +23,7 @@ android_library("sample_java") {
 }
 
 source_set("sample_native_side") {
-  deps = [
-    ":sample_header",
-    "//base",
-  ]
+  deps = [ ":sample_header" ]
   sources = [ "sample.cc" ]
 }
 
@@ -40,7 +37,7 @@ shared_library_with_jni("sample_lib") {
 
   deps = [
     ":sample_native_side",
-    "//base",
+    "//third_party/jni_zero",
   ]
   inputs = [ _linker_script ]
   ldflags =

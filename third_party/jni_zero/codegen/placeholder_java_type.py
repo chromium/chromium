@@ -3,7 +3,11 @@
 # found in the LICENSE file.
 
 
-def Generate(java_class, nested_classes, script_name):
+def Generate(java_class,
+             nested_classes,
+             script_name,
+             proxy_interface=None,
+             proxy_natives=None):
   """Generate an empty placeholder java class with a given name and package.
 
   The placeholder files allow compiling FooJni.java without requiring access to
@@ -17,11 +21,23 @@ def Generate(java_class, nested_classes, script_name):
 
 package {java_class.package_with_dots};
 
-public class {java_class.name} {{
+public interface {java_class.name} {{
 """)
   if nested_classes:
     for clazz in nested_classes:
-      sb.append(f'public class {clazz.nested_name} {{}}\n')
+      # The proxy interface has to exist for real in the placeholder file for
+      # Foo.java because FooJni implements it and uses @Override.
+      if clazz == proxy_interface:
+        sb.append(f'  public interface {clazz.nested_name} {{\n')
+        for native in proxy_natives:
+          parameter_list = ', '.join(f'{param.java_type.to_java()} {param.name}'
+                                     for param in native.params)
+          sb.append(
+              f'    public {native.return_type.to_java()} {native.name}({parameter_list});\n'
+          )
+        sb.append('  }\n')
+      else:
+        sb.append(f'  public interface {clazz.nested_name} {{}}\n')
 
   sb.append('}\n')
   return ''.join(sb)

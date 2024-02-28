@@ -147,11 +147,15 @@ class BaseTest(unittest.TestCase):
     if srcjar:
       dir_prefix, file_prefix = _MakePrefixes(options)
       name_to_goldens = {
-          f'{dir_prefix}org/jni_zero/{file_prefix}GEN_JNI.java':
-          f'{golden_name}-Placeholder-GEN_JNI.java.golden',
           f'org/jni_zero/{basename}Jni.java':
           f'{golden_name}-{basename}Jni.java.golden',
       }
+      # GEN_JNI ends up in placeholder srcjar instead if passed.
+      if not generate_placeholders:
+        name_to_goldens.update({
+            f'{dir_prefix}org/jni_zero/{file_prefix}GEN_JNI.java':
+            f'{golden_name}-Placeholder-GEN_JNI.java.golden',
+        })
 
     with tempfile.TemporaryDirectory() as tdir:
       relative_input_file = os.path.join(_JAVA_SRC_DIR, input_file)
@@ -335,6 +339,7 @@ class Tests(BaseTest):
 
   def testEndToEndProxyHashed(self):
     self._TestEndToEndGeneration('SampleForAnnotationProcessor.java',
+                                 srcjar=True,
                                  generate_placeholders=True)
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],
                                    use_proxy_hash=True)

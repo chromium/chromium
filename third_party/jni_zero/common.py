@@ -8,6 +8,7 @@ import filecmp
 import os
 import shutil
 import tempfile
+import pathlib
 import zipfile
 
 
@@ -30,6 +31,7 @@ def atomic_output(path, mode='w+b'):
       f.close()
 
     if not (os.path.exists(path) and filecmp.cmp(f.name, path)):
+      pathlib.Path(path).parents[0].mkdir(parents=True, exist_ok=True)
       shutil.move(f.name, path)
     if os.path.exists(f.name):
       os.unlink(f.name)

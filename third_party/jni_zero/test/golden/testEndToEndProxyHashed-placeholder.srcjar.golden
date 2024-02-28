@@ -43,9 +43,30 @@ public class GEN_JNI {
 
 package org.jni_zero;
 
-public class SampleForAnnotationProcessor {
-public class TestStruct {}
-public class Natives {}
+public interface SampleForAnnotationProcessor {
+  public interface TestStruct {}
+  public interface Natives {
+    public org.jni_zero.SampleForAnnotationProcessor bar(org.jni_zero.SampleForAnnotationProcessor sample);
+    public void foo();
+    public boolean hasPhalange();
+    public Class returnClass();
+    public Class[] returnClasses();
+    public String returnConvertedString();
+    public String[] returnConvertedStrings();
+    public Object returnObject();
+    public Object[] returnObjects();
+    public String returnString();
+    public String[] returnStrings();
+    public org.jni_zero.SampleForAnnotationProcessor.TestStruct returnStruct();
+    public org.jni_zero.SampleForAnnotationProcessor.TestStruct[] returnStructs();
+    public Throwable returnThrowable();
+    public Throwable[] returnThrowables();
+    public String revString(String stringToReverse);
+    public org.jni_zero.SampleForAnnotationProcessor[] sendSamplesToNative(org.jni_zero.SampleForAnnotationProcessor[] strs);
+    public String[] sendToNative(String[] strs);
+    public int[] testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
+    public void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, org.jni_zero.SampleForAnnotationProcessor.TestStruct tStruct, org.jni_zero.SampleForAnnotationProcessor.TestStruct[] structs, Object obj, Object convertedObj, Object[] objects, Object[] convertedObjects);
+  }
 }
 
 
@@ -57,7 +78,7 @@ public class Natives {}
 
 package android.content;
 
-public class Context {
+public interface Context {
 }
 
 
@@ -69,7 +90,7 @@ public class Context {
 
 package android.view;
 
-public class View {
+public interface View {
 }
 
 
@@ -81,7 +102,7 @@ public class View {
 
 package org.dummy;
 
-public class MyClass {
+public interface MyClass {
 }
 
 
@@ -93,7 +114,7 @@ public class MyClass {
 
 package org.dummy;
 
-public class MyInterface {
+public interface MyInterface {
 }
 
 
