@@ -286,11 +286,16 @@ public class AddToHomescreenAddShortcutTest {
     @Feature("{Webapp}")
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testAddAdaptableShortcut() throws Exception {
+        int expectedDialogType =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)
+                        ? AppType.SHORTCUT
+                        : AppType.WEBAPK;
+
         // Test the baseline of no adaptive icon.
         loadUrl(
                 mTestServerRule.getServer().getURL(NON_MASKABLE_MANIFEST_TEST_PAGE_PATH),
                 MANIFEST_TEST_PAGE_TITLE);
-        addShortcutToTab(mTab, "", true, /* expectedDialogType= */ AppType.WEBAPK);
+        addShortcutToTab(mTab, "", true, /* expectedDialogType= */ expectedDialogType);
 
         Assert.assertFalse(mShortcutHelperDelegate.mRequestedShortcutAdaptable);
 
@@ -300,7 +305,7 @@ public class AddToHomescreenAddShortcutTest {
         loadUrl(
                 mTestServerRule.getServer().getURL(MASKABLE_MANIFEST_TEST_PAGE_PATH),
                 MANIFEST_TEST_PAGE_TITLE);
-        addShortcutToTab(mTab, "", true, /* expectedDialogType= */ AppType.WEBAPK);
+        addShortcutToTab(mTab, "", true, /* expectedDialogType= */ expectedDialogType);
 
         Assert.assertTrue(mShortcutHelperDelegate.mRequestedShortcutAdaptable);
     }
@@ -371,7 +376,13 @@ public class AddToHomescreenAddShortcutTest {
         loadUrl(
                 WebappTestPage.getServiceWorkerUrl(mTestServerRule.getServer()),
                 WebappTestPage.PAGE_TITLE);
-        addShortcutToTab(mTab, "", true, /* expectedDialogType= */ AppType.WEBAPK);
+        addShortcutToTab(
+                mTab,
+                "",
+                true,
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)
+                        ? AppType.SHORTCUT
+                        : AppType.WEBAPK);
 
         // Make sure that the splash screen image was downloaded.
         CriteriaHelper.pollUiThread(
@@ -402,7 +413,13 @@ public class AddToHomescreenAddShortcutTest {
                         "verify_appinstalled"),
                 WebappTestPage.PAGE_TITLE);
 
-        addShortcutToTab(mTab, "", true, /* expectedDialogType= */ AppType.WEBAPK);
+        addShortcutToTab(
+                mTab,
+                "",
+                true,
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)
+                        ? AppType.SHORTCUT
+                        : AppType.WEBAPK);
 
         // Wait for the tab title to change. This will happen (due to the JavaScript
         // that runs

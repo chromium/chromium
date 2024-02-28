@@ -1076,6 +1076,7 @@ public class AppBannerManagerTest {
         "enable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE,
         "disable-features=" + ChromeFeatureList.ADD_TO_HOMESCREEN_IPH
     })
+    @DisabledTest(message = "crbug/327273599")
     public void testInProductHelp() throws Exception {
         // Visit a site that is a PWA. The ambient badge should show.
         String webBannerUrl = WebappTestPage.getServiceWorkerUrl(mTestServer);

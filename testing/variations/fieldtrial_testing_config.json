@@ -20418,7 +20418,7 @@
             ]
         }
     ],
-    "WebApkUniversalInstall": [
+    "WebApkUniversalInstallUI": [
         {
             "platforms": [
                 "android"
@@ -20427,8 +20427,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UniversalInstallIcon",
-                        "UniversalInstallManifest",
+                        "PwaUniversalInstallUi",
                         "UniversalInstallRootScopeNoManifest"
                     ]
                 }
