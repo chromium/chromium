@@ -159,6 +159,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 - (void)hideAllHelpBubbles {
+  [self.sharePageIPHBubblePresenter dismissAnimated:NO];
   [self.openNewTabIPHBubblePresenter dismissAnimated:NO];
   [self.tabGridIPHBubblePresenter dismissAnimated:NO];
   [self.bottomToolbarTipBubblePresenter dismissAnimated:NO];
