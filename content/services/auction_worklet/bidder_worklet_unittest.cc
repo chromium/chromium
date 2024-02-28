@@ -2610,7 +2610,7 @@ TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
   // For now, returning multiple bids isn't available by default.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 1,
-          render:"https://response.test/"}])",
+          render: "https://response.test/"}])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
 }
 
@@ -2632,15 +2632,15 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   // Single bid as an array member.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
-          render:"https://response.test/"}])",
+          render: "https://response.test/"}])",
       expected_bid->Clone());
 
   // Actually multiple bids.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           {ad: "ad2", bid: 3,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
          ])",
       /*expected_bid=*/expected_bid->Clone());
   ASSERT_EQ(2u, bids_.size());
@@ -2650,11 +2650,11 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   // Too many bids.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           {ad: "ad2", bid: 3,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           {ad: "ad3", bid: 4,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
          ])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
@@ -2662,22 +2662,21 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       {"https://url.test/ generateBid() more bids provided than permitted by "
        "auction configuration."});
 
-  // The bid limit counts only actual bids.
+  // The bid limit looks at the length of the sequence provided; some entries
+  // being dropped as non-bids doesn't change that.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           {ad: "ad2", bid: -5,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           {ad: "ad3", bid: 4,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
          ])",
-      /*expected_bid=*/expected_bid->Clone(),
+      /*expected_bid=*/nullptr,
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
-      {});
-  ASSERT_EQ(2u, bids_.size());
-  EXPECT_EQ(bids_[1]->bid, 4);
-  EXPECT_EQ(bids_[1]->ad, "\"ad3\"");
+      {"https://url.test/ generateBid() more bids provided than permitted by "
+       "auction configuration."});
 
   // Catches errors in individual entries.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2685,43 +2684,80 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
-      {"generateBid() bids sequence entry: 'render' is required when making a "
-       "bid."});
+      {"https://url.test/ generateBid() bids sequence entry: 'render' is "
+       "required when making a bid."});
+
+  // Some more complicated error messages.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 10, render: {}}])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bids sequence entry: 'render': "
+       "Required field 'url' is undefined."});
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 10, render: "https://example.org/",
+           adComponents: [{}]
+      }])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bids sequence entry: adComponents "
+       "entry: Required field 'url' is undefined."});
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           {ad: "ad", bid: 10}])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
-      {"generateBid() bids sequence entry: 'render' is required when making a "
-       "bid."});
+      {"https://url.test/ generateBid() bids sequence entry: 'render' is "
+       "required when making a bid."});
 
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           10])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
-      {"generateBid() bids sequence entry: Value passed as dictionary is "
-       "neither object, null, nor undefined."});
+      {"https://url.test/ generateBid() bids sequence entry: Value passed as "
+       "dictionary is neither object, null, nor undefined."});
 
   // A non-bid is still ignored.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad",
-          render:"https://response.test/"}])",
+          render: "https://response.test/"}])",
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
 
   // A non-bid among real bids in an array is also ignored.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 2,
-          render:"https://response.test/"},
+          render: "https://response.test/"},
           {ad: "ad2",
-          render:"https://response.test/"},
+          render: "https://response.test/"},
          ])",
       expected_bid->Clone());
+
+  // Make sure the IDL checks happen before semantic checks. This has 4 bids,
+  // but 4th one isn't an object, so the IDL error about that is what we should
+  // report, not the semantic error on size or on lack of URL on first one. This
+  // is mostly important in that looking at the 4th one could have side-effects.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 2},
+          {ad: "ad2", bid: 3,
+          render:"https://response.test/"},
+          {ad: "ad3", bid: 4,
+          render:"https://response.test/"},
+          4
+         ])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bids sequence entry: Value passed as "
+       "dictionary is neither object, null, nor undefined."});
 }
 
 // For now multi-bid support, even in degenerate form of passing a single bid in
@@ -2729,8 +2765,8 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
 TEST_F(BidderWorkletTest, SetBidMultiBid) {
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
-        setBid([{ad: "ad", bid:2, render:"https://response.test"}]);
-          throw "oh no";
+        setBid([{ad: "ad", bid:2, render: "https://response.test"}]);
+        throw "oh no";
       })",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
@@ -2763,7 +2799,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
   // Can set an array with one entry.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
-         setBid([{ad: "ad", bid:2, render:"https://response.test"}]);
+         setBid([{ad: "ad", bid:2, render: "https://response.test"}]);
          throw "boo";
        })",
       /*expected_bid=*/expected_bid->Clone(),
@@ -2774,8 +2810,8 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
   // Or two.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
-         setBid([{ad: "ad", bid:2, render:"https://response.test"},
-                 {ad: "bad", bid:4, render:"https://response2.test"}]);
+         setBid([{ad: "ad", bid:2, render: "https://response.test"},
+                 {ad: "bad", bid:4, render: "https://response2.test"}]);
          throw "boo";
        })",
       /*expected_bid=*/expected_bid->Clone(),
@@ -2789,9 +2825,9 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
   // ..but given our `multi_bid_limit_` is 2, not 3.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
-         setBid([{ad: "ad", bid:2, render:"https://response.test"},
-                 {ad: "bad", bid:4, render:"https://response2.test"},
-                 {ad: "lad", bid:8, render:"https://response3.test"}]);
+         setBid([{ad: "ad", bid:2, render: "https://response.test"},
+                 {ad: "bad", bid:4, render: "https://response2.test"},
+                 {ad: "lad", bid:8, render: "https://response3.test"}]);
          throw "boo";
        })",
       /*expected_bid=*/nullptr, /*expected_data_version=*/std::nullopt,
@@ -2802,9 +2838,9 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
   // SetBid() with arrays overwrites.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
-         setBid([{ad: "ad", bid:2, render:"https://response.test"},
-                 {ad: "bad", bid:4, render:"https://response2.test"}]);
-         setBid([{ad: "lad", bid:8, render:"https://response3.test"}]);
+         setBid([{ad: "ad", bid:2, render: "https://response.test"},
+                 {ad: "bad", bid:4, render: "https://response2.test"}]);
+         setBid([{ad: "lad", bid:8, render: "https://response3.test"}]);
          throw "boo";
        })",
       /*expected_bid=*/expected_bid3->Clone(),
@@ -2815,8 +2851,8 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
   // Can overwrite with an empty array as well.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
-         setBid([{ad: "ad", bid:2, render:"https://response.test"},
-                 {ad: "bad", bid:4, render:"https://response2.test"}]);
+         setBid([{ad: "ad", bid:2, render: "https://response.test"},
+                 {ad: "bad", bid:4, render: "https://response2.test"}]);
          setBid([]);
          throw "boo";
        })",
@@ -2826,24 +2862,24 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
   // Individual checks do happen.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
-         setBid([{ad: "ad", bid:2, render:"https://response.test"},
-                 {ad: "bad", bid:4, render:"https://response4.test"}]);
+         setBid([{ad: "ad", bid:2, render: "https://response.test"},
+                 {ad: "bad", bid:4, render: "https://response4.test"}]);
          throw "boo";
        })",
       /*expected_bid=*/nullptr, /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
-      {"https://url.test/:2 Uncaught TypeError: generateBid() bids sequence "
-       "entry: bid render URL 'https://response4.test/' isn't one of the "
-       "registered creative URLs."});
+      {"https://url.test/:2 Uncaught TypeError: bids sequence entry: bid "
+       "render URL 'https://response4.test/' isn't one of the registered "
+       "creative URLs."});
 
   // Can recover from a set that throws an exception.
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
          try {
-           setBid([{ad: "ad", bid:2, render:"https://response.test"},
-                  {ad: "bad", bid:4, render:"https://response4.test"}]);
+           setBid([{ad: "ad", bid:2, render: "https://response.test"},
+                  {ad: "bad", bid:4, render: "https://response4.test"}]);
          } catch (e) {
-           setBid([{ad: "lad", bid:8, render:"https://response3.test"}]);
+           setBid([{ad: "lad", bid:8, render: "https://response3.test"}]);
          }
          throw "boo";
        })",
@@ -9513,8 +9549,8 @@ TEST_F(BidderWorkletMultiBidTest, KAnonClassify) {
       CreateGenerateBidScript(kBids), bid1.Clone(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
-      {"generateBid() bids sequence entry: bid render URL "
-       "'https://response.test/' isn't one of the registered creative URLs."});
+      {"https://url.test/ generateBid() more bids provided than permitted by "
+       "auction configuration."});
   ASSERT_EQ(3u, bids_.size());
   EXPECT_EQ(bids_[1]->bid_role,
             auction_worklet::mojom::BidRole::kUnenforcedKAnon);

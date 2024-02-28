@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
@@ -63,15 +64,38 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
                                 std::string error_prefix);
 
  private:
+  struct GenerateBidOutput;
+
   static void SetBid(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  // Attempts to parse a single bid. Returns whether any errors were raised.
+  // Attempts to convert a single bid from JS to IDL, returning either the IDL
+  // type or a failing status.
+  //
+  // `error_prefix` is the base prefix for errors, `render_prefix` is one for
+  // errors in render field, and `components_prefix` is for errors in the
+  // adComponents array.
+  base::expected<GenerateBidOutput, IdlConvert::Status> ConvertBidToIDL(
+      AuctionV8Helper::TimeLimitScope& time_limit_scope,
+      v8::Local<v8::Value> input,
+      const std::string& error_prefix,
+      const std::string& render_prefix,
+      const std::string& components_prefix);
+
+  // Tries to semantically check the bid in `idl`, and convert it to
+  // mojom::BidderWorkletBid.
+  //
   // Note that a valid value that results in no bid is not considered an error.
   // In case of an error, may also set `reject_reason_`.
-  std::pair<IdlConvert::Status, mojom::BidderWorkletBidPtr> ParseBid(
-      AuctionV8Helper::TimeLimitScope& time_limit_scope,
-      v8::Local<v8::Value> generate_bid_result,
-      std::string error_prefix);
+  //
+  // `error_prefix` is the base prefix for errors, `render_prefix` is one for
+  // errors in render field, and `components_prefix` is for errors in the
+  // adComponents array.
+  base::expected<mojom::BidderWorkletBidPtr, IdlConvert::Status>
+  SemanticCheckBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
+                   const GenerateBidOutput& idl,
+                   const std::string& error_prefix,
+                   const std::string& render_prefix,
+                   const std::string& components_prefix);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 

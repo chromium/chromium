@@ -37,17 +37,12 @@ namespace auction_worklet {
 
 namespace {
 
-std::pair<IdlConvert::Status, mojom::BidderWorkletBidPtr> StatusOnly(
-    IdlConvert::Status status) {
-  return std::make_pair(std::move(status), mojom::BidderWorkletBidPtr());
-}
-
 // Checks that `url` is a valid URL and is in `ads`. Appends an error to
 // `out_errors` if not. `error_prefix` is used in output error messages
 // only.
 bool IsAllowedAdUrl(
     const GURL& url,
-    std::string& error_prefix,
+    const std::string& error_prefix,
     const char* argument_name,
     const base::RepeatingCallback<bool(const std::string&)>& is_excluded,
     const std::vector<blink::InterestGroup::Ad>& ads,
@@ -131,7 +126,7 @@ IdlConvert::Status ConvertDomStringOrAdRender(
 bool TryToParseUrlWithSize(AuctionV8Helper* v8_helper,
                            AuctionV8Helper::TimeLimitScope& time_limit_scope,
                            const std::string& error_prefix,
-                           AdRender& value,
+                           const AdRender& value,
                            std::string& ad_url_out,
                            std::optional<blink::AdSize>& size_out,
                            std::string& error_out) {
@@ -155,6 +150,14 @@ bool TryToParseUrlWithSize(AuctionV8Helper* v8_helper,
   return true;
 }
 
+std::string RenderPrefix(const std::string& error_prefix) {
+  return base::StrCat({error_prefix, "'render': "});
+}
+
+std::string ComponentsPrefix(const std::string& error_prefix) {
+  return base::StrCat({error_prefix, "adComponents entry: "});
+}
+
 }  // namespace
 
 std::vector<mojom::BidderWorkletBidPtr> SetBidBindings::TakeBids() {
@@ -166,6 +169,27 @@ std::vector<mojom::BidderWorkletBidPtr> SetBidBindings::TakeBids() {
   }
   return std::move(bids_);
 }
+
+// This basically corresponds to the GenerateBidOutput type in the spec,
+// except the (DOMString or AdRender) unions are normalized to AdRender.
+struct SetBidBindings::GenerateBidOutput {
+  GenerateBidOutput() = default;
+  GenerateBidOutput(GenerateBidOutput&&) = default;
+  GenerateBidOutput(const GenerateBidOutput&) = delete;
+  ~GenerateBidOutput() = default;
+
+  GenerateBidOutput& operator=(GenerateBidOutput&&) = default;
+  GenerateBidOutput& operator=(const GenerateBidOutput&) = delete;
+
+  std::optional<double> bid;
+  std::optional<std::string> bid_currency;
+  std::optional<AdRender> render;
+  std::optional<v8::Local<v8::Value>> ad;
+  std::optional<std::vector<AdRender>> ad_components;
+  std::optional<double> ad_cost;
+  std::optional<UnrestrictedDouble> modeling_signals;
+  std::optional<bool> allow_component_auction;
+};
 
 SetBidBindings::SetBidBindings(AuctionV8Helper* v8_helper)
     : v8_helper_(v8_helper) {}
@@ -220,85 +244,107 @@ IdlConvert::Status SetBidBindings::SetBidImpl(v8::Local<v8::Value> value,
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper_->GetTimeLimit());
 
   // If the bid value is an object, check if it's convertible to a sequence,
-  // and if so parse as multiple bids.
+  // and if so parse as multiple bids. This will be denoted by non-null
+  // `iterator_factory`.
+  v8::Local<v8::Object> iterable, iterator_factory;
   if (value->IsObject() &&
       base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid)) {
-    v8::Local<v8::Object> iterable = value.As<v8::Object>();
-    v8::Local<v8::Object> iterator_factory;
+    iterable = value.As<v8::Object>();
     IdlConvert::Status seq_check_status = IdlConvert::CheckForSequence(
         v8_helper_->isolate(), error_prefix, {}, iterable, iterator_factory);
     if (!seq_check_status.is_success()) {
       // Side effects of overload check returned failure.
       return seq_check_status;
     }
-    if (!iterator_factory.IsEmpty()) {
-      // Multiple bids.
-      auto item_handler = base::BindRepeating(
-          [](SetBidBindings* self,
-             AuctionV8Helper::TimeLimitScope& time_limit_scope,
-             v8::Local<v8::Value> item) -> IdlConvert::Status {
-            auto [status, new_bid] = self->ParseBid(
-                time_limit_scope, item, "generateBid() bids sequence entry: ");
-            if (!status.is_success()) {
-              // In case of error, clear the list of bids.
-              self->bids_.clear();
-            } else if (new_bid) {
-              self->bids_.push_back(std::move(new_bid));
-            }
-            // Neither failure nor a `new_bid` is possible if the current
-            // `item` is a valid "I am not making a bid" item, which is
-            // accepted here for consistency with the single-entry case.
-            return std::move(status);
-          },
-          this, std::ref(time_limit_scope));
+  }
 
-      auto status = IdlConvert::ConvertSequence(
-          v8_helper_.get(), "generateBid() bids sequence ", {}, iterable,
-          iterator_factory, item_handler);
-      if (status.is_success()) {
-        // Check there aren't too many bids. This is a semantic check, so
-        // it has to happen after the WebIDL type conversions.
-        if (bids_.size() > multi_bid_limit_) {
-          status = IdlConvert::Status::MakeErrorMessage(base::StrCat(
-              {error_prefix,
-               "more bids provided than permitted by auction configuration."}));
-          bids_.clear();
+  std::string render_prefix;
+  std::string components_prefix;
+  std::string too_many_bids_error;
+
+  // Do the IDL conversion of the input, whatever type it is.
+  std::vector<GenerateBidOutput> idl_bids;
+  auto item_handler = base::BindRepeating(
+      [](SetBidBindings* self,
+         AuctionV8Helper::TimeLimitScope& time_limit_scope,
+         const std::string& error_prefix, const std::string& render_prefix,
+         const std::string& components_prefix,
+         std::vector<GenerateBidOutput>& idl_bids,
+         v8::Local<v8::Value> item) -> IdlConvert::Status {
+        auto bid_idl_or_error =
+            self->ConvertBidToIDL(time_limit_scope, item, error_prefix,
+                                  render_prefix, components_prefix);
+        if (bid_idl_or_error.has_value()) {
+          idl_bids.push_back(std::move(bid_idl_or_error).value());
+          return IdlConvert::Status::MakeSuccess();
+        } else {
+          // IDL conversion failed.
+          return std::move(bid_idl_or_error).error();
         }
-      }
+      },
+      this, std::ref(time_limit_scope), std::cref(error_prefix),
+      std::cref(render_prefix), std::cref(components_prefix),
+      std::ref(idl_bids));
 
+  if (iterator_factory.IsEmpty()) {
+    // Single bid.
+    render_prefix = RenderPrefix(error_prefix);
+    components_prefix = ComponentsPrefix(error_prefix);
+    auto status = item_handler.Run(value);
+    if (!status.is_success()) {
       return status;
+    }
+  } else {
+    // Bid sequence.
+    too_many_bids_error = base::StrCat(
+        {error_prefix,
+         "more bids provided than permitted by auction configuration."});
+    error_prefix = base::StrCat({error_prefix, "bids sequence entry: "});
+    render_prefix = RenderPrefix(error_prefix);
+    components_prefix = ComponentsPrefix(error_prefix);
+
+    auto seq_status =
+        IdlConvert::ConvertSequence(v8_helper_.get(), error_prefix, {},
+                                    iterable, iterator_factory, item_handler);
+    if (!seq_status.is_success()) {
+      return seq_status;
     }
   }
 
-  // Single bid.
-  auto [status, new_bid] =
-      ParseBid(time_limit_scope, value, std::move(error_prefix));
-  if (new_bid) {
-    bids_.push_back(std::move(new_bid));
+  // Now do semantic checks. Length is first.
+  if (idl_bids.size() > multi_bid_limit_) {
+    return IdlConvert::Status::MakeErrorMessage(too_many_bids_error);
   }
-  return std::move(status);
+
+  // Check all bids and convert them to Mojo structs in `bids_`.
+  for (const auto& bid_idl : idl_bids) {
+    auto maybe_new_bid =
+        SemanticCheckBid(time_limit_scope, bid_idl, error_prefix, render_prefix,
+                         components_prefix);
+
+    if (!maybe_new_bid.has_value()) {
+      // In case of error, clear the list of bids.
+      bids_.clear();
+      return std::move(maybe_new_bid).error();
+    }
+
+    // Unlike with IDL conversion, success does not imply existence of bid;
+    // "no bid" is a valid outcome.
+    if (maybe_new_bid.value()) {
+      bids_.push_back(std::move(maybe_new_bid).value());
+    }
+  }
+  return IdlConvert::Status::MakeSuccess();
 }
 
-std::pair<IdlConvert::Status, mojom::BidderWorkletBidPtr>
-SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
-                         v8::Local<v8::Value> input,
-                         std::string error_prefix) {
-  v8::Isolate* isolate = v8_helper_->isolate();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-
-  DCHECK(bidder_worklet_non_shared_params_)
-      << "ReInitialize() must be called before each use";
-
-  struct GenerateBidOutput {
-    std::optional<double> bid;
-    std::optional<std::string> bid_currency;
-    std::optional<AdRender> render;
-    std::optional<v8::Local<v8::Value>> ad;
-    std::optional<std::vector<AdRender>> ad_components;
-    std::optional<double> ad_cost;
-    std::optional<UnrestrictedDouble> modeling_signals;
-    std::optional<bool> allow_component_auction;
-  } idl;
+base::expected<SetBidBindings::GenerateBidOutput, IdlConvert::Status>
+SetBidBindings::ConvertBidToIDL(
+    AuctionV8Helper::TimeLimitScope& time_limit_scope,
+    v8::Local<v8::Value> input,
+    const std::string& error_prefix,
+    const std::string& render_prefix,
+    const std::string& components_prefix) {
+  GenerateBidOutput idl;
 
   auto components_exist = base::BindOnce(
       [](GenerateBidOutput& idl) { idl.ad_components.emplace(); },
@@ -308,9 +354,6 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
                                 error_prefix, input);
 
   scoped_refptr<AuctionV8Helper> ref_v8_helper(v8_helper_.get());
-  std::string render_prefix = base::StrCat({error_prefix, "'render': "});
-  std::string components_prefix =
-      base::StrCat({error_prefix, "adComponents entry: "});
   auto collect_components = base::BindRepeating(
       [](scoped_refptr<AuctionV8Helper> v8_helper,
          AuctionV8Helper::TimeLimitScope& time_limit_scope,
@@ -348,20 +391,34 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
   }
 
   if (convert_set_bid.is_failed()) {
-    return StatusOnly(convert_set_bid.TakeStatus());
+    return base::unexpected(convert_set_bid.TakeStatus());
   }
 
   if (!idl.allow_component_auction.has_value()) {
     idl.allow_component_auction.emplace(false);
   }
+  return idl;
+}
 
+base::expected<mojom::BidderWorkletBidPtr, IdlConvert::Status>
+SetBidBindings::SemanticCheckBid(
+    AuctionV8Helper::TimeLimitScope& time_limit_scope,
+    const GenerateBidOutput& idl,
+    const std::string& error_prefix,
+    const std::string& render_prefix,
+    const std::string& components_prefix) {
+  DCHECK(bidder_worklet_non_shared_params_)
+      << "ReInitialize() must be called before each use";
+
+  v8::Isolate* isolate = v8_helper_->isolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   if (!idl.bid.has_value() || *idl.bid <= 0.0) {
     // Not an error, just no bid.
-    return StatusOnly(IdlConvert::Status::MakeSuccess());
+    return mojom::BidderWorkletBidPtr();
   }
 
   if (!idl.render.has_value()) {
-    return StatusOnly(IdlConvert::Status::MakeErrorMessage(base::StrCat(
+    return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
         {error_prefix, "'render' is required when making a bid."})));
   }
 
@@ -369,7 +426,7 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
   if (idl.bid_currency.has_value()) {
     if (!blink::IsValidAdCurrencyCode(*idl.bid_currency)) {
       reject_reason_ = mojom::RejectReason::kWrongGenerateBidCurrency;
-      return StatusOnly(IdlConvert::Status::MakeErrorMessage(
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StringPrintf("%sbidCurrency of '%s' is not a currency code.",
                              error_prefix.c_str(), idl.bid_currency->c_str())));
     }
@@ -378,10 +435,12 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
 
   if (!blink::VerifyAdCurrencyCode(per_buyer_currency_, bid_currency)) {
     reject_reason_ = mojom::RejectReason::kWrongGenerateBidCurrency;
-    return StatusOnly(IdlConvert::Status::MakeErrorMessage(base::StringPrintf(
-        "%sbidCurrency mismatch; returned '%s', expected '%s'.",
-        error_prefix.c_str(), blink::PrintableAdCurrency(bid_currency).c_str(),
-        blink::PrintableAdCurrency(per_buyer_currency_).c_str())));
+    return base::unexpected(
+        IdlConvert::Status::MakeErrorMessage(base::StringPrintf(
+            "%sbidCurrency mismatch; returned '%s', expected '%s'.",
+            error_prefix.c_str(),
+            blink::PrintableAdCurrency(bid_currency).c_str(),
+            blink::PrintableAdCurrency(per_buyer_currency_).c_str())));
   }
 
   // "ad" field is optional, but if present, must be possible to convert to
@@ -393,17 +452,17 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
     AuctionV8Helper::ExtractJsonResult json_result =
         v8_helper_->ExtractJson(context, *idl.ad, &ad_json);
     if (json_result == AuctionV8Helper::ExtractJsonResult::kFailure) {
-      return StatusOnly(IdlConvert::Status::MakeErrorMessage(
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StrCat({error_prefix, "bid has invalid ad value."})));
     } else if (json_result == AuctionV8Helper::ExtractJsonResult::kTimeout) {
-      return StatusOnly(IdlConvert::Status::MakeTimeout(base::StrCat(
+      return base::unexpected(IdlConvert::Status::MakeTimeout(base::StrCat(
           {error_prefix, "serializing bid 'ad' value to JSON timed out."})));
     }
   }
 
   if (has_top_level_seller_origin_) {
     if (!*idl.allow_component_auction) {
-      return StatusOnly(IdlConvert::Status::MakeErrorMessage(
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StrCat({error_prefix,
                         "bid does not have allowComponentAuction "
                         "set to true. Bid dropped from component auction."})));
@@ -422,12 +481,12 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
   if (!TryToParseUrlWithSize(v8_helper_.get(), time_limit_scope, render_prefix,
                              *idl.render, render_url_string, render_size,
                              error_msg)) {
-    return StatusOnly(
+    return base::unexpected(
         IdlConvert::Status::MakeErrorMessage(std::move(error_msg)));
   }
 
   if (render_size.has_value() && !IsValidAdSize(render_size.value())) {
-    return StatusOnly(IdlConvert::Status::MakeErrorMessage(
+    return base::unexpected(IdlConvert::Status::MakeErrorMessage(
         base::StrCat({error_prefix, "bid has invalid size for render ad."})));
   }
 
@@ -435,14 +494,14 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
   if (!IsAllowedAdUrl(render_url, error_prefix, "render", is_ad_excluded_,
                       bidder_worklet_non_shared_params_->ads.value(),
                       error_msg)) {
-    return StatusOnly(
+    return base::unexpected(
         IdlConvert::Status::MakeErrorMessage(std::move(error_msg)));
   }
 
   std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
   if (idl.ad_components.has_value()) {
     if (!bidder_worklet_non_shared_params_->ad_components.has_value()) {
-      return StatusOnly(IdlConvert::Status::MakeErrorMessage(
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StrCat({error_prefix,
                         "bid contains adComponents but InterestGroup has no "
                         "adComponents."})));
@@ -455,27 +514,28 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
 
     const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
     if (idl.ad_components->size() > kMaxAdAuctionAdComponents) {
-      return StatusOnly(IdlConvert::Status::MakeErrorMessage(
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StringPrintf("%sbid adComponents with over %zu items.",
                              error_prefix.c_str(), kMaxAdAuctionAdComponents)));
     }
 
     ad_component_descriptors.emplace();
-    for (AdRender& component : *idl.ad_components) {
+    for (const AdRender& component : *idl.ad_components) {
       std::string ad_component_url_string;
       std::optional<blink::AdSize> ad_component_size = std::nullopt;
       if (!TryToParseUrlWithSize(
               v8_helper_.get(), time_limit_scope, components_prefix, component,
               ad_component_url_string, ad_component_size, error_msg)) {
-        return StatusOnly(
+        return base::unexpected(
             IdlConvert::Status::MakeErrorMessage(std::move(error_msg)));
       }
 
       if (ad_component_size.has_value() &&
           !IsValidAdSize(ad_component_size.value())) {
-        return StatusOnly(IdlConvert::Status::MakeErrorMessage(base::StrCat(
-            {error_prefix,
-             "bid adComponents have invalid size for ad component."})));
+        return base::unexpected(
+            IdlConvert::Status::MakeErrorMessage(base::StrCat(
+                {error_prefix,
+                 "bid adComponents have invalid size for ad component."})));
       }
 
       GURL ad_component_url(ad_component_url_string);
@@ -484,7 +544,7 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
               is_component_ad_excluded_,
               bidder_worklet_non_shared_params_->ad_components.value(),
               error_msg)) {
-        return StatusOnly(
+        return base::unexpected(
             IdlConvert::Status::MakeErrorMessage(std::move(error_msg)));
       }
       ad_component_descriptors->emplace_back(std::move(ad_component_url),
@@ -498,15 +558,13 @@ SetBidBindings::ParseBid(AuctionV8Helper::TimeLimitScope& time_limit_scope,
   // when ownership of the bid is taken by the caller, instead of here.
   //
   // Similarly it's easier for BidderWorklet to compute the proper role.
-  return std::make_pair(
-      IdlConvert::Status::MakeSuccess(),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, std::move(ad_json),
-          *idl.bid, std::move(bid_currency), std::move(idl.ad_cost),
-          blink::AdDescriptor(render_url, render_size),
-          std::move(ad_component_descriptors),
-          static_cast<std::optional<uint16_t>>(modeling_signals),
-          /*bid_duration=*/base::TimeDelta()));
+  return mojom::BidderWorkletBid::New(
+      auction_worklet::mojom::BidRole::kUnenforcedKAnon, std::move(ad_json),
+      *idl.bid, std::move(bid_currency), std::move(idl.ad_cost),
+      blink::AdDescriptor(render_url, render_size),
+      std::move(ad_component_descriptors),
+      static_cast<std::optional<uint16_t>>(modeling_signals),
+      /*bid_duration=*/base::TimeDelta());
 }
 
 // static

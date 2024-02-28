@@ -1044,9 +1044,9 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     Run(scope, script, "test", error_msgs, gin::ConvertToV8(isolate, bids));
     EXPECT_THAT(error_msgs,
                 ElementsAre("https://example.test/script.js:3 Uncaught "
-                            "TypeError: generateBid() bids sequence entry: bid "
-                            "render URL 'https://example3.test/ad3' isn't one "
-                            "of the registered creative URLs."));
+                            "TypeError: bids sequence entry: bid render URL "
+                            "'https://example3.test/ad3' isn't one of the "
+                            "registered creative URLs."));
     auto mojo_bids = context_recycler.set_bid_bindings()->TakeBids();
     EXPECT_EQ(0u, mojo_bids.size());
   }
