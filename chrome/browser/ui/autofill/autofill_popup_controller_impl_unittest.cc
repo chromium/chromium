@@ -1236,6 +1236,24 @@ TEST_F(AutofillPopupControllerImplTest, AcceptAddressNoPwdWarningAndroid) {
   client().popup_controller(manager()).AcceptSuggestion(
       0, base::TimeTicks::Now() + base::Milliseconds(500));
 }
+
+// When a suggestion is accepted, the popup is hidden inside
+// `delegate->DidAcceptSuggestion()`. On Android, some code is still being
+// executed after hiding. This test makes sure no use-after-free, null pointer
+// dereferencing or other memory violations occur.
+TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionIsMemorySafe) {
+  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion)
+      .WillOnce([this]() {
+        client().popup_controller(manager()).Hide(
+            PopupHidingReason::kAcceptSuggestion);
+      });
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0,
+                                                        base::TimeTicks::Now());
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
