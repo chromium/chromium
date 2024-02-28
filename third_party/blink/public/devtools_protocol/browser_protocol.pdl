@@ -9003,6 +9003,7 @@ domain Page
       SmartCard
       LiveMediaStreamTrack
       UnloadHandler
+      ParserAborted
       # Disabled for RenderFrameHost reasons
       # See content/browser/renderer_host/back_forward_cache_disable.h for explanations.
       ContentSecurityHandler

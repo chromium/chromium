@@ -1628,6 +1628,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::LiveMediaStreamTrack;
     case WebSchedulerTrackedFeature::kUnloadHandler:
       return Page::BackForwardCacheNotRestoredReasonEnum::UnloadHandler;
+    case WebSchedulerTrackedFeature::kParserAborted:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ParserAborted;
   }
 }
 
@@ -1828,6 +1830,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kSmartCard:
     case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
     case WebSchedulerTrackedFeature::kUnloadHandler:
+    case WebSchedulerTrackedFeature::kParserAborted:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:

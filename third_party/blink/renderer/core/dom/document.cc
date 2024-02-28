@@ -3717,8 +3717,16 @@ void Document::CancelParsing() {
   // open() or write() after an active parser is aborted. See
   // https://github.com/whatwg/html/issues/4723 for discussion about
   // standardizing this behavior.
-  if (parser_ && parser_->IsParsing())
+  if (parser_ && parser_->IsParsing()) {
     ignore_opens_and_writes_for_abort_ = true;
+    if (GetFrame()) {
+      // Only register the sticky feature when the parser was parsing and then
+      // was cancelled.
+      GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
+          SchedulingPolicy::Feature::kParserAborted,
+          {SchedulingPolicy::DisableBackForwardCache()});
+    }
+  }
   DetachParser();
   SetParsingState(kFinishedParsing);
   SetReadyState(kComplete);

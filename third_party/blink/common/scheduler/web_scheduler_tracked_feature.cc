@@ -128,6 +128,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"media-stream", "page has live MediaStreamTrack"};
     case WebSchedulerTrackedFeature::kUnloadHandler:
       return {"unload-handler", "page contains unload handler"};
+    case WebSchedulerTrackedFeature::kParserAborted:
+      return {"parser-aborted", "parser was aborted"};
   }
   return {};
 }
@@ -218,7 +220,8 @@ WebSchedulerTrackedFeatures StickyFeatures() {
               kJsNetworkRequestReceivedCacheControlNoStoreResource,
           WebSchedulerTrackedFeature::kWebRTCSticky,
           WebSchedulerTrackedFeature::kWebSocketSticky,
-          WebSchedulerTrackedFeature::kWebTransportSticky};
+          WebSchedulerTrackedFeature::kWebTransportSticky,
+          WebSchedulerTrackedFeature::kParserAborted};
 }
 
 // static
