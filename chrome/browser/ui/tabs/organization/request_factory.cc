@@ -155,6 +155,18 @@ void PerformTabOrganizationExecution(
     return;
   }
 
+  for (const std::unique_ptr<GroupData>& group_data : request->group_datas()) {
+    auto* group = tab_organization_request.add_pre_existing_tab_groups();
+    group->set_group_id(group_data->id.ToString());
+    group->set_label(base::UTF16ToUTF8(group_data->label));
+    for (const std::unique_ptr<TabData>& tab_data : group_data->tabs) {
+      auto* tab = group->add_tabs();
+      tab->set_tab_id(tab_data->tab_id());
+      tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
+      tab->set_url(tab_data->original_url().spec());
+    }
+  }
+
   if (request->base_tab_id().has_value()) {
     tab_organization_request.set_active_tab_id(request->base_tab_id().value());
   }

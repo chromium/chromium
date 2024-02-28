@@ -11,6 +11,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 
+GroupData::GroupData(tab_groups::TabGroupId id_,
+                     std::u16string label_,
+                     std::vector<std::unique_ptr<TabData>> tabs_)
+    : id(id_), label(label_), tabs(std::move(tabs_)) {}
+
+GroupData::~GroupData() = default;
+
 TabOrganizationResponse::Organization::Organization(
     std::u16string label_,
     std::vector<TabData::TabID> tab_ids_,
@@ -66,6 +73,14 @@ TabData* TabOrganizationRequest::AddTabData(std::unique_ptr<TabData> tab_data) {
   TabData* tab_data_ptr = tab_data.get();
   tab_datas_.emplace_back(std::move(tab_data));
   return tab_data_ptr;
+}
+
+void TabOrganizationRequest::AddGroupData(
+    tab_groups::TabGroupId id,
+    std::u16string label,
+    std::vector<std::unique_ptr<TabData>> tabs) {
+  group_datas_.emplace_back(
+      std::make_unique<GroupData>(id, label, std::move(tabs)));
 }
 
 void TabOrganizationRequest::StartRequest() {

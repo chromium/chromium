@@ -13,6 +13,9 @@
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "components/tab_groups/tab_group_id.h"
 
 namespace {
 int kNextSessionID = 1;
@@ -120,7 +123,6 @@ TabOrganizationSession::CreateSessionForBrowser(
           ->CreateRequest(browser->profile());
 
   // iterate through the tabstripmodel building the tab data.
-  std::vector<std::unique_ptr<TabData>> tab_datas;
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   for (int index = 0; index < tab_strip_model->count(); index++) {
     content::WebContents* web_contents =
@@ -136,6 +138,20 @@ TabOrganizationSession::CreateSessionForBrowser(
     }
 
     request->AddTabData(std::move(tab_data));
+  }
+
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  for (tab_groups::TabGroupId group_id : tab_group_model->ListTabGroups()) {
+    TabGroup* group = tab_group_model->GetTabGroup(group_id);
+    std::u16string title = group->visual_data()->title();
+    std::vector<std::unique_ptr<TabData>> tabs;
+    const gfx::Range tab_indices = group->ListTabs();
+    for (size_t index = tab_indices.start(); index < tab_indices.end();
+         index++) {
+      tabs.push_back(std::make_unique<TabData>(
+          tab_strip_model, tab_strip_model->GetWebContentsAt(index)));
+    }
+    request->AddGroupData(group_id, title, std::move(tabs));
   }
 
   return std::make_unique<TabOrganizationSession>(std::move(request),

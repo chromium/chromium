@@ -82,7 +82,7 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
     const TabOrganizationEntryPoint entrypoint,
     const content::WebContents* base_session_webcontents) {
   CHECK(!base::Contains(browser_session_map_, browser));
-
+  CHECK(browser->tab_strip_model()->SupportsTabGroups());
   std::pair<BrowserSessionMap::iterator, bool> pair =
       browser_session_map_.emplace(
           browser, TabOrganizationSession::CreateSessionForBrowser(
