@@ -298,9 +298,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_DE_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Germany."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_ENABLE_ZIP_ONLY_ADDRESS_FORMS,
-                "When enabled, Autofill supports forms consisting of only zip code fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DEFAULT_TO_CITY_AND_NUMBER,
                 "When enabled, Autofill heuristics will prioritize filling phone numbers in "
                         + "local format, not in international format."),

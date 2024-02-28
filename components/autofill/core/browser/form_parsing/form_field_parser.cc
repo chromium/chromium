@@ -223,9 +223,7 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   FieldTypeSet permitted_single_field_types{
       MERCHANT_PROMO_CODE, IBAN_VALUE,
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableZipOnlyAddressForms) &&
-      AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
+  if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
   }
 

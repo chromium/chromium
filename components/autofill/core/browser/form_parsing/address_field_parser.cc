@@ -226,11 +226,6 @@ bool AddressFieldParser::IsStandaloneZipSupported(
 std::unique_ptr<FormFieldParser> AddressFieldParser::ParseStandaloneZip(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableZipOnlyAddressForms)) {
-    return nullptr;
-  }
-
   if (scanner->IsEnd()) {
     return nullptr;
   }

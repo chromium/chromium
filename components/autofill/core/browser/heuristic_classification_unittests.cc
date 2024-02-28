@@ -536,7 +536,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       // Allow local heuristics to take precedence.
       features::kAutofillLocalHeuristicsOverrides,
       // Other improvements.
-      features::kAutofillEnableZipOnlyAddressForms,
       features::kAutofillDefaultToCityAndNumber,
       features::kAutofillPreferLabelsInSomeCountries,
       features::kAutofillEnableCacheForRegexMatching};

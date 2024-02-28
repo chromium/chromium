@@ -267,14 +267,6 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Some countries like BR and MX have address forms with only a zip code.
-// If this feature is enabled, those fields may be classified as zip code fields
-// for users who are located in BR/MX, even though our typical policy is to
-// disable local heuristics for forms with <3 fields.
-BASE_FEATURE(kAutofillEnableZipOnlyAddressForms,
-             "AutofillEnableZipOnlyAddressForms",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, trunk prefix-related phone number types are added to the
 // supported and matching types of |PhoneNumber|. Local heuristics for these
 // types are enabled as well.

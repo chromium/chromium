@@ -354,15 +354,11 @@ TEST_P(FormFieldParserTest, ParseFormRequires3DistinctFieldTypes) {
 }
 
 TEST_P(FormFieldParserTest, ParseStandaloneZipDisabledForUS) {
-  base::test::ScopedFeatureList enabled{
-      features::kAutofillEnableZipOnlyAddressForms};
   AddTextFormFieldData("zip", "ZIP", ADDRESS_HOME_ZIP);
   EXPECT_EQ(0, ParseFormFields(GeoIpCountryCode("US")));
 }
 
 TEST_P(FormFieldParserTest, ParseStandaloneZipEnabledForBR) {
-  base::test::ScopedFeatureList enabled{
-      features::kAutofillEnableZipOnlyAddressForms};
   AddTextFormFieldData("cep", "CEP", ADDRESS_HOME_ZIP);
   EXPECT_EQ(1, ParseFormFields(GeoIpCountryCode("BR")));
   TestClassificationExpectations();
