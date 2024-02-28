@@ -141,3 +141,13 @@ export async function launchDebugger(timeout: number = 2000) {
   });
   debugger;
 }
+
+/**
+ * When dealing with CrLitElement instances, prefer this over using the
+ * `updateComplete` Promise, since it guarantees that microtasks queued by all
+ * other Lit elements have executed, as well as any updates that would be
+ * triggered by those updates, and so on.
+ */
+export function microtasksFinished(): Promise<void> {
+  return new Promise(resolve => setTimeout(() => resolve(), 0));
+}
