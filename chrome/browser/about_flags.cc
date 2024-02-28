@@ -3225,22 +3225,6 @@ const FeatureEntry::FeatureVariation
          std::size(kGalleryAppPdfEditNotificationOpenWithGalleryApp), nullptr}};
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kOsIntegrationSubManagersWriteConfig[] = {
-    {"stage", "write_config"}};
-const FeatureEntry::FeatureParam
-    kOsIntegrationSubManagersExecuteAndWriteConfig[] = {
-        {"stage", "execute_and_write_config"}};
-
-const FeatureEntry::FeatureVariation
-    kOsIntegrationSubManagersConfigVariations[] = {
-        {"Write Config only", kOsIntegrationSubManagersWriteConfig,
-         std::size(kOsIntegrationSubManagersWriteConfig), nullptr},
-        {"Execute and Write Config",
-         kOsIntegrationSubManagersExecuteAndWriteConfig,
-         std::size(kOsIntegrationSubManagersExecuteAndWriteConfig), nullptr}};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 const FeatureEntry::FeatureParam kWebRtcApmDownmixMethodAverage[] = {
     {"method", "average"}};
 const FeatureEntry::FeatureParam kWebRtcApmDownmixMethodFirstChannel[] = {
@@ -4949,14 +4933,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastEnableStreamingWithHiDPIName,
      flag_descriptions::kCastEnableStreamingWithHiDPIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kCastEnableStreamingWithHiDPI)},
-
-    {"enable-os-integration-sub-managers",
-     flag_descriptions::kEnableOsIntegrationSubManagersName,
-     flag_descriptions::kEnableOsIntegrationSubManagersDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kOsIntegrationSubManagers,
-                                    kOsIntegrationSubManagersConfigVariations,
-                                    "OsIntegrationSubManagers")},
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"password-sharing", flag_descriptions::kEnablePasswordSharingName,

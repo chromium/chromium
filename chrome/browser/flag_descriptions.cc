@@ -2018,13 +2018,6 @@ const char kContextualPageActionsShareModelName[] =
 const char kContextualPageActionsShareModelDescription[] =
     "Enables share model data collection.";
 
-const char kEnableOsIntegrationSubManagersName[] =
-    "OS Integration sub managers";
-const char kEnableOsIntegrationSubManagersDescription[] =
-    "Enable OS integration sub managers to either just write new OS "
-    "integration states to DB or execute on the OS integration states before "
-    "writing to the DB";
-
 const char kHandwritingLegacyRecognitionName[] =
     "Handwriting Legacy Recognition";
 const char kHandwritingLegacyRecognitionDescription[] =

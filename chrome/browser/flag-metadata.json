@@ -3262,11 +3262,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "enable-os-integration-sub-managers",
-    "owners": [ "dibyapal@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "enable-palm-suppression",
     "owners": [ "robsc@chromium.org", "napper@chromium.org", "hcutts@chromium.org", "chromeos-tango@google.com" ],
     // Added feature, for testing. expiry deep in future.
