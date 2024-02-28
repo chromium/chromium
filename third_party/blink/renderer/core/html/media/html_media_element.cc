@@ -760,16 +760,13 @@ void HTMLMediaElement::ParseAttribute(
              RuntimeEnabledFeatures::MediaLatencyHintEnabled()) {
     if (web_media_player_)
       web_media_player_->SetLatencyHint(latencyHint());
+  } else if (name == html_names::kMutedAttr) {
+    if (params.reason == AttributeModificationReason::kByParser) {
+      muted_ = true;
+    }
   } else {
     HTMLElement::ParseAttribute(params);
   }
-}
-
-void HTMLMediaElement::ParserDidSetAttributes() {
-  HTMLElement::ParserDidSetAttributes();
-
-  if (FastHasAttribute(html_names::kMutedAttr))
-    muted_ = true;
 }
 
 // This method is being used as a way to know that cloneNode finished cloning
