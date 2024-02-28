@@ -3316,6 +3316,10 @@ source_set("browser") {
     deps += [ "//content/browser/devtools:devtools_resources_extern" ]
   }
 
+  if (is_win) {
+    deps += [ "//ui/base/ime/win" ]
+  }
+
   if (use_aura) {
     deps += [
       "//ui/aura",

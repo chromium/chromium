@@ -188,9 +188,4 @@ void InputMethodWinTSF::OnUrlChanged() {
   ui::TSFBridge::GetInstance()->OnUrlChanged();
 }
 
-void InputMethodWinTSF::SetPrivateInputScope(HWND hwnd) {
-  tsf_inputscope::InitializeForSetInputScope();
-  tsf_inputscope::SetPrivateInputScope(hwnd);
-}
-
 }  // namespace ui

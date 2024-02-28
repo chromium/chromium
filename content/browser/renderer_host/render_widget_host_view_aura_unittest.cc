@@ -3520,61 +3520,6 @@ TEST_F(RenderWidgetHostViewAuraTest, TouchEventPositionsArentRounded) {
   EXPECT_EQ(kY, pointer_state().GetY(0));
 }
 
-#if BUILDFLAG(IS_WIN)
-class RenderWidgetHostViewAuraTsfMockInputMethod : public ui::MockInputMethod {
- public:
-  RenderWidgetHostViewAuraTsfMockInputMethod() : MockInputMethod(nullptr) {}
-
-  RenderWidgetHostViewAuraTsfMockInputMethod(
-      const RenderWidgetHostViewAuraTsfMockInputMethod&) = delete;
-  RenderWidgetHostViewAuraTsfMockInputMethod& operator=(
-      const RenderWidgetHostViewAuraTsfMockInputMethod&) = delete;
-
-  // Call count of SetPrivateInputScope
-  unsigned set_private_input_scope_call_count() const {
-    return set_private_input_scope_call_count_;
-  }
-  void SetPrivateInputScope(HWND hwnd) override {
-    ++set_private_input_scope_call_count_;
-  }
-
- private:
-  unsigned set_private_input_scope_call_count_ = 0;
-};
-
-class RenderWidgetHostViewAuraInputScopeTest
-    : public RenderWidgetHostViewAuraTest {
- public:
-  RenderWidgetHostViewAuraInputScopeTest() = default;
-
-  RenderWidgetHostViewAuraInputScopeTest(
-      const RenderWidgetHostViewAuraInputScopeTest&) = delete;
-  RenderWidgetHostViewAuraInputScopeTest& operator=(
-      const RenderWidgetHostViewAuraInputScopeTest&) = delete;
-
-  ~RenderWidgetHostViewAuraInputScopeTest() override {}
-  void SetUp() override {
-    ui::SetUpInputMethodForTesting(
-        new RenderWidgetHostViewAuraTsfMockInputMethod());
-    SetUpEnvironment();
-  }
-
-  RenderWidgetHostViewAuraTsfMockInputMethod* GetMockInputMethod() const {
-    return static_cast<RenderWidgetHostViewAuraTsfMockInputMethod*>(
-        GetInputMethod());
-  }
-};
-
-TEST_F(RenderWidgetHostViewAuraInputScopeTest, InputScopeWithDisabledLearning) {
-  parent_view_->Show();
-  // MockRenderWidgetHostDelegate, which is used to setup parent_view_ sets up
-  // the TextInputManager to disable learning. In non-test environments, it is
-  // setup based on IsOffTheRecord in WebContentsImpl.
-  EXPECT_FALSE(parent_view_->GetTextInputManager()->should_do_learning());
-  EXPECT_EQ(GetMockInputMethod()->set_private_input_scope_call_count(), 1u);
-}
-#endif
-
 // Tests that non-precise mouse-wheel events do not initiate overscroll.
 TEST_F(RenderWidgetHostViewAuraOverscrollTest, WheelNotPreciseScrollEvent) {
   SetUpOverscrollEnvironment();

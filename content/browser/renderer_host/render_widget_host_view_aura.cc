@@ -113,6 +113,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/ime/virtual_keyboard_controller_observer.h"
+#include "ui/base/ime/win/tsf_input_scope.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/gdi_util.h"
@@ -891,7 +892,7 @@ void RenderWidgetHostViewAura::ShowWithVisibility(
   }
 
   if (window_->GetHost() && GetInputMethod() && !ShouldDoLearning()) {
-    GetInputMethod()->SetPrivateInputScope(
+    ui::tsf_inputscope::SetPrivateInputScope(
         RenderWidgetHostViewAura::GetHostWindowHWND());
   }
 

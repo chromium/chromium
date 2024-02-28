@@ -39,7 +39,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
   bool IsInputLocaleCJK() const override;
   bool IsCandidatePopupOpen() const override;
   void OnUrlChanged() override;
-  void SetPrivateInputScope(HWND hwnd) override;
 
   // Overridden from InputMethodBase:
   void OnWillChangeFocusedClient(TextInputClient* focused_before,
