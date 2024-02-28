@@ -61,7 +61,8 @@ class WebSocketStream::UnderlyingSource final : public UnderlyingSourceBase {
   void DidReceiveTextMessage(const String&);
   void DidReceiveBinaryMessage(const Vector<base::span<const char>>&);
   void DidStartClosingHandshake();
-  void DidClose(bool was_clean, uint16_t code, const String& reason);
+  void DidCloseCleanly(uint16_t code, const String& reason);
+  void CloseWithError(v8::Local<v8::Value> error);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(creator_);
@@ -92,7 +93,8 @@ class WebSocketStream::UnderlyingSink final : public UnderlyingSinkBase {
 
   // API for WebSocketStream.
   void DidStartClosingHandshake();
-  void DidClose(bool was_clean, uint16_t code, const String& reason);
+  void DidCloseCleanly(uint16_t code, const String& reason);
+  void CloseWithError(v8::Local<v8::Value> error);
   bool AllDataHasBeenConsumed() { return !is_writing_; }
 
   void Trace(Visitor* visitor) const override {
@@ -175,24 +177,28 @@ void WebSocketStream::UnderlyingSource::DidStartClosingHandshake() {
   closed_ = true;
 }
 
-void WebSocketStream::UnderlyingSource::DidClose(bool was_clean,
-                                                 uint16_t code,
-                                                 const String& reason) {
+void WebSocketStream::UnderlyingSource::DidCloseCleanly(uint16_t code,
+                                                        const String& reason) {
   DVLOG(1) << "WebSocketStream::UnderlyingSource " << this
-           << " DidClose() was_clean=" << was_clean << " code=" << code
-           << " reason=" << reason;
+           << " DidCloseCleanly() code=" << code << " reason=" << reason;
 
   if (closed_)
     return;
 
   closed_ = true;
-  if (was_clean) {
-    Controller()->Close();
+  Controller()->Close();
+}
+
+void WebSocketStream::UnderlyingSource::CloseWithError(
+    v8::Local<v8::Value> error) {
+  DVLOG(1) << "WebSocketStream::UnderlyingSource::CloseWithError";
+  if (closed_) {
     return;
   }
 
-  Controller()->Error(creator_->CreateWebSocketError(
-      kWebSocketNotCleanlyClosedErrorMessage, code, reason));
+  closed_ = true;
+
+  Controller()->Error(error);
 }
 
 ScriptPromise WebSocketStream::UnderlyingSink::start(
@@ -258,31 +264,36 @@ void WebSocketStream::UnderlyingSink::DidStartClosingHandshake() {
   ErrorControllerBecauseClosed();
 }
 
-void WebSocketStream::UnderlyingSink::DidClose(bool was_clean,
-                                               uint16_t code,
-                                               const String& reason) {
+void WebSocketStream::UnderlyingSink::DidCloseCleanly(uint16_t code,
+                                                      const String& reason) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this
-           << " DidClose() was_clean=" << was_clean << " code=" << code
-           << " reason=" << reason;
+           << " DidCloseCleanly() code=" << code << " reason=" << reason;
 
-  if (close_resolver_)
-    ResolveClose(was_clean);
+  if (close_resolver_) {
+    ResolveClose(/*was_clean=*/true);
+  }
 
   if (closed_)
     return;
   closed_ = true;
 
-  if (was_clean) {
-    ErrorControllerBecauseClosed();
-    return;
+  ErrorControllerBecauseClosed();
+}
+
+void WebSocketStream::UnderlyingSink::CloseWithError(
+    v8::Local<v8::Value> error) {
+  if (close_resolver_) {
+    ResolveClose(/*was_clean=*/false);
   }
 
+  if (closed_) {
+    return;
+  }
+  closed_ = true;
+
   ScriptState* script_state = creator_->script_state_;
-  Controller()->error(
-      script_state,
-      ScriptValue(script_state->GetIsolate(),
-                  creator_->CreateWebSocketError(
-                      kWebSocketNotCleanlyClosedErrorMessage, code, reason)));
+  Controller()->error(script_state,
+                      ScriptValue(script_state->GetIsolate(), error));
 }
 
 void WebSocketStream::UnderlyingSink::ErrorControllerBecauseClosed() {
@@ -580,15 +591,24 @@ void WebSocketStream::DidClose(
   channel_->Disconnect();
   channel_ = nullptr;
   abort_handle_.Clear();
-  if (source_)
-    source_->DidClose(was_clean, code, reason);
-  if (sink_)
-    sink_->DidClose(was_clean, code, reason);
   if (was_clean) {
+    if (source_) {
+      source_->DidCloseCleanly(code, reason);
+    }
+    if (sink_) {
+      sink_->DidCloseCleanly(code, reason);
+    }
     closed_resolver_->Resolve(MakeCloseInfo(code, reason));
   } else {
-    closed_resolver_->Reject(
-        CreateWebSocketError(kWebSocketNotCleanlyClosedErrorMessage));
+    auto error = CreateWebSocketError(kWebSocketNotCleanlyClosedErrorMessage,
+                                      code, reason);
+    if (source_) {
+      source_->CloseWithError(error);
+    }
+    if (sink_) {
+      sink_->CloseWithError(error);
+    }
+    closed_resolver_->Reject(error);
   }
 }
 
@@ -714,12 +734,8 @@ v8::Local<v8::Value> WebSocketStream::CreateWebSocketError(
     String message,
     std::optional<uint16_t> close_code,
     String reason) {
-  // This method should not be called with invalid `close_code` and `reason`,
-  // but the use of ASSERT_NO_EXCEPTION here is bad practice.
-  // TODO(ricea): Do something else.
   return WebSocketError::Create(script_state_->GetIsolate(), std::move(message),
-                                close_code, std::move(reason),
-                                ASSERT_NO_EXCEPTION);
+                                close_code, std::move(reason));
 }
 
 void WebSocketStream::OnAbort() {

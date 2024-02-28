@@ -124,8 +124,7 @@ TEST_F(WebSocketErrorTest, InternalCreate) {
   V8TestingScope scope;
   auto* isolate = scope.GetIsolate();
   auto context = scope.GetContext();
-  auto v8value = WebSocketError::Create(isolate, "message", 1000, "reason",
-                                        ASSERT_NO_EXCEPTION);
+  auto v8value = WebSocketError::Create(isolate, "message", 1000, "reason");
 
   ASSERT_FALSE(v8value.IsEmpty());
   ASSERT_TRUE(v8value->IsObject());
