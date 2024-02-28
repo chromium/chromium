@@ -17,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/app_launch_prefetch/app_launch_prefetch.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/plugin_service_impl.h"
@@ -236,8 +235,8 @@ bool PpapiPluginProcessHost::Init(const ContentPluginInfo& info) {
   BrowserChildProcessHostImpl::CopyTraceStartupFlags(cmd_line.get());
 
 #if BUILDFLAG(IS_WIN)
-  cmd_line->AppendArgNative(
-      app_launch_prefetch::GetPrefetchSwitch(SubprocessType::kPpapi));
+  cmd_line->AppendArg(internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+      AppLaunchPrefetchType::kPpapi));
 #endif  // BUILDFLAG(IS_WIN)
 
   // These switches are forwarded to plugin pocesses.

@@ -261,10 +261,11 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
-#include "components/app_launch_prefetch/app_launch_prefetch.h"
+#include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
+#include "content/public/common/prefetch_type_win.h"
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -3289,11 +3290,13 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
 
 #if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(kExtensionProcess)) {
-    command_line->AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
-        app_launch_prefetch::SubprocessType::kExtension));
+    command_line->AppendArg(
+        internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+            AppLaunchPrefetchType::kExtension));
   } else {
-    command_line->AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
-        app_launch_prefetch::SubprocessType::kRenderer));
+    command_line->AppendArg(
+        internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+            AppLaunchPrefetchType::kRenderer));
   }
 #endif  // BUILDFLAG(IS_WIN)
 

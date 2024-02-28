@@ -39,10 +39,9 @@ include_rules = [
   "+components/access_code_cast",
   "+components/account_id",
   "+components/account_manager_core",
-  "+components/affiliations",
   "+components/allocation_recorder",
   "+components/app_constants/constants.h",
-  "+components/app_launch_prefetch",
+  "+components/affiliations",
   # TODO(b/129295708): Remove after move is complete.
   "+components/arc",
   "+components/app_restore",
