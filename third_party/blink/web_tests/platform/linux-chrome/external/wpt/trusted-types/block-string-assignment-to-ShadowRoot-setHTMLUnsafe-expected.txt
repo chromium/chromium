@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] `shadowRoot.setHTMLUnsafe(string)` throws.
-  assert_throws_js: function "_ => {\n      s.setHTMLUnsafe("Fail");\n    }" did not throw
-[FAIL] `shadowRoot.setHTMLUnsafe(null)` throws.
-  assert_throws_js: function "_ => {\n      s.setHTMLUnsafe(null);\n    }" did not throw
-[FAIL] `shadowRoot.setHTMLUnsafe(string)` assigned via default policy (successful HTML transformation).
-  assert_equals: expected "Quack, I want to be a duck!" but got "Hi, I want to be transformed!"
-Harness: the test ran to completion.

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Preconnect in early hints.
-  assert_equals: Connection establishment should not take time for a resource from a preconnected origin. expected 173.5 but got 169.80000000074506
-Harness: the test ran to completion.

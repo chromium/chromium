@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that screen.orientation.lock returns a promise which will be fulfilled with a void value.
-  promise_test: Unhandled rejection with value: object "NotSupportedError: screen.orientation.lock() is not available on this device."
-[FAIL] Test that screen.orientation.lock() is actually async
-  promise_test: Unhandled rejection with value: object "NotSupportedError: screen.orientation.lock() is not available on this device."
-Harness: the test ran to completion.

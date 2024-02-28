@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Checkboxes should clear :active when the user tabs away from them while pressing the parent label with a pointing device
-  assert_equals: Checkboxes should be :active while the label is pressed expected Element node <input type="checkbox" id="cb2" checked=""></input> but got null
-[FAIL] Radios should clear :active when the user tabs away from them while pressing the following label with a pointing device
-  assert_equals: Radios should be :active while the label is pressed expected Element node <input type="radio" id="r1" checked=""></input> but got null
-Harness: the test ran to completion.

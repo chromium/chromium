@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Activation through touch pointerevent click
-  assert_false: touch pointerdown event should not result in activation expected false got true
-Harness: the test ran to completion.

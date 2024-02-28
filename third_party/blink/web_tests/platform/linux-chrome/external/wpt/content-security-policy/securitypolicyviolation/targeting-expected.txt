@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 2 , harness_status.message = 
-[NOTRUN] These tests should not fail.
-[FAIL] Inline violations target the right element.
-  assert_equals: expected 118 but got 141
-[TIMEOUT] Elements created in this document, but pushed into a same-origin frame trigger on that frame's document, not on this frame's document.
-  Test timed out
-Harness: the test ran to completion.

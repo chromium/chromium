@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Check SharedWorker sameSiteCookies option default for third-party
-  assert_equals: Worker should get/set SameSite=None cookies only expected "ReadOnLoad:None,ReadOnFetch:None,SetOnRedirectLoad:None,SetOnLoad:None,SetOnRedirectFetch:None,SetOnFetch:None" but got "ReadOnLoad:,ReadOnFetch:,SetOnRedirectLoad:,SetOnLoad:,SetOnRedirectFetch:,SetOnFetch:"
-Harness: the test ran to completion.

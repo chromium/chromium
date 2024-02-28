@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL PASS] table 5
-[FAIL PASS] table 6
-Harness: the test ran to completion.

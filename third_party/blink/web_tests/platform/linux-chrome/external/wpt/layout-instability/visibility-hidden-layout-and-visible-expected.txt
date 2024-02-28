@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] visibility:hidden change with layout
-  assert_equals: expected 0.020796079107245125 but got 0.020310837261409403
-Harness: the test ran to completion.

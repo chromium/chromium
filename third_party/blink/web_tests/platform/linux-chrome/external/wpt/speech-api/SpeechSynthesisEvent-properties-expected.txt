@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Properties of SpeechSynthesisEvent
-  assert_equals: Expected start event, but got error event instead expected "start" but got "error"
-Harness: the test ran to completion.

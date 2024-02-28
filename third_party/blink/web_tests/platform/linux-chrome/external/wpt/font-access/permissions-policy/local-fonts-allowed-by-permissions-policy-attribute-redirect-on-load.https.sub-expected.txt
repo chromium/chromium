@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] permissions policy allow="local-fonts" allows same-origin navigation in an iframe.
-  assert_true: local-fonts expected true got false
-Harness: the test ran to completion.

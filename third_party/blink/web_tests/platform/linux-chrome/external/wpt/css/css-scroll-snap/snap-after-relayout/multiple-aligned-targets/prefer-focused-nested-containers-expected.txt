@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Snap container prefers focused nested snap target.
-  assert_equals: vertical scroll done expected 500 but got 494
-Harness: the test ran to completion.

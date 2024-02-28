@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Top-level document receives blur/focus events and loses system focus during opening/closing of a popup
-  assert_true: Document received blur event when popup opened expected true got false
-Harness: the test ran to completion.

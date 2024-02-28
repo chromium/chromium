@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that orientationchange event is not fired when the orientation does not change.
-  promise_test: Unhandled rejection with value: object "NotSupportedError: screen.orientation.lock() is not available on this device."
-[FAIL] Test that orientationchange event is fired when the orientation changes.
-  promise_test: Unhandled rejection with value: object "NotSupportedError: screen.orientation.lock() is not available on this device."
-Harness: the test ran to completion.
