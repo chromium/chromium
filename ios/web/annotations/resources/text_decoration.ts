@@ -129,6 +129,10 @@ class TextDecoration {
         if (parentNode && id) {
           parentNode.replaceChild(textNode, replacement);
           textNode[replacementNodeDecorationId] = id;
+          // The node has been replace. Remove the symbols so it is not
+          // considered as a replacement node in observers anymore..
+          delete replacement[replacementNodeDecorationId];
+          delete replacement[originalNodeDecorationId];
         }
         this.replacements[i] = textNode;
       }
