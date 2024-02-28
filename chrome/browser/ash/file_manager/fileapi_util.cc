@@ -14,12 +14,14 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -500,6 +502,20 @@ void GenerateUnusedFilenameOnGotMetadata(
                      std::move(state), std::move(callback)));
 }
 
+// If the file is on ODFS (OneDrive), trim leading and trailing spaces from the
+// destination name because OneDrive will not allow this, even though Files app
+// is fine with it.
+base::FilePath TrimFilenameIfOnODFS(storage::FileSystemURL destination_folder,
+                                    base::FilePath filename) {
+  if (ash::cloud_upload::UrlIsOnODFS(destination_folder)) {
+    std::string name = filename.AsUTF8Unsafe();
+    base::TrimString(name, " ", &name);
+    return base::FilePath(name);
+  }
+
+  return filename;
+}
+
 }  // namespace
 
 EntryDefinition::EntryDefinition() = default;
@@ -696,17 +712,20 @@ void GenerateUnusedFilename(
     return;
   }
 
+  base::FilePath trimmed_filename =
+      TrimFilenameIfOnODFS(destination_folder, filename);
+
   auto trial_url = file_system_context->CreateCrackedFileSystemURL(
       destination_folder.storage_key(), destination_folder.mount_type(),
-      destination_folder.virtual_path().Append(filename));
+      destination_folder.virtual_path().Append(trimmed_filename));
 
   GenerateUnusedFilenameState state;
   state.destination_folder = std::move(destination_folder);
   state.file_system_context = file_system_context;
-  state.extension = filename.Extension();
+  state.extension = trimmed_filename.Extension();
   // Extracts the filename without extension or existing counter.
   // E.g. "foo (3).txt" -> "foo".
-  bool res = RE2::FullMatch(filename.RemoveExtension().value(),
+  bool res = RE2::FullMatch(trimmed_filename.RemoveExtension().value(),
                             R"((.*?)(?: \(\d+\))?)", &state.prefix);
   DCHECK(res);
 
