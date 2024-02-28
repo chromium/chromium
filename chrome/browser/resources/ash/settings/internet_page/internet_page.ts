@@ -350,7 +350,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       /**
        * Whether the 'Add custom APN' button is disabled.
        */
-      isCreateCustomApnButtonDisabled_: {
+      isNumCustomApnsLimitReached_: {
         type: Boolean,
       },
 
@@ -379,7 +379,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private isApnRevampEnabled_: boolean;
   private isCellularCarrierLockEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
-  private isCreateCustomApnButtonDisabled_: boolean;
+  private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
   private disableVpnUi_: boolean;
@@ -1036,13 +1036,26 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * Handles UI requests to add new APN.
    */
   private onCreateCustomApnClicked_(): void {
-    if (this.isCreateCustomApnButtonDisabled_) {
+    if (this.isNumCustomApnsLimitReached_) {
       return;
     }
     this.closeApnMenu_();
     const apnSubpage = castExists(
         this.shadowRoot!.querySelector<ApnSubpageElement>('#apnSubpage'));
     apnSubpage.openApnDetailDialogInCreateMode();
+  }
+
+  /**
+   * Handles UI requests to discover more APNs.
+   */
+  private onDiscoverMoreApnsClicked_(): void {
+    if (this.isNumCustomApnsLimitReached_) {
+      return;
+    }
+    this.closeApnMenu_();
+    const apnSubpage = castExists(
+        this.shadowRoot!.querySelector<ApnSubpageElement>('#apnSubpage'));
+    apnSubpage.openApnSelectionDialog();
   }
 
   private onShowPasspointDetails_(event: CustomEvent<PasspointSubscription>):

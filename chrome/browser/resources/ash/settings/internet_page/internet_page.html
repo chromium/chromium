@@ -132,7 +132,7 @@
         </cr-icon-button>
       </div>
       <apn-subpage id="apnSubpage"
-          is-num-custom-apns-limit-reached="{{isCreateCustomApnButtonDisabled_}}"
+          is-num-custom-apns-limit-reached="{{isNumCustomApnsLimitReached_}}"
       >
       </apn-subpage>
     </os-settings-subpage>
@@ -238,16 +238,28 @@
 </template>
 
 <cr-action-menu id="apnDotsMenu">
+  <button id="discoverMoreApnsButton" class="dropdown-item"
+      on-click="onDiscoverMoreApnsClicked_"
+      disabled="[[isNumCustomApnsLimitReached_]]">
+    $i18n{apnPageDiscoverMoreApns}
+  </button>
   <button id="createCustomApnButton" class="dropdown-item"
       on-click="onCreateCustomApnClicked_"
-      disabled="[[isCreateCustomApnButtonDisabled_]]">
+      disabled="[[isNumCustomApnsLimitReached_]]">
     $i18n{apnPageCreateNewApn}
   </button>
 </cr-action-menu>
 
-<template is="dom-if" if="[[isCreateCustomApnButtonDisabled_]]" restamp>
+<template is="dom-if" if="[[isNumCustomApnsLimitReached_]]" restamp>
   <!-- TODO(b/162365553) Add a11y support-->
-  <paper-tooltip id="apnTooltip" for="detailsButton">
+  <paper-tooltip id="discoverMoreApnsTooltip"
+      for="discoverMoreApnsButton"
+      position="left">
+    $i18n{customApnLimitReached}
+  </paper-tooltip>
+  <paper-tooltip id="createCustomApnTooltip"
+      for="createCustomApnButton"
+      position="left">
     $i18n{customApnLimitReached}
   </paper-tooltip>
 </template>

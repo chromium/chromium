@@ -148,6 +148,15 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
     this.$.apnList.openApnDetailDialogInCreateMode();
   }
 
+  /**
+   * Helper method that can be used by parent elements to open the APN
+   * selection dialog.
+   */
+  openApnSelectionDialog(): void {
+    assert(this.guid_);
+    this.$.apnList.openApnSelectionDialog();
+  }
+
   private async getNetworkDetails_(): Promise<void> {
     assert(this.guid_);
 
