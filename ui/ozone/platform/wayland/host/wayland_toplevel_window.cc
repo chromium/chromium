@@ -897,6 +897,10 @@ void WaylandToplevelWindow::SetShadowCornersRadii(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+PlatformWindowDelegate::State WaylandToplevelWindow::GetLatchedState() const {
+  return latched_state();
+}
+
 void WaylandToplevelWindow::RoundTripQueue() {
   connection()->RoundTripQueue();
 }

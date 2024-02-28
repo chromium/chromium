@@ -26,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -4265,15 +4266,32 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 
 namespace {
 
+// Calls `SetBounds` on a browser window, and waits for the bounds to be set
+// server-side.
+//
+// NOTE: This function assumes that the server will respect our choice of
+// bounds. For example, if we place the window outside the edge of the screen,
+// the server will modify its bounds - in that case this function will fail.
+
+// NOTE: This function also assumes that the window's bounds were never
+// previously set to `bounds`. If they were previously set to be `bounds`, then
+// to another value, then back to `bounds`, it may grab the latched state for
+// the first setting, instead of the last one.
 void SetBoundsSync(BrowserWindow* window, const gfx::Rect& bounds) {
   window->SetBounds(bounds);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Wait for a Wayland roundtrip to ensure all side effects have been
-  // processed.
   auto* host = static_cast<aura::WindowTreeHostPlatform*>(
       window->GetNativeWindow()->GetHost());
   auto* wayland_extension = ui::GetWaylandExtension(*host->platform_window());
+
+  // Wait until the server has processed all currently issued requests.
+  wayland_extension->RoundTripQueue();
+
+  // Wait for latched state to reflect the bounds change.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return wayland_extension->GetLatchedState().bounds_dip == bounds;
+  }));
   wayland_extension->RoundTripQueue();
 #endif
 }

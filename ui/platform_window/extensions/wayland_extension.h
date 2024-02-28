@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/platform_window/platform_window_delegate.h"
 
 namespace gfx {
 class RoundedCornersF;
@@ -72,9 +73,16 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Wait for a Wayland roundtrip to ensure all side effects have been
+  // Waits for a Wayland roundtrip to ensure all side effects have been
   // processed.
   virtual void RoundTripQueue() = 0;
+
+  // Returns the current configuration state of the window. This is initially
+  // set to values provided by the client, until we get an actual configure from
+  // the server.
+  // See the comment to the member of WaylandWindow `applied_state_`
+  // in `ui/ozone/platform/wayland/host/wayland_window.h` for more info.
+  virtual PlatformWindowDelegate::State GetLatchedState() const = 0;
 
   // Signals the underneath platform to shows a preview for the given window
   // snap direction. `allow_haptic_feedback` indicates if it should send haptic
