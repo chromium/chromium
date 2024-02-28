@@ -419,7 +419,6 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
     public static final String SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK =
             "SafeBrowsingNewGmsApiForSubresourceFilterCheck";
-    public static final String SAFE_BROWSING_SKIP_SUBRESOURCES = "SafeBrowsingSkipSubResources";
     public static final String SCREENSHOTS_FOR_ANDROID_V2 = "ScreenshotsForAndroidV2";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_ENGINES_PROMO_V3 = "SearchEnginesPromoV3";

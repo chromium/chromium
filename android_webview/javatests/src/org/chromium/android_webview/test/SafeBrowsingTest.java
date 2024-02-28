@@ -63,9 +63,7 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
 import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
 import org.chromium.components.safe_browsing.SafetyNetApiHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -760,14 +758,12 @@ public class SafeBrowsingTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingShowsInterstitialForSubresource() throws Throwable {
+    public void testSafeBrowsingNoInterstitialForSubresource() throws Throwable {
         loadGreenPage();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback= */ true);
-        assertGreenPageNotShowing();
-        // Assume that we are rendering the interstitial, since we see neither the previous page
-        // nor the target page
+        final String responseUrl = mTestServer.getURL(IFRAME_HTML_PATH);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), responseUrl);
+        assertTargetPageHasLoaded(IFRAME_EMBEDDER_BACKGROUND_COLOR);
     }
 
     @Test
@@ -784,23 +780,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         // Check there is not an extra onSafeBrowsingHit call after proceeding.
         Assert.assertEquals(
                 onSafeBrowsingCountBeforeClick, mContentsClient.getOnSafeBrowsingHitCount());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingProceedThroughInterstitialForSubresource() throws Throwable {
-        int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback= */ false);
-        waitForInterstitialDomToLoad();
-        clickVisitUnsafePage();
-        // For subresources, the initial site finishes loading before the interstitial is shown,
-        // causing an extra onPageFinished call if committed interstitials are enabled (since the
-        // proceed action triggers a reload).
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount, 2);
-        assertTargetPageHasLoaded(IFRAME_EMBEDDER_BACKGROUND_COLOR);
     }
 
     @Test
@@ -836,24 +815,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         errorHelper.waitForCallback(errorCount);
         mActivityTestRule.waitForVisualStateCallback(mAwContents);
         assertTargetPageNotShowing(MALWARE_PAGE_BACKGROUND_COLOR);
-        assertGreenPageShowing();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingDontProceedNavigatesBackForSubResource() throws Throwable {
-        loadGreenPage();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback= */ false);
-        waitForInterstitialDomToLoad();
-        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
-        int errorCount = errorHelper.getCallCount();
-        clickBackToSafety();
-        errorHelper.waitForCallback(errorCount);
-        mActivityTestRule.waitForVisualStateCallback(mAwContents);
-        assertTargetPageNotShowing(IFRAME_EMBEDDER_BACKGROUND_COLOR);
         assertGreenPageShowing();
     }
 
@@ -1042,80 +1003,6 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         // Check onSafeBrowsingHit arguments
         Assert.assertEquals(responseUrl, mContentsClient.getLastRequest().url);
-        Assert.assertEquals(
-                AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
-                mContentsClient.getLastThreatType());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingOnSafeBrowsingHitForSubresourceNoPreviousPage() throws Throwable {
-        mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.BACK_TO_SAFETY);
-        final String responseUrl = mTestServer.getURL(IFRAME_HTML_PATH);
-        final String subresourceUrl = mTestServer.getURL(MALWARE_HTML_PATH);
-        int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
-
-        // We'll successfully load IFRAME_HTML_PATH, and will soon call onSafeBrowsingHit
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount);
-
-        final GURL aboutBlank = new GURL(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-
-        // Wait for the onSafeBrowsingHit to call BACK_TO_SAFETY and navigate back
-        mActivityTestRule.pollUiThread(() -> aboutBlank.equals(mAwContents.getUrl()));
-
-        // Check onSafeBrowsingHit arguments
-        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
-        Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
-        Assert.assertEquals(
-                AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
-                mContentsClient.getLastThreatType());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES})
-    // TODO(crbug.com/1487858): Remove this test after SAFE_BROWSING_SKIP_SUBRESOURCES is launched.
-    public void testSafeBrowsingOnSafeBrowsingHitForSubresource() throws Throwable {
-        mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.BACK_TO_SAFETY);
-        loadGreenPage();
-        final String responseUrl = mTestServer.getURL(IFRAME_HTML_PATH);
-        final String subresourceUrl = mTestServer.getURL(MALWARE_HTML_PATH);
-        int pageFinishedCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
-
-        // We'll successfully load IFRAME_HTML_PATH, and will soon call onSafeBrowsingHit
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount);
-
-        // Wait for the onSafeBrowsingHit to call BACK_TO_SAFETY and navigate back
-        mActivityTestRule.pollUiThread(
-                () ->
-                        colorToString(GREEN_PAGE_BACKGROUND_COLOR)
-                                .equals(
-                                        colorToString(
-                                                GraphicsTestUtils.getPixelColorAtCenterOfView(
-                                                        mAwContents, mContainerView))));
-
-        // Check onSafeBrowsingHit arguments
-        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
-        Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
-        Assert.assertEquals(
-                AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
-                mContentsClient.getLastThreatType());
-
-        mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.PROCEED);
-
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), responseUrl);
-        mActivityTestRule.waitForVisualStateCallback(mAwContents);
-        assertTargetPageHasLoaded(IFRAME_EMBEDDER_BACKGROUND_COLOR);
-
-        Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
-        Assert.assertEquals(subresourceUrl, mContentsClient.getLastRequest().url);
         Assert.assertEquals(
                 AwSafeBrowsingConversionHelper.SAFE_BROWSING_THREAT_MALWARE,
                 mContentsClient.getLastThreatType());
