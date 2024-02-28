@@ -195,6 +195,22 @@ void Euicc::RequestAvailableProfiles(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void Euicc::RefreshInstalledProfiles(
+    RefreshInstalledProfilesCallback callback) {
+  DCHECK(ash::features::IsSmdsSupportEnabled());
+  NET_LOG(EVENT) << "Refreshing installed profiles";
+  esim_manager_->cellular_esim_profile_handler()->RefreshProfileList(
+      path_,
+      base::BindOnce(
+          [](RefreshInstalledProfilesCallback callback,
+             std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+            std::move(callback).Run(inhibit_lock
+                                        ? mojom::ESimOperationResult::kSuccess
+                                        : mojom::ESimOperationResult::kFailure);
+          },
+          std::move(callback)));
+}
+
 void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {
   // Before requesting pending profiles, we also request installed profiles.
   // This ensures that if an error occurs and Chrome's installed profile cache

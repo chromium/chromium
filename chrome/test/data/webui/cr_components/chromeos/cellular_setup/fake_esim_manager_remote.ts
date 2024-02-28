@@ -147,6 +147,8 @@ export class FakeEuicc implements EuiccInterface {
   properties: EuiccProperties;
   private fakeESimManager_: FakeESimManagerRemote;
   private profiles_: FakeProfile[];
+  private refreshInstalledProfilesResult_: ESimOperationResult;
+  private refreshInstalledProfilesCount_: number = 0;
   private requestPendingProfilesResult_: ESimOperationResult;
   private eidQRCode_: QRCode|null = null;
   private profileInstallResult_: ProfileInstallResult|null = null;
@@ -158,6 +160,7 @@ export class FakeEuicc implements EuiccInterface {
     for (let i = 0; i < numProfiles; i++) {
       this.addProfile();
     }
+    this.refreshInstalledProfilesResult_ = ESimOperationResult.kSuccess;
     this.requestPendingProfilesResult_ = ESimOperationResult.kSuccess;
   }
 
@@ -166,6 +169,8 @@ export class FakeEuicc implements EuiccInterface {
   }
 
   requestPendingProfiles(): Promise<{result:ESimOperationResult}> {
+    // Requesting pending profiles refreshes the installed profile list.
+    this.refreshInstalledProfilesCount_++;
     return Promise.resolve({
       result: this.requestPendingProfilesResult_,
     });
@@ -178,6 +183,13 @@ export class FakeEuicc implements EuiccInterface {
       profiles: this.profiles_.map(profile => {
         return profile.properties;
       }),
+    });
+  }
+
+  refreshInstalledProfiles(): Promise<{result: ESimOperationResult}> {
+    this.refreshInstalledProfilesCount_++;
+    return Promise.resolve({
+      result: this.refreshInstalledProfilesResult_,
     });
   }
 
@@ -194,6 +206,10 @@ export class FakeEuicc implements EuiccInterface {
     } else {
       return Promise.resolve({qrCode: null});
     }
+  }
+
+  getRefreshInstalledProfilesCount(): number {
+    return this.refreshInstalledProfilesCount_;
   }
 
   installProfileFromActivationCode(
