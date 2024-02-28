@@ -7,7 +7,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
@@ -106,12 +105,9 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
   PropertyTreeStateOrAlias() = default;
 
  private:
-  raw_ptr<const TransformPaintPropertyNodeOrAlias, DanglingUntriaged>
-      transform_ = nullptr;
-  raw_ptr<const ClipPaintPropertyNodeOrAlias, DanglingUntriaged> clip_ =
-      nullptr;
-  raw_ptr<const EffectPaintPropertyNodeOrAlias, DanglingUntriaged> effect_ =
-      nullptr;
+  const TransformPaintPropertyNodeOrAlias* transform_ = nullptr;
+  const ClipPaintPropertyNodeOrAlias* clip_ = nullptr;
+  const EffectPaintPropertyNodeOrAlias* effect_ = nullptr;
 };
 
 class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
