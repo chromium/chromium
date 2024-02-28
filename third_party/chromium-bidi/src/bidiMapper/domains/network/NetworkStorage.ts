@@ -17,6 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
+import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
@@ -33,6 +34,7 @@ interface NetworkInterception {
 /** Stores network and intercept maps. */
 export class NetworkStorage {
   #eventManager: EventManager;
+  #logger?: LoggerFn;
 
   readonly #targets = new Set<CdpTarget>();
   /**
@@ -50,7 +52,11 @@ export class NetworkStorage {
     auth: false,
   };
 
-  constructor(eventManager: EventManager, browserClient: CdpClient) {
+  constructor(
+    eventManager: EventManager,
+    browserClient: CdpClient,
+    logger?: LoggerFn
+  ) {
     this.#eventManager = eventManager;
 
     browserClient.on(
@@ -59,6 +65,8 @@ export class NetworkStorage {
         this.disposeRequestMap(sessionId);
       }
     );
+
+    this.#logger = logger;
   }
 
   /**
@@ -80,7 +88,8 @@ export class NetworkStorage {
       this.#eventManager,
       this,
       cdpTarget,
-      redirectCount
+      redirectCount,
+      this.#logger
     );
 
     this.addRequest(request);
@@ -107,8 +116,6 @@ export class NetworkStorage {
               cdpTarget,
               request.redirectCount + 1
             ).onRequestWillBeSentEvent(params);
-          } else if (request) {
-            request.onRequestWillBeSentEvent(params);
           } else {
             this.#getOrCreateNetworkRequest(
               params.requestId,
@@ -165,13 +172,25 @@ export class NetworkStorage {
       [
         'Fetch.requestPaused',
         (event: Protocol.Fetch.RequestPausedEvent) => {
-          this.#handleNetworkInterception(event, cdpTarget);
+          this.#getOrCreateNetworkRequest(
+            // CDP quirk if the Network domain is not present this is undefined
+            event.networkId ?? event.requestId,
+            cdpTarget
+          ).onRequestPaused(event);
         },
       ],
       [
         'Fetch.authRequired',
         (event: Protocol.Fetch.AuthRequiredEvent) => {
-          this.#handleAuthInterception(event, cdpTarget);
+          let request = this.getRequestByFetchId(event.requestId);
+          if (!request) {
+            request = this.#getOrCreateNetworkRequest(
+              event.requestId,
+              cdpTarget
+            );
+          }
+
+          request.onAuthRequired(event);
         },
       ],
     ] as const;
@@ -251,11 +270,11 @@ export class NetworkStorage {
     }
   }
 
-  requestBlockedBy(
+  getInterceptsForPhase(
     request: NetworkRequest,
-    phase?: Network.InterceptPhase
+    phase: Network.InterceptPhase
   ): Set<Network.Intercept> {
-    if (request.url === undefined || phase === undefined) {
+    if (request.url === NetworkRequest.unknownParameter) {
       return new Set();
     }
 
@@ -281,50 +300,11 @@ export class NetworkStorage {
   }
 
   disposeRequestMap(sessionId: string) {
-    const requests = [...this.#requests.values()].filter((request) => {
-      return request.cdpClient.sessionId === sessionId;
-    });
-
-    for (const request of requests) {
-      request.dispose();
-      this.#requests.delete(request.id);
+    for (const request of this.#requests.values()) {
+      if (request.cdpClient.sessionId === sessionId) {
+        this.#requests.delete(request.id);
+      }
     }
-  }
-
-  #handleNetworkInterception(
-    event: Protocol.Fetch.RequestPausedEvent,
-    cdpTarget: CdpTarget
-  ) {
-    // CDP quirk if the Network domain is not present this is undefined
-    this.#getOrCreateNetworkRequest(
-      event.networkId ?? '',
-      cdpTarget
-    ).onRequestPaused(event);
-  }
-
-  #handleAuthInterception(
-    event: Protocol.Fetch.AuthRequiredEvent,
-    cdpTarget: CdpTarget
-  ) {
-    // CDP quirk if the Network domain is not present this is undefined
-    const request = this.getRequestByFetchId(event.requestId ?? '');
-    if (!request) {
-      // CDP quirk even both request/response may be continued
-      // with this command
-      void cdpTarget.cdpClient
-        .sendCommand('Fetch.continueWithAuth', {
-          requestId: event.requestId,
-          authChallengeResponse: {
-            response: 'Default',
-          },
-        })
-        .catch(() => {
-          // TODO: add logging
-        });
-      return;
-    }
-
-    request.onAuthRequired(event);
   }
 
   /**
@@ -376,10 +356,6 @@ export class NetworkStorage {
   }
 
   deleteRequest(id: Network.Request) {
-    const request = this.#requests.get(id);
-    if (request) {
-      request.dispose();
-      this.#requests.delete(id);
-    }
+    this.#requests.delete(id);
   }
 }

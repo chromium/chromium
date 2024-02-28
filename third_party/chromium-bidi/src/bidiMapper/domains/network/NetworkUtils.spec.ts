@@ -232,30 +232,6 @@ describe('NetworkUtils', () => {
     });
   });
 
-  describe('cdpFromSpecUrlPattern', () => {
-    it('string type', () => {
-      expect(
-        networkUtils.cdpFromSpecUrlPattern({
-          type: 'string',
-          pattern: 'https://example.com',
-        } satisfies Network.UrlPattern)
-      ).to.equal('https://example.com');
-    });
-
-    it('pattern type', () => {
-      expect(
-        networkUtils.cdpFromSpecUrlPattern({
-          type: 'pattern',
-          protocol: 'https',
-          hostname: 'example.com',
-          port: '80',
-          pathname: '/foo',
-          search: 'bar=baz',
-        } satisfies Network.UrlPattern)
-      ).to.equal('https://example.com:80/foo?bar=baz');
-    });
-  });
-
   describe('buildUrlPatternString', () => {
     describe('protocol', () => {
       it('empty', () => {
@@ -412,16 +388,50 @@ describe('NetworkUtils', () => {
   });
 
   describe('matchUrlPattern', () => {
-    it('string type', () => {
-      expect(
-        networkUtils.matchUrlPattern(
-          {
-            type: 'string',
-            pattern: 'https://example.com',
-          } satisfies Network.UrlPattern,
-          'https://example.com'
-        )
-      ).to.be.true;
+    describe('string type', () => {
+      it('positive match', () => {
+        expect(
+          networkUtils.matchUrlPattern(
+            {
+              type: 'string',
+              pattern: 'https://example.com',
+            } satisfies Network.UrlPattern,
+            'https://example.com'
+          )
+        ).to.be.true;
+      });
+      it('negative match', () => {
+        const test = [
+          ['https://example.com/', 'https://some.other.host/'],
+          ['https://example.com:1234/', 'https://example.com:5678/'],
+          ['https://example.com/', 'https://example.com:5678/'],
+          ['https://example.com/path', 'https://example.com/other/path'],
+          ['https://example.com/path', 'https://example.com/path/continued'],
+          ['https://example.com/pathcase', 'https://example.com/PATHCASE'],
+          [
+            'https://example.com/?searchcase',
+            'https://example.com/?SEARCHCASE',
+          ],
+          ['https://example.com/?key', 'https://example.com/?otherkey'],
+          ['https://example.com/?key', 'https://example.com/?key=value'],
+          ['https://example.com/?a=b&c=d', 'https://example.com/?c=d&a=b'],
+          // TODO: Consider removing ?
+          // ['https://example.com/??', 'https://example.com/?'],
+        ] as const;
+
+        for (const [url, expected] of test) {
+          expect(
+            networkUtils.matchUrlPattern(
+              {
+                type: 'string',
+                pattern: url,
+              } satisfies Network.UrlPattern,
+              expected
+            ),
+            `${url} should match ${expected}`
+          ).to.be.false;
+        }
+      });
     });
 
     describe('pattern type', () => {

@@ -306,29 +306,7 @@ export function matchUrlPattern(
   urlPattern: Network.UrlPattern,
   url: string | undefined
 ): boolean {
-  switch (urlPattern.type) {
-    case 'string':
-      return urlPattern.pattern === url;
-    case 'pattern': {
-      return (
-        new URLPattern({
-          protocol: urlPattern.protocol,
-          hostname: urlPattern.hostname,
-          port: urlPattern.port,
-          pathname: urlPattern.pathname,
-          search: urlPattern.search,
-        }).exec(url) !== null
-      );
-    }
-  }
-}
-
-/** Converts a URL pattern from the spec to a CDP URL pattern. */
-export function cdpFromSpecUrlPattern(urlPattern: Network.UrlPattern): string {
-  switch (urlPattern.type) {
-    case 'string':
-      return urlPattern.pattern;
-    case 'pattern':
-      return buildUrlPatternString(urlPattern);
-  }
+  return new URLPattern(
+    urlPattern.type === 'string' ? urlPattern.pattern : urlPattern
+  ).test(url);
 }

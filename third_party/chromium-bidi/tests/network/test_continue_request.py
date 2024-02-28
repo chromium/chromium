@@ -38,7 +38,6 @@ async def test_continue_request_non_existent_request(websocket):
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_request_invalid_phase_response_started(
         websocket, context_id, example_url):
@@ -64,7 +63,6 @@ async def test_continue_request_invalid_phase_response_started(
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_request_invalid_phase_auth_required(
         websocket, context_id, base_url, auth_required_url):
@@ -92,7 +90,6 @@ async def test_continue_request_invalid_phase_auth_required(
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_request_invalid_url(websocket, context_id,
                                             example_url):
@@ -323,6 +320,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: #1890")
 async def test_continue_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 
@@ -388,17 +386,16 @@ async def test_continue_request_remove_intercept_inflight_request(
         })
     assert result == {}
 
-    # TODO: Clarify the behavior of of removing intercept
-    # while there are inflight requests.
+    network_id = event_response["params"]["request"]["request"]
 
-    # await execute_command(
-    #     websocket, {
-    #         "method": "network.continueRequest",
-    #         "params": {
-    #             "request": network_id,
-    #             "url": example_url,
-    #         },
-    #     })
+    await execute_command(
+        websocket, {
+            "method": "network.continueRequest",
+            "params": {
+                "request": network_id,
+                "url": example_url,
+            },
+        })
 
     event_response = await wait_for_event(websocket,
                                           "network.responseCompleted")

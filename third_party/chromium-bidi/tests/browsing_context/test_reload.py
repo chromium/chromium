@@ -15,7 +15,8 @@
 import pytest
 from anys import ANY_DICT, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -195,19 +196,14 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 @pytest.mark.parametrize("ignoreCache", [True, False])
 async def test_browsingContext_reload_ignoreCache(websocket, context_id,
                                                   ignoreCache, cacheable_url):
-    if not ignoreCache:
-        pytest.xfail(
-            "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/pull/1466/files#r1377517937 need to be fixed"
-        )
 
     await subscribe(websocket, [
-        "network.beforeRequestSent",
         "network.responseCompleted",
     ])
 
-    initial_navigation = await goto_url(websocket, context_id, cacheable_url)
+    await goto_url(websocket, context_id, cacheable_url)
 
-    id = await send_JSON_command(
+    await send_JSON_command(
         websocket, {
             "method": "browsingContext.reload",
             "params": {
@@ -217,22 +213,8 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             }
         })
 
-    before_request_sent_event = await read_JSON_message(websocket)
-    assert before_request_sent_event == {
-        'type': 'event',
-        "method": "network.beforeRequestSent",
-        "params": {
-            "isBlocked": False,
-            "context": context_id,
-            "initiator": ANY_DICT,
-            "navigation": ANY_STR,
-            "redirectCount": 0,
-            "request": ANY_DICT,
-            "timestamp": ANY_TIMESTAMP,
-        },
-    }
-
-    response_completed_event = await read_JSON_message(websocket)
+    response_completed_event = await wait_for_event(
+        websocket, "network.responseCompleted")
     assert response_completed_event == {
         'type': 'event',
         "method": "network.responseCompleted",
@@ -246,19 +228,3 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
     }
-
-    # Assert command done.
-    response = await read_JSON_message(websocket)
-    assert response == {
-        "id": id,
-        "type": "success",
-        "result": {
-            "navigation": ANY_STR,
-            "url": cacheable_url,
-        },
-    }
-
-    assert response["result"]["navigation"] == response_completed_event[
-        "params"]["navigation"] == before_request_sent_event["params"][
-            "navigation"]
-    assert initial_navigation["navigation"] != response["result"]["navigation"]

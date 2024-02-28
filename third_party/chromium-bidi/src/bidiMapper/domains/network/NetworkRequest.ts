@@ -26,10 +26,10 @@ import {
   Network,
   type BrowsingContext,
   ChromiumBidi,
+  type NetworkEvent,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import {Deferred} from '../../../utils/Deferred.js';
-import type {Result} from '../../../utils/result.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -42,7 +42,7 @@ import {
 
 /** Abstracts one individual network request. */
 export class NetworkRequest {
-  static #unknown = 'UNKNOWN';
+  static unknownParameter = 'UNKNOWN';
 
   /**
    * Each network request has an associated request id, which is a string
@@ -69,6 +69,7 @@ export class NetworkRequest {
     info?: Protocol.Network.RequestWillBeSentEvent;
     extraInfo?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
     paused?: Protocol.Fetch.RequestPausedEvent;
+    auth?: Protocol.Fetch.AuthRequiredEvent;
   } = {};
 
   #response: {
@@ -78,26 +79,33 @@ export class NetworkRequest {
     paused?: Protocol.Fetch.RequestPausedEvent;
   } = {};
 
-  #beforeRequestSentDeferred = new Deferred<Result<void>>();
-  #responseStartedDeferred = new Deferred<Result<void>>();
-  #responseCompletedDeferred = new Deferred<Result<void>>();
-
   #eventManager: EventManager;
   #networkStorage: NetworkStorage;
   #cdpTarget: CdpTarget;
+  #logger?: LoggerFn;
+
+  #emittedEvents: Record<ChromiumBidi.Network.EventNames, boolean> = {
+    [ChromiumBidi.Network.EventNames.AuthRequired]: false,
+    [ChromiumBidi.Network.EventNames.BeforeRequestSent]: false,
+    [ChromiumBidi.Network.EventNames.FetchError]: false,
+    [ChromiumBidi.Network.EventNames.ResponseCompleted]: false,
+    [ChromiumBidi.Network.EventNames.ResponseStarted]: false,
+  };
 
   constructor(
     id: Network.Request,
     eventManager: EventManager,
     networkStorage: NetworkStorage,
     cdpTarget: CdpTarget,
-    redirectCount = 0
+    redirectCount = 0,
+    logger?: LoggerFn
   ) {
     this.#id = id;
     this.#eventManager = eventManager;
     this.#networkStorage = networkStorage;
     this.#cdpTarget = cdpTarget;
     this.#redirectCount = redirectCount;
+    this.#logger = logger;
   }
 
   get id(): string {
@@ -108,25 +116,36 @@ export class NetworkRequest {
     return this.#fetchId;
   }
 
-  get phase(): Network.InterceptPhase | undefined {
+  /**
+   * When blocked returns the phase for it
+   */
+  get currentInterceptPhase(): Network.InterceptPhase | undefined {
     return this.#interceptPhase;
   }
 
-  get url(): string | undefined {
+  get url(): string {
     return (
       this.#response.info?.url ??
+      this.#response.paused?.request.url ??
+      this.#request.auth?.request.url ??
       this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
-      this.#response.paused?.request.url
+      NetworkRequest.unknownParameter
+    );
+  }
+
+  get method(): string {
+    return (
+      this.#request.info?.request.method ??
+      this.#request.paused?.request.method ??
+      this.#request.auth?.request.method ??
+      this.#response.paused?.request.method ??
+      NetworkRequest.unknownParameter
     );
   }
 
   get redirectCount() {
     return this.#redirectCount;
-  }
-
-  get blocked() {
-    return this.#isBlockedInPhase(this.#interceptPhase);
   }
 
   get cdpClient() {
@@ -137,22 +156,32 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
-  #isBlockedInPhase(phase?: Network.InterceptPhase) {
-    return this.#networkStorage.requestBlockedBy(this, phase).size > 0;
+  #interceptsInPhase(phase: Network.InterceptPhase) {
+    return this.#networkStorage.getInterceptsForPhase(this, phase);
   }
 
-  handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
-    this.#queueResponseStartedEvent();
-    this.#queueResponseCompletedEvent();
+  #isBlockedInPhase(phase: Network.InterceptPhase) {
+    return this.#interceptsInPhase(phase).size > 0;
+  }
+
+  handleRedirect(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#response.hasExtraInfo = event.redirectHasExtraInfo;
     this.#response.info = event.redirectResponse!;
-    this.#emitEventsIfReady(true);
+    this.#emitEventsIfReady({
+      wasRedirected: true,
+    });
   }
 
-  #emitEventsIfReady(wasRedirected = false) {
+  #emitEventsIfReady(
+    options: {
+      wasRedirected?: boolean;
+      hasFailed?: boolean;
+    } = {}
+  ) {
     const requestExtraInfoCompleted =
       // Flush redirects
-      wasRedirected ||
+      options.wasRedirected ||
+      options.hasFailed ||
       Boolean(this.#request.extraInfo) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||
@@ -165,8 +194,8 @@ export class NetworkRequest {
     );
 
     const requestInterceptionCompleted =
-      (requestInterceptionExpected && Boolean(this.#request.paused)) ||
-      !requestInterceptionExpected;
+      !requestInterceptionExpected ||
+      (requestInterceptionExpected && Boolean(this.#request.paused));
 
     if (
       Boolean(this.#request.info) &&
@@ -174,10 +203,7 @@ export class NetworkRequest {
         ? requestInterceptionCompleted
         : requestExtraInfoCompleted)
     ) {
-      this.#beforeRequestSentDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
+      this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
     }
 
     const responseExtraInfoCompleted =
@@ -191,37 +217,28 @@ export class NetworkRequest {
       Network.InterceptPhase.ResponseStarted
     );
 
-    const responseInterceptionCompleted =
-      (responseInterceptionExpected && Boolean(this.#response.paused)) ||
-      !responseInterceptionExpected;
-
-    if (responseInterceptionExpected && Boolean(this.#response.paused)) {
-      this.#responseStartedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
-    } else if (this.#response.info) {
-      this.#responseStartedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
+    if (
+      this.#response.info ||
+      (responseInterceptionExpected && Boolean(this.#response.paused))
+    ) {
+      this.#emitEvent(this.#getResponseStartedEvent.bind(this));
     }
+
+    const responseInterceptionCompleted =
+      !responseInterceptionExpected ||
+      (responseInterceptionExpected && Boolean(this.#response.paused));
 
     if (
       Boolean(this.#response.info) &&
       responseExtraInfoCompleted &&
       responseInterceptionCompleted
     ) {
-      this.#responseCompletedDeferred.resolve({
-        kind: 'success',
-        value: undefined,
-      });
+      this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
     }
   }
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     this.#request.info = event;
-    this.#queueBeforeRequestSentEvent();
     this.#emitEventsIfReady();
   }
 
@@ -242,8 +259,6 @@ export class NetworkRequest {
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
     this.#response.hasExtraInfo = event.hasExtraInfo;
     this.#response.info = event.response;
-    this.#queueResponseStartedEvent();
-    this.#queueResponseCompletedEvent();
     this.#emitEventsIfReady();
   }
 
@@ -253,45 +268,29 @@ export class NetworkRequest {
   }
 
   onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
-    this.#beforeRequestSentDeferred.resolve({
-      kind: 'success',
-      value: undefined,
+    this.#emitEventsIfReady({
+      hasFailed: true,
     });
-    this.#responseStartedDeferred.resolve({
-      kind: 'error',
-      error: new Error('Network event loading failed'),
+    this.#emitEvent(() => {
+      return {
+        method: ChromiumBidi.Network.EventNames.FetchError,
+        params: {
+          ...this.#getBaseEventParams(),
+          errorText: event.errorText,
+        },
+      };
     });
-    this.#responseCompletedDeferred.resolve({
-      kind: 'error',
-      error: new Error('Network event loading failed'),
-    });
-
-    this.#queueEventPromise(
-      Promise.resolve({kind: 'success', value: undefined}),
-      () => {
-        return {
-          params: {
-            ...this.#getBaseEventParams(),
-            errorText: event.errorText,
-          },
-          method: ChromiumBidi.Network.EventNames.FetchError,
-          type: 'event' as const,
-        };
-      },
-      ChromiumBidi.Network.EventNames.FetchError
-    );
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
   async failRequest(errorReason: Protocol.Network.ErrorReason) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.failRequest', {
       requestId: this.#fetchId,
       errorReason,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   onRequestPaused(event: Protocol.Fetch.RequestPausedEvent) {
@@ -299,48 +298,44 @@ export class NetworkRequest {
 
     // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     if (event.responseStatusCode || event.responseErrorReason) {
-      this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       this.#response.paused = event;
-
-      this.#emitEventsIfReady();
-      if (!this.blocked) {
+      if (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
+        this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
+      } else {
         void this.continueResponse();
-      } else if (!this.#response.info) {
-        this.#queueResponseStartedEvent();
-        this.#queueResponseCompletedEvent();
       }
     } else {
       this.#request.paused = event;
-      this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
-      this.#emitEventsIfReady();
-      if (!this.blocked) {
+      if (this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent)) {
+        this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
+      } else {
         void this.continueRequest();
       }
     }
+
+    this.#emitEventsIfReady();
   }
 
-  onAuthRequired(_event: Protocol.Fetch.AuthRequiredEvent) {
-    this.#interceptPhase = Network.InterceptPhase.AuthRequired;
-    if (!this.blocked) {
+  onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
+    this.#fetchId = event.requestId;
+    this.#request.auth = event;
+    if (this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
+      this.#interceptPhase = Network.InterceptPhase.AuthRequired;
+    } else {
       void this.continueWithAuth();
     }
 
-    this.#queueEventPromise(
-      Promise.resolve({kind: 'success', value: undefined}),
-      () => {
-        return {
-          params: {
-            ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
-            // TODO: Why is this on the Spec
-            // How are we suppose to know the response if we are blocked by Auth
-            response: {} as any,
-          },
-          method: ChromiumBidi.Network.EventNames.AuthRequired,
-          type: 'event' as const,
-        };
-      },
-      ChromiumBidi.Network.EventNames.AuthRequired
-    );
+    this.#emitEvent(() => {
+      return {
+        method: ChromiumBidi.Network.EventNames.AuthRequired,
+        params: {
+          ...this.#getBaseEventParams(Network.InterceptPhase.AuthRequired),
+          // TODO: Why is this on the Spec
+          // How are we suppose to know the response if we are blocked by Auth
+          response: {} as any,
+        },
+      };
+    });
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
@@ -350,8 +345,8 @@ export class NetworkRequest {
     headers?: Protocol.Fetch.HeaderEntry[]
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
-    // TODO: Expand.
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueRequest', {
       requestId: this.#fetchId,
       url,
@@ -361,8 +356,6 @@ export class NetworkRequest {
       // postData:,
       // interceptResponse:,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
@@ -373,14 +366,13 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.ContinueResponseRequest, 'requestId'> = {}) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueResponse', {
       requestId: this.#fetchId,
       responseCode,
       responsePhrase,
       responseHeaders,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
@@ -391,12 +383,11 @@ export class NetworkRequest {
   ) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
       requestId: this.#fetchId,
       authChallengeResponse,
     });
-
-    this.#interceptPhase = undefined;
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
@@ -408,6 +399,7 @@ export class NetworkRequest {
   }: Omit<Protocol.Fetch.FulfillRequestRequest, 'requestId'>) {
     assert(this.#fetchId, 'Network Interception not set-up.');
 
+    this.#interceptPhase = undefined;
     await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
       requestId: this.#fetchId,
       responseCode,
@@ -415,59 +407,47 @@ export class NetworkRequest {
       responseHeaders,
       ...(body ? {body: btoa(body)} : {}), // TODO: Double-check if btoa usage is correct.
     });
-
-    this.#interceptPhase = undefined;
-  }
-
-  dispose() {
-    const result = {
-      kind: 'error' as const,
-      error: new Error('Network processor detached'),
-    };
-    this.#beforeRequestSentDeferred.resolve(result);
-    this.#responseStartedDeferred.resolve(result);
-    this.#responseCompletedDeferred.resolve(result);
   }
 
   get #context() {
-    return this.#request.info?.frameId ?? null;
+    return (
+      this.#response.paused?.frameId ??
+      this.#request.info?.frameId ??
+      this.#request.paused?.frameId ??
+      this.#request.auth?.frameId ??
+      null
+    );
   }
 
   /** Returns the HTTP status code associated with this request if any. */
   get statusCode(): number {
     return (
-      this.#response.info?.status ?? this.#response.extraInfo?.statusCode ?? -1 // TODO: Throw an exception or use some other status code?
+      this.#response.paused?.responseStatusCode ??
+      this.#response.extraInfo?.statusCode ??
+      this.#response.info?.status ??
+      -1 // TODO: Throw an exception or use some other status code?
     );
   }
 
-  #queueEventPromise(
-    deferred: Promise<Result<void>>,
-    getEventData: () => ChromiumBidi.Event,
-    eventName: ChromiumBidi.Network.EventNames
-  ) {
-    if (this.#isIgnoredEvent()) {
+  #emitEvent(getEvent: () => NetworkEvent) {
+    let event: NetworkEvent;
+    try {
+      event = getEvent();
+    } catch (error) {
+      this.#logger?.(LogType.debugError, error);
+      throw error;
+    }
+
+    if (this.#isIgnoredEvent() || this.#emittedEvents[event.method]) {
       return;
     }
 
-    this.#eventManager.registerPromiseEvent(
-      deferred.then((result) => {
-        if (result.kind === 'success') {
-          try {
-            return {
-              kind: 'success',
-              value: getEventData(),
-            };
-          } catch (error) {
-            return {
-              kind: 'error',
-              error: error instanceof Error ? error : new Error('Unknown'),
-            };
-          }
-        }
-        return result;
+    this.#emittedEvents[event.method] = true;
+    this.#eventManager.registerEvent(
+      Object.assign(event, {
+        type: 'event' as const,
       }),
-      this.#context,
-      eventName
+      this.#context
     );
   }
 
@@ -478,8 +458,9 @@ export class NetworkRequest {
     > = {
       isBlocked: false,
     };
-    if (phase && phase === this.#interceptPhase) {
-      const blockedBy = this.#networkStorage.requestBlockedBy(this, phase);
+
+    if (phase) {
+      const blockedBy = this.#interceptsInPhase(phase);
       interceptProps.isBlocked = blockedBy.size > 0;
       if (interceptProps.isBlocked) {
         interceptProps.intercepts = [...blockedBy] as [
@@ -525,9 +506,9 @@ export class NetworkRequest {
     );
 
     return {
-      request: this.#request.info?.requestId ?? NetworkRequest.#unknown,
-      url: this.#request.info?.request.url ?? NetworkRequest.#unknown,
-      method: this.#request.info?.request.method ?? NetworkRequest.#unknown,
+      request: this.#id,
+      url: this.url,
+      method: this.method,
       headers,
       cookies,
       headersSize: computeHeadersSize(headers),
@@ -556,18 +537,6 @@ export class NetworkRequest {
     };
   }
 
-  #queueBeforeRequestSentEvent() {
-    this.#queueEventPromise(
-      this.#beforeRequestSentDeferred,
-      () => {
-        return Object.assign(this.#getBeforeRequestEvent(), {
-          type: 'event' as const,
-        });
-      },
-      ChromiumBidi.Network.EventNames.BeforeRequestSent
-    );
-  }
-
   #getBeforeRequestEvent(): Network.BeforeRequestSent {
     assert(this.#request.info, 'RequestWillBeSentEvent is not set');
 
@@ -582,18 +551,6 @@ export class NetworkRequest {
         },
       },
     };
-  }
-
-  #queueResponseStartedEvent() {
-    this.#queueEventPromise(
-      this.#responseStartedDeferred,
-      () => {
-        return Object.assign(this.#getResponseStartedEvent(), {
-          type: 'event' as const,
-        });
-      },
-      ChromiumBidi.Network.EventNames.ResponseStarted
-    );
   }
 
   #getResponseStartedEvent(): Network.ResponseStarted {
@@ -621,13 +578,9 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(Network.InterceptPhase.ResponseStarted),
         response: {
-          url:
-            this.#response.info?.url ??
-            this.#response.paused?.request.url ??
-            NetworkRequest.#unknown,
+          url: this.url,
           protocol: this.#response.info?.protocol ?? '',
-          status:
-            this.statusCode || this.#response.paused?.responseStatusCode || 0,
+          status: this.statusCode,
           statusText:
             this.#response.info?.statusText ||
             this.#response.paused?.responseStatusText ||
@@ -651,18 +604,6 @@ export class NetworkRequest {
     };
   }
 
-  #queueResponseCompletedEvent() {
-    this.#queueEventPromise(
-      this.#responseCompletedDeferred,
-      () => {
-        return Object.assign(this.#getResponseReceivedEvent(), {
-          type: 'event' as const,
-        });
-      },
-      ChromiumBidi.Network.EventNames.ResponseCompleted
-    );
-  }
-
   #getResponseReceivedEvent(): Network.ResponseCompleted {
     assert(this.#request.info, 'RequestWillBeSentEvent is not set');
     assert(this.#response.info, 'ResponseReceivedEvent is not set');
@@ -683,7 +624,7 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(),
         response: {
-          url: this.#response.info.url ?? NetworkRequest.#unknown,
+          url: this.url,
           protocol: this.#response.info.protocol ?? '',
           status: this.statusCode,
           statusText: this.#response.info.statusText,

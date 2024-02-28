@@ -89,7 +89,7 @@ class LocalHttpServer:
                                     content_type="text/html")
 
             return Response(
-                '', 401,
+                'HTTP Error 401 Unauthorized: Access is denied', 401,
                 {"WWW-Authenticate": 'Basic realm="Access to staging site"'})
 
         self.__http_server \

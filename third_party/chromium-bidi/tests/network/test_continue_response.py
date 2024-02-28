@@ -40,7 +40,6 @@ async def test_continue_response_non_existent_request(websocket):
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_phase(websocket, context_id,
                                                example_url):
@@ -74,7 +73,6 @@ async def test_continue_response_invalid_phase(websocket, context_id,
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_status_code(websocket, context_id,
                                                      example_url):
@@ -100,7 +98,6 @@ async def test_continue_response_invalid_status_code(websocket, context_id,
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_reason_phrase(websocket, context_id,
                                                        example_url):
@@ -125,7 +122,6 @@ async def test_continue_response_invalid_reason_phrase(websocket, context_id,
             })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_continue_response_invalid_headers(websocket, context_id,
                                                  example_url):
@@ -211,11 +207,10 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
 ],
                          ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test, as it's racy")
 async def test_continue_response_must_specify_both_status_and_headers(
         websocket, context_id, example_url, continueResponseParams):
     await subscribe(websocket,
-                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    ["network.responseStarted", "network.responseCompleted"],
                     [context_id])
 
     await execute_command(
@@ -240,8 +235,7 @@ async def test_continue_response_must_specify_both_status_and_headers(
             }
         })
 
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
+    event_response = await wait_for_event(websocket, "network.responseStarted")
     network_id = event_response["params"]["request"]["request"]
 
     # TODO(https://github.com/w3c/webdriver-bidi/issues/572): Follow up with spec.
@@ -262,11 +256,12 @@ async def test_continue_response_must_specify_both_status_and_headers(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
+@pytest.mark.skip(reason="CDP does not update the response correctly")
 async def test_continue_response_completes(websocket, context_id, example_url):
-    await subscribe(websocket,
-                    ["network.beforeRequestSent", "network.responseCompleted"],
-                    [context_id])
+    await subscribe(websocket, [
+        "network.beforeRequestSent", "network.responseStarted",
+        "network.responseCompleted"
+    ], [context_id])
 
     await execute_command(
         websocket, {
@@ -295,9 +290,6 @@ async def test_continue_response_completes(websocket, context_id, example_url):
         "method": "network.responseStarted",
         "params": {
             "context": context_id,
-            "initiator": {
-                "type": "other",
-            },
             "intercepts": ANY_LIST,
             "isBlocked": True,
             "navigation": ANY_STR,
@@ -312,6 +304,7 @@ async def test_continue_response_completes(websocket, context_id, example_url):
                 "bodySize": 0,
                 "timings": ANY_DICT,
             },
+            "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
@@ -364,10 +357,9 @@ async def test_continue_response_completes(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
 async def test_continue_response_twice(websocket, context_id, example_url):
     await subscribe(websocket,
-                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    ["network.responseStarted", "network.responseCompleted"],
                     [context_id])
 
     await execute_command(
@@ -392,15 +384,12 @@ async def test_continue_response_twice(websocket, context_id, example_url):
             }
         })
 
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
+    event_response = await wait_for_event(websocket, "network.responseStarted")
     assert event_response == {
-        "method": "network.beforeRequestSent",
+        "method": "network.responseStarted",
         "params": {
             "context": context_id,
-            "initiator": {
-                "type": "other",
-            },
+            "intercepts": ANY_LIST,
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -414,6 +403,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
                 "bodySize": 0,
                 "timings": ANY_DICT,
             },
+            "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
@@ -447,7 +437,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Clarify how removing the last intercept works")
+@pytest.mark.skip(reason="TODO: #1890")
 async def test_continue_response_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 
@@ -502,9 +492,6 @@ async def test_continue_response_remove_intercept_inflight_request(
         },
         "type": "event",
     }
-
-    # TODO: Clarify the behavior of of removing intercept
-    # while there are inflight requests.
 
     result = await execute_command(
         websocket, {

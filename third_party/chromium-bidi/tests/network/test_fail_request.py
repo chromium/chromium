@@ -163,7 +163,6 @@ async def test_fail_request_twice(websocket, context_id, example_url):
         })
 
 
-@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_fail_request_with_auth_required_phase(websocket, context_id,
                                                      auth_required_url,
@@ -283,68 +282,19 @@ async def test_fail_request_completes(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Fix this test")
 async def test_fail_request_completes_new_request_still_blocks(
-        websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+        websocket, context_id, example_url, base_url):
 
-    result = await execute_command(
-        websocket, {
-            "method": "network.addIntercept",
-            "params": {
-                "phases": ["beforeRequestSent"],
-                "urlPatterns": [{
-                    "type": "string",
-                    "pattern": example_url,
-                }, ],
-            },
-        })
+    await goto_url(websocket, context_id, base_url)
 
-    assert result == {
-        "intercept": ANY_UUID,
-    }
-    intercept_id = result["intercept"]
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.fetchError"],
+                    [context_id])
 
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
-
-    event_response1 = await wait_for_event(websocket,
-                                           "network.beforeRequestSent")
-    assert event_response1 == {
-        "method": "network.beforeRequestSent",
-        "params": {
-            "context": context_id,
-            "initiator": {
-                "type": "other",
-            },
-            "intercepts": [intercept_id],
-            "isBlocked": True,
-            "navigation": ANY_STR,
-            "redirectCount": 0,
-            "request": {
-                "request": ANY_STR,
-                "url": example_url,
-                "method": "GET",
-                "headers": ANY_LIST,
-                "cookies": [],
-                "headersSize": ANY_NUMBER,
-                "bodySize": 0,
-                "timings": ANY_DICT,
-            },
-            "timestamp": ANY_TIMESTAMP,
-        },
-        "type": "event",
-    }
-    network_id_1 = event_response1["params"]["request"]["request"]
-
-    await subscribe(websocket, ["network.fetchError"])
+    network_id_1 = await create_blocked_request(websocket,
+                                                context_id,
+                                                url=example_url,
+                                                phase="beforeRequestSent")
 
     result = await execute_command(websocket, {
         "method": "network.failRequest",
@@ -363,7 +313,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "context": context_id,
             "errorText": "net::ERR_FAILED",
             "isBlocked": False,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": AnyExtending(
                 {
@@ -377,16 +327,7 @@ async def test_fail_request_completes_new_request_still_blocks(
         "type": "event",
     }
 
-    # Perform the same navigation again.
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
+    await create_request_via_fetch(websocket, context_id, example_url)
 
     event_response2 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
@@ -395,11 +336,11 @@ async def test_fail_request_completes_new_request_still_blocks(
         "params": {
             "context": context_id,
             "initiator": {
-                "type": "other",
+                "type": "script",
             },
-            "intercepts": [intercept_id],
+            "intercepts": ANY_LIST,
             "isBlocked": True,
-            "navigation": ANY_STR,
+            "navigation": None,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
@@ -416,8 +357,6 @@ async def test_fail_request_completes_new_request_still_blocks(
         "type": "event",
     }
     network_id_2 = event_response2["params"]["request"]["request"]
-
-    assert event_response1 != event_response2
 
     # The second request should have a different ID.
     assert network_id_1 != network_id_2
@@ -594,8 +533,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason='TODO: Clarify the behavior after last intercept is removed')
+@pytest.mark.skip(reason='TODO: #1890')
 async def test_fail_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
 
