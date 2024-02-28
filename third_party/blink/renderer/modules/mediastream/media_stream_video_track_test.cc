@@ -74,11 +74,12 @@ class MockEmitLogMessageCb {
 class MediaStreamVideoTrackTest
     : public testing::TestWithParam<ContentHintType> {
  public:
-  MediaStreamVideoTrackTest() : mock_source_(nullptr), source_started_(false) {}
+  MediaStreamVideoTrackTest() : mock_source_(nullptr) {}
 
   ~MediaStreamVideoTrackTest() override {}
 
   void TearDown() override {
+    mock_source_ = nullptr;
     source_ = nullptr;
     WebHeap::CollectAllGarbageForTesting();
   }
@@ -191,8 +192,8 @@ class MediaStreamVideoTrackTest
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> source_;
   // |mock_source_| is owned by |source_|.
-  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> mock_source_;
-  bool source_started_;
+  raw_ptr<MockMediaStreamVideoSource> mock_source_;
+  bool source_started_ = false;
 };
 
 TEST_F(MediaStreamVideoTrackTest, AddAndRemoveSink) {
