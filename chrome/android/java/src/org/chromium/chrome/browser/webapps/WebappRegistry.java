@@ -403,11 +403,12 @@ public class WebappRegistry {
 
     /**
      * Deletes the data for all "old" web apps, as well as all WebAPKs that have been uninstalled in
-     * the last month. "Old" web apps have not been opened by the user in the last 3 months, or have
-     * had their last used time set to 0 by the user clearing their history. Cleanup is run, at
-     * most, once a month.
+     * the last month, and removes all WebAPKs from Sync which haven't been used in the last month.
+     * "Old" web apps have not been opened by the user in the last 3 months, or have had their last
+     * used time set to 0 by the user clearing their history. Cleanup is run, at most, once a month.
+     *
      * @param currentTime The current time which will be checked to decide if the task should be run
-     *                    and if a web app should be cleaned up.
+     *     and if a web app should be cleaned up.
      */
     public void unregisterOldWebapps(long currentTime) {
         if ((currentTime - mPreferences.getLong(KEY_LAST_CLEANUP, 0)) < FULL_CLEANUP_DURATION) {
@@ -430,6 +431,8 @@ public class WebappRegistry {
             storage.delete();
             it.remove();
         }
+
+        WebApkSyncService.removeOldWebAPKsFromSync(currentTime);
 
         mPreferences
                 .edit()

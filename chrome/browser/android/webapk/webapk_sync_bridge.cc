@@ -98,6 +98,16 @@ std::unique_ptr<WebApkProto> CloneWebApkProto(const WebApkProto& app) {
   return clone;
 }
 
+// Returns true if the specifics' timestamp is at most kRecentAppMaxAge before
+// |time|. In other words, if |time| is Now, then this returns whether the
+// specifics is at most kRecentAppMaxAge old.
+bool AppWasUsedRecentlyComparedTo(const sync_pb::WebApkSpecifics* specifics,
+                                  const base::Time time) {
+  base::Time app_last_used = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(specifics->last_used_time_windows_epoch_micros()));
+  return time - app_last_used < kRecentAppMaxAge;
+}
+
 }  // anonymous namespace
 
 WebApkSyncBridge::WebApkSyncBridge(
@@ -161,9 +171,7 @@ WebApkSyncBridge::CreateMetadataChangeList() {
 
 bool WebApkSyncBridge::AppWasUsedRecently(
     const sync_pb::WebApkSpecifics* specifics) const {
-  base::Time app_last_used = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(specifics->last_used_time_windows_epoch_micros()));
-  return clock_->Now() - app_last_used < kRecentAppMaxAge;
+  return AppWasUsedRecentlyComparedTo(specifics, clock_->Now());
 }
 
 void WebApkSyncBridge::OnDataWritten(CommitCallback callback, bool success) {
@@ -350,7 +358,7 @@ void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
   }
 
   if (!AppWasUsedRecently(&app->sync_data())) {
-    DeleteAppFromSync(app_id);
+    DeleteAppsFromSync(std::vector<const webapps::AppId>{app_id});
     return;
   }
 
@@ -420,6 +428,21 @@ void WebApkSyncBridge::ApplyDisableSyncChanges(
   registry_.clear();
 }
 
+void WebApkSyncBridge::RemoveOldWebAPKsFromSync(
+    int64_t current_time_ms_since_unix_epoch) {
+  std::vector<const webapps::AppId> app_ids;
+  for (const auto& appListing : registry_) {
+    const webapps::AppId app_id = appListing.first;
+    const WebApkProto& app = *appListing.second;
+    if (!AppWasUsedRecentlyComparedTo(
+            &app.sync_data(), base::Time::FromMillisecondsSinceUnixEpoch(
+                                  current_time_ms_since_unix_epoch))) {
+      app_ids.push_back(app_id);
+    }
+  }
+  DeleteAppsFromSync(app_ids);
+}
+
 void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app) {
   webapps::AppId app_id = ManifestIdStrToAppId(app->sync_data().manifest_id());
   std::unique_ptr<syncer::EntityData> entity_data =
@@ -442,14 +465,17 @@ void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app) {
   ApplyIncrementalSyncChangesToRegistry(std::move(registry_update));
 }
 
-void WebApkSyncBridge::DeleteAppFromSync(const webapps::AppId& app_id) {
+void WebApkSyncBridge::DeleteAppsFromSync(
+    const std::vector<const webapps::AppId>& app_ids) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
-  change_processor()->Delete(app_id, metadata_change_list.get());
-
   std::unique_ptr<RegistryUpdateData> registry_update =
       std::make_unique<RegistryUpdateData>();
-  registry_update->apps_to_delete.push_back(app_id);
+
+  for (const webapps::AppId& app_id : app_ids) {
+    change_processor()->Delete(app_id, metadata_change_list.get());
+    registry_update->apps_to_delete.push_back(app_id);
+  }
 
   database_.Write(
       *registry_update, std::move(metadata_change_list),

@@ -70,6 +70,8 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
 
+  void RemoveOldWebAPKsFromSync(int64_t current_time_ms_since_unix_epoch);
+
   void RegisterDoneInitializingCallback(
       base::OnceCallback<void(bool)> init_done_callback);
   void MergeSyncDataForTesting(std::vector<std::vector<std::string>> app_vector,
@@ -110,7 +112,7 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<RegistryUpdateData> update_data);
 
   void AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app);
-  void DeleteAppFromSync(const webapps::AppId& app_id);
+  void DeleteAppsFromSync(const std::vector<const webapps::AppId>& app_ids);
 
   WebApkDatabase database_;
   Registry registry_;

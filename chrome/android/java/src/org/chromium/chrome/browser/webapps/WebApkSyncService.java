@@ -91,6 +91,10 @@ public class WebApkSyncService {
         return webApkSpecificsBuilder.build();
     }
 
+    static void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch) {
+        WebApkSyncServiceJni.get().removeOldWebAPKsFromSync(currentTimeMsSinceUnixEpoch);
+    }
+
     private static long toMicrosecondsSinceWindowsEpoch(long timeInMills) {
         return timeInMills * 1000 + UNIX_OFFSET_MICROS;
     }
@@ -100,5 +104,7 @@ public class WebApkSyncService {
         void onWebApkUsed(byte[] webApkSpecifics);
 
         void onWebApkUninstalled(String manifestId);
+
+        void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch);
     }
 }

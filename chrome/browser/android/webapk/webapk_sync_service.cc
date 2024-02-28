@@ -70,6 +70,11 @@ void WebApkSyncService::OnWebApkUninstalled(const std::string& manifest_id) {
   sync_bridge_->OnWebApkUninstalled(manifest_id);
 }
 
+void WebApkSyncService::RemoveOldWebAPKsFromSync(
+    int64_t current_time_ms_since_unix_epoch) {
+  sync_bridge_->RemoveOldWebAPKsFromSync(current_time_ms_since_unix_epoch);
+}
+
 // static
 static void JNI_WebApkSyncService_OnWebApkUsed(
     JNIEnv* env,
@@ -110,6 +115,22 @@ static void JNI_WebApkSyncService_OnWebApkUninstalled(
 
   WebApkSyncService::GetForProfile(profile)->OnWebApkUninstalled(
       ConvertJavaStringToUTF8(env, java_manifest_id));
+}
+
+static void JNI_WebApkSyncService_RemoveOldWebAPKsFromSync(
+    JNIEnv* env,
+    jlong java_current_time_ms_since_unix_epoch) {
+  if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+    return;
+  }
+
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  if (profile == nullptr) {
+    return;
+  }
+
+  WebApkSyncService::GetForProfile(profile)->RemoveOldWebAPKsFromSync(
+      static_cast<int64_t>(java_current_time_ms_since_unix_epoch));
 }
 
 }  // namespace webapk
