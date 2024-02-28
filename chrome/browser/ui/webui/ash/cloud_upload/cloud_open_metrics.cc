@@ -58,8 +58,8 @@ std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
 }
 
 // Returns true when `task_result` represents the cloud open/upload flow ending
-// before the setup has completed.
-bool DidEndWithoutSetUp(OfficeTaskResult task_result) {
+// before calling CloudOpenTask::OpenOrMoveFiles().
+bool DidEndBeforeCallingOpenOrMoveFiles(OfficeTaskResult task_result) {
   switch (task_result) {
     case OfficeTaskResult::kFallbackQuickOffice:
     case OfficeTaskResult::kFallbackOther:
@@ -181,8 +181,9 @@ void CloudOpenMetrics::CheckForInconsistencies(
   // Task result should always be logged.
   ExpectLogged(task_result);
   if (task_result.logged()) {
-    if (DidEndWithoutSetUp(task_result.value)) {
-      // The cloud open/upload flow was exited before the setup completed.
+    if (DidEndBeforeCallingOpenOrMoveFiles(task_result.value)) {
+      // The cloud open/upload flow was exited before calling
+      // CloudOpenTask::OpenOrMoveFiles().
       ExpectNotLogged(transfer_required);
       ExpectNotLogged(source_volume);
       ExpectNotLogged(upload_result);
@@ -240,8 +241,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
         }
       }
     } else {
-      // The cloud open/upload flow was not exited at the Fallback Dialog or
-      // Setup flow.
+      // CloudOpenTask::OpenOrMoveFiles() was called.
       ExpectLogged(source_volume);
       ExpectLogged(transfer_required);
       if (DidEndAtMoveConfirmation(task_result.value)) {
