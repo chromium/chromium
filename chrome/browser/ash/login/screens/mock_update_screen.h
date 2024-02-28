@@ -25,7 +25,7 @@ class MockUpdateScreen : public UpdateScreen {
   void RunExit(UpdateScreen::Result result);
 };
 
-class MockUpdateView : public UpdateView {
+class MockUpdateView final : public UpdateView {
  public:
   MockUpdateView();
   ~MockUpdateView() override;
@@ -47,6 +47,13 @@ class MockUpdateView : public UpdateView {
   MOCK_METHOD(void, SetCancelUpdateShortcutEnabled, (bool value));
   MOCK_METHOD(void, ShowLowBatteryWarningMessage, (bool value));
   MOCK_METHOD(void, SetAutoTransition, (bool value));
+
+  base::WeakPtr<UpdateView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<UpdateView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -25,6 +25,10 @@ void LocaleSwitchScreenHandler::UpdateStrings() {
   GetOobeUI()->GetCoreOobe()->ReloadContent();
 }
 
+base::WeakPtr<LocaleSwitchView> LocaleSwitchScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void LocaleSwitchScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 

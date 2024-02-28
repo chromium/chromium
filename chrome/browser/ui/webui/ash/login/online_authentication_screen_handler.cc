@@ -29,4 +29,9 @@ void OnlineAuthenticationScreenHandler::Show() {
 
 void OnlineAuthenticationScreenHandler::Hide() {}
 
+base::WeakPtr<OnlineAuthenticationScreenView>
+OnlineAuthenticationScreenHandler::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

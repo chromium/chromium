@@ -171,6 +171,10 @@ void CoreOobeHandler::SetBluetoothDeviceInfo(
   CallJS("cr.ui.Oobe.setBluetoothDeviceInfo", bluetooth_name);
 }
 
+base::WeakPtr<CoreOobeView> CoreOobeHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void CoreOobeHandler::HandleInitializeCoreHandler() {
   VLOG(3) << "CoreOobeHandler::HandleInitializeCoreHandler";
   CHECK(ui_init_state_ == UiState::kUninitialized);

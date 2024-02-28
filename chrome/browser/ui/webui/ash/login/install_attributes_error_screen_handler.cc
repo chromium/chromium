@@ -42,4 +42,9 @@ void InstallAttributesErrorScreenHandler::Show() {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<InstallAttributesErrorView>
+InstallAttributesErrorScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

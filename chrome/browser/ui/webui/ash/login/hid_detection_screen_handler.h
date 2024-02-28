@@ -14,7 +14,7 @@ namespace ash {
 
 // Interface between HID detection screen and its representation, either WebUI
 // or Views one.
-class HIDDetectionView : public base::SupportsWeakPtr<HIDDetectionView> {
+class HIDDetectionView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"hid-detection",
                                                        "HIDDetectionScreen"};
@@ -31,12 +31,12 @@ class HIDDetectionView : public base::SupportsWeakPtr<HIDDetectionView> {
   virtual void SetPointingDeviceName(const std::string& value) = 0;
   virtual void SetKeyboardDeviceName(const std::string& value) = 0;
   virtual void SetContinueButtonEnabled(bool value) = 0;
+  virtual base::WeakPtr<HIDDetectionView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of HIDDetectionScreenView.
-class HIDDetectionScreenHandler
-    : public HIDDetectionView,
-      public BaseScreenHandler {
+class HIDDetectionScreenHandler final : public HIDDetectionView,
+                                        public BaseScreenHandler {
  public:
   using TView = HIDDetectionView;
 
@@ -59,6 +59,7 @@ class HIDDetectionScreenHandler
   void SetPointingDeviceName(const std::string& value) override;
   void SetKeyboardDeviceName(const std::string& value) override;
   void SetContinueButtonEnabled(bool value) override;
+  base::WeakPtr<HIDDetectionView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
@@ -98,6 +99,7 @@ class HIDDetectionScreenHandler
   std::string keyboard_device_name_;
   std::string keyboard_device_label_;
   bool continue_button_enabled_ = false;
+  base::WeakPtrFactory<HIDDetectionView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

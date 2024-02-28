@@ -41,4 +41,9 @@ void PasswordSelectionScreenHandler::ShowPasswordChoice() {
   CallExternalAPI("showPasswordChoice");
 }
 
+base::WeakPtr<PasswordSelectionScreenView>
+PasswordSelectionScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

@@ -40,4 +40,9 @@ void ParentalHandoffScreenHandler::Show(const std::u16string& username) {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<ParentalHandoffScreenView>
+ParentalHandoffScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

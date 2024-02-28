@@ -9,8 +9,7 @@
 
 namespace ash {
 
-class RecoveryEligibilityView
-    : public base::SupportsWeakPtr<RecoveryEligibilityView> {
+class RecoveryEligibilityView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "recovery-check", "RecoveryEligibilityScreen"};

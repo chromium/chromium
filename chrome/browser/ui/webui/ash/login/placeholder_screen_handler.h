@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_PLACEHOLDER_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_PLACEHOLDER_SCREEN_HANDLER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "components/login/localized_values_builder.h"
@@ -16,8 +15,7 @@ class PlaceholderScreen;
 
 // Interface for dependency injection between PlaceholderScreen and its
 // WebUI representation.
-class PlaceholderScreenView
-    : public base::SupportsWeakPtr<PlaceholderScreenView> {
+class PlaceholderScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"placeholder",
                                                        "PlaceholderScreen"};

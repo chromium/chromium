@@ -16,8 +16,7 @@ class ConsumerUpdateScreen;
 
 // Interface for dependency injection between ConsumerUpdateScreen and its
 // WebUI representation.
-class ConsumerUpdateScreenView
-    : public base::SupportsWeakPtr<ConsumerUpdateScreenView> {
+class ConsumerUpdateScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"consumer-update",
                                                        "ConsumerUpdateScreen"};
@@ -42,10 +41,11 @@ class ConsumerUpdateScreenView
   virtual void ShowLowBatteryWarningMessage(bool value) = 0;
   virtual void SetAutoTransition(bool value) = 0;
   virtual void SetIsUpdateMandatory(bool value) = 0;
+  virtual base::WeakPtr<ConsumerUpdateScreenView> AsWeakPtr() = 0;
 };
 
-class ConsumerUpdateScreenHandler : public BaseScreenHandler,
-                                    public ConsumerUpdateScreenView {
+class ConsumerUpdateScreenHandler final : public BaseScreenHandler,
+                                          public ConsumerUpdateScreenView {
  public:
   using TView = ConsumerUpdateScreenView;
 
@@ -70,10 +70,14 @@ class ConsumerUpdateScreenHandler : public BaseScreenHandler,
 
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details);
+  base::WeakPtr<ConsumerUpdateScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<ConsumerUpdateScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

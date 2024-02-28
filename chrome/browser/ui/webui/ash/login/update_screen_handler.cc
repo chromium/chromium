@@ -92,6 +92,10 @@ void UpdateScreenHandler::SetCancelUpdateShortcutEnabled(bool value) {
   CallExternalAPI("setCancelUpdateShortcutEnabled", value);
 }
 
+base::WeakPtr<UpdateView> UpdateScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void UpdateScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("updateCompeletedMsg", IDS_UPDATE_COMPLETED);

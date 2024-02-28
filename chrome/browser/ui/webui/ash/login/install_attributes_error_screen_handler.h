@@ -12,8 +12,7 @@ namespace ash {
 
 // Interface for dependency injection between InstallAttributesErrorScreen and
 // its WebUI representation.
-class InstallAttributesErrorView
-    : public base::SupportsWeakPtr<InstallAttributesErrorView> {
+class InstallAttributesErrorView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "install-attributes-error-message",
@@ -23,10 +22,14 @@ class InstallAttributesErrorView
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<InstallAttributesErrorView> AsWeakPtr() = 0;
 };
 
-class InstallAttributesErrorScreenHandler : public InstallAttributesErrorView,
-                                            public BaseScreenHandler {
+class InstallAttributesErrorScreenHandler final
+    : public InstallAttributesErrorView,
+      public BaseScreenHandler {
  public:
   using TView = InstallAttributesErrorView;
 
@@ -38,11 +41,15 @@ class InstallAttributesErrorScreenHandler : public InstallAttributesErrorView,
   ~InstallAttributesErrorScreenHandler() override;
 
  private:
+  // InstallAttributesErrorView
   void Show() override;
+  base::WeakPtr<InstallAttributesErrorView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+  base::WeakPtrFactory<InstallAttributesErrorView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

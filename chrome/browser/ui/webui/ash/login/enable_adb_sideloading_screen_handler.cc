@@ -23,6 +23,11 @@ void EnableAdbSideloadingScreenHandler::SetScreenState(UIState value) {
   CallExternalAPI("setScreenState", static_cast<int>(value));
 }
 
+base::WeakPtr<EnableAdbSideloadingScreenView>
+EnableAdbSideloadingScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void EnableAdbSideloadingScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("enableAdbSideloadingSetupTitle",

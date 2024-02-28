@@ -91,4 +91,9 @@ void ConsumerUpdateScreenHandler::SetIsUpdateMandatory(bool value) {
   CallExternalAPI("setIsUpdateMandatory", value);
 }
 
+base::WeakPtr<ConsumerUpdateScreenView>
+ConsumerUpdateScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

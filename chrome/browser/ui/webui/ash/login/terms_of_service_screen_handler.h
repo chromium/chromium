@@ -41,8 +41,8 @@ class TermsOfServiceScreenView {
 };
 
 // The sole implementation of the TermsOfServiceScreenView, using WebUI.
-class TermsOfServiceScreenHandler : public BaseScreenHandler,
-                                    public TermsOfServiceScreenView {
+class TermsOfServiceScreenHandler final : public BaseScreenHandler,
+                                          public TermsOfServiceScreenView {
  public:
   using TView = TermsOfServiceScreenView;
 

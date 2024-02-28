@@ -39,7 +39,7 @@ class PriorityScreenChecker {
       WelcomeView::kScreenId, UserCreationView::kScreenId};
 };
 
-class CoreOobeView : public base::SupportsWeakPtr<CoreOobeView> {
+class CoreOobeView {
  public:
   // Possible Initialization States of the UI
   enum class UiState {
@@ -73,12 +73,15 @@ class CoreOobeView : public base::SupportsWeakPtr<CoreOobeView> {
   virtual void SetVirtualKeyboardShown(bool shown) = 0;
   virtual void SetOsVersionLabelText(const std::string& label_text) = 0;
   virtual void SetBluetoothDeviceInfo(const std::string& bluetooth_name) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<CoreOobeView> AsWeakPtr() = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
-class CoreOobeHandler : public BaseWebUIHandler,
-                        public CoreOobeView,
-                        public ui::EventSource {
+class CoreOobeHandler final : public BaseWebUIHandler,
+                              public CoreOobeView,
+                              public ui::EventSource {
  public:
   CoreOobeHandler();
   CoreOobeHandler(const CoreOobeHandler&) = delete;
@@ -90,6 +93,9 @@ class CoreOobeHandler : public BaseWebUIHandler,
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
+
+  // CoreOobeView
+  base::WeakPtr<CoreOobeView> AsWeakPtr() override;
 
  private:
   // ui::EventSource implementation:
@@ -132,6 +138,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Initialization state that is kept in sync with |CoreOobe|.
   UiState ui_init_state_ = UiState::kUninitialized;
+
+  base::WeakPtrFactory<CoreOobeView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
