@@ -228,9 +228,9 @@ static bool ParseDQT(const uint8_t* buffer,
       return false;
     }
 
-    if (!reader.ReadBytes(&q_table[table_id].value,
-                          sizeof(q_table[table_id].value)))
+    if (!reader.ReadBytes(q_table[table_id].value)) {
       return false;
+    }
     q_table[table_id].valid = true;
   }
   return true;
@@ -268,8 +268,9 @@ static bool ParseDHT(const uint8_t* buffer,
       table = &dc_table[table_id];
 
     size_t count = 0;
-    if (!reader.ReadBytes(&table->code_length, sizeof(table->code_length)))
+    if (!reader.ReadBytes(table->code_length)) {
       return false;
+    }
     for (size_t i = 0; i < std::size(table->code_length); i++)
       count += table->code_length[i];
 
@@ -277,8 +278,9 @@ static bool ParseDHT(const uint8_t* buffer,
       DVLOG(1) << "Invalid code count " << count;
       return false;
     }
-    if (!reader.ReadBytes(&table->code_value, count))
+    if (!reader.ReadBytes(base::span(table->code_value).first(count))) {
       return false;
+    }
     table->valid = true;
   }
   return true;

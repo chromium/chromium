@@ -61,7 +61,7 @@ bool SignalKeyInternalFromBinary(const std::string& input,
     return false;
   }
   auto reader = base::BigEndianReader::FromStringPiece(input);
-  reader.ReadBytes(&output->prefix.kind, sizeof(output->prefix.kind));
+  reader.ReadChar(&output->prefix.kind);
   reader.Skip(sizeof(SignalKeyInternal::Prefix::padding));
   reader.ReadU64(&output->prefix.name_hash);
 
@@ -76,7 +76,7 @@ bool SignalKeyInternalFromBinary(const std::string& input,
   // value, as seen in SignalKeyInternalToBinary(), so we want to convert large
   // unsigned values back to negative values which static_cast will do.
   output->time_range_start_sec = static_cast<int64_t>(unsigned_val);
-  CHECK_EQ(0UL, reader.remaining());
+  CHECK(reader.remaining_bytes().empty());
   return true;
 }
 
@@ -105,7 +105,7 @@ bool SignalKeyInternalPrefixFromBinary(const std::string& input,
     return false;
   }
   auto reader = base::BigEndianReader::FromStringPiece(input);
-  reader.ReadBytes(&output->kind, sizeof(output->kind));
+  reader.ReadChar(&output->kind);
   reader.Skip(sizeof(SignalKeyInternal::Prefix::padding));
   reader.ReadU64(&output->name_hash);
   CHECK_EQ(0UL, reader.remaining());

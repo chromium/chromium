@@ -120,8 +120,29 @@ class BASE_EXPORT BigEndianReader {
   // TODO(crbug.com/40284755): Remove this method.
   size_t remaining() const { return buffer_.size(); }
 
+  // Moves the internal state forward `len` bytes, or returns false if there is
+  // not enough bytes left to read from.
   bool Skip(size_t len);
-  bool ReadBytes(void* out, size_t len);
+
+  // Reads an 8-bit integer and advances past it. Returns false if there is not
+  // enough bytes to read from.
+  bool ReadU8(uint8_t* value);
+  // Reads a 16-bit integer and advances past it. Returns false if there is not
+  // enough bytes to read from.
+  bool ReadU16(uint16_t* value);
+  // Reads a 32-bit integer and advances past it. Returns false if there is not
+  // enough bytes to read from.
+  bool ReadU32(uint32_t* value);
+  // Reads a 64-bit integer and advances past it. Returns false if there is not
+  // enough bytes to read from.
+  bool ReadU64(uint64_t* value);
+
+  // An alias for `ReadU8` that works with a `char` pointer instead of
+  // `uint8_t`.
+  bool ReadChar(char* value) {
+    return ReadU8(reinterpret_cast<uint8_t*>(value));
+  }
+
   // Creates a StringPiece in |out| that points to the underlying buffer.
   bool ReadPiece(base::StringPiece* out, size_t len);
 
@@ -134,7 +155,7 @@ class BASE_EXPORT BigEndianReader {
   // past those bytes, or returns nullopt and if there are not `N` bytes
   // remaining in the buffer.
   template <size_t N>
-  std::optional<span<const uint8_t, N>> ReadFixedSpan() {
+  std::optional<span<const uint8_t, N>> ReadSpan() {
     if (remaining() < N) {
       return std::nullopt;
     }
@@ -143,10 +164,24 @@ class BASE_EXPORT BigEndianReader {
     return {consume};
   }
 
-  bool ReadU8(uint8_t* value);
-  bool ReadU16(uint16_t* value);
-  bool ReadU32(uint32_t* value);
-  bool ReadU64(uint64_t* value);
+  // Copies into a span (writing to the whole span) from the buffer and moves
+  // the internal state past the copied bytes, or returns false and if there are
+  // not enough bytes remaining in the buffer to fill the span and leaves the
+  // internal state unchanged.
+  bool ReadBytes(span<uint8_t> out);
+
+  // Copies into a span of `N` bytes from the buffer and moves the internal
+  // state past the copied bytes, or returns false and if there are not `N`
+  // bytes remaining in the buffer and leaves the internal state unchanged.
+  template <size_t N>
+  bool ReadBytes(span<uint8_t, N> out) {
+    std::optional<span<const uint8_t, N>> span = ReadSpan<N>();
+    if (!span.has_value()) {
+      return false;
+    }
+    out.copy_from(*span);
+    return true;
+  }
 
   // Reads a length-prefixed region:
   // 1. reads a big-endian length L from the buffer;

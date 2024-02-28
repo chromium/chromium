@@ -89,36 +89,48 @@ TEST(BoxByteStreamTest, Default) {
         break;
       case DataType::kEndBox:
         break;
-      case DataType::kType_8:
-        EXPECT_TRUE(reader.ReadU8(reinterpret_cast<uint8_t*>(&ret_value)));
+      case DataType::kType_8: {
+        uint8_t val;
+        EXPECT_TRUE(reader.ReadU8(&val));
+        base::byte_span_from_ref(ret_value).first<1>().copy_from(
+            base::byte_span_from_ref(val));
         EXPECT_EQ(data.value, ret_value);
         break;
-      case DataType::kType_16:
-        EXPECT_TRUE(reader.ReadU16(reinterpret_cast<uint16_t*>(&ret_value)));
+      }
+      case DataType::kType_16: {
+        uint16_t val;
+        EXPECT_TRUE(reader.ReadU16(&val));
+        base::byte_span_from_ref(ret_value).first<2>().copy_from(
+            base::byte_span_from_ref(val));
         EXPECT_EQ(data.value, ret_value);
         break;
-      case DataType::kType_32:
-        EXPECT_TRUE(reader.ReadU32(reinterpret_cast<uint32_t*>(&ret_value)));
+      }
+      case DataType::kType_32: {
+        uint32_t val;
+        EXPECT_TRUE(reader.ReadU32(&val));
+        base::byte_span_from_ref(ret_value).first<4>().copy_from(
+            base::byte_span_from_ref(val));
         EXPECT_EQ(data.value, ret_value);
         break;
+      }
       case DataType::kType_64:
         EXPECT_TRUE(reader.ReadU64(&ret_value));
         EXPECT_EQ(data.value, ret_value);
         break;
       case DataType::kType_Bytes:
-        EXPECT_TRUE(reader.ReadBytes(&ret_value, 7));
+        EXPECT_TRUE(
+            reader.ReadBytes(base::byte_span_from_ref(ret_value).first<7>()));
         EXPECT_EQ(data.value, ret_value);
         break;
       case DataType::kType_String:
         std::string expected_string = reinterpret_cast<char*>(data.value);
         if (expected_string.empty()) {
-          EXPECT_TRUE(reader.ReadBytes(&ret_value, 1));
+          EXPECT_TRUE(
+              reader.ReadBytes(base::byte_span_from_ref(ret_value).first<1>()));
           EXPECT_EQ(ret_value, 0u);
         } else {
-          std::vector<uint8_t> ret_string;
-          ret_string.resize(expected_string.size());
-          EXPECT_TRUE(
-              reader.ReadBytes(ret_string.data(), expected_string.size()));
+          std::vector<uint8_t> ret_string(expected_string.size());
+          EXPECT_TRUE(reader.ReadBytes(ret_string));
           EXPECT_EQ(expected_string,
                     std::string(ret_string.begin(), ret_string.end()));
         }

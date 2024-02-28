@@ -35,13 +35,40 @@ bool BigEndianReader::Skip(size_t len) {
   return true;
 }
 
-bool BigEndianReader::ReadBytes(void* out, size_t len) {
-  std::optional<span<const uint8_t>> o = ReadSpan(len);
-  if (o.has_value()) {
-    memcpy(out, o->data(), o->size_bytes());
-    return true;
+bool BigEndianReader::ReadU8(uint8_t* value) {
+  std::array<uint8_t, 1u> bytes;
+  if (!ReadBytes<1u>(bytes)) {
+    return false;
   }
-  return false;
+  *value = numerics::U8FromBigEndian(bytes);
+  return true;
+}
+
+bool BigEndianReader::ReadU16(uint16_t* value) {
+  std::array<uint8_t, 2u> bytes;
+  if (!ReadBytes<2u>(bytes)) {
+    return false;
+  }
+  *value = numerics::U16FromBigEndian(bytes);
+  return true;
+}
+
+bool BigEndianReader::ReadU32(uint32_t* value) {
+  std::array<uint8_t, 4u> bytes;
+  if (!ReadBytes<4u>(bytes)) {
+    return false;
+  }
+  *value = numerics::U32FromBigEndian(bytes);
+  return true;
+}
+
+bool BigEndianReader::ReadU64(uint64_t* value) {
+  std::array<uint8_t, 8u> bytes;
+  if (!ReadBytes<8u>(bytes)) {
+    return false;
+  }
+  *value = numerics::U64FromBigEndian(bytes);
+  return true;
 }
 
 bool BigEndianReader::ReadPiece(base::StringPiece* out, size_t len) {
@@ -65,39 +92,13 @@ std::optional<span<const uint8_t>> BigEndianReader::ReadSpan(
   return {consume};
 }
 
-bool BigEndianReader::ReadU8(uint8_t* value) {
-  std::optional<span<const uint8_t, 1u>> bytes = ReadFixedSpan<1u>();
-  if (!bytes.has_value()) {
+bool BigEndianReader::ReadBytes(span<uint8_t> out) {
+  if (remaining() < out.size()) {
     return false;
   }
-  *value = numerics::U8FromBigEndian(*bytes);
-  return true;
-}
-
-bool BigEndianReader::ReadU16(uint16_t* value) {
-  std::optional<span<const uint8_t, 2u>> bytes = ReadFixedSpan<2u>();
-  if (!bytes.has_value()) {
-    return false;
-  }
-  *value = numerics::U16FromBigEndian(*bytes);
-  return true;
-}
-
-bool BigEndianReader::ReadU32(uint32_t* value) {
-  std::optional<span<const uint8_t, 4u>> bytes = ReadFixedSpan<4u>();
-  if (!bytes.has_value()) {
-    return false;
-  }
-  *value = numerics::U32FromBigEndian(*bytes);
-  return true;
-}
-
-bool BigEndianReader::ReadU64(uint64_t* value) {
-  std::optional<span<const uint8_t, 8u>> bytes = ReadFixedSpan<8u>();
-  if (!bytes.has_value()) {
-    return false;
-  }
-  *value = numerics::U64FromBigEndian(*bytes);
+  auto [consume, remain] = buffer_.split_at(out.size());
+  buffer_ = remain;
+  out.copy_from(consume);
   return true;
 }
 

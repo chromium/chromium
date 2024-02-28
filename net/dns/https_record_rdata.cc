@@ -109,11 +109,13 @@ bool ParseIpAddresses(base::StringPiece param_value,
   auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::vector<IPAddress> addresses;
-  uint8_t addr_bytes[ADDRESS_SIZE];
   do {
-    if (!reader.ReadBytes(addr_bytes, ADDRESS_SIZE))
+    if (auto addr_bytes = reader.ReadSpan(ADDRESS_SIZE);
+        !addr_bytes.has_value()) {
       return false;
-    addresses.emplace_back(addr_bytes);
+    } else {
+      addresses.emplace_back(*addr_bytes);
+    }
     DCHECK(addresses.back().IsValid());
   } while (reader.remaining() > 0);
 
