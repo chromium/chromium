@@ -184,6 +184,7 @@ suite('KioskModeTests', function() {
 
     const addInput = dialog.$.addInput;
     addInput.value = 'blah';
+    await addInput.updateComplete;
     assertFalse(addButton.disabled);
 
     addButton.click();

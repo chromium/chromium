@@ -4,6 +4,7 @@
 
 import './app.js';
 
+export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
 export {BiMap} from './bimap.js';
 export {fuzzySearch, FuzzySearchOptions} from './fuzzy_search.js';

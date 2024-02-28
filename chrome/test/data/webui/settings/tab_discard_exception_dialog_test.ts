@@ -75,6 +75,7 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.reset();
     const trimmedRule = rule.trim();
     dialog.$.input.$.input.value = rule;
+    await dialog.$.input.$.input.updateComplete;
     dialog.$.input.$.input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     if (trimmedRule &&

@@ -122,12 +122,12 @@ export class BookmarksEditDialogElement extends PolymerElement {
    */
   validateUrl(): boolean {
     const urlInput = this.$.url;
-    const originalValue = this.urlValue_;
 
     if (urlInput.validate()) {
       return true;
     }
 
+    const originalValue = this.urlValue_;
     this.urlValue_ = 'http://' + originalValue;
 
     if (urlInput.validate()) {

@@ -159,6 +159,7 @@ suite('SecurityKeysCredentialManagement', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
+    await dialog.$.pin.$.pin.updateComplete;
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -220,6 +221,7 @@ suite('SecurityKeysCredentialManagement', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
+    await dialog.$.pin.$.pin.updateComplete;
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -267,6 +269,10 @@ suite('SecurityKeysCredentialManagement', function() {
     assertShown(allDivs, dialog, 'edit');
     dialog.$.displayNameInput.value = 'Bobby Example';
     dialog.$.userNameInput.value = 'bobby@example.com';
+    await Promise.all([
+      dialog.$.displayNameInput.updateComplete,
+      dialog.$.userNameInput.updateComplete,
+    ]);
     dialog.$.confirmButton.click();
     credentials[0]!.userDisplayName = 'Bobby Example';
     credentials[0]!.userName = 'bobby@example.com';

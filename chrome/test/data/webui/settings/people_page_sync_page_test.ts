@@ -346,7 +346,7 @@ suite('SyncSettings', function() {
     assertFalse(encryptWithPassphrase.checked);
   });
 
-  test('SaveButtonDisabledWhenPassphraseOrConfirmationEmpty', function() {
+  test('SaveButtonDisabledWhenPassphraseOrConfirmationEmpty', async () => {
     encryptWithPassphrase.click();
     flush();
 
@@ -364,18 +364,30 @@ suite('SyncSettings', function() {
 
     passphraseInput.value = '';
     passphraseConfirmationInput.value = '';
+    await Promise.all([
+      passphraseInput.updateComplete,
+      passphraseConfirmationInput.updateComplete,
+    ]);
     assertTrue(saveNewPassphrase.disabled);
 
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = '';
+    await Promise.all([
+      passphraseInput.updateComplete,
+      passphraseConfirmationInput.updateComplete,
+    ]);
     assertTrue(saveNewPassphrase.disabled);
 
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = 'bar';
+    await Promise.all([
+      passphraseInput.updateComplete,
+      passphraseConfirmationInput.updateComplete,
+    ]);
     assertFalse(saveNewPassphrase.disabled);
   });
 
-  test('CreatingPassphraseMismatchedPassphrase', function() {
+  test('CreatingPassphraseMismatchedPassphrase', async () => {
     encryptWithPassphrase.click();
     flush();
 
@@ -394,6 +406,10 @@ suite('SyncSettings', function() {
             '#passphraseConfirmationInput')!;
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = 'bar';
+    await Promise.all([
+      passphraseInput.updateComplete,
+      passphraseConfirmationInput.updateComplete,
+    ]);
 
     saveNewPassphrase!.click();
     flush();
@@ -422,6 +438,10 @@ suite('SyncSettings', function() {
     passphraseInput.value = 'foo';
     passphraseConfirmationInput.value = 'foo';
     browserProxy.encryptionPassphraseSuccess = true;
+    await Promise.all([
+      passphraseInput.updateComplete,
+      passphraseConfirmationInput.updateComplete,
+    ]);
     saveNewPassphrase!.click();
 
     const passphrase = await browserProxy.whenCalled('setEncryptionPassphrase');
@@ -500,7 +520,7 @@ suite('SyncSettings', function() {
 
   test(
       'ExistingPassphraseSubmitButtonDisabledWhenExistingPassphraseEmpty',
-      function() {
+      async () => {
         const prefs = getSyncAllPrefs();
         prefs.encryptAllData = true;
         prefs.passphraseRequired = true;
@@ -509,15 +529,18 @@ suite('SyncSettings', function() {
 
         const existingPassphraseInput =
             syncPage.shadowRoot!.querySelector<CrInputElement>(
-                '#existingPassphraseInput')!;
+                '#existingPassphraseInput');
+        assertTrue(!!existingPassphraseInput);
         const submitExistingPassphrase =
             syncPage.shadowRoot!.querySelector<CrButtonElement>(
                 '#submitExistingPassphrase')!;
 
         existingPassphraseInput.value = '';
+        await existingPassphraseInput.updateComplete;
         assertTrue(submitExistingPassphrase.disabled);
 
         existingPassphraseInput.value = 'foo';
+        await existingPassphraseInput.updateComplete;
         assertFalse(submitExistingPassphrase.disabled);
       });
 
@@ -532,13 +555,14 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector<CrInputElement>(
             '#existingPassphraseInput');
     assertTrue(!!existingPassphraseInput);
-    existingPassphraseInput!.value = 'wrong';
+    existingPassphraseInput.value = 'wrong';
     browserProxy.decryptionPassphraseSuccess = false;
 
     const submitExistingPassphrase =
         syncPage.shadowRoot!.querySelector<CrButtonElement>(
             '#submitExistingPassphrase');
     assertTrue(!!submitExistingPassphrase);
+    await existingPassphraseInput.updateComplete;
     submitExistingPassphrase!.click();
 
     const passphrase = await browserProxy.whenCalled('setDecryptionPassphrase');
@@ -565,6 +589,7 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector<CrButtonElement>(
             '#submitExistingPassphrase');
     assertTrue(!!submitExistingPassphrase);
+    await existingPassphraseInput.updateComplete;
     submitExistingPassphrase!.click();
 
     const passphrase = await browserProxy.whenCalled('setDecryptionPassphrase');
@@ -837,11 +862,13 @@ suite('SyncSettings', function() {
     const existingPassphraseInput =
         syncPage.shadowRoot!.querySelector<CrInputElement>(
             '#existingPassphraseInput');
-    existingPassphraseInput!.value = 'right';
+    assertTrue(!!existingPassphraseInput);
+    existingPassphraseInput.value = 'right';
     browserProxy.decryptionPassphraseSuccess = true;
     const submitExistingPassphrase =
         syncPage.shadowRoot!.querySelector<CrButtonElement>(
             '#submitExistingPassphrase');
+    await existingPassphraseInput.updateComplete;
     submitExistingPassphrase!.click();
 
     await browserProxy.whenCalled('setDecryptionPassphrase');
@@ -888,6 +915,10 @@ suite('SyncSettings', function() {
     const saveNewPassphrase =
         encryptionElement.shadowRoot!.querySelector<CrButtonElement>(
             '#saveNewPassphrase');
+    await Promise.all([
+      passphraseInput.updateComplete,
+      passphraseConfirmationInput.updateComplete,
+    ]);
     saveNewPassphrase!.click();
 
     await browserProxy.whenCalled('setEncryptionPassphrase');

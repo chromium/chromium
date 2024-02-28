@@ -5,7 +5,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import type {SyncInfo, Tab, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {CrInputElement, SyncInfo, Tab, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -120,15 +120,17 @@ suite('TabOrganizationPageTest', () => {
     const group = tabOrganizationResults.shadowRoot!.querySelector(
         'tab-organization-group');
     assertTrue(!!group);
-    const input = group.shadowRoot!.querySelector<HTMLElement>(
+    const input = group.shadowRoot!.querySelector<CrInputElement>(
         '#singleOrganizationInput');
     assertTrue(!!input);
     assertFalse(input.hasAttribute('focused_'));
 
     input.focus();
+    await input.updateComplete;
     assertTrue(input.hasAttribute('focused_'));
 
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await input.updateComplete;
     assertFalse(input.hasAttribute('focused_'));
   });
 

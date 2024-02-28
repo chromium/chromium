@@ -159,6 +159,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
+    await dialog.$.pin.$.pin.updateComplete;
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -229,6 +230,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
+    await dialog.$.pin.$.pin.updateComplete;
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -288,6 +290,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertEquals(dialog.$.enrollmentName.value, enrollmentName);
     const invalidNewEnrollmentName = '21 bytes long string!';
     dialog.$.enrollmentName.value = invalidNewEnrollmentName;
+    await dialog.$.enrollmentName.updateComplete;
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
     assertFalse(dialog.$.enrollmentName.invalid);
@@ -299,6 +302,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'chooseName');
     const newEnrollmentName = '20 bytes long string';
     dialog.$.enrollmentName.value = newEnrollmentName;
+    await dialog.$.enrollmentName.updateComplete;
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
 

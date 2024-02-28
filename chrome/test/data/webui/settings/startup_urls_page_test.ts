@@ -129,6 +129,7 @@ suite('StartupUrlDialog', function() {
     const expectedUrl = 'dummy-foo.com';
     inputElement.value = expectedUrl;
     browserProxy.setUrlValidity(false);
+    await inputElement.updateComplete;
     pressSpace(inputElement);
 
     const url = await browserProxy.whenCalled('validateStartupPage');
@@ -185,6 +186,7 @@ suite('StartupUrlDialog', function() {
     // Input a URL and force validation.
     const inputElement = dialog.$.url;
     inputElement.value = 'foo.com';
+    await inputElement.updateComplete;
     pressSpace(inputElement);
 
     await browserProxy.whenCalled('validateStartupPage');

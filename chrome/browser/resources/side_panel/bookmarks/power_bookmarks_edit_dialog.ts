@@ -185,12 +185,12 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
 
   private validateUrl_(): boolean {
     const urlInput = this.$.urlInput;
-    const originalValue = urlInput.inputElement.value;
 
     if (urlInput.validate()) {
       return true;
     }
 
+    const originalValue = urlInput.inputElement.value;
     urlInput.inputElement.value = 'http://' + originalValue;
 
     if (urlInput.validate()) {

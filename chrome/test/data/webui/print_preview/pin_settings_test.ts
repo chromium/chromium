@@ -68,6 +68,7 @@ suite('PinSettingsTest', function() {
     assertEquals('', pinSection.getSettingValue('pinValue'));
 
     const input = pinSection.shadowRoot!.querySelector('cr-input')!;
+    await input.updateComplete;
     assertEquals('', input.value);
     assertFalse(pinSection.getSetting('pinValue').setFromUi);
 
@@ -165,7 +166,7 @@ suite('PinSettingsTest', function() {
 
   // Tests that if settings are enforced by enterprise policy the
   // appropriate UI is disabled.
-  test('disabled by policy', function() {
+  test('disabled by policy', async () => {
     const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     assertFalse(checkbox.disabled);
 
@@ -174,6 +175,7 @@ suite('PinSettingsTest', function() {
     assertFalse(input.disabled);
 
     model.set('settings.pin.setByPolicy', true);
+    await input.updateComplete;
     assertTrue(checkbox.disabled);
     assertFalse(input.disabled);
   });

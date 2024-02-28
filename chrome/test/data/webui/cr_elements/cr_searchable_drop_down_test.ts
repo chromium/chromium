@@ -34,20 +34,22 @@ suite('cr-searchable-drop-down', function() {
    * @param searchTerm The string used to filter the list of items in the drop
    *     down.
    */
-  function search(searchTerm: string) {
+  async function search(searchTerm: string): Promise<void> {
     const input = /** @type {!CrInputElement} */ (
         dropDown.shadowRoot!.querySelector('cr-input')!);
     input.value = searchTerm;
+    await input.updateComplete;
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     flush();
   }
 
-  function blur() {
+  async function blur(): Promise<void> {
     const input = /** @type {!CrInputElement} */ (
         dropDown.shadowRoot!.querySelector('cr-input')!);
     input.dispatchEvent(
         new CustomEvent('blur', {bubbles: true, composed: true}));
+    await input.updateComplete;
     flush();
   }
 
@@ -103,29 +105,29 @@ suite('cr-searchable-drop-down', function() {
     assertEquals('three', itemList[2]!.textContent!.trim());
   });
 
-  test('filter works correctly', function() {
+  test('filter works correctly', async () => {
     setItems(['cat', 'hat', 'rat', 'rake']);
 
-    search('c');
+    await search('c');
     assertEquals(1, getList().length);
     assertEquals('cat', getList()[0]!.textContent!.trim());
     assertTrue(dropDown.invalid);
 
-    search('at');
+    await search('at');
     assertEquals(3, getList().length);
     assertEquals('cat', getList()[0]!.textContent!.trim());
     assertEquals('hat', getList()[1]!.textContent!.trim());
     assertEquals('rat', getList()[2]!.textContent!.trim());
     assertTrue(dropDown.invalid);
 
-    search('ra');
+    await search('ra');
     assertEquals(2, getList().length);
     assertEquals('rat', getList()[0]!.textContent!.trim());
     assertEquals('rake', getList()[1]!.textContent!.trim());
     assertTrue(dropDown.invalid);
   });
 
-  test('value is set on click', function() {
+  test('value is set on click', async () => {
     setItems(['dog', 'cat', 'mouse']);
 
     assertNotEquals('dog', dropDown.value);
@@ -135,14 +137,14 @@ suite('cr-searchable-drop-down', function() {
     assertEquals('dog', dropDown.value);
 
     // Make sure final value does not change while searching.
-    search('ta');
+    await search('ta');
     assertEquals('dog', dropDown.value);
     assertTrue(dropDown.invalid);
   });
 
   // If the update-value-on-input flag is passed, final value should be whatever
   // is in the search box.
-  test('value is set on click and on search', function() {
+  test('value is set on click and on search', async () => {
     dropDown.updateValueOnInput = true;
     setItems(['dog', 'cat', 'mouse']);
 
@@ -153,7 +155,7 @@ suite('cr-searchable-drop-down', function() {
     assertEquals('dog', dropDown.value);
 
     // Make sure final value does change while searching.
-    search('ta');
+    await search('ta');
     assertEquals('ta', dropDown.value);
     assertFalse(dropDown.invalid);
   });
@@ -299,29 +301,33 @@ suite('cr-searchable-drop-down', function() {
   // is set, then the error message should be displayed. If the |errorMessage|
   // property is not set or |errorMessageAllowed| is false, no error message
   // should be displayed.
-  test('error message is displayed if set and allowed', function() {
+  test('error message is displayed if set and allowed', async () => {
     dropDown.errorMessageAllowed = true;
     dropDown.errorMessage = 'error message';
 
     const input = dropDown.$.search;
+    await input.updateComplete;
 
     assertEquals(dropDown.errorMessage, input.$.error.textContent);
     assertTrue(input.invalid);
 
     // Set |errorMessageAllowed| to false and verify no error message is shown.
     dropDown.errorMessageAllowed = false;
+    await input.updateComplete;
 
     assertNotEquals(dropDown.errorMessage, input.$.error.textContent);
     assertFalse(input.invalid);
 
     // Set |errorMessageAllowed| to true and verify it is displayed again.
     dropDown.errorMessageAllowed = true;
+    await input.updateComplete;
 
     assertEquals(dropDown.errorMessage, input.$.error.textContent);
     assertTrue(input.invalid);
 
     // Clearing |errorMessage| hides the error.
     dropDown.errorMessage = '';
+    await input.updateComplete;
 
     assertEquals(dropDown.errorMessage, input.$.error.textContent);
     assertFalse(input.invalid);
@@ -355,7 +361,7 @@ suite('cr-searchable-drop-down', function() {
 
   // When a user types in the dropdown but does not choose a valid option, the
   // dropdown should revert to the previously selected option on loss of focus.
-  test('value resets on loss of focus', function() {
+  test('value resets on loss of focus', async () => {
     setItems(['dog', 'cat', 'mouse']);
 
     getList()[0]!.click();
@@ -363,9 +369,9 @@ suite('cr-searchable-drop-down', function() {
     assertFalse(dropDown.invalid);
 
     // Make sure the search box value changes back to dog
-    search('ta');
+    await search('ta');
     assertTrue(dropDown.invalid);
-    blur();
+    await blur();
     assertEquals('dog', searchInput.value);
     assertFalse(dropDown.invalid);
   });
@@ -373,7 +379,7 @@ suite('cr-searchable-drop-down', function() {
   // When a user types in the dropdown but does not choose a valid option, the
   // dropdown should keep the same text on loss of focus. (Only when
   // isupdateValueOnInput is set to true).
-  test('value remains on loss of focus', function() {
+  test('value remains on loss of focus', async () => {
     dropDown.updateValueOnInput = true;
     setItems(['dog', 'cat', 'mouse']);
 
@@ -382,9 +388,9 @@ suite('cr-searchable-drop-down', function() {
     assertFalse(dropDown.invalid);
 
     // Make sure the search box value keeps the same text
-    search('ta');
+    await search('ta');
     assertFalse(dropDown.invalid);
-    blur();
+    await blur();
     assertEquals('ta', searchInput.value);
     assertFalse(dropDown.invalid);
   });
@@ -392,14 +398,14 @@ suite('cr-searchable-drop-down', function() {
   // In certain cases when a user clicks their desired option from the dropdown,
   // the on-blur event is fired before the on-click event. This test is to
   // guarantee expected behavior given a proceeding blur event.
-  test('blur event when option is clicked', function() {
+  test('blur event when option is clicked', async () => {
     setItems(['cat', 'hat', 'rat', 'rake']);
 
-    search('rat');
+    await search('rat');
     assertEquals(1, getList().length);
     assertEquals('rat', getList()[0]!.textContent!.trim());
 
-    blur();
+    await blur();
     getList()[0]!.click();
 
     assertEquals('rat', dropDown.value);

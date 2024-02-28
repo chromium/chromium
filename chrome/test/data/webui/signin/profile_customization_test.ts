@@ -55,6 +55,11 @@ suite('ProfileCustomizationTest', function() {
   // change the name.
   test('ClickDone', async function() {
     await initializeApp();
+    // Wait for the name input to update, and then wait a second time
+    // for the validation that is triggered before checking if the
+    // button is disabled.
+    await app.$.nameInput.updateComplete;
+    await app.$.nameInput.updateComplete;
     assertTrue(isChildVisible(app, '#doneButton'));
     const doneButton = app.$.doneButton;
     assertFalse(doneButton.disabled);
@@ -67,27 +72,37 @@ suite('ProfileCustomizationTest', function() {
   test('ChangeName', async function() {
     await initializeApp();
     const nameInput = app.$.nameInput;
+    await nameInput.updateComplete;
     // Check the default value for the input.
     assertEquals('TestName', nameInput.value);
     assertFalse(nameInput.invalid);
 
     // Invalid name (white space).
     nameInput.value = '   ';
+    // Wait for the name input to update, and then wait a second time
+    // for the validation that is triggered before checking if the
+    // button is disabled.
+    await nameInput.updateComplete;
     assertTrue(nameInput.invalid);
 
     // The button is disabled.
+    await nameInput.updateComplete;
     assertTrue(isChildVisible(app, '#doneButton'));
     const doneButton = app.$.doneButton;
     assertTrue(doneButton.disabled);
 
     // Empty name.
     nameInput.value = '';
+    await nameInput.updateComplete;
     assertTrue(nameInput.invalid);
+    await nameInput.updateComplete;
     assertTrue(doneButton.disabled);
 
     // Valid name.
     nameInput.value = 'Bob';
+    await nameInput.updateComplete;
     assertFalse(nameInput.invalid);
+    await nameInput.updateComplete;
 
     // Click done, and check that the new name is sent.
     assertTrue(isChildVisible(app, '#doneButton'));

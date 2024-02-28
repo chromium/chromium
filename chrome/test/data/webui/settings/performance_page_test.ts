@@ -409,6 +409,7 @@ suite('TabDiscardExceptionList', function() {
       input: string) {
     const inputEvent = eventToPromise('input', dialog.$.input.$.input);
     dialog.$.input.$.input.value = input;
+    await dialog.$.input.$.input.updateComplete;
     dialog.$.input.$.input.dispatchEvent(new CustomEvent('input'));
     await inputEvent;
     dialog.$.actionButton.click();

@@ -20,8 +20,10 @@ import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './aut
 /**
  * Helper function to simulate typing in nickname in the nickname field.
  */
-function typeInNickname(nicknameInput: CrInputElement, nickname: string) {
+async function typeInNickname(
+    nicknameInput: CrInputElement, nickname: string): Promise<void> {
   nicknameInput.value = nickname;
+  await nicknameInput.updateComplete;
   nicknameInput.dispatchEvent(
       new CustomEvent('input', {bubbles: true, composed: true}));
 }
@@ -299,12 +301,14 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
         creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
     const cvcInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
+    assertTrue(!!cvcInput);
     nameInput!.value = 'Jane Doe';
     numberInput!.value = '4111111111111111';
-    typeInNickname(nicknameInput!, 'Grocery Card');
+    await typeInNickname(nicknameInput!, 'Grocery Card');
     yearInput!.value = nextYear();
     yearInput!.dispatchEvent(new CustomEvent('change'));
-    cvcInput!.value = '123';
+    cvcInput.value = '123';
+    await cvcInput.updateComplete;
     flush();
 
     const expiredError =
@@ -342,9 +346,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const nameInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#nameInput');
+    assertTrue(!!nameInput);
     const numberInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#numberInput');
+    assertTrue(!!numberInput);
     const nicknameInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#nicknameInput');
@@ -352,12 +358,18 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
         creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
     const cvcInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
-    nameInput!.value = '  Jane Doe  \n';
-    numberInput!.value = ' 4111111111111111 ';
-    typeInNickname(nicknameInput!, ' Grocery Card  ');
+    assertTrue(!!cvcInput);
+    nameInput.value = '  Jane Doe  \n';
+    numberInput.value = ' 4111111111111111 ';
+    await Promise.all([
+      nameInput.updateComplete,
+      numberInput.updateComplete,
+      typeInNickname(nicknameInput!, 'Grocery Card'),
+    ]);
     yearInput!.value = nextYear();
     yearInput!.dispatchEvent(new CustomEvent('change'));
-    cvcInput!.value = ' ';
+    cvcInput.value = ' ';
+    await cvcInput.updateComplete;
     flush();
 
     const expiredError =
@@ -403,19 +415,22 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const nameInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#nameInput');
+    assertTrue(!!nameInput);
     const nicknameInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#nicknameInput');
     const numberInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#numberInput');
+    assertTrue(!!numberInput);
     const yearInput =
         creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
     const cvcInput =
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>('#cvcInput');
-    assertEquals(nameInput!.value, 'Wrong name');
+    assertTrue(!!cvcInput);
+    assertEquals(nameInput.value, 'Wrong name');
     assertEquals(nicknameInput!.value, 'Shopping Card');
-    assertEquals(numberInput!.value, '4444333322221111');
+    assertEquals(numberInput.value, '4444333322221111');
     assertEquals(yearInput!.value, nextYear());
 
     const expiredError =
@@ -430,12 +445,17 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Update cardholder name, card number, expiration year and nickname, and
     // trigger the on-input handler.
-    nameInput!.value = 'Jane Doe';
-    numberInput!.value = '4111111111111111';
-    typeInNickname(nicknameInput!, 'Grocery Card');
+    nameInput.value = 'Jane Doe';
+    numberInput.value = '4111111111111111';
+    await Promise.all([
+      nameInput.updateComplete,
+      numberInput.updateComplete,
+      typeInNickname(nicknameInput!, 'Grocery Card'),
+    ]);
     yearInput!.value = farFutureYear();
     yearInput!.dispatchEvent(new CustomEvent('change'));
-    cvcInput!.value = '098';
+    cvcInput.value = '098';
+    await cvcInput.updateComplete;
     flush();
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
@@ -462,7 +482,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#nicknameInput');
     assertTrue(!!nicknameInput);
-    nicknameInput!.focus();
+    nicknameInput.focus();
 
     const validInputs = [
       '',
@@ -473,11 +493,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
       /* UTF-16 hex encoded credit card emoji */ 'Chase Freedom \uD83D\uDCB3',
     ];
     for (const nickname of validInputs) {
-      typeInNickname(nicknameInput!, nickname);
-      assertFalse(nicknameInput!.invalid);
+      await typeInNickname(nicknameInput, nickname);
+      assertFalse(nicknameInput.invalid);
       // Error message is hidden for valid nickname input.
       assertEquals(
-          'hidden', getComputedStyle(nicknameInput!.$.error).visibility);
+          'hidden', getComputedStyle(nicknameInput.$.error).visibility);
     }
 
     // Verify invalid nickname inputs.
@@ -490,19 +510,19 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
       /* UTF-16 hex encoded digt 7 emoji */ 'Digit emoji: \u0037\uFE0F\u20E3',
     ];
     for (const nickname of invalidInputs) {
-      typeInNickname(nicknameInput!, nickname);
-      assertTrue(nicknameInput!.invalid);
-      assertNotEquals('', nicknameInput!.errorMessage);
+      await typeInNickname(nicknameInput, nickname);
+      assertTrue(nicknameInput.invalid);
+      assertNotEquals('', nicknameInput.errorMessage);
       // Error message is shown for invalid nickname input.
       assertEquals(
-          'visible', getComputedStyle(nicknameInput!.$.error).visibility);
+          'visible', getComputedStyle(nicknameInput.$.error).visibility);
     }
     // The error message is still shown even when user does not focus on the
     // nickname field.
-    nicknameInput!.blur();
-    assertTrue(nicknameInput!.invalid);
-    assertEquals(
-        'visible', getComputedStyle(nicknameInput!.$.error).visibility);
+    nicknameInput.blur();
+    await nicknameInput.updateComplete;
+    assertTrue(nicknameInput.invalid);
+    assertEquals('visible', getComputedStyle(nicknameInput.$.error).visibility);
   });
 
   test('disable save button when input nickname is invalid', async function() {
@@ -525,11 +545,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
         creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
             '#nicknameInput');
 
-    typeInNickname(nicknameInput!, 'invalid: 123');
+    await typeInNickname(nicknameInput!, 'invalid: 123');
     // Save button is disabled since the nickname is invalid.
     assertTrue(saveButton!.disabled);
 
-    typeInNickname(nicknameInput!, 'valid nickname');
+    await typeInNickname(nicknameInput!, 'valid nickname');
     // Save button is back to enabled since user updates with a valid nickname.
     assertFalse(saveButton!.disabled);
   });
@@ -559,18 +579,20 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // User types in one character. Ensure the character count is dynamically
     // updated.
-    typeInNickname(nicknameInput!, 'a');
+    await typeInNickname(nicknameInput!, 'a');
     assertTrue(characterCount.textContent!.includes('1/25'));
     // User types in total 5 characters.
-    typeInNickname(nicknameInput!, 'abcde');
+    await typeInNickname(nicknameInput!, 'abcde');
     assertTrue(characterCount.textContent!.includes('5/25'));
 
     // User click outside of nickname input, the character count isn't shown.
     nicknameInput!.blur();
+    await nicknameInput.updateComplete;
     assertFalse(isVisible(characterCount));
 
     // User clicks on nickname input again.
     nicknameInput!.focus();
+    await nicknameInput.updateComplete;
     // Character count is shown when nickname input field is re-focused.
     assertTrue(isVisible(characterCount));
     assertTrue(characterCount.textContent!.includes('5/25'));
@@ -665,9 +687,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Fill in IBAN value and nickname, and trigger the on-input handler.
     nicknameInput.value = 'My doctor\'s IBAN';
+    await nicknameInput.updateComplete;
     assertTrue(characterCount.textContent!.includes('16/25'));
 
     valueInput.value = 'IT60X0542811101000000123456';
+    await valueInput.updateComplete;
     flush();
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
@@ -696,6 +720,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const valueInput = ibanDialog.$.valueInput;
     nicknameInput.value = '   My doctor\'s IBAN  ';
     valueInput.value = '  IT60 X054 2811 1010 0000 0123 456 ';
+    await Promise.all(
+        [nicknameInput.updateComplete, valueInput.updateComplete]);
     flush();
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);
@@ -726,6 +752,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     const valueInput = ibanDialog.$.valueInput;
     valueInput.value = 'DE75 5121 0800 1245 1261 99';
     nicknameInput.value = 'My brother\'s IBAN';
+    await Promise.all(
+        [valueInput.updateComplete, nicknameInput.updateComplete]);
     flush();
 
     const savedPromise = eventToPromise('save-iban', ibanDialog);

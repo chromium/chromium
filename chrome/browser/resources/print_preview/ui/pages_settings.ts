@@ -398,8 +398,10 @@ export class PrintPreviewPagesSettingsElement extends
     this.onCustomInputBlur_();
   }
 
-  private onCustomInputBlur_() {
+  private async onCustomInputBlur_() {
     this.resetAndUpdate();
+    await this.shadowRoot!.querySelector('cr-input')!.updateComplete;
+
     if (this.errorState_ === PagesInputErrorState.EMPTY) {
       // Update with all pages.
       this.shadowRoot!.querySelector('cr-input')!.value =
@@ -408,6 +410,8 @@ export class PrintPreviewPagesSettingsElement extends
       this.resetString();
       this.restoreLastInput_ = false;
     }
+    this.dispatchEvent(new CustomEvent(
+        'custom-input-blurred-for-test', {bubbles: true, composed: true}));
   }
 
   /**

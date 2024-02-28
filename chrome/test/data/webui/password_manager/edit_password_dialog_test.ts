@@ -106,6 +106,7 @@ suite('EditPasswordDialogTest', function() {
 
     // Update username to the same value as other credential and observe error.
     dialog.$.usernameInput.value = 'username1';
+    await dialog.$.usernameInput.updateComplete;
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
@@ -145,10 +146,12 @@ suite('EditPasswordDialogTest', function() {
     // Update username to the same value as the passkey. There should not be an
     // error.
     dialog.$.usernameInput.value = 'passkey-username';
+    await dialog.$.usernameInput.updateComplete;
     assertFalse(dialog.$.usernameInput.invalid);
 
     // Update username to the same value as the federated credential.
     dialog.$.usernameInput.value = 'federated-username';
+    await dialog.$.usernameInput.updateComplete;
     assertFalse(dialog.$.usernameInput.invalid);
   });
 
@@ -173,6 +176,7 @@ suite('EditPasswordDialogTest', function() {
 
     // Update username to the same value as other credential and observe error.
     dialog.$.usernameInput.value = 'test';
+    await dialog.$.usernameInput.updateComplete;
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
@@ -241,6 +245,10 @@ suite('EditPasswordDialogTest', function() {
     dialog.$.usernameInput.value = 'username2';
     dialog.$.passwordInput.value = 'sTroNgPA$$wOrD';
     dialog.$.passwordNote.value = 'super secret note.';
+    await Promise.all([
+      dialog.$.usernameInput.updateComplete,
+      dialog.$.passwordInput.updateComplete,
+    ]);
 
     assertFalse(dialog.$.saveButton.disabled);
     dialog.$.saveButton.click();
@@ -280,6 +288,7 @@ suite('EditPasswordDialogTest', function() {
                 // Enter website
                 dialog.$.passwordInput.value = 'sTroNgPA$$wOrD';
                 dialog.$.passwordNote.value = testCase.newNote;
+                await dialog.$.passwordInput.updateComplete;
 
                 assertFalse(dialog.$.saveButton.disabled);
                 dialog.$.saveButton.click();

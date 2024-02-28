@@ -367,13 +367,16 @@ export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
  * @param parentElement The element that receives the input-change event.
  * @return Promise that resolves when the input-change event has fired.
  */
-export function triggerInputEvent(
+export async function triggerInputEvent(
     inputElement: HTMLInputElement|CrInputElement, input: string,
     parentElement: HTMLElement): Promise<void> {
   inputElement.value = input;
+  if (inputElement.tagName === 'CR-INPUT') {
+    await (inputElement as CrInputElement).updateComplete;
+  }
   inputElement.dispatchEvent(
       new CustomEvent('input', {composed: true, bubbles: true}));
-  return eventToPromise('input-change', parentElement);
+  return await eventToPromise('input-change', parentElement);
 }
 
 const TestListenerElementBase = WebUiListenerMixin(PolymerElement);

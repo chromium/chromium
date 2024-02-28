@@ -1336,6 +1336,7 @@ suite('EditExceptionDialog', function() {
 
     // Simulate user input of whitespace only text.
     input!.value = '  ';
+    await input.updateComplete;
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     flush();
@@ -1346,6 +1347,7 @@ suite('EditExceptionDialog', function() {
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = '*';
     input!.value = expectedPattern;
+    await input.updateComplete;
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
@@ -1362,6 +1364,7 @@ suite('EditExceptionDialog', function() {
     // Simulate user edit.
     const newValue = input!.value + ':1234';
     input!.value = newValue;
+    await input.updateComplete;
 
     const actionButton = dialog.$.actionButton;
     assertTrue(!!actionButton);
@@ -1397,8 +1400,10 @@ suite('AddExceptionDialog', function() {
     assertTrue(actionButton.disabled);
 
     const input = dialog.shadowRoot!.querySelector('cr-input');
-    input!.value = expectedPattern;
-    input!.dispatchEvent(
+    assertTrue(!!input);
+    input.value = expectedPattern;
+    await input.updateComplete;
+    input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 
     const [pattern, _category] =
@@ -1450,6 +1455,7 @@ suite('AddExceptionDialog', function() {
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = 'foobarbaz';
     input!.value = expectedPattern;
+    await input.updateComplete;
     input!.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
 

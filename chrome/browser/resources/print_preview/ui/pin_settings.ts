@@ -193,8 +193,7 @@ export class PrintPreviewPinSettingsElement extends
   private computeValid_(): boolean {
     // Make sure value updates first, in case inputString_ was updated by JS.
     this.$.pinValue.value = this.inputString_;
-    this.$.pinValue.validate();
-    return !this.$.pinValue.invalid;
+    return this.$.pinValue.validate();
   }
 
   private getPinErrorMessage_(): string {

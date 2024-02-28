@@ -202,6 +202,7 @@ suite('ProfilePickerMainViewTest', function() {
 
     // Set to invalid profile name
     localProfileName.value = '';
+    await localProfileName.updateComplete;
     assertTrue(localProfileName.invalid);
   });
 

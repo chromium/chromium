@@ -498,48 +498,45 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
-  test('verifyPhoneAndEmailAreSaved', function() {
+  test('verifyPhoneAndEmailAreSaved', async () => {
     const address = createEmptyAddressEntry();
-    return createAddressDialog(address).then(function(dialog) {
-      const rows = dialog.$.dialog.querySelectorAll('.address-row');
-      assertGT(rows.length, 0, 'dialog should contain address rows');
+    const dialog = await createAddressDialog(address);
+    const rows = dialog.$.dialog.querySelectorAll('.address-row');
+    assertGT(rows.length, 0, 'dialog should contain address rows');
 
-      const lastRow = rows[rows.length - 1]!;
-      const phoneInput =
-          lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(1)');
-      const emailInput =
-          lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(2)');
+    const lastRow = rows[rows.length - 1]!;
+    const phoneInput =
+        lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(1)');
+    const emailInput =
+        lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(2)');
 
-      assertTrue(!!phoneInput, 'phone element should be the first cr-input');
-      assertTrue(!!emailInput, 'email element should be the second cr-input');
+    assertTrue(!!phoneInput, 'phone element should be the first cr-input');
+    assertTrue(!!emailInput, 'email element should be the second cr-input');
 
-      assertEquals(undefined, phoneInput.value);
-      assertFalse(
-          !!getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER));
+    assertEquals(undefined, phoneInput.value);
+    assertFalse(
+        !!getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER));
 
-      assertEquals(undefined, emailInput.value);
-      assertFalse(!!getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
+    assertEquals(undefined, emailInput.value);
+    assertFalse(!!getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
 
-      const phoneNumber = '(555) 555-5555';
-      const emailAddress = 'no-reply@chromium.org';
+    const phoneNumber = '(555) 555-5555';
+    const emailAddress = 'no-reply@chromium.org';
 
-      phoneInput.value = phoneNumber;
-      emailInput.value = emailAddress;
-
-      return expectEvent(dialog, 'save-address', function() {
-               dialog.$.saveButton.click();
-             }).then(function() {
-        assertEquals(phoneNumber, phoneInput.value);
-        assertEquals(
-            phoneNumber,
-            getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER));
-
-        assertEquals(emailAddress, emailInput.value);
-        assertEquals(
-            emailAddress,
-            getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
-      });
+    phoneInput.value = phoneNumber;
+    emailInput.value = emailAddress;
+    await Promise.all([phoneInput.updateComplete, emailInput.updateComplete]);
+    await expectEvent(dialog, 'save-address', function() {
+      dialog.$.saveButton.click();
     });
+    assertEquals(phoneNumber, phoneInput.value);
+    assertEquals(
+        phoneNumber,
+        getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER));
+
+    assertEquals(emailAddress, emailInput.value);
+    assertEquals(
+        emailAddress, getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
   });
 
   // TODO(crbug.com/1473847): Fix the flakiness.

@@ -22,8 +22,10 @@ import {createPaymentsSection, getDefaultExpectations} from './payments_section_
 /**
  * Helper function to update IBAN value in the IBAN field.
  */
-function updateIbanTextboxValue(valueInput: CrInputElement, value: string) {
+async function updateIbanTextboxValue(
+    valueInput: CrInputElement, value: string): Promise<void> {
   valueInput.value = value;
+  await valueInput.updateComplete;
   valueInput.dispatchEvent(
       new CustomEvent('input', {bubbles: true, composed: true}));
 }
@@ -150,10 +152,10 @@ suite('PaymentsSectionIban', function() {
 
     // Add a valid IBAN value.
     const valueInput = ibanDialog.$.valueInput;
-    updateIbanTextboxValue(valueInput, 'FI1410093000123458');
+    await updateIbanTextboxValue(valueInput, 'FI1410093000123458');
 
     // Type in another valid IBAN value.
-    updateIbanTextboxValue(valueInput, 'IT60X0542811101000000123456');
+    await updateIbanTextboxValue(valueInput, 'IT60X0542811101000000123456');
 
     const savePromise = eventToPromise('save-iban', ibanDialog);
     saveButton.click();
