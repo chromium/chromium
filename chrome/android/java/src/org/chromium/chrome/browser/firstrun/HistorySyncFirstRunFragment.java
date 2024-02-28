@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,13 +35,7 @@ public class HistorySyncFirstRunFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        assert getPageDelegate().getProfileProviderSupplier().get() != null;
-        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
-        mHistorySyncCoordinator =
-                new HistorySyncCoordinator(
-                        getLayoutInflater(), this, profile, SigninAccessPoint.START_PAGE);
-        mFragmentView.removeAllViews();
-        mFragmentView.addView(mHistorySyncCoordinator.getView());
+        createCoordinatorAndAddToFragment();
     }
 
     @Override
@@ -50,6 +45,15 @@ public class HistorySyncFirstRunFragment extends Fragment
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mHistorySyncCoordinator == null) {
+            return;
+        }
+        createCoordinatorAndAddToFragment();
     }
 
     /** Implements {@link FirstRunFragment}. */
@@ -68,5 +72,23 @@ public class HistorySyncFirstRunFragment extends Fragment
         getPageDelegate().advanceToNextPage();
         mHistorySyncCoordinator.destroy();
         mHistorySyncCoordinator = null;
+    }
+
+    @Override
+    public boolean canUseLandscapeLayout() {
+        return getPageDelegate().canUseLandscapeLayout();
+    }
+
+    private void createCoordinatorAndAddToFragment() {
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+        }
+        assert getPageDelegate().getProfileProviderSupplier().get() != null;
+        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
+        mHistorySyncCoordinator =
+                new HistorySyncCoordinator(
+                        getLayoutInflater(), this, profile, SigninAccessPoint.START_PAGE);
+        mFragmentView.removeAllViews();
+        mFragmentView.addView(mHistorySyncCoordinator.getView());
     }
 }
