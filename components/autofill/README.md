@@ -92,7 +92,7 @@ corresponds to a [`Profile`](https://www.chromium.org/developers/design-document
   but `AutofillDriverIOS*` instead of `ContentAutofill*`, and a different but
   identically named `AutofillAgent`.
 * Chrome vs WebView: WebView also uses `AutofillManager` and everything south
-  of it, but `AwAutofillClient` instead of `ChromeAutofillClient`, and
+  of it, but `AndroidAutofillClient` instead of `ChromeAutofillClient`, and
   `AndroidAutofillManager` instead of `BrowserAutofillManager`.
 
 ### Links to files
@@ -192,7 +192,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
       * Serves as bridge from platform aganostic `BrowserAutofillManager` to the
         OS specific logic.
     * Implements `AutofillClient` interface.
-    * Has siblings `AwAutofillClient`, `ChromeAutofillClientIOS` and
+    * Has siblings `AndroidAutofillClient`, `ChromeAutofillClientIOS` and
       `WebViewAutofillClientIOS`.
   * `PersonalDataManager`
     * One instance per `BrowserContext` (Chrome profile). In incognito mode, the
