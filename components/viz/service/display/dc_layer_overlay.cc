@@ -292,12 +292,15 @@ DCLayerResult ValidateTextureQuad(
   }
 
   if (quad->is_video_frame) {
-    auto color_space = resource_provider->GetColorSpace(quad->resource_id());
+    const auto& color_space =
+        resource_provider->GetColorSpace(quad->resource_id());
+    const auto& hdr_metadata =
+        resource_provider->GetHDRMetadata(quad->resource_id());
     auto buffer_format =
         resource_provider->GetBufferFormat(quad->resource_id());
     auto result = ValidateYUVOverlay(
-        quad->protected_video_type, color_space, buffer_format,
-        quad->hdr_metadata, is_page_fullscreen_mode, has_overlay_support,
+        quad->protected_video_type, color_space, buffer_format, hdr_metadata,
+        is_page_fullscreen_mode, has_overlay_support,
         has_p010_video_processor_support, allowed_yuv_overlay_count,
         processed_yuv_overlay_count);
     return result;
@@ -340,7 +343,8 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   }
 
   dc_layer->color_space = resource_provider->GetColorSpace(quad->resource_id());
-  dc_layer->hdr_metadata = quad->hdr_metadata;
+  dc_layer->hdr_metadata =
+      resource_provider->GetHDRMetadata(quad->resource_id());
   // Both color space and protected_video_type are hard-coded for stream video.
   // TODO(crbug.com/1384544): Consider using quad->protected_video_type.
   if (quad->is_stream_video) {

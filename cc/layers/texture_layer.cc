@@ -79,14 +79,6 @@ void TextureLayer::SetUV(const gfx::PointF& top_left,
   SetNeedsCommit();
 }
 
-void TextureLayer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
-  if (hdr_metadata_.Read(*this) == hdr_metadata) {
-    return;
-  }
-  hdr_metadata_.Write(*this) = hdr_metadata;
-  SetNeedsCommit();
-}
-
 void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
   if (premultiplied_alpha_.Read(*this) == premultiplied_alpha)
     return;
@@ -227,7 +219,6 @@ void TextureLayer::PushPropertiesTo(
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_.Read(*this));
   texture_layer->SetBlendBackgroundColor(blend_background_color_.Read(*this));
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_.Read(*this));
-  texture_layer->SetHdrMetadata(hdr_metadata_.Read(*this));
   if (needs_set_resource_.Read(*this)) {
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;

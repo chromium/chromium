@@ -270,7 +270,6 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     // the layer is promoted to an overlay. Make sure we have fallback /
     // emulation paths to keep the rendering correct in that cases.
     layer_->SetPremultipliedAlpha(true);
-    layer_->SetHdrMetadata(hdr_metadata_);
 
     if (client_) {
       client_->SetNeedsCompositingUpdate();
@@ -333,6 +332,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       Format(), IsOverlayCandidate(),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
   out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);
+  out_resource->hdr_metadata = hdr_metadata_;
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).

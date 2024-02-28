@@ -153,9 +153,6 @@ void CanvasResourceHost::SetNeedsPushProperties() {
 
 void CanvasResourceHost::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
-  if (cc_layer_) {
-    cc_layer_->SetHdrMetadata(hdr_metadata_);
-  }
 }
 
 cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
@@ -170,7 +167,6 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     cc_layer_->SetNearestNeighbor(FilterQuality() ==
                                   cc::PaintFlags::FilterQuality::kNone);
-    cc_layer_->SetHdrMetadata(hdr_metadata_);
     cc_layer_->SetFlipped(!resource_provider_->IsOriginTopLeft());
   }
   return cc_layer_.get();
@@ -244,6 +240,11 @@ bool CanvasResourceHost::PrepareTransferableResource(
         .Run(std::move(frame), gpu::SyncToken(), false /* is_lost */);
     return false;
   }
+  // TODO(https://crbug.com/1475955): HDR metadata should be propagated to
+  // `frame`, and should be populated by the above call to
+  // CanvasResource::PrepareTransferableResource, rather than be inserted
+  // here.
+  out_resource->hdr_metadata = hdr_metadata_;
   // Note: frame is kept alive via a reference kept in out_release_callback.
   *out_release_callback = base::BindOnce(
       ReleaseCanvasResource, std::move(release_callback), std::move(frame));

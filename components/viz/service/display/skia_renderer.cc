@@ -2644,10 +2644,12 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
   // We need only RGB portion of the color space, YUV conversion handled in
   // skia.
-  const gfx::ColorSpace& src_color_space =
+  const gfx::ColorSpace src_color_space =
       resource_provider()
           ->GetColorSpace(quad->resource_id())
           .GetAsFullRangeRGB();
+  const gfx::HDRMetadata& src_hdr_metadata =
+      resource_provider()->GetHDRMetadata(quad->resource_id());
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
@@ -2815,7 +2817,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     DCHECK(SkColorSpace::Equals(image->colorSpace(),
                                 CurrentRenderPassSkColorSpace().get()));
     sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-        src_color_space, std::nullopt, quad->hdr_metadata, dst_color_space,
+        src_color_space, std::nullopt, src_hdr_metadata, dst_color_space,
         quad->is_video_frame);
     paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
   }

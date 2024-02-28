@@ -998,8 +998,6 @@ void VideoResourceUpdater::AppendQuads(
       }
 #endif
       texture_quad->is_video_frame = true;
-      texture_quad->hdr_metadata =
-          frame->hdr_metadata().value_or(gfx::HDRMetadata());
       for (viz::ResourceId resource_id : texture_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
       }
@@ -1178,6 +1176,8 @@ void VideoResourceUpdater::CopyHardwarePlane(
       false /* is_overlay_candidate */,
       viz::TransferableResource::ResourceSource::kVideo);
   transferable_resource.color_space = copy_color_space;
+  transferable_resource.hdr_metadata =
+      video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
   transferable_resource.needs_detiling = video_frame->metadata().needs_detiling;
   external_resources->resources.push_back(std::move(transferable_resource));
 
@@ -1906,6 +1906,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     }
 
     transferable_resource.color_space = output_color_space;
+    transferable_resource.hdr_metadata =
+        video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
     transferable_resource.needs_detiling =
         video_frame->metadata().needs_detiling;
     external_resources.resources.push_back(std::move(transferable_resource));
@@ -1969,6 +1971,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
         plane_resource->overlay_candidate(),
         viz::TransferableResource::ResourceSource::kVideo);
     transferable_resource.color_space = output_color_space;
+    transferable_resource.hdr_metadata =
+        video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
     external_resources.resources.push_back(std::move(transferable_resource));
     external_resources.release_callbacks.push_back(base::BindOnce(
         &VideoResourceUpdater::RecycleResource, weak_ptr_factory_.GetWeakPtr(),
