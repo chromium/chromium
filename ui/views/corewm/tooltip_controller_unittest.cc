@@ -62,7 +62,6 @@ class TestTooltipLacros : public Tooltip {
   TestTooltipLacros& operator=(const TestTooltipLacros&) = delete;
 
   ~TestTooltipLacros() override {
-    tooltip_parent_ = nullptr;
     state_manager_ = nullptr;
   }
 
@@ -90,6 +89,7 @@ class TestTooltipLacros : public Tooltip {
   }
   void Hide() override {
     is_visible_ = false;
+    tooltip_parent_ = nullptr;
     DCHECK(state_manager_);
     state_manager_->OnTooltipHiddenOnServer();
   }
@@ -185,12 +185,17 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   void TearDown() override {
+    // Reset the tooltip in case tests end with a visible tooltip.
+    helper_->state_manager()->HideAndReset();
+
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
     aura::Window* root_window = GetContext();
     if (root_window) {
       root_window->RemovePreTargetHandler(controller_.get());
       wm::SetTooltipClient(root_window, nullptr);
+      tooltip_ = nullptr;
+      helper_->set_controller(nullptr);
       controller_.reset();
     }
 #endif
@@ -236,7 +241,7 @@ class TooltipControllerTest : public ViewsTestBase {
 
  protected:
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
-  raw_ptr<TooltipAura, DanglingUntriaged> tooltip_;  // not owned.
+  raw_ptr<TooltipAura> tooltip_;  // not owned.
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   raw_ptr<TestTooltipLacros> tooltip_;  // not owned.
 #endif
@@ -1120,6 +1125,9 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
   }
 
   void TearDown() override {
+    // Reset the tooltip in case tests end with a visible tooltip.
+    helper_->state_manager()->HideAndReset();
+
     root_window()->RemovePreTargetHandler(controller_.get());
     wm::SetTooltipClient(root_window(), nullptr);
     controller_.reset();
