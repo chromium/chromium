@@ -5241,9 +5241,6 @@
         <message name="IDS_SETTINGS_ACCESS_POINT_NAME_APN" desc="Name of the settings page which displays APN related configuration.">
           Access point name (APN)
         </message>
-        <message name="IDS_SETTINGS_ADD_NEW_APN" desc="Title for the button which opens the create new custom APN dialog.">
-          New APN
-        </message>
         <message name="IDS_SETTINGS_CREATE_NEW_APN" desc="Title for the button which opens the create new custom APN dialog.">
           Create new APN
         </message>

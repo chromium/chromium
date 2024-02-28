@@ -125,22 +125,11 @@
   <template is="dom-if" route-path="/apn" restamp>
     <os-settings-subpage page-title="$i18n{internetApnPageTitle}">
       <div slot="subpage-title-extra">
-        <div id="apnButtonTitle">
-          <cr-button id="createCustomApnButton"
-              on-click="onCreateCustomApnClicked_"
-              class="cancel-button"
-              deep-link-focus-id$="[[Setting.kCellularAddApn]]"
-              disabled="[[isCreateCustomApnButtonDisabled_]]">
-            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
-            $i18n{apnPageAddNewApn}
-          </cr-button>
-        </div>
-        <!-- TODO(b/162365553) Add a11y support-->
-        <template is="dom-if" if="[[isCreateCustomApnButtonDisabled_]]" restamp>
-          <paper-tooltip id="apnTooltip" for="apnButtonTitle">
-            $i18n{customApnLimitReached}
-          </paper-tooltip>
-        </template>
+        <cr-icon-button id="apnActionMenuButton" class="icon-more-vert"
+            on-click="onApnMenuButtonClicked_"
+            focus-row-control focus-type="menu"
+            deep-link-focus-id$="[[Setting.kCellularAddApn]]">
+        </cr-icon-button>
       </div>
       <apn-subpage id="apnSubpage"
           is-num-custom-apns-limit-reached="{{isCreateCustomApnButtonDisabled_}}"
@@ -246,6 +235,21 @@
       on-close="onCloseHotspotConfigDialog_"
       hotspot-info="[[hotspotInfo]]">
   </hotspot-config-dialog>
+</template>
+
+<cr-action-menu id="apnDotsMenu">
+  <button id="createCustomApnButton" class="dropdown-item"
+      on-click="onCreateCustomApnClicked_"
+      disabled="[[isCreateCustomApnButtonDisabled_]]">
+    $i18n{apnPageCreateNewApn}
+  </button>
+</cr-action-menu>
+
+<template is="dom-if" if="[[isCreateCustomApnButtonDisabled_]]" restamp>
+  <!-- TODO(b/162365553) Add a11y support-->
+  <paper-tooltip id="apnTooltip" for="detailsButton">
+    $i18n{customApnLimitReached}
+  </paper-tooltip>
 </template>
 
 <cr-toast id="errorToast" duration="5000">

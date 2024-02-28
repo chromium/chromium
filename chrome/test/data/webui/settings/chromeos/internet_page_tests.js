@@ -318,7 +318,7 @@ suite('InternetPage', function() {
           'Toggle WiFi should be focused for settingId=4.');
     });
 
-    test('Deep link to + New APN Button', async () => {
+    test('Deep link to APN menu button', async () => {
       loadTimeData.overrideValues({isApnRevampEnabled: true});
       await init();
 
@@ -336,13 +336,13 @@ suite('InternetPage', function() {
       await flushAsync();
 
       const deepLinkElement =
-          internetPage.shadowRoot.querySelector('#createCustomApnButton');
+          internetPage.shadowRoot.querySelector('#apnActionMenuButton');
       assertTrue(!!deepLinkElement);
 
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          `+ New APN Button be focused for settingId=${
+          `APN menu button be focused for settingId=${
               settingMojom.Setting.kCellularAddApn.toString()}.`);
     });
 
@@ -1022,12 +1022,20 @@ suite('InternetPage', function() {
             apnList.shadowRoot.querySelector('apn-detail-dialog');
 
         assertFalse(!!getApnDetailDialog());
+        const apnMenuButton =
+            internetPage.shadowRoot.querySelector('#apnActionMenuButton');
+        assertTrue(!!apnMenuButton);
+        apnMenuButton.click();
+        await flushAsync();
+
+        assertTrue(internetPage.shadowRoot.querySelector('#apnDotsMenu').open);
         const createCustomApnButton =
             internetPage.shadowRoot.querySelector('#createCustomApnButton');
         assertTrue(!!createCustomApnButton);
         createCustomApnButton.click();
         await flushAsync();
 
+        assertFalse(internetPage.shadowRoot.querySelector('#apnDotsMenu').open);
         assertTrue(!!getApnDetailDialog());
         const onCloseEventPromise = eventToPromise('close', apnList);
         const cancelBtn = getApnDetailDialog().shadowRoot.querySelector(
