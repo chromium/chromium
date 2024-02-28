@@ -43,7 +43,7 @@ class SystemUIComponentsGridView : public views::View {
   template <typename T>
   T* AddInstance(const std::u16string& name, std::unique_ptr<T> instance) {
     T* instance_ptr = instance.get();
-    AddInstanceImpl(name, instance.release());
+    AddInstanceImpl(name, std::move(instance));
     return instance_ptr;
   }
 
@@ -54,7 +54,8 @@ class SystemUIComponentsGridView : public views::View {
   class GridLayout;
 
   // Adds the view of the instance and label in the view's hierarchy.
-  void AddInstanceImpl(const std::u16string& name, views::View* instance_view);
+  void AddInstanceImpl(const std::u16string& name,
+                       std::unique_ptr<views::View> instance_view);
 
   // The grid layout holding the labels and instances.
   raw_ptr<GridLayout> grid_layout_;
