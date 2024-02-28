@@ -73,6 +73,10 @@ interface TextNodeVisitor {
   visibleTextNode(textNode: Text): void;
   // Called for invisible `node` between `visibleTextNode`s.
   invisibleNode(node: Node): void;
+  // Called before entering `node` subtree.
+  enterVisibleNode(node: Node): void;
+  // Called after leaving `node` subtree.
+  leaveVisibleNode(node: Node): void;
   // Called when ending the visit.
   end(): void;
 }
@@ -148,7 +152,9 @@ class TextIntersectionObserver implements CountedIntersectionObserver {
             this.unobserve(childNode);
           } else if (
               childNode[visibleDescendantCount] || childNode[visibleElement]) {
+            visitor.enterVisibleNode(childNode);
             traverseVisible(childNode);
+            visitor.leaveVisibleNode(childNode);
           } else {
             visitor.invisibleNode(childNode);
           }

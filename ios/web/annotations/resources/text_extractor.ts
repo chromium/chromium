@@ -18,6 +18,11 @@ const SECTION_BREAK = ' ‡ ';
 // Minimum number of characters to add at ends of sections.
 const EXTRA_CHARACTERS_AT_END = 128;
 
+const KNOWN_INLINE_ELEMENTS: Set<string> = new Set([
+  'A', 'ABBR', 'B', 'CITE', 'CODE', 'I', 'DFN', 'EM', 'MARK', 'SMALL', 'SPAN',
+  'STRONG', 'SUB', 'SUP', 'VAR'
+]);
+
 // A section is a `textNode` and an index. The index is the position when this
 // node's text is in the full extracted text. Note that some text, like breaks
 // and spaces, are not in `TextSection`s. Neither are text nodes with no text or
@@ -107,24 +112,31 @@ class TextExtractor implements TextNodeVisitor {
       this.index += textNode.textContent!.length;
       this.broken = false;
       this.spaced = false;
-    } else if (!this.spaced) {
-      // Spacer, no section registered.
-      this.parts.push(' ');
-      this.index++;
-      this.spaced = true;
+    } else {
+      this.addSpaceIfNeeded();
+    }
+  }
+
+  enterVisibleNode(node: Node): void {
+    if (node instanceof Element && !KNOWN_INLINE_ELEMENTS.has(node.nodeName)) {
+      this.addSpaceIfNeeded();
+    }
+  }
+
+  leaveVisibleNode(node: Node): void {
+    if (node instanceof Element && !KNOWN_INLINE_ELEMENTS.has(node.nodeName)) {
+      this.addSpaceIfNeeded();
     }
   }
 
   invisibleNode(node: Node): void {
-    // Skip empty text nodes. They are not real breaks.
-    if (node.nodeType === Node.TEXT_NODE &&
+    if (node.nodeType === Node.COMMENT_NODE) {
+      // Completely ignore comments.
+    } else if (
+        node.nodeType === Node.TEXT_NODE &&
         (!node.textContent || !node.textContent.trim())) {
-      if (!this.spaced) {
-        // Spacer, no section registered.
-        this.parts.push(' ');
-        this.index++;
-        this.spaced = true;
-      }
+      // Skip empty text nodes. They are not real breaks.
+      this.addSpaceIfNeeded();
     } else if (!this.broken) {
       // Text section break, no section registered.
       this.parts.push(this.sectionBreak);
@@ -162,6 +174,16 @@ class TextExtractor implements TextNodeVisitor {
   }
 
   // Mark: Private API
+
+  // Adds a single space between parts if there was none.
+  private addSpaceIfNeeded() {
+    if (!this.spaced) {
+      // Spacer, no section registered.
+      this.parts.push(' ');
+      this.index++;
+      this.spaced = true;
+    }
+  }
 
   // Extracts up to `extraCharactersAtEnd` before `beforeNode`. Returns
   // an array of `TextSection`, its combined text and the offset to
