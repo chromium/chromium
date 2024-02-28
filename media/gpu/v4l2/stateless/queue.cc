@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 
@@ -21,6 +22,12 @@ constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
 // The number of planes for a compressed buffer is always 1.
 constexpr uint32_t kNumberInputPlanes = 1;
 
+constexpr char kTracingCategory[] = "media,gpu";
+constexpr char kV4L2OutputQueue[] = "V4L2 Output Buffer Queued Duration";
+constexpr char kV4L2InputQueue[] = "V4L2 Input Buffer Queued Duration";
+constexpr char kCompressedBufferIndex[] = "compressed buffer index";
+constexpr char kDecodedBufferIndex[] = "decoded buffer index";
+
 void BlockOnDequeueOfBuffer(scoped_refptr<media::StatelessDevice> device,
                             media::BufferType buffer_type,
                             media::MemoryType memory_type,
@@ -33,6 +40,14 @@ void BlockOnDequeueOfBuffer(scoped_refptr<media::StatelessDevice> device,
     if (buffer) {
       DVLOGF(4) << BufferTypeString(buffer_type) << " (" << buffer->GetIndex()
                 << " buffer dequeued.";
+
+      if (buffer_type == media::BufferType::kCompressedData) {
+        TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2InputQueue,
+                                        TRACE_ID_LOCAL(buffer->GetIndex()));
+      } else {
+        TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2OutputQueue,
+                                        TRACE_ID_LOCAL(buffer->GetIndex()));
+      }
       dequeue_cb.Run(std::move(*buffer));
     } else {
       break;
@@ -250,6 +265,10 @@ bool InputQueue::SubmitCompressedFrameData(void* ctrls,
     LOG(ERROR) << "Unable to copy compressed buffer into driver.";
   }
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kV4L2InputQueue,
+                                    TRACE_ID_LOCAL(buffer.GetIndex()),
+                                    kCompressedBufferIndex, buffer.GetIndex());
+
   // This shouldn't happen. A buffer has been allocated and filled, there
   // should be nothing preventing it from getting queued.
   if (!device_->QueueBuffer(buffer, request_fd)) {
@@ -441,6 +460,12 @@ bool OutputQueue::PrepareBuffers(size_t num_buffers) {
       LOG(ERROR) << "Failed to queue buffer # " << *index;
       return false;
     }
+
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        kTracingCategory, kV4L2OutputQueue,
+        TRACE_ID_LOCAL(buffers_[*index].GetIndex()), kDecodedBufferIndex,
+        buffers_[*index].GetIndex());
+
     free_buffer_indices_.erase(index++);
   }
 
@@ -505,6 +530,9 @@ bool OutputQueue::QueueBufferByFrameID(uint64_t frame_id) {
       NOTREACHED() << "Failed to queue buffer.";
       return false;
     }
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kV4L2OutputQueue,
+                                      TRACE_ID_LOCAL(buffer.GetIndex()),
+                                      kDecodedBufferIndex, buffer.GetIndex());
 
     return true;
   }

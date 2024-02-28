@@ -10,6 +10,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
@@ -45,6 +46,10 @@
 // DVLOGF(5): Events that occur multiple times per frame.
 
 namespace {
+constexpr char kTracingCategory[] = "media,gpu";
+constexpr char kBitstreamTracing[] = "V4L2 Bitstream Held Duration";
+constexpr char kBitstreamID[] = "bitstream id";
+
 constexpr size_t kTimestampCacheSize = 128;
 }  // namespace
 
@@ -104,7 +109,7 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(config.IsValidConfig());
   DVLOGF(3);
-
+  TRACE_EVENT0("media,gpu", "V4L2StatelessVideoDecoder::Initialize");
   if (config.is_encrypted()) {
     MEDIA_LOG(ERROR, media_log_) << "Decoder does not support encrypted stream";
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
@@ -157,6 +162,10 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   const int32_t bitstream_id =
       bitstream_id_generator_.GenerateNextId().GetUnsafeValue();
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kBitstreamTracing,
+                                    TRACE_ID_LOCAL(bitstream_id), kBitstreamID,
+                                    bitstream_id);
 
   decode_request_queue_.push(
       DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
@@ -745,6 +754,14 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(current_decode_request_->decode_cb),
                                   DecoderStatus::Codes::kOk));
+
+    // There are multiple locations that the decode callback is run. For tracing
+    // purposes only the common path is considered. The reset/flush/error/etc.
+    // cases are ignored.
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        kTracingCategory, kBitstreamTracing,
+        TRACE_ID_LOCAL(current_decode_request_->bitstream_id));
+
     current_decode_request_ = std::nullopt;
   }
 }
