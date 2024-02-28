@@ -37,6 +37,7 @@ class PrimaryAccountAccessTokenFetcher;
 namespace webauthn_pb {
 class EnclaveLocalState;
 class EnclaveLocalState_User;
+class EnclaveLocalState_WrappedPIN;
 }  // namespace webauthn_pb
 
 // EnclaveManager stores and manages the passkey enclave state. One instance
@@ -123,6 +124,11 @@ class EnclaveManager : public KeyedService {
   void StoreKeys(const std::string& gaia_id,
                  std::vector<std::vector<uint8_t>> keys,
                  int last_key_version);
+
+  // Slowly compute a PIN claim for the given PIN for submission to the enclave.
+  static std::unique_ptr<device::enclave::ClaimedPIN> MakeClaimedPINSlowly(
+      std::string pin,
+      const webauthn_pb::EnclaveLocalState_WrappedPIN& wrapped_pin);
 
   // If background processes need to be stopped then return true and call
   // `on_stop` when stopped. Otherwise return false.

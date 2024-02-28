@@ -60,19 +60,39 @@ fn write_all(mut conn: &TcpStream, buf: &[u8]) -> bool {
     true
 }
 
+/// `next_line` recognises TLS handshakes and returns them as a special error.
+enum NextLineError {
+    /// The client probably sent a TLS handshake, not an HTTP request.
+    TlsHandshake,
+    /// Some other I/O or UTF-8 error.
+    OtherError,
+}
+
+impl<E> From<E> for NextLineError
+where
+    E: std::error::Error,
+{
+    fn from(_: E) -> NextLineError {
+        Self::OtherError
+    }
+}
+
 /// Reads a "\r\n"-terminated line from `conn` and returns it without that
 /// terminator. (Inefficient, but we don't mind in this context.)
-fn next_line(mut conn: &TcpStream) -> Option<String> {
+fn next_line(mut conn: &TcpStream) -> Result<String, NextLineError> {
     let mut ret = Vec::with_capacity(32);
     let mut seen_cr = false;
     loop {
         let mut buf = [0u8; 1];
-        if conn.read(&mut buf).ok()? == 0 {
-            return None;
+        if conn.read(&mut buf)? == 0 {
+            return Err(NextLineError::OtherError);
+        }
+        if ret.is_empty() && buf[0] == 0x16 {
+            return Err(NextLineError::TlsHandshake);
         }
         if seen_cr && buf[0] == b'\n' {
             ret.pop();
-            return String::from_utf8(ret).ok();
+            return Ok(String::from_utf8(ret)?);
         }
         seen_cr = buf[0] == b'\r';
         ret.push(buf[0]);
@@ -177,7 +197,7 @@ fn write_msg(conn: &TcpStream, msg: &[u8]) -> bool {
 /// connection. See https://datatracker.ietf.org/doc/html/rfc6455#section-1.3
 fn calculate_websocket_accept(key: &[u8]) -> String {
     let digest = crypto::sha1_two_part(key, b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-    base64::encode(&digest)
+    base64::encode(digest)
 }
 
 struct EnclaveServer {
@@ -192,8 +212,12 @@ impl EnclaveServer {
         let mut websocket_key: Option<String> = None;
         let mut websocket_protocol: Option<String> = None;
         loop {
-            let Some(line) = next_line(&conn) else {
-                return;
+            let line = match next_line(&conn) {
+                Ok(line) => line,
+                Err(NextLineError::OtherError) => return,
+                Err(NextLineError::TlsHandshake) => panic!(
+                    "TLS handshake recevied. This server only speaks plaintext. Ensure that you have specified the address with ws://, not wss://"
+                ),
             };
             if line.is_empty() {
                 break;
@@ -322,7 +346,7 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let local_addr = listener.local_addr().unwrap();
     println!("{}", local_addr.port());
-    eprintln!("Listening on {}", local_addr);
+    eprintln!("Listening on ws://{}", local_addr);
     for stream in listener.incoming() {
         let stream = stream.unwrap();
         stream.set_nodelay(true).unwrap();

@@ -9,6 +9,53 @@ option optimize_for = LITE_RUNTIME;
 package webauthn_pb;
 
 message EnclaveLocalState {
+  // Google Password Manager PINs are assumed to have low entropy and so cannot
+  // be validated locally. Instead the enclave can validate them and enforce
+  // rate limiting. Thus, locally and in the metadata of the virtual member of
+  // the security domain, there is a wrapped version.
+  message WrappedPIN {
+    // The PIN, encrypted to the security domain secret. The plaintext is a
+    // CBOR structure containing the scrypt-hash of the PIN, claim key,
+    // generation number, plus recovery key store counter ID and handle.
+    bytes wrapped_pin = 1;
+
+    // A key used to encrypt claimed PIN hashes for validation at the enclave.
+    // These are encrypted to ensure that the enclave has access to the local
+    // state needed to unwrap the security domain secret.
+    bytes claim_key = 2;
+
+    // The generation number of the GPM PIN. Starts from zero and increases
+    // strictly monotonically when the GPM PIN changes. The enclave enforces
+    // a high-water mark.
+    int64 generation = 3;
+
+    enum Form {
+      // Never used. Only for detecting when the form is missing.
+      FORM_UNSPECIFIED = 0;
+      // The GPM PIN is six digits.
+      FORM_SIX_DIGITS = 1;
+      // The GPM PIN is an arbitrary, alphanumeric string.
+      FORM_ARBITRARY = 2;
+    }
+    // The form of the PIN, for showing the right UI.
+    Form form = 4;
+
+    enum Hash {
+      // Never used. Only for detecting when the hash is missing.
+      HASH_UNSPECIFIED = 0;
+      // scrypt, where `hash_difficulty` is N.
+      HASH_SCRYPT = 1;
+    }
+    // Which hash is used to form the PIN hash.
+    Hash hash = 5;
+
+    // A difficulty factor for the hash.
+    int32 hash_difficulty = 6;
+
+    // Salt used when hashing the PIN.
+    bytes hash_salt = 7;
+  }
+
   // User contains state for a specific GAIA ID.
   message User {
     // The hardware-bound, not-user-verification-interlocked device key:
@@ -47,6 +94,10 @@ message EnclaveLocalState {
     // A map from security domain epoch to the enclave-wrapped security domain
     // secret for that epoch.
     map<int32, bytes> wrapped_security_domain_secrets = 10;
+
+    // A map from security domain epoch to the wrapped Google Password Manager
+    // PIN for that epoch.
+    map<int32, WrappedPIN> wrapped_pins = 11;
   }
 
   map<string, User> users = 1;

@@ -729,12 +729,14 @@ mod key_distribution {
     ///   * https://www.gstatic.com/cryptauthvault/v0/cert.xml
     ///   * https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml
     ///
-    /// The `current_time` is used for certificate validation and also to
-    /// "randomly" pick a cohort.
+    /// The `current_time` is used for certificate validation. The
+    /// `cohort_selector` is used to deterministically select one of the
+    /// cohorts from the set.
     pub fn get_cohort_key(
         cert_xml: &[u8],
         sig_xml: &[u8],
         current_time_epoch_secs: i64,
+        cohort_selector: u32,
     ) -> Result<([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>), &'static str> {
         // The cert.sig.xml contains:
         //   a) a leaf X.509 certificate.
@@ -779,7 +781,7 @@ mod key_distribution {
 
         // Now that the `cert.xml` file has been validated, the cohort public keys
         // can be extracted from it.
-        get_public_keys_from_certs(cert_xml, current_time_epoch_secs)
+        get_public_keys_from_certs(cert_xml, current_time_epoch_secs, cohort_selector)
     }
 
     /// Return an ECDH public key, and certificate path, from an arbitrary
@@ -791,6 +793,7 @@ mod key_distribution {
     fn get_public_keys_from_certs(
         cert_xml: &[u8],
         current_time_epoch_secs: i64,
+        cohort_selector: u32,
     ) -> Result<([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>), &'static str> {
         let (certs_toplevel, certs_value) =
             xml::parse(cert_xml).ok_or("failed to parse certs XML")?;
@@ -823,7 +826,7 @@ mod key_distribution {
             return Err("no endpoint certificates");
         }
         // Pick one of the endpoints arbitrarily.
-        let endpoint_der = &endpoint_ders[current_time_epoch_secs as usize % endpoints.len()];
+        let endpoint_der = &endpoint_ders[cohort_selector as usize % endpoints.len()];
         let endpoint_cert = x509::parse(endpoint_der).ok_or("failed to parse <cert>")?;
 
         let (cohort_public_key_type, cohort_public_key) =
@@ -1005,17 +1008,26 @@ mod key_distribution {
         use super::super::{SAMPLE_CERTS_XML, SAMPLE_SIG_XML, SAMPLE_VALIDATION_EPOCH_SECONDS};
         use super::*;
 
+        const SAMPLE_COHORT_SELECTOR: u32 = 0;
+
         #[test]
         fn test_get_public_keys() {
-            let (_key, path) =
-                get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, SAMPLE_VALIDATION_EPOCH_SECONDS)
-                    .unwrap();
+            let (_key, path) = get_cohort_key(
+                SAMPLE_CERTS_XML,
+                SAMPLE_SIG_XML,
+                SAMPLE_VALIDATION_EPOCH_SECONDS,
+                SAMPLE_COHORT_SELECTOR,
+            )
+            .unwrap();
             assert_eq!(path.len(), 2);
         }
 
         #[test]
         fn test_get_public_keys_expired() {
-            assert!(get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, 1).is_err())
+            assert!(
+                get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, 1, SAMPLE_COHORT_SELECTOR)
+                    .is_err()
+            )
         }
 
         #[test]
@@ -1049,7 +1061,10 @@ mod key_distribution {
 </signature>
 "#;
             let sig_xml = TEMPLATE.replace("CERT", SELF_SIGNED);
-            assert_eq!(Err("no path found"), get_cohort_key(b"", &sig_xml.into_bytes(), 1));
+            assert_eq!(
+                Err("no path found"),
+                get_cohort_key(b"", &sig_xml.into_bytes(), 1, SAMPLE_COHORT_SELECTOR)
+            );
         }
     }
 }
@@ -1193,9 +1208,17 @@ mod securebox {
     }
 }
 
+fn cohort_selector_from_handle(handle: &[u8; VAULT_HANDLE_LEN]) -> u32 {
+    // unwrap: the slice will always be four bytes long, as required.
+    u32::from_le_bytes(handle[VAULT_HANDLE_LEN - 4..VAULT_HANDLE_LEN].try_into().unwrap())
+}
+
 /// The maximum number of attempted guesses that the recovery key store will
 /// allow for the secret.
 const MAX_ATTEMPTS: u32 = 10;
+
+/// The length, in bytes, of a Vault handle.
+const VAULT_HANDLE_LEN: usize = 17;
 
 /// This structure holds the many values that result from wrapping a knowledge
 /// factor. All these values need to be placed into a `Vault` protobuf for
@@ -1218,12 +1241,16 @@ fn wrap(
     sig_xml: &[u8],
     current_time_epoch_secs: i64,
 ) -> Result<Wrapped, &'static str> {
-    let (cohort_public_key, certs_in_path) =
-        key_distribution::get_cohort_key(cert_xml, sig_xml, current_time_epoch_secs)?;
-
-    let mut vault_handle = [0u8; 17];
+    let mut vault_handle = [0u8; VAULT_HANDLE_LEN];
     vault_handle[0] = 3; // a type byte that indicates a GPM PIN.
     crypto::rand_bytes(&mut vault_handle[1..]);
+
+    let (cohort_public_key, certs_in_path) = key_distribution::get_cohort_key(
+        cert_xml,
+        sig_xml,
+        current_time_epoch_secs,
+        cohort_selector_from_handle(&vault_handle),
+    )?;
 
     let mut counter_id = [0u8; 8];
     crypto::rand_bytes(&mut counter_id);

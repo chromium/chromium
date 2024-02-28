@@ -58,6 +58,7 @@ cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildGetAssertionCommand(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     scoped_refptr<JSONRequest> request,
     std::string client_data_hash,
+    std::unique_ptr<ClaimedPIN> claimed_pin,
     std::vector<std::vector<uint8_t>> wrapped_secrets);
 
 // Returns a CBOR value with the provided MakeCredential request. The return
@@ -65,6 +66,7 @@ cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildGetAssertionCommand(
 // protocol.
 cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
     BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request,
+                               std::unique_ptr<ClaimedPIN> claimed_pin,
                                std::vector<uint8_t> wrapped_secret);
 
 // Builds a CBOR serialization of the command to be sent to the enclave

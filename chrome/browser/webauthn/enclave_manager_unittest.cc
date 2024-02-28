@@ -51,6 +51,8 @@ namespace enclave = device::enclave;
 
 namespace {
 
+constexpr int32_t kSecretVersion = 417;
+
 constexpr std::array<uint8_t, 32> kTestKey = {
     0xc4, 0xdf, 0xa4, 0xed, 0xfc, 0xf9, 0x7c, 0xc0, 0x3a, 0xb1, 0xcb,
     0x3c, 0x03, 0x02, 0x9b, 0x5a, 0x05, 0xec, 0x88, 0x48, 0x54, 0x42,
@@ -285,109 +287,9 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     }
   }
 
-  base::test::TaskEnvironment task_env_;
-  std::optional<base::RepeatingClosure> quit_closure_;
-  const TempDir temp_dir_;
-  const std::pair<base::Process, uint16_t> process_and_port_;
-  const enclave::ScopedEnclaveOverride enclave_override_;
-  network::TestURLLoaderFactory url_loader_factory_;
-  mojo::Remote<network::mojom::NetworkContext> network_context_;
-  std::unique_ptr<network::NetworkService> network_service_;
-  signin::IdentityTestEnvironment identity_test_env_;
-  std::string gaia_id_;
-  EnclaveManager manager_;
-};
-
-TEST_F(EnclaveManagerTest, TestInfrastructure) {
-  // Tests that the enclave starts up.
-}
-
-TEST_F(EnclaveManagerTest, Basic) {
-  ASSERT_FALSE(manager_.is_loaded());
-  ASSERT_FALSE(manager_.is_registered());
-  ASSERT_FALSE(manager_.is_ready());
-
-  manager_.Start();
-  ASSERT_FALSE(manager_.is_idle());
-  RunUntilIdle();
-  ASSERT_TRUE(manager_.is_idle());
-  ASSERT_TRUE(manager_.is_loaded());
-  ASSERT_FALSE(manager_.is_registered());
-  ASSERT_FALSE(manager_.is_ready());
-
-  manager_.RegisterIfNeeded();
-  ASSERT_FALSE(manager_.is_idle());
-  RunUntilIdle();
-  ASSERT_TRUE(manager_.is_idle());
-  ASSERT_TRUE(manager_.is_loaded());
-  ASSERT_TRUE(manager_.is_registered());
-  ASSERT_FALSE(manager_.is_ready());
-
-  const int32_t kSecretVersion = 417;
-  url_loader_factory_.AddResponse(
-      GetFullJoinSecurityDomainsURLForTesting(
-          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
-          trusted_vault::SecurityDomainId::kPasskeys)
-          .spec(),
-      MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
-  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
-  manager_.StoreKeys(gaia_id_, {std::move(key)},
-                     /*last_key_version=*/kSecretVersion);
-  ASSERT_FALSE(manager_.is_idle());
-  RunUntilIdle();
-  ASSERT_TRUE(manager_.is_idle());
-  ASSERT_TRUE(manager_.is_loaded());
-  ASSERT_TRUE(manager_.is_registered());
-  ASSERT_TRUE(manager_.is_ready());
-
-  {
-    auto ui_request = std::make_unique<enclave::CredentialRequest>();
-    ui_request->signing_callback = manager_.HardwareKeySigningCallback();
-    ui_request->wrapped_secrets = {
-        *manager_.GetWrappedSecret(/*version=*/kSecretVersion)};
-    ui_request->entity = GetTestEntity();
-
-    enclave::EnclaveAuthenticator authenticator(
-        std::move(ui_request), /*save_passkey_callback=*/
-        base::BindRepeating(
-            [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); }),
-        network_context_.get());
-
-    device::CtapGetAssertionRequest ctap_request("test.com",
-                                                 R"({"foo": "bar"})");
-    ctap_request.allow_list.emplace_back(device::PublicKeyCredentialDescriptor(
-        device::CredentialType::kPublicKey, /*id=*/{1, 2, 3, 4}));
-
-    device::CtapGetAssertionOptions ctap_options;
-    ctap_options.json = JSONFromString(R"({
-        "allowCredentials": [ ],
-        "challenge": "CYO8B30gOPIOVFAaU61J7PvoETG_sCZQ38Gzpu",
-        "rpId": "webauthn.io",
-        "userVerification": "preferred"
-    })");
-
-    auto quit_closure = task_env_.QuitClosure();
-    std::optional<device::CtapDeviceResponseCode> status;
-    std::vector<device::AuthenticatorGetAssertionResponse> responses;
-    authenticator.GetAssertion(
-        std::move(ctap_request), std::move(ctap_options),
-        base::BindLambdaForTesting(
-            [&quit_closure, &status, &responses](
-                device::CtapDeviceResponseCode in_status,
-                std::vector<device::AuthenticatorGetAssertionResponse>
-                    in_responses) {
-              status = in_status;
-              responses = std::move(in_responses);
-              quit_closure.Run();
-            }));
-    task_env_.RunUntilQuit();
-
-    ASSERT_TRUE(status.has_value());
-    ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
-    ASSERT_EQ(responses.size(), 1u);
-  }
-
-  {
+  void DoCreate(
+      std::unique_ptr<enclave::ClaimedPIN> claimed_pin,
+      std::unique_ptr<sync_pb::WebauthnCredentialSpecifics>* out_specifics) {
     auto ui_request = std::make_unique<enclave::CredentialRequest>();
     ui_request->signing_callback = manager_.HardwareKeySigningCallback();
     int32_t secret_version;
@@ -397,14 +299,17 @@ TEST_F(EnclaveManagerTest, Basic) {
     EXPECT_EQ(secret_version, kSecretVersion);
     ui_request->wrapped_secrets = {std::move(wrapped_secret)};
     ui_request->wrapped_secret_version = kSecretVersion;
+    ui_request->claimed_pin = std::move(claimed_pin);
 
-    std::optional<sync_pb::WebauthnCredentialSpecifics> specifics;
+    std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> specifics;
 
     enclave::EnclaveAuthenticator authenticator(
         std::move(ui_request), /*save_passkey_callback=*/
         base::BindLambdaForTesting(
             [&specifics](sync_pb::WebauthnCredentialSpecifics in_specifics) {
-              specifics.emplace(std::move(in_specifics));
+              specifics =
+                  std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
+                      std::move(in_specifics));
             }),
         network_context_.get());
 
@@ -461,13 +366,123 @@ TEST_F(EnclaveManagerTest, Basic) {
     ASSERT_TRUE(status.has_value());
     ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
     ASSERT_TRUE(response.has_value());
-    ASSERT_TRUE(specifics.has_value());
+    ASSERT_TRUE(specifics);
     EXPECT_EQ(specifics->rp_id(), "rpid");
     EXPECT_EQ(specifics->user_id(), "uid");
     EXPECT_EQ(specifics->user_name(), "user");
     EXPECT_EQ(specifics->user_display_name(), "display name");
     EXPECT_EQ(specifics->key_version(), kSecretVersion);
+
+    if (out_specifics) {
+      *out_specifics = std::move(specifics);
+    }
   }
+
+  void DoAssertion(std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity,
+                   std::unique_ptr<enclave::ClaimedPIN> claimed_pin) {
+    auto ui_request = std::make_unique<enclave::CredentialRequest>();
+    ui_request->signing_callback = manager_.HardwareKeySigningCallback();
+    ui_request->wrapped_secrets = {
+        *manager_.GetWrappedSecret(/*version=*/kSecretVersion)};
+    ui_request->entity = std::move(entity);
+    ui_request->claimed_pin = std::move(claimed_pin);
+
+    enclave::EnclaveAuthenticator authenticator(
+        std::move(ui_request), /*save_passkey_callback=*/
+        base::BindRepeating(
+            [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); }),
+        network_context_.get());
+
+    device::CtapGetAssertionRequest ctap_request("test.com",
+                                                 R"({"foo": "bar"})");
+    ctap_request.allow_list.emplace_back(device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, /*id=*/{1, 2, 3, 4}));
+
+    device::CtapGetAssertionOptions ctap_options;
+    ctap_options.json = JSONFromString(R"({
+        "allowCredentials": [ ],
+        "challenge": "CYO8B30gOPIOVFAaU61J7PvoETG_sCZQ38Gzpu",
+        "rpId": "webauthn.io",
+        "userVerification": "preferred"
+    })");
+
+    auto quit_closure = task_env_.QuitClosure();
+    std::optional<device::CtapDeviceResponseCode> status;
+    std::vector<device::AuthenticatorGetAssertionResponse> responses;
+    authenticator.GetAssertion(
+        std::move(ctap_request), std::move(ctap_options),
+        base::BindLambdaForTesting(
+            [&quit_closure, &status, &responses](
+                device::CtapDeviceResponseCode in_status,
+                std::vector<device::AuthenticatorGetAssertionResponse>
+                    in_responses) {
+              status = in_status;
+              responses = std::move(in_responses);
+              quit_closure.Run();
+            }));
+    task_env_.RunUntilQuit();
+
+    ASSERT_TRUE(status.has_value());
+    ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
+    ASSERT_EQ(responses.size(), 1u);
+  }
+
+  base::test::TaskEnvironment task_env_;
+  std::optional<base::RepeatingClosure> quit_closure_;
+  const TempDir temp_dir_;
+  const std::pair<base::Process, uint16_t> process_and_port_;
+  const enclave::ScopedEnclaveOverride enclave_override_;
+  network::TestURLLoaderFactory url_loader_factory_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
+  std::unique_ptr<network::NetworkService> network_service_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  std::string gaia_id_;
+  EnclaveManager manager_;
+};
+
+TEST_F(EnclaveManagerTest, TestInfrastructure) {
+  // Tests that the enclave starts up.
+}
+
+TEST_F(EnclaveManagerTest, Basic) {
+  ASSERT_FALSE(manager_.is_loaded());
+  ASSERT_FALSE(manager_.is_registered());
+  ASSERT_FALSE(manager_.is_ready());
+
+  manager_.Start();
+  ASSERT_FALSE(manager_.is_idle());
+  RunUntilIdle();
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.is_loaded());
+  ASSERT_FALSE(manager_.is_registered());
+  ASSERT_FALSE(manager_.is_ready());
+
+  manager_.RegisterIfNeeded();
+  ASSERT_FALSE(manager_.is_idle());
+  RunUntilIdle();
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.is_loaded());
+  ASSERT_TRUE(manager_.is_registered());
+  ASSERT_FALSE(manager_.is_ready());
+
+  url_loader_factory_.AddResponse(
+      GetFullJoinSecurityDomainsURLForTesting(
+          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
+          trusted_vault::SecurityDomainId::kPasskeys)
+          .spec(),
+      MakeJoinSecurityDomainsResponse(/*current_epoch=*/1).SerializeAsString());
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_FALSE(manager_.is_idle());
+  RunUntilIdle();
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.is_loaded());
+  ASSERT_TRUE(manager_.is_registered());
+  ASSERT_TRUE(manager_.is_ready());
+
+  DoCreate(/*claimed_pin=*/nullptr, /*out_specifics=*/nullptr);
+  DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr);
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
@@ -614,6 +629,7 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
 
 TEST_F(EnclaveManagerTest, SetPIN) {
   manager_.Start();
+  const std::string pin = "123456";
 
   url_loader_factory_.AddResponse(
       std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
@@ -623,14 +639,31 @@ TEST_F(EnclaveManagerTest, SetPIN) {
       std::string(kSampleRecoverableKeyStoreSigXML));
   url_loader_factory_.AddResponse(
       std::string(EnclaveManager::recovery_key_store_url_for_testing()) +
-          "0?alt=proto",
+          "?alt=proto",
       MakeVaultResponse());
+  url_loader_factory_.AddResponse(
+      GetFullJoinSecurityDomainsURLForTesting(
+          trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
+          trusted_vault::SecurityDomainId::kPasskeys)
+          .spec(),
+      MakeJoinSecurityDomainsResponse(/*current_epoch=*/kSecretVersion)
+          .SerializeAsString());
 
-  manager_.SetupWithPIN("123456");
-  // For now there's nothing to check other than that this doesn't crash.
-  // In the future this code will be more complete and there will be a way to
-  // test that the EnclaveManager believes that it was successful.
+  manager_.SetupWithPIN(pin);
   RunUntilIdle();
+  ASSERT_TRUE(manager_.is_ready());
+
+  std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(pin,
+                                           manager_.local_state_for_testing()
+                                               .users()
+                                               .begin()
+                                               ->second.wrapped_pins()
+                                               .begin()
+                                               ->second);
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  DoCreate(/*claimed_pin=*/nullptr, &entity);
+  DoAssertion(std::move(entity), std::move(claimed_pin));
 }
 
 TEST_F(EnclaveManagerTest, SetPIN_CertXMLFailure) {
@@ -646,6 +679,7 @@ TEST_F(EnclaveManagerTest, SetPIN_CertXMLFailure) {
   manager_.SetupWithPIN("123456");
   // This test simply shouldn't crash or hang.
   RunUntilIdle();
+  ASSERT_FALSE(manager_.is_ready());
 }
 
 TEST_F(EnclaveManagerTest, SetPIN_SigXMLFailure) {
@@ -661,6 +695,7 @@ TEST_F(EnclaveManagerTest, SetPIN_SigXMLFailure) {
   manager_.SetupWithPIN("123456");
   // This test simply shouldn't crash or hang.
   RunUntilIdle();
+  ASSERT_FALSE(manager_.is_ready());
 }
 
 }  // namespace

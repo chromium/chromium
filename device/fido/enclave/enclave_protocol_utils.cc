@@ -49,9 +49,10 @@ const size_t kCredentialIdSize = 16;
 // JSON keys for request fields used for both GetAssertion and MakeCredential.
 const char kRequestDataKey[] = "request";
 const char kRequestClientDataJSONKey[] = "client_data_json";
+const char kRequestClaimedPINKey[] = "claimed_pin";
+const char kRequestWrappedPINDataKey[] = "wrapped_pin_data";
 
 // JSON keys for GetAssertion request fields.
-const char kGetAssertionRequestUvKey[] = "uv";
 const char kGetAssertionRequestProtobufKey[] = "protobuf";
 
 // JSON keys for GetAssertion response fields.
@@ -337,6 +338,7 @@ cbor::Value BuildGetAssertionCommand(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     scoped_refptr<JSONRequest> request,
     std::string client_data_json,
+    std::unique_ptr<ClaimedPIN> claimed_pin,
     std::vector<std::vector<uint8_t>> wrapped_secrets) {
   cbor::Value::MapValue entry_map;
 
@@ -360,12 +362,17 @@ cbor::Value BuildGetAssertionCommand(
   entry_map.emplace(cbor::Value(kRequestClientDataJSONKey),
                     cbor::Value(client_data_json));
 
-  entry_map.emplace(cbor::Value(kGetAssertionRequestUvKey), cbor::Value(true));
+  if (claimed_pin) {
+    entry_map.emplace(kRequestClaimedPINKey, std::move(claimed_pin->pin_claim));
+    entry_map.emplace(kRequestWrappedPINDataKey,
+                      std::move(claimed_pin->wrapped_pin));
+  }
 
   return cbor::Value(entry_map);
 }
 
 cbor::Value BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request,
+                                       std::unique_ptr<ClaimedPIN> claimed_pin,
                                        std::vector<uint8_t> wrapped_secret) {
   cbor::Value::MapValue entry_map;
 
@@ -374,6 +381,11 @@ cbor::Value BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request,
   entry_map.emplace(cbor::Value(kRequestDataKey), toCbor(*request->value));
   entry_map.emplace(cbor::Value(kMakeCredentialRequestWrappedSecretKey),
                     cbor::Value(std::move(wrapped_secret)));
+  if (claimed_pin) {
+    entry_map.emplace(kRequestClaimedPINKey, std::move(claimed_pin->pin_claim));
+    entry_map.emplace(kRequestWrappedPINDataKey,
+                      std::move(claimed_pin->wrapped_pin));
+  }
 
   return cbor::Value(entry_map);
 }

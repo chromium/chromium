@@ -37,6 +37,8 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/aead.h"
+#include "crypto/hkdf.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/unexportable_key.h"
@@ -83,17 +85,18 @@ struct EnclaveManager::PendingActions {
 namespace {
 
 // These URLs distribute the public keys for the recovery key store.
-constexpr std::string_view kCertFileURL =
+constexpr char kCertFileURL[] =
     "https://www.gstatic.com/cryptauthvault/v0/cert.xml";
-constexpr std::string_view kSigFileURL =
+constexpr char kSigFileURL[] =
     "https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml";
 
 // The maximum number of bytes that will be downloaded from the above two URLs.
 constexpr size_t kMaxFetchBodyBytes = 128 * 1024;
 
-// This URL is used for uploading to the recovery key store.
-constexpr std::string_view kRecoveryKeyStoreURL =
-    "https://cryptauthvault.googleapis.com/v1/vaults/";
+// This URL is used for uploading to the recovery key store. The "name"
+// parameter isn't used by Vault and so is a constant "0".
+constexpr char kRecoveryKeyStoreURL[] =
+    "https://cryptauthvault.googleapis.com/v1/vaults/0";
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("recovery_key_store_fetch", R"(
@@ -225,6 +228,33 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
 
+  for (const auto& it : user.wrapped_pins()) {
+    const EnclaveLocalState::WrappedPIN& wrapped_pin = it.second;
+    // The nonce is 12 bytes, and the tag is 16 bytes, so this establishes
+    // a lower-bound of one byte of plaintext.
+    if (wrapped_pin.wrapped_pin().size() < 12 + 1 + 16) {
+      return __LINE__;
+    }
+    if (wrapped_pin.claim_key().size() != 32) {
+      return __LINE__;
+    }
+    if (wrapped_pin.generation() < 0) {
+      return __LINE__;
+    }
+    if (wrapped_pin.form() == wrapped_pin.FORM_UNSPECIFIED) {
+      return __LINE__;
+    }
+    if (wrapped_pin.hash() == wrapped_pin.HASH_UNSPECIFIED) {
+      return __LINE__;
+    }
+    if (wrapped_pin.hash_difficulty() <= 0) {
+      return __LINE__;
+    }
+    if (wrapped_pin.hash_salt().empty()) {
+      return __LINE__;
+    }
+  }
+
   return std::nullopt;
 }
 
@@ -339,18 +369,28 @@ cbor::Value BuildWrappingMessage(
   return cbor::Value(std::move(requests));
 }
 
-// Build an enclave request to wrap the given security domain secrets.
-cbor::Value BuildPINWrappingMessage(base::span<const uint8_t> hashed_pin,
-                                    std::string cert_xml,
-                                    std::string sig_xml) {
+// Build an enclave request to wrap a PIN and a security domain secret.
+cbor::Value BuildPINAndSecretWrappingMessage(
+    base::span<const uint8_t> hashed_pin,
+    std::string cert_xml,
+    std::string sig_xml,
+    base::span<const uint8_t> security_domain_secret) {
   cbor::Value::ArrayValue requests;
-  cbor::Value::MapValue request;
-  request.emplace(enclave::kRequestCommandKey,
-                  enclave::kRecoveryKeyStoreWrapCommandName);
-  request.emplace(enclave::kRecoveryKeyStorePinHash, std::move(hashed_pin));
-  request.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
-  request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
-  requests.emplace_back(std::move(request));
+
+  cbor::Value::MapValue request1;
+  request1.emplace(enclave::kRequestCommandKey,
+                   enclave::kRecoveryKeyStoreWrapCommandName);
+  request1.emplace(enclave::kRecoveryKeyStorePinHash, std::move(hashed_pin));
+  request1.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
+  request1.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
+  requests.emplace_back(std::move(request1));
+
+  cbor::Value::MapValue request2;
+  request2.emplace(enclave::kRequestCommandKey, enclave::kWrapKeyCommandName);
+  request2.emplace(enclave::kWrappingPurpose,
+                   enclave::kKeyPurposeSecurityDomainSecret);
+  request2.emplace(enclave::kWrappingKeyToWrap, security_domain_secret);
+  requests.emplace_back(std::move(request2));
 
   return cbor::Value(std::move(requests));
 }
@@ -362,8 +402,7 @@ cbor::Value BuildPINWrappingMessage(base::span<const uint8_t> hashed_pin,
 bool StoreWrappedSecrets(EnclaveLocalState::User* user,
                          const base::flat_map<int32_t, std::vector<uint8_t>>
                              new_security_domain_secrets,
-                         const cbor::Value& response) {
-  const cbor::Value::ArrayValue& responses = response.GetArray();
+                         base::span<const cbor::Value> responses) {
   CHECK_EQ(new_security_domain_secrets.size(), responses.size());
 
   size_t i = 0;
@@ -727,6 +766,7 @@ class EnclaveManager::StateMachine {
     kWrappingPIN,
     kWaitingForRecoveryKeyStoreTokenForUpload,
     kWaitingForRecoveryKeyStore,
+    kJoiningPINToDomain,
   };
 
   enum class FetchedFile {
@@ -738,6 +778,7 @@ class EnclaveManager::StateMachine {
     ~HashedPIN() { memset(hashed, 0, sizeof(hashed)); }
 
     int n = 0;  // The scrypt `N` parameter.
+    bool is_six_digits = false;
     uint8_t salt[16];
     uint8_t hashed[32];
   };
@@ -753,7 +794,8 @@ class EnclaveManager::StateMachine {
   using EnclaveResponse = base::StrongAlias<class EnclaveResponse, cbor::Value>;
   using JoinStatus =
       base::StrongAlias<class JoinStatus,
-                        trusted_vault::TrustedVaultRegistrationStatus>;
+                        std::pair<trusted_vault::TrustedVaultRegistrationStatus,
+                                  /*key_version=*/int>>;
   using AccessToken = base::StrongAlias<class AccessToken, std::string>;
   using FileFetched =
       base::StrongAlias<class FileFetched,
@@ -847,6 +889,10 @@ class EnclaveManager::StateMachine {
       case State::kWaitingForRecoveryKeyStore:
         DoWaitingForRecoveryKeyStore(std::move(event));
         break;
+
+      case State::kJoiningPINToDomain:
+        DoJoiningPINToDomain(std::move(event));
+        break;
     }
 
     FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
@@ -910,6 +956,8 @@ class EnclaveManager::StateMachine {
         return "WaitingForRecoveryKeyStoreTokenForUpload";
       case State::kWaitingForRecoveryKeyStore:
         return "WaitingForRecoveryKeyStore";
+      case State::kJoiningPINToDomain:
+        return "JoiningPINToDomain";
     }
   }
 
@@ -925,9 +973,10 @@ class EnclaveManager::StateMachine {
             },
             [](const AccessToken&) { return std::string("AccessToken"); },
             [](const JoinStatus& status) {
-              return std::string("JoinStatus(") +
-                     TrustedVaultRegistrationStatusToString(status.value()) +
-                     ")";
+              return base::StrCat(
+                  {"JoinStatus(",
+                   TrustedVaultRegistrationStatusToString(status.value().first),
+                   ", ", base::NumberToString(status.value().second), ")"});
             },
             [](const FileFetched& fetched) {
               const FetchedFile fetched_file = fetched.value().first;
@@ -980,7 +1029,7 @@ class EnclaveManager::StateMachine {
         GetAccessTokenInternal(GaiaConstants::kPasskeysEnclaveOAuth2Scope);
       } else if (!user_->joined() && !user_->member_public_key().empty()) {
         store_keys_args_for_joining_ = std::move(store_keys_args);
-        JoinDomain();
+        JoinSecurityDomain();
       }
       return;
     }
@@ -999,6 +1048,11 @@ class EnclaveManager::StateMachine {
                 // factor falls on the server when MagicArch is used, I've stuck
                 // with this norm.
                 hashed->n = 16384;
+                hashed->is_six_digits =
+                    pin.size() == 6 &&
+                    base::ranges::all_of(pin, [](char c) -> bool {
+                      return c >= '0' && c <= '9';
+                    });
                 CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), hashed->salt,
                                      sizeof(hashed->salt), hashed->n, 8, 1,
                                      /*max_mem=*/0, hashed->hashed,
@@ -1252,42 +1306,19 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    if (!StoreWrappedSecrets(user_, new_security_domain_secrets, response)) {
+    if (!StoreWrappedSecrets(user_, new_security_domain_secrets,
+                             response.GetArray())) {
       FIDO_LOG(ERROR) << "Failed to store wrapped secrets";
       state_ = State::kStop;
       return;
     }
 
     if (!user_->joined()) {
-      JoinDomain();
+      JoinSecurityDomain();
     } else {
       manager_->WriteState(&local_state_);
       state_ = State::kNextAction;
     }
-  }
-
-  void JoinDomain() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    state_ = State::kJoiningDomain;
-    const auto secure_box_pub_key =
-        trusted_vault::SecureBoxPublicKey::CreateByImport(
-            ToSpan(user_->member_public_key()));
-    join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
-        *primary_account_info_, store_keys_args_for_joining_->keys,
-        store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
-        trusted_vault::AuthenticationFactorType::kPhysicalDevice,
-        /*authentication_factor_type_hint=*/std::nullopt,
-        base::BindOnce(
-            [](base::WeakPtr<StateMachine> machine,
-               trusted_vault::TrustedVaultRegistrationStatus status,
-               int key_version) {
-              if (!machine) {
-                return;
-              }
-              machine->Process(JoinStatus(status));
-            },
-            weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoJoiningDomain(Event event) {
@@ -1298,7 +1329,7 @@ class EnclaveManager::StateMachine {
 
     CHECK(absl::holds_alternative<JoinStatus>(event));
     const trusted_vault::TrustedVaultRegistrationStatus status =
-        absl::get_if<JoinStatus>(&event)->value();
+        absl::get_if<JoinStatus>(&event)->value().first;
 
     switch (status) {
       case trusted_vault::TrustedVaultRegistrationStatus::kSuccess:
@@ -1377,18 +1408,22 @@ class EnclaveManager::StateMachine {
     }
     CHECK(absl::holds_alternative<AccessToken>(event)) << ToString(event);
 
+    // Also generate the security domain secret now so that we can wrap it in
+    // the same enclave request.
+    crypto::RandBytes(security_domain_secret_);
+
     // We have everything needed to make the enclave request to wrap the hashed
     // PIN for transmission to the recovery key store.
     state_ = State::kWrappingPIN;
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
-    enclave::Transact(
-        manager_->network_context_, enclave::GetEnclaveIdentity(),
-        std::move(token),
-        BuildPINWrappingMessage(hashed_pin_->hashed, std::move(*cert_xml_),
-                                std::move(*sig_xml_)),
-        enclave::SigningCallback(),
-        base::BindOnce(&StateMachine::OnEnclaveResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
+    enclave::Transact(manager_->network_context_, enclave::GetEnclaveIdentity(),
+                      std::move(token),
+                      BuildPINAndSecretWrappingMessage(
+                          hashed_pin_->hashed, std::move(*cert_xml_),
+                          std::move(*sig_xml_), security_domain_secret_),
+                      manager_->HardwareKeySigningCallback(),
+                      base::BindOnce(&StateMachine::OnEnclaveResponse,
+                                     weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoWrappingPIN(Event event) {
@@ -1396,7 +1431,7 @@ class EnclaveManager::StateMachine {
 
     cbor::Value response =
         std::move(absl::get_if<EnclaveResponse>(&event)->value());
-    if (!IsAllOk(response, 1)) {
+    if (!IsAllOk(response, 2)) {
       FIDO_LOG(ERROR) << "PIN wrapping resulted in error response: "
                       << cbor::DiagnosticWriter::Write(response);
       state_ = State::kStop;
@@ -1420,6 +1455,8 @@ class EnclaveManager::StateMachine {
     }
     vault_ = std::move(*vault);
 
+    wrapping_response_ = std::move(response);
+
     state_ = State::kWaitingForRecoveryKeyStoreTokenForUpload;
     GetAccessTokenInternal(GaiaConstants::kCryptAuthOAuth2Scope);
   }
@@ -1437,10 +1474,7 @@ class EnclaveManager::StateMachine {
 
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
     auto request = std::make_unique<network::ResourceRequest>();
-    GURL base_url(std::string(kRecoveryKeyStoreURL) +
-                  // We're uploading a new entry, rather than refreshing an
-                  // existing one, so the ID is just a placeholder:
-                  "0");
+    GURL base_url(kRecoveryKeyStoreURL);
     request->url = net::AppendQueryParameter(base_url, "alt", "proto");
     request->method = "PATCH";
     request->headers.SetHeader("Authorization",
@@ -1494,8 +1528,76 @@ class EnclaveManager::StateMachine {
       return;
     }
 
-    /// TODO(enclave): wrap the PIN hash for the enclave.
-    state_ = State::kNextAction;
+    wrapped_pin_ = BuildWrappedPIN(*hashed_pin_, /*generation=*/0, vault_.get(),
+                                   security_domain_secret_);
+    store_keys_args_for_joining_ = std::make_unique<StoreKeysArgs>();
+    // Key version zero is a special value that indicates that the security
+    // domain is being created.
+    store_keys_args_for_joining_->last_key_version = 0;
+    store_keys_args_for_joining_->keys.emplace_back(
+        std::begin(security_domain_secret_), std::end(security_domain_secret_));
+
+    const auto secure_box_pub_key =
+        trusted_vault::SecureBoxPublicKey::CreateByImport(ToSpan(
+            vault_->application_keys()[0].asymmetric_key_pair().public_key()));
+
+    state_ = State::kJoiningPINToDomain;
+    join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
+        *primary_account_info_, store_keys_args_for_joining_->keys,
+        store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
+        trusted_vault::AuthenticationFactorType::kGpmPin,
+        /*authentication_factor_type_hint=*/std::nullopt,
+        base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void DoJoiningPINToDomain(Event event) {
+    CHECK(absl::holds_alternative<JoinStatus>(event)) << ToString(event);
+
+    const auto& join_status = absl::get_if<JoinStatus>(&event)->value();
+    const trusted_vault::TrustedVaultRegistrationStatus status =
+        join_status.first;
+    const int key_version = join_status.second;
+
+    if (status != trusted_vault::TrustedVaultRegistrationStatus::kSuccess) {
+      state_ = State::kStop;
+      return;
+    }
+
+    user_->mutable_wrapped_pins()->clear();
+    user_->mutable_wrapped_pins()->insert(
+        {key_version, std::move(*wrapped_pin_)});
+    wrapped_pin_.reset();
+
+    base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets;
+    new_security_domain_secrets.insert({key_version,
+                                        {std::begin(security_domain_secret_),
+                                         std::end(security_domain_secret_)}});
+    if (!StoreWrappedSecrets(user_, new_security_domain_secrets,
+                             base::span<const cbor::Value>(
+                                 &wrapping_response_->GetArray()[1], 1ul))) {
+      FIDO_LOG(ERROR) << "Secret wrapping resulted in malformed resposne: "
+                      << cbor::DiagnosticWriter::Write(*wrapping_response_);
+      state_ = State::kStop;
+      return;
+    }
+
+    store_keys_args_for_joining_->last_key_version = key_version;
+    JoinSecurityDomain();
+  }
+
+  void JoinSecurityDomain() {
+    state_ = State::kJoiningDomain;
+    const auto secure_box_pub_key =
+        trusted_vault::SecureBoxPublicKey::CreateByImport(
+            ToSpan(user_->member_public_key()));
+    join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
+        *primary_account_info_, store_keys_args_for_joining_->keys,
+        store_keys_args_for_joining_->last_key_version, *secure_box_pub_key,
+        trusted_vault::AuthenticationFactorType::kPhysicalDevice,
+        /*authentication_factor_type_hint=*/std::nullopt,
+        base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void GetAccessTokenInternal(const char* scope) {
@@ -1529,6 +1631,65 @@ class EnclaveManager::StateMachine {
     }
   }
 
+  void OnJoinedSecurityDomain(
+      trusted_vault::TrustedVaultRegistrationStatus status,
+      int key_version) {
+    Process(JoinStatus(std::make_pair(status, key_version)));
+  }
+
+  // Constructed a wrapped version of the hashed PIN that will be part of the
+  // virtual member metadata. The inner CBOR structure contains everything that
+  // the enclave would need when processing a PIN and is authenticated (and
+  // encrypted) by the security domain secret.
+  static webauthn_pb::EnclaveLocalState::WrappedPIN BuildWrappedPIN(
+      const HashedPIN& hashed_pin,
+      int64_t generation,
+      const trusted_vault_pb::Vault* vault,
+      base::span<const uint8_t> security_domain_secret) {
+    uint8_t claim_key[32];
+    crypto::RandBytes(claim_key);
+
+    cbor::Value::MapValue map;
+    map.emplace(1, base::span<const uint8_t>(hashed_pin.hashed));
+    map.emplace(2, generation);
+    map.emplace(3, base::span<const uint8_t>(claim_key));
+    map.emplace(4, ToSpan(vault->vault_parameters().counter_id()));
+    map.emplace(5, ToSpan(vault->vault_parameters().vault_handle()));
+    const std::vector<uint8_t> cbor_bytes =
+        cbor::Writer::Write(cbor::Value(std::move(map))).value();
+
+    // This is "KeychainApplicationKey:chrome:GPM PIN data wrapping key".
+    static constexpr uint8_t kKeyPurposePinDataKey[] = {
+        0x4b, 0x65, 0x79, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x41, 0x70, 0x70,
+        0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4b, 0x65, 0x79,
+        0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
+        0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
+        0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
+    const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
+        security_domain_secret, /*salt=*/base::span<const uint8_t>(),
+        kKeyPurposePinDataKey, 32);
+    crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
+    aead.Init(derived_key);
+    uint8_t nonce[12];
+    crypto::RandBytes(nonce);
+    std::vector<uint8_t> wrapped_pin = aead.Seal(
+        cbor_bytes, nonce, /*additional_data=*/base::span<const uint8_t>());
+    wrapped_pin.insert(wrapped_pin.begin(), std::begin(nonce), std::end(nonce));
+
+    webauthn_pb::EnclaveLocalState::WrappedPIN ret;
+    ret.set_wrapped_pin(VecToString(std::move(wrapped_pin)));
+    ret.set_claim_key(VecToString(claim_key));
+    ret.set_generation(generation);
+    ret.set_form(
+        hashed_pin.is_six_digits
+            ? webauthn_pb::EnclaveLocalState::WrappedPIN::FORM_SIX_DIGITS
+            : webauthn_pb::EnclaveLocalState::WrappedPIN::FORM_ARBITRARY);
+    ret.set_hash(webauthn_pb::EnclaveLocalState::WrappedPIN::HASH_SCRYPT);
+    ret.set_hash_difficulty(hashed_pin.n);
+    ret.set_hash_salt(VecToString(hashed_pin.salt));
+    return ret;
+  }
+
   const raw_ptr<EnclaveManager> manager_;
   // local_state_ contains a copy of the EnclaveManager's state from when this
   // StateMachine was created.
@@ -1559,6 +1720,9 @@ class EnclaveManager::StateMachine {
   std::optional<std::string> sig_xml_;
   std::unique_ptr<HashedPIN> hashed_pin_;
   std::unique_ptr<trusted_vault_pb::Vault> vault_;
+  std::array<uint8_t, 32> security_domain_secret_;
+  std::optional<webauthn_pb::EnclaveLocalState::WrappedPIN> wrapped_pin_;
+  std::optional<cbor::Value> wrapping_response_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<StateMachine> weak_ptr_factory_{this};
@@ -1951,6 +2115,29 @@ void EnclaveManager::StoreKeys(const std::string& gaia_id,
   }
   pending_actions_->store_keys_args = std::move(store_keys_args);
   Act();
+}
+
+std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
+    std::string pin,
+    const webauthn_pb::EnclaveLocalState::WrappedPIN& wrapped_pin) {
+  uint8_t hashed[32];
+  const std::string& salt = wrapped_pin.hash_salt();
+  CHECK(EVP_PBE_scrypt(pin.data(), pin.size(),
+                       reinterpret_cast<const uint8_t*>(salt.data()),
+                       salt.size(), wrapped_pin.hash_difficulty(), 8, 1,
+                       1ul << 28, hashed, sizeof(hashed)));
+
+  static constexpr uint8_t kAAD[] = {'P', 'I', 'N', ' ', 'c',
+                                     'l', 'a', 'i', 'm'};
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
+  aead.Init(ToSpan(wrapped_pin.claim_key()));
+  uint8_t nonce[12];
+  crypto::RandBytes(nonce);
+  std::vector<uint8_t> ciphertext = aead.Seal(hashed, nonce, kAAD);
+  ciphertext.insert(ciphertext.begin(), std::begin(nonce), std::end(nonce));
+
+  return std::make_unique<enclave::ClaimedPIN>(
+      std::move(ciphertext), ToVector(wrapped_pin.wrapped_pin()));
 }
 
 bool EnclaveManager::RunWhenStoppedForTesting(base::OnceClosure on_stop) {

@@ -257,7 +257,7 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
   BuildCommandRequestBody(
       BuildGetAssertionCommand(std::move(entity), json_request, kClientDataJson,
-                               wrapped_secrets()),
+                               /*claimed_pin=*/nullptr, wrapped_secrets()),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -268,27 +268,64 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
   auto decoded_command =
       ValidateRequestFormatAndReturnCommandList(*request_cbor);
   auto& command_element = decoded_command->GetArray()[0];
+  auto& command_map = command_element.GetMap();
+  EXPECT_EQ(command_map.find(cbor::Value("cmd"))->second.GetString(),
+            "passkeys/assert");
+  EXPECT_TRUE(command_map.find(cbor::Value("claimed_pin")) ==
+              command_map.end());
+  EXPECT_TRUE(command_map.find(cbor::Value("wrapped_pin_data")) ==
+              command_map.end());
   EXPECT_EQ(
-      command_element.GetMap().find(cbor::Value("cmd"))->second.GetString(),
-      "passkeys/assert");
-  EXPECT_EQ(command_element.GetMap().find(cbor::Value("uv"))->second.GetBool(),
-            true);
-  EXPECT_EQ(command_element.GetMap()
-                .find(cbor::Value("client_data_json"))
-                ->second.GetString(),
-            kClientDataJson);
+      command_map.find(cbor::Value("client_data_json"))->second.GetString(),
+      kClientDataJson);
   auto& request_value_map =
-      command_element.GetMap().find(cbor::Value("request"))->second.GetMap();
+      command_map.find(cbor::Value("request"))->second.GetMap();
   EXPECT_EQ(request_value_map.find(cbor::Value("rpId"))->second.GetString(),
             "test.example");
 
-  auto& serialized_passkey_entity = command_element.GetMap()
-                                        .find(cbor::Value("protobuf"))
-                                        ->second.GetBytestring();
+  auto& serialized_passkey_entity =
+      command_map.find(cbor::Value("protobuf"))->second.GetBytestring();
   sync_pb::WebauthnCredentialSpecifics out_entity;
   EXPECT_TRUE(out_entity.ParseFromArray(serialized_passkey_entity.data(),
                                         serialized_passkey_entity.size()));
   EXPECT_EQ(out_entity.rp_id(), std::string(kRpId));
+}
+
+TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
+  BuildCommandCompletionWaiter waiter;
+  auto entity = PasskeyEntity();
+  entity.set_rp_id(kRpId);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(kGetAssertionRequestJson);
+  EXPECT_TRUE(parsed_json);
+  auto json_request =
+      base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+  const std::vector<uint8_t> pin_claim = {1, 2, 3};
+  const std::vector<uint8_t> wrapped_pin = {4, 5, 6, 7};
+  auto claimed_pin = std::make_unique<ClaimedPIN>(pin_claim, wrapped_pin);
+  BuildCommandRequestBody(
+      BuildGetAssertionCommand(std::move(entity), json_request, kClientDataJson,
+                               std::move(claimed_pin), wrapped_secrets()),
+      base::BindOnce(&FakeSigningCallback), handshake_hash(),
+      base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
+                     base::Unretained(&waiter)));
+
+  waiter.Wait();
+
+  std::optional<cbor::Value> request_cbor = cbor::Reader::Read(waiter.result());
+  auto decoded_command =
+      ValidateRequestFormatAndReturnCommandList(*request_cbor);
+  auto& command_element = decoded_command->GetArray()[0];
+  auto& command_map = command_element.GetMap();
+
+  EXPECT_EQ(command_map.find(cbor::Value("claimed_pin"))
+                ->second.GetBytestring()
+                .size(),
+            3u);
+  EXPECT_EQ(command_map.find(cbor::Value("wrapped_pin_data"))
+                ->second.GetBytestring()
+                .size(),
+            4u);
 }
 
 TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
@@ -299,7 +336,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
   BuildCommandRequestBody(
-      BuildMakeCredentialCommand(json_request, wrapped_secret()),
+      BuildMakeCredentialCommand(json_request, /*claimed_pin=*/nullptr,
+                                 wrapped_secret()),
       base::BindOnce(&FakeSigningCallback), handshake_hash(),
       base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
                      base::Unretained(&waiter)));
@@ -310,16 +348,55 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
   auto decoded_command =
       ValidateRequestFormatAndReturnCommandList(*request_cbor);
   auto& command_element = decoded_command->GetArray()[0];
-  EXPECT_EQ(
-      command_element.GetMap().find(cbor::Value("cmd"))->second.GetString(),
-      "passkeys/create");
+  auto& command_map = command_element.GetMap();
+  EXPECT_EQ(command_map.find(cbor::Value("cmd"))->second.GetString(),
+            "passkeys/create");
+  EXPECT_TRUE(command_map.find(cbor::Value("claimed_pin")) ==
+              command_map.end());
+  EXPECT_TRUE(command_map.find(cbor::Value("wrapped_pin_data")) ==
+              command_map.end());
   auto& request_value_map =
-      command_element.GetMap().find(cbor::Value("request"))->second.GetMap();
+      command_map.find(cbor::Value("request"))->second.GetMap();
   EXPECT_EQ(request_value_map.find(cbor::Value("rp"))
                 ->second.GetMap()
                 .find(cbor::Value("id"))
                 ->second.GetString(),
             "test.example");
+}
+
+TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_WithPIN) {
+  BuildCommandCompletionWaiter waiter;
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(kMakeCredentialRequestJson);
+  EXPECT_TRUE(parsed_json);
+  auto json_request =
+      base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+  const std::vector<uint8_t> pin_claim = {1, 2, 3};
+  const std::vector<uint8_t> wrapped_pin = {4, 5, 6, 7};
+  auto claimed_pin = std::make_unique<ClaimedPIN>(pin_claim, wrapped_pin);
+  BuildCommandRequestBody(
+      BuildMakeCredentialCommand(json_request, std::move(claimed_pin),
+                                 wrapped_secret()),
+      base::BindOnce(&FakeSigningCallback), handshake_hash(),
+      base::BindOnce(&BuildCommandCompletionWaiter::CompletionCallback,
+                     base::Unretained(&waiter)));
+
+  waiter.Wait();
+
+  std::optional<cbor::Value> request_cbor = cbor::Reader::Read(waiter.result());
+  auto decoded_command =
+      ValidateRequestFormatAndReturnCommandList(*request_cbor);
+  auto& command_element = decoded_command->GetArray()[0];
+  auto& command_map = command_element.GetMap();
+
+  EXPECT_EQ(command_map.find(cbor::Value("claimed_pin"))
+                ->second.GetBytestring()
+                .size(),
+            3u);
+  EXPECT_EQ(command_map.find(cbor::Value("wrapped_pin_data"))
+                ->second.GetBytestring()
+                .size(),
+            4u);
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Success) {

@@ -14,6 +14,11 @@ ClientSignature::ClientSignature() = default;
 ClientSignature::~ClientSignature() = default;
 ClientSignature::ClientSignature(const ClientSignature&) = default;
 ClientSignature::ClientSignature(ClientSignature&&) = default;
+ClaimedPIN::ClaimedPIN(std::vector<uint8_t> in_pin_claim,
+                       std::vector<uint8_t> in_wrapped_pin)
+    : pin_claim(std::move(in_pin_claim)),
+      wrapped_pin(std::move(in_wrapped_pin)) {}
+ClaimedPIN::~ClaimedPIN() = default;
 CredentialRequest::CredentialRequest() = default;
 CredentialRequest::~CredentialRequest() = default;
 CredentialRequest::CredentialRequest(CredentialRequest&&) = default;

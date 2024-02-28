@@ -66,6 +66,20 @@ using SigningCallback = base::OnceCallback<void(
     SignedMessage,
     base::OnceCallback<void(std::optional<ClientSignature>)>)>;
 
+// A PIN entered by the user, after hashing and encoding.
+struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimedPIN {
+  explicit ClaimedPIN(std::vector<uint8_t> pin_claim,
+                      std::vector<uint8_t> wrapped_pin);
+  ~ClaimedPIN();
+  ClaimedPIN(ClaimedPIN&) = delete;
+  ClaimedPIN(ClaimedPIN&&) = delete;
+
+  // The hashed PIN, encrypted to the claim key.
+  std::vector<uint8_t> pin_claim;
+  // The true PIN hash, encrypted to the security domain secret.
+  std::vector<uint8_t> wrapped_pin;
+};
+
 // A CredentialRequest contains the values that, in addition to a CTAP request,
 // are needed for building a fully-formed enclave request.
 struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
@@ -87,6 +101,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // entity optionally contains a passkey Sync entity. This may be omitted for
   // create() requests.
   std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  // The PIN entered by the user (wrapped for the enclave), and the correct PIN
+  // (encrypted to the security domain secret). Optional, may be nullptr.
+  std::unique_ptr<ClaimedPIN> claimed_pin;
 };
 
 }  // namespace device::enclave
