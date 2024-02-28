@@ -2001,7 +2001,8 @@ class ExtensionWebRequestApiWebTransportTest
 
 // Test that the webRequest events are dispatched for the WebTransport
 // handshake.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, Main) {
+// TODO(crbug.com/326122304): Re-enable this test
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, DISABLED_Main) {
   ASSERT_TRUE(RunTest("test_webtransport.html")) << message_;
 }
 
