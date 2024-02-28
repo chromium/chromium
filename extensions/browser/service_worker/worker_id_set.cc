@@ -38,9 +38,9 @@ static_assert(
     kSmallestRenderProcessId < 0,
     "Sentinel render_process_id must be smaller than any valid process id.");
 
-void EmitMultiWorkerMetrics(const char* metric_name,
-                            const WorkerId& worker_id,
-                            content::BrowserContext* context) {
+content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus
+GetWorkerLifecycleState(const WorkerId& worker_id,
+                        content::BrowserContext* context) {
   content::ServiceWorkerContext* sw_context =
       util::GetServiceWorkerContextForExtensionId(worker_id.extension_id,
                                                   context);
@@ -49,15 +49,20 @@ void EmitMultiWorkerMetrics(const char* metric_name,
 
   const auto search_worker_running =
       worker_running_info.find(worker_id.version_id);
-  content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus version_status =
-      search_worker_running != worker_running_info.end()
-          ? search_worker_running->second.version_status
-          // Didn't find registered worker as running worker in the //content
-          // layer so emit unknown status. This indicates we're tracking a
-          // worker that is unknown to the lower SW layer.
-          : content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
-                kUnknown;
-  base::UmaHistogramEnumeration(metric_name, version_status);
+  return search_worker_running != worker_running_info.end()
+             ? search_worker_running->second.version_status
+             // Didn't find registered worker as running worker in the //content
+             // layer so return unknown status. This indicates we're tracking a
+             // worker that is unknown to the lower SW layer.
+             : content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+                   kUnknown;
+}
+
+void EmitMultiWorkerMetrics(const char* metric_name,
+                            const WorkerId& worker_id,
+                            content::BrowserContext* context) {
+  base::UmaHistogramEnumeration(metric_name,
+                                GetWorkerLifecycleState(worker_id, context));
 }
 
 }  // namespace
