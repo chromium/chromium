@@ -3549,7 +3549,7 @@
   },
   "chromeos-jacuzzi-rel-skylab": {
     "additional_compile_targets": [
-      "chrome"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
@@ -3629,7 +3629,7 @@
   },
   "chromeos-octopus-rel-skylab": {
     "additional_compile_targets": [
-      "chrome"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {

@@ -1152,9 +1152,7 @@
   },
   "chromeos-brya-chrome-dchecks-skylab": {
     "additional_compile_targets": [
-      "chrome",
-      "linux_symbols",
-      "symupload"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
@@ -1504,9 +1502,7 @@
   },
   "chromeos-jacuzzi-chrome-dchecks-skylab": {
     "additional_compile_targets": [
-      "chrome",
-      "linux_symbols",
-      "symupload"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
@@ -1574,9 +1570,7 @@
   },
   "chromeos-octopus-chrome-skylab-fyi": {
     "additional_compile_targets": [
-      "chrome",
-      "linux_symbols",
-      "symupload"
+      "chromiumos_preflight"
     ],
     "skylab_tests": [
       {
@@ -1607,9 +1601,7 @@
   },
   "chromeos-trogdor-chrome-skylab-fyi": {
     "additional_compile_targets": [
-      "chrome",
-      "linux_symbols",
-      "symupload"
+      "chromiumos_preflight"
     ]
   },
   "chromeos-trogdor-chrome-skylab-tests-fyi": {
