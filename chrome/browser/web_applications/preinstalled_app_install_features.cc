@@ -27,11 +27,7 @@ namespace {
 // After a feature flag has been shipped and should be cleaned up, move it into
 // kShippedPreinstalledAppInstallFeatures to ensure any external installation
 // configs that reference it continue to see it as enabled.
-constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
-#if BUILDFLAG(IS_CHROMEOS)
-    &chromeos::features::kCrosMall,
-#endif
-};
+constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {};
 
 constexpr const base::StringPiece kShippedPreinstalledAppInstallFeatures[] = {
     // Enables installing the PWA version of the chrome os calculator instead of
