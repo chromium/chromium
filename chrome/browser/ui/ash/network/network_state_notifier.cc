@@ -626,14 +626,21 @@ void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
 void NetworkStateNotifier::ShowCarrierUnlockNotification() {
   std::u16string message =
       l10n_util::GetStringUTF16(IDS_NETWORK_CARRIER_UNLOCK_BODY);
-  ShowErrorNotification(
-      /*identifier=*/"", kNetworkCarrierUnlockNotificationId,
-      NotificationCatalogName::kNetworkCarrierUnlock, shill::kTypeCellular,
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kNetworkCarrierUnlockNotificationId,
       l10n_util::GetStringFUTF16(IDS_NETWORK_CARRIER_UNLOCK_TITLE,
                                  ui::GetChromeOSDeviceName()),
-      message,
-      base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
-                          weak_ptr_factory_.GetWeakPtr(), ""));
+      message, std::u16string() /* display_source */, GURL(),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetworkError,
+          NotificationCatalogName::kNetworkCarrierUnlock),
+      message_center::RichNotificationData(),
+      new message_center::HandleNotificationClickDelegate(
+          base::BindRepeating(&NetworkStateNotifier::ShowMobileDataSubpage,
+                              weak_ptr_factory_.GetWeakPtr())),
+      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void NetworkStateNotifier::ShowNetworkSettings(const std::string& network_id) {
@@ -662,6 +669,15 @@ void NetworkStateNotifier::ShowSimUnlockSettings() {
 
   NET_LOG(USER) << "Opening SIM unlock settings";
   system_tray_client_->ShowSettingsSimUnlock();
+}
+
+void NetworkStateNotifier::ShowMobileDataSubpage() {
+  if (!system_tray_client_) {
+    return;
+  }
+
+  NET_LOG(USER) << "Opening Mobile data subpage";
+  system_tray_client_->ShowMobileDataSubpage();
 }
 
 void NetworkStateNotifier::ShowApnSettings(const std::string& network_id) {

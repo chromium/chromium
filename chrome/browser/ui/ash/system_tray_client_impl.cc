@@ -616,6 +616,11 @@ void SystemTrayClientImpl::ShowSettingsCellularSetup(bool show_psim_flow) {
   ShowSettingsSubPageForActiveUser(page);
 }
 
+void SystemTrayClientImpl::ShowMobileDataSubpage() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kCellularNetworksSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();

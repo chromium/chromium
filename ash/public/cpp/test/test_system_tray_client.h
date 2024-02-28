@@ -58,6 +58,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowNetworkConfigure(const std::string& network_id) override;
   void ShowNetworkCreate(const std::string& type) override;
   void ShowSettingsCellularSetup(bool show_psim_flow) override;
+  void ShowMobileDataSubpage() override;
   void ShowSettingsSimUnlock() override;
   void ShowApnSubpage(const std::string& network_id) override;
   void ShowThirdPartyVpnCreate(const std::string& extension_id) override;
@@ -136,6 +137,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   }
 
   int show_apn_subpage_count() const { return show_apn_subpage_count_; }
+
+  int show_mobile_data_subpage_count() const {
+    return show_mobile_data_subpage_count_;
+  }
 
   const std::string& last_apn_subpage_network_id() const {
     return last_apn_subpage_network_id_;
@@ -228,6 +233,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_wifi_sync_settings_count_ = 0;
   int show_sim_unlock_settings_count_ = 0;
   int show_apn_subpage_count_ = 0;
+  int show_mobile_data_subpage_count_ = 0;
   int show_third_party_vpn_create_count_ = 0;
   std::string last_third_party_vpn_extension_id_;
   int show_arc_vpn_create_count_ = 0;

@@ -126,6 +126,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // allows the user to select which flow they wish to enter (pSIM or eSIM).
   virtual void ShowSettingsCellularSetup(bool show_psim_flow) = 0;
 
+  // Opens Mobile data subpage.
+  virtual void ShowMobileDataSubpage() = 0;
+
   // Opens SIM unlock dialog in OS Settings.
   virtual void ShowSettingsSimUnlock() = 0;
 

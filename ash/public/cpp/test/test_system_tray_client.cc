@@ -104,6 +104,10 @@ void TestSystemTrayClient::ShowNetworkCreate(const std::string& type) {
 
 void TestSystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {}
 
+void TestSystemTrayClient::ShowMobileDataSubpage() {
+  show_mobile_data_subpage_count_++;
+}
+
 void TestSystemTrayClient::ShowSettingsSimUnlock() {
   ++show_sim_unlock_settings_count_;
 }

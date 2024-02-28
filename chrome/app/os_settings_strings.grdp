@@ -4480,7 +4480,7 @@ Press an assigned switch or key to remove assignment.
     Network out of range
     </message>
     <message name="IDS_SETTINGS_INTERNET_MOBILE_PROVIDER_LOCKED" desc="Text shown when viewing network detail page when the mobile provider is locked due to carrier lock">
-    Mobile network provider is locked
+    Cannot connect. Locked by another mobile provider.
   </message>
   <message name="IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE" desc="The title text of the cellular setup dialog that allows users set up a new cellular network by activating a physical SIM card or setting up the device's built in eSIM.">
     Set up new network

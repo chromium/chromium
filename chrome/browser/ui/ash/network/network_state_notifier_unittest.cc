@@ -18,10 +18,16 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
+#include "chromeos/ash/components/carrier_lock/common.h"
+#include "chromeos/ash/components/carrier_lock/fake_fcm_topic_subscriber.h"
+#include "chromeos/ash/components/carrier_lock/fake_provisioning_config_fetcher.h"
+#include "chromeos/ash/components/carrier_lock/fake_psm_claim_verifier.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/fake_network_3gpp_handler.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -47,6 +53,7 @@ const char kTestEsimProfileName[] = "test_profile_name";
 const char16_t kTestEsimProfileName16[] = u"test_profile_name";
 const char kCellularEsimServicePath[] = "/service/cellular_esim1";
 const char kCellularDevicePath[] = "/device/cellular1";
+const char kTestTopic[] = "/topics/test";
 
 class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
  public:
@@ -68,7 +75,9 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
   }
   void ShowMobileSetupDialog(const std::string& service_path) override {}
   void ShowCarrierAccountDetail(const std::string& service_path) override {}
-  void ShowCarrierUnlockNotification() override {}
+  void ShowCarrierUnlockNotification() override {
+    network_state_notifier_->ShowCarrierUnlockNotification();
+  }
   void ShowPortalSignin(const std::string& service_path,
                         NetworkConnect::Source source) override {}
   void ShowNetworkConnectError(const std::string& error_name,
@@ -86,7 +95,9 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
 
 class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
  public:
-  NetworkStateNotifierTest() = default;
+  NetworkStateNotifierTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   NetworkStateNotifierTest(const NetworkStateNotifierTest&) = delete;
   NetworkStateNotifierTest& operator=(const NetworkStateNotifierTest&) = delete;
@@ -103,10 +114,35 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    carrier_lock_manager_.reset();
     NetworkConnect::Shutdown();
     network_connect_delegate_.reset();
     network_handler_test_helper_.reset();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  void SetupCarrierLock() {
+    ash::carrier_lock::CarrierLockManager::RegisterLocalPrefs(
+        local_state_.registry());
+
+    fake_modem_handler_ = std::make_unique<FakeNetwork3gppHandler>();
+    fake_config_fetcher_ =
+        std::make_unique<carrier_lock::FakeProvisioningConfigFetcher>();
+    fake_psm_verifier_ = std::make_unique<carrier_lock::FakePsmClaimVerifier>();
+    fake_fcm_subscriber_ =
+        std::make_unique<carrier_lock::FakeFcmTopicSubscriber>();
+  }
+
+  void RunCarrierLock() {
+    local_state_.SetBoolean(carrier_lock::kDisableManagerPref, false);
+    local_state_.SetString(carrier_lock::kFcmTopicPref, std::string());
+    local_state_.SetString(carrier_lock::kLastImeiPref, std::string());
+    local_state_.SetInteger(carrier_lock::kErrorCounterPref, 0);
+
+    carrier_lock_manager_ = carrier_lock::CarrierLockManager::CreateForTesting(
+        &local_state_, fake_modem_handler_.get(),
+        std::move(fake_fcm_subscriber_), std::move(fake_psm_verifier_),
+        std::move(fake_config_fetcher_));
   }
 
   void Init() {
@@ -225,6 +261,12 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple user_prefs_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<carrier_lock::CarrierLockManager> carrier_lock_manager_;
+  std::unique_ptr<FakeNetwork3gppHandler> fake_modem_handler_;
+  std::unique_ptr<carrier_lock::FakeFcmTopicSubscriber> fake_fcm_subscriber_;
+  std::unique_ptr<carrier_lock::FakePsmClaimVerifier> fake_psm_verifier_;
+  std::unique_ptr<carrier_lock::FakeProvisioningConfigFetcher>
+      fake_config_fetcher_;
 };
 
 TEST_F(NetworkStateNotifierTest, WiFiConnectionFailure) {
@@ -391,6 +433,59 @@ TEST_F(NetworkStateNotifierTest, CellularCarrierLockedSimConnectionFailure) {
   notification->delegate()->Click(/*button_index=*/std::nullopt,
                                   /*reply=*/std::nullopt);
   EXPECT_EQ(1, test_system_tray_client_.show_network_settings_count());
+}
+
+TEST_F(NetworkStateNotifierTest, CellularCarrierUnlockNotification) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  Init();
+  SetupCarrierLock();
+  carrier_lock::FakeProvisioningConfigFetcher* config =
+      fake_config_fetcher_.get();
+  carrier_lock::FakeFcmTopicSubscriber* fcm = fake_fcm_subscriber_.get();
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(nullptr /* profile */);
+
+  // Set return values for fake auxiliary classes
+  fake_modem_handler_->set_carrier_lock_result(CarrierLockResult::kSuccess);
+  fake_fcm_subscriber_->SetTokenAndResult(
+      /*token*/ std::string("Token"),
+      /*result*/ carrier_lock::Result::kSuccess);
+  fake_psm_verifier_->SetMemberAndResult(
+      /*membership*/ true,
+      /*result*/ carrier_lock::Result::kSuccess);
+  fake_config_fetcher_->SetConfigTopicAndResult(
+      /*configuration*/ std::string("LockedConfig"),
+      /*restriction mode*/ ::carrier_lock::DEFAULT_DISALLOW,
+      /*fcm topic*/ std::string(kTestTopic),
+      /*result*/ carrier_lock::Result::kSuccess);
+
+  // Run Carrier Lock Manager
+  RunCarrierLock();
+  base::RunLoop().RunUntilIdle();
+
+  // Trigger FCM notification to unlock device
+  config->SetConfigTopicAndResult(
+      /*configuration*/ std::string("UnlockedConfig"),
+      /*restriction mode*/ ::carrier_lock::DEFAULT_ALLOW,
+      /*fcm topic*/ std::string(),
+      /*result*/ carrier_lock::Result::kSuccess);
+  fcm->SendNotification();
+  task_environment()->FastForwardBy(carrier_lock::kConfigDelay);
+  base::RunLoop().RunUntilIdle();
+
+  // unlock should spawn a notification.
+  std::optional<message_center::Notification> notification =
+      tester.GetNotification(
+          NetworkStateNotifier::kNetworkCarrierUnlockNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(notification->message(),
+            l10n_util::GetStringUTF16(IDS_NETWORK_CARRIER_UNLOCK_BODY));
+  // Clicking the notification should open mobile network sub page.
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
+  EXPECT_EQ(1, test_system_tray_client_.show_mobile_data_subpage_count());
 }
 
 TEST_F(NetworkStateNotifierTest,
