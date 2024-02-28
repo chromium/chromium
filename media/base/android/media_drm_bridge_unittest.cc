@@ -299,6 +299,31 @@ TEST_F(MediaDrmBridgeTest, Unprovision_Widevine) {
   Unprovision();
 }
 
+TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_FeatureFlagDisabled) {
+  // Only test this if Widevine is supported. Otherwise
+  // CreateWithoutSessionSupport() will return null and it can't be
+  // tested.
+  if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
+    GTEST_SKIP() << "Widevine not supported on device.";
+  }
+
+  scoped_feature_list_.InitWithFeatureState(media::kMediaDrmGetStatusForPolicy,
+                                            false);
+
+  CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL3);
+  EXPECT_TRUE(media_drm_bridge_);
+
+  CdmKeyInformation::KeyStatus key_status;
+  CdmPromise::Exception exception;
+
+  media_drm_bridge_->GetStatusForPolicy(
+      HdcpVersion::kHdcpVersionNone,
+      std::make_unique<MockCdmKeyStatusPromise>(
+          /*expect_success=*/false, &key_status, &exception));
+
+  EXPECT_EQ(exception, CdmPromise::Exception::NOT_SUPPORTED_ERROR);
+}
+
 TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
   scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
                                         {});

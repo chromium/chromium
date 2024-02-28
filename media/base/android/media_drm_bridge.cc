@@ -474,6 +474,12 @@ void MediaDrmBridge::GetStatusForPolicy(
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
 
+  if (!base::FeatureList::IsEnabled(kMediaDrmGetStatusForPolicy)) {
+    promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
+                    "GetStatusForPolicy() is not supported.");
+    return;
+  }
+
   promise->resolve(min_hdcp_version <= GetCurrentHdcpLevel()
                        ? CdmKeyInformation::KeyStatus::USABLE
                        : CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED);
