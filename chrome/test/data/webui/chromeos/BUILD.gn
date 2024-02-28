@@ -233,6 +233,12 @@ ts_library("build_ts") {
     "sys_internals/test_util.js",
   ]
 
+  definitions = [
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
+    "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
+  ]
+
   path_mappings = [
     "chrome://chrome-signin/arc_account_picker/*|" +
         rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
@@ -250,11 +256,11 @@ ts_library("build_ts") {
 
   deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/chromeos/internet_config_dialog:build_ts",
     "//chrome/browser/resources/chromeos/internet_detail_dialog:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

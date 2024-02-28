@@ -199,10 +199,17 @@ path_mappings: Additional non-default path mappings for absolute imports. The
                adding "//ui/webui/resources/cr_elements:build_ts" in deps will
                automatically add the mapping for imports from that library
                (e.g. 'chrome://resources/cr_elements/cr_button/cr_button.js').
-               Important: Don't add path_mappings without also adding the
-               ts_library() target(s) responsible for the files being mapped to
-               deps! path_mappings without corresponding deps can result in
-               flaky build errors.
+               Important: Adding path_mappings *does not* add the files mapped
+               in |inputs| or the targets generating files to |deps|. To prevent
+               flaky build errors, *always* do one of the following when adding
+               a path_mapping:
+               - Add the ts_library() target responsible for compiling .ts files
+                 into the mapped generated directory to |deps|.
+               - Add the ts_definitions(), copy(), preprocess_if_expr(), or
+                 other target responsible for generating definitions files in
+                 the mapped generated directory to |extra_deps|
+               - Add all source .d.ts files your target uses from the mapped
+                 source directory to |definitions|.
 manifest_excludes: List of input files to exclude from the output
                    the manifest file.
 enable_source_maps: Defaults to the value of the enable_webui_inline_sourcemaps

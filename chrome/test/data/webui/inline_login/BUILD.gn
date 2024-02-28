@@ -12,6 +12,11 @@ build_webui_tests("build") {
     "inline_login_test_util.ts",
   ]
 
+  ts_definitions = [
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+  ]
+
   ts_path_mappings = [
     "chrome://chrome-signin/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",

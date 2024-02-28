@@ -30,6 +30,15 @@ build_webui_tests("build") {
                     target_gen_dir),
   ]
 
+  ts_definitions = [
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
+    "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
+  ]
+
   ts_deps = [
     "//chrome/browser/resources/ash/inline_login:build_ts",
     "//third_party/polymer/v3_0:library",

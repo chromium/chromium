@@ -300,3 +300,50 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
 
   return False, f'Error: root_dir ({root_dir}) should be within {gen_dir} ' + \
       f'or {target_path_src}.'
+
+
+def validateDefinitionDeps(definitions_files, target_path, gen_dir,
+                           root_gen_dir, definitions):
+  # Root gen dir relative to the current working directory (essentially 'gen')
+  gen_dir_from_build = os.path.normpath(os.path.join(gen_dir,
+                                                     root_gen_dir)).replace(
+                                                         '\\', '/')
+
+  def getPathFromCwd(exception):
+    return os.path.relpath(os.path.join(_SRC_DIR, exception),
+                           _CWD).replace('\\', '/')
+
+  # TODO(https://crbug.com/326005022): Determine if the following are actually
+  # safe for computation of gn input values.
+  exceptions_list = [
+      'third_party/lit/v3_0/',
+      'third_party/material_web_components/',
+      'third_party/node/node_modules/',
+      'third_party/polymer/v3_0/',
+      'tools/typescript/definitions/',
+      'tools/typescript/tests/',
+  ]
+  exceptions = [getPathFromCwd(e) for e in exceptions_list]
+  definitions_normalized = [d.replace('\\', '/') for d in definitions]
+
+  missing_inputs = []
+  for f in definitions_files:
+    # File path relative to the current working directory.
+    f_from_cwd = os.path.relpath(f, _CWD).replace('\\', '/')
+    is_gen_file = f_from_cwd.startswith(gen_dir_from_build)
+    f_from_gen = os.path.relpath(f, gen_dir).replace('\\', '/')
+    if not is_gen_file and f_from_gen not in definitions_normalized and \
+        not any(f_from_cwd.startswith(exception) for exception in exceptions):
+      missing_inputs.append(
+          os.path.relpath(f_from_cwd, _SRC_DIR).replace('\\', '/'))
+
+  if not missing_inputs:
+    return True, None
+
+  errorMessage = 'Undeclared dependencies to definition files encountered ' + \
+                 f'while building {target_path}. Please list the following ' + \
+                 'file(s) in |definitions|:\n'
+  for missing_input in missing_inputs:
+    errorMessage += f'//{missing_input}\n'
+
+  return False, errorMessage
