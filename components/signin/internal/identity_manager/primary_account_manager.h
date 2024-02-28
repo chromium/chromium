@@ -225,8 +225,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // point when signing in.
   void ComputeExplicitBrowserSignin(
       const signin::PrimaryAccountChangeEvent& event_details,
-      const absl::variant<signin_metrics::AccessPoint,
-                          signin_metrics::ProfileSignout>& event_source,
       ScopedPrefCommit& scoped_pref_commit);
 
   // Returns the primary account. Crashes if it is called before the primary

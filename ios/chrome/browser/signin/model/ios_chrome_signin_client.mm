@@ -90,7 +90,5 @@ version_info::Channel IOSChromeSigninClient::GetClientChannel() {
   return GetChannel();
 }
 
-void IOSChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
-    signin::PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {}
+void IOSChromeSigninClient::OnPrimaryAccountChanged(
+    signin::PrimaryAccountChangeEvent event_details) {}

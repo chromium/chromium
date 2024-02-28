@@ -566,10 +566,12 @@ TEST_P(ChromeSigninClientMetricsTest, ExentsionsAndBookmarkCount) {
     previous_state.primary_account = account;
     previous_state.consent_level = signin::ConsentLevel::kSignin;
   }
+  MetricsAccessPointHistogramNamesParam test_params = std::get<1>(GetParam());
   signin::PrimaryAccountChangeEvent event_details{
       previous_state,
-      /*current_state=*/signin::PrimaryAccountChangeEvent::State(
-          account, consent_level)};
+      /*current_state=*/
+      signin::PrimaryAccountChangeEvent::State(account, consent_level),
+      test_params.access_point};
   // Ensure the events types are correct for both consent levels.
   if (consent_level == signin::ConsentLevel::kSync) {
     ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
@@ -583,10 +585,8 @@ TEST_P(ChromeSigninClientMetricsTest, ExentsionsAndBookmarkCount) {
               signin::PrimaryAccountChangeEvent::Type::kNone);
   }
 
-  MetricsAccessPointHistogramNamesParam test_params = std::get<1>(GetParam());
   // Simulate primary account changed.
-  client.OnPrimaryAccountChangedWithEventSource(event_details,
-                                                test_params.access_point);
+  client.OnPrimaryAccountChanged(event_details);
 
   // Check for expected histograms values below.
   const size_t signin_expected_bucket_count =
@@ -689,8 +689,10 @@ TEST_F(ChromeSigninClientMetricsTest,
   // It will trigger both events to `kSignin` and `kSync`.
   signin::PrimaryAccountChangeEvent event_details{
       /*previous_state=*/signin::PrimaryAccountChangeEvent::State(),
-      /*current_state=*/signin::PrimaryAccountChangeEvent::State(
-          account, signin::ConsentLevel::kSync)};
+      /*current_state=*/
+      signin::PrimaryAccountChangeEvent::State(account,
+                                               signin::ConsentLevel::kSync),
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN};
   // Both Signin and Sync event are being set.
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
             signin::PrimaryAccountChangeEvent::Type::kSet);
@@ -698,8 +700,7 @@ TEST_F(ChromeSigninClientMetricsTest,
             signin::PrimaryAccountChangeEvent::Type::kSet);
 
   // Simulate primary account changed.
-  client.OnPrimaryAccountChangedWithEventSource(
-      event_details, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  client.OnPrimaryAccountChanged(event_details);
 
   // Check for expected histograms values below.
 
@@ -776,15 +777,15 @@ TEST_F(ChromeSigninClientMetricsTest,
   // Event details to simulate no update. Either empty or same value set.
   signin::PrimaryAccountChangeEvent event_details{
       /*previous_state=*/signin::PrimaryAccountChangeEvent::State(),
-      /*current_state=*/signin::PrimaryAccountChangeEvent::State()};
+      /*current_state=*/signin::PrimaryAccountChangeEvent::State(),
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN};
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
             signin::PrimaryAccountChangeEvent::Type::kNone);
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSync),
             signin::PrimaryAccountChangeEvent::Type::kNone);
 
   // Simulate primary account changed.
-  client.OnPrimaryAccountChangedWithEventSource(
-      event_details, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  client.OnPrimaryAccountChanged(event_details);
 
   // `expected_counts` is empty as we expect no histograms related to
   // `Signin.Bookmarks` or `Signin.Extensions to be recorded.
@@ -813,15 +814,15 @@ TEST_F(ChromeSigninClientMetricsTest,
   signin::PrimaryAccountChangeEvent event_details{
       /*previous_state=*/signin::PrimaryAccountChangeEvent::State(
           account, signin::ConsentLevel::kSignin),
-      /*current_state=*/signin::PrimaryAccountChangeEvent::State()};
+      /*current_state=*/signin::PrimaryAccountChangeEvent::State(),
+      signin_metrics::ProfileSignout::kTest};
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
             signin::PrimaryAccountChangeEvent::Type::kCleared);
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSync),
             signin::PrimaryAccountChangeEvent::Type::kNone);
 
   // Simulate primary account changed.
-  client.OnPrimaryAccountChangedWithEventSource(
-      event_details, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  client.OnPrimaryAccountChanged(event_details);
 
   // `expected_counts` is empty as we expect no histograms related to
   // `Signin.Bookmarks` or `Signin.Extensions to be recorded.
@@ -853,16 +854,17 @@ TEST_F(ChromeSigninClientMetricsTest,
   // Simulating signing in update.
   signin::PrimaryAccountChangeEvent event_details{
       /*previous_state=*/signin::PrimaryAccountChangeEvent::State(),
-      /*current_state=*/signin::PrimaryAccountChangeEvent::State(
-          account, signin::ConsentLevel::kSignin)};
+      /*current_state=*/
+      signin::PrimaryAccountChangeEvent::State(account,
+                                               signin::ConsentLevel::kSignin),
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN};
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSignin),
             signin::PrimaryAccountChangeEvent::Type::kSet);
   ASSERT_EQ(event_details.GetEventTypeFor(signin::ConsentLevel::kSync),
             signin::PrimaryAccountChangeEvent::Type::kNone);
 
   // Simulate primary account changed.
-  client.OnPrimaryAccountChangedWithEventSource(
-      event_details, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  client.OnPrimaryAccountChanged(event_details);
 
   // `expected_counts` is empty as we expect no histograms related to
   // `Signin.Bookmarks` or `Signin.Extensions to be recorded.

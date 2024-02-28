@@ -46,10 +46,7 @@ enum class InitializePrefState {
   kMaxValue = kEmptyPrimaryAccountId_ConsentedForSync,
 };
 
-void LogPrimaryAccountChangeMetrics(
-    PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {
+void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -62,20 +59,21 @@ void LogPrimaryAccountChangeMetrics(
         break;
       }
 
-      DCHECK(
-          absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+      DCHECK(absl::holds_alternative<signin_metrics::AccessPoint>(
+          event_details.GetEventSource()));
       base::UmaHistogramEnumeration(
           "Signin.SignIn.Completed",
-          absl::get<signin_metrics::AccessPoint>(event_source),
+          absl::get<signin_metrics::AccessPoint>(
+              event_details.GetEventSource()),
           signin_metrics::AccessPoint::ACCESS_POINT_MAX);
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:
       DCHECK(absl::holds_alternative<signin_metrics::ProfileSignout>(
-          event_source));
-      base::UmaHistogramEnumeration(
-          "Signin.SignOut.Completed",
-          absl::get<signin_metrics::ProfileSignout>(event_source));
+          event_details.GetEventSource()));
+      base::UmaHistogramEnumeration("Signin.SignOut.Completed",
+                                    absl::get<signin_metrics::ProfileSignout>(
+                                        event_details.GetEventSource()));
       break;
   }
 
@@ -84,20 +82,21 @@ void LogPrimaryAccountChangeMetrics(
       break;
 
     case PrimaryAccountChangeEvent::Type::kSet:
-      DCHECK(
-          absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+      DCHECK(absl::holds_alternative<signin_metrics::AccessPoint>(
+          event_details.GetEventSource()));
       base::UmaHistogramEnumeration(
           "Signin.SyncOptIn.Completed",
-          absl::get<signin_metrics::AccessPoint>(event_source),
+          absl::get<signin_metrics::AccessPoint>(
+              event_details.GetEventSource()),
           signin_metrics::AccessPoint::ACCESS_POINT_MAX);
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:
       DCHECK(absl::holds_alternative<signin_metrics::ProfileSignout>(
-          event_source));
-      base::UmaHistogramEnumeration(
-          "Signin.SyncTurnOff.Completed",
-          absl::get<signin_metrics::ProfileSignout>(event_source));
+          event_details.GetEventSource()));
+      base::UmaHistogramEnumeration("Signin.SyncTurnOff.Completed",
+                                    absl::get<signin_metrics::ProfileSignout>(
+                                        event_details.GetEventSource()));
       break;
   }
 }
@@ -696,8 +695,6 @@ PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
 
 void PrimaryAccountManager::ComputeExplicitBrowserSignin(
     const PrimaryAccountChangeEvent& event_details,
-    const absl::variant<signin_metrics::AccessPoint,
-                        signin_metrics::ProfileSignout>& event_source,
     ScopedPrefCommit& scoped_pref_commit) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case PrimaryAccountChangeEvent::Type::kNone:
@@ -706,9 +703,9 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
       scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
       return;
     case PrimaryAccountChangeEvent::Type::kSet:
-      CHECK(absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+      CHECK(event_details.GetAccessPoint().has_value());
       signin_metrics::AccessPoint access_point =
-          absl::get<signin_metrics::AccessPoint>(event_source);
+          event_details.GetAccessPoint().value();
 
       if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN ||
           access_point ==
@@ -728,7 +725,8 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
         event_source,
     ScopedPrefCommit& scoped_pref_commit) {
   PrimaryAccountChangeEvent::State current_state = GetPrimaryAccountState();
-  PrimaryAccountChangeEvent event_details(previous_state, current_state);
+  PrimaryAccountChangeEvent event_details(previous_state, current_state,
+                                          event_source);
 
   DCHECK(event_details.GetEventTypeFor(signin::ConsentLevel::kSync) !=
              PrimaryAccountChangeEvent::Type::kNone ||
@@ -736,11 +734,11 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
              PrimaryAccountChangeEvent::Type::kNone)
       << "PrimaryAccountChangeEvent with no change: " << event_details;
 
-  LogPrimaryAccountChangeMetrics(event_details, event_source);
+  LogPrimaryAccountChangeMetrics(event_details);
 
-  ComputeExplicitBrowserSignin(event_details, event_source, scoped_pref_commit);
+  ComputeExplicitBrowserSignin(event_details, scoped_pref_commit);
 
-  client_->OnPrimaryAccountChangedWithEventSource(event_details, event_source);
+  client_->OnPrimaryAccountChanged(event_details);
 
   for (Observer& observer : observers_) {
     observer.OnPrimaryAccountChanged(event_details);

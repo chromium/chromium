@@ -4,8 +4,10 @@
 
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
-#include "build/build_config.h"
 #include "base/check_op.h"
+#include "build/build_config.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/android/jni_headers/PrimaryAccountChangeEvent_jni.h"
@@ -28,17 +30,19 @@ PrimaryAccountChangeEvent::State& PrimaryAccountChangeEvent::State::operator=(
 
 PrimaryAccountChangeEvent::PrimaryAccountChangeEvent() = default;
 
-PrimaryAccountChangeEvent::PrimaryAccountChangeEvent(State previous_state,
-                                                     State current_state)
-    : previous_state_(previous_state), current_state_(current_state) {}
+PrimaryAccountChangeEvent::PrimaryAccountChangeEvent(
+    State previous_state,
+    State current_state,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source)
+    : previous_state_(previous_state),
+      current_state_(current_state),
+      event_source_(event_source) {
+  CHECK(StatesAndEventSourceAreValid(previous_state_, current_state_,
+                                     event_source_));
+}
 
 PrimaryAccountChangeEvent::~PrimaryAccountChangeEvent() = default;
-
-bool operator==(const PrimaryAccountChangeEvent& lhs,
-                const PrimaryAccountChangeEvent& rhs) {
-  return lhs.GetPreviousState() == rhs.GetPreviousState() &&
-         lhs.GetCurrentState() == rhs.GetCurrentState();
-}
 
 PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
     ConsentLevel consent_level) const {
@@ -86,6 +90,81 @@ PrimaryAccountChangeEvent::GetCurrentState() const {
 const PrimaryAccountChangeEvent::State&
 PrimaryAccountChangeEvent::GetPreviousState() const {
   return previous_state_;
+}
+
+const absl::variant<signin_metrics::AccessPoint,
+                    signin_metrics::ProfileSignout>&
+PrimaryAccountChangeEvent::GetEventSource() const {
+  return event_source_;
+}
+
+std::optional<signin_metrics::AccessPoint>
+PrimaryAccountChangeEvent::GetAccessPoint() const {
+  if (absl::holds_alternative<signin_metrics::AccessPoint>(event_source_)) {
+    return std::optional<signin_metrics::AccessPoint>(
+        absl::get<signin_metrics::AccessPoint>(event_source_));
+  }
+  return std::nullopt;
+}
+
+bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
+    PrimaryAccountChangeEvent::State previous_state,
+    PrimaryAccountChangeEvent::State current_state,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {
+  // The states cannot have an empty primary account and the consent level
+  // kSync.
+  if (previous_state.primary_account.IsEmpty() &&
+      previous_state.consent_level == ConsentLevel::kSync) {
+    return false;
+  }
+  if (current_state.primary_account.IsEmpty() &&
+      current_state.consent_level == ConsentLevel::kSync) {
+    return false;
+  }
+
+  // If the previous state's primary account is empty and the current state's is
+  // not, the event source should be an access point.
+  if (previous_state.primary_account.IsEmpty() &&
+      !current_state.primary_account.IsEmpty() &&
+      !absl::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
+    return false;
+  }
+
+  // If the previous state's primary account is not empty and the current
+  // state's is empty, the event source should be a profile sign out.
+  if (!previous_state.primary_account.IsEmpty() &&
+      current_state.primary_account.IsEmpty() &&
+      !absl::holds_alternative<signin_metrics::ProfileSignout>(event_source)) {
+    return false;
+  }
+
+  // If the previous state's consent level is kSignin and the current state's is
+  // kSync, the event source should be an access point.
+  if (previous_state.consent_level == ConsentLevel::kSignin &&
+      current_state.consent_level == ConsentLevel::kSync &&
+      !absl::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
+    return false;
+  }
+
+  // If the previous state's consent level is kSync and the current state's is
+  // kSignin, the event source should be a profile sign out.
+  if (previous_state.consent_level == ConsentLevel::kSync &&
+      current_state.consent_level == ConsentLevel::kSignin &&
+      !absl::holds_alternative<signin_metrics::ProfileSignout>(event_source)) {
+    return false;
+  }
+
+  // If the primary account changes and the states' consent level stay the same,
+  // the event source should be an access point.
+  if (!current_state.primary_account.IsEmpty() &&
+      previous_state.consent_level == current_state.consent_level &&
+      previous_state.primary_account != current_state.primary_account &&
+      !absl::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool operator==(const PrimaryAccountChangeEvent::State& lhs,

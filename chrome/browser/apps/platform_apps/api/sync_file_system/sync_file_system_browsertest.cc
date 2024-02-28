@@ -185,7 +185,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
                                     identity_manager()->GetPrimaryAccountInfo(
                                         signin::ConsentLevel::kSync),
                                     signin::ConsentLevel::kSync),
-                                PrimaryAccountChangeEvent::State()));
+                                PrimaryAccountChangeEvent::State(),
+                                signin_metrics::ProfileSignout::kTest));
   foo_created.Reply("resume");
 
   ASSERT_TRUE(bar_created.WaitUntilSatisfied());
@@ -198,12 +199,13 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
   EXPECT_EQ(REMOTE_SERVICE_AUTHENTICATION_REQUIRED,
             sync_engine()->GetCurrentState());
 
-  sync_engine()->OnPrimaryAccountChanged(
-      PrimaryAccountChangeEvent(PrimaryAccountChangeEvent::State(),
-                                PrimaryAccountChangeEvent::State(
-                                    identity_manager()->GetPrimaryAccountInfo(
-                                        signin::ConsentLevel::kSync),
-                                    signin::ConsentLevel::kSync)));
+  sync_engine()->OnPrimaryAccountChanged(PrimaryAccountChangeEvent(
+      PrimaryAccountChangeEvent::State(),
+      PrimaryAccountChangeEvent::State(
+          identity_manager()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSync),
+          signin::ConsentLevel::kSync),
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
   WaitUntilIdle();
 
   bar_created.Reply("resume");

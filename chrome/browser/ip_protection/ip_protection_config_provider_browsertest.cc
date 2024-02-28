@@ -370,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderIdentityBrowserTest,
           IdentityManager()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
           signin::ConsentLevel::kSignin),
-      signin::PrimaryAccountChangeEvent::State()));
+      signin::PrimaryAccountChangeEvent::State(),
+      signin_metrics::ProfileSignout::kTest));
 #endif
 
   // Request tokens from both contexts and ensure that the "don't retry"
@@ -425,7 +426,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderIdentityBrowserTest,
       signin::PrimaryAccountChangeEvent::State(
           IdentityManager()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
-          signin::ConsentLevel::kSignin)));
+          signin::ConsentLevel::kSignin),
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN));
 #endif
 
   // Verify that cooldown timers in the network context have been reset and

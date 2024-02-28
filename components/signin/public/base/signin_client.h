@@ -155,13 +155,11 @@ class SigninClient : public KeyedService {
   // Returns the channel for the client installation.
   virtual version_info::Channel GetClientChannel() = 0;
 
-  // Called when the primary account is changed, with additional information.
-  // `event_details` contains information on how the account changed.
-  // `event_source` contains information on how the signin/signout happened.
-  virtual void OnPrimaryAccountChangedWithEventSource(
-      signin::PrimaryAccountChangeEvent event_details,
-      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-          event_source) = 0;
+  // Called when the primary account is changed. `event_details` contains
+  // information on how the account changed, and on how the signin/signout
+  // happened.
+  virtual void OnPrimaryAccountChanged(
+      signin::PrimaryAccountChangeEvent event_details) = 0;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   virtual std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>

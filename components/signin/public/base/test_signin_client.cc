@@ -141,10 +141,8 @@ version_info::Channel TestSigninClient::GetClientChannel() {
   return version_info::Channel::UNKNOWN;
 }
 
-void TestSigninClient::OnPrimaryAccountChangedWithEventSource(
-    signin::PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {}
+void TestSigninClient::OnPrimaryAccountChanged(
+    signin::PrimaryAccountChangeEvent event_details) {}
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>

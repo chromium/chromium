@@ -40,7 +40,11 @@ class PrimaryAccountChangeEvent {
   };
 
   PrimaryAccountChangeEvent();
-  PrimaryAccountChangeEvent(State previous_state, State current_state);
+  PrimaryAccountChangeEvent(
+      State previous_state,
+      State current_state,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source);
   ~PrimaryAccountChangeEvent();
 
   // Returns primary account change event type for the corresponding
@@ -52,16 +56,25 @@ class PrimaryAccountChangeEvent {
 
   const State& GetPreviousState() const;
   const State& GetCurrentState() const;
+  const absl::variant<signin_metrics::AccessPoint,
+                      signin_metrics::ProfileSignout>&
+  GetEventSource() const;
+  std::optional<signin_metrics::AccessPoint> GetAccessPoint() const;
+
+  static bool StatesAndEventSourceAreValid(
+      PrimaryAccountChangeEvent::State previous_state,
+      PrimaryAccountChangeEvent::State current_state,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source);
 
  private:
   State previous_state_, current_state_;
+  absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+      event_source_;
 };
 
 bool operator==(const PrimaryAccountChangeEvent::State& lhs,
                 const PrimaryAccountChangeEvent::State& rhs);
-
-bool operator==(const PrimaryAccountChangeEvent& lhs,
-                const PrimaryAccountChangeEvent& rhs);
 
 std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state);

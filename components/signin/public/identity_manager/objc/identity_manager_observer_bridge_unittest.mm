@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 #import "base/ios/block_types.h"
 #import "base/test/task_environment.h"
@@ -138,10 +139,15 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountSet) {
   PrimaryAccountChangeEvent::State previous_state;
   PrimaryAccountChangeEvent::State current_state(account_info_,
                                                  signin::ConsentLevel::kSync);
-  PrimaryAccountChangeEvent event_details(previous_state, current_state);
+  PrimaryAccountChangeEvent event_details(
+      previous_state, current_state,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   observer_bridge_.get()->OnPrimaryAccountChanged(event_details);
   EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountChangedCount);
-  EXPECT_EQ(event_details, observer_bridge_delegate_.receivedEvent);
+  EXPECT_EQ(event_details.GetPreviousState(),
+            observer_bridge_delegate_.receivedEvent.GetPreviousState());
+  EXPECT_EQ(event_details.GetCurrentState(),
+            observer_bridge_delegate_.receivedEvent.GetCurrentState());
   // Reset counter to pass the tear down.
   observer_bridge_delegate_.onPrimaryAccountChangedCount = 0;
 }
@@ -152,10 +158,14 @@ TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountCleared) {
   PrimaryAccountChangeEvent::State previous_state(account_info_,
                                                   signin::ConsentLevel::kSync);
   PrimaryAccountChangeEvent::State current_state;
-  PrimaryAccountChangeEvent event_details(previous_state, current_state);
+  PrimaryAccountChangeEvent event_details(
+      previous_state, current_state, signin_metrics::ProfileSignout::kTest);
   observer_bridge_.get()->OnPrimaryAccountChanged(event_details);
   EXPECT_EQ(1, observer_bridge_delegate_.onPrimaryAccountChangedCount);
-  EXPECT_EQ(event_details, observer_bridge_delegate_.receivedEvent);
+  EXPECT_EQ(event_details.GetPreviousState(),
+            observer_bridge_delegate_.receivedEvent.GetPreviousState());
+  EXPECT_EQ(event_details.GetCurrentState(),
+            observer_bridge_delegate_.receivedEvent.GetCurrentState());
   // Reset counter to pass the tear down.
   observer_bridge_delegate_.onPrimaryAccountChangedCount = 0;
 }

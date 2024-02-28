@@ -384,10 +384,8 @@ version_info::Channel ChromeSigninClient::GetClientChannel() {
   return chrome::GetChannel();
 }
 
-void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
-    signin::PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {
+void ChromeSigninClient::OnPrimaryAccountChanged(
+    signin::PrimaryAccountChangeEvent event_details) {
   for (signin::ConsentLevel consent_level :
        {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
     switch (event_details.GetEventTypeFor(consent_level)) {
@@ -395,10 +393,9 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
       case signin::PrimaryAccountChangeEvent::Type::kCleared:
         break;
       case signin::PrimaryAccountChangeEvent::Type::kSet:
-        CHECK(
-            absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+        CHECK(event_details.GetAccessPoint().has_value());
         signin_metrics::AccessPoint access_point =
-            absl::get<signin_metrics::AccessPoint>(event_source);
+            event_details.GetAccessPoint().value();
 
         // Only record metrics when setting the primary account.
         std::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
