@@ -55,6 +55,7 @@ public class AddToHomescreenDialogView
 
     private LinearLayout mAppLayout;
     private TextView mAppNameView;
+    private EditText mHomebrewAppNameInput;
     private TextView mAppOriginView;
     private RatingBar mAppRatingBar;
     private ImageView mPlayLogoView;
@@ -84,10 +85,12 @@ public class AddToHomescreenDialogView
 
         mProgressBarView = mParentView.findViewById(R.id.spinny);
         mIconView = (ImageView) mParentView.findViewById(R.id.icon);
-        mShortcutTitleInput = mParentView.findViewById(R.id.text);
-        mAppLayout = (LinearLayout) mParentView.findViewById(R.id.app_info);
 
-        mAppNameView = (TextView) mAppLayout.findViewById(R.id.name);
+        mShortcutTitleInput = mParentView.findViewById(R.id.shortcut_name);
+
+        mAppLayout = (LinearLayout) mParentView.findViewById(R.id.app_info);
+        mAppNameView = (TextView) mAppLayout.findViewById(R.id.app_name);
+        mHomebrewAppNameInput = mAppLayout.findViewById(R.id.homebrew_name);
         mAppOriginView = (TextView) mAppLayout.findViewById(R.id.origin);
         mAppRatingBar = (RatingBar) mAppLayout.findViewById(R.id.control_rating);
         mPlayLogoView = (ImageView) mParentView.findViewById(R.id.play_logo);
@@ -141,10 +144,25 @@ public class AddToHomescreenDialogView
                     }
                 });
 
+        mHomebrewAppNameInput.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void afterTextChanged(Editable editableText) {
+                        updateInstallButton();
+                    }
+                });
+
         Resources resources = context.getResources();
         mInstallTitleText = resources.getString(R.string.menu_install_webapp);
         mInstallButtonText = resources.getString(R.string.app_banner_install);
-        mAddTitleText = resources.getString(R.string.menu_add_to_homescreen);
+        mAddTitleText = resources.getString(R.string.pwa_uni_install_option_shortcut);
         mAddButtonText = resources.getString(R.string.add);
 
         mDialogModel =
@@ -174,6 +192,7 @@ public class AddToHomescreenDialogView
     protected void setTitle(String title) {
         mAppNameView.setText(title);
         mShortcutTitleInput.setText(title);
+        mHomebrewAppNameInput.setText(title);
         mIconView.setContentDescription(title);
     }
 
@@ -203,6 +222,7 @@ public class AddToHomescreenDialogView
         switch (mAppType) {
             case AppType.NATIVE:
                 mAppLayout.setVisibility(View.VISIBLE);
+                mAppNameView.setVisibility(View.VISIBLE);
                 mAppRatingBar.setVisibility(View.VISIBLE);
                 mPlayLogoView.setVisibility(View.VISIBLE);
                 break;
@@ -211,11 +231,13 @@ public class AddToHomescreenDialogView
                 break;
             case AppType.WEBAPK:
                 mAppLayout.setVisibility(View.VISIBLE);
+                mAppNameView.setVisibility(View.VISIBLE);
                 mAppOriginView.setVisibility(View.VISIBLE);
                 break;
             case AppType.WEBAPK_DIY:
-                mShortcutTitleInput.setVisibility(View.VISIBLE);
                 mAppLayout.setVisibility(View.VISIBLE);
+                mHomebrewAppNameInput.setVisibility(View.VISIBLE);
+                mAppOriginView.setVisibility(View.VISIBLE);
                 mAppOriginView.setVisibility(View.VISIBLE);
                 break;
         }
@@ -251,10 +273,12 @@ public class AddToHomescreenDialogView
         updateInstallButton();
     }
 
+    // Update button state for shortcut or diy app.
     private void updateInstallButton() {
+        TextView appNameView = getAppNameView();
         boolean missingTitle =
-                mShortcutTitleInput.getVisibility() == View.VISIBLE
-                        && TextUtils.isEmpty(mShortcutTitleInput.getText());
+                appNameView.getVisibility() == View.VISIBLE
+                        && TextUtils.isEmpty(appNameView.getText());
         mDialogModel.set(
                 ModalDialogProperties.POSITIVE_BUTTON_DISABLED, !mCanSubmit || missingTitle);
     }
@@ -262,6 +286,8 @@ public class AddToHomescreenDialogView
     private void resetAllVisibility() {
         mShortcutTitleInput.setVisibility(View.GONE);
         mAppLayout.setVisibility(View.GONE);
+        mHomebrewAppNameInput.setVisibility(View.GONE);
+        mAppNameView.setVisibility(View.GONE);
         mAppOriginView.setVisibility(View.GONE);
         mAppRatingBar.setVisibility(View.GONE);
         mPlayLogoView.setVisibility(View.GONE);
@@ -293,7 +319,8 @@ public class AddToHomescreenDialogView
     public void onClick(PropertyModel model, int buttonType) {
         int dismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-            mDelegate.onAddToHomescreen(mShortcutTitleInput.getText().toString(), mAppType);
+            String title = getAppNameView().getText().toString();
+            mDelegate.onAddToHomescreen(title, mAppType);
             dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
         }
         mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);
@@ -304,6 +331,22 @@ public class AddToHomescreenDialogView
         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) return;
 
         mDelegate.onViewDismissed();
+    }
+
+    @VisibleForTesting
+    TextView getAppNameView() {
+        switch (mAppType) {
+            case AppType.SHORTCUT:
+                return mShortcutTitleInput;
+            case AppType.WEBAPK_DIY:
+                return mHomebrewAppNameInput;
+            case AppType.WEBAPK:
+            case AppType.NATIVE:
+                return mAppNameView;
+            default:
+                assert false;
+                return null;
+        }
     }
 
     View getParentViewForTest() {
