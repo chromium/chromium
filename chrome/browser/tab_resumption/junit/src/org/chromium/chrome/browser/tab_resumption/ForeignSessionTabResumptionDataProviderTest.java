@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -23,226 +21,107 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.SyncService.SyncStateChangedListener;
-import org.chromium.components.sync_device_info.FormFactor;
-import org.chromium.url.JUnitTestGURLs;
+import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDataSource.DataChangedObserver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
-    @Mock private SigninManager mSigninManager;
-    @Mock private IdentityManager mIdentityManager;
-    @Mock private SyncService mSyncService;
-    @Mock private ForeignSessionHelper mForeignSessionHelper;
+    static final SuggestionEntry ENTRY1 =
+            new SuggestionEntry("My Tablet", TAB6.url, TAB6.title, TAB6.lastActiveTime, TAB6.id);
+    static final SuggestionEntry ENTRY2 =
+            new SuggestionEntry("My Tablet", TAB5.url, TAB5.title, TAB5.lastActiveTime, TAB5.id);
+    static final SuggestionEntry ENTRY3 =
+            new SuggestionEntry("My Desktop", TAB1.url, TAB1.title, TAB1.lastActiveTime, TAB1.id);
 
-    @Captor private ArgumentCaptor<SignInStateObserver> mSignInStateObserverCaptor;
-    @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+    @Mock private ForeignSessionTabResumptionDataSource mSource;
+
+    @Captor private ArgumentCaptor<DataChangedObserver> mDataChangedObserverCaptor;
 
     private ForeignSessionTabResumptionDataProvider mDataProvider;
+    private DataChangedObserver mDataChangedObserver;
 
     private int mStatusChangedCallbackCounter;
-    private int mSuggestionCallbackCounter;
-    private ArrayList<ForeignSession> mForeignSessions;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        // Populate `mForeignSessionHelper` with test data.
-        ForeignSessionWindow desktopWindow1 =
-                new ForeignSessionWindow(
-                        /* timestamp= */ makeTimestamp(3, 30, 0),
-                        /* sessionId= */ 201,
-                        /* tabs= */ new ArrayList<>(Arrays.asList(TAB1, TAB2)));
-        ForeignSessionWindow desktopWindow2 =
-                new ForeignSessionWindow(
-                        /* timestamp= */ makeTimestamp(9, 15, 20),
-                        /* sessionId= */ 202,
-                        /* tabs= */ new ArrayList<>(Arrays.asList(TAB3, TAB4)));
-        ForeignSession desktopForeignSession =
-                new ForeignSession(
-                        /* tag= */ "TagForDesktop",
-                        /* name= */ "My Desktop",
-                        /* modifiedTime= */ makeTimestamp(10, 0, 0),
-                        /* windows= */ new ArrayList<>(
-                                Arrays.asList(desktopWindow1, desktopWindow2)),
-                        /* formFactor= */ FormFactor.DESKTOP);
+        mDataProvider = new ForeignSessionTabResumptionDataProvider(mSource, () -> {});
+        mDataProvider.setStatusChangedCallback(
+                () -> {
+                    ++mStatusChangedCallbackCounter;
+                });
 
-        ForeignSessionWindow tabletWindow1 =
-                new ForeignSessionWindow(
-                        /* timestamp= */ makeTimestamp(8, 1, 15),
-                        /* sessionId= */ 301,
-                        /* tabs= */ new ArrayList<>(Arrays.asList(TAB5, TAB6, TAB7)));
-        ForeignSession tabletForeignSession =
-                new ForeignSession(
-                        /* tag= */ "TagForTablet",
-                        /* name= */ "My Tablet",
-                        /* modifiedTime= */ makeTimestamp(8, 5, 20),
-                        /* windows= */ new ArrayList<>(Arrays.asList(tabletWindow1)),
-                        /* formFactor= */ FormFactor.TABLET);
-
-        ArrayList<ForeignSession> foreignSessions =
-                new ArrayList<>(Arrays.asList(desktopForeignSession, tabletForeignSession));
-        when(mForeignSessionHelper.getForeignSessions()).thenReturn(foreignSessions);
+        verify(mSource).addObserver(mDataChangedObserverCaptor.capture());
+        mDataChangedObserver = mDataChangedObserverCaptor.getValue();
+        Assert.assertNotNull(mDataChangedObserver);
     }
 
     @After
     public void tearDown() {
         if (mDataProvider != null) {
             mDataProvider.destroy();
+            verify(mSource).removeObserver(mDataChangedObserver);
         }
     }
 
     @Test
     @SmallTest
     public void testMainFlow() {
-        // Initially signed in and synced.
-        createDataProvider(/* isSignedIn= */ true, /* isSynced= */ true);
-        mDataProvider.fetchSuggestions(this::expectFilteredSortedSuggestions);
-        // In production, fetchSuggestions() is async. In test, the provided fakes are eager. For
-        // simplicity, in test we assume eagerness, and not worry about awaiting async calls.
-        Assert.assertEquals(0, mStatusChangedCallbackCounter);
-        Assert.assertEquals(1, mSuggestionCallbackCounter);
-        // Repeat.
-        mDataProvider.fetchSuggestions(this::expectFilteredSortedSuggestions);
-        Assert.assertEquals(0, mStatusChangedCallbackCounter);
-        Assert.assertEquals(2, mSuggestionCallbackCounter);
-        // Disable sync.
-        toggleIsSyncedThenNotify(false);
-        Assert.assertEquals(1, mStatusChangedCallbackCounter);
-        mDataProvider.fetchSuggestions(this::expectNullSuggestions);
-        Assert.assertEquals(1, mStatusChangedCallbackCounter);
-        Assert.assertEquals(3, mSuggestionCallbackCounter);
-        // Enable sync.
-        toggleIsSyncedThenNotify(true);
-        Assert.assertEquals(2, mStatusChangedCallbackCounter);
-        mDataProvider.fetchSuggestions(this::expectFilteredSortedSuggestions);
-        Assert.assertEquals(2, mStatusChangedCallbackCounter);
-        Assert.assertEquals(4, mSuggestionCallbackCounter);
-        // Sign out.
-        toggleIsSignedInThenNotify(false);
-        Assert.assertEquals(3, mStatusChangedCallbackCounter);
-        mDataProvider.fetchSuggestions(this::expectNullSuggestions);
-        Assert.assertEquals(3, mStatusChangedCallbackCounter);
-        Assert.assertEquals(5, mSuggestionCallbackCounter);
-        // Sign in.
-        toggleIsSignedInThenNotify(true);
-        Assert.assertEquals(4, mStatusChangedCallbackCounter);
-        mDataProvider.fetchSuggestions(this::expectFilteredSortedSuggestions);
-        Assert.assertEquals(4, mStatusChangedCallbackCounter);
-        Assert.assertEquals(6, mSuggestionCallbackCounter);
-    }
+        when(mSource.canUseData()).thenReturn(true);
+        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS);
+        when(mSource.getSuggestions())
+                .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
 
-    @Test
-    @SmallTest
-    public void testInitiallyNotSignedIn() {
-        // Initially not signed in.
-        createDataProvider(/* isSignedIn= */ false, /* isSynced= */ false);
-        mDataProvider.fetchSuggestions(this::expectNullSuggestions);
-        Assert.assertEquals(0, mStatusChangedCallbackCounter);
-        Assert.assertEquals(1, mSuggestionCallbackCounter);
-        // Sign in: Still bad.
-        toggleIsSignedInThenNotify(true);
-        Assert.assertEquals(1, mStatusChangedCallbackCounter);
-        mDataProvider.fetchSuggestions(this::expectNullSuggestions);
-        Assert.assertEquals(1, mStatusChangedCallbackCounter);
-        Assert.assertEquals(2, mSuggestionCallbackCounter);
-        // Enable sync: Finally good.
-        toggleIsSyncedThenNotify(true);
-        Assert.assertEquals(2, mStatusChangedCallbackCounter);
-        mDataProvider.fetchSuggestions(this::expectFilteredSortedSuggestions);
-        Assert.assertEquals(2, mStatusChangedCallbackCounter);
-        Assert.assertEquals(3, mSuggestionCallbackCounter);
-    }
-
-    @Test
-    @SmallTest
-    public void testInitiallyNotSynced() {
-        // Initially signed in, but not synced.
-        createDataProvider(/* isSignedIn= */ true, /* isSynced= */ false);
-        mDataProvider.fetchSuggestions(this::expectNullSuggestions);
-        Assert.assertEquals(0, mStatusChangedCallbackCounter);
-        Assert.assertEquals(1, mSuggestionCallbackCounter);
-        // Enable sync: Now good.
-        toggleIsSyncedThenNotify(true);
-        Assert.assertEquals(1, mStatusChangedCallbackCounter);
-        mDataProvider.fetchSuggestions(this::expectFilteredSortedSuggestions);
-        Assert.assertEquals(1, mStatusChangedCallbackCounter);
-        Assert.assertEquals(2, mSuggestionCallbackCounter);
-    }
-
-    private void createDataProvider(boolean isSignedIn, boolean isSynced) {
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(isSynced);
-        mDataProvider =
-                new ForeignSessionTabResumptionDataProvider(
-                        /* signinManager= */ mSigninManager,
-                        /* identityManager= */ mIdentityManager,
-                        /* syncService= */ mSyncService,
-                        /* foreignSessionHelper= */ mForeignSessionHelper,
-                        /* forcedCurrentTimeMs= */ CURRENT_TIME_MS);
-
-        verify(mSigninManager).addSignInStateObserver(mSignInStateObserverCaptor.capture());
-        verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
-        Assert.assertEquals(mDataProvider, mSignInStateObserverCaptor.getValue());
-        Assert.assertEquals(mDataProvider, mSyncStateChangedListenerCaptor.getValue());
-
-        mDataProvider.setStatusChangedCallback(
-                () -> {
-                    ++mStatusChangedCallbackCounter;
+        mDataProvider.fetchSuggestions(
+                (List<SuggestionEntry> suggestions) -> {
+                    Assert.assertEquals(3, suggestions.size());
+                    Assert.assertEquals(ENTRY1, suggestions.get(0));
+                    Assert.assertEquals(ENTRY2, suggestions.get(1));
+                    Assert.assertEquals(ENTRY3, suggestions.get(2));
                 });
+        Assert.assertEquals(0, mStatusChangedCallbackCounter);
+
+        // ForeignSessionDataChanged event lead to dispatch (causing module refresh).
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        Assert.assertEquals(1, mStatusChangedCallbackCounter);
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        Assert.assertEquals(2, mStatusChangedCallbackCounter);
+
+        // 3s elapsed, same as before; if ForeignSessionTabResumptionDataSource receives new
+        // data at this time, it can still cause module refresh.
+        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS + TimeUnit.SECONDS.toMillis(3));
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        Assert.assertEquals(3, mStatusChangedCallbackCounter);
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        Assert.assertEquals(4, mStatusChangedCallbackCounter);
+
+        // 1min elapsed, well beyond lock threshold.
+        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS + TimeUnit.MINUTES.toMillis(1));
+        // Data is now locked: Non-permission update no longer cause module refresh.
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
+        Assert.assertEquals(4, mStatusChangedCallbackCounter);
+        // Permission update (login or sync state change) can cause module refresh.
+        mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
+        Assert.assertEquals(5, mStatusChangedCallbackCounter);
     }
 
-    private void toggleIsSignedInThenNotify(boolean isSignedIn) {
-        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
-        // For simplicity, call handlers directly instead of using `mSigninManager`.
-        if (isSignedIn) {
-            mSignInStateObserverCaptor.getValue().onSignedIn();
-        } else {
-            mSignInStateObserverCaptor.getValue().onSignedOut();
-        }
-    }
+    @Test
+    @SmallTest
+    public void testCannotUseData() {
+        when(mSource.canUseData()).thenReturn(false);
+        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS);
+        when(mSource.getSuggestions())
+                .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
 
-    private void toggleIsSyncedThenNotify(boolean isSynced) {
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(isSynced);
-        // For simplicity, call handlers directly instead of using `mSyncService`.
-        mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
-    }
-
-    private void expectFilteredSortedSuggestions(@Nullable List<SuggestionEntry> suggestions) {
-        // There are 7 tabs total, but TAB3 is invalid, and TAB2 is stale, resulting in 5.
-        ++mSuggestionCallbackCounter;
-        Assert.assertEquals(5, suggestions.size());
-        // Ensure sorted.
-        SuggestionEntry prevEntry = null;
-        for (SuggestionEntry entry : suggestions) {
-            if (prevEntry != null) {
-                Assert.assertTrue(prevEntry.compareTo(entry) < 0);
-            }
-            prevEntry = entry;
-        }
-        // Just check values for the first entry, which should be TAB6, being the most recent.
-        SuggestionEntry firstEntry = suggestions.get(0);
-        Assert.assertEquals("My Tablet", firstEntry.sourceName);
-        Assert.assertEquals(JUnitTestGURLs.INITIAL_URL, firstEntry.url);
-        Assert.assertEquals("Initial", firstEntry.title);
-        Assert.assertEquals(makeTimestamp(8, 0, 0), firstEntry.lastActiveTime);
-        Assert.assertEquals(106, firstEntry.id);
-    }
-
-    private void expectNullSuggestions(@Nullable List<SuggestionEntry> suggestions) {
-        ++mSuggestionCallbackCounter;
-        Assert.assertEquals(null, suggestions);
+        mDataProvider.fetchSuggestions(
+                (List<SuggestionEntry> suggestions) -> {
+                    Assert.assertEquals(0, suggestions.size());
+                });
     }
 }

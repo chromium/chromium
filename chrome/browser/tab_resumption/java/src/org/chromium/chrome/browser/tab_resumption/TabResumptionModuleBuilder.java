@@ -24,6 +24,11 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
 
+    // Foreign Session data source that listens to login / sync status changes. Shared among data
+    // providers to reduce resource use, and ref-counted to ensure proper resource management.
+    private ForeignSessionTabResumptionDataSource mForeignSessionTabResumptionDataSource;
+    private int mForeignSessionTabResumptionDataSourceRefCount;
+
     public TabResumptionModuleBuilder(
             @NonNull Context context, @NonNull ObservableSupplier<Profile> profileSupplier) {
         mContext = context;
@@ -39,9 +44,10 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         if (!TabResumptionModuleUtils.shouldShowTabResumptionModule(profile)) {
             return false;
         }
-
+        addRefToDataSource();
         TabResumptionDataProvider dataProvider =
-                ForeignSessionTabResumptionDataProvider.createFromProfile(profile);
+                new ForeignSessionTabResumptionDataProvider(
+                        mForeignSessionTabResumptionDataSource, this::removeRefToDataSource);
         UrlImageProvider urlImageProvider = new UrlImageProvider(profile, mContext);
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
@@ -85,5 +91,24 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         Profile profile = mProfileSupplier.get();
         // It is possible that an incognito profile is provided by the supplier. See b/326619334.
         return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
+    }
+
+    private void addRefToDataSource() {
+        if (mForeignSessionTabResumptionDataSourceRefCount == 0) {
+            assert mForeignSessionTabResumptionDataSource == null;
+            Profile profile = getRegularProfile();
+            mForeignSessionTabResumptionDataSource =
+                    ForeignSessionTabResumptionDataSource.createFromProfile(profile);
+        }
+        ++mForeignSessionTabResumptionDataSourceRefCount;
+    }
+
+    private void removeRefToDataSource() {
+        assert mForeignSessionTabResumptionDataSource != null;
+        --mForeignSessionTabResumptionDataSourceRefCount;
+        if (mForeignSessionTabResumptionDataSourceRefCount == 0) {
+            mForeignSessionTabResumptionDataSource.destroy();
+            mForeignSessionTabResumptionDataSource = null;
+        }
     }
 }

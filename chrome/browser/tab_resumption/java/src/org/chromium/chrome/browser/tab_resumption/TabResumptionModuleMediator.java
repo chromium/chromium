@@ -58,6 +58,11 @@ public class TabResumptionModuleMediator {
      * available then hides the module.
      */
     void loadModule() {
+        // Abort if the module has already loaded but is hidden.
+        if (mHasPreviousLoad && !mModel.get(TabResumptionModuleProperties.IS_VISIBLE)) {
+            return;
+        }
+
         mDataProvider.fetchSuggestions(
                 (List<SuggestionEntry> suggestions) -> {
                     SuggestionBundle bundle = null;

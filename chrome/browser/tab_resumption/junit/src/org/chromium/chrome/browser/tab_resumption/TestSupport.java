@@ -6,8 +6,15 @@ package org.chromium.chrome.browser.tab_resumption;
 
 import android.graphics.Bitmap;
 
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
+import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestSupport {
     static final long BASE_TIME_MS = 1705000000000L; // 2024-01-11, 14:06:40 EST.
@@ -81,5 +88,60 @@ public class TestSupport {
      */
     static long makeTimestamp(int hours, int minutes, int seconds) {
         return BASE_TIME_MS + ((hours * 60L + minutes) * 60L + seconds) * 1000L;
+    }
+
+    /** Makes a list of fixed ForeignSession test data. */
+    static List<ForeignSession> makeForeignSessionsA() {
+        ForeignSessionWindow desktopWindow1 =
+                new ForeignSessionWindow(
+                        /* timestamp= */ makeTimestamp(3, 30, 0),
+                        /* sessionId= */ 201,
+                        /* tabs= */ new ArrayList<>(Arrays.asList(TAB1, TAB2)));
+        ForeignSessionWindow desktopWindow2 =
+                new ForeignSessionWindow(
+                        /* timestamp= */ makeTimestamp(9, 15, 20),
+                        /* sessionId= */ 202,
+                        /* tabs= */ new ArrayList<>(Arrays.asList(TAB3, TAB4)));
+        ForeignSession desktopForeignSession =
+                new ForeignSession(
+                        /* tag= */ "TagForDesktop",
+                        /* name= */ "My Desktop",
+                        /* modifiedTime= */ makeTimestamp(10, 0, 0),
+                        /* windows= */ new ArrayList<>(
+                                Arrays.asList(desktopWindow1, desktopWindow2)),
+                        /* formFactor= */ FormFactor.DESKTOP);
+
+        ForeignSessionWindow tabletWindow1 =
+                new ForeignSessionWindow(
+                        /* timestamp= */ makeTimestamp(8, 1, 15),
+                        /* sessionId= */ 301,
+                        /* tabs= */ new ArrayList<>(Arrays.asList(TAB5, TAB6, TAB7)));
+        ForeignSession tabletForeignSession =
+                new ForeignSession(
+                        /* tag= */ "TagForTablet",
+                        /* name= */ "My Tablet",
+                        /* modifiedTime= */ makeTimestamp(8, 5, 20),
+                        /* windows= */ new ArrayList<>(Arrays.asList(tabletWindow1)),
+                        /* formFactor= */ FormFactor.TABLET);
+
+        return new ArrayList<>(Arrays.asList(desktopForeignSession, tabletForeignSession));
+    }
+
+    /** Makes a shorter, altered list of fixed ForeignSession test data. */
+    static List<ForeignSession> makeForeignSessionsB() {
+        ForeignSessionWindow tabletWindow1 =
+                new ForeignSessionWindow(
+                        /* timestamp= */ makeTimestamp(9, 1, 15),
+                        /* sessionId= */ 301,
+                        /* tabs= */ new ArrayList<>(Arrays.asList(TAB5, TAB7)));
+        ForeignSession tabletForeignSession =
+                new ForeignSession(
+                        /* tag= */ "TagForTablet",
+                        /* name= */ "My Tablet",
+                        /* modifiedTime= */ makeTimestamp(9, 5, 20),
+                        /* windows= */ new ArrayList<>(Arrays.asList(tabletWindow1)),
+                        /* formFactor= */ FormFactor.TABLET);
+
+        return new ArrayList<>(Arrays.asList(tabletForeignSession));
     }
 }
