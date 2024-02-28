@@ -113,6 +113,7 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    mock_gpu_delegate_ = nullptr;
     converter_.reset();
     RunTasksAndVerifyAndClearExpectations();
   }

@@ -215,6 +215,7 @@ class VideoDecoderPipelineTest
   ~VideoDecoderPipelineTest() override = default;
 
   void TearDown() override {
+    pool_ = nullptr;
     VideoDecoderPipeline::DestroyAsync(std::move(decoder_));
     task_environment_.RunUntilIdle();
   }
