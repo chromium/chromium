@@ -8,10 +8,12 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 
 BookmarkModelBridge::BookmarkModelBridge(
     id<BookmarkModelBridgeObserver> observer,
-    bookmarks::BookmarkModel* model)
+    LegacyBookmarkModel* model)
     : observer_(observer) {
   DCHECK(observer_);
   DCHECK(model);
@@ -21,12 +23,12 @@ BookmarkModelBridge::BookmarkModelBridge(
 BookmarkModelBridge::~BookmarkModelBridge() {}
 
 void BookmarkModelBridge::BookmarkModelLoaded(bool ids_reassigned) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   [observer_ bookmarkModelLoaded:model];
 }
 
 void BookmarkModelBridge::BookmarkModelBeingDeleted() {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   model_observation_.Reset();
 
   SEL selector = @selector(bookmarkModelBeingDeleted:);
@@ -40,7 +42,7 @@ void BookmarkModelBridge::BookmarkNodeMoved(
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   const bookmarks::BookmarkNode* node = new_parent->children()[new_index].get();
   [observer_ bookmarkModel:model
                didMoveNode:node
@@ -52,7 +54,7 @@ void BookmarkModelBridge::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   [observer_ bookmarkModel:model didChangeChildrenForNode:parent];
   SEL selector = @selector(bookmarkModel:didAddNode:toFolder:);
   if ([observer_ respondsToSelector:selector]) {
@@ -65,7 +67,7 @@ void BookmarkModelBridge::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   SEL selector = @selector(bookmarkModel:willDeleteNode:fromFolder:);
   if ([observer_ respondsToSelector:selector]) {
     [observer_ bookmarkModel:model willDeleteNode:node fromFolder:parent];
@@ -77,7 +79,7 @@ void BookmarkModelBridge::BookmarkNodeRemoved(
     size_t old_index,
     const bookmarks::BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   // Calling -bookmarkModel:didDeleteNode:fromFolder: may cause the current
   // bridge object to be destroyed, so code must not access `this` after (even
   // implictly), so copy `observer_` to a local variable. Use `__weak` for the
@@ -91,7 +93,7 @@ void BookmarkModelBridge::BookmarkNodeRemoved(
 
 void BookmarkModelBridge::OnWillChangeBookmarkNode(
     const bookmarks::BookmarkNode* node) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   SEL selector = @selector(bookmarkModel:willChangeBookmarkNode:);
   if ([observer_ respondsToSelector:selector]) {
     [observer_ bookmarkModel:model willChangeBookmarkNode:node];
@@ -100,13 +102,13 @@ void BookmarkModelBridge::OnWillChangeBookmarkNode(
 
 void BookmarkModelBridge::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   [observer_ bookmarkModel:model didChangeNode:node];
 }
 
 void BookmarkModelBridge::BookmarkNodeFaviconChanged(
     const bookmarks::BookmarkNode* node) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   SEL selector = @selector(bookmarkModel:didChangeFaviconForNode:);
   if ([observer_ respondsToSelector:selector]) {
     [observer_ bookmarkModel:model didChangeFaviconForNode:node];
@@ -115,12 +117,12 @@ void BookmarkModelBridge::BookmarkNodeFaviconChanged(
 
 void BookmarkModelBridge::BookmarkNodeChildrenReordered(
     const bookmarks::BookmarkNode* node) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   [observer_ bookmarkModel:model didChangeChildrenForNode:node];
 }
 
 void BookmarkModelBridge::OnWillRemoveAllUserBookmarks() {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   SEL selector = @selector(bookmarkModelWillRemoveAllNodes:);
   if ([observer_ respondsToSelector:selector]) {
     [observer_ bookmarkModelWillRemoveAllNodes:model];
@@ -129,6 +131,6 @@ void BookmarkModelBridge::OnWillRemoveAllUserBookmarks() {
 
 void BookmarkModelBridge::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls) {
-  bookmarks::BookmarkModel* model = model_observation_.GetSource();
+  LegacyBookmarkModel* model = model_observation_.GetSource();
   [observer_ bookmarkModelRemovedAllNodes:model];
 }

@@ -100,6 +100,7 @@ source_set("unit_tests") {
     "//components/sync/service",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/shared/model/application_context",

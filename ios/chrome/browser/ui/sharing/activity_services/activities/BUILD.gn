@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//components/bookmarks/common",
     "//components/prefs:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/shared/model/browser",

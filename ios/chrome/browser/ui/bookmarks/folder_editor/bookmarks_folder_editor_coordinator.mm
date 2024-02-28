@@ -87,10 +87,10 @@
   // TODO(crbug.com/1402758): Create a mediator.
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
+  LegacyBookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
-  bookmarks::BookmarkModel* accountBookmarkModel =
+  LegacyBookmarkModel* accountBookmarkModel =
       ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);

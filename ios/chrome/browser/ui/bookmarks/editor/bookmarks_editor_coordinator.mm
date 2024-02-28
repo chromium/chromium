@@ -86,10 +86,10 @@
   _viewController.delegate = self;
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
+  LegacyBookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
-  bookmarks::BookmarkModel* accountBookmarkModel =
+  LegacyBookmarkModel* accountBookmarkModel =
       ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);

@@ -71,12 +71,11 @@ struct TitledUrlMatch;
 // You should NOT directly create a BookmarkModel, instead go through the
 // BookmarkModelFactory.
 //
-// Marked final to prevent unintended subclassing.
 // `MoveToOtherModelWithNewNodeIdsAndUuids` affects two instances, and assumes
 // that both instances are `BookmarkModel`, not some subclasses.
-class BookmarkModel final : public CoreBookmarkModel,
-                            public BookmarkUndoProvider,
-                            public base::SupportsUserData {
+class BookmarkModel : public CoreBookmarkModel,
+                      public BookmarkUndoProvider,
+                      public base::SupportsUserData {
  public:
   // `client` must not be null.
   explicit BookmarkModel(std::unique_ptr<BookmarkClient> client);

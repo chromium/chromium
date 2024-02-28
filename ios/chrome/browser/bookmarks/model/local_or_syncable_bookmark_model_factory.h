@@ -11,19 +11,17 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;
-
-namespace bookmarks {
-class BookmarkModel;
-}
+class LegacyBookmarkModel;
 
 namespace ios {
+
 // Owns local/syncable BookmarkModels.
 class LocalOrSyncableBookmarkModelFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static bookmarks::BookmarkModel* GetForBrowserState(
+  static LegacyBookmarkModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
-  static bookmarks::BookmarkModel* GetForBrowserStateIfExists(
+  static LegacyBookmarkModel* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
   static LocalOrSyncableBookmarkModelFactory* GetInstance();
 

@@ -7,24 +7,23 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
 
 // Returns the bookmark model designed by `type`.
-bookmarks::BookmarkModel* GetBookmarkModelForType(
+LegacyBookmarkModel* GetBookmarkModelForType(
     BookmarkModelType type,
-    bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model) {
+    LegacyBookmarkModel* local_or_syncable_bookmark_model,
+    LegacyBookmarkModel* account_bookmark_model) {
   switch (type) {
     case BookmarkModelType::kAccount:
       return account_bookmark_model;
@@ -59,7 +58,8 @@ bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
   return true;
 }
 
-std::vector<const BookmarkNode*> PrimaryPermanentNodes(BookmarkModel* model) {
+std::vector<const BookmarkNode*> PrimaryPermanentNodes(
+    LegacyBookmarkModel* model) {
   DCHECK(model->loaded());
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(model->mobile_node());
@@ -68,7 +68,8 @@ std::vector<const BookmarkNode*> PrimaryPermanentNodes(BookmarkModel* model) {
   return nodes;
 }
 
-bool IsPrimaryPermanentNode(const BookmarkNode* node, BookmarkModel* model) {
+bool IsPrimaryPermanentNode(const BookmarkNode* node,
+                            LegacyBookmarkModel* model) {
   std::vector<const BookmarkNode*> primary_nodes(PrimaryPermanentNodes(model));
   return base::Contains(primary_nodes, node);
 }
@@ -98,15 +99,15 @@ void SetLastUsedBookmarkFolder(PrefService* prefs,
 const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     PrefService* prefs,
     bool is_account_bookmark_model_available,
-    bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model) {
+    LegacyBookmarkModel* local_or_syncable_bookmark_model,
+    LegacyBookmarkModel* account_bookmark_model) {
   int64_t node_id =
       prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks);
 
   if (node_id != kLastUsedBookmarkFolderNone) {
     BookmarkModelType type = static_cast<BookmarkModelType>(prefs->GetInteger(
         prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
-    bookmarks::BookmarkModel* bookmark_model = GetBookmarkModelForType(
+    LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(
         type, local_or_syncable_bookmark_model, account_bookmark_model);
     const BookmarkNode* result =
         bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
@@ -120,7 +121,7 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   BookmarkModelType type = (is_account_bookmark_model_available)
                                ? BookmarkModelType::kAccount
                                : BookmarkModelType::kLocalOrSyncable;
-  bookmarks::BookmarkModel* bookmark_model = GetBookmarkModelForType(
+  LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(
       type, local_or_syncable_bookmark_model, account_bookmark_model);
   return bookmark_model->mobile_node();
 }

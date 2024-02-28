@@ -20,6 +20,8 @@ source_set("model") {
     "bookmark_model_factory.h",
     "bookmark_undo_service_factory.cc",
     "bookmark_undo_service_factory.h",
+    "legacy_bookmark_model.cc",
+    "legacy_bookmark_model.h",
     "local_or_syncable_bookmark_model_factory.cc",
     "local_or_syncable_bookmark_model_factory.h",
     "local_or_syncable_bookmark_sync_service_factory.h",

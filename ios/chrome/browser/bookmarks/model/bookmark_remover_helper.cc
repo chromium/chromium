@@ -11,6 +11,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
+#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
@@ -56,12 +57,12 @@ void BookmarkRemoverHelper::RemoveAllUserBookmarksIOS(Callback completion) {
   }
 
   // Wait for BookmarkModels to finish loading before deleting entries.
-  bookmarks::BookmarkModel* local_or_syncable_bookmark_model =
+  LegacyBookmarkModel* local_or_syncable_bookmark_model =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browser_state_);
   bookmark_model_observations_.AddObservation(local_or_syncable_bookmark_model);
 
-  bookmarks::BookmarkModel* account_bookmark_model =
+  LegacyBookmarkModel* account_bookmark_model =
       ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_);
   if (account_bookmark_model) {
     bookmark_model_observations_.AddObservation(account_bookmark_model);

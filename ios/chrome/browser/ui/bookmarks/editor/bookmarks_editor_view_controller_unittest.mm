@@ -6,8 +6,8 @@
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
 
 #import "base/test/metrics/user_action_tester.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"

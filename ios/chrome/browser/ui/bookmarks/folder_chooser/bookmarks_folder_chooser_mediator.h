@@ -11,11 +11,11 @@
 #import <Foundation/Foundation.h>
 #import <set>
 
-@protocol BookmarksFolderChooserMediatorDelegate;
 class AuthenticationService;
+@protocol BookmarksFolderChooserMediatorDelegate;
+class LegacyBookmarkModel;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -40,9 +40,9 @@ class SyncService;
 // nodes that are being edited (moved to a folder).
 - (instancetype)
     initWithLocalOrSyncableBookmarkModel:
-        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
                     accountBookmarkModel:
-                        (bookmarks::BookmarkModel*)accountBookmarkModel
+                        (LegacyBookmarkModel*)accountBookmarkModel
                              editedNodes:
                                  (std::set<const bookmarks::BookmarkNode*>)
                                      editedNodes

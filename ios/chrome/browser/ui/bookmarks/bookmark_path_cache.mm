@@ -4,15 +4,14 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 
-using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
@@ -41,16 +40,16 @@ const int64_t kFolderNone = -1;
 
 + (BOOL)getBookmarkTopMostRowCacheWithPrefService:(PrefService*)prefService
                              localOrSyncableModel:
-                                 (bookmarks::BookmarkModel*)localOrSyncableModel
+                                 (LegacyBookmarkModel*)localOrSyncableModel
                                      accountModel:
-                                         (bookmarks::BookmarkModel*)accountModel
+                                         (LegacyBookmarkModel*)accountModel
                                          folderId:(int64_t*)folderId
                                         modelType:(BookmarkModelType*)modelType
                                        topMostRow:(int*)topMostRow {
   *folderId = prefService->GetInt64(prefs::kIosBookmarkCachedFolderId);
   *modelType = static_cast<BookmarkModelType>(
       prefService->GetInt64(prefs::kIosBookmarkCachedFolderModel));
-  bookmarks::BookmarkModel* model;
+  LegacyBookmarkModel* model;
   if (*modelType == BookmarkModelType::kLocalOrSyncable) {
     model = localOrSyncableModel;
   } else {

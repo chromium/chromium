@@ -11,11 +11,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_consumer.h"
@@ -24,7 +24,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
@@ -43,7 +42,7 @@ enum class TestParam {
 @property(nonatomic, assign) const BookmarkNode* bookmarkNodeDeletedArg;
 // The argument provided when `bookmarkModelWillRemoveAllNodes:` was called.
 @property(nonatomic, assign)
-    const BookmarkModel* bookmarkModelWillRemoveAllNodesArg;
+    const LegacyBookmarkModel* bookmarkModelWillRemoveAllNodesArg;
 
 - (instancetype)initWithNodes:(const std::set<const BookmarkNode*>&)nodes;
 
@@ -67,7 +66,8 @@ enum class TestParam {
   _bookmarkNodeDeletedArg = bookmarkNode;
 }
 
-- (void)bookmarkModelWillRemoveAllNodes:(const BookmarkModel*)bookmarkModel {
+- (void)bookmarkModelWillRemoveAllNodes:
+    (const LegacyBookmarkModel*)bookmarkModel {
   _editedNodes.clear();
   _bookmarkModelWillRemoveAllNodesArg = bookmarkModel;
 }
@@ -153,7 +153,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
   IOSChromeScopedTestingLocalState local_state_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  raw_ptr<BookmarkModel> model_;
+  raw_ptr<LegacyBookmarkModel> model_;
   BookmarksFolderChooserSubDataSourceImpl* sub_data_source_;
   id mock_consumer_;
   FakeBookmarksFolderChooserParentDataSource* fake_parent_data_source_;

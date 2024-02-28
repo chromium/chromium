@@ -6,15 +6,15 @@
 
 #import <memory>
 
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 
 @class TestBookmarkModelBridgeObserver;
 
 @interface TestBookmarkModelBridgeOwner : NSObject
 
-- (instancetype)initWithModel:(bookmarks::BookmarkModel*)model
+- (instancetype)initWithModel:(LegacyBookmarkModel*)model
                      observer:(TestBookmarkModelBridgeObserver*)observer
     NS_DESIGNATED_INITIALIZER;
 
@@ -40,7 +40,7 @@
   bool _bookmarkNodeDeletedCalled;
 }
 
-- (instancetype)initWithModel:(bookmarks::BookmarkModel*)model
+- (instancetype)initWithModel:(LegacyBookmarkModel*)model
                      observer:(TestBookmarkModelBridgeObserver*)observer {
   if ((self = [super init])) {
     DCHECK(model);
@@ -72,27 +72,27 @@
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
     didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
 }
 
-- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
 }
 
-- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
           didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
            fromParent:(const bookmarks::BookmarkNode*)oldParent
              toParent:(const bookmarks::BookmarkNode*)newParent {
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [_owner bookmarkNodeDeleted];

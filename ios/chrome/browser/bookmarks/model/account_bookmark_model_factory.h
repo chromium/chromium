@@ -11,16 +11,14 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;
-
-namespace bookmarks {
-class BookmarkModel;
-}
+class LegacyBookmarkModel;
 
 namespace ios {
+
 // Owns BookmarkModels associated with the primary account.
 class AccountBookmarkModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static bookmarks::BookmarkModel* GetForBrowserState(
+  static LegacyBookmarkModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
   static AccountBookmarkModelFactory* GetInstance();
   // Returns the default factory, useful in tests where it's null by default.

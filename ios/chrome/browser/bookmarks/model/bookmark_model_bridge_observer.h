@@ -8,52 +8,53 @@
 #import <Foundation/Foundation.h>
 
 #include "base/scoped_observation.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
+
+class LegacyBookmarkModel;
 
 // The ObjC translations of the C++ observer callbacks are defined here.
 @protocol BookmarkModelBridgeObserver <NSObject>
 // The bookmark model has loaded.
-- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model;
 // The node has changed, but not its children.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // The node has not changed, but the ordering and existence of its children have
 // changed.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
     didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // The node has moved to a new parent folder.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
           didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
            fromParent:(const bookmarks::BookmarkNode*)oldParent
              toParent:(const bookmarks::BookmarkNode*)newParent;
 // `node` was deleted from `folder`.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder;
 // All non-permanent nodes have been removed in model.
-- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model;
 
 @optional
 // Called before removing a bookmark node.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
        willDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder;
 // Called after adding a bookmark node.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
            didAddNode:(const bookmarks::BookmarkNode*)node
              toFolder:(const bookmarks::BookmarkNode*)folder;
 
 // Called before removing all non-permanent nodes.
-- (void)bookmarkModelWillRemoveAllNodes:(const bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model;
 // The node favicon changed.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
     didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // Called before changing a bookmark node.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
     willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // Called when the model is being deleted.
-- (void)bookmarkModelBeingDeleted:(bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelBeingDeleted:(LegacyBookmarkModel*)model;
 @end
 
 // A bridge that translates BookmarkModelObserver C++ callbacks into ObjC
@@ -61,7 +62,7 @@
 class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
  public:
   explicit BookmarkModelBridge(id<BookmarkModelBridgeObserver> observer,
-                               bookmarks::BookmarkModel* model);
+                               LegacyBookmarkModel* model);
   ~BookmarkModelBridge() override;
 
  private:
@@ -93,8 +94,7 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 
   __weak id<BookmarkModelBridgeObserver> observer_;
 
-  base::ScopedObservation<bookmarks::BookmarkModel,
-                          bookmarks::BookmarkModelObserver>
+  base::ScopedObservation<LegacyBookmarkModel, bookmarks::BookmarkModelObserver>
       model_observation_{this};
 };
 

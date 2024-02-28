@@ -10,10 +10,10 @@
 
 enum class BookmarkModelType;
 class ChromeBrowserState;
+class LegacyBookmarkModel;
 class PrefService;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -37,12 +37,12 @@ extern const int64_t kLastUsedBookmarkFolderNone;
 // and whose folder children should be shown in the bookmark menu.
 // `model` must be loaded.
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
-    bookmarks::BookmarkModel* model);
+    LegacyBookmarkModel* model);
 
 // Returns whether `node` is a primary permanent node in the sense of
 // `PrimaryPermanentNodes`.
 bool IsPrimaryPermanentNode(const bookmarks::BookmarkNode* node,
-                            bookmarks::BookmarkModel* model);
+                            LegacyBookmarkModel* model);
 
 // Whether a bookmark was manually moved by the user to a different folder since
 // last signin/signout.
@@ -65,7 +65,7 @@ void SetLastUsedBookmarkFolder(PrefService* prefs,
 const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     PrefService* prefs,
     bool is_account_bookmark_model_available,
-    bookmarks::BookmarkModel* profile_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model);
+    LegacyBookmarkModel* profile_bookmark_model,
+    LegacyBookmarkModel* account_bookmark_model);
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_

@@ -14,10 +14,6 @@
 @protocol BookmarksFolderChooserMutator;
 @protocol BookmarksFolderChooserViewControllerPresentationDelegate;
 
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
-
 // A folder selector view controller.
 // This controller monitors the state of the bookmark model, so changes to the
 // bookmark model can affect this controller's state.

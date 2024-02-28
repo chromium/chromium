@@ -106,6 +106,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

@@ -13,8 +13,8 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/test/test_timeouts.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -191,7 +191,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 
   // Model for bookmarks.
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<LegacyBookmarkModel> bookmark_model_;
 
   // Browser for the coordinator.
   std::unique_ptr<Browser> browser_;

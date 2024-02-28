@@ -11,6 +11,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
@@ -46,11 +47,11 @@ class MainControllerTest : public PlatformTest {
 
     browser_state_ = builder.Build();
 
-    bookmarks::BookmarkModel* bookmarks_model =
+    LegacyBookmarkModel* bookmarks_model =
         ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
             browser_state_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmarks_model);
-    bookmarks::BookmarkModel* account_bookmark_model =
+    LegacyBookmarkModel* account_bookmark_model =
         ios::AccountBookmarkModelFactory::GetForBrowserState(
             browser_state_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model);

@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_sub_data_source_impl.h"
 
 #import "base/memory/raw_ptr.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 
-using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 @interface BookmarksFolderChooserSubDataSourceImpl () <
@@ -18,13 +17,13 @@ using bookmarks::BookmarkNode;
 
 @implementation BookmarksFolderChooserSubDataSourceImpl {
   // Bookmarks model object.
-  raw_ptr<BookmarkModel> _bookmarkModel;
+  raw_ptr<LegacyBookmarkModel> _bookmarkModel;
   // Observer for `_bookmarkModel` changes.
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
   __weak id<BookmarksFolderChooserParentDataSource> _parentDataSource;
 }
 
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+- (instancetype)initWithBookmarkModel:(LegacyBookmarkModel*)bookmarkModel
                      parentDataSource:
                          (id<BookmarksFolderChooserParentDataSource>)
                              parentDataSource {
@@ -69,24 +68,24 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
   // The bookmark model is assumed to be loaded when this controller is created.
   NOTREACHED();
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (bookmarkNode->is_folder()) {
     [_consumer notifyModelUpdated];
   }
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
     didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   [_consumer notifyModelUpdated];
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
           didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
            fromParent:(const bookmarks::BookmarkNode*)oldParent
              toParent:(const bookmarks::BookmarkNode*)newParent {
@@ -95,20 +94,20 @@ using bookmarks::BookmarkNode;
   }
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [_parentDataSource bookmarkNodeDeleted:node];
   [_consumer notifyModelUpdated];
 }
 
-- (void)bookmarkModelWillRemoveAllNodes:(const BookmarkModel*)model {
+- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
   // `_consumer` is notified after the nodes are acutally deleted in
   // `bookmarkModelRemovedAllNodes`.
   [_parentDataSource bookmarkModelWillRemoveAllNodes:model];
 }
 
-- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
   [_consumer notifyModelUpdated];
 }
 

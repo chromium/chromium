@@ -12,10 +12,10 @@
 class AuthenticationService;
 @class BookmarksFolderEditorViewController;
 class Browser;
+class LegacyBookmarkModel;
 @protocol SnackbarCommands;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -76,9 +76,9 @@ class SyncService;
 // `browser` must not be `nullptr`.
 - (instancetype)
     initWithLocalOrSyncableBookmarkModel:
-        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
                     accountBookmarkModel:
-                        (bookmarks::BookmarkModel*)accountBookmarkModel
+                        (LegacyBookmarkModel*)accountBookmarkModel
                               folderNode:(const bookmarks::BookmarkNode*)folder
                         parentFolderNode:
                             (const bookmarks::BookmarkNode*)parentFolder

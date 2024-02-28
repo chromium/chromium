@@ -17,6 +17,7 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
@@ -32,8 +33,8 @@ namespace {
 std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model = std::make_unique<
-      bookmarks::BookmarkModel>(std::make_unique<BookmarkClientImpl>(
+  std::unique_ptr<LegacyBookmarkModel> bookmark_model = std::make_unique<
+      LegacyBookmarkModel>(std::make_unique<BookmarkClientImpl>(
       browser_state,
       ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
       ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
@@ -49,18 +50,17 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
 }  // namespace
 
 // static
-bookmarks::BookmarkModel*
-LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+LegacyBookmarkModel* LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<bookmarks::BookmarkModel*>(
+  return static_cast<LegacyBookmarkModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 // static
-bookmarks::BookmarkModel*
+LegacyBookmarkModel*
 LocalOrSyncableBookmarkModelFactory::GetForBrowserStateIfExists(
     ChromeBrowserState* browser_state) {
-  return static_cast<bookmarks::BookmarkModel*>(
+  return static_cast<LegacyBookmarkModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
 

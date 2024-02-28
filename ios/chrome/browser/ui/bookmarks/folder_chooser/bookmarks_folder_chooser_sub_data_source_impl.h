@@ -11,9 +11,10 @@
 #import <set>
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
+
+class LegacyBookmarkModel;
 
 // Protocol to access and update data from parent data source object. Please
 // note that the parent data source is not and should not be responsible for
@@ -26,7 +27,7 @@ class BookmarkNode;
 - (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)bookmarkNode;
 // Called before all the bookmark nodes in the model are deleted.
 - (void)bookmarkModelWillRemoveAllNodes:
-    (const bookmarks::BookmarkModel*)bookmarkModel;
+    (const LegacyBookmarkModel*)bookmarkModel;
 // The set of nodes that are being considered for a move by folder chooser.
 - (const std::set<const bookmarks::BookmarkNode*>&)editedNodes;
 
@@ -42,7 +43,7 @@ class BookmarkNode;
 
 // Both `bookmarkModel` and `parentDataSource` needs to be non null.
 // Additionally, `bookmarkModel` needs to be fully loaded.
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+- (instancetype)initWithBookmarkModel:(LegacyBookmarkModel*)bookmarkModel
                      parentDataSource:
                          (id<BookmarksFolderChooserParentDataSource>)
                              parentDataSource NS_DESIGNATED_INITIALIZER;

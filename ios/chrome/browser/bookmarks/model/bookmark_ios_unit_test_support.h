@@ -16,10 +16,10 @@
 
 class Browser;
 class GURL;
+class LegacyBookmarkModel;
 class TestChromeBrowserState;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
@@ -44,7 +44,7 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
       const std::u16string& title);
   void ChangeTitle(const std::u16string& title,
                    const bookmarks::BookmarkNode* node);
-  bookmarks::BookmarkModel* GetBookmarkModelForNode(
+  LegacyBookmarkModel* GetBookmarkModelForNode(
       const bookmarks::BookmarkNode* node);
 
   const bool wait_for_initialization_;
@@ -54,9 +54,9 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   // Bookmark model for the LocalOrSyncable storage.
-  raw_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_;
+  raw_ptr<LegacyBookmarkModel> local_or_syncable_bookmark_model_;
   // Bookmark model for the account storage.
-  raw_ptr<bookmarks::BookmarkModel> account_bookmark_model_;
+  raw_ptr<LegacyBookmarkModel> account_bookmark_model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 };
 

@@ -17,7 +17,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
@@ -25,6 +24,7 @@
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
@@ -65,7 +65,6 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
@@ -139,9 +138,9 @@ enum class PresentedState {
   base::WeakPtr<ChromeBrowserState> _browserState;
 
   // Profile bookmark model.
-  base::WeakPtr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
+  base::WeakPtr<LegacyBookmarkModel> _localOrSyncableBookmarkModel;
   // Account bookmark model.
-  base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
+  base::WeakPtr<LegacyBookmarkModel> _accountBookmarkModel;
   // Coordinator of manage sync settings.
   ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 }
@@ -162,7 +161,7 @@ enum class PresentedState {
         ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
             _browserState.get())
             ->AsWeakPtr();
-    BookmarkModel* accountBookmarkModel =
+    LegacyBookmarkModel* accountBookmarkModel =
         ios::AccountBookmarkModelFactory::GetForBrowserState(
             _browserState.get());
     if (accountBookmarkModel) {

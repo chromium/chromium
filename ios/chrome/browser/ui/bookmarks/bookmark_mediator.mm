@@ -12,7 +12,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -21,6 +20,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -34,14 +34,13 @@
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 @implementation BookmarkMediator {
   // Profile bookmark model for this mediator.
-  base::WeakPtr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
+  base::WeakPtr<LegacyBookmarkModel> _localOrSyncableBookmarkModel;
   // Account bookmark model for this mediator.
-  base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
+  base::WeakPtr<LegacyBookmarkModel> _accountBookmarkModel;
 
   // Prefs model for this mediator.
   raw_ptr<PrefService> _prefs;
@@ -64,9 +63,9 @@ using bookmarks::BookmarkNode;
 
 - (instancetype)
     initWithWithLocalOrSyncableBookmarkModel:
-        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
                         accountBookmarkModel:
-                            (bookmarks::BookmarkModel*)accountBookmarkModel
+                            (LegacyBookmarkModel*)accountBookmarkModel
                                        prefs:(PrefService*)prefs
                        authenticationService:
                            (AuthenticationService*)authenticationService
@@ -101,7 +100,7 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* defaultFolder = GetDefaultBookmarkFolder(
       _prefs, bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService),
       _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
-  BookmarkModel* modelForDefaultFolder =
+  LegacyBookmarkModel* modelForDefaultFolder =
       bookmark_utils_ios::GetBookmarkModelForNode(
           defaultFolder, _localOrSyncableBookmarkModel.get(),
           _accountBookmarkModel.get());
@@ -139,7 +138,7 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* defaultFolder = GetDefaultBookmarkFolder(
       _prefs, bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService),
       _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
-  BookmarkModel* modelForDefaultFolder =
+  LegacyBookmarkModel* modelForDefaultFolder =
       bookmark_utils_ios::GetBookmarkModelForNode(
           defaultFolder, _localOrSyncableBookmarkModel.get(),
           _accountBookmarkModel.get());
@@ -204,8 +203,10 @@ using bookmarks::BookmarkNode;
 
 - (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
                            toFolder:(const BookmarkNode*)folder {
-  BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(
-      folder, _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
+  LegacyBookmarkModel* modelForFolder =
+      bookmark_utils_ios::GetBookmarkModelForNode(
+          folder, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get());
   for (URLWithTitle* urlWithTitle in URLs) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));

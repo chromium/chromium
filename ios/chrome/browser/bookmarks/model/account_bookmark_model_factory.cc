@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
@@ -35,8 +36,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
       ChromeBrowserState::FromBrowserState(context);
   // Using nullptr for `ManagedBookmarkService`, since managed bookmarks affect
   // only the local bookmark storage.
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
+  std::unique_ptr<LegacyBookmarkModel> bookmark_model(
+      new LegacyBookmarkModel(std::make_unique<BookmarkClientImpl>(
           browser_state, /*managed_bookmark_service=*/nullptr,
           ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
               browser_state),
@@ -52,9 +53,9 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
 }  // namespace
 
 // static
-bookmarks::BookmarkModel* AccountBookmarkModelFactory::GetForBrowserState(
+LegacyBookmarkModel* AccountBookmarkModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<bookmarks::BookmarkModel*>(
+  return static_cast<LegacyBookmarkModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 

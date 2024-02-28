@@ -9,8 +9,9 @@
 
 namespace bookmarks {
 class BookmarkNode;
-class BookmarkModel;
 }  // namespace bookmarks
+
+class LegacyBookmarkModel;
 
 // Allows the bookmark editor’s view controller to reflect user’s change in the
 // model.
@@ -29,7 +30,7 @@ class BookmarkModel;
 // TODO(crbug.com/1404311): Remove those accessor and setters.
 // We temporarily use them to facilitate code migration.
 - (const bookmarks::BookmarkNode*)bookmark;
-- (bookmarks::BookmarkModel*)bookmarkModel;
+- (LegacyBookmarkModel*)bookmarkModel;
 - (const bookmarks::BookmarkNode*)folder;
 - (BOOL)ignoresBookmarkModelChanges;
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder;

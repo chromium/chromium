@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"

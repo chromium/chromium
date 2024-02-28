@@ -10,7 +10,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -30,6 +29,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -134,8 +134,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Uses `IsBookmarked` to check whether `url` is bookmarked in any of the
 // provided bookmark models. `account_model` can be null.
 bool IsBookmarked(const GURL& url,
-                  bookmarks::BookmarkModel* local_model,
-                  bookmarks::BookmarkModel* account_model) {
+                  LegacyBookmarkModel* local_model,
+                  LegacyBookmarkModel* account_model) {
   CHECK(local_model);
   if (local_model->IsBookmarked(url)) {
     return true;
@@ -368,7 +368,7 @@ bool IsBookmarked(const GURL& url,
 }
 
 - (void)setLocalOrSyncableBookmarkModel:
-    (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel {
+    (LegacyBookmarkModel*)localOrSyncableBookmarkModel {
   _localOrSyncableBookmarkModelBridge.reset();
 
   _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
@@ -381,8 +381,7 @@ bool IsBookmarked(const GURL& url,
   [self updateModel];
 }
 
-- (void)setAccountBookmarkModel:
-    (bookmarks::BookmarkModel*)accountBookmarkModel {
+- (void)setAccountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel {
   _accountBookmarkModelBridge.reset();
 
   _accountBookmarkModel = accountBookmarkModel;
@@ -1617,33 +1616,33 @@ bool IsBookmarked(const GURL& url,
 
 // If an added or removed bookmark is the same as the current url, update the
 // toolbar so the star highlight is kept in sync.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
     didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   [self updateModel];
 }
 
 // If all bookmarks are removed, update the toolbar so the star highlight is
 // kept in sync.
-- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes:(LegacyBookmarkModel*)model {
   [self updateModel];
 }
 
 // In case we are on a bookmarked page before the model is loaded.
-- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
   [self updateModel];
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   [self updateModel];
 }
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
           didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
            fromParent:(const bookmarks::BookmarkNode*)oldParent
              toParent:(const bookmarks::BookmarkNode*)newParent {
   // No-op -- required by BookmarkModelBridgeObserver but not used.
 }
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+- (void)bookmarkModel:(LegacyBookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [self updateModel];

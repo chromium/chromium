@@ -8,6 +8,7 @@
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
 class ChromeBrowserState;
+class LegacyBookmarkModel;
 
 namespace favicon {
 class LargeIconService;
@@ -15,7 +16,6 @@ class LargeIconService;
 
 namespace bookmarks {
 class BookmarkNode;
-class BookmarkModel;
 }
 
 @class CSSearchableItem;
@@ -30,8 +30,8 @@ class BookmarkModel;
 - (instancetype)
         initWithLargeIconService:(favicon::LargeIconService*)largeIconService
     localOrSyncableBookmarkModel:
-        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
-            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel
               spotlightInterface:(SpotlightInterface*)spotlightInterface
            searchableItemFactory:(SearchableItemFactory*)searchableItemFactory;
 

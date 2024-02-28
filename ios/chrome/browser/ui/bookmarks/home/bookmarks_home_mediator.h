@@ -14,10 +14,10 @@
 @class BookmarkTableCell;
 @protocol BookmarkTableCellTitleEditing;
 class Browser;
+class LegacyBookmarkModel;
 @class TableViewModel;
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -57,10 +57,6 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
   BookmarksHomeItemTypeBatchUploadRecommendation,
 };
 
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
-
 // BookmarksHomeMediator manages model interactions for the
 // BookmarksHomeViewController.
 @interface BookmarksHomeMediator : NSObject
@@ -93,7 +89,7 @@ class BookmarkModel;
 // Bookmark model of the current displayed folder node. If the view is at
 // the root level, `displayedBookmarkModel` returns the localOrSyncable storage.
 @property(nonatomic, assign, readonly)
-    bookmarks::BookmarkModel* displayedBookmarkModel;
+    LegacyBookmarkModel* displayedBookmarkModel;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
@@ -105,8 +101,8 @@ class BookmarkModel;
 // `BookmarksHomeMediator`. A mediator should not be aware of this class.
 - (instancetype)initWithBrowser:(Browser*)browser
     localOrSyncableBookmarkModel:
-        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
-            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel
                    displayedNode:(const bookmarks::BookmarkNode*)displayedNode
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -141,7 +137,7 @@ class BookmarkModel;
 // Returns weather the slashed cloud icon should be displayed for
 // `bookmarkModel`.
 - (BOOL)shouldDisplayCloudSlashIconWithBookmarkModel:
-    (bookmarks::BookmarkModel*)bookmarkModel;
+    (LegacyBookmarkModel*)bookmarkModel;
 
 // Called to update the promo after account settings is closed.
 - (void)updateReviewSettingsPromo;

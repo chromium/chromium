@@ -7,6 +7,7 @@
 #include "base/test/test_future.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 
 class BookmarkRemoverHelperUnitTest : public BookmarkIOSUnitTestSupport {
