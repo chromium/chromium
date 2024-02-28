@@ -382,6 +382,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool IsReady() const;
 
  protected:
+  bool has_frame_colors() const { return has_frame_colors_; }
+
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
   void CreateShellSurfaceWidget(ui::WindowShowState show_state);
