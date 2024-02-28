@@ -34,6 +34,9 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
+
 namespace crypto {
 
 namespace {
@@ -139,7 +142,7 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
     base::apple::ScopedCFTypeRef<CFErrorRef> error;
     base::apple::ScopedCFTypeRef<CFDataRef> signature(
         AppleKeychainV2::GetInstance().KeyCreateSignature(
-            key_.get(), algorithm, base::apple::NSToCFPtrCast(nsdata),
+            key_.get(), algorithm, NSToCFPtrCast(nsdata),
             error.InitializeInto()));
     if (!signature) {
       LOG(ERROR) << "Error signing with key: " << error.get();
@@ -175,8 +178,8 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
 class UnexportableKeyProviderMac : public UnexportableKeyProvider {
  public:
   explicit UnexportableKeyProviderMac(std::string keychain_access_group)
-      : keychain_access_group_(
-            base::SysUTF8ToCFStringRef(std::move(keychain_access_group))) {}
+      : keychain_access_group_(base::SysUTF8ToNSString(keychain_access_group)) {
+  }
   ~UnexportableKeyProviderMac() override = default;
 
   std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
@@ -197,74 +200,58 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
     }
 
     // Generate the key pair.
-    base::apple::ScopedCFTypeRef<CFStringRef> attr_label =
-        base::SysUTF8ToCFStringRef(kAttrLabel);
     base::apple::ScopedCFTypeRef<SecAccessControlRef> access(
         SecAccessControlCreateWithFlags(
             kCFAllocatorDefault,
             kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
             kSecAccessControlPrivateKeyUsage,
             /*error=*/nil));
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> key_attributes(
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                  &kCFTypeDictionaryKeyCallBacks,
-                                  &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(key_attributes.get(), kSecAttrIsPermanent,
-                         kCFBooleanTrue);
-    CFDictionarySetValue(key_attributes.get(), kSecAttrAccessControl,
-                         access.get());
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                  &kCFTypeDictionaryKeyCallBacks,
-                                  &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(attributes.get(), kSecUseDataProtectionKeychain,
-                         kCFBooleanTrue);
-    CFDictionarySetValue(attributes.get(), kSecAttrKeyType,
-                         kSecAttrKeyTypeECSECPrimeRandom);
-    CFDictionarySetValue(attributes.get(), kSecAttrKeySizeInBits,
-                         base::apple::NSToCFPtrCast(@256));
-    CFDictionarySetValue(attributes.get(), kSecAttrTokenID,
-                         kSecAttrTokenIDSecureEnclave);
-    CFDictionarySetValue(attributes.get(), kSecPrivateKeyAttrs,
-                         key_attributes.get());
-    CFDictionarySetValue(attributes.get(), kSecAttrAccessGroup,
-                         keychain_access_group_.get());
-    CFDictionarySetValue(attributes.get(), kSecAttrLabel, attr_label.get());
-    CFDictionarySetValue(attributes.get(), kSecAttrAccessGroup,
-                         keychain_access_group_.get());
+
+    NSDictionary* key_attributes = @{
+      CFToNSPtrCast(kSecAttrIsPermanent) : @YES,
+      CFToNSPtrCast(kSecAttrAccessControl) : (__bridge id)access.get(),
+
+    };
+    NSDictionary* attributes = @{
+      CFToNSPtrCast(kSecUseDataProtectionKeychain) : @YES,
+      CFToNSPtrCast(kSecAttrKeyType) :
+          CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
+      CFToNSPtrCast(kSecAttrKeySizeInBits) : @256,
+      CFToNSPtrCast(kSecAttrTokenID) :
+          CFToNSPtrCast(kSecAttrTokenIDSecureEnclave),
+      CFToNSPtrCast(kSecPrivateKeyAttrs) : key_attributes,
+      CFToNSPtrCast(kSecAttrAccessGroup) : keychain_access_group_,
+      CFToNSPtrCast(kSecAttrLabel) : base::SysUTF8ToNSString(kAttrLabel),
+    };
+
     base::apple::ScopedCFTypeRef<CFErrorRef> error;
     base::apple::ScopedCFTypeRef<SecKeyRef> private_key(
         AppleKeychainV2::GetInstance().KeyCreateRandomKey(
-            attributes.get(), error.InitializeInto()));
+            NSToCFPtrCast(attributes), error.InitializeInto()));
     if (!private_key) {
       LOG(ERROR) << "Could not create private key: " << error.get();
       return nullptr;
     }
-    base::apple::ScopedCFTypeRef<CFDictionaryRef> key_metadata(
-        AppleKeychainV2::GetInstance().KeyCopyAttributes(private_key.get()));
+    base::apple::ScopedCFTypeRef<CFDictionaryRef> key_metadata =
+        AppleKeychainV2::GetInstance().KeyCopyAttributes(private_key.get());
     return std::make_unique<UnexportableSigningKeyMac>(key_metadata.get());
   }
 
   std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override {
     base::apple::ScopedCFTypeRef<CFTypeRef> key_data;
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> query(
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                  &kCFTypeDictionaryKeyCallBacks,
-                                  &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(query.get(), kSecClass, kSecClassKey);
-    CFDictionarySetValue(query.get(), kSecAttrKeyType,
-                         kSecAttrKeyTypeECSECPrimeRandom);
-    CFDictionarySetValue(query.get(), kSecReturnRef, kCFBooleanTrue);
-    CFDictionarySetValue(query.get(), kSecReturnAttributes, kCFBooleanTrue);
-    CFDictionarySetValue(query.get(), kSecAttrAccessGroup,
-                         keychain_access_group_.get());
-    CFDictionarySetValue(query.get(), kSecAttrApplicationLabel,
-                         CFDataCreate(kCFAllocatorDefault, wrapped_key.data(),
-                                      wrapped_key.size()));
-    CFDictionarySetValue(query.get(), kSecAttrAccessGroup,
-                         keychain_access_group_.get());
-    AppleKeychainV2::GetInstance().ItemCopyMatching(query.get(),
+
+    NSDictionary* query = @{
+      CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
+      CFToNSPtrCast(kSecAttrKeyType) :
+          CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
+      CFToNSPtrCast(kSecReturnRef) : @YES,
+      CFToNSPtrCast(kSecReturnAttributes) : @YES,
+      CFToNSPtrCast(kSecAttrAccessGroup) : keychain_access_group_,
+      CFToNSPtrCast(kSecAttrApplicationLabel) :
+          [NSData dataWithBytes:wrapped_key.data() length:wrapped_key.size()],
+    };
+    AppleKeychainV2::GetInstance().ItemCopyMatching(NSToCFPtrCast(query),
                                                     key_data.InitializeInto());
     CFDictionaryRef key_attributes =
         base::apple::CFCast<CFDictionaryRef>(key_data.get());
@@ -275,7 +262,7 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
   }
 
  private:
-  base::apple::ScopedCFTypeRef<CFStringRef> keychain_access_group_;
+  NSString* __strong keychain_access_group_;
 };
 
 }  // namespace
