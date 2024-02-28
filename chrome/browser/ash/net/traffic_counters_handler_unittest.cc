@@ -113,10 +113,7 @@ class TrafficCountersHandlerTest : public ::testing::Test {
         base::Milliseconds(traffic_counter_reset_time_ms));
   }
 
-  void SetAutoResetAndDay(bool auto_reset, int user_specified_day) {
-    NetworkHandler::Get()
-        ->network_metadata_store()
-        ->SetEnableTrafficCountersAutoReset(wifi_guid_, auto_reset);
+  void SetResetDay(int user_specified_day) {
     NetworkHandler::Get()
         ->network_metadata_store()
         ->SetDayOfTrafficCountersAutoReset(wifi_guid_, user_specified_day);
@@ -202,7 +199,7 @@ class TrafficCountersHandlerTest : public ::testing::Test {
 
 TEST_F(TrafficCountersHandlerTest, GetLastResetTime) {
   RunTrafficCountersHandler();
-  EXPECT_EQ(GetLastResetTime(), base::Time());
+  EXPECT_EQ(GetLastResetTime(), base::Time::UnixEpoch());
 
   base::Time reset_time =
       SetLastResetTimeAndRun("Fri, 15 December 2023 10:00:00 UTC");
@@ -211,23 +208,6 @@ TEST_F(TrafficCountersHandlerTest, GetLastResetTime) {
 
 TEST_F(TrafficCountersHandlerTest, SetMetadata) {
   RunTrafficCountersHandler();
-  const base::Value* enabled =
-      NetworkHandler::Get()
-          ->network_metadata_store()
-          ->GetEnableTrafficCountersAutoReset(wifi_guid());
-  ASSERT_TRUE(enabled && enabled->is_bool());
-  EXPECT_FALSE(enabled->GetBool());
-
-  NetworkHandler::Get()
-      ->network_metadata_store()
-      ->SetEnableTrafficCountersAutoReset(wifi_guid(), true);
-  RunUntilIdle();
-  enabled = NetworkHandler::Get()
-                ->network_metadata_store()
-                ->GetEnableTrafficCountersAutoReset(wifi_guid());
-  ASSERT_TRUE(enabled && enabled->is_bool());
-  EXPECT_TRUE(enabled->GetBool());
-
   NetworkHandler::Get()
       ->network_metadata_store()
       ->SetDayOfTrafficCountersAutoReset(wifi_guid(), 13);
@@ -240,46 +220,23 @@ TEST_F(TrafficCountersHandlerTest, SetMetadata) {
   EXPECT_EQ(reset_day_value->GetInt(), 13);
 }
 
-TEST_F(TrafficCountersHandlerTest, AutoReset) {
+TEST_F(TrafficCountersHandlerTest, FirstOfMonth) {
   base::Time reset_time =
       SetLastResetTimeAndRun("Fri, 15 December 2023 10:00:00 UTC");
   EXPECT_EQ(GetLastResetTime(), reset_time);
 
-  SetAutoResetAndDay(true, 1);
+  SetResetDay(1);
 
   // Advance the clock to Jan 1st, 2024. The counters should get reset.
   base::Time simulated_time1 =
       AdvanceClockTo("Mon, 1 January 2024 07:01:00 UTC");
   RunTrafficCountersHandler();
   EXPECT_EQ(GetLastResetTime(), simulated_time1);
-
-  // Fast forwarding the date by 15 days to Jan 16th should not affect the
-  // last reset time.
-  FastForwardBy(base::Days(15));
-  RunTrafficCountersHandler();
-  EXPECT_EQ(GetLastResetTime(), simulated_time1);
-
-  // Setting AutoReset to false should prevent auto reset.
-  SetAutoResetAndDay(false, 1);
-  base::Time simulated_time2 =
-      AdvanceClockTo("Fri, 15 March 2024 07:01:00 UTC");
-  RunTrafficCountersHandler();
-  EXPECT_EQ(GetLastResetTime(), simulated_time1);
-
-  // Setting AutoReset back to true should auto reset.
-  SetAutoResetAndDay(true, 1);
-  RunTrafficCountersHandler();
-  EXPECT_EQ(GetLastResetTime(), simulated_time2);
-
-  // Fast forwarding the date by 40 days should auto reset.
-  FastForwardBy(base::Days(40));
-  RunTrafficCountersHandler();
-  EXPECT_GT(GetLastResetTime(), simulated_time2);
 }
 
-TEST_F(TrafficCountersHandlerTest, AutoResetEndOfMonth) {
+TEST_F(TrafficCountersHandlerTest, EndOfMonth) {
   SetLastResetTimeAndRun("Fri, 1 March 2024 07:01:00 UTC");
-  SetAutoResetAndDay(true, 15);
+  SetResetDay(15);
 
   // Adjust the user specified day to the 15th and ensure that a reset occurs
   // on March 15th.
@@ -289,7 +246,7 @@ TEST_F(TrafficCountersHandlerTest, AutoResetEndOfMonth) {
 
   // Adjust the user specified day to the 14th and fast forward by 1 day to Mar
   // 16th. Ensure that no reset occurs on March 16th.
-  SetAutoResetAndDay(true, 14);
+  SetResetDay(14);
   RunTrafficCountersHandler();
   EXPECT_EQ(GetLastResetTime(), simulated_time);
   FastForwardBy(base::Days(1));
@@ -298,7 +255,7 @@ TEST_F(TrafficCountersHandlerTest, AutoResetEndOfMonth) {
 
   // Adjust the user specified day to the 31st and Fast forward to Mar 31st.
   // Ensure that a reset occurs.
-  SetAutoResetAndDay(true, 31);
+  SetResetDay(31);
   simulated_time = AdvanceClockTo("Sun, 31 March 2024 07:01:00 UTC");
   RunTrafficCountersHandler();
   EXPECT_EQ(GetLastResetTime(), simulated_time);
@@ -319,9 +276,9 @@ TEST_F(TrafficCountersHandlerTest, AutoResetEndOfMonth) {
   EXPECT_EQ(GetLastResetTime(), simulated_time);
 }
 
-TEST_F(TrafficCountersHandlerTest, AutoResetLeapYear) {
+TEST_F(TrafficCountersHandlerTest, LeapYear) {
   SetLastResetTimeAndRun("Fri, 15 December 2023 10:00:00 UTC");
-  SetAutoResetAndDay(true, 1);
+  SetResetDay(1);
 
   base::Time simulated_time =
       AdvanceClockTo("Mon, 1 January 2024 07:01:00 UTC");
@@ -363,7 +320,7 @@ TEST_F(TrafficCountersHandlerTest, AutoResetLeapYear) {
 
 TEST_F(TrafficCountersHandlerTest, NoLeapYear) {
   SetLastResetTimeAndRun("Sat, 15 January 2023 10:00:00 UTC");
-  SetAutoResetAndDay(true, 31);
+  SetResetDay(31);
 
   // Adjust the clock to set the "current time". Use Jan 31st, 2023
   // to test whether the functionality is correct on non-leap years.
@@ -407,7 +364,7 @@ TEST_F(TrafficCountersHandlerTest, NoLeapYear) {
 }
 
 TEST_F(TrafficCountersHandlerTest, ChangeUserSpecifiedDate) {
-  SetAutoResetAndDay(true, 31);
+  SetResetDay(31);
   SetLastResetTimeAndRun("Sat, 15 January 2023 10:00:00 UTC");
 
   // Advancing the date to Jan 31st should reset the traffic counters.
@@ -417,7 +374,7 @@ TEST_F(TrafficCountersHandlerTest, ChangeUserSpecifiedDate) {
   EXPECT_EQ(GetLastResetTime(), simulated_time);
 
   // Change user specified auto reset day.
-  SetAutoResetAndDay(true, 5);
+  SetResetDay(5);
   RunTrafficCountersHandler();
 
   // After fast forwarding the date to February 5th, ensure traffic counters are
@@ -435,13 +392,47 @@ TEST_F(TrafficCountersHandlerTest, AutoResetTimer) {
       SetLastResetTimeAndRun("Fri, 15 December 2023 10:00:00 UTC");
   EXPECT_EQ(GetLastResetTime(), reset_time);
 
-  SetAutoResetAndDay(true, 1);
+  SetResetDay(1);
 
   // Advance the clock to Jan 2nd, 2024. The timer should run and the counters
   // should get reset.
   base::Time simulated_time =
       AdvanceClockTo("Tue, 2 January 2024 07:01:00 UTC");
   EXPECT_EQ(GetLastResetTime(), simulated_time);
+}
+
+TEST_F(TrafficCountersHandlerTest, FastForward40Days) {
+  // Set the clock to the specified time and then run traffic counters.
+  base::Time simulated_time =
+      AdvanceClockTo("Sun, 5 February 2023 07:01:00 UTC");
+  RunTrafficCountersHandler();
+  // Since no last_reset_time was available in the model, a reset should occur
+  // at the time specified above.
+  EXPECT_EQ(GetLastResetTime(), simulated_time);
+
+  // Simulate a device shutdown for 40 days.
+  FastForwardBy(base::Days(40));
+
+  // Once device is up and running, run TrafficCountersHandler and confirm
+  // that reset date is correct.
+  base::Time reset_time =
+      SetLastResetTimeAndRun("2023-03-17 07:01:00.000000 UTC");
+
+  EXPECT_EQ(GetLastResetTime(), reset_time);
+}
+
+TEST_F(TrafficCountersHandlerTest, ChangeResetDayToDayGreaterThanCurrentDay) {
+  // Start the traffic counters timer.
+  traffic_counters_handler()->Start();
+
+  base::Time reset_time =
+      SetLastResetTimeAndRun("Fri, 15 December 2023 10:00:00 UTC");
+  EXPECT_EQ(GetLastResetTime(), reset_time);
+
+  SetResetDay(20);
+
+  reset_time = SetLastResetTimeAndRun("Wed, 20 December 2023 10:00:00 UTC");
+  EXPECT_EQ(GetLastResetTime(), reset_time);
 }
 
 }  // namespace traffic_counters

@@ -23,6 +23,10 @@ namespace {
 // Interval duration to determine the auto reset check frequency.
 constexpr base::TimeDelta kResetCheckInterval = base::Hours(6);
 
+// Gets the last day of the month when the user specified reset day
+// exceeds the number of day in that month. For example, if the user specified
+// reset day is 31, this function would ensure that the returned time would
+// represent Feb 28 (non-leap year), Apr 30, etc.
 base::Time GetValidTime(base::Time::Exploded exploded_time) {
   base::Time time;
   while (!base::Time::FromLocalExploded(exploded_time, &time)) {
@@ -34,12 +38,35 @@ base::Time GetValidTime(base::Time::Exploded exploded_time) {
   return time;
 }
 
+// Calculates when the traffic counters were expected to be reset last month.
+base::Time CalculateLastMonthResetTime(base::Time::Exploded exploded,
+                                       int user_specified_reset_day) {
+  exploded.month -= 1;
+  if (exploded.month < 1) {
+    exploded.month = 12;
+    exploded.year -= 1;
+  }
+
+  exploded.day_of_month = user_specified_reset_day;
+
+  return GetValidTime(exploded);
+}
+
+// Calculates when the traffic counters were/are expected to be reset this
+// month.
+base::Time CalculateCurrentMonthResetTime(base::Time::Exploded exploded,
+                                          int user_specified_reset_day) {
+  exploded.day_of_month = user_specified_reset_day;
+
+  return GetValidTime(exploded);
+}
+
 // To avoid discrepancies between different times of the same day, set all times
-// to 12:01:00 AM. This is safe to do so because traffic counters will never be
+// to 12:00:00 AM. This is safe to do so because traffic counters will never be
 // automatically reset more than once on any given day.
 void AdjustExplodedTimeValues(base::Time::Exploded* exploded_time) {
   exploded_time->hour = 0;
-  exploded_time->minute = 1;
+  exploded_time->minute = 0;
   exploded_time->second = 0;
   exploded_time->millisecond = 0;
 }
@@ -57,26 +84,24 @@ TrafficCountersHandler::TrafficCountersHandler()
       cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-TrafficCountersHandler::~TrafficCountersHandler() = default;
+TrafficCountersHandler::~TrafficCountersHandler() {
+  network_metadata_store_->RemoveObserver(this);
+  network_metadata_store_ = nullptr;
+}
 
 void TrafficCountersHandler::Start() {
-  RunAll();
+  RunActive();
   timer_->Start(FROM_HERE, kResetCheckInterval, this,
-                &TrafficCountersHandler::RunAll);
+                &TrafficCountersHandler::RunActive);
 }
 
-void TrafficCountersHandler::RunAll() {
-  RunWithFilter(chromeos::network_config::mojom::FilterType::kAll);
-}
-
-void TrafficCountersHandler::RunWithFilter(
-    chromeos::network_config::mojom::FilterType filter_type) {
-  NET_LOG(EVENT) << "Starting run with filter type " << filter_type
-                 << " at: " << time_getter_.Run();
+void TrafficCountersHandler::RunActive() {
+  NET_LOG(EVENT) << "Starting run at: " << time_getter_.Run();
   DCHECK(remote_cros_network_config_);
   remote_cros_network_config_->GetNetworkStateList(
       chromeos::network_config::mojom::NetworkFilter::New(
-          filter_type, chromeos::network_config::mojom::NetworkType::kAll,
+          chromeos::network_config::mojom::FilterType::kActive,
+          chromeos::network_config::mojom::NetworkType::kAll,
           chromeos::network_config::mojom::kNoLimit),
       base::BindOnce(&TrafficCountersHandler::OnNetworkStateListReceived,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -85,30 +110,33 @@ void TrafficCountersHandler::RunWithFilter(
 void TrafficCountersHandler::OnActiveNetworksChanged(
     std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
         active_networks) {
-  RunWithFilter(chromeos::network_config::mojom::FilterType::kActive);
+  RunActive();
+}
+
+void TrafficCountersHandler::OnNetworkUpdate(
+    const std::string& guid,
+    const base::Value::Dict* set_properties) {
+  // OnNetworkUpdate() is invoked when NetworkMetadataObserver sees a change to
+  // a configuration property. This class is interested in reset day changes,
+  // and changes to configuration properties might indicate a reset day change,
+  // hence the RunActive() call. But if properties is null, there is nothing to
+  // check.
+  if (!set_properties) {
+    return;
+  }
+
+  RunActive();
 }
 
 void TrafficCountersHandler::OnNetworkStateListReceived(
     std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
         networks) {
   for (const auto& network : networks) {
-    if (!GetAutoResetEnabled(network->guid)) {
-      continue;
-    }
     remote_cros_network_config_->GetManagedProperties(
         network->guid,
         base::BindOnce(&TrafficCountersHandler::OnManagedPropertiesReceived,
                        weak_ptr_factory_.GetWeakPtr(), network->guid));
   }
-}
-
-bool TrafficCountersHandler::GetAutoResetEnabled(std::string guid) {
-  NetworkMetadataStore* metadata_store =
-      NetworkHandler::Get()->network_metadata_store();
-  DCHECK(metadata_store);
-  const base::Value* enabled =
-      metadata_store->GetEnableTrafficCountersAutoReset(guid);
-  return enabled && enabled->GetBool();
 }
 
 void TrafficCountersHandler::OnManagedPropertiesReceived(
@@ -123,98 +151,81 @@ void TrafficCountersHandler::OnManagedPropertiesReceived(
     NET_LOG(ERROR) << "Failed to retrieve traffic counter properties for: "
                    << NetworkGuidId(guid);
   }
-  bool should_reset;
   if (!managed_properties->traffic_counter_properties->last_reset_time
            .has_value()) {
     // No last reset time, trigger an initial reset.
-    should_reset = true;
-  } else {
-    base::Time last_reset_time = base::Time::FromDeltaSinceWindowsEpoch(
-        managed_properties->traffic_counter_properties->last_reset_time
-            ->ToDeltaSinceWindowsEpoch());
-    should_reset = ShouldReset(guid, last_reset_time);
-  }
-  if (should_reset) {
     NET_LOG(EVENT) << "Resetting traffic counters for network: "
                    << NetworkGuidId(guid);
+    remote_cros_network_config_->ResetTrafficCounters(guid);
+    return;
+  }
+
+  // TODO(b/327244777): Currently, NetworkMetadataStore is destroyed and
+  // re-created when prefs are loaded. Once this is fixed, move the
+  // initialization of |network_metadata_store_| to the constructor.
+  if (!network_metadata_store_) {
+    network_metadata_store_ =
+        NetworkHandler::Get()->network_metadata_store()->GetWeakPtr();
+    network_metadata_store_->AddObserver(this);
+  }
+
+  DCHECK(network_metadata_store_);
+  const base::Value* reset_day_ptr =
+      network_metadata_store_->GetDayOfTrafficCountersAutoReset(guid);
+  if (!reset_day_ptr) {
+    NET_LOG(EVENT) << "Failed to retrieve auto reset day for network: "
+                   << NetworkGuidId(guid);
+    remote_cros_network_config_->ResetTrafficCounters(guid);
+    network_metadata_store_->SetDayOfTrafficCountersAutoReset(guid, 1);
+    return;
+  }
+
+  base::Time::Exploded current_time_exploded = CurrentDateExploded();
+  auto user_specified_reset_day = reset_day_ptr->GetInt();
+
+  base::Time last_month_reset = CalculateLastMonthResetTime(
+      current_time_exploded, user_specified_reset_day);
+  base::Time last_reset_time = base::Time::FromDeltaSinceWindowsEpoch(
+      managed_properties->traffic_counter_properties->last_reset_time
+          ->ToDeltaSinceWindowsEpoch());
+  // If the last time traffic counters were reset (last_reset_time) was before
+  // the time traffic counters were expected to be reset last month
+  // (last_month_reset), then the traffic counters should be reset. This handles
+  // the case where the traffic counters feature was disabled for over a month
+  // and then re-enabled.
+  if (last_reset_time < last_month_reset) {
+    remote_cros_network_config_->ResetTrafficCounters(guid);
+    return;
+  }
+
+  base::Time curr_month_reset = CalculateCurrentMonthResetTime(
+      current_time_exploded, user_specified_reset_day);
+  base::Time current_date = GetValidTime(current_time_exploded);
+  // If the last time traffic counters were reset (last_reset_time) was before
+  // the expected reset date on this month (curr_month_resset), and today
+  // (current_date) is equal to or greater than the expected date of reset for
+  // this month (curr_month_reset), then reset the counters. For example, let's
+  // assume that traffic counters are the be reset on the 5th of every month and
+  // were last reset on January 5th. If the current_date is between February
+  // 1st-February 4th, then current_date (e.g, Feb 3rd) > curr_month_reset (Feb
+  // 5th), so the counters are not reset. However, if the current date is Feb
+  // 5th onwards, then current_date (Feb 5th) = curr_month_reset (Feb 5th), so
+  // traffic counters are reset.
+  if (last_reset_time < curr_month_reset && current_date >= curr_month_reset) {
     remote_cros_network_config_->ResetTrafficCounters(guid);
   }
 }
 
-// Note that if a user manually resets the traffic counters on the user
-// specified reset day before TrafficCountersHandler runs,
-// TrafficCountersHandler class will not automatically reset the counters until
-// the reset day the following month.
-bool TrafficCountersHandler::ShouldReset(std::string guid,
-                                         base::Time last_reset_time) {
-  NetworkMetadataStore* metadata_store =
-      NetworkHandler::Get()->network_metadata_store();
-  DCHECK(metadata_store);
-  const base::Value* reset_day_ptr =
-      metadata_store->GetDayOfTrafficCountersAutoReset(guid);
-  if (!reset_day_ptr) {
-    NET_LOG(ERROR) << "Failed to retrieve auto reset day for network: "
-                   << NetworkGuidId(guid);
-    return false;
-  }
-  auto user_specified_reset_day = reset_day_ptr->GetInt();
-
+base::Time::Exploded TrafficCountersHandler::CurrentDateExploded() {
   base::Time::Exploded current_time_exploded;
   time_getter_.Run().LocalExplode(&current_time_exploded);
   AdjustExplodedTimeValues(&current_time_exploded);
 
-  base::Time::Exploded last_reset_time_exploded;
-  last_reset_time.LocalExplode(&last_reset_time_exploded);
-  AdjustExplodedTimeValues(&last_reset_time_exploded);
-  if (!base::Time::FromLocalExploded(last_reset_time_exploded,
-                                     &last_reset_time)) {
-    NET_LOG(ERROR) << "Failed to set last_reset_time to 12:01:00 AM";
-    return false;
-  }
-
-  bool result = false;
-  base::Time expected_last_reset_time =
-      GetExpectedLastResetTime(current_time_exploded, user_specified_reset_day);
-  if (expected_last_reset_time > last_reset_time) {
-    // If the actual last auto reset occurred before our expected last
-    // auto reset time, traffic counters should be reset.
-    result = true;
-  }
-
-  VLOG(3) << "ShouldReset for: " << guid << " at: " << time_getter_.Run()
-          << " last: " << last_reset_time
-          << " expected_last: " << expected_last_reset_time
-          << " day: " << user_specified_reset_day << " = " << result;
-
-  // expected_last_reset_time.ToDeltaSinceWindowsEpoch() <=
-  // actual_last_reset_time.ToDeltaSinceWindowsEpoch(). Don't reset traffic
-  // counters.
-  return result;
-}
-
-base::Time TrafficCountersHandler::GetExpectedLastResetTime(
-    const base::Time::Exploded& current_time_exploded,
-    int user_specified_reset_day) {
-  base::Time::Exploded exploded = current_time_exploded;
-  exploded.day_of_month = user_specified_reset_day;
-  GetValidTime(exploded).LocalExplode(&exploded);
-
-  // If the user specified reset day is greater than the current day, then the
-  // expected last reset day is on the user specified day of the previous
-  // month. Concretely, if e.g., user_specified_reset_day = 14 and current day
-  // = 13, the last reset day is expected to be on the 14th of the previous
-  // month. Otherwise, we expect that the last reset occurred in the current
-  // month.
-  if (exploded.day_of_month > current_time_exploded.day_of_month) {
-    // "+ 11) % 12) + 1" wraps the month around if it goes outside 1..12.
-    exploded.month = (((exploded.month - 1) + 11) % 12) + 1;
-    exploded.year -= (exploded.month == 12);
-  }
-  return GetValidTime(exploded);
+  return current_time_exploded;
 }
 
 void TrafficCountersHandler::RunForTesting() {
-  RunWithFilter(chromeos::network_config::mojom::FilterType::kAll);
+  RunActive();
 }
 
 void TrafficCountersHandler::SetTimeGetterForTest(TimeGetter time_getter) {
