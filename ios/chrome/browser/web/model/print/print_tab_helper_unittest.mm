@@ -45,8 +45,7 @@ class PrintTabHelperTest : public PlatformTest {
     web_state_.SetBrowserState(chrome_browser_state_.get());
 
     printer_ = [[PrintTabHelperTestPrinter alloc] init];
-    PrintTabHelper::CreateForWebState(&web_state_);
-    PrintTabHelper::FromWebState(&web_state_)->set_printer(printer_);
+    PrintTabHelper::GetOrCreateForWebState(&web_state_)->set_printer(printer_);
   }
 
   PrintTabHelperTestPrinter* printer_;
@@ -59,7 +58,7 @@ class PrintTabHelperTest : public PlatformTest {
 TEST_F(PrintTabHelperTest, PrintEnabled) {
   ASSERT_FALSE(printer_.printInvoked);
 
-  PrintTabHelper::FromWebState(&web_state_)->Print();
+  PrintTabHelper::GetOrCreateForWebState(&web_state_)->Print();
   EXPECT_TRUE(printer_.printInvoked);
 }
 
@@ -68,6 +67,6 @@ TEST_F(PrintTabHelperTest, PrintDisabled) {
   ASSERT_FALSE(printer_.printInvoked);
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kPrintingEnabled, false);
 
-  PrintTabHelper::FromWebState(&web_state_)->Print();
+  PrintTabHelper::GetOrCreateForWebState(&web_state_)->Print();
   EXPECT_FALSE(printer_.printInvoked);
 }

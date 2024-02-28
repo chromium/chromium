@@ -251,7 +251,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
         web_state, SadTabTabHelper::kDefaultRepeatFailureInterval);
     SnapshotTabHelper::CreateForWebState(web_state);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
-    PrintTabHelper::CreateForWebState(web_state);
+    if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+      PrintTabHelper::GetOrCreateForWebState(web_state);
+    }
     ChromeIOSTranslateClient::CreateForWebState(web_state);
 
     PasswordTabHelper::CreateForWebState(web_state);

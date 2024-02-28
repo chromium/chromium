@@ -56,8 +56,7 @@ class PrintJavaScriptFeatureTest : public PlatformTest {
     printer_ = [[PrintJavaScriptFeatureTestPrinter alloc] init];
     GetWebClient()->SetJavaScriptFeatures({&feature_});
 
-    PrintTabHelper::CreateForWebState(web_state());
-    PrintTabHelper::FromWebState(web_state())->set_printer(printer_);
+    PrintTabHelper::GetOrCreateForWebState(web_state())->set_printer(printer_);
   }
 
   web::FakeWebClient* GetWebClient() {

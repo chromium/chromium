@@ -131,7 +131,8 @@
   autofillTabHelper->SetCommandsHandler(autofillHandler);
 
   DCHECK(_printCoordinator);
-  PrintTabHelper::FromWebState(webState)->set_printer(_printCoordinator);
+  PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(
+      _printCoordinator);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(_repostFormDelegate);
 
@@ -208,7 +209,7 @@
   autofillTabHelper->SetBaseViewController(nil);
   autofillTabHelper->SetCommandsHandler(nil);
 
-  PrintTabHelper::FromWebState(webState)->set_printer(nil);
+  PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
 
