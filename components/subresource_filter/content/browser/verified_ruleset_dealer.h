@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/subresource_filter/content/common/ruleset_dealer.h"
@@ -156,7 +157,8 @@ class VerifiedRuleset {
 // The UI-thread handle that owns a VerifiedRuleset living on a dedicated
 // sequenced |task_runner|, same as the VerifiedRulesetDealer lives on. Provides
 // asynchronous access to the instance, and destroys it asynchronously.
-class VerifiedRuleset::Handle {
+class VerifiedRuleset::Handle
+    : public base::SupportsWeakPtr<VerifiedRuleset::Handle> {
  public:
   // Creates a VerifiedRuleset and initializes it asynchronously on a
   // |task_runner| using |dealer_handle|. The instance remains owned by this

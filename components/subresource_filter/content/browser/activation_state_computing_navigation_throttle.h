@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -112,10 +111,9 @@ class ActivationStateComputingNavigationThrottle
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> async_filter_;
 
-  // Must outlive this class. For root frame navigations, this member will be
-  // nullptr until NotifyPageActivationWithRuleset is called.
-  raw_ptr<VerifiedRuleset::Handle, AcrossTasksDanglingUntriaged>
-      ruleset_handle_;
+  // For root frame navigations, this member will be nullptr until
+  // NotifyPageActivationWithRuleset is called.
+  base::WeakPtr<VerifiedRuleset::Handle> ruleset_handle_;
 
   // Will be set to true when DEFER is called in WillProcessResponse.
   bool deferred_ = false;
