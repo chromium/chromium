@@ -137,7 +137,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PaintPropertyTreeBuilderTest,
                          ::testing::Values(0,
                                            kUnderInvalidationChecking,
-                                           kSparseObjectPaintProperties,
                                            kElementCapture));
 
 TEST_P(PaintPropertyTreeBuilderTest, FixedPosition) {

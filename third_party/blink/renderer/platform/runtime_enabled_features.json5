@@ -3514,9 +3514,6 @@
       name: "SoftNavigationHeuristicsExposeFPAndFCP",
     },
     {
-      name: "SparseObjectPaintProperties",
-    },
-    {
       name: "SpeakerSelection",
       status: "test",
     },
