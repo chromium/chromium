@@ -164,8 +164,6 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
           std::move(show_pwd_migration_warning_callback)),
       parent_controller_(parent) {
   ClearState();
-  delegate->RegisterDeletionCallback(base::BindOnce(
-      &AutofillPopupControllerImpl::HideViewAndDie, GetWeakPtr()));
 }
 
 AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
@@ -784,9 +782,11 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   // Mark the popup-like filling sources as unavailable.
   // Note: We don't invoke ManualFillingController::Hide() here, as we might
   // switch between text input fields.
-  ManualFillingController::GetOrCreate(web_contents_.get())
-      ->UpdateSourceAvailability(FillingSource::AUTOFILL,
-                                 /*has_suggestions=*/false);
+  if (web_contents_) {
+    ManualFillingController::GetOrCreate(web_contents_.get())
+        ->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                   /*has_suggestions=*/false);
+  }
 #endif
 
   // TODO(crbug.com/1341374, crbug.com/1277218): Move this into the asynchronous

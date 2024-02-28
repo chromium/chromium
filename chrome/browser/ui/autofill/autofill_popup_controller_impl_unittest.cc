@@ -1555,8 +1555,6 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic, HideOnWebContentsDestroyed) {
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kRendererEvent));
-  EXPECT_CALL(client().popup_controller(manager()),
-              Hide(PopupHidingReason::kTabGone));
   DeleteContents();
 }
 
@@ -1568,11 +1566,6 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kRendererEvent));
-  // There seems to be no way to destroy only the main frame in a test. We
-  // therefore let the test fixture's TearDown() destroy the main frame. As a
-  // side-effect, the WebContents will also be destroyed and call Hide().
-  EXPECT_CALL(client().popup_controller(manager()),
-              Hide(PopupHidingReason::kTabGone));
 }
 
 // Tests that if the popup is shown in the *sub frame*, destruction of the
@@ -1634,9 +1627,6 @@ TEST_F(AutofillPopupControllerImplTestHidingLogic,
   EXPECT_CALL(client().popup_controller(sub_manager()),
               Hide(PopupHidingReason::kRendererEvent));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
-  // The WebContents will also be destroyed and call Hide().
-  EXPECT_CALL(client().popup_controller(sub_manager()),
-              Hide(PopupHidingReason::kTabGone));
 }
 
 // Tests that Compose saved state notification popup gets hidden after 2

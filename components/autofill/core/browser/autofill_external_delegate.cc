@@ -134,10 +134,7 @@ AutofillExternalDelegate::AutofillExternalDelegate(
     BrowserAutofillManager* manager)
     : manager_(CHECK_DEREF(manager)) {}
 
-AutofillExternalDelegate::~AutofillExternalDelegate() {
-  if (deletion_callback_)
-    std::move(deletion_callback_).Run();
-}
+AutofillExternalDelegate::~AutofillExternalDelegate() = default;
 
 // static
 bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
@@ -864,11 +861,6 @@ FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
 
 int32_t AutofillExternalDelegate::GetWebContentsPopupControllerAxId() const {
   return query_field_.form_control_ax_id;
-}
-
-void AutofillExternalDelegate::RegisterDeletionCallback(
-    base::OnceClosure deletion_callback) {
-  deletion_callback_ = std::move(deletion_callback);
 }
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {

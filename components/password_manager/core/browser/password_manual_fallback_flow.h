@@ -63,7 +63,6 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   void ClearPreviewedForm() override;
   autofill::FillingProduct GetMainFillingProduct() const override;
   int32_t GetWebContentsPopupControllerAxId() const override;
-  void RegisterDeletionCallback(base::OnceClosure deletion_callback) override;
 
  private:
   // Is used to track whether the flow was invoked and whether the passwords
@@ -106,9 +105,6 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   base::ScopedObservation<SavedPasswordsPresenter,
                           SavedPasswordsPresenter::Observer>
       passwords_presenter_observation_{this};
-
-  // If not null then it will be called in destructor.
-  base::OnceClosure deletion_callback_;
 
   base::WeakPtrFactory<PasswordManualFallbackFlow> weak_ptr_factory_{this};
 };

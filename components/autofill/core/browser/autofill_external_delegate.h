@@ -74,8 +74,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // who has a controller relation to the current autofill popup.
   int32_t GetWebContentsPopupControllerAxId() const override;
 
-  void RegisterDeletionCallback(base::OnceClosure deletion_callback) override;
-
   // Called when the renderer posts an Autofill query to the browser. |bounds|
   // is window relative. We might not want to display the warning if a website
   // has disabled Autocomplete because they have their own popup, and showing
@@ -275,9 +273,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
   // The current data list values.
   std::vector<SelectOption> datalist_;
-
-  // If not null then it will be called in destructor.
-  base::OnceClosure deletion_callback_;
 
   // Autofill profile update and deletion are async operations. PDM observer is
   // used to detect when these operations finish. These operations can happen at

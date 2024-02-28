@@ -48,10 +48,6 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
               GetWebContentsPopupControllerAxId,
               (),
               (const, override));
-  MOCK_METHOD(void,
-              RegisterDeletionCallback,
-              (base::OnceClosure deletion_callback),
-              (override));
 
   base::WeakPtr<MockAutofillPopupDelegate> GetWeakPtr();
 

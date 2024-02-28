@@ -26,11 +26,7 @@ PasswordManualFallbackFlow::PasswordManualFallbackFlow(
   passwords_presenter_->Init();
 }
 
-PasswordManualFallbackFlow::~PasswordManualFallbackFlow() {
-  if (deletion_callback_) {
-    std::move(deletion_callback_).Run();
-  }
-}
+PasswordManualFallbackFlow::~PasswordManualFallbackFlow() = default;
 
 // static
 bool PasswordManualFallbackFlow::SupportsSuggestionType(
@@ -169,11 +165,6 @@ int32_t PasswordManualFallbackFlow::GetWebContentsPopupControllerAxId() const {
   // See http://crbug.com/991253
   NOTIMPLEMENTED_LOG_ONCE();
   return 0;
-}
-
-void PasswordManualFallbackFlow::RegisterDeletionCallback(
-    base::OnceClosure deletion_callback) {
-  deletion_callback_ = std::move(deletion_callback);
 }
 
 void PasswordManualFallbackFlow::RunFlowImpl(

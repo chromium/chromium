@@ -136,9 +136,6 @@ PasswordAutofillManager::PasswordAutofillManager(
 
 PasswordAutofillManager::~PasswordAutofillManager() {
   CancelBiometricReauthIfOngoing();
-
-  if (deletion_callback_)
-    std::move(deletion_callback_).Run();
 }
 
 absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
@@ -332,11 +329,6 @@ int32_t PasswordAutofillManager::GetWebContentsPopupControllerAxId() const {
   // See http://crbug.com/991253
   NOTIMPLEMENTED_LOG_ONCE();
   return 0;
-}
-
-void PasswordAutofillManager::RegisterDeletionCallback(
-    base::OnceClosure deletion_callback) {
-  deletion_callback_ = std::move(deletion_callback);
 }
 
 void PasswordAutofillManager::OnAddPasswordFillData(
