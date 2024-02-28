@@ -59,7 +59,7 @@ suite('PlayPause', () => {
   suite('by default', () => {
     test('is paused', () => {
       assertTrue(app.speechPlayngState.paused);
-      assertFalse(app.speechStarted);
+      assertFalse(app.speechPlayngState.speechStarted);
     });
 
     test('shows play icon', () => {

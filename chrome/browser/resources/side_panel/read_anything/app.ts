@@ -166,6 +166,7 @@ export enum PauseActionSource {
 export interface SpeechPlayingState {
   paused: boolean;
   pauseSource?: PauseActionSource;
+  speechStarted: boolean;
 }
 
 export interface ReadAnythingElement {
@@ -231,9 +232,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   speechPlayngState: SpeechPlayingState = {
     paused: true,
     pauseSource: PauseActionSource.DEFAULT,
+    speechStarted: false,
   };
 
-  speechStarted = false;
   maxSpeechLength = 175;
 
   // The node id of the first text node that should be used by Read Aloud.
@@ -700,7 +701,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   stopSpeech(pauseSource: PauseActionSource) {
     // TODO(crbug.com/1474951): When pausing, can we pause on a word boundary
     // and continue playing from the previous word?
-    this.speechPlayngState = {paused: true, pauseSource};
+    this.speechPlayngState = {
+      ...this.speechPlayngState,
+      paused: true,
+      pauseSource,
+    };
 
     const pausedFromButton = pauseSource === PauseActionSource.BUTTON_CLICK;
 
@@ -753,7 +758,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   playSpeech() {
     const container = this.$.container;
-    if (this.speechStarted && this.speechPlayngState.paused) {
+    if (this.speechPlayngState.speechStarted && this.speechPlayngState.paused) {
       const pausedFromButton =
           this.speechPlayngState.pauseSource === PauseActionSource.BUTTON_CLICK;
 
@@ -763,7 +768,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.highlightAndPlayMessage();
       }
 
-      this.speechPlayngState = {paused: false};
+      this.speechPlayngState = {paused: false, speechStarted: true};
 
       // Hide links when speech resumes. We only hide links when the page was
       // paused from the play/pause button.
@@ -784,7 +789,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
     if (container.textContent) {
-      this.speechPlayngState = {paused: false};
+      this.speechPlayngState = {paused: false, speechStarted: true};
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
         this.updateLinks();
@@ -909,7 +914,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     message.pitch = utteranceSettings.pitch;
     message.rate = utteranceSettings.rate;
 
-    this.speechStarted = true;
     this.synth.speak(message);
   }
 
@@ -1034,10 +1038,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private clearReadAloudState() {
-    this.speechStarted = false;
     this.speechPlayngState = {
       paused: true,
       pauseSource: PauseActionSource.DEFAULT,
+      speechStarted: false,
     };
     this.previousHighlight_ = [];
   }
@@ -1056,7 +1060,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private resetSpeechPostSettingChange_() {
     // Don't call stopSpeech() if initAxPositionWithNode hasn't been called
-    if (!this.speechStarted) {
+    if (!this.speechPlayngState.speechStarted) {
       return;
     }
 
