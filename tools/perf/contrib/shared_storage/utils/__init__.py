@@ -8,11 +8,13 @@ __all__ = [
     'GetExpectedHistogramsDictionary',
     'GetExpectedHistogramsFile',
     'GetHistogramsFromEventType',
+    'GetNonePlaceholder',
     'GetSharedStorageIteratorHistograms',
     'GetSharedStorageUmaHistograms',
     'GetRunPathFile',
     'JsonDump',
     'MovePreviousExpectedHistogramsFile',
+    'ProcessResults',
 ]
 
 from .file_util import (CleanUpRunPathFile, EnsureDataDir,
@@ -22,4 +24,5 @@ from .file_util import (CleanUpRunPathFile, EnsureDataDir,
 from .histogram_list import (GetHistogramsFromEventType,
                              GetSharedStorageIteratorHistograms,
                              GetSharedStorageUmaHistograms)
-from .util import JsonDump
+from .process_results import ProcessResults
+from .util import GetNonePlaceholder, JsonDump

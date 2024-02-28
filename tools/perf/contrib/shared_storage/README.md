@@ -62,3 +62,16 @@ For example, a modified version of the original benchmark command is:
 ```bash
 tools/perf/run_benchmark shared_storage.small --browser=system --story-filter=Append --iterations=5 --pageset-repeat=1 --xvfb --verbose-cpu-metrics --verbose-memory-metrics --verbose
 ```
+
+## Post-Test Result Processing
+
+By default, shared storage perf test results will be displayed in a file at path `$CHROMIUM_SRC/tools/perf/results.html`, where `$CHROMIUM_SRC` is your Chromium source directory.
+
+The shared storage perf tests have a script to process results further into various human-friendly files with paths `$CHROMIUM_SRC/tools/perf/contrib/shared_storage/data/histograms_*.json`.
+
+To run the script, run the following command manually after a perf test run completes:
+```bash
+tools/perf/contrib/shared_storage/process_results
+```
+
+In particular, the above script will compare the actual histogram sample counts recorded during the run with the expected counts, and notify you of any deltas. If there are any non-zero deltas.
