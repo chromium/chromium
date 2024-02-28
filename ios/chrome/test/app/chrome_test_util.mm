@@ -105,6 +105,8 @@ ChromeBrowserState* GetCurrentIncognitoBrowserState() {
   return GetBrowserState(true);
 }
 
+// TODO(crbug.com/327330176): Avoid using
+// mainController.browserProviderInterface.
 Browser* GetMainBrowser() {
   return GetMainController()
       .browserProviderInterface.mainBrowserProvider.browser;

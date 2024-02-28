@@ -820,6 +820,8 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 }
 
 + (void)stopAllWebStatesLoading {
+  // TODO(crbug.com/327330181): Avoid using
+  // mainController.browserProviderInterface.
   WebStateList* web_state_list =
       chrome_test_util::GetMainController()
           .browserProviderInterface.currentBrowserProvider.browser
@@ -1388,6 +1390,8 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 #pragma mark - Keyboard Command Utilities
 
 + (NSInteger)registeredKeyCommandCount {
+  // TODO(crbug.com/327330181): Avoid using
+  // mainController.browserProviderInterface.
   UIViewController* browserViewController =
       chrome_test_util::GetMainController()
           .browserProviderInterface.mainBrowserProvider.viewController;

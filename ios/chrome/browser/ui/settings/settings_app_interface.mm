@@ -80,6 +80,8 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
 }
 
 + (BOOL)settingsRegisteredKeyboardCommands {
+  // TODO(crbug.com/327328907): Avoid using
+  // mainController.browserProviderInterface.
   UIViewController* viewController =
       chrome_test_util::GetMainController()
           .browserProviderInterface.mainBrowserProvider.viewController;

@@ -38,6 +38,8 @@ NSString* GetIdForWebState(web::WebState* web_state) {
   return web_state->GetStableIdentifier();
 }
 
+// TODO(crbug.com/327330603): Avoid using
+// mainController.browserProviderInterface.
 WebStateList* GetCurrentWebStateList() {
   return chrome_test_util::GetMainController()
       .browserProviderInterface.currentBrowserProvider.browser

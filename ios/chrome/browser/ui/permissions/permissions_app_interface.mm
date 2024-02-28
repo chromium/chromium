@@ -15,6 +15,8 @@
 @implementation PermissionsAppInterface
 
 + (NSDictionary<NSNumber*, NSNumber*>*)statesForAllPermissions {
+  // TODO(crbug.com/327327535): Avoid using
+  // mainController.browserProviderInterface.
   web::WebState* activeWebState =
       chrome_test_util::GetMainController()
           .browserProviderInterface.currentBrowserProvider.browser

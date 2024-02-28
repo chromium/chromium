@@ -16,6 +16,8 @@
 
 @implementation InfobarManagerAppInterface
 
+// TODO(crbug.com/327328901): Avoid using
+// mainController.browserProviderInterface in this class.
 + (BOOL)verifyInfobarCount:(NSInteger)totalInfobars {
   MainController* mainController = chrome_test_util::GetMainController();
   id<BrowserProvider> interface =

@@ -36,6 +36,8 @@ using scanner::CameraState;
 
 + (UIViewController*)currentBrowserViewController {
   MainController* mainController = chrome_test_util::GetMainController();
+  // TODO(crbug.com/327328147): Avoid using
+  // mainController.browserProviderInterface.
   return mainController.browserProviderInterface.mainBrowserProvider
       .viewController;
 }
