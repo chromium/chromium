@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
@@ -316,6 +318,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage : public CanvasResource {
   virtual bool IsLost() const = 0;
   virtual void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>&) = 0;
   virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                            const std::string& parent_path,
                             size_t bytes_per_pixel) const {}
 
  protected:
@@ -379,6 +382,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image) final;
   const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                    const std::string& parent_path,
                     size_t bytes_per_pixel) const override;
   // Whether this type of CanvasResource can provide detailed memory data. If
   // true, then the CanvasResourceProvider will not report data, to avoid

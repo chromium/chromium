@@ -15351,11 +15351,6 @@ be describing additional metrics about the same event.
       Measure of memory consumed by live allocations made from Oilpan.
     </summary>
   </metric>
-  <metric name="CanvasResourceProvider.SkSurface">
-    <summary>
-      Measure of memory used due to CanvasResourceProvider's SkSurface.
-    </summary>
-  </metric>
   <metric name="CommandBuffer">
     <summary>
       Measure of memory consumed by GL command buffer.

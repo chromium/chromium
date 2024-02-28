@@ -334,6 +334,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
+  const WTF::Vector<scoped_refptr<CanvasResource>>& canvas_resources() const {
+    return canvas_resources_;
+  }
+
  private:
   friend class FlushForImageListener;
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;

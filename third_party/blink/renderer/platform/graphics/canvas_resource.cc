@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -851,12 +852,13 @@ CanvasResourceRasterSharedImage::ContextProviderWrapper() const {
 
 void CanvasResourceRasterSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
+    const std::string& parent_path,
     size_t bytes_per_pixel) const {
   if (!IsValid())
     return;
 
   std::string dump_name =
-      base::StringPrintf("canvas/ResourceProvider/CanvasResource/0x%" PRIXPTR,
+      base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, parent_path.c_str(),
                          reinterpret_cast<uintptr_t>(this));
   auto* dump = pmd->CreateAllocatorDump(dump_name);
   size_t memory_size = Size().height() * Size().width() * bytes_per_pixel;
