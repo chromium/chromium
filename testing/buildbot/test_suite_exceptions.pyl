@@ -952,6 +952,9 @@
           'Release_x64',
         ],
       },
+      'win11-arm64-rel-tests': {
+        'experiment_percentage': 100, # https://crbug.com/325415943
+      },
       'win11-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
