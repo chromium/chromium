@@ -344,9 +344,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
 // Therefore, we keep only the 10 first suggested profiles.
 TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
   std::vector<AutofillProfile> profiles;
-  for (size_t i = 0;
-       i < 2 * AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount;
-       i++) {
+  for (size_t i = 0; i < 2 * kMaxDeduplicatedProfilesForSuggestion; i++) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
     test::SetProfileInfo(&profile, base::StringPrintf("Marion%zu", i).c_str(),
                          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
@@ -361,18 +359,16 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
           test_api(suggestion_generator())
               .GetProfilesToSuggest(NAME_FIRST, u"Ma", false, {});
 
-  ASSERT_EQ(2 * AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
+  ASSERT_EQ(2 * kMaxDeduplicatedProfilesForSuggestion,
             personal_data().GetProfiles().size());
-  ASSERT_EQ(AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
-            suggested_profiles.size());
+  ASSERT_EQ(kMaxDeduplicatedProfilesForSuggestion, suggested_profiles.size());
 }
 
 // Deduping takes noticeable time when there are more than 50 profiles.
 // Therefore, keep only the 50 first pre-dedupe matching profiles.
 TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
   std::vector<AutofillProfile> profiles;
-  for (size_t i = 0;
-       i < AutofillSuggestionGenerator::kMaxSuggestedProfilesCount; i++) {
+  for (size_t i = 0; i < kMaxPrefixMatchedProfilesForSuggestion; i++) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
     test::SetProfileInfo(
@@ -405,7 +401,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
           test_api(suggestion_generator())
               .GetProfilesToSuggest(NAME_FIRST, u"Ma", false, {});
 
-  ASSERT_EQ(AutofillSuggestionGenerator::kMaxSuggestedProfilesCount + 1,
+  ASSERT_EQ(kMaxPrefixMatchedProfilesForSuggestion + 1,
             personal_data().GetProfiles().size());
   ASSERT_EQ(1U, suggested_profiles.size());
   EXPECT_EQ(suggested_profiles.front()->GetRawInfo(NAME_FIRST),
@@ -652,14 +648,11 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_MultipleDedupe) {
 // Test the limit of number of deduplicated profiles.
 TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
   std::vector<AutofillProfile> profiles;
-  for (size_t i = 0;
-       i < AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount + 1;
-       i++) {
+  for (size_t i = 0; i < kMaxDeduplicatedProfilesForSuggestion + 1; i++) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
     profile.SetRawInfo(NAME_FULL,
                        base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
-    profile.set_use_count(
-        AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount + 10 - i);
+    profile.set_use_count(kMaxDeduplicatedProfilesForSuggestion + 10 - i);
     profiles.push_back(profile);
     personal_data().AddProfile(profile);
   }
@@ -670,8 +663,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
               .GetProfilesToSuggest(NAME_FULL, u"",
                                     /*field_is_autofilled=*/false, {NAME_FULL});
 
-  ASSERT_EQ(AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount,
-            profiles_to_suggest.size());
+  ASSERT_EQ(kMaxDeduplicatedProfilesForSuggestion, profiles_to_suggest.size());
 
   // All profiles are different.
   for (size_t i = 0; i < profiles_to_suggest.size(); i++) {

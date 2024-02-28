@@ -38,15 +38,6 @@ class PersonalDataManager;
 // address profile Autofill.
 class AutofillSuggestionGenerator {
  public:
-  // As of November 2018, displaying 10 suggestions cover at least 99% of the
-  // indices clicked by our users. The suggestions will also refine as they
-  // type.
-  static constexpr size_t kMaxUniqueSuggestedProfilesCount = 10;
-
-  // As of November 2018, 50 profiles should be more than enough to cover at
-  // least 99% of all times the dropdown is shown.
-  static constexpr size_t kMaxSuggestedProfilesCount = 50;
-
   AutofillSuggestionGenerator(AutofillClient& autofill_client,
                               PersonalDataManager& personal_data);
   ~AutofillSuggestionGenerator();
@@ -186,9 +177,9 @@ class AutofillSuggestionGenerator {
 
   // Dedupes the given profiles based on if one is a subset of the other for
   // suggestions represented by `field_types`. The function returns at most
-  // `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of
-  // the FieldTypes relevant for the current suggestions, including that
-  // of the field on which the user is currently focused.
+  // `kMaxDeduplicatedProfilesForSuggestion` profiles. `field_types` stores all
+  // of the FieldTypes relevant for the current suggestions, including that of
+  // the field on which the user is currently focused.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
   DeduplicatedProfilesForSuggestions(
       const std::vector<const AutofillProfile*>& matched_profiles,
@@ -198,7 +189,7 @@ class AutofillSuggestionGenerator {
 
   // Matches based on prefix search, and limits number of profiles.
   // Returns the top matching profiles based on prefix search. At most
-  // `kMaxSuggestedProfilesCount` are returned.
+  // `kMaxPrefixMatchedProfilesForSuggestion` are returned.
   std::vector<const AutofillProfile*> GetPrefixMatchedProfiles(
       const std::vector<AutofillProfile*>& profiles,
       FieldType trigger_field_type,

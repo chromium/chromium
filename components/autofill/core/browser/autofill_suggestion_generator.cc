@@ -1413,7 +1413,7 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
   // very useful for the user).
   for (size_t a = 0;
        a < matched_profiles.size() &&
-       unique_matched_profiles.size() < kMaxUniqueSuggestedProfilesCount;
+       unique_matched_profiles.size() < kMaxDeduplicatedProfilesForSuggestion;
        ++a) {
     bool include = true;
     const AutofillProfile* profile_a = matched_profiles[a];
@@ -1469,7 +1469,7 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
     bool field_is_autofilled) {
   std::vector<const AutofillProfile*> matched_profiles;
   for (const AutofillProfile* profile : profiles) {
-    if (matched_profiles.size() == kMaxSuggestedProfilesCount) {
+    if (matched_profiles.size() == kMaxPrefixMatchedProfilesForSuggestion) {
       break;
     }
     // Don't offer to fill the exact same value again. If detailed suggestions
