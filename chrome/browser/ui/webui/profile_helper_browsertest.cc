@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
@@ -211,8 +212,17 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   CloseBrowserSynchronously(original_browser);
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
+  // ProfileManager will switch active profile upon observing
+  // BrowserListObserver::OnBrowserSetLastActive(). Wait until the event
+  // is observed if the active profile has not switched to `additional_profile`
+  // yet.
+  bool wait_for_set_last_active_observed =
+      ProfileManager::GetLastUsedProfileIfLoaded() != additional_profile;
+  ui_test_utils::WaitForBrowserSetLastActive(browser_list->get(0),
+                                             wait_for_set_last_active_observed);
+
   // Ensure the last active browser and the`LastUsedProfile` is set.
-  browser_list->get(0)->window()->Show();
+  EXPECT_EQ(chrome::FindLastActive(), browser_list->get(0));
   EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfileDir(),
             additional_profile->GetPath());
 
