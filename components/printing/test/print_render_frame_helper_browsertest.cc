@@ -2635,6 +2635,46 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   OnClosePrintPreviewDialog();
 }
 
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+TEST_F(PrintRenderFrameHelperPreviewTest, TextSelectionPageRules) {
+  LoadHTML(R"HTML(
+    <style>
+      @page :first {
+        size: 300px;
+        page-orientation: rotate-right;
+      }
+      @page {
+        size: 400px;
+        page-orientation: rotate-left;
+      }
+    </style>
+    <div style="break-after:page;">page 1</div>
+    <div style="break-after:page;">page 2</div>
+  )HTML");
+  GetMainFrame()->ExecuteCommand("SelectAll");
+
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  VerifyPreviewPageCount(2);
+
+  // The @page rules should be ignored when printing the selection. The default
+  // page size (US Letter in this case) should be used.
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  EXPECT_EQ(page->image().size(), gfx::Size(612, 792));
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  EXPECT_EQ(page->image().size(), gfx::Size(612, 792));
+
+  OnClosePrintPreviewDialog();
+}
+
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+
 // Tests that cancelling print preview works.
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewCancel) {
   LoadHTML(kLongPageHTML);

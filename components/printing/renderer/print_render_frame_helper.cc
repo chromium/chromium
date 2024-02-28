@@ -1760,7 +1760,7 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
       uint32_t page_index = print_preview_context_.GetNextPageIndex();
       DCHECK_NE(page_index, kInvalidPageIndex);
 
-      blink::WebLocalFrame* frame = print_preview_context_.source_frame();
+      blink::WebLocalFrame* frame = print_preview_context_.prepared_frame();
       if (frame) {
         blink::WebPrintPageDescription description;
         frame->GetPageDescription(page_index, &description);
