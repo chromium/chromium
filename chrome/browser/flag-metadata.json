@@ -8185,12 +8185,12 @@
   {
     "name": "use-multi-plane-format-for-hardware-video",
     "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "use-multi-plane-format-for-software-video",
     "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "use-nat64-for-ipv4-literal",
