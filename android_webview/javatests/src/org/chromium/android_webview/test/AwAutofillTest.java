@@ -727,14 +727,15 @@ public class AwAutofillTest extends AwParameterizedTest {
     }
 
     /**
-     * This test is verifying that a user interacting with a form after reloading a webpage
-     * triggers a new autofill session rather than continuing a session that was started before the
-     * reload. This is necessary to ensure that autofill is properly triggered in this case (see
+     * This test is verifying that a user interacting with a form after reloading a webpage triggers
+     * a new autofill session rather than continuing a session that was started before the reload.
+     * This is necessary to ensure that autofill is properly triggered in this case (see
      * crbug.com/1117563 for details).
      */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testAutofillTriggersAfterReload() throws Throwable {
         int cnt = 0;
 
@@ -848,6 +849,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testCommit() throws Throwable {
         loadHTML(
                 """
@@ -886,7 +888,9 @@ public class AwAutofillTest extends AwParameterizedTest {
         executeJavaScriptAndWaitForResult("document.getElementById('formid').submit();");
         waitForCallbackAndVerifyTypes(
                 cnt,
-                new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+                new Integer[] {
+                    AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL
+                });
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         assertEquals(2, values.size());
         assertEquals("a", values.get(0).second.getTextValue());
@@ -957,7 +961,9 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AutofillAcrossIframes"})
+    @CommandLineFlags.Add({
+        "enable-features=AutofillAcrossIframes, AndroidAutofillCancelSessionOnNavigation"
+    })
     public void testCrossFrameCommit() throws Throwable {
         // The only reason we use a <form> inside the iframe is that this makes it easiest to
         // trigger a form submission in that frame.
@@ -1276,12 +1282,13 @@ public class AwAutofillTest extends AwParameterizedTest {
     }
 
     /**
-     * This test is verifying that a navigation occurring while there is a probably-submitted
-     * form will trigger commit of the current autofill session.
+     * This test is verifying that a navigation occurring while there is a probably-submitted form
+     * will trigger commit of the current autofill session.
      */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testNavigationAfterProbableSubmitResultsInSessionCommit() throws Throwable {
         int cnt = 0;
         loadHTML(
@@ -1583,6 +1590,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserSelectSuggestionUserChangeFormFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1616,6 +1624,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserSelectSuggestionUserChangeFormNoFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1648,6 +1657,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMASessionMetricsRecordedOnAwContentsDestruction() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1682,6 +1692,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserSelectNotSuggestionUserChangeFormNoFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1714,6 +1725,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserNotSelectSuggestionUserChangeFormFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1746,6 +1758,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMANoSuggestionUserChangeFormNoFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1775,6 +1788,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMANoSuggestionUserChangeFormFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1806,6 +1820,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserSelectSuggestionUserNotChangeFormFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1838,6 +1853,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserSelectSuggestionUserNotChangeFormNoFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1868,6 +1884,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserNotSelectSuggestionUserNotChangeFormNoFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1897,6 +1914,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAUserNotSelectSuggestionUserNotChangeFormFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1928,6 +1946,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMANoSuggestionUserNotChangeFormNoFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -1956,6 +1975,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMANoSuggestionUserNotChangeFormFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -2133,6 +2153,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAFormSubmissionProbablyFormSubmitted() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -2159,6 +2180,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAFormSubmissionFrameDetached() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -2218,6 +2240,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAFormSubmissionSameDocumentNavigation() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -2276,6 +2299,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testUMAFormSubmissionXHRSucceeded() throws Throwable {
         var histograms =
                 TestThreadUtils.runOnUiThreadBlocking(
@@ -3243,6 +3267,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillCancelSessionOnNavigation"})
     public void testFrameDetachedOnFormSubmission() throws Throwable {
         final String subFrame =
                 """
