@@ -72,55 +72,8 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
   // Populate initial instance params from creation params.
   net::CertVerifyProc::InstanceParams instance_params;
   if (creation_params->initial_additional_certificates) {
-    instance_params
-        .additional_trust_anchors = net::x509_util::ParseAllValidCerts(
-        net::x509_util::ConvertToX509CertificatesIgnoreErrors(
-            creation_params->initial_additional_certificates->trust_anchors));
-
-    instance_params.additional_untrusted_authorities =
-        net::x509_util::ParseAllValidCerts(
-            net::x509_util::ConvertToX509CertificatesIgnoreErrors(
-                creation_params->initial_additional_certificates
-                    ->all_certificates));
-
-    instance_params.additional_trust_anchors_with_enforced_constraints =
-        net::x509_util::ParseAllValidCerts(
-            net::x509_util::ConvertToX509CertificatesIgnoreErrors(
-                creation_params->initial_additional_certificates
-                    ->trust_anchors_with_enforced_constraints));
-
-    instance_params.additional_distrusted_spkis =
-        creation_params->initial_additional_certificates->distrusted_spkis;
-    instance_params.include_system_trust_store =
-        creation_params->initial_additional_certificates
-            ->include_system_trust_store;
-
-    for (const auto& cert_with_constraints_mojo :
-         creation_params->initial_additional_certificates
-             ->trust_anchors_with_additional_constraints) {
-      bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
-          net::x509_util::CreateCryptoBuffer(
-              base::as_byte_span(cert_with_constraints_mojo->certificate));
-      std::shared_ptr<const bssl::ParsedCertificate> cert =
-          bssl::ParsedCertificate::Create(
-              std::move(cert_buffer),
-              net::x509_util::DefaultParseCertificateOptions(), nullptr);
-      if (!cert) {
-        continue;
-      }
-
-      net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
-      cert_with_constraints.certificate = std::move(cert);
-      cert_with_constraints.permitted_dns_names =
-          cert_with_constraints_mojo->permitted_dns_names;
-
-      for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
-        cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
-      }
-
-      instance_params.additional_trust_anchors_with_constraints.push_back(
-          std::move(cert_with_constraints));
-    }
+    UpdateCertVerifierInstanceParams(
+        creation_params->initial_additional_certificates, &instance_params);
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =

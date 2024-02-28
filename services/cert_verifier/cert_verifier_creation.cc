@@ -17,8 +17,10 @@
 #include "net/cert/ct_verifier.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
+#include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "net/cert/multi_log_ct_verifier.h"
@@ -229,6 +231,58 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
       proc_factory->CreateCertVerifyProc(cert_net_fetcher, impl_params,
                                          instance_params),
       proc_factory);
+}
+
+void UpdateCertVerifierInstanceParams(
+    const mojom::AdditionalCertificatesPtr& additional_certificates,
+    net::CertVerifyProc::InstanceParams* instance_params) {
+  instance_params->additional_trust_anchors =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->trust_anchors));
+
+  instance_params->additional_untrusted_authorities =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates->all_certificates));
+
+  instance_params->additional_trust_anchors_with_enforced_constraints =
+      net::x509_util::ParseAllValidCerts(
+          net::x509_util::ConvertToX509CertificatesIgnoreErrors(
+              additional_certificates
+                  ->trust_anchors_with_enforced_constraints));
+
+  instance_params->additional_distrusted_spkis =
+      additional_certificates->distrusted_spkis;
+
+  instance_params->include_system_trust_store =
+      additional_certificates->include_system_trust_store;
+
+  for (const auto& cert_with_constraints_mojo :
+       additional_certificates->trust_anchors_with_additional_constraints) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
+        net::x509_util::CreateCryptoBuffer(
+            base::as_byte_span(cert_with_constraints_mojo->certificate));
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        bssl::ParsedCertificate::Create(
+            std::move(cert_buffer),
+            net::x509_util::DefaultParseCertificateOptions(), nullptr);
+    if (!cert) {
+      continue;
+    }
+
+    net::CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+    cert_with_constraints.certificate = std::move(cert);
+    cert_with_constraints.permitted_dns_names =
+        cert_with_constraints_mojo->permitted_dns_names;
+
+    for (const auto& cidr : cert_with_constraints_mojo->permitted_cidrs) {
+      cert_with_constraints.permitted_cidrs.push_back({cidr->ip, cidr->mask});
+    }
+
+    instance_params->additional_trust_anchors_with_constraints.push_back(
+        std::move(cert_with_constraints));
+  }
 }
 
 }  // namespace cert_verifier
