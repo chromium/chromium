@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
               OnBeforeAskForValuesToFill(_, form.global_id(),
                                          form.fields[0].global_id(), _));
 
-  std::vector<const FormFieldData* const> filled_fields_by_autofill = {
+  const std::vector<const FormFieldData*> filled_fields_by_autofill = {
       {&form.fields[0], &form.fields[1]}};
   web_contents()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
     // Call the driver of the field host iframe.
@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
   AutofillProfile profile = CreateTestProfile();
   FormData form =
       main_autofill_manager().form_structures().begin()->second->ToFormData();
-  std::vector<const FormFieldData* const> filled_fields_by_autofill = {
+  const std::vector<const FormFieldData*> filled_fields_by_autofill = {
       {&form.fields[0], &form.fields[1]}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   AutofillProfile profile_a = CreateTestProfile();
   FormData form_a =
       main_autofill_manager().form_structures().begin()->second->ToFormData();
-  std::vector<const FormFieldData* const> filled_fields_by_autofill_a = {
+  const std::vector<const FormFieldData*> filled_fields_by_autofill_a = {
       {&form_a.fields[0], &form_a.fields[1]}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   AutofillProfile profile_b = CreateTestProfile();
   FormData form_b =
       main_autofill_manager().form_structures().begin()->second->ToFormData();
-  std::vector<const FormFieldData* const> filled_fields_by_autofill_b = {
+  const std::vector<const FormFieldData*> filled_fields_by_autofill_b = {
       {&form_b.fields[0], &form_b.fields[1]}};
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,

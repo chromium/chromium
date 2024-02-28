@@ -17,28 +17,23 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-SearchEngineTableViewControllerTest::SearchEngineTableViewControllerTest() {}
+SearchEngineTableViewControllerTest::SearchEngineTableViewControllerTest()
+    : prepopulated_search_engine_({
+          {"google.com", GURL("https://p1.com?q={searchTerms}")},
+          {"bing.com", GURL("https://p2.com?q={searchTerms}")},
+          {"duckduckgo.com", GURL("https://p3.com?q={searchTerms}")},
+      }),
+      custom_search_engine_({
+          {"custom-1", GURL("https://c1.com?q={searchTerms}")},
+          {"custom-2", GURL("https://c2.com?q={searchTerms}")},
+          {"custom-3", GURL("https://c3.com?q={searchTerms}")},
+          {"custom-4", GURL("https://c4.com?q={searchTerms}")},
+      }) {}
 
 SearchEngineTableViewControllerTest::~SearchEngineTableViewControllerTest() {}
 
 void SearchEngineTableViewControllerTest::SetUp() {
   LegacyChromeTableViewControllerTest::SetUp();
-  // Create prepopulated search engine.
-  prepopulated_search_engine_.push_back(
-      {"google.com", GURL("https://p1.com?q={searchTerms}")});
-  prepopulated_search_engine_.push_back(
-      {"bing.com", GURL("https://p2.com?q={searchTerms}")});
-  prepopulated_search_engine_.push_back(
-      {"duckduckgo.com", GURL("https://p3.com?q={searchTerms}")});
-  // Create custom search engine.
-  custom_search_engine_.push_back(
-      {"custom-1", GURL("https://c1.com?q={searchTerms}")});
-  custom_search_engine_.push_back(
-      {"custom-2", GURL("https://c2.com?q={searchTerms}")});
-  custom_search_engine_.push_back(
-      {"custom-3", GURL("https://c3.com?q={searchTerms}")});
-  custom_search_engine_.push_back(
-      {"custom-4", GURL("https://c4.com?q={searchTerms}")});
 
   TestChromeBrowserState::Builder test_cbs_builder;
 

@@ -106,8 +106,8 @@ class SearchEngineTableViewControllerTest
   base::HistogramTester histogram_tester_;
   raw_ptr<TemplateURLService> template_url_service_;  // weak
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-  std::vector<const SearchEngineTest> prepopulated_search_engine_;
-  std::vector<const SearchEngineTest> custom_search_engine_;
+  const std::vector<SearchEngineTest> prepopulated_search_engine_;
+  const std::vector<SearchEngineTest> custom_search_engine_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SEARCH_ENGINE_TABLE_VIEW_CONTROLLER_UNITTEST_H_

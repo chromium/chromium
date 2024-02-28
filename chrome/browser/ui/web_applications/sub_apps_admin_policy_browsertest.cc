@@ -103,7 +103,7 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
   }
 
   void SetAllowlistedOrigins(
-      const std::vector<const std::string>& allowlisted_origins) {
+      const std::vector<std::string>& allowlisted_origins) {
     policy::PolicyMap policy_map;
     base::Value::List allowed_origins;
 

@@ -1095,7 +1095,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             ->GetPrimaryMainFrame();
     url::Origin main_frame_origin = main_frame->GetLastCommittedOrigin();
 
-    auto initial_groups = GetAllInterestGroupDetails();
+    const auto initial_groups = GetAllInterestGroupDetails();
 
     std::string result = ClearOriginJoinedInterestGroups(owner, groups_to_keep,
                                                          execution_target);
@@ -1157,8 +1157,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return result;
   }
 
-  std::vector<const SingleStorageInterestGroup> GetAllInterestGroupDetails() {
-    std::vector<const SingleStorageInterestGroup> interest_groups;
+  std::vector<SingleStorageInterestGroup> GetAllInterestGroupDetails() {
+    std::vector<SingleStorageInterestGroup> interest_groups;
     for (const auto& owner : GetAllInterestGroupsOwners()) {
       scoped_refptr<StorageInterestGroups> owner_groups =
           GetInterestGroupsForOwner(owner);

@@ -73,7 +73,6 @@ class ChromeOsWebAppExperimentsBrowserTest
   webapps::AppId app_id_;
   GURL extended_scope_;
   GURL extended_scope_page_;
-  std::vector<const char* const> extended_scopes_;
   // This has no effect in Lacros, the feature is enabled via
   // `chromeos::BrowserInitParams` instead.
   base::test::ScopedFeatureList scoped_feature_list_{

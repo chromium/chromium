@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_P(
     // extension URL.
     ASSERT_EQ(2u, entries.size());
 
-    std::vector<const GURL> entry_urls;
+    std::vector<GURL> entry_urls;
     for (const ukm::mojom::UkmEntry* const entry : entries) {
       auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       EXPECT_TRUE(src)
@@ -1364,7 +1364,7 @@ IN_PROC_BROWSER_TEST_P(
         << "Another 2 UKM metrics with different source ID should be recorded "
            "from the second navigation";
 
-    std::vector<const GURL> entry_urls;
+    std::vector<GURL> entry_urls;
     for (const ukm::mojom::UkmEntry* const entry : entries) {
       auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       ASSERT_TRUE(src)
