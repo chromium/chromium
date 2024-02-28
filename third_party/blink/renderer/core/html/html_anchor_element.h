@@ -114,6 +114,8 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   bool SupportsFocus(UpdateBehavior update_behavior =
                          UpdateBehavior::kStyleAndLayout) const override;
 
+  void FinishParsingChildren() final;
+
  private:
   void AttributeChanged(const AttributeModificationParams&) override;
   bool ShouldHaveFocusAppearance() const final;

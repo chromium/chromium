@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/loader/ping_loader.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -292,8 +293,15 @@ void HTMLAnchorElement::ParseAttribute(
     }
     InvalidateCachedVisitedLinkHash();
     LogUpdateAttributeIfIsolatedWorldAndInDocument("a", params);
-  } else if (params.name == html_names::kNameAttr ||
-             params.name == html_names::kTitleAttr) {
+  } else if (params.name == html_names::kNameAttr) {
+    if (GetDocument().HasRenderBlockingExpectLinkElements() && isConnected() &&
+        IsFinishedParsingChildren() && !params.new_value.empty()) {
+      DCHECK(GetDocument().GetRenderBlockingResourceManager());
+      GetDocument()
+          .GetRenderBlockingResourceManager()
+          ->RemovePendingParsingElement(params.new_value);
+    }
+  } else if (params.name == html_names::kTitleAttr) {
     // Do nothing.
   } else if (params.name == html_names::kRelAttr) {
     SetRel(params.new_value);
@@ -331,6 +339,16 @@ bool HTMLAnchorElement::IsURLAttribute(const Attribute& attribute) const {
 bool HTMLAnchorElement::HasLegalLinkAttribute(const QualifiedName& name) const {
   return name == html_names::kHrefAttr ||
          HTMLElement::HasLegalLinkAttribute(name);
+}
+
+void HTMLAnchorElement::FinishParsingChildren() {
+  Element::FinishParsingChildren();
+  if (GetDocument().HasRenderBlockingExpectLinkElements()) {
+    DCHECK(GetDocument().GetRenderBlockingResourceManager());
+    GetDocument()
+        .GetRenderBlockingResourceManager()
+        ->RemovePendingParsingElement(GetNameAttribute());
+  }
 }
 
 bool HTMLAnchorElement::CanStartSelection() const {
