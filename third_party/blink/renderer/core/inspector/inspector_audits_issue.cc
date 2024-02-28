@@ -236,6 +236,21 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
         kNavigationRegistrationWithoutTransientUserActivation:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           NavigationRegistrationWithoutTransientUserActivation;
+    case AttributionReportingIssueType::kInvalidInfoHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidInfoHeader;
+    case AttributionReportingIssueType::kNoRegisterSourceHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NoRegisterSourceHeader;
+    case AttributionReportingIssueType::kNoRegisterTriggerHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NoRegisterTriggerHeader;
+    case AttributionReportingIssueType::kNoRegisterOsSourceHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NoRegisterOsSourceHeader;
+    case AttributionReportingIssueType::kNoRegisterOsTriggerHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          NoRegisterOsTriggerHeader;
   }
 }
 

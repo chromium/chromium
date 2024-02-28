@@ -206,7 +206,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting/os"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride",
+    "args": ["--enable-features=AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride,AttributionReportingPreferredPlatform",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "May 30, 2024"
   },

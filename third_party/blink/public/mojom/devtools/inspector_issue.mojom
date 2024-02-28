@@ -92,6 +92,11 @@ enum AttributionReportingIssueType {
   kWebAndOsHeaders,
   kNoWebOrOsSupport,
   kNavigationRegistrationWithoutTransientUserActivation,
+  kInvalidInfoHeader,
+  kNoRegisterSourceHeader,
+  kNoRegisterTriggerHeader,
+  kNoRegisterOsSourceHeader,
+  kNoRegisterOsTriggerHeader,
 };
 
 struct AttributionReportingIssueDetails {

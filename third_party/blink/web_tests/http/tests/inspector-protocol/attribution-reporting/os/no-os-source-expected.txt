@@ -1,0 +1,11 @@
+Test that an attributionsrc request that is eligible for source triggers an issue when OS is preferred but there is no OS source registration.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            request : <object>
+            violationType : NoRegisterOsSourceHeader
+        }
+    }
+}
+

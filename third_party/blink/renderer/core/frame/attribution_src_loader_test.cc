@@ -13,6 +13,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -733,8 +736,6 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        HeadersSize_OsMetricsRecorded) {
   base::HistogramTester histograms;
-  GetPage().SetAttributionSupport(
-      network::mojom::AttributionSupport::kWebAndOs);
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
   AtomicString os_registration(R"("https://r.test/x")");
@@ -742,6 +743,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   ResourceRequest request(test_url);
   request.SetAttributionReportingEligibility(
       AttributionReportingEligibility::kTrigger);
+  request.SetAttributionReportingSupport(
+      network::mojom::AttributionSupport::kWebAndOs);
   auto* resource = MakeGarbageCollected<MockResource>(test_url);
   ResourceResponse response(test_url);
   response.SetHttpStatusCode(200);
@@ -819,6 +822,270 @@ TEST_F(
 
   EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
       request, response, resource));
+}
+
+struct PreferredPlatformTestCase {
+  bool feature_enabled = true;
+  const char* info_header;
+  bool has_web_header;
+  bool has_os_header;
+  network::mojom::AttributionSupport support;
+  bool expected_web;
+  bool expected_os;
+};
+
+const PreferredPlatformTestCase kPreferredPlatformTestCases[] = {
+    {
+        .feature_enabled = false,
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .feature_enabled = true,
+        .info_header = nullptr,
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = false,
+        .expected_os = true,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = true,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = true,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kNone,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = false,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=os",
+        .has_web_header = true,
+        .has_os_header = false,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWebAndOs,
+        .expected_web = true,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kWeb,
+        .expected_web = true,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = true,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kNone,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = true,
+        .has_os_header = false,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+    {
+        .info_header = "preferred-platform=web",
+        .has_web_header = false,
+        .has_os_header = true,
+        .support = network::mojom::AttributionSupport::kOs,
+        .expected_web = false,
+        .expected_os = false,
+    },
+};
+
+class AttributionSrcLoaderPreferredPlatformEnabledTest
+    : public AttributionSrcLoaderTest,
+      public ::testing::WithParamInterface<PreferredPlatformTestCase> {
+ public:
+  AttributionSrcLoaderPreferredPlatformEnabledTest() {
+    std::vector<base::test::FeatureRef> enabled_features(
+        {network::features::kAttributionReportingCrossAppWeb});
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().feature_enabled) {
+      enabled_features.emplace_back(attribution_reporting::features::
+                                        kAttributionReportingPreferredPlatform);
+    } else {
+      disabled_features.emplace_back(
+          attribution_reporting::features::
+              kAttributionReportingPreferredPlatform);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+    WebRuntimeFeatures::EnableFeatureFromString(
+        /*name=*/"AttributionReportingCrossAppWeb", /*enable=*/true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class AttributionSrcLoaderPreferredPlatformSourceTest
+    : public AttributionSrcLoaderPreferredPlatformEnabledTest {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionSrcLoaderPreferredPlatformSourceTest,
+                         ::testing::ValuesIn(kPreferredPlatformTestCases));
+
+// TODO(linnan): These tests are flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE(TEST_NAME) DISABLED_##TEST_NAME
+#else
+#define MAYBE(TEST_NAME) TEST_NAME
+#endif
+
+TEST_P(AttributionSrcLoaderPreferredPlatformSourceTest,
+       MAYBE(PreferredPlatform)) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  const auto& test_case = GetParam();
+
+  ResourceRequest request(test_url);
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kEventSourceOrTrigger);
+  request.SetAttributionReportingSupport(test_case.support);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  if (test_case.has_web_header) {
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterSource,
+        AtomicString(R"({"destination":"https://destination.example"})"));
+  }
+  if (test_case.has_os_header) {
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterOSSource,
+        AtomicString(R"("https://r.test/x")"));
+  }
+  if (test_case.info_header) {
+    response.SetHttpHeaderField(http_names::kAttributionReportingInfo,
+                                AtomicString(test_case.info_header));
+  }
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+
+  EXPECT_THAT(mock_data_host->source_data(),
+              ::testing::SizeIs(test_case.expected_web));
+  EXPECT_THAT(mock_data_host->os_sources(),
+              ::testing::SizeIs(test_case.expected_os));
+}
+
+class AttributionSrcLoaderPreferredPlatformTriggerTest
+    : public AttributionSrcLoaderPreferredPlatformEnabledTest {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AttributionSrcLoaderPreferredPlatformTriggerTest,
+                         ::testing::ValuesIn(kPreferredPlatformTestCases));
+
+TEST_P(AttributionSrcLoaderPreferredPlatformTriggerTest,
+       MAYBE(PreferredPlatform)) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  const auto& test_case = GetParam();
+
+  ResourceRequest request(test_url);
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kEventSourceOrTrigger);
+  request.SetAttributionReportingSupport(test_case.support);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  if (test_case.has_web_header) {
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterTrigger,
+        AtomicString(R"({})"));
+  }
+  if (test_case.has_os_header) {
+    response.SetHttpHeaderField(
+        http_names::kAttributionReportingRegisterOSTrigger,
+        AtomicString(R"("https://r.test/x")"));
+  }
+  if (test_case.info_header) {
+    response.SetHttpHeaderField(http_names::kAttributionReportingInfo,
+                                AtomicString(test_case.info_header));
+  }
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+
+  EXPECT_THAT(mock_data_host->trigger_data(),
+              ::testing::SizeIs(test_case.expected_web));
+  EXPECT_THAT(mock_data_host->os_triggers(),
+              ::testing::SizeIs(test_case.expected_os));
 }
 
 }  // namespace

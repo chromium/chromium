@@ -65,6 +65,10 @@ component("attribution_reporting") {
     "os_registration.h",
     "parsing_utils.cc",
     "parsing_utils.h",
+    "registrar.cc",
+    "registrar.h",
+    "registration_info.cc",
+    "registration_info.h",
     "source_registration.cc",
     "source_registration.h",
     "source_type.cc",
@@ -91,7 +95,11 @@ component("attribution_reporting") {
     "//url",
   ]
 
-  deps = [ ":is_origin_suitable" ]
+  deps = [
+    ":is_origin_suitable",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:mojom_headers",
+  ]
 
   defines = [ "IS_ATTRIBUTION_REPORTING_IMPL" ]
 }
@@ -129,6 +137,8 @@ source_set("unit_tests") {
     "max_event_level_reports_unittest.cc",
     "os_registration_unittest.cc",
     "parsing_utils_unittest.cc",
+    "registrar_unittest.cc",
+    "registration_info_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
     "summary_buckets_unittest.cc",
@@ -141,6 +151,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//services/network/public/mojom:mojom_headers",
     "//testing/gtest",
   ]
 }

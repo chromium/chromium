@@ -25,6 +25,7 @@ class TriggerVerification;
 
 namespace attribution_reporting {
 class SuitableOrigin;
+enum class Registrar;
 }  // namespace attribution_reporting
 
 namespace blink {
@@ -141,7 +142,8 @@ class CORE_EXPORT AttributionSrcLoader
       network::mojom::AttributionSupport,
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
-      const Vector<network::TriggerVerification>&);
+      const Vector<network::TriggerVerification>&,
+      std::optional<attribution_reporting::Registrar> preferred_platform);
 
   const Member<LocalFrame> local_frame_;
 };

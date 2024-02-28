@@ -201,6 +201,14 @@ BuildAttributionReportingIssueViolationType(
         kNavigationRegistrationWithoutTransientUserActivation:
       // This issue is not reported from the browser.
       NOTREACHED_NORETURN();
+    case blink::mojom::AttributionReportingIssueType::kInvalidInfoHeader:
+    case blink::mojom::AttributionReportingIssueType::kNoRegisterSourceHeader:
+    case blink::mojom::AttributionReportingIssueType::kNoRegisterTriggerHeader:
+    case blink::mojom::AttributionReportingIssueType::kNoRegisterOsSourceHeader:
+    case blink::mojom::AttributionReportingIssueType::
+        kNoRegisterOsTriggerHeader:
+      // TODO(crbug.com/325103501): Support preferred platform in the browser.
+      NOTREACHED_NORETURN();
   }
 }
 
