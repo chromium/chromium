@@ -86,7 +86,7 @@ class PA_TRIVIAL_ABI InstanceTracer {
     return ++counter_;
   }
 
-  static std::atomic<uint64_t> counter_;
+  PA_COMPONENT_EXPORT(RAW_PTR) static std::atomic<uint64_t> counter_;
 
   // 0 is treated as 'ownerless'. It is used as a sentinel for constexpr
   // raw_ptrs or other places where owner tracking doesn't make sense.
