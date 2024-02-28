@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
@@ -271,7 +270,7 @@ void TextureLayerImpl::RegisterSharedBitmapId(
     // AppendQuads().
     to_register_bitmaps_[id] = std::move(bitmap);
   }
-  base::Erase(to_unregister_bitmap_ids_, id);
+  std::erase(to_unregister_bitmap_ids_, id);
 }
 
 void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {

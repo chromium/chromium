@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -255,7 +255,7 @@ SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
   DCHECK(!base::Contains(to_register_bitmaps_.Read(*this), id));
   DCHECK(!base::Contains(registered_bitmaps_.Read(*this), id));
   to_register_bitmaps_.Write(*this)[id] = std::move(bitmap);
-  base::Erase(to_unregister_bitmap_ids_.Write(*this), id);
+  std::erase(to_unregister_bitmap_ids_.Write(*this), id);
 
   // This does not SetNeedsCommit() to be as lazy as possible.
   // Notifying a SharedBitmapId is not needed until it is used,

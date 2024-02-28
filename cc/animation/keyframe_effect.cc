@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -628,7 +628,7 @@ void KeyframeEffect::MarkAbortedKeyframeModelsForDeletion(
 }
 
 void KeyframeEffect::PurgeKeyframeModelsMarkedForDeletion(bool impl_only) {
-  base::EraseIf(keyframe_models(), [impl_only](const auto& keyframe_model) {
+  std::erase_if(keyframe_models(), [impl_only](const auto& keyframe_model) {
     return keyframe_model->run_state() ==
                gfx::KeyframeModel::WAITING_FOR_DELETION &&
            (!impl_only || KeyframeModel::ToCcKeyframeModel(keyframe_model.get())
@@ -637,7 +637,7 @@ void KeyframeEffect::PurgeKeyframeModelsMarkedForDeletion(bool impl_only) {
 }
 
 void KeyframeEffect::PurgeDeletedKeyframeModels() {
-  base::EraseIf(keyframe_models(), [](const auto& keyframe_model) {
+  std::erase_if(keyframe_models(), [](const auto& keyframe_model) {
     return keyframe_model->run_state() ==
                gfx::KeyframeModel::WAITING_FOR_DELETION &&
            !KeyframeModel::ToCcKeyframeModel(keyframe_model.get())

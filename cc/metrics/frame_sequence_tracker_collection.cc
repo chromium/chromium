@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -252,7 +251,7 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
     }
   }
 
-  base::EraseIf(
+  std::erase_if(
       removal_trackers_,
       [](const std::unique_ptr<FrameSequenceTracker>& tracker) {
         return tracker->termination_status() ==

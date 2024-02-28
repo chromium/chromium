@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <atomic>
 #include <utility>
+#include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/slim/layer_tree.h"
@@ -126,7 +126,7 @@ void Layer::RemoveFromParentSlim() {
   }
 
   SetLayerTree(nullptr);
-  base::EraseIf(parent_->children_,
+  std::erase_if(parent_->children_,
                 [&](auto& ptr) { return ptr.get() == this; });
   parent_->NotifyPropertyChanged();
   SetParentSlim(nullptr);
