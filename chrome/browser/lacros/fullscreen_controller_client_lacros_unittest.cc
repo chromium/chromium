@@ -113,7 +113,10 @@ class FullscreenControllerClientLacrosTest : public BrowserWithTestWindowTest {
                            profile_->GetBaseName().value());
   }
 
-  void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
+  void TearDown() override {
+    profile_ = nullptr;
+    BrowserWithTestWindowTest::TearDown();
+  }
 
   void SetKeepFullscreenWithoutNotificationAllowList(
       const std::string& pattern) {
@@ -175,8 +178,8 @@ class FullscreenControllerClientLacrosWebContentsTest
 
   void TearDown() override {
     if (app_window_) {
-      app_window_->OnNativeClose();
-      app_window_ = nullptr;
+      // OnNativeClose() will destroy the app window.
+      app_window_.ExtractAsDangling()->OnNativeClose();
     }
 
     FullscreenControllerClientLacrosTest::TearDown();
