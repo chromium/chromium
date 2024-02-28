@@ -1,14 +1,18 @@
 [
     {
-        "duration": "61.0",
+        "duration": "188.0",
         "name": "startup.mobile/cct:coldish:bbc"
     },
     {
-        "duration": "64.0",
+        "duration": "191.0",
         "name": "startup.mobile/intent:coldish:bbc"
     },
     {
-        "duration": "38.0",
+        "duration": "165.0",
         "name": "startup.mobile/intent:warm:bbc"
+    },
+    {
+        "duration": "8.0",
+        "name": "startup.mobile/mobile_pwa:with_http_cache"
     }
 ]
