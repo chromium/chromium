@@ -1405,7 +1405,9 @@ void ChromeContentRendererClient::PostCompositorThreadCreated(
 }
 
 bool ChromeContentRendererClient::RunIdleHandlerWhenWidgetsHidden() {
-  return !IsStandaloneContentExtensionProcess();
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kInitIsolateAsForeground) ||
+         !IsStandaloneContentExtensionProcess();
 }
 
 bool ChromeContentRendererClient::AllowPopup() {

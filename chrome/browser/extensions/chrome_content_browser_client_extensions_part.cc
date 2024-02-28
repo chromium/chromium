@@ -67,6 +67,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -926,8 +927,25 @@ void ChromeContentBrowserClientExtensionsPart::
 
   auto* process_map = ProcessMap::Get(profile);
   CHECK(process_map);
-  if (process_map->Contains(process->GetID())) {
+  std::set<ExtensionId> extensions =
+      process_map->GetExtensionsInProcess(process->GetID());
+  if (!extensions.empty()) {
     command_line->AppendSwitch(switches::kExtensionProcess);
+
+    // Blink usually initializes the main-thread Isolate in background mode for
+    // extension processes, assuming that they can't detect visibility. However,
+    // mimehandler processes such as the PDF document viewer can indeed detect
+    // visibility, and benefit from being started in foreground mode. We can
+    // safely start those processes in foreground mode, knowing that
+    // RenderThreadImpl::OnRendererHidden will be called when appropriate.
+    const std::vector<std::string>& mimehandler_extensions =
+        MimeTypesHandler::GetMIMETypeAllowlist();
+    for (const std::string& extension : mimehandler_extensions) {
+      if (extensions.contains(extension)) {
+        command_line->AppendSwitch(::switches::kInitIsolateAsForeground);
+        break;
+      }
+    }
   }
 }
 
