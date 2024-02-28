@@ -559,6 +559,8 @@ contrib/shared_storage/page_set.py
 contrib/shared_storage/pages.py
 contrib/shared_storage/shared_storage.py
 contrib/shared_storage/shared_storage_shared_page_state.py
+contrib/shared_storage/utils/__init__.py
+contrib/shared_storage/utils/histogram_list.py
 contrib/system_health_scroll_jank/__init__.py
 contrib/system_health_scroll_jank/janky_story_set.py
 contrib/system_health_scroll_jank/system_health_scroll_jank.py

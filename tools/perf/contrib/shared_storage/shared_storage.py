@@ -7,6 +7,7 @@ import os
 
 from benchmarks import memory
 from contrib.shared_storage import page_set
+from contrib.shared_storage import utils
 from core import perf_benchmark
 
 from telemetry import benchmark
@@ -14,29 +15,6 @@ from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
 from py_utils import xvfb
-
-# Shared-storage-related histograms to measure.
-_SHARED_STORAGE_UMA_HISTOGRAMS = [
-    "Storage.SharedStorage.Document.Timing.AddModule",
-    "Storage.SharedStorage.Document.Timing.Append",
-    "Storage.SharedStorage.Document.Timing.Clear",
-    "Storage.SharedStorage.Document.Timing.Delete",
-    "Storage.SharedStorage.Document.Timing.Run",
-    "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet",
-    "Storage.SharedStorage.Document.Timing.SelectURL",
-    "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",
-    "Storage.SharedStorage.Document.Timing.Set",
-    "Storage.SharedStorage.Worklet.Timing.Append",
-    "Storage.SharedStorage.Worklet.Timing.Clear",
-    "Storage.SharedStorage.Worklet.Timing.Delete",
-    "Storage.SharedStorage.Worklet.Timing.Entries.Next",
-    "Storage.SharedStorage.Worklet.Timing.Get",
-    "Storage.SharedStorage.Worklet.Timing.Keys.Next",
-    "Storage.SharedStorage.Worklet.Timing.Length",
-    "Storage.SharedStorage.Worklet.Timing.RemainingBudget",
-    "Storage.SharedStorage.Worklet.Timing.Set",
-    "Storage.SharedStorage.Worklet.Timing.Values.Next",
-]
 
 # Features to enable via command line.
 _ENABLED_FEATURES = [
@@ -159,7 +137,7 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
     tbm_options.config.chrome_trace_config.SetTraceBufferSizeInKb(
         _TRACE_BUFFER_SIZE)
 
-    for histogram in _SHARED_STORAGE_UMA_HISTOGRAMS:
+    for histogram in utils.GetSharedStorageUmaHistograms():
       tbm_options.config.chrome_trace_config.EnableUMAHistograms(histogram)
 
     tbm_options.AddTimelineBasedMetric('umaMetric')
