@@ -1,16 +1,16 @@
-# Testing and debugging Cronet for Android
+# Testing and debugging Cronet
 
 [TOC]
 
 ## Checkout and build
 
-See instructions in the [common checkout and
-build](/components/cronet/build_instructions.md).
+See instructions in the
+[common checkout and build](/components/cronet/build_instructions.md).
 
 ## Running tests locally
 
-First, connect an Android device by following the [Plug in your Android
-device](/docs/android_build_instructions.md#Plug-in-your-Android-device)
+First, connect an Android device by following the
+[Plug in your Android device](/docs/android_build_instructions.md#Plug-in-your-Android-device)
 steps. Prefer using a device running a userdebug build.
 
 Alternatively, you can pass the --x86 flag to `gn` to test on a local emulator
