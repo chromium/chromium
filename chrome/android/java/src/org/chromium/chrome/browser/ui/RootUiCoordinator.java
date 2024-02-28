@@ -1395,6 +1395,7 @@ public class RootUiCoordinator
                             mActivity,
                             mBrowserControlsManager,
                             mFullscreenManager,
+                            mEdgeToEdgeControllerSupplier,
                             toolbarContainer,
                             mCompositorViewHolderSupplier.get(),
                             urlFocusChangedCallback,

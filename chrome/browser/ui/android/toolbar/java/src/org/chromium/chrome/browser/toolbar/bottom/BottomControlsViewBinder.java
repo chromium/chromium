@@ -34,10 +34,10 @@ class BottomControlsViewBinder {
     }
 
     static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
-        if (BottomControlsProperties.BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX == propertyKey) {
-            View bottomControlsWrapper = view.root.findViewById(R.id.bottom_controls_wrapper);
-            bottomControlsWrapper.getLayoutParams().height =
-                    model.get(BottomControlsProperties.BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX);
+        if (BottomControlsProperties.ANDROID_VIEW_HEIGHT == propertyKey) {
+            View bottomControlsView = view.root.findViewById(R.id.bottom_container_slot);
+            bottomControlsView.getLayoutParams().height =
+                    model.get(BottomControlsProperties.ANDROID_VIEW_HEIGHT);
         } else if (BottomControlsProperties.Y_OFFSET == propertyKey) {
             view.sceneLayer.setYOffset(model.get(BottomControlsProperties.Y_OFFSET));
         } else if (BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y == propertyKey) {
