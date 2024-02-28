@@ -148,6 +148,7 @@ BASE_DECLARE_FEATURE(kIPHPageZoomFeature);
 BASE_DECLARE_FEATURE(kIPHPreviewsOmniboxUIFeature);
 BASE_DECLARE_FEATURE(kIPHPriceDropNTPFeature);
 BASE_DECLARE_FEATURE(kIPHQuietNotificationPromptsFeature);
+BASE_DECLARE_FEATURE(kIPHReadAloudAppMenuFeature);
 BASE_DECLARE_FEATURE(kIPHReadLaterContextMenuFeature);
 BASE_DECLARE_FEATURE(kIPHReadLaterAppMenuBookmarkThisPageFeature);
 BASE_DECLARE_FEATURE(kIPHReadLaterAppMenuBookmarksFeature);
