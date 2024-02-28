@@ -8,17 +8,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
-#include "content/browser/webid/digital_credentials/digital_identity_types.h"
+#include "content/browser/webid/digital_credentials/digital_identity_provider_utils.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 using base::Value;
 using blink::mojom::RequestDigitalIdentityStatus;
-using content::digital_identity::RequestStatusForMetrics;
+using RequestStatusForMetrics =
+    content::DigitalIdentityProvider::RequestStatusForMetrics;
 
 namespace content {
 
@@ -171,7 +172,7 @@ DigitalIdentityRequestImpl::CreateProvider() {
       GetContentClient()->browser()->CreateDigitalIdentityProvider();
 
   if (!provider) {
-    return DigitalIdentityProvider::Create();
+    return CreateDigitalIdentityProvider();
   }
   return provider;
 }

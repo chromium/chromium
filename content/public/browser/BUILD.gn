@@ -153,6 +153,8 @@ source_set("browser_sources") {
     "devtools_manager_delegate.h",
     "devtools_network_transaction_factory.h",
     "devtools_socket_factory.h",
+    "digital_identity_provider.cc",
+    "digital_identity_provider.h",
     "dips_delegate.cc",
     "dips_delegate.h",
     "disallow_activation_reason.h",
@@ -734,6 +736,9 @@ if (is_android) {
   }
   java_cpp_enum("bluetooth_chooser_event_javagen") {
     sources = [ "bluetooth_chooser.h" ]
+  }
+  java_cpp_enum("digital_identity_enum") {
+    sources = [ "digital_identity_provider.h" ]
   }
 }
 

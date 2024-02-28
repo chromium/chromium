@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "content/browser/webid/digital_credentials/digital_identity_types.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "url/gurl.h"
@@ -56,12 +56,12 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // `status_for_metrics`.
   void CompleteRequest(
       const std::string& response,
-      digital_identity::RequestStatusForMetrics status_for_metrics);
+      DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
 
   void CompleteRequestWithStatus(
       blink::mojom::RequestDigitalIdentityStatus status,
       const std::string& response,
-      digital_identity::RequestStatusForMetrics status_for_metrics);
+      DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics);
 
   std::unique_ptr<DigitalIdentityProvider> CreateProvider();
 

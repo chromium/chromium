@@ -19,7 +19,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/browser/webid/digital_credentials/digital_identity_types.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/test/mock_digital_identity_provider.h"
@@ -980,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(
                 "test-mdoc",
-                digital_identity::RequestStatusForMetrics::kSuccess);
+                DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
           }));
 
   EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
@@ -1023,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(
                 "test-mdoc",
-                digital_identity::RequestStatusForMetrics::kSuccess);
+                DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
           }));
 
   std::string script = R"(
@@ -1072,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                 ExtractJsError(RunDigitalIdentityValidRequest(shell())));
             std::move(callback).Run(
                 "test-mdoc",
-                digital_identity::RequestStatusForMetrics::kSuccess);
+                DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
           }));
 
   EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
@@ -1092,8 +1091,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(
-                "test-mdoc",
-                digital_identity::RequestStatusForMetrics::kErrorUserDeclined);
+                "test-mdoc", DigitalIdentityProvider::RequestStatusForMetrics::
+                                 kErrorUserDeclined);
           }));
 
   EXPECT_EQ("NetworkError: Error retrieving a token.",
@@ -1135,14 +1134,14 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(
                 "test-mdoc",
-                digital_identity::RequestStatusForMetrics::kSuccess);
+                DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
           }));
 
   RunDigitalIdentityValidRequest(shell());
 
   histogram_tester.ExpectUniqueSample(
       "Blink.DigitalIdentityRequest.Status",
-      digital_identity::RequestStatusForMetrics::kSuccess, 1);
+      DigitalIdentityProvider::RequestStatusForMetrics::kSuccess, 1);
 }
 
 // Verify that the Authz parameters are passed to the id assertion endpoint.

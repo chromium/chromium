@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "content/browser/webid/digital_credentials/digital_identity_types.h"
 #include "content/public/android/content_jni_headers/DigitalIdentityProvider_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -67,7 +66,7 @@ void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
         ConvertJavaStringToUTF8(env, j_digital_identity);
     std::move(callback_).Run(
         digital_identity,
-        static_cast<digital_identity::RequestStatusForMetrics>(
+        static_cast<DigitalIdentityProvider::RequestStatusForMetrics>(
             status_for_metrics));
   }
 }

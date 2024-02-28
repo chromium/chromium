@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
+#include "content/browser/webid/digital_credentials/digital_identity_provider_utils.h"
 
 #include "build/build_config.h"
 
@@ -12,11 +12,7 @@
 
 namespace content {
 
-DigitalIdentityProvider::DigitalIdentityProvider() = default;
-DigitalIdentityProvider::~DigitalIdentityProvider() = default;
-
-// static
-std::unique_ptr<DigitalIdentityProvider> DigitalIdentityProvider::Create() {
+std::unique_ptr<DigitalIdentityProvider> CreateDigitalIdentityProvider() {
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<DigitalIdentityProviderAndroid>();
 #else

@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_DIGITAL_IDENTITY_PROVIDER_H_
 
 #include "base/values.h"
-#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {

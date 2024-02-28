@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 
 /** Tests for {@link DigitalIdentityProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
