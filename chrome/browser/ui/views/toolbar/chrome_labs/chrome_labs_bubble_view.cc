@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_view_controller.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 

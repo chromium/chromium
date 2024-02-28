@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_COORDINATOR_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_COORDINATOR_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_COORDINATOR_H_
+#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
@@ -72,4 +72,4 @@ class ChromeLabsCoordinator {
 #endif
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_COORDINATOR_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_COORDINATOR_H_

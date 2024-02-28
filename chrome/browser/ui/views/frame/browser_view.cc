@@ -162,7 +162,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"

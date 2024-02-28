@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/dot_indicator.h"
@@ -52,4 +52,4 @@ class ChromeLabsButton : public ToolbarButton {
   std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_BUTTON_H_

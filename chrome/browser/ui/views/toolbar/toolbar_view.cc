@@ -74,7 +74,7 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"

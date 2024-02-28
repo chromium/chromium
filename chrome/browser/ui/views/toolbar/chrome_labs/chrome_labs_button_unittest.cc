@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "components/flags_ui/feature_entry_macros.h"

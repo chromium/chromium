@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_VIEW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_VIEW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_VIEW_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_VIEW_CONTROLLER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -52,4 +52,4 @@ class ChromeLabsViewController {
   raw_ptr<flags_ui::FlagsStorage, DanglingUntriaged> flags_storage_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_VIEW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_VIEW_CONTROLLER_H_
