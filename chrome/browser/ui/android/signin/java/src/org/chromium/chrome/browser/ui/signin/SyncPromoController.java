@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
@@ -52,6 +51,7 @@ import org.chromium.components.sync.UserSelectableType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Set;
 
 /**
  * A controller for configuring the sync promo. It sets up the sync promo depending on the
@@ -112,6 +112,7 @@ public class SyncPromoController {
     private final @StringRes int mTitleStringId;
     private final @StringRes int mDescriptionStringId;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
+    private final SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
 
     private @Nullable DisplayableProfileData mProfileData;
     private @Nullable ImpressionTracker mImpressionTracker;
@@ -214,14 +215,18 @@ public class SyncPromoController {
      * @param profile The Profile associated with the sync promo.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
      * @param syncConsentActivityLauncher Launcher of {@link SyncConsentActivity}.
+     * @param signinAndHistoryOptInActivityLauncher Launcher of {@link
+     *     SigninAndHistoryOptInActivity}.
      */
     public SyncPromoController(
             Profile profile,
             @AccessPoint int accessPoint,
-            SyncConsentActivityLauncher syncConsentActivityLauncher) {
+            SyncConsentActivityLauncher syncConsentActivityLauncher,
+            SigninAndHistoryOptInActivityLauncher signinAndHistoryOptInActivityLauncher) {
         mProfile = profile;
         mAccessPoint = accessPoint;
         mSyncConsentActivityLauncher = syncConsentActivityLauncher;
+        mSigninAndHistoryOptInActivityLauncher = signinAndHistoryOptInActivityLauncher;
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 mImpressionUserActionName = "Signin_Impression_FromBookmarkManager";
@@ -313,20 +318,31 @@ public class SyncPromoController {
     }
 
     private boolean canShowBookmarkPromo() {
-        boolean isPromoDismissed =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, false);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+                && syncService
+                        .getSelectedTypes()
+                        .containsAll(
+                                Set.of(
+                                        UserSelectableType.BOOKMARKS,
+                                        UserSelectableType.READING_LIST))) {
+            return false;
+        }
+
         boolean isTypeManagedByPolicy =
                 syncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)
                         && syncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST);
-        return !isTypeManagedByPolicy
-                && ChromeSharedPreferences.getInstance()
+        boolean isMaxImpressionCountReached =
+                ChromeSharedPreferences.getInstance()
                                 .readInt(
                                         getPromoShowCountPreferenceName(
                                                 SigninAccessPoint.BOOKMARK_MANAGER))
-                        < MAX_IMPRESSIONS_BOOKMARKS
-                && !isPromoDismissed;
+                        >= MAX_IMPRESSIONS_BOOKMARKS;
+        boolean isPromoDismissed =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, false);
+
+        return !isTypeManagedByPolicy && !isMaxImpressionCountReached && !isPromoDismissed;
     }
 
     private boolean canShowRecentTabsPromo() {
@@ -522,15 +538,12 @@ public class SyncPromoController {
         if (mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER
                 && SyncFeatureMap.isEnabled(
                         SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
-            // TODO(crbug.com/1520798): Update this when the new sign-in flow is ready.
-            AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
-            CoreAccountInfo defaultAccount =
-                    accountManagerFacade.getCoreAccountInfos().getResult().get(0);
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-            signinManager.signin(defaultAccount, SigninAccessPoint.BOOKMARK_MANAGER, null);
-            SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-            syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
-            syncService.setSelectedType(UserSelectableType.READING_LIST, true);
+            mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
+                    context,
+                    mProfile,
+                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                    mAccessPoint);
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
                     context, mAccessPoint, mProfileData.getAccountEmail());

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -119,7 +120,8 @@ public class RecentTabsManager
                 new SyncPromoController(
                         mProfile,
                         SigninAccessPoint.RECENT_TABS,
-                        SyncConsentActivityLauncherImpl.get());
+                        SyncConsentActivityLauncherImpl.get(),
+                        SigninAndHistoryOptInActivityLauncherImpl.get());
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
 
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);

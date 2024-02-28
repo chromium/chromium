@@ -5,14 +5,19 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +43,14 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -49,6 +59,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -91,6 +102,7 @@ public class SyncPromoControllerUITest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
+    @Mock private SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
 
     @Before
     public void setUp() {
@@ -155,6 +167,54 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
         onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testBookmarkSyncPromoLaunchesSigninFlow() throws Throwable {
+        mSigninTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        setUpSyncPromoView(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                profileDataCache,
+                R.layout.sync_promo_view_bookmarks);
+        onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+
+        verify(mSigninAndHistoryOptInActivityLauncher)
+                .launchActivityIfAllowed(
+                        any(Context.class),
+                        any(Profile.class),
+                        eq(NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testBookmarkSyncPromoLaunchesSyncFlow() throws Throwable {
+        mSigninTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        setUpSyncPromoView(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                profileDataCache,
+                R.layout.sync_promo_view_bookmarks);
+        onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+
+        verify(mSyncConsentActivityLauncher)
+                .launchActivityForPromoDefaultFlow(
+                        any(Context.class),
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER),
+                        any(String.class));
     }
 
     @Test
@@ -368,7 +428,8 @@ public class SyncPromoControllerUITest {
                                     new SyncPromoController(
                                             ProfileManager.getLastUsedRegularProfile(),
                                             accessPoint,
-                                            mSyncConsentActivityLauncher);
+                                            mSyncConsentActivityLauncher,
+                                            mSigninAndHistoryOptInActivityLauncher);
                             syncPromoController.setUpSyncPromoView(
                                     profileDataCache,
                                     promoView.findViewById(R.id.signin_promo_view_container),

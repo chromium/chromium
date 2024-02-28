@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +23,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -36,8 +36,11 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+
+import java.util.Set;
 
 /** Tests for {@link SyncPromoController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,6 +48,7 @@ import org.chromium.components.sync.UserSelectableType;
     ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
     ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
 })
+@EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
 public class SyncPromoControllerTest {
     private static final int TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS = 100;
     private static final long TIME_SINCE_FIRST_SHOWN_LIMIT_MS =
@@ -65,11 +69,17 @@ public class SyncPromoControllerTest {
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeAccountManagerFacade);
 
-    @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private Profile mProfile;
+
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+
+    @Mock private IdentityManager mIdentityManager;
 
     @Mock private SyncService mSyncService;
 
-    @Mock private Profile mProfile;
+    @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
+
+    @Mock private SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
 
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
@@ -80,9 +90,9 @@ public class SyncPromoControllerTest {
 
     @Before
     public void setUp() {
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(mProfile))
-                .thenReturn(mIdentityManagerMock);
+                .thenReturn(mIdentityManager);
         mSharedPreferencesManager.writeInt(
                 SyncPromoController.getPromoShowCountPreferenceName(
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
@@ -96,7 +106,8 @@ public class SyncPromoControllerTest {
                 new SyncPromoController(
                         mProfile,
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
-                        mock(SyncConsentActivityLauncher.class));
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
     }
 
     @Test
@@ -311,7 +322,8 @@ public class SyncPromoControllerTest {
                 new SyncPromoController(
                         mProfile,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mock(SyncConsentActivityLauncher.class));
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
 
@@ -325,7 +337,8 @@ public class SyncPromoControllerTest {
                 new SyncPromoController(
                         mProfile,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mock(SyncConsentActivityLauncher.class));
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
@@ -339,7 +352,57 @@ public class SyncPromoControllerTest {
                 new SyncPromoController(
                         mProfile,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        mock(SyncConsentActivityLauncher.class));
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+        Assert.assertTrue(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    public void shouldHideBookmarksSyncPromoIfDataTypesSyncing() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST));
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.BOOKMARK_MANAGER,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+        Assert.assertFalse(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    public void shouldShowBookmarksSyncPromoIfBookmarkNotSyncing() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.READING_LIST));
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.BOOKMARK_MANAGER,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+        Assert.assertTrue(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    public void shouldShowBookmarksSyncPromoIfReadingListNotSyncing() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.BOOKMARK_MANAGER,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
@@ -352,7 +415,8 @@ public class SyncPromoControllerTest {
                 new SyncPromoController(
                         mProfile,
                         SigninAccessPoint.RECENT_TABS,
-                        mock(SyncConsentActivityLauncher.class));
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
 
@@ -365,7 +429,8 @@ public class SyncPromoControllerTest {
                 new SyncPromoController(
                         mProfile,
                         SigninAccessPoint.RECENT_TABS,
-                        mock(SyncConsentActivityLauncher.class));
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 

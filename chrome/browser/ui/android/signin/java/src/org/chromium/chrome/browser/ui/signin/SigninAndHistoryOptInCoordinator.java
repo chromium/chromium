@@ -18,14 +18,18 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -296,6 +300,13 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
     }
 
     private void onFlowComplete() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
+            Profile profile = mProfileSupplier.get();
+            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
+            syncService.setSelectedType(UserSelectableType.READING_LIST, true);
+        }
         mDelegate.onFlowComplete();
     }
 }

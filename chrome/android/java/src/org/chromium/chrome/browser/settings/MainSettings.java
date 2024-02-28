@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -188,7 +189,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 new SyncPromoController(
                         getProfile(),
                         SigninAccessPoint.SETTINGS,
-                        SyncConsentActivityLauncherImpl.get()));
+                        SyncConsentActivityLauncherImpl.get(),
+                        SigninAndHistoryOptInActivityLauncherImpl.get()));
 
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
         signInPreference.initialize(
