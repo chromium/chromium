@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
-#include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -43,7 +42,6 @@ class Textfield;
 //
 ////////////////////////////////////////////////////////////////////////////////
 class FindBarView : public views::BoxLayoutView,
-                    public DropdownBarHostDelegate,
                     public views::TextfieldController {
   METADATA_HEADER(FindBarView, views::BoxLayoutView)
 
@@ -84,13 +82,13 @@ class FindBarView : public views::BoxLayoutView,
   // Clears the current Match Count value in the Find text box.
   void ClearMatchCount();
 
+  // Claims focus for the text field and selects its contents.
+  void FocusAndSelectAll();
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
-
-  // DropdownBarHostDelegate:
-  void FocusAndSelectAll() override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
