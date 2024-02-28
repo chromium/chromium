@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -81,11 +82,13 @@ class DrmGpuDisplayManager {
                           const display::GammaCurve& degamma,
                           const display::GammaCurve& gamma);
   bool SetPrivacyScreen(int64_t display_id, bool enabled);
+  std::optional<display::RefreshRange> GetSeamlessRefreshRates(
+      int64_t display_id) const;
 
  private:
   friend class DrmGpuDisplayManagerTest;
 
-  DrmDisplay* FindDisplay(int64_t display_id);
+  DrmDisplay* FindDisplay(int64_t display_id) const;
 
   // Notify ScreenManager of all the displays that were present before the
   // update but are gone after the update.

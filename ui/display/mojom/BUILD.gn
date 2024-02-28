@@ -102,6 +102,10 @@ mojom("mojom") {
           mojom = "display.mojom.VariableRefreshRateState"
           cpp = "::display::VariableRefreshRateState"
         },
+        {
+          mojom = "display.mojom.RefreshRangeNode"
+          cpp = "::display::RefreshRangeNode"
+        },
       ]
       traits_sources = [ "display_constants_mojom_traits.cc" ]
       traits_headers = [ "display_constants_mojom_traits.h" ]

@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/action_logger.h"
@@ -38,6 +39,16 @@ using display::test::ActionLogger;
 using display::test::TestNativeDisplayDelegate;
 using game_mode::GameModeController;
 using power_manager::PowerSupplyProperties;
+
+class MockNativeDisplayDelegate : public TestNativeDisplayDelegate {
+ public:
+  explicit MockNativeDisplayDelegate(ActionLogger* logger)
+      : TestNativeDisplayDelegate(logger) {}
+  MOCK_METHOD(void,
+              GetSeamlessRefreshRates,
+              (int64_t, display::GetSeamlessRefreshRatesCallback),
+              (const override));
+};
 
 std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
                                              int height,
@@ -99,7 +110,8 @@ class RefreshRateControllerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     logger_ = std::make_unique<ActionLogger>();
-    native_display_delegate_ = new TestNativeDisplayDelegate(logger_.get());
+    native_display_delegate_ =
+        new testing::NiceMock<MockNativeDisplayDelegate>(logger_.get());
     display_manager()->configurator()->SetDelegateForTesting(
         std::unique_ptr<NativeDisplayDelegate>(native_display_delegate_));
     game_mode_controller_ = std::make_unique<GameModeController>();
@@ -138,7 +150,7 @@ class RefreshRateControllerTest : public AshTestBase {
   std::unique_ptr<RefreshRateController> controller_;
   std::unique_ptr<GameModeController> game_mode_controller_;
   // Owned by DisplayConfigurator.
-  raw_ptr<TestNativeDisplayDelegate, DanglingUntriaged>
+  raw_ptr<MockNativeDisplayDelegate, DanglingUntriaged>
       native_display_delegate_;
   base::test::ScopedFeatureList scoped_features_;
 };
@@ -148,8 +160,8 @@ TEST_F(RefreshRateControllerTest, ThrottleStateSetAtConstruction) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  SetUpDisplays(std::move(snapshots));
 
   // Expect the initial state to be 120 Hz.
   {
@@ -180,8 +192,8 @@ TEST_F(RefreshRateControllerTest, ShouldNotThrottleOnAC) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  SetUpDisplays(std::move(snapshots));
 
   // Expect the initial state to be 120 Hz.
   {
@@ -210,8 +222,8 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(display_id);
+  SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
@@ -259,8 +271,8 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnBattery) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  SetUpDisplays(std::move(snapshots));
 
   // Expect the initial state to be 120 Hz.
   {
@@ -290,8 +302,8 @@ TEST_F(RefreshRateControllerTest,
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(display_id);
+  SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
@@ -492,8 +504,8 @@ TEST_F(RefreshRateControllerTest, ShouldNotThrottleExternalDisplay) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_HDMI));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  SetUpDisplays(std::move(snapshots));
 
   // Expect the initial state to be 120 Hz.
   {
@@ -522,8 +534,8 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnUSBCharger) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  SetUpDisplays(std::move(snapshots));
 
   // Expect the initial state to be 120 Hz.
   {
@@ -555,8 +567,8 @@ TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
       internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   snapshots.push_back(BuildVrrPanelSnapshot(
       external_id, display::DISPLAY_CONNECTION_TYPE_HDMI));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(internal_id);
+  SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
@@ -612,8 +624,8 @@ TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildVrrPanelSnapshot(
       display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(display_id);
+  SetUpDisplays(std::move(snapshots));
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
@@ -647,5 +659,57 @@ TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
                                            ash::WindowState::Get(window.get()));
 }
 
+TEST_F(RefreshRateControllerTest,
+       RequestSeamlessRefreshRatesOnInternalDisplayModeChanged) {
+  constexpr int64_t kDisplayId = 12345;
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+
+  // Create a vector of DisplaySnapshot.
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+
+  // Create a DisplayStateList pointing to the snapshot.
+  DisplayStateList state_list;
+  for (auto& snapshot : snapshots) {
+    state_list.push_back(snapshot.get());
+  }
+
+  EXPECT_CALL(*native_display_delegate_,
+              GetSeamlessRefreshRates(kDisplayId, testing::_));
+  controller_->OnDisplayModeChanged(state_list);
+
+  // When the internal display is turned off, it will have no mode set.
+  snapshots[0]->set_current_mode(nullptr);
+  EXPECT_CALL(*native_display_delegate_,
+              GetSeamlessRefreshRates(testing::_, testing::_))
+      .Times(0);
+  controller_->OnDisplayModeChanged(state_list);
+}
+
+TEST_F(RefreshRateControllerTest, RequestSeamlessRefreshRatesMultipleDisplays) {
+  constexpr int64_t kInternalDisplayId = 12345;
+  constexpr int64_t kExternalDisplayId = 67890;
+  ScopedSetInternalDisplayIds set_internal(kInternalDisplayId);
+
+  // Create a vector of DisplaySnapshot.
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      kInternalDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      kExternalDisplayId, display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT));
+
+  // Create a DisplayStateList pointing to the snapshot.
+  DisplayStateList state_list;
+  for (auto& snapshot : snapshots) {
+    state_list.push_back(snapshot.get());
+  }
+
+  EXPECT_CALL(*native_display_delegate_,
+              GetSeamlessRefreshRates(kInternalDisplayId, testing::_));
+  EXPECT_CALL(*native_display_delegate_,
+              GetSeamlessRefreshRates(kExternalDisplayId, testing::_));
+  controller_->OnDisplayModeChanged(state_list);
+}
 }  // namespace
 }  // namespace ash

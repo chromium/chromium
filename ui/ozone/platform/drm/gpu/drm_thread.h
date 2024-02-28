@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
@@ -196,6 +197,11 @@ class DrmThread : public base::Thread,
   void SetPrivacyScreen(int64_t display_id,
                         bool enabled,
                         base::OnceCallback<void(bool)> callback) override;
+  void GetSeamlessRefreshRates(
+      int64_t display_id,
+      base::OnceCallback<void(const std::optional<display::RefreshRange>&)>
+          callback) override;
+
   void GetDeviceCursor(
       mojo::PendingAssociatedReceiver<ozone::mojom::DeviceCursor> receiver)
       override;

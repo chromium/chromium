@@ -220,6 +220,12 @@ void FakeDisplayDelegate::SetPrivacyScreen(int64_t display_id,
   std::move(callback).Run(false);
 }
 
+void FakeDisplayDelegate::GetSeamlessRefreshRates(
+    int64_t display_id,
+    GetSeamlessRefreshRatesCallback callback) const {
+  std::move(callback).Run(std::nullopt);
+}
+
 void FakeDisplayDelegate::AddObserver(NativeDisplayObserver* observer) {
   observers_.AddObserver(observer);
 }

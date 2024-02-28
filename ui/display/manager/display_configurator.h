@@ -50,6 +50,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
  public:
   using ConfigurationCallback = base::OnceCallback<void(bool /* success */)>;
   using DisplayControlCallback = base::OnceCallback<void(bool success)>;
+  using GetSeamlessRefreshRatesCallback =
+      base::OnceCallback<void(const std::optional<RefreshRange>&)>;
 
   using DisplayStateList =
       std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>;
@@ -251,6 +253,26 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // do not support this, it is a no-op.
   void MaybeSetRefreshRateThrottleState(int64_t display_id,
                                         RefreshRateThrottleState state);
+
+  // Request a description of the refresh rates to which the display can support
+  // a configuration without a full modeset.
+  // The supported refresh rates depend on the current configuration of the
+  // display driver and hardware.
+  //
+  // It's possible that there could be some configuration change such that a
+  // seamless modeset to a refresh rate returned from here succeeds at one time,
+  // and fails at another due to some configuration change in the display
+  // driver. The caller should re-query the supported refresh rates whenever
+  // there is a full modeset, or when a seamless refresh rate change fails, to
+  // ensure that the caller has an up-to-date picture of which refresh rates are
+  // supported.
+  //
+  // A result of nullopt indicates that the request failed for some reason such
+  // as an invalid display_id. An empty RefreshRange vector indicates that there
+  // are no modes to which the display can be configured seamlessly. This could
+  // happen if the display is currently turned off.
+  void GetSeamlessRefreshRates(int64_t display_id,
+                               GetSeamlessRefreshRatesCallback callback);
 
   // NativeDisplayObserver:
   void OnConfigurationChanged() override;

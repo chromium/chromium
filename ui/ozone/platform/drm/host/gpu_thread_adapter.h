@@ -79,6 +79,10 @@ class GpuThreadAdapter {
       bool enabled,
       display::SetPrivacyScreenCallback callback) = 0;
 
+  virtual void GpuGetSeamlessRefreshRates(
+      int64_t display_id,
+      display::GetSeamlessRefreshRatesCallback callback) = 0;
+
   // Services needed by DrmWindowHost
   virtual bool GpuDestroyWindow(gfx::AcceleratedWidget widget) = 0;
   virtual bool GpuCreateWindow(gfx::AcceleratedWidget widget,

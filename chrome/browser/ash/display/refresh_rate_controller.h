@@ -15,6 +15,7 @@ namespace ash {
 
 namespace {
 using GameMode = ash::ResourcedClient::GameMode;
+using DisplayStateList = display::DisplayConfigurator::DisplayStateList;
 }  // namespace
 
 // RefreshRateController manages features related to display refresh rate, such
@@ -27,7 +28,8 @@ using GameMode = ash::ResourcedClient::GameMode;
 class RefreshRateController : public PowerStatus::Observer,
                               public game_mode::GameModeController::Observer,
                               public aura::WindowObserver,
-                              public display::DisplayObserver {
+                              public display::DisplayObserver,
+                              public display::DisplayConfigurator::Observer {
  public:
   RefreshRateController(display::DisplayConfigurator* display_configurator,
                         PowerStatus* power_status,
@@ -39,20 +41,27 @@ class RefreshRateController : public PowerStatus::Observer,
 
   ~RefreshRateController() override;
 
-  // PowerStatus::Observer:
+  // PowerStatus::Observer implementation.
   void OnPowerStatusChanged() override;
 
-  // GameModeController::Observer:
+  // GameModeController::Observer implementation.
   void OnSetGameMode(GameMode game_mode, WindowState* window_state) override;
 
-  // WindowObserver:
+  // WindowObserver implementation.
   void OnWindowAddedToRootWindow(aura::Window* window) override;
 
-  // DisplayObserver:
+  // DisplayObserver implementation.
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+  // DisplayConfigurator::Observer implementation.
+  void OnDisplayModeChanged(const DisplayStateList& displays) override;
+
  private:
+  void UpdateSeamlessRefreshRates(int64_t display_id);
+  void OnSeamlessRefreshRangeReceived(
+      int64_t display_id,
+      const std::optional<display::RefreshRange>& refresh_ranges);
   void RefreshThrottleState();
   void RefreshVrrState();
   display::RefreshRateThrottleState GetDesiredThrottleState();
@@ -70,6 +79,9 @@ class RefreshRateController : public PowerStatus::Observer,
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       borealis_window_observer_{this};
   display::ScopedDisplayObserver display_observer_{this};
+  base::ScopedObservation<display::DisplayConfigurator,
+                          display::DisplayConfigurator::Observer>
+      display_configurator_observer_{this};
 
   base::WeakPtrFactory<RefreshRateController> weak_ptr_factory_{this};
 };

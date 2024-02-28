@@ -109,6 +109,12 @@ interface DrmDevice {
   // configuration was successful.
   SetPrivacyScreen(int64 display_id, bool enabled) => (bool success);
 
+  // Gets the refresh rate ranges that this display can be configured to
+  // seamlessly. Null if the set of refresh rates cannot be queried for
+  // any reason.
+  GetSeamlessRefreshRates(int64 display_id) =>
+      (array<display.mojom.RefreshRangeNode>? ranges);
+
   // Provides a DeviceCursor interface. The provided interface needs to be
   // associated because the AcceleratedWidgets referenced by its methods are
   // registered via CreateWindow() in this interface.

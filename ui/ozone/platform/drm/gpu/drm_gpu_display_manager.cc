@@ -22,6 +22,7 @@
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
@@ -486,7 +487,25 @@ bool DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {
   return display->SetPrivacyScreen(enabled);
 }
 
-DrmDisplay* DrmGpuDisplayManager::FindDisplay(int64_t display_id) {
+std::optional<display::RefreshRange>
+DrmGpuDisplayManager::GetSeamlessRefreshRates(int64_t display_id) const {
+  DrmDisplay* display = FindDisplay(display_id);
+  if (!display) {
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
+    return std::nullopt;
+  }
+
+  // TODO(b/323362145): Only include modes that can be switched to seamlessly
+  // and support contiguity logic.
+  display::RefreshRange range;
+  for (const drmModeModeInfo& mode : display->modes()) {
+    float refresh = ModeRefreshRate(mode);
+    range.push_back(display::RefreshRangeNode(refresh));
+  }
+  return range;
+}
+
+DrmDisplay* DrmGpuDisplayManager::FindDisplay(int64_t display_id) const {
   for (const auto& display : displays_) {
     if (display->display_id() == display_id)
       return display.get();

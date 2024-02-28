@@ -128,6 +128,13 @@ void DrmNativeDisplayDelegate::SetPrivacyScreen(
   display->SetPrivacyScreen(enabled, std::move(callback));
 }
 
+void DrmNativeDisplayDelegate::GetSeamlessRefreshRates(
+    int64_t display_id,
+    display::GetSeamlessRefreshRatesCallback callback) const {
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->GetSeamlessRefreshRates(std::move(callback));
+}
+
 void DrmNativeDisplayDelegate::AddObserver(
     display::NativeDisplayObserver* observer) {
   observers_.AddObserver(observer);

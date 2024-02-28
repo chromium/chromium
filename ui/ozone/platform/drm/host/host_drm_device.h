@@ -94,6 +94,9 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   void GpuSetPrivacyScreen(int64_t display_id,
                            bool enabled,
                            display::SetPrivacyScreenCallback callback) override;
+  void GpuGetSeamlessRefreshRates(
+      int64_t display_id,
+      display::GetSeamlessRefreshRatesCallback callback) override;
 
   // Services needed by DrmWindowHost
   bool GpuDestroyWindow(gfx::AcceleratedWidget widget) override;

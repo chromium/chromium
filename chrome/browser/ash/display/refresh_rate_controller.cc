@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/display/refresh_rate_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/display_util.h"
 
 namespace ash {
@@ -21,6 +23,8 @@ RefreshRateController::RefreshRateController(
       force_throttle_(force_throttle) {
   power_status_observer_.Observe(power_status);
   game_mode_observer_.Observe(game_mode_controller);
+  display_configurator_observer_.Observe(display_configurator);
+
   // Ensure initial states are calculated.
   RefreshThrottleState();
   RefreshVrrState();
@@ -53,6 +57,31 @@ void RefreshRateController::OnWindowAddedToRootWindow(aura::Window* window) {
   // Refresh state in case the window changed displays.
   RefreshThrottleState();
   RefreshVrrState();
+}
+
+void RefreshRateController::OnDisplayModeChanged(
+    const DisplayStateList& displays) {
+  for (const display::DisplaySnapshot* snapshot : displays) {
+    if (!snapshot->current_mode()) {
+      continue;
+    }
+    UpdateSeamlessRefreshRates(snapshot->display_id());
+  }
+}
+
+void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
+  auto callback =
+      base::BindOnce(&RefreshRateController::OnSeamlessRefreshRangeReceived,
+                     weak_ptr_factory_.GetWeakPtr(), display_id);
+  display_configurator_->GetSeamlessRefreshRates(display_id,
+                                                 std::move(callback));
+}
+
+void RefreshRateController::OnSeamlessRefreshRangeReceived(
+    int64_t display_id,
+    const std::optional<display::RefreshRange>& refresh_ranges) {
+  // TODO(b/323362145): Stash the refresh rates and request a refresh rate
+  // explicitly when throttling.
 }
 
 void RefreshRateController::OnDisplayMetricsChanged(

@@ -502,6 +502,15 @@ void DrmThread::SetPrivacyScreen(int64_t display_id,
   std::move(callback).Run(success);
 }
 
+void DrmThread::GetSeamlessRefreshRates(
+    int64_t display_id,
+    base::OnceCallback<void(const std::optional<display::RefreshRange>&)>
+        callback) {
+  std::optional<display::RefreshRange> ranges =
+      display_manager_->GetSeamlessRefreshRates(display_id);
+  std::move(callback).Run(std::move(ranges));
+}
+
 void DrmThread::AddDrmDeviceReceiver(
     mojo::PendingReceiver<ozone::mojom::DrmDevice> receiver) {
   TRACE_EVENT0("drm", "DrmThread::AddDrmDeviceReceiver");

@@ -279,6 +279,12 @@ void TestNativeDisplayDelegate::SetPrivacyScreen(
   std::move(callback).Run(true);
 }
 
+void TestNativeDisplayDelegate::GetSeamlessRefreshRates(
+    int64_t display_id,
+    GetSeamlessRefreshRatesCallback callback) const {
+  std::move(callback).Run(std::nullopt);
+}
+
 void TestNativeDisplayDelegate::AddObserver(NativeDisplayObserver* observer) {
   observers_.AddObserver(observer);
 }

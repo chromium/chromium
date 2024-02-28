@@ -275,4 +275,14 @@ bool EnumTraits<display::mojom::VariableRefreshRateState,
   return false;
 }
 
+// static
+bool StructTraits<display::mojom::RefreshRangeNodeDataView,
+                  display::RefreshRangeNode>::
+    Read(display::mojom::RefreshRangeNodeDataView data,
+         display::RefreshRangeNode* out_range) {
+  *out_range =
+      display::RefreshRangeNode(data.refresh_rate(), data.contiguous());
+  return true;
+}
+
 }  // namespace mojo

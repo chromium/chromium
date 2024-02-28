@@ -308,6 +308,17 @@ void HostDrmDevice::GpuSetPrivacyScreen(
   }
 }
 
+void HostDrmDevice::GpuGetSeamlessRefreshRates(
+    int64_t display_id,
+    display::GetSeamlessRefreshRatesCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
+  if (!IsConnected()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  drm_device_->GetSeamlessRefreshRates(display_id, std::move(callback));
+}
+
 void HostDrmDevice::GpuRefreshNativeDisplaysCallback(
     MovableDisplaySnapshots displays) const {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);

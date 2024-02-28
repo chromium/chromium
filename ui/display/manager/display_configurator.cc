@@ -734,6 +734,13 @@ void DisplayConfigurator::RelinquishControl(DisplayControlCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void DisplayConfigurator::GetSeamlessRefreshRates(
+    int64_t display_id,
+    GetSeamlessRefreshRatesCallback callback) {
+  native_display_delegate_->GetSeamlessRefreshRates(display_id,
+                                                    std::move(callback));
+}
+
 void DisplayConfigurator::SendRelinquishDisplayControl(
     DisplayControlCallback callback,
     bool success) {

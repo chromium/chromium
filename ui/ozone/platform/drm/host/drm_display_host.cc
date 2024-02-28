@@ -132,6 +132,12 @@ void DrmDisplayHost::SetPrivacyScreen(
                                std::move(callback));
 }
 
+void DrmDisplayHost::GetSeamlessRefreshRates(
+    display::GetSeamlessRefreshRatesCallback callback) const {
+  sender_->GpuGetSeamlessRefreshRates(snapshot_->display_id(),
+                                      std::move(callback));
+}
+
 void DrmDisplayHost::OnGpuProcessLaunched() {}
 
 void DrmDisplayHost::OnGpuThreadReady() {

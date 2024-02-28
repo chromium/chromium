@@ -51,6 +51,8 @@ class DrmDisplayHost : public GpuThreadObserver {
                           const display::GammaCurve& gamma);
   void SetPrivacyScreen(bool enabled,
                         display::SetPrivacyScreenCallback callback);
+  void GetSeamlessRefreshRates(
+      display::GetSeamlessRefreshRatesCallback callback) const;
 
   // Called when the IPC from the GPU process arrives to answer the above
   // commands.

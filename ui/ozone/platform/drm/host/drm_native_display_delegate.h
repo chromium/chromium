@@ -62,6 +62,10 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
   void SetPrivacyScreen(int64_t display_id,
                         bool enabled,
                         display::SetPrivacyScreenCallback callback) override;
+  void GetSeamlessRefreshRates(
+      int64_t display_id,
+      display::GetSeamlessRefreshRatesCallback callback) const override;
+
   void AddObserver(display::NativeDisplayObserver* observer) override;
   void RemoveObserver(display::NativeDisplayObserver* observer) override;
   display::FakeDisplayController* GetFakeDisplayController() override;
