@@ -1510,16 +1510,17 @@ class OSSettingsPrivacyTestPrivacyHubV0Enabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-using OsPrivacyPageTestPrivacyHubSubpage =
+using OSSettingsPrivacyPageTestPrivacyHubSubpage =
     OSSettingsPrivacyTestPrivacyHubV0Enabled;
 
-IN_PROC_BROWSER_TEST_F(OsPrivacyPageTestPrivacyHubSubpage, AllBuilds) {
+IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyPageTestPrivacyHubSubpage, AllBuilds) {
   RunSettingsTest("os_privacy_page/privacy_hub_subpage_test.js",
                   "runMochaSuite('<settings-privacy-hub-subpage> AllBuilds')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(OsPrivacyPageTestPrivacyHubSubpage, OfficialBuild) {
+IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyPageTestPrivacyHubSubpage,
+                       OfficialBuild) {
   RunSettingsTest("os_privacy_page/privacy_hub_subpage_test.js",
                   "runMochaSuite('<os-settings-privacy-page> OfficialBuild')");
 }
@@ -1675,15 +1676,15 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsSettingsMenuItem) {
   RunSettingsTest("os_settings_menu/menu_item_test.js");
 }
 
-using OsSettingsTestSearchBox = OSSettingsMochaTest;
+using OSSettingsTestSearchBox = OSSettingsMochaTest;
 
-IN_PROC_BROWSER_TEST_F(OsSettingsTestSearchBox, AllBuilds) {
+IN_PROC_BROWSER_TEST_F(OSSettingsTestSearchBox, AllBuilds) {
   RunSettingsTest("os_settings_search_box/os_settings_search_box_test.js",
                   "runMochaSuite('<os-settings-search-box> AllBuilds')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(OsSettingsTestSearchBox, OfficialBuild) {
+IN_PROC_BROWSER_TEST_F(OSSettingsTestSearchBox, OfficialBuild) {
   RunSettingsTest("os_settings_search_box/os_settings_search_box_test.js",
                   "runMochaSuite('<os-settings-search-box> OfficialBuild')");
 }
