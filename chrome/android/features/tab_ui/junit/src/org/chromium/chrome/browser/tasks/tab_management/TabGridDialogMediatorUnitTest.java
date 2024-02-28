@@ -168,6 +168,7 @@ public class TabGridDialogMediatorUnitTest {
                         mRecyclerViewPositionSupplier,
                         mAnimationSourceViewProvider,
                         mSnackbarManager,
+                        /*SharedImageTilesCoordinator*/ null,
                         "");
 
         mMediator.initWithNative(
@@ -1097,6 +1098,7 @@ public class TabGridDialogMediatorUnitTest {
                         mRecyclerViewPositionSupplier,
                         null,
                         mSnackbarManager,
+                        /*SharedImageTilesCoordinator*/ null,
                         "");
         mMediator.initWithNative(
                 () -> {
@@ -1144,6 +1146,7 @@ public class TabGridDialogMediatorUnitTest {
                         mRecyclerViewPositionSupplier,
                         null,
                         mSnackbarManager,
+                        /*SharedImageTilesCoordinator*/ null,
                         "");
         mMediator.initWithNative(
                 () -> {
@@ -1192,6 +1195,7 @@ public class TabGridDialogMediatorUnitTest {
                         mRecyclerViewPositionSupplier,
                         null,
                         mSnackbarManager,
+                        /*SharedImageTilesCoordinator*/ null,
                         "");
         mMediator.initWithNative(
                 () -> {

@@ -25,7 +25,9 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
+      "android/java/res/drawable/round_image_filled.xml",
       "android/java/res/layout/shared_image_tiles.xml",
+      "android/java/res/layout/shared_image_tiles_count.xml",
       "android/java/res/layout/shared_image_tiles_icon.xml",
       "android/java/res/values/dimens.xml",
     ]
@@ -42,6 +44,7 @@ if (is_android) {
 
     deps = [
       ":java_resources",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//third_party/android_sdk:android_window_extensions_java",
       "//ui/android:ui_no_recycler_view_java",
     ]

@@ -6025,6 +6025,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_PREFS_SAFETY_HUB" desc="Title of the Safety hub element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">
         Safety hub
       </message>
+
+      <!-- Data Sharing -->
+      <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">
+        +<ph name="COUNT_NUMBER">%1$s<ex>1</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

@@ -132,6 +132,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             this::getRecyclerViewPosition,
                             animationSourceViewProvider,
                             mSnackbarManager,
+                            mSharedImageTilesCoordinator,
                             mComponentName);
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to

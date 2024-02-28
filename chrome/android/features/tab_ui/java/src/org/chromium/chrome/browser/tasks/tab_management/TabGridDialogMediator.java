@@ -22,6 +22,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.data_sharing.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -122,6 +123,7 @@ public class TabGridDialogMediator
     private final DialogHandler mTabGridDialogHandler;
     private final Runnable mScrimClickRunnable;
     private final @Nullable SnackbarManager mSnackbarManager;
+    private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final String mComponentName;
 
     private TabGroupTitleEditor mTabGroupTitleEditor;
@@ -144,6 +146,7 @@ public class TabGridDialogMediator
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
             AnimationSourceViewProvider animationSourceViewProvider,
             SnackbarManager snackbarManager,
+            @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             String componentName) {
         mContext = activity;
         mModel = model;
@@ -157,6 +160,7 @@ public class TabGridDialogMediator
         mSnackbarManager = snackbarManager;
         mComponentName = componentName;
         mActivity = activity;
+        mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
 
         // Register for tab model.
         mTabModelObserver =
@@ -497,6 +501,9 @@ public class TabGridDialogMediator
                 TabUiThemeProvider.getTabGridDialogUngroupBarHoveredTextColor(context, isIncognito);
 
         mModel.set(TabGridDialogProperties.DIALOG_BACKGROUND_COLOR, dialogBackgroundColor);
+        if (mSharedImageTilesCoordinator != null) {
+            mSharedImageTilesCoordinator.updateBackgroundColor(dialogBackgroundColor);
+        }
         mModel.set(TabGridDialogProperties.TINT, tintList);
         mModel.set(
                 TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR,
