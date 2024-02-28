@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_EMBEDDINGS_SQL_DATABASE_H_
 
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"

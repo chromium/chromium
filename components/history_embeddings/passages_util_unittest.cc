@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/history_embeddings/passages_util.h"
+
 #include <memory>
 
 #include "base/logging.h"
@@ -9,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,10 +44,16 @@ std::string RandomPassage() {
 
 }  // namespace
 
-// Note: Disabled by default so as to not burden the bots. Enable when needed.
-TEST(PassageCryptTest, DISABLED_EncryptDecryptMicrobenchmark) {
-  OSCryptMocker::SetUp();
+class HistoryEmbeddingsPassagesUtilTest : public testing::Test {
+ public:
+  void SetUp() override { OSCryptMocker::SetUp(); }
 
+  void TearDown() override { OSCryptMocker::TearDown(); }
+};
+
+// Note: Disabled by default so as to not burden the bots. Enable when needed.
+TEST_F(HistoryEmbeddingsPassagesUtilTest,
+       DISABLED_EncryptDecryptMicrobenchmark) {
   constexpr size_t kPassageCount = 1000u;
   std::vector<std::string> passages;
   passages.reserve(kPassageCount);
@@ -77,8 +86,43 @@ TEST(PassageCryptTest, DISABLED_EncryptDecryptMicrobenchmark) {
   }
   LOG(INFO) << "Decrypted " << kPassageCount << " passages in "
             << decrypt_timer.Elapsed();
+}
 
-  OSCryptMocker::TearDown();
+TEST_F(HistoryEmbeddingsPassagesUtilTest, ProtoToBlobAndBack) {
+  constexpr int kPassageCount = 50u;
+  proto::PassagesValue original_proto;
+
+  size_t total_passage_size = 0;
+
+  for (int i = 0; i < kPassageCount; i++) {
+    std::string passage = RandomPassage();
+    total_passage_size += passage.size();
+    original_proto.add_passages(std::move(passage));
+  }
+  ASSERT_EQ(kPassageCount, original_proto.passages_size());
+
+  std::vector<uint8_t> blob;
+
+  base::ElapsedTimer proto_to_blob_timer;
+  blob = PassagesProtoToBlob(original_proto);
+  ASSERT_FALSE(blob.empty());
+
+  LOG(INFO) << "Proto to Blob in: " << proto_to_blob_timer.Elapsed();
+  LOG(INFO) << "Blob size: " << blob.size();
+  LOG(INFO) << "Total passages size: " << total_passage_size;
+
+  std::optional<proto::PassagesValue> read_proto;
+  base::ElapsedTimer blob_to_proto_timer;
+  read_proto = PassagesBlobToProto(blob);
+  ASSERT_TRUE(read_proto.has_value());
+
+  LOG(INFO) << "Blob to Proto in: " << blob_to_proto_timer.Elapsed();
+
+  // Now verify that every single passage is restored.
+  ASSERT_EQ(kPassageCount, read_proto->passages_size());
+  for (int i = 0; i < kPassageCount; i++) {
+    EXPECT_EQ(read_proto->passages().at(i), original_proto.passages().at(i));
+  }
 }
 
 }  // namespace history_embeddings
