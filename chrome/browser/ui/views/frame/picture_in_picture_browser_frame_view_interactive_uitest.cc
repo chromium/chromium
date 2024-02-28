@@ -24,6 +24,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/animation/animation_test_api.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "ui/linux/fake_linux_ui.h"
+#include "ui/linux/linux_ui_getter.h"
+#endif
+
 namespace {
 
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
@@ -352,5 +359,63 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       pip_frame_view()->browser_view()->browser()->GetWindowTitleForCurrentTab(
           /*include_app_name=*/false));
 }
+
+#if BUILDFLAG(IS_LINUX)
+
+class FakeLinuxUiGetter : public ui::LinuxUiGetter {
+ public:
+  FakeLinuxUiGetter() = default;
+
+  ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
+    return &fake_linux_ui_;
+  }
+
+  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+    return &fake_linux_ui_;
+  }
+
+ private:
+  class LinuxUiWithoutNativeDecoration : public ui::FakeLinuxUi {
+   public:
+    ui::NativeTheme* GetNativeTheme() const override {
+      return ui::NativeTheme::GetInstanceForNativeUi();
+    }
+
+    ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+                                                    bool tiled) override {
+      // The test relies on this returning null.
+      return nullptr;
+    }
+  };
+
+  LinuxUiWithoutNativeDecoration fake_linux_ui_;
+};
+
+class PictureInPictureBrowserFrameViewLinuxNoClientNativeDecorationsTest
+    : public PictureInPictureBrowserFrameViewTest {
+ public:
+  void SetUpOnMainThread() override {
+    // Create a fake UI getter, which will automatically set itself as the
+    // default. This has to wait until `SetUpOnMainThread()` so browser startup
+    // doesn't overwrite it with the real getter.
+    linux_ui_getter_ = std::make_unique<FakeLinuxUiGetter>();
+    ThemeServiceFactory::GetForProfile(browser()->profile())->UseSystemTheme();
+    PictureInPictureBrowserFrameViewTest::SetUpOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
+};
+
+// Regression test for https://crbug.com/325459394:
+// PiP should not crash if the Linux native theme does not draw client-side
+// frame decorations.
+IN_PROC_BROWSER_TEST_F(
+    PictureInPictureBrowserFrameViewLinuxNoClientNativeDecorationsTest,
+    DoesNotCrash) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+}
+
+#endif
 
 }  // namespace

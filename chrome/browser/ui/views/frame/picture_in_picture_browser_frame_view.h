@@ -193,9 +193,6 @@ class PictureInPictureBrowserFrameView
   bool IsOverlayViewVisible() const;
 
 #if BUILDFLAG(IS_LINUX)
-  // Sets the window frame provider so that it will be used for drawing.
-  void SetWindowFrameProvider(ui::WindowFrameProvider* window_frame_provider);
-
   // Returns whether a client-side shadow should be drawn for the window.
   bool ShouldDrawFrameShadow() const;
 

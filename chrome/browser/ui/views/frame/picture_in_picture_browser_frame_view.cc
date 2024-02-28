@@ -60,8 +60,11 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -572,7 +575,23 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   }
 
 #if BUILDFLAG(IS_LINUX)
-  frame_background_ = std::make_unique<views::FrameBackground>();
+  auto* profile = browser_view->browser()->profile();
+  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
+  auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
+  if (linux_ui_theme && theme_service_factory->UsingSystemTheme()) {
+    bool solid_frame = !static_cast<DesktopBrowserFrameAuraLinux*>(
+                            frame->native_browser_frame())
+                            ->ShouldDrawRestoredFrameShadow();
+
+    // This may return null, but that's handled below.
+    window_frame_provider_ =
+        linux_ui_theme->GetWindowFrameProvider(solid_frame, /*tiled=*/false);
+  }
+
+  // Only one of window_frame_provider_ and frame_background_ will be used.
+  if (!window_frame_provider_) {
+    frame_background_ = std::make_unique<views::FrameBackground>();
+  }
 #endif
 
 
@@ -1271,15 +1290,6 @@ gfx::Size PictureInPictureBrowserFrameView::GetNonClientViewAreaSize() const {
 }
 
 #if BUILDFLAG(IS_LINUX)
-void PictureInPictureBrowserFrameView::SetWindowFrameProvider(
-    ui::WindowFrameProvider* window_frame_provider) {
-  DCHECK(window_frame_provider);
-  window_frame_provider_ = window_frame_provider;
-
-  // Only one of window_frame_provider_ and frame_background_ will be used.
-  frame_background_.reset();
-}
-
 bool PictureInPictureBrowserFrameView::ShouldDrawFrameShadow() const {
   return static_cast<DesktopBrowserFrameAuraLinux*>(
              frame()->native_browser_frame())
