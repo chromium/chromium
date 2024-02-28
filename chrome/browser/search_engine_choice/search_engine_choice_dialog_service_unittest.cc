@@ -295,6 +295,21 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
             prepopulate_id);
 }
 
+TEST_F(SearchEngineChoiceDialogServiceTest, IsUrlSuitableForDialog) {
+  SearchEngineChoiceDialogService* search_engine_choice_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
+      GURL(chrome::kChromeUISettingsURL)));
+  EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
+      GURL(chrome::kChromeUIWelcomeURL)));
+  EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
+      GURL(chrome::kChromeUIDevToolsURL)));
+  EXPECT_TRUE(search_engine_choice_service->IsUrlSuitableForDialog(
+      GURL(chrome::kChromeUINewTabPageURL)));
+  EXPECT_TRUE(search_engine_choice_service->IsUrlSuitableForDialog(
+      GURL(url::kAboutBlankURL)));
+}
+
 #else
 TEST_F(SearchEngineChoiceDialogServiceTest,
        ServiceNotInitializedInChromeForTesting) {

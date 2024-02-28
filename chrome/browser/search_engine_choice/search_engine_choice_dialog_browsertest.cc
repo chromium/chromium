@@ -359,60 +359,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 }
 
-// TODO(crbug/1523581): Flaky on Linux Tests (dbg) and Mac ASan 64 Tests.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
-    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
-#define MAYBE_RestoreSettingsAndChangeUrl DISABLED_RestoreSettingsAndChangeUrl
-#else
-#define MAYBE_RestoreSettingsAndChangeUrl RestoreSettingsAndChangeUrl
-#endif
-IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
-                       MAYBE_RestoreSettingsAndChangeUrl) {
-  // Navigate the current tab to the settings page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUISettingsURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-
-  auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(
-          browser()->profile()));
-  ASSERT_TRUE(service);
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
-
-  // Make sure that the dialog doesn't open if the restored tab is the settings
-  // page.
-  QuitAndRestoreBrowser(browser());
-  ASSERT_TRUE(browser());
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  EXPECT_EQ(GURL(chrome::kChromeUISettingsURL),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
-
-  // Make sure that the dialog doesn't get displayed after navigating to
-  // `chrome://welcome`.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIWelcomeURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
-
-  // Make sure that the dialog doesn't open on the devtools url
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIDevToolsURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_FALSE(service->IsShowingDialog(browser()));
-
-  // Dialog gets displayed when we navigate to chrome://new-tab-page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
-}
-
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        BrowserIsRemovedFromListAfterClose) {
   Profile* profile = browser()->profile();
