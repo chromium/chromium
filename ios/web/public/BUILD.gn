@@ -30,6 +30,7 @@ source_set("public") {
 
   sources = [
     "browser_state.h",
+    "lazy_web_state_user_data.h",
     "web_client.h",
     "web_state.h",
     "web_state_delegate.h",
