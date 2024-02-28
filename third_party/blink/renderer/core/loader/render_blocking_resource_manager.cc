@@ -173,6 +173,8 @@ void RenderBlockingResourceManager::RemovePendingParsingElement(
   }
 
   element_render_blocking_links_.erase(id);
+  element_render_blocking_links_.erase(
+      AtomicString(EncodeWithURLEscapeSequences(id)));
   if (element_render_blocking_links_.empty()) {
     document_->SetHasRenderBlockingExpectLinkElements(false);
     RenderBlockingResourceUnblocked();
