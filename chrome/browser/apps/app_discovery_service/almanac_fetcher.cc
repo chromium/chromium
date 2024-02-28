@@ -80,7 +80,6 @@ AlmanacFetcher::AlmanacFetcher(Profile* profile,
   // Chrome API key or this is a test environment as the server call would fail.
   if ((google_apis::IsGoogleChromeAPIKeyUsed() ||
        skip_api_key_check_for_testing) &&
-      base::FeatureList::IsEnabled(kAlmanacGameMigration) &&
       chromeos::features::IsCloudGamingDeviceEnabled()) {
     base::FilePath path = profile->GetPath().AppendASCII(kLauncherAppFilePath);
     proto_file_manager_ =

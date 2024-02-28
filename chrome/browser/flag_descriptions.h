@@ -3193,9 +3193,6 @@ extern const char kAllowEapDefaultCasWithoutSubjectVerificationDescription[];
 extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 
-extern const char kAlmanacGameMigrationName[];
-extern const char kAlmanacGameMigrationDescription[];
-
 extern const char kAltClickAndSixPackCustomizationName[];
 extern const char kAltClickAndSixPackCustomizationDescription[];
 extern const char kAlwaysEnableHdcpName[];

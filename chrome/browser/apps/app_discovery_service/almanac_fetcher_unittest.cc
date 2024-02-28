@@ -120,8 +120,8 @@ gfx::Image& GetTestImage(int resource_id) {
 class AlmanacFetcherTest : public testing::Test {
  public:
   AlmanacFetcherTest() {
-    feature_list_.InitWithFeatures(
-        {kAlmanacGameMigration, chromeos::features::kCloudGamingDevice}, {});
+    feature_list_.InitWithFeatures({chromeos::features::kCloudGamingDevice},
+                                   {});
     launcher_app_descriptor_ = GetTestDataRoot().Append(FILE_PATH_LITERAL(
         "chrome/browser/apps/app_discovery_service/almanac_api/"
         "launcher_app.descriptor"));

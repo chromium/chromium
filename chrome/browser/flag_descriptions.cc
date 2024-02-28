@@ -5530,12 +5530,6 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
-const char kAlmanacGameMigrationName[] =
-    "Use Almanac for games in App Discovery Service";
-const char kAlmanacGameMigrationDescription[] =
-    "Enables App Discovery Service to use the Almanac system for fetching "
-    "games instead of the App Provisioning Component.";
-
 const char kAltClickAndSixPackCustomizationName[] =
     "Allow users to customize Alt-Click and 6-pack key remapping.";
 

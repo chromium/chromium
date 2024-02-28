@@ -51,7 +51,6 @@ class AppFetcherManager {
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<AppFetcher> recommended_arc_app_fetcher_;
-  std::unique_ptr<AppFetcher> game_fetcher_;
   std::unique_ptr<AppFetcher> almanac_fetcher_;
 
   static AppFetcher* g_test_fetcher_;

@@ -10503,12 +10503,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDrawImmediatelyWhenInteractiveDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDrawImmediatelyWhenInteractive)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"almanac-game-migration", flag_descriptions::kAlmanacGameMigrationName,
-     flag_descriptions::kAlmanacGameMigrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(apps::kAlmanacGameMigration)},
-#endif
-
 #if BUILDFLAG(IS_MAC)
     {"enable-mac-pwas-notification-attribution",
      flag_descriptions::kMacPWAsNotificationAttributionName,
