@@ -31,6 +31,8 @@ import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.variations.LoadSeedResult;
 
 import java.io.File;
@@ -441,7 +443,9 @@ public class VariationsSeedLoader {
     // AwBrowserProcess.getWebViewPackageName() must be ready to use before calling this.
     public void startVariationsInit() {
         mRunnable = new SeedLoadAndUpdateRunnable();
-        (new Thread(mRunnable)).start();
+        // The Runnable task must be scheduled with high priority to start the FutureTask as soon as
+        // possible since that task is blocking WebView startup.
+        PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, mRunnable);
     }
 
     // Block on loading the seed with a timeout. Then if a seed was successfully loaded, initialize
