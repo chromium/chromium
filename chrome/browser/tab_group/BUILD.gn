@@ -9,7 +9,6 @@ import("//chrome/browser/buildflags.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroup.java",
-    "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterObserver.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
@@ -21,15 +20,12 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
-    "//components/tab_groups:tab_groups_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_collection_collection_java",
   ]
 }
 
 robolectric_library("junit") {
   sources = [
-    "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtilsUnitTest.java",
   ]
@@ -45,7 +41,6 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
