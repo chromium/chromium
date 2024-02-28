@@ -1296,7 +1296,6 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
     const gfx::BufferFormat buffer_format =
         GpuMemoryBufferFormat(output_format_, plane);
-    unsigned texture_target = gpu_factories_->ImageTextureTarget(buffer_format);
     // Bind the texture and create or rebind the image. This image may be read
     // via the raster interface for import into canvas and/or 2-copy import into
     // WebGL as well as potentially being read via the GLES interface for 1-copy
@@ -1343,6 +1342,8 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       sii->UpdateSharedImage(frame_resources->sync_token,
                              plane_resource.shared_image->mailbox());
     }
+    auto texture_target = plane_resource.shared_image->GetTextureTarget(
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, buffer_format);
     mailbox_holders[plane] =
         gpu::MailboxHolder(plane_resource.shared_image->mailbox(),
                            gpu::SyncToken(), texture_target);
