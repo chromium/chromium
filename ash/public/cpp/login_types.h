@@ -96,7 +96,7 @@ enum class OobeDialogState {
   // CHILD SETUP step for user creation screen.
   SETUP_CHILD = 23,
 
-  // ENROLL TIAGE step for user creation screen.
+  // ENROLL TRIAGE step for user creation screen.
   ENROLL_TRIAGE = 24,
 };
 
@@ -139,12 +139,8 @@ struct ASH_PUBLIC_EXPORT DeviceEnterpriseInfo {
   // The name of the entity that manages the device and current account user.
   //       For standard Dasher domains, this will be the domain name (foo.com).
   //       For FlexOrgs, this will be the admin's email (user@foo.com).
-  //       For Active Directory or not enterprise enrolled, this will be an
-  //       empty string.
+  //       For non enterprise enrolled devices, this will be an empty string.
   std::string enterprise_domain_manager;
-
-  // Whether this is an Active Directory managed enterprise device.
-  bool active_directory_managed = false;
 
   // Which mode a managed device is enrolled in.
   ManagementDeviceMode management_device_mode = ManagementDeviceMode::kNone;

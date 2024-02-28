@@ -190,42 +190,6 @@ TEST_F(StatusAreaInternalsHandlerTest, ToggleTrayButtons) {
   }
 }
 
-TEST_F(StatusAreaInternalsHandlerTest, SetActiveDirectoryManaged) {
-  auto* enterprise_domain_model = GetFakeModel()->enterprise_domain();
-
-  handler_remote()->SetActiveDirectoryManaged(/*managed=*/true);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_TRUE(enterprise_domain_model->active_directory_managed());
-
-  // Make sure that the enterprise managed UI is visible.
-  LeftClickOn(GetPrimaryUnifiedSystemTray());
-  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()
-                  ->bubble()
-                  ->quick_settings_view()
-                  ->header_for_testing()
-                  ->GetManagedButtonForTest()
-                  ->GetVisible());
-
-  // Close the quick settings bubble.
-  LeftClickOn(GetPrimaryUnifiedSystemTray());
-
-  // Test the reset case.
-  handler_remote()->SetActiveDirectoryManaged(/*managed=*/false);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_FALSE(enterprise_domain_model->active_directory_managed());
-
-  // Make sure that the enterprise managed UI is not visible.
-  LeftClickOn(GetPrimaryUnifiedSystemTray());
-  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()
-                   ->bubble()
-                   ->quick_settings_view()
-                   ->header_for_testing()
-                   ->GetManagedButtonForTest()
-                   ->GetVisible());
-}
-
 TEST_F(StatusAreaInternalsHandlerTest, SetIsInUserChildSession) {
   handler_remote()->SetIsInUserChildSession(/*in_child_session=*/true);
   task_environment()->RunUntilIdle();

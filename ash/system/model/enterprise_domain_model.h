@@ -41,10 +41,6 @@ class ASH_EXPORT EnterpriseDomainModel {
     return device_enterprise_info_.enterprise_domain_manager;
   }
 
-  bool active_directory_managed() const {
-    return device_enterprise_info_.active_directory_managed;
-  }
-
   ManagementDeviceMode management_device_mode() const {
     return device_enterprise_info_.management_device_mode;
   }

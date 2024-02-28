@@ -9,7 +9,7 @@
 
 namespace ash {
 
-EnterpriseDomainModel::EnterpriseDomainModel() {}
+EnterpriseDomainModel::EnterpriseDomainModel() = default;
 
 EnterpriseDomainModel::~EnterpriseDomainModel() = default;
 

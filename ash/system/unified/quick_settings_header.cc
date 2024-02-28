@@ -234,7 +234,6 @@ class QuickSettingsHeader::EnterpriseManagedView
     const std::string account_domain_manager = model->account_domain_manager();
 
     const bool visible = session_controller->ShouldDisplayManagedUI() ||
-                         model->active_directory_managed() ||
                          !enterprise_domain_manager.empty() ||
                          !account_domain_manager.empty();
     SetVisible(visible);

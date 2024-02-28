@@ -29,9 +29,6 @@ interface PageHandler {
   // Toggles the visibility of the projector tray.
   ToggleProjectorTray(bool visible);
 
-  // Sets whether the active directory is being managed or not.
-  SetActiveDirectoryManaged(bool managed);
-
   // Sets whether user is in a child session or not.
   SetIsInUserChildSession(bool in_child_session);
 

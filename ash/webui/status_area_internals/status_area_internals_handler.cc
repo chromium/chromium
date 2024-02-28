@@ -122,12 +122,6 @@ void StatusAreaInternalsHandler::TriggerPrivacyIndicators(
       PrivacyIndicatorsSource::kApps);
 }
 
-void StatusAreaInternalsHandler::SetActiveDirectoryManaged(bool managed) {
-  DeviceEnterpriseInfo info;
-  info.active_directory_managed = managed;
-  scoped_fake_model_->fake_model()->SetDeviceEnterpriseInfo(info);
-}
-
 void StatusAreaInternalsHandler::SetIsInUserChildSession(
     bool in_child_session) {
   scoped_fake_model_->fake_model()->set_is_in_user_child_session(

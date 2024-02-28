@@ -74,9 +74,8 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, ManagedDeviceInfo) {
   SetupContextWidget();
 
   // Simulate enterprise information being available.
-  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(
-      DeviceEnterpriseInfo{"example.com", /*active_directory_managed=*/false,
-                           ManagementDeviceMode::kChromeEnterprise});
+  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(DeviceEnterpriseInfo{
+      "example.com", ManagementDeviceMode::kChromeEnterprise});
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kManagementElementId);
 
@@ -183,9 +182,8 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest, ManagedDeviceInfo) {
   SetupContextWidget();
 
   // Simulate enterprise information being available.
-  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(
-      DeviceEnterpriseInfo{"example.com", /*active_directory_managed=*/false,
-                           ManagementDeviceMode::kChromeEnterprise});
+  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(DeviceEnterpriseInfo{
+      "example.com", ManagementDeviceMode::kChromeEnterprise});
 
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LacrosWindowTitleObserver,
                                       kLacrosWindowTitle);

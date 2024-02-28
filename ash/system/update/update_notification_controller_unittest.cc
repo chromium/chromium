@@ -94,8 +94,7 @@ class UpdateNotificationControllerTest : public AshTestBase {
         Shell::Get()->system_tray_model()->enterprise_domain();
     enterprise_domain->SetEnterpriseAccountDomainInfo(kDomain);
     enterprise_domain->SetDeviceEnterpriseInfo(
-        DeviceEnterpriseInfo{kDeviceDomain, /*active_directory_managed=*/false,
-                             ManagementDeviceMode::kNone});
+        DeviceEnterpriseInfo{kDeviceDomain, ManagementDeviceMode::kNone});
   }
 
  protected:
@@ -162,8 +161,7 @@ class UpdateNotificationControllerTest : public AshTestBase {
   std::u16string system_app_name_;
 };
 
-// Tests that the update icon becomes visible when an update becomes
-// available.
+// Tests that the update icon becomes visible when an update becomes available.
 TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdate) {
   ShowDefaultUpdateNotification();
 

@@ -184,29 +184,12 @@ TEST_F(QuickSettingsHeaderTest, EnterpriseManagedDeviceVisible) {
   CreateQuickSettingsHeader();
 
   // Simulate enterprise information becoming available.
-  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(
-      DeviceEnterpriseInfo{"example.com", /*active_directory_managed=*/false,
-                           ManagementDeviceMode::kChromeEnterprise});
+  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(DeviceEnterpriseInfo{
+      "example.com", ManagementDeviceMode::kChromeEnterprise});
 
   EXPECT_TRUE(GetManagedButton()->GetVisible());
   EXPECT_EQ(GetManagedButtonLabel()->GetText(), u"Managed by example.com");
   EXPECT_EQ(GetManagedButton()->GetTooltipText({}), u"Managed by example.com");
-  EXPECT_TRUE(header_->GetVisible());
-}
-
-TEST_F(QuickSettingsHeaderTest, EnterpriseManagedActiveDirectoryVisible) {
-  CreateQuickSettingsHeader();
-
-  // Simulate enterprise information becoming available.
-  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(
-      DeviceEnterpriseInfo{"", /*active_directory_managed=*/true,
-                           ManagementDeviceMode::kChromeEnterprise});
-
-  EXPECT_TRUE(GetManagedButton()->GetVisible());
-  // Active Directory just shows "Managed" as the button label.
-  EXPECT_EQ(GetManagedButtonLabel()->GetText(), u"Managed");
-  EXPECT_EQ(GetManagedButton()->GetTooltipText({}),
-            u"This Chrome device is enterprise managed");
   EXPECT_TRUE(header_->GetVisible());
 }
 
@@ -224,9 +207,8 @@ TEST_F(QuickSettingsHeaderTest, EnterpriseManagedAccountVisible) {
 
 TEST_F(QuickSettingsHeaderTest, BothChannelAndEnterpriseVisible) {
   test_shell_delegate_->set_channel(version_info::Channel::BETA);
-  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(
-      DeviceEnterpriseInfo{"example.com", /*active_directory_managed=*/false,
-                           ManagementDeviceMode::kChromeEnterprise});
+  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(DeviceEnterpriseInfo{
+      "example.com", ManagementDeviceMode::kChromeEnterprise});
   SimulateUserLogin("user@gmail.com");
 
   CreateQuickSettingsHeader();
@@ -240,9 +222,8 @@ TEST_F(QuickSettingsHeaderTest, BothChannelAndEnterpriseVisible) {
 }
 
 TEST_F(QuickSettingsHeaderTest, BothEolNoticeAndEnterpriseVisible) {
-  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(
-      DeviceEnterpriseInfo{"example.com", /*active_directory_managed=*/false,
-                           ManagementDeviceMode::kChromeEnterprise});
+  GetEnterpriseDomainModel()->SetDeviceEnterpriseInfo(DeviceEnterpriseInfo{
+      "example.com", ManagementDeviceMode::kChromeEnterprise});
   Shell::Get()->system_tray_model()->SetShowEolNotice(true);
   SimulateUserLogin("user@gmail.com");
 

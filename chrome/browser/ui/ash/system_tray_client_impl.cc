@@ -965,7 +965,6 @@ void SystemTrayClientImpl::UpdateDeviceEnterpriseInfo() {
   ash::DeviceEnterpriseInfo device_enterprise_info;
   device_enterprise_info.enterprise_domain_manager =
       connector->GetEnterpriseDomainManager();
-  device_enterprise_info.active_directory_managed = false;
   device_enterprise_info.management_device_mode =
       GetManagementDeviceMode(connector);
   if (!last_device_enterprise_info_) {
