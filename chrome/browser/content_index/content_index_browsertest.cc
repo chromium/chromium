@@ -95,7 +95,10 @@ class ContentIndexTest : public InProcessBrowserTest,
     NOTREACHED();
   }
 
-  void OnContentProviderGoingDown() override {}
+  void OnContentProviderGoingDown() override {
+    // Clear the cached pointer to avoid a dangling pointer error later.
+    provider_ = nullptr;
+  }
 
   // TabStripModelObserver implementation:
   void TabChangedAt(content::WebContents* contents,
@@ -152,7 +155,7 @@ class ContentIndexTest : public InProcessBrowserTest,
 
  private:
   std::map<std::string, OfflineItem> offline_items_;
-  raw_ptr<ContentIndexProviderImpl, DanglingUntriaged> provider_;
+  raw_ptr<ContentIndexProviderImpl> provider_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::OnceClosure wait_for_tab_change_;
 };
