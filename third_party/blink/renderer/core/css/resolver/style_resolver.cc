@@ -3198,7 +3198,6 @@ const ComputedStyle* StyleResolver::ResolvePositionFallbackStyle(
       To<StyleRuleTry>(position_fallback_rule->ChildRules()[index].Get());
   StyleResolverState state(GetDocument(), element);
   state.SetStyle(base_style);
-  state.SetIsResolvingPositionFallbackStyle();
   const CSSPropertyValueSet& properties = try_rule->Properties();
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
