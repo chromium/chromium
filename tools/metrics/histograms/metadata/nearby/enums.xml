@@ -320,6 +320,7 @@ chromium-metrics-reviews@google.com.
   <int value="1414" label="Hidden visibility selected and confirmed"/>
   <int value="1415" label="Manage contacts selected"/>
   <int value="1416" label="Cancel selected on visibility page"/>
+  <int value="1417" label="Your devices visibility selected and confirmed"/>
 </enum>
 
 <enum name="NearbySharePairedKeyVerificationError">

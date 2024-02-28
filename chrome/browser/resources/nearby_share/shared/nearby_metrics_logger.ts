@@ -53,6 +53,7 @@ enum NearbyShareOnboardingFlowEvent {
   HIDDEN_SELECTED_AND_CONFIRMED = 1414,
   MANAGE_CONTACTS_SELECTED = 1415,
   CANCEL_SELECTED_ON_VISIBILITY_PAGE = 1416,
+  YOUR_DEVICES_SELECTED_AND_CONFIRMED = 1417,
 }
 
 const NearbyShareOnboardingResultHistogramName =
@@ -325,6 +326,8 @@ function getOnboardingCompleteFlowEventOnVisibilityPage(
     case Visibility.kSelectedContacts:
       return NearbyShareOnboardingFlowEvent
           .SOME_CONTACTS_SELECTED_AND_CONFIRMED;
+    case Visibility.kYourDevices:
+      return NearbyShareOnboardingFlowEvent.YOUR_DEVICES_SELECTED_AND_CONFIRMED;
     case Visibility.kNoOne:
       return NearbyShareOnboardingFlowEvent.HIDDEN_SELECTED_AND_CONFIRMED;
     default:
