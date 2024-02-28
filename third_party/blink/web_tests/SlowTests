@@ -1462,3 +1462,4 @@ crbug.com/1462683 virtual/threaded/external/wpt/long-animation-frame/tentative/l
 crbug.com/1517319 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Slow ]
 
 crbug.com/326619067 [ Mac ] external/wpt/css/css-scroll-snap-2/snapchanging/snapchanging-on-user-root-scroll.tentative.html [ Slow ]
+crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/* [ Slow ]
