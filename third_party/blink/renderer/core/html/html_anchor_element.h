@@ -105,6 +105,8 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   // Element overrides:
   void SetHovered(bool hovered) override;
 
+  Element* interestTargetElement();
+
   void Trace(Visitor*) const override;
 
  protected:

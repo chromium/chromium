@@ -559,6 +559,16 @@ void HTMLAnchorElement::SetHovered(bool hovered) {
   HTMLElement::SetHovered(hovered);
 }
 
+Element* HTMLAnchorElement::interestTargetElement() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+
+  if (!IsInTreeScope()) {
+    return nullptr;
+  }
+
+  return GetElementAttribute(html_names::kInteresttargetAttr);
+}
+
 void HTMLAnchorElement::HandleClick(Event& event) {
   event.SetDefaultHandled();
 

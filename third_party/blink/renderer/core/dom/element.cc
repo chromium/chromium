@@ -408,6 +408,9 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
   if (name == html_names::kInvoketargetAttr) {
     return true;
   }
+  if (name == html_names::kInteresttargetAttr) {
+    return true;
+  }
   return false;
 }
 

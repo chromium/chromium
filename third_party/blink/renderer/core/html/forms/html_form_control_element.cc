@@ -422,6 +422,16 @@ Element* HTMLFormControlElement::invokeTargetElement() {
   return GetElementAttribute(html_names::kInvoketargetAttr);
 }
 
+Element* HTMLFormControlElement::interestTargetElement() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+
+  if (!IsInTreeScope() || IsDisabledFormControl()) {
+    return nullptr;
+  }
+
+  return GetElementAttribute(html_names::kInteresttargetAttr);
+}
+
 AtomicString HTMLFormControlElement::popoverTargetAction() const {
   auto attribute_value =
       FastGetAttribute(html_names::kPopovertargetactionAttr).LowerASCII();

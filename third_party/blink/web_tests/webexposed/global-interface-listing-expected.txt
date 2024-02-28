@@ -3367,6 +3367,7 @@ interface HTMLAnchorElement : HTMLElement
     getter href
     getter hrefTranslate
     getter hreflang
+    getter interestTargetElement
     getter name
     getter origin
     getter password
@@ -3396,6 +3397,7 @@ interface HTMLAnchorElement : HTMLElement
     setter href
     setter hrefTranslate
     setter hreflang
+    setter interestTargetElement
     setter name
     setter password
     setter pathname
@@ -3544,6 +3546,7 @@ interface HTMLButtonElement : HTMLElement
     getter formMethod
     getter formNoValidate
     getter formTarget
+    getter interestTargetElement
     getter invokeAction
     getter invokeTargetElement
     getter labels
@@ -3565,6 +3568,7 @@ interface HTMLButtonElement : HTMLElement
     setter formMethod
     setter formNoValidate
     setter formTarget
+    setter interestTargetElement
     setter invokeAction
     setter invokeTargetElement
     setter name
@@ -4235,6 +4239,7 @@ interface HTMLInputElement : HTMLElement
     getter height
     getter incremental
     getter indeterminate
+    getter interestTargetElement
     getter invokeAction
     getter invokeTargetElement
     getter labels
@@ -4296,6 +4301,7 @@ interface HTMLInputElement : HTMLElement
     setter height
     setter incremental
     setter indeterminate
+    setter interestTargetElement
     setter invokeAction
     setter invokeTargetElement
     setter max
