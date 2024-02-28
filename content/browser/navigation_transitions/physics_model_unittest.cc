@@ -14,6 +14,8 @@ namespace content {
 
 namespace {
 
+static constexpr float kScreenWidthForTesting = 1080.f;
+
 // Test input and output for finger drag curve.
 struct FingerDragCurveConfig {
   std::tuple<float, base::TimeTicks> movement_timestamp;
@@ -41,7 +43,7 @@ class PhysicsModelUnittest : public ::testing::Test {
   void SetUp() override {
     // Simulate a Pixel6/7. The commit-stop position is 918px.
     physics_model_ = std::make_unique<PhysicsModel>(
-        /*screen_width=*/1080,
+        /*screen_width=*/static_cast<int>(kScreenWidthForTesting),
         /*device_scale_factor=*/2.625);
   }
 
@@ -186,12 +188,14 @@ TEST_F(PhysicsModelUnittest, ProgressInvoke_LiftBeforeCommitStop) {
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
-                  .expected = {.foreground_offset_physical = 1080,
+                  .expected = {.foreground_offset_physical =
+                                   kScreenWidthForTesting,
                                .background_offset_physical = 0,
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
-                  .expected = {.foreground_offset_physical = 1080,
+                  .expected = {.foreground_offset_physical =
+                                   kScreenWidthForTesting,
                                .background_offset_physical = 0,
                                .done = true}},
           },
@@ -244,7 +248,8 @@ TEST_F(PhysicsModelUnittest, ProgressInvoke_LiftAfterCommitStop) {
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
-                  .expected = {.foreground_offset_physical = 1080,
+                  .expected = {.foreground_offset_physical =
+                                   kScreenWidthForTesting,
                                .background_offset_physical = 0,
                                .done = true}},
           },
@@ -331,12 +336,14 @@ TEST_F(PhysicsModelUnittest, ProgressCommitStopInvoke_LiftBeforeCommitStop) {
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
-                  .expected = {.foreground_offset_physical = 1080,
+                  .expected = {.foreground_offset_physical =
+                                   kScreenWidthForTesting,
                                .background_offset_physical = 0,
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
-                  .expected = {.foreground_offset_physical = 1080,
+                  .expected = {.foreground_offset_physical =
+                                   kScreenWidthForTesting,
                                .background_offset_physical = 0,
                                .done = true}},
           },
@@ -430,12 +437,14 @@ TEST_F(PhysicsModelUnittest, ProgressCommitStopInvoke_LiftAfterCommitStop) {
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
-                  .expected = {.foreground_offset_physical = 1080,
+                  .expected = {.foreground_offset_physical =
+                                   kScreenWidthForTesting,
                                .background_offset_physical = 0,
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
-                  .expected = {.foreground_offset_physical = 1080,
+                  .expected = {.foreground_offset_physical =
+                                   kScreenWidthForTesting,
                                .background_offset_physical = 0,
                                .done = true}},
           },
@@ -692,6 +701,38 @@ TEST_F(PhysicsModelUnittest, ProgressCommitPendingAndCancelNav) {
     PhysicsModel::Result r = physics_model()->OnAnimate(cancel.timestamp);
     EXPECT_EQ(r, cancel.expected);
   }
+}
+
+// Regression test for https://crbug.com/326850774: The CommitPending spring
+// shouldn't overshoot the left edge neither.
+TEST_F(PhysicsModelUnittest, CommitPendingSpringOvershootLeftEdge) {
+  // Simulating a fling from 1000px to 0px.
+  physics_model()->OnGestureProgressed(
+      1000, NextTimeTickAfter(base::Milliseconds(0)));
+  // Ten data points so we can evict the first gesture (0px to 1000px). Makes
+  // sure that this sequence carries enough speed.
+  for (int i = 0; i < 10; ++i) {
+    physics_model()->OnGestureProgressed(
+        -100, NextTimeTickAfter(base::Milliseconds(1)));
+  }
+
+  // Lift the finger. The physics model will switch to the commit-pending
+  // spring. The spring will have initial position at the left edge, and with
+  // the initial velocity towards the left. Without the clampping, the spring
+  // will keep moving to the left, which is incorrect.
+  physics_model()->OnGestureDone(/*commit=*/true);
+  PhysicsModel::Result first_frame =
+      physics_model()->OnAnimate(NextTimeTickAfter(base::Milliseconds(100)));
+  EXPECT_GE(first_frame.foreground_offset_physical, 0.f);
+  EXPECT_LE(first_frame.foreground_offset_physical, kScreenWidthForTesting);
+  PhysicsModel::Result second_frame =
+      physics_model()->OnAnimate(NextTimeTickAfter(base::Milliseconds(100)));
+  EXPECT_GE(second_frame.foreground_offset_physical, 0.f);
+  EXPECT_LE(second_frame.foreground_offset_physical, kScreenWidthForTesting);
+  PhysicsModel::Result third_frame =
+      physics_model()->OnAnimate(NextTimeTickAfter(base::Milliseconds(100)));
+  EXPECT_GE(third_frame.foreground_offset_physical, 0.f);
+  EXPECT_LE(third_frame.foreground_offset_physical, kScreenWidthForTesting);
 }
 
 }  // namespace content
