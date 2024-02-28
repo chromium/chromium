@@ -1481,6 +1481,7 @@ TEST_F(WebStateListTest, WebStateListAsWeakPtr) {
   EXPECT_FALSE(weak_web_state_list);
 }
 
+// Tests that GetGroupOfWebStateAt returns the correct group(s).
 TEST_F(WebStateListTest, GetGroupOfWebStateAt) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
@@ -1494,6 +1495,7 @@ TEST_F(WebStateListTest, GetGroupOfWebStateAt) {
   EXPECT_EQ(nullptr, web_state_list_.GetGroupOfWebStateAt(4));
 }
 
+// Tests that GetWebStates returns the correct ranges.
 TEST_F(WebStateListTest, GetWebStates) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
@@ -1507,6 +1509,7 @@ TEST_F(WebStateListTest, GetWebStates) {
   EXPECT_EQ(WebStateList::Range(8, 1), web_state_list_.GetWebStates(group_2));
 }
 
+// Tests that inserting when there are no groups doesn't create any group.
 TEST_F(WebStateListTest, InsertWebState_NoGroup) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(
@@ -1517,6 +1520,7 @@ TEST_F(WebStateListTest, InsertWebState_NoGroup) {
   EXPECT_EQ("| a* _", builder.GetWebStateListDescription(web_state_list_));
 }
 
+// Tests that moving when there are no groups doesn't create any group.
 TEST_F(WebStateListTest, MoveWebStateAt_NoGroup) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(
@@ -1527,6 +1531,7 @@ TEST_F(WebStateListTest, MoveWebStateAt_NoGroup) {
   EXPECT_EQ("| a c d b*", builder.GetWebStateListDescription(web_state_list_));
 }
 
+// Tests that replacing when there are no groups doesn't create any group.
 TEST_F(WebStateListTest, ReplaceWebStateAt_NoGroup) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(
@@ -1539,6 +1544,41 @@ TEST_F(WebStateListTest, ReplaceWebStateAt_NoGroup) {
   EXPECT_EQ("| b*", builder.GetWebStateListDescription(web_state_list_));
 }
 
+// Tests that replacing when there is a group keeps the group.
+TEST_F(WebStateListTest, ReplaceWebStateAt_Grouped) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a* ]"));
+  auto replacement_web_state = CreateWebState(kURL1);
+  builder.SetWebStateIdentifier(replacement_web_state.get(), 'b');
+
+  web_state_list_.ReplaceWebStateAt(0, std::move(replacement_web_state));
+
+  EXPECT_EQ("| [ 0 b* ]", builder.GetWebStateListDescription(web_state_list_));
+}
+
+// Tests that activating a non-grouped WebState doesn't create any group.
+TEST_F(WebStateListTest, ActivateWebStateAt_NoGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_, "| a"));
+
+  web_state_list_.ActivateWebStateAt(0);
+
+  EXPECT_EQ("| a*", builder.GetWebStateListDescription(web_state_list_));
+}
+
+// Tests that activating a grouped WebState keeps the group.
+TEST_F(WebStateListTest, ActivateWebStateAt_Grouped) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a ]"));
+
+  web_state_list_.ActivateWebStateAt(0);
+
+  EXPECT_EQ("| [ 0 a* ]", builder.GetWebStateListDescription(web_state_list_));
+}
+
+// Tests creating a group with one tab.
 TEST_F(WebStateListTest, CreateGroup_OneTab) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(
@@ -1551,8 +1591,10 @@ TEST_F(WebStateListTest, CreateGroup_OneTab) {
 
   EXPECT_EQ("| [ 0 a* ]", builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group));
+  EXPECT_EQ(visual_data, group->visual_data());
 }
 
+// Tests creating a group with several tabs.
 TEST_F(WebStateListTest, CreateGroup_SeveralTabs) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
@@ -1566,8 +1608,10 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs) {
   EXPECT_EQ("| [ 0 a c e ] b* d",
             builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(0, 3), web_state_list_.GetWebStates(group));
+  EXPECT_EQ(visual_data, group->visual_data());
 }
 
+// Tests creating a group with several tabs, some being pinned.
 TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomePinned) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
@@ -1581,8 +1625,10 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomePinned) {
   EXPECT_EQ("a c | [ 0 b* d ] e",
             builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(2, 2), web_state_list_.GetWebStates(group));
+  EXPECT_EQ(visual_data, group->visual_data());
 }
 
+// Tests creating a group with several tabs, some being already grouped.
 TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomeGrouped) {
   WebStateListBuilderFromDescription builder;
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
@@ -1599,4 +1645,5 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomeGrouped) {
 
   EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
   EXPECT_EQ(WebStateList::Range(2, 2), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(visual_data_1, group_1->visual_data());
 }
