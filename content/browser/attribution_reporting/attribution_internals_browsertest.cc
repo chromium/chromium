@@ -360,6 +360,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // TODO(crbug.com/1491813): Bypass locale dependency to validate event report
   // windows column value.
   static constexpr char kScript[] = R"(
+    // TODO(apaseltiner): This is necessary because innerText returns different
+    // results based on whether the text is visible. Switch to textContent to
+    // make this unnecessary.
+    document.querySelector('cr-tab-box').setAttribute('selected-index', 1);
+
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
     const regTable = document.querySelector('#sourceRegistrationTable')

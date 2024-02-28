@@ -14,17 +14,11 @@ found in the LICENSE file.
 </head>
 <body>
 <header>
-In this browser:
-<ul>
-<li>Attribution Reporting is <b id="feature-status" class="disabled">disabled</b>.
-<li><code>Attribution-Reporting-Support</code> is <b id="attribution-support">web</b>.
-<li>Report delays are <b id="report-delays">enabled</b>.
-<li>Noise is <b id="noise">enabled</b>.
-</ul>
 <button id="refresh">Refresh all page data</button>
 <button id="clear-data">Clear all attribution data</button>
 </header>
 <cr-tab-box hidden>
+  <div slot="tab">API State</div>
   <div slot="tab">Active Sources</div>
   <div slot="tab">Source Registrations</div>
   <div slot="tab">Trigger Registrations</div>
@@ -32,6 +26,15 @@ In this browser:
   <div slot="tab">Aggregatable Reports</div>
   <div slot="tab">Debug Reports</div>
   <div slot="tab">OS Registrations</div>
+  <div slot="panel">
+    In this browser:
+    <ul>
+    <li>Attribution Reporting is <b id="feature-status">disabled</b>.
+    <li><code>Attribution-Reporting-Support</code> is <b id="attribution-support">web</b>.
+    <li>Report delays are <b id="report-delays">enabled</b>.
+    <li>Noise is <b id="noise">enabled</b>.
+    </ul>
+  </div>
   <div slot="panel">
     <attribution-internals-table id="sourceTable">
     </attribution-internals-table>

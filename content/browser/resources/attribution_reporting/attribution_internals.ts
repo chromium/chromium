@@ -911,7 +911,6 @@ class AttributionInternals implements ObserverInterface {
       const featureStatus =
           document.querySelector<HTMLElement>('#feature-status')!;
       featureStatus.innerText = response.enabled ? 'enabled' : 'disabled';
-      featureStatus.classList.toggle('disabled', !response.enabled);
 
       const reportDelaysContent =
           document.querySelector<HTMLElement>('#report-delays')!;
