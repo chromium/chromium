@@ -923,9 +923,15 @@ public final class ReturnToChromeUtil {
                 && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
     }
 
-    /** Returns true if START_SURFACE_REFACTOR is enabled. */
-    public static boolean isStartSurfaceRefactorEnabled(Context context) {
-        return ChromeFeatureList.sStartSurfaceRefactor.isEnabled();
+    /**
+     * Returns true if START_SURFACE_REFACTOR is enabled.
+     *
+     * @deprecated this always returns true now and doesn't use the context param. Remove this as
+     *     part of crbug.com/327477398.
+     */
+    @Deprecated
+    public static boolean isStartSurfaceRefactorEnabled(@Nullable Context unused) {
+        return true;
     }
 
     /**

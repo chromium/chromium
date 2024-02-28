@@ -1090,11 +1090,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     public void testStartSurfaceMenu() {
         mStartSurfaceSupplier.set(mStartSurfaceCoordinator);
-        @LayoutType
-        int layoutType =
-                ChromeFeatureList.sStartSurfaceRefactor.isEnabled()
-                        ? LayoutType.START_SURFACE
-                        : LayoutType.TAB_SWITCHER;
+        @LayoutType int layoutType = LayoutType.START_SURFACE;
         setUpMocksForOverviewMenu(layoutType);
         doReturn(true).when(mAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
 

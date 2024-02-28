@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_REFACTOR;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_RETURN_TIME;
 
 import android.os.Build;
@@ -47,7 +46,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ANDROID_HUB, START_SURFACE_REFACTOR})
+@EnableFeatures({ANDROID_HUB})
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {
     @Rule

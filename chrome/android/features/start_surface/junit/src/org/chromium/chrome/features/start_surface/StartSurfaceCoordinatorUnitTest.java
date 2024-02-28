@@ -28,7 +28,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -74,9 +73,7 @@ public class StartSurfaceCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testShowAndHideWithRefactorEnabled() {
-        assertTrue(ChromeFeatureList.sStartSurfaceRefactor.isEnabled());
         assertNull(mCoordinator.getTasksSurfaceForTesting());
         TabSwitcher tabSwitcherModule =
                 mCoordinator.getMediatorForTesting().getTabSwitcherModuleForTesting();
@@ -95,24 +92,6 @@ public class StartSurfaceCoordinatorUnitTest {
         assertTrue(mCoordinator.isMVTilesCleanedUpForTesting());
         assertFalse(mCoordinator.isMVTilesInitializedForTesting());
         assertNull(mCoordinator.getTileGroupDelegateForTesting());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    public void testCleanUpMVTilesAfterHiding() {
-        assertFalse(ChromeFeatureList.sStartSurfaceRefactor.isEnabled());
-        assertNotNull(mCoordinator.getTasksSurfaceForTesting());
-        assertNull(mCoordinator.getMediatorForTesting().getTabSwitcherModuleForTesting());
-        assertNull(mCoordinator.getViewForTesting());
-
-        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mCoordinator.showOverview(false);
-
-        Assert.assertFalse(mCoordinator.isMVTilesCleanedUpForTesting());
-
-        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
-        mCoordinator.onHide();
-        Assert.assertTrue(mCoordinator.isMVTilesCleanedUpForTesting());
     }
 
     @Test

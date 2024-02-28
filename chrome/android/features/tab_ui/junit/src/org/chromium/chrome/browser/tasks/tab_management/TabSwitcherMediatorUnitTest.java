@@ -840,39 +840,6 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
-    // When Start surface refactoring is enabled, the top control properties are no longer handled
-    // separately, and it is covered by test updatesPropertiesWithTopControlsChanges().
-    @DisableFeatures({
-        ChromeFeatureList.START_SURFACE_REFACTOR,
-        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
-    })
-    public void updatesPropertiesWithTopControlsChanges_StartSurface() {
-        assertEquals(0, mModel.get(TabListContainerProperties.TOP_MARGIN));
-        assertEquals(0, mModel.get(TabListContainerProperties.SHADOW_TOP_OFFSET));
-
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onTopControlsHeightChanged(CONTROL_HEIGHT_INCREASED, 0);
-        doReturn(CONTROL_HEIGHT_INCREASED).when(mBrowserControlsStateProvider).getContentOffset();
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onControlsOffsetChanged(0, 0, 0, 0, false);
-        assertEquals(0, mModel.get(TabListContainerProperties.TOP_MARGIN));
-        assertEquals(0, mModel.get(TabListContainerProperties.SHADOW_TOP_OFFSET));
-
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onTopControlsHeightChanged(CONTROL_HEIGHT_DEFAULT, 0);
-        doReturn(CONTROL_HEIGHT_DEFAULT).when(mBrowserControlsStateProvider).getContentOffset();
-        mBrowserControlsStateProviderObserverCaptor
-                .getValue()
-                .onControlsOffsetChanged(0, 0, 0, 0, false);
-        assertEquals(0, mModel.get(TabListContainerProperties.TOP_MARGIN));
-        assertEquals(0, mModel.get(TabListContainerProperties.SHADOW_TOP_OFFSET));
-    }
-
-    @Test
     public void updatesBottomPaddingOnlyInGridMode() {
         doReturn(16f).when(mResources).getDimension(R.dimen.tab_grid_bottom_padding);
 

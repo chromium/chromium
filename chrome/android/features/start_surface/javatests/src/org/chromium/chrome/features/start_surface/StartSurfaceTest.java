@@ -212,7 +212,6 @@ public class StartSurfaceTest {
     @CommandLineFlags.Add({
         START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"
     })
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -250,17 +249,6 @@ public class StartSurfaceTest {
 
         onViewWaiting(withId(R.id.single_tab_view)).perform(click());
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({
-        START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"
-    })
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    public void testShow_SingleAsHomepage_NoIncognitoSwitch_RefactorEnabled() {
-        testShow_SingleAsHomepage_NoIncognitoSwitch();
     }
 
     @Test
@@ -311,18 +299,6 @@ public class StartSurfaceTest {
 
         onViewWaiting(withId(R.id.single_tab_view)).perform(click());
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    @CommandLineFlags.Add({
-        START_SURFACE_TEST_BASE_PARAMS
-                + "open_ntp_instead_of_start/false/open_start_as_homepage/true"
-    })
-    public void testShow_SingleAsHomepage_SingleTab_RefactorEnabled() {
-        testShow_SingleAsHomepage_SingleTab();
     }
 
     @Test
@@ -694,7 +670,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "https://crbug.com/1470714")
     public void testShow_SingleAsHomepage_DoNotResetScrollPositionFromBack() {
@@ -1132,31 +1107,6 @@ public class StartSurfaceTest {
                         cta,
                         org.chromium.chrome.test.R.dimen.home_surface_background_color_elevation),
                 ((ColorDrawable) startSurfaceToolbar.getBackground()).getColor());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH, ChromeFeatureList.START_SURFACE_REFACTOR})
-    public void testStatusBarColor_RefactorDisabled_SurfacePolishDisabled() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(cta, false);
-        testStatusBarColorImpl(expectedDefaultStandardColor, expectedDefaultStandardColor);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testStatusBarColor_RefactorDisabled_SurfacePolishEnabled() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        final int expectedPolishedStandardColor =
-                ChromeColors.getSurfaceColor(cta, R.dimen.home_surface_background_color_elevation);
-        final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(cta, false);
-        testStatusBarColorImpl(expectedPolishedStandardColor, expectedDefaultStandardColor);
     }
 
     @Test

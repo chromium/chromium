@@ -68,11 +68,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-// START_SURFACE_REFACTOR is required to have stable parent id logic.
-@EnableFeatures({
-    ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION,
-    ChromeFeatureList.START_SURFACE_REFACTOR
-})
+@EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
 @Batch(Batch.PER_CLASS)
 public class TabGridAccessibilityHelperTest {
     @IntDef({
@@ -103,8 +99,7 @@ public class TabGridAccessibilityHelperTest {
         CriteriaHelper.pollUiThread(
                 sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
 
-        TabUiTestHelper.getTabSwitcherLayoutAndVerify(
-                sActivityTestRule.getActivity(), /* isStartSurfaceRefactorEnabled= */ true);
+        TabUiTestHelper.getTabSwitcherLayoutAndVerify(sActivityTestRule.getActivity());
     }
 
     @After

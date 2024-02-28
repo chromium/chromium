@@ -166,7 +166,6 @@ BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
 BASE_DECLARE_FEATURE(kStartSurfaceOnTablet);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kAccountReauthenticationRecentTimeWindow);
-BASE_DECLARE_FEATURE(kStartSurfaceRefactor);
 BASE_DECLARE_FEATURE(kStartSurfaceWithAccessibility);
 BASE_DECLARE_FEATURE(kSurfacePolish);
 BASE_DECLARE_FEATURE(kTabResumptionModuleAndroid);

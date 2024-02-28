@@ -35,15 +35,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -236,99 +232,6 @@ public class StatusIndicatorTest {
                 "Wrong Android view visibility.",
                 View.VISIBLE,
                 getStatusIndicator().getVisibility());
-    }
-
-    @Test
-    @MediumTest
-    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    // TODO(https://crbug.com/1315676): Remove this test once the Start surface refactor is done.
-    // This is because the "secondary_tasks_surface_view" will go away, and testShowAfterHide() will
-    // cover the testing of grid tab switcher directly.
-    @DisableFeatures({
-        ChromeFeatureList.START_SURFACE_REFACTOR,
-        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
-    })
-    public void testShowAndHideOnStartSurface() {
-        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-
-        StartSurfaceTestUtils.waitForTabSwitcherVisible(mActivityTestRule.getActivity());
-        // R.id.status_indicator won't be in the View tree until the indicator is shown for the
-        // first time and the corresponding ViewStub is inflated.
-        onView(withId(R.id.status_indicator)).check(doesNotExist());
-        onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
-        Assert.assertFalse(
-                "Wrong initial composited view visibility.",
-                mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mStatusIndicatorCoordinator.show(
-                            "Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
-                    mStatusIndicatorCoordinator
-                            .getMediatorForTesting()
-                            .finishAnimationsForTesting();
-                });
-
-        // The status indicator will be immediately visible.
-        onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                            Matchers.is(getStatusIndicator().getHeight()));
-                });
-
-        onView(withId(R.id.control_container))
-                .check(matches(withTopMargin(getStatusIndicator().getHeight())));
-        onView(withId(R.id.secondary_tasks_surface_view))
-                .check(
-                        matches(
-                                withTopMargin(
-                                        mBrowserControlsStateProvider.getTopControlsHeight())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mStatusIndicatorCoordinator.updateContent(
-                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
-                    mStatusIndicatorCoordinator
-                            .getMediatorForTesting()
-                            .finishAnimationsForTesting();
-                });
-
-        // #updateContent shouldn't change the layout.
-        onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
-        onView(withId(R.id.control_container))
-                .check(matches(withTopMargin(getStatusIndicator().getHeight())));
-        onView(withId(R.id.secondary_tasks_surface_view))
-                .check(
-                        matches(
-                                withTopMargin(
-                                        mBrowserControlsStateProvider.getTopControlsHeight())));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mStatusIndicatorCoordinator.hide();
-                    mStatusIndicatorCoordinator
-                            .getMediatorForTesting()
-                            .finishAnimationsForTesting();
-                });
-
-        // Wait until the status indicator finishes animating, or becomes fully hidden.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                            Matchers.is(0));
-                });
-
-        onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
-        onView(withId(R.id.secondary_tasks_surface_view))
-                .check(
-                        matches(
-                                withTopMargin(
-                                        mBrowserControlsStateProvider.getTopControlsHeight())));
     }
 
     @Test

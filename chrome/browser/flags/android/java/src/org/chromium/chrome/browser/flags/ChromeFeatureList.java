@@ -442,7 +442,6 @@ public abstract class ChromeFeatureList {
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
     public static final String START_SURFACE_ON_TABLET = "StartSurfaceOnTablet";
-    public static final String START_SURFACE_REFACTOR = "StartSurfaceRefactor";
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
     public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
             "AccountReauthenticationRecentTimeWindow";
@@ -630,8 +629,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceOnTablet =
             newCachedFlag(START_SURFACE_ON_TABLET, true);
-    public static final CachedFlag sStartSurfaceRefactor =
-            newCachedFlag(START_SURFACE_REFACTOR, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
@@ -742,7 +739,6 @@ public abstract class ChromeFeatureList {
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceAndroid,
                     sStartSurfaceOnTablet,
-                    sStartSurfaceRefactor,
                     sStartSurfaceReturnTime,
                     sAccountReauthenticationRecentTimeWindow,
                     sStartSurfaceWithAccessibility,

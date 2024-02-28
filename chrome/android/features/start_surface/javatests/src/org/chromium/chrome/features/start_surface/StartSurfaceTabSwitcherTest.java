@@ -183,10 +183,6 @@ public class StartSurfaceTabSwitcherTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (!ChromeFeatureList.sStartSurfaceRefactor.isEnabled()) {
-            onViewWaiting(withId(R.id.secondary_tasks_surface_view));
-        }
-
         onViewWaiting(
                         allOf(
                                 isDescendantOfA(

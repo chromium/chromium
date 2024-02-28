@@ -4485,10 +4485,6 @@ const char kStartSurfaceOnTabletName[] = "Start Surface On Tablet";
 const char kStartSurfaceOnTabletDescription[] =
     "Enable Start Surface On Tablet.";
 
-const char kStartSurfaceRefactorName[] = "Start Surface Refactor";
-const char kStartSurfaceRefactorDescription[] =
-    "Enable splitting Tab switcher from Start surface";
-
 const char kStartSurfaceWithAccessibilityName[] =
     "Start Surface With Accessibility";
 const char kStartSurfaceWithAccessibilityDescription[] =

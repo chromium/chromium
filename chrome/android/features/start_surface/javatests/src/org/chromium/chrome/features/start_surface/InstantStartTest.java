@@ -213,53 +213,6 @@ public class InstantStartTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"
-    })
-    // TODO(https://crbug.com/1315676): Removes this test once the start surface refactoring is
-    // done, since the secondary tasks surface will go away.
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS + "/enable_launch_polish/true"
-    })
-    public void startSurfaceSinglePanePreNativeAndWithNativeTest() {
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Assert.assertFalse(cta.isTablet());
-        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
-
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-
-        Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
-        assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromePhone.class);
-        assertThat(cta.getLayoutManager().getOverviewLayout())
-                .isInstanceOf(TabSwitcherAndStartSurfaceLayout.class);
-
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-        Assert.assertTrue(startSurfaceCoordinator.isInitPendingForTesting());
-        Assert.assertFalse(startSurfaceCoordinator.isInitializedWithNativeForTesting());
-        Assert.assertFalse(startSurfaceCoordinator.isSecondaryTaskInitPendingForTesting());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    startSurfaceCoordinator.setStartSurfaceState(
-                            StartSurfaceState.SHOWN_TABSWITCHER);
-                });
-        CriteriaHelper.pollUiThread(startSurfaceCoordinator::isSecondaryTaskInitPendingForTesting);
-
-        // Initializes native.
-        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-        Assert.assertFalse(startSurfaceCoordinator.isInitPendingForTesting());
-        Assert.assertFalse(startSurfaceCoordinator.isSecondaryTaskInitPendingForTesting());
-        Assert.assertTrue(startSurfaceCoordinator.isInitializedWithNativeForTesting());
-    }
-
-    @Test
-    @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void willInitNativeOnTabletTest() {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);

@@ -3581,11 +3581,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-start-surface-refactor",
-    "owners": [ "hanxi@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-start-surface-return-time",
     "owners": [ "hanxi@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 140

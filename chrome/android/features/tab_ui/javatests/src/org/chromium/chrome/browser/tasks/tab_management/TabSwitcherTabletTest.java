@@ -85,7 +85,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.START_SURFACE_REFACTOR})
+@DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
 @Restriction({
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_TABLET
@@ -296,8 +296,7 @@ public class TabSwitcherTabletTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    public void testGridTabSwitcher_RefactorEnabled() throws ExecutionException {
+    public void testGridTabSwitcher() throws ExecutionException {
         prepareTabs(2, 0);
         // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the
         // grid tab switcher is inflated.
@@ -337,12 +336,8 @@ public class TabSwitcherTabletTest {
     // Regression test for crbug.com/1487114.
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_REFACTOR,
-        ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION
-    })
-    public void testGridTabSwitcher_DeferredTabSwitcherLayoutCreation_RefactorEnabled()
-            throws ExecutionException {
+    @EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
+    public void testGridTabSwitcher_DeferredTabSwitcherLayoutCreation() throws ExecutionException {
         prepareTabs(2, 0);
         // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the
         // grid tab switcher is inflated.

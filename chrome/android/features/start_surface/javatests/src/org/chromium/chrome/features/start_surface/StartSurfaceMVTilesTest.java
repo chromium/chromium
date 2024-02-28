@@ -176,7 +176,6 @@ public class StartSurfaceMVTilesTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_REFACTOR,
         ChromeFeatureList.SURFACE_POLISH,
         ChromeFeatureList.MAGIC_STACK_ANDROID
     })
