@@ -184,10 +184,6 @@
           "group": "tryserver.chromium.mac"
         },
         {
-          "builder": "mac-siso-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
           "builder": "mac12-tests",
           "group": "tryserver.chromium.mac"
         },

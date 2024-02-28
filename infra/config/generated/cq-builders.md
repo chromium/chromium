@@ -642,17 +642,11 @@ as required builders.
 * [fuchsia-binary-size-siso](https://ci.chromium.org/p/chromium/builders/try/fuchsia-binary-size-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-binary-size-siso""))
   * Experiment percentage: 10.0
 
-* [ios-simulator-siso](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-siso""))
-  * Experiment percentage: 5.0
-
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
   * Experiment percentage: 10.0
 
 * [linux_chromium_tsan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_tsan_siso_rel_ng""))
   * Experiment percentage: 10.0
-
-* [mac-siso-rel](https://ci.chromium.org/p/chromium/builders/try/mac-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-siso-rel""))
-  * Experiment percentage: 5.0
 
 * [mac13-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac13-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac13-arm64-rel""))
   * Experiment percentage: 100.0

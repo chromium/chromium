@@ -47,10 +47,6 @@
         {
           "builder": "ios-simulator",
           "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "ios-simulator-siso",
-          "group": "tryserver.chromium.mac"
         }
       ]
     }

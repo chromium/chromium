@@ -188,38 +188,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "mac-siso-rel",
-    description_html = """\
-This builder shadows mac-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating mac-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/mac-rel"),
-    gn_args = "try/mac-rel",
-    compilator = "mac-siso-rel-compilator",
-    contact_team_email = "chrome-build-team@google.com",
-    coverage_test_types = ["overall", "unit"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    siso_enabled = True,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "mac-siso-rel-compilator",
-    cpu = cpu.ARM64,
-    contact_team_email = "chrome-build-team@google.com",
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.builder(
     name = "mac10.15-wpt-content-shell-fyi-rel",
     mirrors = [
@@ -626,41 +594,6 @@ try_.compilator_builder(
     builderless = False,
     cpu = cpu.ARM64,
     ssd = None,
-    main_list_view = "try",
-    siso_enabled = True,
-    xcode = xcode.xcode_default,
-)
-
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "ios-simulator-siso",
-    description_html = """\
-This builder shadows ios-simulator builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating ios-simulator from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/ios-simulator"),
-    gn_args = "try/ios-simulator",
-    os = os.LINUX_DEFAULT,
-    compilator = "ios-simulator-siso-compilator",
-    contact_team_email = "chrome-build-team@google.com",
-    coverage_exclude_sources = "ios_test_files_and_test_utils",
-    coverage_test_types = ["overall", "unit"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    siso_enabled = True,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "ios-simulator-siso-compilator",
-    cpu = cpu.ARM64,
-    contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     siso_enabled = True,
     xcode = xcode.xcode_default,

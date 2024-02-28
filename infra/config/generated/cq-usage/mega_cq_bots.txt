@@ -65,7 +65,6 @@ chromium/try/ios-device
 chromium/try/ios-simulator
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
-chromium/try/ios-simulator-siso
 chromium/try/lacros-amd64-generic-rel-gtest
 chromium/try/lacros-amd64-generic-rel-gtest-and-tast
 chromium/try/lacros-amd64-generic-rel-non-skylab
@@ -130,7 +129,6 @@ chromium/try/mac-clobber-rel
 chromium/try/mac-dawn-rel
 chromium/try/mac-official
 chromium/try/mac-rel
-chromium/try/mac-siso-rel
 chromium/try/mac11-arm64-rel
 chromium/try/mac12-arm64-rel
 chromium/try/mac12-tests
