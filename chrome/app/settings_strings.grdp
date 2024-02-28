@@ -259,17 +259,17 @@
   <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
     Show bookmarks bar
   </message>
-  <message name="IDS_SETTINGS_HOVER_CARD_TITLE" desc="Title for the section in appearance settings for configuring what gets displayed in tab hovercards." translateable="false">
-    Tab hover preview cards
+  <message name="IDS_SETTINGS_HOVER_CARD_TITLE" desc="Title for the section in appearance settings for configuring what gets displayed in tab hovercards.">
+    Tab hover preview card
   </message>
-  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES" desc="Label for the toggle which enables or disables showing image previews for tab hovercards." translateable="false">
+  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_IMAGES" desc="Label for the toggle which enables or disables showing image previews for tab hovercards.">
     Show images
   </message>
-  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards." translateable="false">
+  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards.">
     Show memory usage
   </message>
-  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE_STANDALONE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards. This longer string is shown when then toggle is in it's own row without a title to indicate the setting is to do with tab hovercards." translateable="false">
-    Show memory usage in tab hover preview cards
+  <message name="IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE_STANDALONE" desc="Label for the toggle which enables or disables showing tabs' memory usage in tab hovercards. This longer string is shown when then toggle is in it's own row without a title to indicate the setting is to do with tab hovercards.">
+    Show memory usage on tab hover preview card
   </message>
   <message name="IDS_SETTINGS_SIDE_PANEL" desc="Title for the side panel section. Allows the user to toggle which side the side panel is displayed on.">
     Side panel
