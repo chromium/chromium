@@ -86,11 +86,6 @@
 }
 
 - (void)updateBackgroundColor {
-  if (base::FeatureList::IsEnabled(kDynamicThemeColor) ||
-      base::FeatureList::IsEnabled(kDynamicBackgroundColor)) {
-    [super updateBackgroundColor];
-    return;
-  }
   UIColor* backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
   if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) &&

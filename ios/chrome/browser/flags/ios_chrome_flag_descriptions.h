@@ -253,16 +253,6 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDiscoverFeedSportCardName[];
 extern const char kDiscoverFeedSportCardDescription[];
 
-// Title and description for the flag that updates the color of the toolbar
-// based on the page's background color.
-extern const char kDynamicBackgroundColorName[];
-extern const char kDynamicBackgroundColorDescription[];
-
-// Title and description for the flag that updates the color of the toolbar
-// based on the page's theme color.
-extern const char kDynamicThemeColorName[];
-extern const char kDynamicThemeColorDescription[];
-
 // Title and description for the flag to enable the muting of compromised
 // passwords in the Password Manager.
 extern const char kEnableCompromisedPasswordsMutingName[];

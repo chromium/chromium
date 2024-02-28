@@ -323,9 +323,7 @@
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
   [self updateShareMenuForWebState:self.webState];
-  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) ||
-      base::FeatureList::IsEnabled(kDynamicThemeColor) ||
-      base::FeatureList::IsEnabled(kDynamicBackgroundColor)) {
+  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar)) {
     [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
     [self.consumer
         setUnderPageBackgroundColor:self.webState

@@ -283,12 +283,6 @@ BASE_FEATURE(kDefaultBrowserVideoInSettings,
 BASE_FEATURE(kThemeColorInTopToolbar,
              "ThemeColorInTopToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDynamicThemeColor,
-             "DynamicThemeColor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDynamicBackgroundColor,
-             "DynamicBackgroundColor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGridAlwaysBounce,
              "TabGridAlwaysBounce",

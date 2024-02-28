@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "third_party/material_color_utilities/src/cpp/palettes/core.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
@@ -405,46 +404,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 }
 
 - (void)updateBackgroundColor {
-  UIColor* colorToTransform = nil;
-  if (base::FeatureList::IsEnabled(kDynamicThemeColor) &&
-      [self isValidColorForDynamicBackground:self.pageThemeColor]) {
-    colorToTransform = self.pageThemeColor;
-  } else if (base::FeatureList::IsEnabled(kDynamicBackgroundColor) &&
-             [self isValidColorForDynamicBackground:
-                       self.underPageBackgroundColor]) {
-    colorToTransform = self.underPageBackgroundColor;
-  }
-
-  UIColor* backgroundColor =
-      self.buttonFactory.toolbarConfiguration.backgroundColor;
-
-  if (colorToTransform) {
-    CGFloat alpha;
-    CGFloat red;
-    CGFloat green;
-    CGFloat blue;
-    [colorToTransform getRed:&red green:&green blue:&blue alpha:&alpha];
-    int alphaInt = alpha * 255;
-    int redInt = red * 255;
-    int greenInt = green * 255;
-    int blueInt = blue * 255;
-    int ARGB = ((alphaInt & 0xff) << 24) | ((redInt & 0xff) << 16) |
-               ((greenInt & 0xff) << 8) | (blueInt & 0xff);
-    // TODO(crbug.com/1496866): Remove the dependency on
-    // material_color_utilities in #imports, BUILD.gn deps and DEPS file if this
-    // code is removed.
-    material_color_utilities::TonalPalette palette =
-        material_color_utilities::CorePalette::Of(ARGB).secondary();
-    backgroundColor = [UIColor
-        colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
-          if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-            return UIColorFromRGB(palette.get(30));
-          }
-          return UIColorFromRGB(palette.get(90));
-        }];
-  }
-
-  self.view.backgroundColor = backgroundColor;
+  // Implemented in subclass.
 }
 
 #pragma mark - PopupMenuUIUpdating
@@ -595,22 +555,6 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // Exits fullscreen.
 - (void)exitFullscreen {
   [self.adaptiveDelegate exitFullscreen];
-}
-
-// Whether the color is valid to use as dynamic background color.
-- (BOOL)isValidColorForDynamicBackground:(UIColor*)color {
-  if (!color) {
-    return NO;
-  }
-
-  // White is not considered valid as the default toolbar color is prefered in
-  // that case.
-  CGFloat alpha;
-  CGFloat red;
-  CGFloat green;
-  CGFloat blue;
-  [color getRed:&red green:&green blue:&blue alpha:&alpha];
-  return alpha != 1 || red != 1 || green != 1 || blue != 1;
 }
 
 @end

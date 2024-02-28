@@ -270,14 +270,6 @@ BASE_DECLARE_FEATURE(kDefaultBrowserVideoInSettings);
 // Feature flag to try using the page theme color in the top toolbar
 BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
 
-// Feature flag to try using the page theme color as dynamic color for the
-// toolbars.
-BASE_DECLARE_FEATURE(kDynamicThemeColor);
-
-// Feature flag to try using the page background color as dynamic color for the
-// toolbars.
-BASE_DECLARE_FEATURE(kDynamicBackgroundColor);
-
 // Feature flag enabling the Tab Grid to always bounce (even when the content
 // fits the screen already).
 BASE_DECLARE_FEATURE(kTabGridAlwaysBounce);
