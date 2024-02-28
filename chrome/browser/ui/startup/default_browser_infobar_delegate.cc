@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -27,11 +28,13 @@ void DefaultBrowserInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     Profile* profile) {
   infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
-          new DefaultBrowserInfoBarDelegate(profile))));
+      CreateConfirmInfoBar(std::make_unique<DefaultBrowserInfoBarDelegate>(
+          base::PassKey<DefaultBrowserInfoBarDelegate>(), profile)));
 }
 
-DefaultBrowserInfoBarDelegate::DefaultBrowserInfoBarDelegate(Profile* profile)
+DefaultBrowserInfoBarDelegate::DefaultBrowserInfoBarDelegate(
+    base::PassKey<DefaultBrowserInfoBarDelegate>,
+    Profile* profile)
     : profile_(profile) {
   if (!base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh)) {
     // We want the info-bar to stick-around for few seconds and then be hidden
