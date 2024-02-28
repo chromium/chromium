@@ -15,11 +15,27 @@ namespace content {
 
 // A struct containing information about a running service worker.
 struct CONTENT_EXPORT ServiceWorkerRunningInfo {
+  // This enum mostly mimics ServiceWorkerVersion::Status. `kUnknown` is a
+  // catch-all used to indicate that when a running worker is not found. These
+  // values are persisted to logs. Entries should not be renumbered and numeric
+  // values should never be reused.
+  enum class ServiceWorkerVersionStatus {
+    kUnknown = 0,
+    kNew = 1,
+    kInstalling = 2,
+    kInstalled = 3,
+    kActivating = 4,
+    kActivated = 5,
+    kRedundant = 6,
+    kMaxValue = kRedundant,
+  };
+
   ServiceWorkerRunningInfo(const GURL& script_url,
                            const GURL& scope,
                            const blink::StorageKey& key,
                            int64_t render_process_id,
-                           const blink::ServiceWorkerToken& token);
+                           const blink::ServiceWorkerToken& token,
+                           ServiceWorkerVersionStatus version_status);
   ServiceWorkerRunningInfo(ServiceWorkerRunningInfo&& other) noexcept;
   ServiceWorkerRunningInfo& operator=(
       ServiceWorkerRunningInfo&& other) noexcept;
@@ -39,6 +55,10 @@ struct CONTENT_EXPORT ServiceWorkerRunningInfo {
 
   // The token that uniquely identifies this worker.
   blink::ServiceWorkerToken token;
+
+  // The lifecycle status of the running worker, mostly mimicking
+  // `ServiceWorkerVersion::Status`.
+  ServiceWorkerVersionStatus version_status;
 };
 
 }  // namespace content

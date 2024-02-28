@@ -28,6 +28,7 @@
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
@@ -424,7 +425,9 @@ void TestServiceWorkerContext::StartServiceWorker(int64_t version_id,
         content::ServiceWorkerRunningInfo(
             worker_url, scope_url,
             blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url)),
-            worker_process_id, blink::ServiceWorkerToken()));
+            worker_process_id, blink::ServiceWorkerToken(),
+            content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
+                kActivated));
   }
 }
 

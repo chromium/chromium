@@ -45,6 +45,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/browser/webui_config.h"
@@ -74,6 +75,27 @@
 namespace content {
 
 namespace {
+
+// Translate a ServiceWorkerVersion::Status to a
+// ServiceWorkerRunningInfo::ServiceWorkerVersionStatus.
+ServiceWorkerRunningInfo::ServiceWorkerVersionStatus
+GetRunningInfoVersionStatusForStatus(
+    ServiceWorkerVersion::Status version_status) {
+  switch (version_status) {
+    case ServiceWorkerVersion::Status::NEW:
+      return ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kNew;
+    case ServiceWorkerVersion::Status::INSTALLING:
+      return ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kInstalling;
+    case ServiceWorkerVersion::Status::INSTALLED:
+      return ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kInstalled;
+    case ServiceWorkerVersion::Status::ACTIVATING:
+      return ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kActivating;
+    case ServiceWorkerVersion::Status::ACTIVATED:
+      return ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kActivated;
+    case ServiceWorkerVersion::Status::REDUNDANT:
+      return ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kRedundant;
+  }
+}
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables running ServiceWorkerStorageControl on IO thread instead of UI thread
@@ -459,9 +481,13 @@ void ServiceWorkerContextWrapper::OnStarted(
   if (is_deleting_and_starting_over_)
     return;
 
+  ServiceWorkerVersion* version = GetLiveVersion(version_id);
+  ServiceWorkerRunningInfo::ServiceWorkerVersionStatus version_status =
+      version ? GetRunningInfoVersionStatusForStatus(version->status())
+              : ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kUnknown;
   auto insertion_result = running_service_workers_.insert(std::make_pair(
-      version_id,
-      ServiceWorkerRunningInfo(script_url, scope, key, process_id, token)));
+      version_id, ServiceWorkerRunningInfo(script_url, scope, key, process_id,
+                                           token, version_status)));
   DCHECK(insertion_result.second);
 
   const auto& running_info = insertion_result.first->second;
@@ -499,6 +525,11 @@ void ServiceWorkerContextWrapper::OnVersionStateChanged(
     const blink::StorageKey& key,
     ServiceWorkerVersion::Status status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto it = running_service_workers_.find(version_id);
+  if (it != running_service_workers_.end()) {
+    it->second.version_status = GetRunningInfoVersionStatusForStatus(status);
+  }
 
   if (status == ServiceWorkerVersion::Status::ACTIVATED) {
     for (auto& observer : observer_list_)
