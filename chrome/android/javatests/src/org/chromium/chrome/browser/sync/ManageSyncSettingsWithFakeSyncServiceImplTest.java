@@ -30,7 +30,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ManageSyncSettingsWithFakeSyncServiceImplTest {
-    @Rule
+    @Rule(order = 0)
     public SyncTestRule mSyncTestRule =
             new SyncTestRule() {
                 @Override
@@ -39,7 +39,10 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
                 }
             };
 
-    @Rule
+    // SettingsActivity has to be finished before the outer ChromeTabbedActivity can be finished,
+    // otherwise trying to finish ChromeTabbedActivity won't work (SyncTestRule extends
+    // ChromeTabbedActivityTestRule).
+    @Rule(order = 1)
     public SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ManageSyncSettings.class);
 

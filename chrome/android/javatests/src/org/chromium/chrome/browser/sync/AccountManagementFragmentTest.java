@@ -74,9 +74,9 @@ public class AccountManagementFragmentTest {
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
-    public SyncTestRule mSyncTestRule = new SyncTestRule();
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
+    private final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
