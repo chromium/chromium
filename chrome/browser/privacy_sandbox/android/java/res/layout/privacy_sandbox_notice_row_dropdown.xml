@@ -17,6 +17,7 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_1"
         style="@style/TextAppearance.TextMediumThick.Secondary" />
 
@@ -64,6 +65,7 @@ found in the LICENSE file.
         android:layout_marginBottom="@dimen/promo_between_text_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
         android:text="@string/privacy_sandbox_m1_notice_row_learn_more_heading_2"
         style="@style/TextAppearance.TextMediumThick.Secondary" />
 

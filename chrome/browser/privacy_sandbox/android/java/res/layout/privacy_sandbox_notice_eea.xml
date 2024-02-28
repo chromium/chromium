@@ -50,6 +50,7 @@ found in the LICENSE file.
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:accessibilityHeading="true"
                     android:text="@string/privacy_sandbox_m1_notice_eea_title"
                     android:layout_gravity="center"
                     android:gravity="center"
