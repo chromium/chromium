@@ -71,6 +71,9 @@ public class TabThemeTest {
             mCallbackHelper.notifyCalled();
         }
 
+        @Override
+        public void onThemeColorUpdated(boolean colorChanged) {}
+
         public CallbackHelper getCallbackHelper() {
             return mCallbackHelper;
         }
@@ -78,6 +81,29 @@ public class TabThemeTest {
         public int getColor() {
             return mColor;
         }
+    }
+
+    private static class ThemeColorObserverForTestOverlayColorOnFrozenNativePages
+            implements ThemeColorObserver {
+        private final TopUiThemeColorProvider mColorProvider;
+        private final Tab mTab;
+
+        private ThemeColorObserverForTestOverlayColorOnFrozenNativePages(
+                TopUiThemeColorProvider colorProvider, Tab tab) {
+            mColorProvider = colorProvider;
+            mTab = tab;
+        }
+
+        @Override
+        public void onThemeColorChanged(int color, boolean shouldAnimate) {
+            Assert.assertNotSame(
+                    "Theme color should never be 0 or TRANSPARENT!",
+                    Color.TRANSPARENT,
+                    mColorProvider.getSceneLayerBackground(mTab));
+        }
+
+        @Override
+        public void onThemeColorUpdated(boolean colorChanged) {}
     }
 
     @Before
@@ -189,12 +215,7 @@ public class TabThemeTest {
                         .getTopUiThemeColorProvider();
 
         ThemeColorObserver colorObserver =
-                (color, animate) -> {
-                    Assert.assertNotSame(
-                            "Theme color should never be 0 or TRANSPARENT!",
-                            Color.TRANSPARENT,
-                            colorProvider.getSceneLayerBackground(tab));
-                };
+                new ThemeColorObserverForTestOverlayColorOnFrozenNativePages(colorProvider, tab);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> colorProvider.addThemeColorObserver(colorObserver));

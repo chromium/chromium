@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -110,6 +111,22 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     // Theme Color
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
     private ThemeColorObserver mThemeColorObserver;
+
+    private static class ThemeColorObserverImpl implements ThemeColorObserver {
+        private final ViewGroup mContainerView;
+
+        private ThemeColorObserverImpl(ViewGroup containerView) {
+            mContainerView = containerView;
+        }
+
+        @Override
+        public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
+            mContainerView.setBackgroundColor(color);
+        }
+
+        @Override
+        public void onThemeColorUpdated(boolean colorChanged) {}
+    }
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -530,8 +547,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             }
 
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
-                mThemeColorObserver =
-                        (color, shouldAnimate) -> containerView.setBackgroundColor(color);
+                mThemeColorObserver = new ThemeColorObserverImpl(containerView);
                 mTopUiThemeColorProvider = getTopUiThemeColorProvider().get();
                 mTopUiThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
             }

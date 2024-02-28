@@ -621,6 +621,17 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * For extending classes to override and carry out the changes related with the update
+     * notification of the primary color used by the current tab. This method will be called any
+     * time there's a signal indicating the primary color may have changed regardless of whether the
+     * primary color actually changed. In contrast, #onPrimaryColorChanged is only called when the
+     * primary color actually changes.
+     */
+    public void onPrimaryColorUpdated(boolean colorChanged) {
+        mToolbarLayout.onPrimaryColorUpdated(colorChanged);
+    }
+
+    /**
      * Sets whether a title should be shown within the Toolbar.
      * @param showTitle Whether a title should be shown.
      */

@@ -195,7 +195,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
- * Contains logic for managing the toolbar visual component.  This class manages the interactions
+ * Contains logic for managing the toolbar visual component. This class manages the interactions
  * with the rest of the application to ensure the toolbar is always visually up to date.
  */
 public class ToolbarManager
@@ -2153,6 +2153,16 @@ public class ToolbarManager
         // sub-components. That will let us have every component handle its own coloring, and remove
         // onThemeColorChanged from ToolbarManager.
         mCustomTabThemeColorProvider.setPrimaryColor(color, shouldAnimate);
+    }
+
+    /**
+     * Notifies the primary color used by the model has a new update.
+     *
+     * @param colorChanged True if the updated color is different from the original theme color.
+     */
+    @Override
+    public void onThemeColorUpdated(boolean colorChanged) {
+        mToolbar.onPrimaryColorUpdated(colorChanged);
     }
 
     @Override

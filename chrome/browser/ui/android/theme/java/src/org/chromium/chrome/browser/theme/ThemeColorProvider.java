@@ -23,6 +23,15 @@ public abstract class ThemeColorProvider {
          * @param shouldAnimate Whether the change of color should be animated.
          */
         void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate);
+
+        /**
+         * This method will be notified any time there's a signal indicating the theme color may
+         * have changed regardless of whether the theme color actually changed. In contrast,
+         * #onThemeColorChanged is only notified when the theme color actually changes.
+         *
+         * @param colorChanged True if the updated color is different from the original theme color.
+         */
+        void onThemeColorUpdated(boolean colorChanged);
     }
 
     /** An interface to be notified about changes to the tint. */
@@ -116,7 +125,12 @@ public abstract class ThemeColorProvider {
     }
 
     protected void updatePrimaryColor(@ColorInt int color, boolean shouldAnimate) {
-        if (mPrimaryColor == color) return;
+        boolean colorChanged = mPrimaryColor != color;
+        for (ThemeColorObserver observer : mThemeColorObservers) {
+            observer.onThemeColorUpdated(colorChanged);
+        }
+
+        if (!colorChanged) return;
         mPrimaryColor = color;
         for (ThemeColorObserver observer : mThemeColorObservers) {
             observer.onThemeColorChanged(color, shouldAnimate);

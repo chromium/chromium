@@ -300,6 +300,11 @@ public class ToolbarPhone extends ToolbarLayout
     // page is Start Surface / NTP, to indicate that the appearance of the real search box changed.
     private boolean mIsStartOrNtpWithSurfacePolish;
 
+    // Added due to b/323888159 to keep the toolbar color consistent
+    // with NTP's background color during the loading phase on NTP when navigating from NTP to
+    // webpage.
+    private boolean mIsInLoadingPhaseFromNtpToWebpage;
+
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
 
@@ -468,7 +473,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The location bar color.
      */
     private @ColorInt int getLocationBarColorForToolbarColor(@ColorInt int toolbarColor) {
-        if (isLocationBarShownInGeneralNtpOrStartSurface()) {
+        if (isLocationBarShownInGeneralNtpOrStartSurface() || mIsInLoadingPhaseFromNtpToWebpage) {
             assert mHomeSurfaceLocationBarBackgroundColor != 0;
             return mHomeSurfaceLocationBarBackgroundColor;
         }
@@ -901,6 +906,9 @@ public class ToolbarPhone extends ToolbarLayout
             case VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO:
                 return mHomeSurfaceToolbarBackgroundColor;
             case VisualState.NORMAL:
+                if (mIsInLoadingPhaseFromNtpToWebpage) {
+                    return mHomeSurfaceToolbarBackgroundColor;
+                }
                 return ChromeColors.getDefaultThemeColor(getContext(), false);
             case VisualState.INCOGNITO:
                 return ChromeColors.getDefaultThemeColor(getContext(), true);
@@ -1220,7 +1228,9 @@ public class ToolbarPhone extends ToolbarLayout
             if (((mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus())
                             || !isLocationBarShownInNtp)
                     && mTabSwitcherState == STATIC_TAB) {
-                boolean usePolishedLocationBar = isLocationBarShownInGeneralNtpOrStartSurface();
+                boolean usePolishedLocationBar =
+                        isLocationBarShownInGeneralNtpOrStartSurface()
+                                || mIsInLoadingPhaseFromNtpToWebpage;
                 // Add a special case for general NTP and Start Surface to the defaultColor to
                 // ensure that the color is right and changes smoothly during the un-focus
                 // animation.
@@ -2480,6 +2490,16 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
+    public void onPrimaryColorUpdated(boolean colorChanged) {
+        if (mIsInLoadingPhaseFromNtpToWebpage && !colorChanged) {
+            // When transitioning from an NTP to a webpage without a specified brand color
+            // (indicated by 'colorChanged'), we need to change the toolbar and location bar's color
+            // to the default color.
+            onPrimaryColorChanged(true);
+        }
+    }
+
+    @Override
     public void onPrimaryColorChanged(boolean shouldAnimate) {
         super.onPrimaryColorChanged(shouldAnimate);
         if (mBrandColorTransitionActive) mBrandColorTransitionAnimation.end();
@@ -2493,6 +2513,12 @@ public class ToolbarPhone extends ToolbarLayout
 
         final @ColorInt int initialLocationBarColor =
                 getLocationBarColorForToolbarColor(initialColor);
+
+        // When the webpage finishes loading during the NTP phase, the process should halt at this
+        // point because the tab's color is updated, and the initial color of the location bar is
+        // established for the upcoming navigation animation.
+        mIsInLoadingPhaseFromNtpToWebpage = false;
+
         final @ColorInt int finalLocationBarColor = getLocationBarColorForToolbarColor(finalColor);
 
         // Ignore theme color changes while the omnibox is focused, since we want a standard,
@@ -2791,6 +2817,14 @@ public class ToolbarPhone extends ToolbarLayout
                 updateToolbarBackgroundFromState(VisualState.BRAND_COLOR);
                 getProgressBar().setThemeColor(themeColorForProgressBar, isIncognito());
             }
+        }
+
+        // The starting point of the loading phase when navigating from NTP to a webpage.
+        if (mIsSurfacePolishEnabled
+                && (mVisualState == VisualState.NEW_TAB_NORMAL
+                        || mVisualState == VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO)
+                && newVisualState == VisualState.NORMAL) {
+            mIsInLoadingPhaseFromNtpToWebpage = true;
         }
 
         mVisualState = newVisualState;

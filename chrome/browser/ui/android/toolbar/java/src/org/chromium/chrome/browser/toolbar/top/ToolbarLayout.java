@@ -246,6 +246,9 @@ public abstract class ToolbarLayout extends FrameLayout
     @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {}
 
+    @Override
+    public void onThemeColorUpdated(boolean colorChanged) {}
+
     /**
      * Set the height that the progress bar should be.
      * @return The progress bar height in px.
@@ -548,6 +551,15 @@ public abstract class ToolbarLayout extends FrameLayout
      * for the current tab changing.
      */
     public void onPrimaryColorChanged(boolean shouldAnimate) {}
+
+    /**
+     * For extending classes to override and carry out the changes related with the update
+     * notification of the primary color used by the current tab. This method will be called any
+     * time there's a signal indicating the primary color may have changed regardless of whether the
+     * primary color actually changed. In contrast, #onPrimaryColorChanged is only called when the
+     * primary color actually changes.
+     */
+    void onPrimaryColorUpdated(boolean colorChanged) {}
 
     /**
      * Sets the icon drawable that the close button in the toolbar (if any) should show, or hides
