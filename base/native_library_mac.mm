@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 
@@ -103,8 +104,8 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
   // Get the function pointer using the right API for the type.
   if (library->type == BUNDLE) {
-    apple::ScopedCFTypeRef<CFStringRef> symbol_name(CFStringCreateWithCString(
-        kCFAllocatorDefault, name, kCFStringEncodingUTF8));
+    apple::ScopedCFTypeRef<CFStringRef> symbol_name =
+        SysUTF8ToCFStringRef(name);
     function_pointer =
         CFBundleGetFunctionPointerForName(library->bundle, symbol_name.get());
   } else {

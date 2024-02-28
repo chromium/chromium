@@ -146,7 +146,7 @@ void OfflinePageTabHelper::LoadOfflineData(web::WebState* web_state,
   offline_navigation_triggered_ = url;
 
   if (is_pdf) {
-    NSData* ns_data = [NSData dataWithBytes:data.c_str() length:data.size()];
+    NSData* ns_data = [NSData dataWithBytes:data.data() length:data.length()];
     web_state->LoadSimulatedRequest(url, ns_data, @"application/pdf");
   } else {
     NSString* path = [NSBundle.mainBundle pathForResource:@"error_page_reloaded"
@@ -157,9 +157,7 @@ void OfflinePageTabHelper::LoadOfflineData(web::WebState* web_state,
         [NSString stringWithContentsOfFile:path
                                   encoding:NSUTF8StringEncoding
                                      error:nil];
-    NSString* html = [[NSString alloc] initWithBytes:data.data()
-                                              length:data.length()
-                                            encoding:NSUTF8StringEncoding];
+    NSString* html = base::SysUTF8ToNSString(data);
     NSString* injected_html =
         [reload_page_html_template stringByAppendingString:html];
     web_state->LoadSimulatedRequest(url, injected_html);

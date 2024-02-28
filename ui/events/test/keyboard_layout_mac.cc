@@ -5,6 +5,7 @@
 #include "ui/events/test/keyboard_layout.h"
 
 #include "base/check_op.h"
+#include "base/strings/sys_string_conversions.h"
 
 namespace ui {
 
@@ -19,9 +20,8 @@ PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout) {
       CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  base::apple::ScopedCFTypeRef<CFStringRef> input_source_id_ref(
-      CFStringCreateWithCString(kCFAllocatorDefault, kUsInputSourceId,
-                                kCFStringEncodingUTF8));
+  base::apple::ScopedCFTypeRef<CFStringRef> input_source_id_ref =
+      base::SysUTF8ToCFStringRef(kUsInputSourceId);
   CFDictionaryAddValue(input_source_list_filter.get(),
                        kTISPropertyInputSourceID, input_source_id_ref.get());
   base::apple::ScopedCFTypeRef<CFArrayRef> input_source_list(
