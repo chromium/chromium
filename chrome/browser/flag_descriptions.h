@@ -158,6 +158,9 @@ extern const char kCustomizeChromeSidePanelExtensionsCardDescription[];
 extern const char kCustomizeChromeWallpaperSearchName[];
 extern const char kCustomizeChromeWallpaperSearchDescription[];
 
+extern const char kCustomizeChromeWallpaperSearchButtonName[];
+extern const char kCustomizeChromeWallpaperSearchButtonDescription[];
+
 extern const char kCustomizeChromeWallpaperSearchInspirationCardName[];
 extern const char kCustomizeChromeWallpaperSearchInspirationCardDescription[];
 

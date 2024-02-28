@@ -219,6 +219,12 @@ const char kCustomizeChromeWallpaperSearchName[] =
 const char kCustomizeChromeWallpaperSearchDescription[] =
     "Enables wallpaper search in Customize Chrome Side Panel.";
 
+const char kCustomizeChromeWallpaperSearchButtonName[] =
+    "Customize Chrome Wallpaper Search Button";
+const char kCustomizeChromeWallpaperSearchButtonDescription[] =
+    "Enables entry point on Customize Chrome Side Panel's Appearance page for "
+    "Wallpaper Search.";
+
 const char kCustomizeChromeWallpaperSearchInspirationCardName[] =
     "Customize Chrome Wallpaper Search Inspiration Card";
 const char kCustomizeChromeWallpaperSearchInspirationCardDescription[] =
@@ -5045,8 +5051,7 @@ const char kNtpSingleRowShortcutsName[] = "NTP Single Row Shortcuts";
 const char kNtpSingleRowShortcutsDescription[] =
     "Shows shortcuts in a single wide row on the New Tab Page.";
 
-const char kNtpWallpaperSearchButtonName[] =
-    "Customize Chrome Wallpaper Search Button";
+const char kNtpWallpaperSearchButtonName[] = "NTP Wallpaper Search Button";
 const char kNtpWallpaperSearchButtonDescription[] =
     "Enables entry point on New Tab Page for Customize Chrome Side Panel "
     "Wallpaper Search.";
