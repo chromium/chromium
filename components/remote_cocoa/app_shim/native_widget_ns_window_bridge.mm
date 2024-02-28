@@ -4,6 +4,10 @@
 
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 
+#import <AppKit/AppKit.h>
+#include <Foundation/Foundation.h>
+#include <Security/Security.h>
+#import <SecurityInterface/SecurityInterface.h>
 #import <objc/runtime.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -11,7 +15,9 @@
 #include <cmath>
 #include <memory>
 
+#include "base/apple/bridging.h"
 #import "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -24,7 +30,6 @@
 #include "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
-#import "components/remote_cocoa/app_shim/certificate_viewer.h"
 #import "components/remote_cocoa/app_shim/context_menu_runner.h"
 #import "components/remote_cocoa/app_shim/mouse_capture.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_frameless_nswindow.h"
@@ -35,6 +40,7 @@
 #import "components/remote_cocoa/app_shim/window_move_loop.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/cert/x509_util_apple.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #include "ui/base/cocoa/cursor_utils.h"
@@ -413,7 +419,20 @@ void NativeWidgetNSWindowBridge::CreateSelectFileDialog(
 
 void NativeWidgetNSWindowBridge::ShowCertificateViewer(
     const scoped_refptr<net::X509Certificate>& certificate) {
-  ShowCertificateViewerForWindow(window_, certificate.get());
+  NSArray* cert_chain = base::apple::CFToNSOwnershipCast(
+      net::x509_util::CreateSecCertificateArrayForX509Certificate(
+          certificate.get())
+          .release());
+  if (!cert_chain) {
+    return;
+  }
+
+  [[[SFCertificatePanel alloc] init] beginSheetForWindow:window_
+                                           modalDelegate:nil
+                                          didEndSelector:nil
+                                             contextInfo:nil
+                                            certificates:cert_chain
+                                               showGroup:YES];
 }
 
 void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {
