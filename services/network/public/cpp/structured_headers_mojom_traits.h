@@ -122,6 +122,35 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
                    net::structured_headers::ParameterizedMember* out);
 };
 
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
+    StructTraits<network::mojom::StructuredHeadersDictionaryMemberDataView,
+                 net::structured_headers::DictionaryMember> {
+  static const std::string& key(
+      const net::structured_headers::DictionaryMember& in) {
+    return in.first;
+  }
+
+  static const net::structured_headers::ParameterizedMember& value(
+      const net::structured_headers::DictionaryMember& in) {
+    return in.second;
+  }
+
+  static bool Read(network::mojom::StructuredHeadersDictionaryMemberDataView,
+                   net::structured_headers::DictionaryMember* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
+    StructTraits<network::mojom::StructuredHeadersDictionaryDataView,
+                 net::structured_headers::Dictionary> {
+  static std::vector<net::structured_headers::DictionaryMember> members(
+      const net::structured_headers::Dictionary& in);
+
+  static bool Read(network::mojom::StructuredHeadersDictionaryDataView,
+                   net::structured_headers::Dictionary* out);
+};
+
 }  // namespace mojo
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_STRUCTURED_HEADERS_MOJOM_TRAITS_H_

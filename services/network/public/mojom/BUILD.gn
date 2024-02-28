@@ -1085,6 +1085,16 @@ mojom("mojom_structured_headers") {
           cpp = "::net::structured_headers::ParameterizedMember"
           move_only = true
         },
+        {
+          mojom = "network.mojom.StructuredHeadersDictionaryMember"
+          cpp = "::net::structured_headers::DictionaryMember"
+          move_only = true
+        },
+        {
+          mojom = "network.mojom.StructuredHeadersDictionary"
+          cpp = "::net::structured_headers::Dictionary"
+          move_only = true
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/structured_headers_mojom_traits.h" ]
