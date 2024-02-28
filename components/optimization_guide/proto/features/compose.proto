@@ -115,9 +115,46 @@ message Int128 {
   uint64 low = 2;
 }
 
+// Status code used in compose responses.
+enum ClientRequestStatus {
+  CLIENT_REQUEST_STATUS_UNSPECIFIED = 0;
+  CLIENT_REQUEST_STATUS_OK = 1;
+  // Generic client error, not specified.
+  CLIENT_REQUEST_STATUS_CLIENT_ERROR = 2;
+  // If the feature is somehow disabled.
+  CLIENT_REQUEST_STATUS_MISCONFIGURATION = 3;
+  // If permission is denied (e.g. user is not logged in.)
+  CLIENT_REQUEST_STATUS_PERMISSION_DENIED = 4;
+  // Generic server error, not specified.
+  CLIENT_REQUEST_STATUS_SERVER_ERROR = 5;
+  // Invalid request sent, likely a client issue where ComposeRequest is
+  // incorrect.
+  CLIENT_REQUEST_STATUS_INVALID_REQUEST = 6;
+  // Request was throttled.
+  CLIENT_REQUEST_STATUS_REQUEST_THROTTLED = 7;
+  // Retryable error occurred in the server.
+  CLIENT_REQUEST_STATUS_RETRYABLE_ERROR = 8;
+  // Non-retryable error occurred in the server (eg. server down).
+  CLIENT_REQUEST_STATUS_NON_RETRYABLE_ERROR = 9;
+  // Unsupported language used.
+  CLIENT_REQUEST_STATUS_UNSUPPORTED_LANGUAGE = 10;
+  // Request was filtered (eg. due to T&S).
+  CLIENT_REQUEST_STATUS_FILTERED = 11;
+  // Compose service was disabled.
+  CLIENT_REQUEST_STATUS_DISABLED = 12;
+  // Request was cancelled.
+  CLIENT_REQUEST_STATUS_CANCELLED = 13;
+  // No response received from the server.
+  CLIENT_REQUEST_STATUS_NO_RESPONSE = 14;
+  // If the user is offline.
+  CLIENT_REQUEST_STATUS_OFFLINE = 15;
+  // The request timed out.
+  CLIENT_REQUEST_STATUS_REQUEST_TIMED_OUT = 16;
+}
+
 // Any data collected on the client outside of the model request and response.
 // This includes user feedback, and metrics about feature usage.
-// Next Id: 8
+// Next Id: 9
 message ComposeQuality {
   reserved 3;
   FinalStatus final_status = 1;
@@ -131,4 +168,6 @@ message ComposeQuality {
   Int128 session_id = 6;
   // Was this request generated via an edit action.
   bool was_generated_via_edit = 7;
+  // The Status of this request.
+  ClientRequestStatus client_request_status = 8;
 }
