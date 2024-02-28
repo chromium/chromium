@@ -15,7 +15,6 @@
 
 namespace ash {
 class ArcWindowWatcher;
-class MahiManagerImpl;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class OobeDialogUtil;
@@ -24,6 +23,7 @@ class VideoConferenceTrayController;
 }  // namespace ash
 
 namespace chromeos {
+class MahiManager;
 class ReadWriteCardsManager;
 }  // namespace chromeos
 
@@ -146,7 +146,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       video_conference_tray_controller_;
   std::unique_ptr<enterprise_connectors::AshAttestationCleanupManager>
       attestation_cleanup_manager_;
-  std::unique_ptr<ash::MahiManagerImpl> mahi_manager_impl_;
+  std::unique_ptr<chromeos::MahiManager> mahi_manager_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;

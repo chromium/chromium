@@ -29,6 +29,8 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   MahiManager(const MahiManager&) = delete;
   MahiManager& operator=(const MahiManager&) = delete;
 
+  virtual ~MahiManager();
+
   static MahiManager* Get();
 
   // Opens the Mahi Panel in the display with `display_id`.
@@ -72,7 +74,6 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
 
  protected:
   MahiManager();
-  virtual ~MahiManager();
 };
 
 // A scoped object that set the global instance of

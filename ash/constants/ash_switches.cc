@@ -1118,6 +1118,9 @@ const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 const char kUseFakeCrasAudioClientForDBus[] =
     "use-fake-cras-audio-client-for-dbus";
 
+// Use the fake MahiManager within the Mahi feature.
+const char kUseFakeMahiManager[] = "use-fake-mahi-manager";
+
 // Flag that stored MyFiles folder inside the user data directory.
 // $HOME/Downloads is used as MyFiles folder for ease access to local files for
 // debugging when running on Linux. By setting this flag, <cryptohome>/MyFiles

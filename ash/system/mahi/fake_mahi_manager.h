@@ -2,30 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_FAKE_MAHI_MANAGER_H_
-#define CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_FAKE_MAHI_MANAGER_H_
+#ifndef ASH_SYSTEM_MAHI_FAKE_MAHI_MANAGER_H_
+#define ASH_SYSTEM_MAHI_FAKE_MAHI_MANAGER_H_
 
 #include <string>
 
-#include "base/component_export.h"
+#include "ash/ash_export.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of `MahiManager`.
-class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) FakeMahiManager : public MahiManager {
+class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
  public:
-  FakeMahiManager() = default;
+  FakeMahiManager();
   FakeMahiManager(const FakeMahiManager&) = delete;
   FakeMahiManager& operator=(const FakeMahiManager&) = delete;
-  ~FakeMahiManager() override = default;
+  ~FakeMahiManager() override;
 
   // MahiManager:
+  void OpenMahiPanel(int64_t display_id) override;
   std::u16string GetContentTitle() override;
   gfx::ImageSkia GetContentIcon() override;
   void GetSummary(MahiSummaryCallback callback) override;
-  void OpenMahiPanel(int64_t display_id) override {}
   void GetOutlines(MahiOutlinesCallback callback) override {}
   void GoToOutlineContent(int outline_id) override {}
   void AnswerQuestion(const std::string& question,
@@ -44,8 +45,11 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) FakeMahiManager : public MahiManager {
 
  private:
   std::u16string summary_text_;
+
+  // The widget contains the Mahi main panel.
+  views::UniqueWidgetPtr mahi_panel_widget_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_FAKE_MAHI_MANAGER_H_
+#endif  // ASH_SYSTEM_MAHI_FAKE_MAHI_MANAGER_H_

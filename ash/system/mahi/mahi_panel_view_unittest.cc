@@ -9,10 +9,10 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chromeos/components/mahi/public/cpp/fake_mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/text_constants.h"
@@ -48,7 +48,7 @@ class MahiPanelViewTest : public AshTestBase {
 
     AshTestBase::SetUp();
 
-    fake_mahi_manager_ = std::make_unique<chromeos::FakeMahiManager>();
+    fake_mahi_manager_ = std::make_unique<FakeMahiManager>();
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
         fake_mahi_manager_.get());
 
@@ -70,16 +70,14 @@ class MahiPanelViewTest : public AshTestBase {
 
   MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
 
-  chromeos::FakeMahiManager* fake_mahi_manager() {
-    return fake_mahi_manager_.get();
-  }
+  FakeMahiManager* fake_mahi_manager() { return fake_mahi_manager_.get(); }
 
   MahiPanelView* panel_view() { return panel_view_; }
 
   views::Widget* widget() { return widget_.get(); }
 
  private:
-  std::unique_ptr<chromeos::FakeMahiManager> fake_mahi_manager_;
+  std::unique_ptr<FakeMahiManager> fake_mahi_manager_;
   std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_setter_;
   raw_ptr<MahiPanelView> panel_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
