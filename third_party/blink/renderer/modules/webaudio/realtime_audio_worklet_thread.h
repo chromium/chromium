@@ -23,7 +23,6 @@ class MODULES_EXPORT RealtimeAudioWorkletThread final : public WorkerThread {
   ~RealtimeAudioWorkletThread() final;
 
   WorkerBackingThread& GetWorkerBackingThread() final;
-  void ClearWorkerBackingThread() final {}
 
   static void ClearSharedBackingThread();
 

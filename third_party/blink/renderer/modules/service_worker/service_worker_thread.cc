@@ -63,10 +63,6 @@ ServiceWorkerThread::~ServiceWorkerThread() {
   global_scope_proxy_->Detach();
 }
 
-void ServiceWorkerThread::ClearWorkerBackingThread() {
-  worker_backing_thread_ = nullptr;
-}
-
 void ServiceWorkerThread::TerminateForTesting() {
   global_scope_proxy_->TerminateWorkerContext();
   WorkerThread::TerminateForTesting();

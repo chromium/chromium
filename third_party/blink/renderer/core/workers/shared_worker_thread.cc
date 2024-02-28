@@ -48,10 +48,6 @@ SharedWorkerThread::SharedWorkerThread(
 
 SharedWorkerThread::~SharedWorkerThread() = default;
 
-void SharedWorkerThread::ClearWorkerBackingThread() {
-  worker_backing_thread_ = nullptr;
-}
-
 WorkerOrWorkletGlobalScope* SharedWorkerThread::CreateWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
   // We need to pull this bool out of creation_params before we construct

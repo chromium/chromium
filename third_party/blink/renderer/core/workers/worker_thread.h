@@ -167,7 +167,6 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   void DidProcessTask(const base::PendingTask&) override;
 
   virtual WorkerBackingThread& GetWorkerBackingThread() = 0;
-  virtual void ClearWorkerBackingThread() = 0;
   ConsoleMessageStorage* GetConsoleMessageStorage() const {
     return console_message_storage_.Get();
   }

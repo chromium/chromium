@@ -23,7 +23,6 @@ class MODULES_EXPORT SemiRealtimeAudioWorkletThread final : public WorkerThread 
   ~SemiRealtimeAudioWorkletThread() final;
 
   WorkerBackingThread& GetWorkerBackingThread() final;
-  void ClearWorkerBackingThread() final {}
 
   static void ClearSharedBackingThread();
 
