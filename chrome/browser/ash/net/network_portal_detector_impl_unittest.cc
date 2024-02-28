@@ -725,19 +725,20 @@ TEST_F(NetworkPortalDetectorImplTest, RequestCaptivePortalDetection) {
   ASSERT_TRUE(default_network);
   EXPECT_EQ(default_network->connection_state(), shill::kStateOnline);
 
-  // When the default network is online, chrome portal detection should be
+  // When the default network is online, portal detection should not be
   // triggered.
   ShillServiceClient::Get()->GetTestInterface()->SetRequestPortalState(
       shill::kStateRedirectFound);
   network_portal_detector()->RequestCaptivePortalDetection();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(shill::kStateOnline, default_network->connection_state());
-  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
 
   // When the default network is not online, shill portal detection should be
   // triggered.
   helper()->SetServiceProperty(kStubWireless1, shill::kStateProperty,
                                base::Value(shill::kStateRedirectFound));
+  EXPECT_EQ(shill::kStateRedirectFound, default_network->connection_state());
   ShillServiceClient::Get()->GetTestInterface()->SetRequestPortalState(
       shill::kStateOnline);
   network_portal_detector()->RequestCaptivePortalDetection();

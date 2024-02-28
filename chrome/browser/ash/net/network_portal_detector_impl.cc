@@ -143,13 +143,12 @@ void NetworkPortalDetectorImpl::RequestCaptivePortalDetection() {
   auto* handler = NetworkHandler::Get()->network_state_handler();
   const NetworkState* default_network = handler->DefaultNetwork();
   if (!default_network) {
+    NET_LOG(DEBUG) << "RequestCaptivePortalDetection(): No default network";
     return;
   }
   if (default_network->IsOnline()) {
-    // If shill has identified the default network as 'online', only proxy
-    // authentication may have changed. Since a probe is inexpensive,
-    // schedule a detection attempt rather than attempt accurate bookkeeping.
-    ScheduleAttempt();
+    // Network is online, no detection necessary.
+    NET_LOG(DEBUG) << "RequestCaptivePortalDetection(): Network is online";
     return;
   }
   // Otherwise request shill portal detection.
@@ -255,6 +254,12 @@ void NetworkPortalDetectorImpl::ScheduleAttempt(const base::TimeDelta& delay) {
 
   if (!is_idle()) {
     NET_LOG(EVENT) << "ScheduleAttempt(): Attempt already running, restarting.";
+    if (state_ == STATE_CHECKING_FOR_PORTAL) {
+      // When a new attempt is scheduled, cancel any pending attempt to avoid
+      // a DCHECK in CaptivePortalDetector when an attempt is started before
+      // the current attempt completes. See b/327072851 for details.
+      captive_portal_detector_->Cancel();
+    }
   }
 
   attempt_task_.Cancel();
