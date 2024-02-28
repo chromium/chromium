@@ -3519,8 +3519,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #if BUILDFLAG(ENABLE_PPAPI)
     switches::kEnablePepperTesting,
 #endif
-    switches::kDisableWebRtcHWDecoding,
-    switches::kDisableWebRtcHWEncoding,
     switches::kEnableWebRtcSrtpAesGcm,
     switches::kEnableWebRtcSrtpEncryptedHeaders,
     switches::kEnforceWebRtcIPPermissionCheck,

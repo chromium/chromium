@@ -58512,7 +58512,6 @@ from previous Chrome versions.
   <int value="-2010634516" label="OmniboxLocalEntitySuggestions:disabled"/>
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
-  <int value="-2008272679" label="disable-webrtc-hw-encoding"/>
   <int value="-2007947679" label="OmniboxMostVisitedTilesOnSrp:disabled"/>
   <int value="-2007377632" label="DiscoverFeedMultiColumn:enabled"/>
   <int value="-2006505465"
@@ -58629,7 +58628,6 @@ from previous Chrome versions.
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1949364473" label="webview-disable-app-recovery"/>
-  <int value="-1948540128" label="disable-webrtc-hw-encoding (deprecated)"/>
   <int value="-1948261745" label="EnforceAshExtensionKeeplist:disabled"/>
   <int value="-1948236151" label="DrawPredictedInkPoint:disabled"/>
   <int value="-1946595906" label="enable-push-api-background-mode"/>
@@ -59105,6 +59103,7 @@ from previous Chrome versions.
   <int value="-1690359116" label="ShortcutCustomizationJelly:enabled"/>
   <int value="-1688631209"
       label="AutofillEnableRankingFormulaAddressProfiles:enabled"/>
+  <int value="-1688055622" label="webrtc-hw-decoding:disabled"/>
   <int value="-1687407363" label="KaleidoscopeModule:disabled"/>
   <int value="-1687406612" label="UseSkiaRenderer:disabled"/>
   <int value="-1686782572" label="ChromeHomeInactivitySheetExpansion:disabled"/>
@@ -61888,6 +61887,7 @@ from previous Chrome versions.
   <int value="-208435024" label="EnableUsernameCorrection:enabled"/>
   <int value="-206393363" label="enable-scroll-prediction"/>
   <int value="-205975637" label="WebUIDarkMode:enabled"/>
+  <int value="-205401012" label="webrtc-hw-encoding:disabled"/>
   <int value="-204978485" label="WallpaperFullScreenPreview:enabled"/>
   <int value="-204355195" label="secondary-ui-md"/>
   <int value="-203968600" label="SyncSupportSecondaryAccount:disabled"/>
@@ -62998,6 +62998,7 @@ from previous Chrome versions.
   <int value="379190682" label="ReorderBookmarks:enabled"/>
   <int value="379326303" label="enable-add-to-shelf"/>
   <int value="379428799" label="security-chip-animation"/>
+  <int value="379502873" label="webrtc-hw-decoding:enabled"/>
   <int value="380372760" label="V8Orinoco:disabled"/>
   <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>
   <int value="381195146" label="LacrosResourcesFileSharing:disabled"/>
@@ -64940,6 +64941,7 @@ from previous Chrome versions.
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
   <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
+  <int value="1450865360" label="webrtc-hw-encoding:enabled"/>
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
@@ -65629,7 +65631,6 @@ from previous Chrome versions.
   <int value="1817312143" label="num-raster-threads"/>
   <int value="1817420759" label="CpuAffinityRestrictToLittleCores:disabled"/>
   <int value="1818829958" label="IdentityDisc:enabled"/>
-  <int value="1819256299" label="disable-webrtc-hw-decoding"/>
   <int value="1819536169" label="disable-cast-streaming-hw-encoding"/>
   <int value="1820317896" label="NTPShowGoogleGInOmnibox:disabled"/>
   <int value="1820442907" label="CrostiniMultiContainer:disabled"/>

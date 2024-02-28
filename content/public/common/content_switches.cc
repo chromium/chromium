@@ -897,12 +897,6 @@ const char kWebOtpBackendAuto[] = "web-otp-backend-auto";
 // ignores this switch on its stable and beta channels.
 const char kDisableWebRtcEncryption[]      = "disable-webrtc-encryption";
 
-// Disables HW decode acceleration for WebRTC.
-const char kDisableWebRtcHWDecoding[]       = "disable-webrtc-hw-decoding";
-
-// Disables HW encode acceleration for WebRTC.
-const char kDisableWebRtcHWEncoding[] = "disable-webrtc-hw-encoding";
-
 // Enables negotiation of GCM cipher suites from RFC 7714 for SRTP in WebRTC.
 // See https://tools.ietf.org/html/rfc7714 for further information.
 const char kEnableWebRtcSrtpAesGcm[] = "enable-webrtc-srtp-aes-gcm";

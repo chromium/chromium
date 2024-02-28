@@ -1460,6 +1460,16 @@ BASE_FEATURE(kWebOtpBackendAuto,
 // The JavaScript API for payments on the web.
 BASE_FEATURE(kWebPayments, "WebPayments", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables HW decode acceleration for WebRTC.
+BASE_FEATURE(kWebRtcHWDecoding,
+             "webrtc-hw-decoding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables HW encode acceleration for WebRTC.
+BASE_FEATURE(kWebRtcHWEncoding,
+             "webrtc-hw-encoding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use GpuMemoryBuffer backed VideoFrames in media streams.
 BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
              "WebRTC-UseGpuMemoryBufferVideoFrames",
