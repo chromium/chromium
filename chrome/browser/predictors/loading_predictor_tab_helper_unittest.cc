@@ -49,8 +49,7 @@ class MockLoadingDataCollector : public LoadingDataCollector {
   MOCK_METHOD4(RecordStartNavigation,
                void(NavigationId, ukm::SourceId, const GURL&, base::TimeTicks));
 
-  MOCK_METHOD4(RecordFinishNavigation,
-               void(NavigationId, const GURL&, const GURL&, bool));
+  MOCK_METHOD3(RecordFinishNavigation, void(NavigationId, const GURL&, bool));
   MOCK_METHOD2(RecordResourceLoadComplete,
                void(NavigationId, const blink::mojom::ResourceLoadInfo&));
   MOCK_METHOD2(RecordMainFrameLoadComplete,
@@ -122,15 +121,13 @@ void LoadingPredictorTabHelperTest::
     NavigateAndCommitInMainFrameAndVerifyMetrics(const std::string& url) {
   ukm::SourceId ukm_source_id;
   GURL main_frame_url;
-  GURL old_main_frame_url;
   GURL new_main_frame_url;
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(_, _, _, _))
       .WillOnce(DoAll(SaveArg<1>(&ukm_source_id), SaveArg<2>(&main_frame_url)));
   EXPECT_CALL(*mock_collector_,
-              RecordFinishNavigation(_, _, _,
+              RecordFinishNavigation(_, _,
                                      /* is_error_page */ false))
-      .WillOnce(DoAll(SaveArg<1>(&old_main_frame_url),
-                      SaveArg<2>(&new_main_frame_url)));
+      .WillOnce(DoAll(SaveArg<1>(&new_main_frame_url)));
 
   NavigateAndCommitInFrame(url, main_rfh());
 
@@ -138,7 +135,6 @@ void LoadingPredictorTabHelperTest::
             web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   GURL gurl(url);
   EXPECT_EQ(gurl, main_frame_url);
-  EXPECT_EQ(gurl, old_main_frame_url);
   EXPECT_EQ(gurl, new_main_frame_url);
 }
 
@@ -183,9 +179,8 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
   navigation->Redirect(GURL("http://test2.org"));
   navigation->Redirect(GURL("http://test3.org"));
   GURL expected_main_frame_url("http://test3.org");
-  EXPECT_CALL(
-      *mock_collector_,
-      RecordFinishNavigation(_, main_frame_url, expected_main_frame_url, _));
+  EXPECT_CALL(*mock_collector_,
+              RecordFinishNavigation(_, expected_main_frame_url, _));
   navigation->Commit();
 
   EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
@@ -220,7 +215,7 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
   navigation->Start();
 
   EXPECT_CALL(*mock_collector_,
-              RecordFinishNavigation(_, url, url,
+              RecordFinishNavigation(_, url,
                                      /* is_error_page */ true));
   navigation->Fail(net::ERR_TIMED_OUT);
   navigation->CommitErrorPage();
@@ -501,7 +496,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                           optimization_metadata);
 
   EXPECT_CALL(*mock_collector_,
-              RecordFinishNavigation(_, _, _,
+              RecordFinishNavigation(_, _,
                                      /* is_error_page */ false));
   navigation->Commit();
 
@@ -771,7 +766,6 @@ class TestLoadingDataCollector : public LoadingDataCollector {
                              const GURL& main_frame_url,
                              base::TimeTicks creation_time) override {}
   void RecordFinishNavigation(NavigationId navigation_id,
-                              const GURL& old_main_frame_url,
                               const GURL& new_main_frame_url,
                               bool is_error_page) override {}
   void RecordResourceLoadComplete(

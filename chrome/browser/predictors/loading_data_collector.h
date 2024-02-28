@@ -106,7 +106,6 @@ class LoadingDataCollector {
                                      const GURL& main_frame_url,
                                      base::TimeTicks creation_time);
   virtual void RecordFinishNavigation(NavigationId navigation_id,
-                                      const GURL& old_main_frame_url,
                                       const GURL& new_main_frame_url,
                                       bool is_error_page);
   virtual void RecordResourceLoadComplete(

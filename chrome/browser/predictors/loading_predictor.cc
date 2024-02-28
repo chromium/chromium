@@ -345,7 +345,7 @@ void LoadingPredictor::OnNavigationFinished(NavigationId navigation_id,
     return;
 
   loading_data_collector()->RecordFinishNavigation(
-      navigation_id, old_main_frame_url, new_main_frame_url, is_error_page);
+      navigation_id, new_main_frame_url, is_error_page);
   if (active_urls_to_navigations_.find(old_main_frame_url) !=
       active_urls_to_navigations_.end()) {
     active_urls_to_navigations_[old_main_frame_url].erase(navigation_id);

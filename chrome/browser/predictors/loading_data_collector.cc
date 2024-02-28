@@ -181,7 +181,6 @@ void LoadingDataCollector::RecordStartNavigation(
 
 void LoadingDataCollector::RecordFinishNavigation(
     NavigationId navigation_id,
-    const GURL& old_main_frame_url,
     const GURL& new_main_frame_url,
     bool is_error_page) {
   if (is_error_page) {
