@@ -318,6 +318,7 @@ PrefetchManager* LoadingPredictor::prefetch_manager() {
 void LoadingPredictor::Shutdown() {
   DCHECK(!shutdown_);
   resource_prefetch_predictor_->Shutdown();
+  preconnect_manager_.reset();
   shutdown_ = true;
 }
 

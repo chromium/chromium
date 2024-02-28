@@ -143,6 +143,7 @@ void LoadingPredictorTest::SetPreference() {
 class LoadingPredictorPreconnectTest : public LoadingPredictorTest {
  public:
   void SetUp() override;
+  void TearDown() override;
 
  protected:
   void SetPreference() override;
@@ -157,6 +158,11 @@ void LoadingPredictorPreconnectTest::SetUp() {
           predictor_->GetWeakPtr(), profile_.get());
   mock_preconnect_manager_ = mock_preconnect_manager.get();
   predictor_->set_mock_preconnect_manager(std::move(mock_preconnect_manager));
+}
+
+void LoadingPredictorPreconnectTest::TearDown() {
+  mock_preconnect_manager_ = nullptr;
+  LoadingPredictorTest::TearDown();
 }
 
 void LoadingPredictorPreconnectTest::SetPreference() {
