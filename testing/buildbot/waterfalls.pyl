@@ -1519,11 +1519,8 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'chromeos-jacuzzi',
-        ],
         'test_suites': {
-          'gtest_tests': 'chromeos_device_only_gtests',
+          'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
         },
         'os_type': 'chromeos',
       },
@@ -1531,11 +1528,8 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'chromeos-octopus',
-        ],
         'test_suites': {
-          'gtest_tests': 'chromeos_device_only_gtests',
+          'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
         },
         'os_type': 'chromeos',
       },
@@ -3348,26 +3342,6 @@
           'gtest_tests': 'perfetto_gtests_android',
         },
       },
-
-      'chromeos-jacuzzi-rel-skylab': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
-        },
-        'os_type': 'chromeos',
-      },
-      'chromeos-octopus-rel-skylab': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'test_suites': {
-          'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
-        },
-        'os_type': 'chromeos',
-      },
-
       'ios-blink-dbg-fyi': {
         'additional_compile_targets': [
           'all'

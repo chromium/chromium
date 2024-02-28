@@ -8006,6 +8006,7 @@
         ]
       },
       "chromeos-jacuzzi-rel": {
+        "contact_team_email": "chromeos-velocity@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8034,27 +8035,6 @@
               "fail_rate": {
                 "average": 0.99
               }
-            }
-          }
-        ]
-      },
-      "chromeos-jacuzzi-rel-skylab": {
-        "contact_team_email": "chromeos-velocity@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
             }
           }
         ]
@@ -8080,6 +8060,7 @@
         ]
       },
       "chromeos-octopus-rel": {
+        "contact_team_email": "chromeos-velocity@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8108,27 +8089,6 @@
               "fail_rate": {
                 "average": 0.99
               }
-            }
-          }
-        ]
-      },
-      "chromeos-octopus-rel-skylab": {
-        "contact_team_email": "chromeos-velocity@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
             }
           }
         ]

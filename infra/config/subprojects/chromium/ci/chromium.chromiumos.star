@@ -523,12 +523,15 @@ ci.builder(
 ci.builder(
     name = "chromeos-jacuzzi-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = """\
+This builder builds chromium and tests it on the public CrOS image on skylab DUTs.
+""",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "arm64",
                 "chromeos",
+                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -542,38 +545,51 @@ ci.builder(
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "jacuzzi",
+                # `arm64-generic` is necessary for lacros build.
+                "arm64-generic",
             ],
         ),
-        build_gs_bucket = "chromium-chromiumos-archive",
+        skylab_upload_location = builder_config.skylab_upload_location(
+            # Both CI and try use the same `chromium-skylab-try` bucket.
+            gs_bucket = "chromium-skylab-try",
+            gs_extra = "ash",
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
+            "also_build_lacros_chrome_for_architecture_arm64",
             "chromeos_device",
-            "reclient",
+            "dcheck_off",
+            "include_unwind_tables",
+            "is_skylab",
             "jacuzzi",
             "ozone_headless",
-            "dcheck_always_on",
+            "reclient",
         ],
     ),
-    # Need to remove this builder since it's not running tests and already
-    # migrated to skylab.
-    sheriff_rotations = args.ignore_default(None),
+    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
+    sheriff_rotations = args.ignore_default(sheriff_rotations.CHROMIUMOS),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "jcz",
     ),
     main_console_view = "main",
+    contact_team_email = "chromeos-velocity@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "chromeos-octopus-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = """\
+This builder builds chromium and tests it on the public CrOS image on skylab DUTs.
+""",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
                 "chromeos",
+                "checkout_lacros_sdk",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -587,17 +603,26 @@ ci.builder(
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "octopus",
+                # `amd64-generic` is necessary for lacros build.
+                "amd64-generic",
             ],
         ),
-        build_gs_bucket = "chromium-chromiumos-archive",
+        skylab_upload_location = builder_config.skylab_upload_location(
+            # Both CI and try use the same `chromium-skylab-try` bucket.
+            gs_bucket = "chromium-skylab-try",
+            gs_extra = "ash",
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
+            "also_build_lacros_chrome_for_architecture_amd64",
             "chromeos_device",
-            "reclient",
+            "dcheck_off",
+            "include_unwind_tables",
+            "is_skylab",
             "octopus",
             "ozone_headless",
-            "dcheck_always_on",
+            "reclient",
         ],
     ),
     # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
@@ -607,6 +632,7 @@ ci.builder(
         short_name = "oct",
     ),
     main_console_view = "main",
+    contact_team_email = "chromeos-velocity@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
