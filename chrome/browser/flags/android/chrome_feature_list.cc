@@ -161,7 +161,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidHub,
     &kAndroidImprovedBookmarks,
     &kAndroidNoVisibleHintForTablets,
-    &kAndroidVisibleUrlTruncation,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidVisibleUrlTruncationV2,
     &kAnimatedImageDragShadow,
@@ -438,10 +437,6 @@ BASE_FEATURE(kAndroidNoVisibleHintForTablets,
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
              "AndroidNoVisibleHintForDifferentTLD",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidVisibleUrlTruncation,
-             "AndroidVisibleUrlTruncation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidVisibleUrlTruncationV2,
              "AndroidVisibleUrlTruncationV2",
