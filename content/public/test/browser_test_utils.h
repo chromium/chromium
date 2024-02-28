@@ -215,8 +215,8 @@ void NavigateToURLBlockUntilNavigationsComplete(
 //   RenderProcessHostBadMojoMessageWaiter kill_waiter(rfh->GetProcess());
 //   EXPECT_THAT(kill_waiter.Wait(), Optional(HasSubstr("...")));
 
-// Perform a renderer-initiated navigation of |window| to |url|, blocking
-// until the navigation finishes.  The navigation is done by assigning
+// Perform a renderer-initiated navigation of the frame |adapter| to |url|,
+// blocking until the navigation finishes. The navigation is done by assigning
 // location.href in the frame |adapter|. Returns true if the page was loaded
 // successfully and the last committed URL matches |url|.
 [[nodiscard]] bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
@@ -239,8 +239,8 @@ void NavigateToURLBlockUntilNavigationsComplete(
     const GURL& url,
     const GURL& expected_commit_url);
 
-// Perform a renderer-initiated navigation of `window` to `url`. Returns true if
-// the navigation started successfully and false otherwise.
+// Perform a renderer-initiated navigation of the frame `adapter` to `url`.
+// Returns true if the navigation started successfully and false otherwise.
 [[nodiscard]] bool BeginNavigateToURLFromRenderer(
     const ToRenderFrameHost& adapter,
     const GURL& url);
