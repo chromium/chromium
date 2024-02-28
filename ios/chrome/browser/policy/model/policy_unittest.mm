@@ -41,9 +41,8 @@ class PolicyTest : public PlatformTest {
     base::FilePath test_data_directory;
     ASSERT_TRUE(
         base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
-    policy_test_cases_path_ =
-        test_data_directory.Append(FILE_PATH_LITERAL("policy"))
-            .Append(FILE_PATH_LITERAL("pref_mapping"));
+    test_case_dir_ = test_data_directory.Append(FILE_PATH_LITERAL("policy"))
+                         .Append(FILE_PATH_LITERAL("pref_mapping"));
   }
 
  protected:
@@ -56,19 +55,19 @@ class PolicyTest : public PlatformTest {
   // Enterprise policy boilerplate configuration.
   std::unique_ptr<EnterprisePolicyTestHelper> enterprise_policy_helper_;
 
-  // The path to `policy_test_cases.json`.
-  base::FilePath policy_test_cases_path_;
+  // The path to components/policy/test/data/pref_mapping/.
+  base::FilePath test_case_dir_;
 };
 
 }  // namespace
 
 TEST_F(PolicyTest, AllPoliciesHaveATestCase) {
-  policy::VerifyAllPoliciesHaveATestCase(policy_test_cases_path_);
+  policy::VerifyAllPoliciesHaveATestCase(test_case_dir_);
 }
 
 TEST_F(PolicyTest, PolicyToPrefMappings) {
   policy::VerifyPolicyToPrefMappings(
-      policy_test_cases_path_, enterprise_policy_helper_->GetLocalState(),
+      test_case_dir_, enterprise_policy_helper_->GetLocalState(),
       enterprise_policy_helper_->GetBrowserState()->GetPrefs(),
       /* signin_profile_prefs= */ nullptr,
       enterprise_policy_helper_->GetPolicyProvider());

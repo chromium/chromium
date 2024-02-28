@@ -122,8 +122,9 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
 }
 
 // Contains the testing details for a single pref affected by one or multiple
-// policies. This is part of the data loaded from
-// components/policy/test/data/policy_test_cases.json.
+// policies. Each entry in `prefs` from
+// components/policy/test/data/pref_mapping/[PolicyName].json is represented by
+// one `PrefTestCase`.
 class PrefTestCase {
  public:
   PrefTestCase(const std::string& name, const base::Value::Dict& settings) {
@@ -185,9 +186,10 @@ class PrefTestCase {
   base::Value default_value_;
 };
 
-// Contains the testing details for a single pref affected by a policy. This is
-// part of the data loaded from
-// components/policy/test/data/policy_test_cases.json.
+// Contains the testing details for a single policy to pref mapping. Each entry
+// under `policy_pref_mapping_tests` from
+// components/policy/test/data/pref_mapping/[PolicyName].json is represented by
+// one `PolicyPrefMappingTest`.
 class PolicyPrefMappingTest {
  public:
   explicit PolicyPrefMappingTest(const base::Value::Dict& mapping) {
@@ -266,8 +268,11 @@ bool CheckRequiredBuildFlagsSupported(const PolicyPrefMappingTest* test) {
   return true;
 }
 
-// Contains the testing details for a single policy. This is part of the data
-// loaded from components/policy/test/data/policy_test_cases.json.
+// Each file like components/policy/test/data/pref_mapping/[PolicyName].json
+// contains one or more `PolicyTestCase` with each of them defining the platform
+// they run on. Typically, if a policy has different mappings per platform, it
+// would have multiple `PolicyTestCase`s. If the mapping is the same across
+// platforms, it would only have one `PolicyTestCase`.
 class PolicyTestCase {
  public:
   PolicyTestCase(const std::string& policy_name,
@@ -282,8 +287,9 @@ class PolicyTestCase {
     const base::Value::List* os_list = test_case.FindList("os");
     if (os_list) {
       for (const auto& os : *os_list) {
-        if (os.is_string())
+        if (os.is_string()) {
           supported_os_.push_back(os.GetString());
+        }
       }
     }
 
@@ -370,7 +376,8 @@ class PolicyTestCase {
       policy_pref_mapping_tests_;
 };
 
-// Parses all policy test cases and makes them available in a map.
+// Parses all policy test cases in components/policy/test/data/pref_mapping/ and
+// makes them available in a map.
 class PolicyTestCases {
  public:
   typedef std::vector<std::unique_ptr<PolicyTestCase>> PolicyTestCaseVector;
@@ -400,7 +407,7 @@ class PolicyTestCases {
         return;
       }
       if (!parsed_json->is_list()) {
-        ADD_FAILURE() << "Error parsing policy_test_cases.json: Expected list.";
+        ADD_FAILURE() << "Error parsing " << path << ": Expected list.";
         return;
       }
       std::string policy_name =
@@ -516,15 +523,15 @@ std::optional<base::flat_set<std::string>> GetTestFilter() {
 
 }  // namespace
 
-void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
-  // Verifies that all known policies have a test case in the JSON file.
+void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_dir) {
+  // Verifies that all known policies have a pref mapping test case.
   // This test fails when a policy is added to
-  // components/policy/resources/policy_templates.json but a test case is not
-  // added to components/policy/test/data/policy_test_cases.json.
+  // components/policy/resources/templates/policy_definitions/ but a test case
+  // is not added to components/policy/test/data/pref_mapping/.
   Schema chrome_schema = Schema::Wrap(GetChromeSchemaData());
   ASSERT_TRUE(chrome_schema.valid());
 
-  PolicyTestCases policy_test_cases(test_case_path);
+  PolicyTestCases policy_test_cases(test_case_dir);
   for (Schema::Iterator it = chrome_schema.GetPropertiesIterator();
        !it.IsAtEnd(); it.Advance()) {
     auto policy = policy_test_cases.map().find(it.key());
@@ -558,7 +565,7 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
 
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.
-void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
+void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
                                 PrefService* local_state,
                                 PrefService* user_prefs,
                                 PrefService* signin_profile_prefs,
@@ -567,7 +574,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   Schema chrome_schema = Schema::Wrap(GetChromeSchemaData());
   ASSERT_TRUE(chrome_schema.valid());
 
-  const PolicyTestCases test_cases(test_case_path);
+  const PolicyTestCases test_cases(test_case_dir);
 
   auto test_filter = GetTestFilter();
 

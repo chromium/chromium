@@ -129,24 +129,22 @@ separate preferences, their default values, and that either `IdleActionAC` or
 
 ## Test format
 
-### policy_test_cases.json
+### PolicyTestCases
 
 The test cases per policy are defined in
 [//components/policy/test/data/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/components/policy/test/data/)
 (for iOS, see separate
 [//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping)).
 
-These files are JSON files with the policy name as key and a `PolicyTestCase`
-(see below) as value). Each policy must have at least one meaningful test case
-per supported operating system (see `reason_for_missing_test` to bypass),
-otherwise the coverage browser test
+These files are JSON files with a list of `PolicyTestCase`s (see below) as
+value). Each policy must have at least one meaningful test case per supported
+operating system (see `reason_for_missing_test` to bypass), otherwise the coverage browser test
 `PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase` or the
 `CheckPolicyTestCases` presubmit check will fail.
 
-In case you want to add multiple `PolicyTestCase`s for a single policy (e.g.
-different tests for different operating systems), you can add more keys with the
-policy name and a custom name/comment like so
-`PolicyName.InsertTestNameOrCommentHere`.
+If your policy to pref mapping is the same on all platforms, you would typically
+have one `PolicyTestCase`. Otherwise, you would have one `PolicyTestCase` per
+group of platforms where it differs.
 
 Since the JSON format does not allow comments, you can use the `note` field
 anywhere to add further documentation.
@@ -179,8 +177,8 @@ recommended values and the preference(s) are checked to still be modifiable by
 the user. Use `check_for_mandatory` and `check_for_recommended` (see below) to
 trigger certain preference(s) to only be checked for certain policy levels. If
 the policy is recommendable (indicated by `can_be_recommended` in
-[policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json)
-then the preference mapping test should also check recommended values.
+PolicyName.yaml then the preference mapping test should also check recommended
+values.
 
 The `policy_pref_mapping_tests` should be a non-empty list of
 `PolicyPrefMappingTest`s.
@@ -224,12 +222,12 @@ Possible values are [`USE_CUPS`]. Defaults to an empty list if not specified. If
 any of the specified buildflags is not defined in the current build, the test case
 is skipped.
 
-### PolicyPrefTestCase
+### PrefTestCase
 
 #### Location
 
-Each `PolicyPrefTestCase` should define a `location` field, where the preference
-is registered. The test will fail if the preference is not registered in said
+Each `PrefTestCase` can define a `location` field, where the preference is
+registered. The test will fail if the preference is not registered in said
 location. Possible values are:
 
 - `user_profile` (default value)
@@ -262,8 +260,8 @@ use the `PolicyTestCase`'s `can_be_recommended` though.
 
 ### Full schema
 ```
-{
-  "${policy_name}[.optionalTestNameSuffix]": {
+[
+  {
     "os": array<string>, // subset of ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "ios"]
     "official_only": boolean, // optional, defaults to false
     "can_be_recommended": boolean, // optional, defaults to false
@@ -299,5 +297,5 @@ use the `PolicyTestCase`'s `can_be_recommended` though.
   },
 
   ... // test cases for other policies
-}
+]
 ```

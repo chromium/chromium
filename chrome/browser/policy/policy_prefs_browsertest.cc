@@ -55,7 +55,7 @@ const size_t kNumChunks = 32;
 
 namespace {
 
-base::FilePath GetTestCasePath() {
+base::FilePath GetTestCaseDir() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
@@ -80,7 +80,7 @@ size_t GetNumChunks() {
 typedef PlatformBrowserTest PolicyPrefsTestCoverageTest;
 
 IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest, AllPoliciesHaveATestCase) {
-  VerifyAllPoliciesHaveATestCase(GetTestCasePath());
+  VerifyAllPoliciesHaveATestCase(GetTestCaseDir());
 }
 
 // Base class for tests that change policy.
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
                                 ->GetOriginalProfile()
                                 ->GetPrefs();
 
-  VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
+  VerifyPolicyToPrefMappings(GetTestCaseDir(), local_state, user_prefs,
                              /* signin_profile_prefs= */ nullptr,
                              GetMockPolicyProvider(), &chunk_info_);
 }
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
 
   // Only checking signin_profile_prefs here since |local_state| is already
   // checked by PolicyPrefsTest.PolicyToPrefsMapping test.
-  VerifyPolicyToPrefMappings(GetTestCasePath(), /* local_state= */ nullptr,
+  VerifyPolicyToPrefMappings(GetTestCaseDir(), /* local_state= */ nullptr,
                              /* user_prefs= */ nullptr, signin_profile_prefs,
                              GetMockPolicyProvider());
 }
