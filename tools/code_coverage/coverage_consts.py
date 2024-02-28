@@ -427,6 +427,7 @@ FUZZERS_WITH_CORPORA = [
     'v8_wasm_code_fuzzer',
     'v8_wasm_compile_fuzzer',
     'v8_wasm_fuzzer',
+    'v8_wasm_init_expr_fuzzer',
     'v8_wasm_streaming_fuzzer',
     'video_capture_host_mojolpm_fuzzer',
     'vp8_depacketizer_fuzzer',
