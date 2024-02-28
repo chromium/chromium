@@ -28,6 +28,7 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
 
 void FacilitatedPaymentsManager::Reset() {
+  pix_code_detection_attempt_count_ = 0;
   weak_ptr_factory_.InvalidateWeakPtrs();
   pix_code_detection_triggering_timer_.Stop();
 }
@@ -45,10 +46,7 @@ void FacilitatedPaymentsManager::
           std::max(base::Seconds(0),
                    kPageLoadWaitTime - (attempt_number - 1) *
                                            kOptimizationGuideDeciderWaitTime);
-      pix_code_detection_triggering_timer_.Start(
-          FROM_HERE, trigger_pix_code_detection_delay,
-          base::BindOnce(&FacilitatedPaymentsManager::TriggerPixCodeDetection,
-                         weak_ptr_factory_.GetWeakPtr()));
+      DelayedTriggerPixCodeDetection(trigger_pix_code_detection_delay);
       break;
     }
     case optimization_guide::OptimizationGuideDecision::kUnknown: {
@@ -86,7 +84,16 @@ FacilitatedPaymentsManager::GetAllowlistCheckResult(const GURL& url) const {
       /*optimization_metadata=*/nullptr);
 }
 
+void FacilitatedPaymentsManager::DelayedTriggerPixCodeDetection(
+    base::TimeDelta delay) {
+  pix_code_detection_triggering_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&FacilitatedPaymentsManager::TriggerPixCodeDetection,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
+  pix_code_detection_attempt_count_++;
   StartPixCodeDetectionLatencyTimer();
   driver_->TriggerPixCodeDetection(
       base::BindOnce(&FacilitatedPaymentsManager::ProcessPixCodeDetectionResult,
@@ -94,10 +101,18 @@ void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
 }
 
 void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
-    mojom::PixCodeDetectionResult result) const {
+    mojom::PixCodeDetectionResult result) {
+  // If a PIX code was not found, re-trigger PIX code detection after a short
+  // duration to allow async content to load completely.
+  if (result == mojom::PixCodeDetectionResult::kPixCodeNotFound &&
+      pix_code_detection_attempt_count_ < kMaxAttemptsForPixCodeDetection) {
+    DelayedTriggerPixCodeDetection(kRetriggerPixCodeDetectionWaitTime);
+    return;
+  }
   ukm::builders::FacilitatedPayments_PixCodeDetectionResult(ukm_source_id_)
       .SetResult(static_cast<uint8_t>(result))
       .SetLatencyInMillis(GetPixCodeDetectionLatencyInMillis())
+      .SetAttempts(pix_code_detection_attempt_count_)
       .Record(ukm::UkmRecorder::Get());
 }
 
