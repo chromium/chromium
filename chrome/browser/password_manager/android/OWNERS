@@ -1,2 +1,10 @@
 fhorschig@chromium.org
 ioanap@chromium.org
+
+per-file password_manager_android_util*=vsemeniuk@google.com
+per-file password_store_android_account_backend*=vsemeniuk@google.com
+# For this one use a '.', there are other files matching the prefix.
+per-file password_store_android_backend.*=vsemeniuk@google.com
+per-file password_store_android_local_backend*=vsemeniuk@google.com
+per-file password_store_backend_migration_decorator*=vsemeniuk@google.com
+per-file password_store_proxy_backend*=vsemeniuk@google.com
