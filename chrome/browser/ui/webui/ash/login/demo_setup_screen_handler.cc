@@ -48,6 +48,10 @@ void DemoSetupScreenHandler::OnSetupSucceeded() {
   CallExternalAPI("onSetupSucceeded");
 }
 
+base::WeakPtr<DemoSetupScreenView> DemoSetupScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void DemoSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("demoSetupProgressScreenTitle",

@@ -12,7 +12,7 @@ namespace ash {
 
 // Interface for dependency injection between TpmErrorScreen and its
 // WebUI representation.
-class TpmErrorView : public base::SupportsWeakPtr<TpmErrorView> {
+class TpmErrorView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"tpm-error-message",
                                                        "TPMErrorMessageScreen"};
@@ -25,9 +25,13 @@ class TpmErrorView : public base::SupportsWeakPtr<TpmErrorView> {
   // Sets corresponding error message when taking tpm ownership return an error.
   virtual void SetTPMOwnedErrorStep() = 0;
   virtual void SetTPMDbusErrorStep() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<TpmErrorView> AsWeakPtr() = 0;
 };
 
-class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
+class TpmErrorScreenHandler final : public TpmErrorView,
+                                    public BaseScreenHandler {
  public:
   using TView = TpmErrorView;
 
@@ -40,10 +44,14 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
   void Show() override;
   void SetTPMOwnedErrorStep() override;
   void SetTPMDbusErrorStep() override;
+  base::WeakPtr<TpmErrorView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<TpmErrorView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

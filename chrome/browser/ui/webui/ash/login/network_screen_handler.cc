@@ -65,4 +65,8 @@ void NetworkScreenHandler::SetQuickStartEnabled() {
   CallExternalAPI("setQuickStartVisible");
 }
 
+base::WeakPtr<NetworkScreenView> NetworkScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

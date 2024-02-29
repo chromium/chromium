@@ -38,6 +38,13 @@ class MockDemoSetupScreenView : public DemoSetupScreenView {
   MOCK_METHOD(void,
               SetCurrentSetupStep,
               (const DemoSetupController::DemoSetupStep current_step));
+
+  base::WeakPtr<DemoSetupScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<DemoSetupScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

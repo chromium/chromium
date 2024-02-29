@@ -24,7 +24,7 @@ class OsInstallScreen;
 
 // Interface for dependency injection between OsInstallScreen and its
 // WebUI representation.
-class OsInstallScreenView : public base::SupportsWeakPtr<OsInstallScreenView> {
+class OsInstallScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"os-install",
                                                        "OsInstallScreen"};
@@ -38,10 +38,11 @@ class OsInstallScreenView : public base::SupportsWeakPtr<OsInstallScreenView> {
   virtual void SetStatus(OsInstallClient::Status status) = 0;
   virtual void SetServiceLogs(const std::string& service_log) = 0;
   virtual void UpdateCountdownStringWithTime(base::TimeDelta time_left) = 0;
+  virtual base::WeakPtr<OsInstallScreenView> AsWeakPtr() = 0;
 };
 
-class OsInstallScreenHandler : public BaseScreenHandler,
-                               public OsInstallScreenView {
+class OsInstallScreenHandler final : public BaseScreenHandler,
+                                     public OsInstallScreenView {
  public:
   using TView = OsInstallScreenView;
 
@@ -61,6 +62,7 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void SetStatus(OsInstallClient::Status status) override;
   void SetServiceLogs(const std::string& service_log) override;
   void UpdateCountdownStringWithTime(base::TimeDelta time_left) override;
+  base::WeakPtr<OsInstallScreenView> AsWeakPtr() override;
 
   base::WeakPtrFactory<OsInstallScreenHandler> weak_factory_{this};
 };

@@ -54,4 +54,8 @@ void DisplaySizeScreenHandler::Show(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }
 
+base::WeakPtr<DisplaySizeScreenView> DisplaySizeScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

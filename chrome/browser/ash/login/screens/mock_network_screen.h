@@ -27,7 +27,7 @@ class MockNetworkScreen : public NetworkScreen {
   void ExitScreen(NetworkScreen::Result result);
 };
 
-class MockNetworkScreenView : public NetworkScreenView {
+class MockNetworkScreenView final : public NetworkScreenView {
  public:
   MockNetworkScreenView();
 
@@ -41,6 +41,13 @@ class MockNetworkScreenView : public NetworkScreenView {
   MOCK_METHOD(void, ClearErrors, ());
   MOCK_METHOD(void, SetOfflineDemoModeEnabled, (bool enabled));
   MOCK_METHOD(void, SetQuickStartEnabled, ());
+
+  base::WeakPtr<NetworkScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<NetworkScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

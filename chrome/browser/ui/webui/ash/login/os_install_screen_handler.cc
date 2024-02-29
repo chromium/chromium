@@ -126,4 +126,8 @@ void OsInstallScreenHandler::UpdateCountdownStringWithTime(
           l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
 }
 
+base::WeakPtr<OsInstallScreenView> OsInstallScreenHandler::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace ash
