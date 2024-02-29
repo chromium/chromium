@@ -24,14 +24,9 @@ namespace ash {
 
 namespace {
 
-// Delay between timer callbacks. Each one plays a tick sound.
-constexpr auto kTimerDelay = base::Milliseconds(500);
-
-// The number of ticks of the timer before the first sound is generated.
-constexpr int kTimerTicksOfFirstSoundFeedback = 6;
-
-// The number of ticks of the timer before toggling spoken feedback.
-constexpr int kTimerTicksToToggleSpokenFeedback = 10;
+// Delay between timer callbacks which triggers toggling ChromeVox.
+// CFM expects 2 seconds.
+constexpr auto kTimerDelay = base::Seconds(2);
 
 }  // namespace
 
@@ -123,9 +118,7 @@ void TouchAccessibilityEnabler::HandleTouchEvent(const ui::TouchEvent& event) {
   } else if (state_ == ONE_FINGER_DOWN &&
              event.type() == ui::ET_TOUCH_PRESSED) {
     state_ = TWO_FINGERS_DOWN;
-    two_finger_start_time_ = Now();
     StartTimer();
-    delegate_->OnTwoFingerTouchStart();
   }
 }
 
@@ -144,8 +137,9 @@ base::TimeTicks TouchAccessibilityEnabler::Now() {
 }
 
 void TouchAccessibilityEnabler::StartTimer() {
-  if (timer_.IsRunning())
+  if (timer_.IsRunning()) {
     return;
+  }
 
   timer_.Start(FROM_HERE, kTimerDelay, this,
                &TouchAccessibilityEnabler::OnTimer);
@@ -154,25 +148,12 @@ void TouchAccessibilityEnabler::StartTimer() {
 void TouchAccessibilityEnabler::CancelTimer() {
   if (timer_.IsRunning()) {
     timer_.Stop();
-    delegate_->OnTwoFingerTouchStop();
   }
 }
 
 void TouchAccessibilityEnabler::OnTimer() {
-  const int tick_count =
-      base::ClampRound((Now() - two_finger_start_time_) / kTimerDelay);
-
-  if (tick_count == kTimerTicksOfFirstSoundFeedback) {
-    base::RecordAction(
-        base::UserMetricsAction("Accessibility.TwoFingersHeldDown"));
-  }
-
-  if (tick_count >= kTimerTicksOfFirstSoundFeedback &&
-      tick_count < kTimerTicksToToggleSpokenFeedback) {
-    delegate_->PlaySpokenFeedbackToggleCountdown(tick_count);
-  }
-  if (tick_count == kTimerTicksToToggleSpokenFeedback) {
-    delegate_->ToggleSpokenFeedback();
+  delegate_->ToggleSpokenFeedback();
+  if (state_ != NO_FINGERS_DOWN) {
     state_ = WAIT_FOR_NO_FINGERS;
   }
 }

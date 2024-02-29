@@ -41,8 +41,6 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
                                   gfx::PointF location) override;
   bool ToggleDictation() override;
   void SilenceSpokenFeedback() override;
-  void OnTwoFingerTouchStart() override;
-  void OnTwoFingerTouchStop() override;
   bool ShouldToggleSpokenFeedbackViaTouch() const override;
   void PlaySpokenFeedbackToggleCountdown(int tick_count) override;
   void RequestSelectToSpeakStateChange() override;
