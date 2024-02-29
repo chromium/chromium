@@ -425,13 +425,13 @@ void LoadingPredictor::MaybeRemovePreconnect(const GURL& url) {
     prefetch_manager_->Stop(url);
 }
 
-void LoadingPredictor::HandleHintByOrigin(const GURL& url,
+bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
                                           bool preconnectable,
                                           bool only_allow_https,
                                           PreconnectData& preconnect_data) {
   if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_) ||
       (only_allow_https && url.scheme() != url::kHttpsScheme)) {
-    return;
+    return false;
   }
 
   const url::Origin origin = url::Origin::Create(url);
@@ -440,7 +440,7 @@ void LoadingPredictor::HandleHintByOrigin(const GURL& url,
   // origin from the same URL will result in a different unique opaque origin,
   // so any preconnect attempt would never be used anyway.
   if (origin.opaque()) {
-    return;
+    return false;
   }
 
   // Tracking whether this is a new origin request. If so, then
@@ -459,14 +459,17 @@ void LoadingPredictor::HandleHintByOrigin(const GURL& url,
       preconnect_manager()->StartPreconnectUrl(url, true,
                                                network_anonymization_key);
     }
-    return;
+    return true;
   }
 
   if (is_new_origin || now - preconnect_data.last_preresolve_time_ >=
                            kMinDelayBetweenPreresolveRequests) {
     preconnect_data.last_preresolve_time_ = now;
     preconnect_manager()->StartPreresolveHost(url, network_anonymization_key);
+    return true;
   }
+
+  return false;
 }
 
 void LoadingPredictor::PreconnectInitiated(const GURL& url,

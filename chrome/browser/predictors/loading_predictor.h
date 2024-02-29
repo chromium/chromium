@@ -156,7 +156,7 @@ class LoadingPredictor : public KeyedService,
 
   // May start a preconnect or a preresolve for `url`. `preconnectable`
   // indicates if preconnect is possible, or only preresolve will be performed.
-  void HandleHintByOrigin(const GURL& url,
+  bool HandleHintByOrigin(const GURL& url,
                           bool preconnectable,
                           bool only_allow_https,
                           PreconnectData& preconnect_data);
@@ -218,6 +218,12 @@ class LoadingPredictor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest,
                            TestDontTrackNonPrefetchableUrls);
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest, TestDontPredictOmniboxHints);
+  FRIEND_TEST_ALL_PREFIXES(LoadingPredictorPreconnectTest,
+                           TestHandleHintWithOpaqueOrigins);
+  FRIEND_TEST_ALL_PREFIXES(LoadingPredictorPreconnectTest,
+                           TestHandleHintWhenOnlyHttpsAllowed);
+  FRIEND_TEST_ALL_PREFIXES(LoadingPredictorPreconnectTest,
+                           TestHandleHintPreresolveWhenOnlyHttpsAllowed);
 
   base::WeakPtrFactory<LoadingPredictor> weak_factory_{this};
 };

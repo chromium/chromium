@@ -577,4 +577,55 @@ TEST_F(
       main_frame_url, HintOrigin::OPTIMIZATION_GUIDE, false, prediction));
 }
 
+// Checks that the opaque origins will not trigger preconnect as it is treated
+// as cross-origin and cannot be reused.
+TEST_F(LoadingPredictorPreconnectTest, TestHandleHintWithOpaqueOrigins) {
+  GURL main_frame_url("about:blank");
+  LoadingPredictor::PreconnectData preconnect_data;
+  EXPECT_FALSE(predictor_->HandleHintByOrigin(main_frame_url,
+                                              /*preconnectable=*/true,
+                                              /*only_allow_https=*/false,
+                                              preconnect_data));
+}
+
+// Checks that the behavior of HandleHintByOrigin is expected when
+// only_allow_https = true.
+TEST_F(LoadingPredictorPreconnectTest, TestHandleHintWhenOnlyHttpsAllowed) {
+  GURL main_frame_url_non_https("http://www.google.com/cats");
+  GURL main_frame_url_https("https://www.google.com/cats");
+  LoadingPredictor::PreconnectData preconnect_data;
+  EXPECT_FALSE(predictor_->HandleHintByOrigin(main_frame_url_non_https,
+                                              /*preconnectable=*/true,
+                                              /*only_allow_https=*/true,
+                                              preconnect_data));
+  EXPECT_CALL(
+      *mock_preconnect_manager_,
+      StartPreconnectUrl(main_frame_url_https, true,
+                         CreateNetworkanonymization_key(main_frame_url_https)));
+  EXPECT_TRUE(predictor_->HandleHintByOrigin(main_frame_url_https,
+                                             /*preconnectable=*/true,
+                                             /*only_allow_https=*/true,
+                                             preconnect_data));
+}
+
+// Checks that HandleHintByOrigin can preresolve correctly.
+TEST_F(LoadingPredictorPreconnectTest,
+       TestHandleHintPreresolveWhenOnlyHttpsAllowed) {
+  GURL main_frame_url_non_https("http://www.google.com/cats");
+  GURL main_frame_url_https("https://www.google.com/cats");
+  LoadingPredictor::PreconnectData preconnect_data;
+  EXPECT_FALSE(predictor_->HandleHintByOrigin(main_frame_url_non_https,
+                                              /*preconnectable=*/false,
+                                              /*only_allow_https=*/true,
+                                              preconnect_data));
+  EXPECT_CALL(*mock_preconnect_manager_,
+              StartPreresolveHost(
+                  main_frame_url_https,
+                  CreateNetworkanonymization_key(main_frame_url_https)));
+  EXPECT_TRUE(predictor_->HandleHintByOrigin(main_frame_url_https,
+                                             /*preconnectable=*/false,
+                                             /*only_allow_https=*/true,
+                                             preconnect_data));
+}
+
 }  // namespace predictors
