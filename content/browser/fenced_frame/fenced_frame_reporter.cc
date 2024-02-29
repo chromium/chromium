@@ -45,7 +45,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
@@ -410,9 +409,7 @@ bool FencedFrameReporter::SendReport(
 
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(request_initiator_frame);
-  if (base::FeatureList::IsEnabled(
-          features::kAttributionFencedFrameReportingBeacon) &&
-      web_contents &&
+  if (web_contents &&
       network::HasAttributionSupport(
           AttributionManager::GetAttributionSupport(web_contents))) {
     if (auto suitable_context =

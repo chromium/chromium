@@ -13855,7 +13855,6 @@
                     },
                     "enable_features": [
                         "AllowURNsInIframes",
-                        "AttributionFencedFrameReportingBeacon",
                         "AttributionReportingCrossAppWeb",
                         "BiddingAndScoringDebugReportingAPI",
                         "BrowsingTopics",

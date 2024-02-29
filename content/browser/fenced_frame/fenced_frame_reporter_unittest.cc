@@ -22,7 +22,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/test/test_content_browser_client.h"
@@ -103,8 +102,7 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
  public:
   FencedFrameReporterTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAttributionFencedFrameReportingBeacon,
-                              blink::features::
+        /*enabled_features=*/{blink::features::
                                   kFencedFramesAutomaticBeaconCredentials},
         /*disabled_features=*/{});
   }

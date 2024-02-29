@@ -62,7 +62,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_response_headers.h"
@@ -1771,9 +1770,6 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     AttributionSuitableContext suitable_context,
     std::optional<int64_t> navigation_id,
     std::string devtools_request_id) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kAttributionFencedFrameReportingBeacon));
-
   if (navigation_id.has_value()) {
     MaybeStartNavigation(navigation_id.value());
   }
