@@ -4,6 +4,7 @@
 
 #include "ash/system/overview/overview_button_tray.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -45,6 +46,10 @@ bool ShouldButtonBeVisible() {
           session_manager::SessionState::ACTIVE ||
       session_controller->IsRunningInAppMode()) {
     return false;
+  }
+
+  if (switches::IsOverviewButtonEnabledForTests()) {
+    return true;
   }
 
   return shell->tablet_mode_controller()->ShouldShowOverviewButton() &&

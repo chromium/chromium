@@ -953,6 +953,9 @@ const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 const char kOobeTriggerSyncTimeoutForTests[] =
     "oobe-trigger-sync-timeout-for-tests";
 
+// If set, the overview button will be visible.
+const char kOverviewButtonForTests[] = "overview-button-for-tests";
+
 // Controls how often the HiddenNetworkHandler class checks for wrongly hidden
 // networks. The interval should be provided in seconds, should follow the
 // format "--hidden-network-migration-interval=#", and should be >= 1.
@@ -1262,6 +1265,11 @@ bool IsOOBENetworkScreenSkippingDisabledForTesting() {
 bool IsOOBEChromeVoxHintEnabledForDevMode() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kEnableOOBEChromeVoxHintForDevMode);
+}
+
+bool IsOverviewButtonEnabledForTests() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOverviewButtonForTests);
 }
 
 bool IsDeviceRequisitionConfigurable() {

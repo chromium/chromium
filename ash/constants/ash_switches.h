@@ -303,6 +303,7 @@ extern const char kOobeTimezoneOverrideForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeTriggerSyncTimeoutForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOrcaKey[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOverviewButtonForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHiddenNetworkMigrationInterval[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -464,6 +465,10 @@ bool AreEmptyPasswordsAllowedForForTesting();
 // Returns true if the OOBE ChromeVox hint is enabled for dev mode.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsOOBEChromeVoxHintEnabledForDevMode();
+
+// Returns true if the overview button is set to be always visible. Mostly for
+// dev purpose.
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOverviewButtonEnabledForTests();
 
 // Returns true if the OEM Device Requisition can be configured.
 COMPONENT_EXPORT(ASH_CONSTANTS)
