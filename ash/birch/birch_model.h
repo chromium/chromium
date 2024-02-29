@@ -56,6 +56,10 @@ class ASH_EXPORT BirchModel {
 
   std::vector<std::unique_ptr<BirchItem>> GetAllItems();
 
+  // Returns at most 4 items. Prefers higher ranked items. Prefers not to
+  // return multiple items of the same type, where possible.
+  std::vector<std::unique_ptr<BirchItem>> GetItemsForDisplay();
+
   // Returns whether all data in the model is currently fresh.
   bool IsDataFresh();
 

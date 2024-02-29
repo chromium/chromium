@@ -128,8 +128,15 @@ void PineController::StartPineOverviewSession() {
     LOG(WARNING) << "Forcing Birch data fetch";
     Shell::Get()->birch_model()->RequestBirchDataFetch(base::BindOnce([]() {
       // Dump the items that were fetched.
-      auto items = Shell::Get()->birch_model()->GetAllItems();
-      for (const auto& item : items) {
+      LOG(WARNING) << "All items:";
+      auto all_items = Shell::Get()->birch_model()->GetAllItems();
+      for (const auto& item : all_items) {
+        LOG(WARNING) << item->ToString();
+      }
+      // Dump the items for display.
+      LOG(WARNING) << "Items for display:";
+      auto display_items = Shell::Get()->birch_model()->GetItemsForDisplay();
+      for (const auto& item : display_items) {
         LOG(WARNING) << item->ToString();
       }
     }));

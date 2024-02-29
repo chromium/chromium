@@ -434,4 +434,168 @@ TEST_F(BirchModelTest, GetAllItems) {
   EXPECT_STREQ(all_items[4]->GetItemType(), BirchWeatherItem::kItemType);
 }
 
+TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Insert one item of each type.
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Event 1");
+  calendar_item_list.back().ranking = 5.f;
+  model->SetCalendarItems(std::move(calendar_item_list));
+
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  attachment_item_list.emplace_back(u"Attachment 1");
+  attachment_item_list.back().ranking = 4.f;
+  model->SetAttachmentItems(std::move(attachment_item_list));
+
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
+                             GURL("favicon"), "session");
+  tab_item_list.back().ranking = 3.f;
+  model->SetRecentTabItems(std::move(tab_item_list));
+
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
+  file_item_list.back().ranking = 2.f;
+  model->SetFileSuggestItems(std::move(file_item_list));
+
+  std::vector<BirchWeatherItem> weather_item_list;
+  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  weather_item_list.back().ranking = 1.f;
+  model->SetWeatherItems(std::move(weather_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
+
+  // The maximum of 4 items are returned.
+  ASSERT_EQ(items.size(), 4u);
+
+  // The items are in priority order.
+  EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
+  EXPECT_STREQ(items[0]->GetItemType(), BirchWeatherItem::kItemType);
+  EXPECT_FLOAT_EQ(items[1]->ranking, 2.f);
+  EXPECT_STREQ(items[1]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_FLOAT_EQ(items[2]->ranking, 3.f);
+  EXPECT_STREQ(items[2]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_FLOAT_EQ(items[3]->ranking, 4.f);
+  EXPECT_STREQ(items[3]->GetItemType(), BirchAttachmentItem::kItemType);
+}
+
+TEST_F(BirchModelTest, GetItemsForDisplay_AvoidDuplicateTypes) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Insert 2 calendar events with high priority.
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Event 1");
+  calendar_item_list.back().ranking = 1.f;
+  calendar_item_list.emplace_back(u"Event 2");
+  calendar_item_list.back().ranking = 2.f;
+  model->SetCalendarItems(std::move(calendar_item_list));
+
+  // Then insert 3 other items with lower priority.
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  attachment_item_list.emplace_back(u"Attachment 1");
+  attachment_item_list.back().ranking = 3.f;
+  model->SetAttachmentItems(std::move(attachment_item_list));
+
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
+                             GURL("favicon"), "session");
+  tab_item_list.back().ranking = 4.f;
+  model->SetRecentTabItems(std::move(tab_item_list));
+
+  std::vector<BirchFileItem> file_item_list;
+  file_item_list.emplace_back(base::FilePath("test path 1"), base::Time());
+  file_item_list.back().ranking = 5.f;
+  model->SetFileSuggestItems(std::move(file_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
+
+  // The maximum of 4 items are returned.
+  ASSERT_EQ(items.size(), 4u);
+
+  // The second calendar event is skipped, despite being high priority, because
+  // the algorithm avoids duplicate types.
+  EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
+  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_FLOAT_EQ(items[1]->ranking, 3.f);
+  EXPECT_STREQ(items[1]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_FLOAT_EQ(items[2]->ranking, 4.f);
+  EXPECT_STREQ(items[2]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_FLOAT_EQ(items[3]->ranking, 5.f);
+  EXPECT_STREQ(items[3]->GetItemType(), BirchFileItem::kItemType);
+}
+
+TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Insert 2 items of the same type.
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Event 1");
+  calendar_item_list.back().ranking = 1.f;
+  calendar_item_list.emplace_back(u"Event 2");
+  calendar_item_list.back().ranking = 2.f;
+  model->SetCalendarItems(std::move(calendar_item_list));
+
+  // Insert 2 more items of a different type.
+  std::vector<BirchAttachmentItem> attachment_item_list;
+  attachment_item_list.emplace_back(u"Attachment 1");
+  attachment_item_list.back().ranking = 3.f;
+  attachment_item_list.emplace_back(u"Attachment 2");
+  attachment_item_list.back().ranking = 4.f;
+  model->SetAttachmentItems(std::move(attachment_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
+
+  ASSERT_EQ(items.size(), 4u);
+  EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
+  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_FLOAT_EQ(items[1]->ranking, 2.f);
+  EXPECT_STREQ(items[1]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_FLOAT_EQ(items[2]->ranking, 3.f);
+  EXPECT_STREQ(items[2]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_FLOAT_EQ(items[3]->ranking, 4.f);
+  EXPECT_STREQ(items[3]->GetItemType(), BirchAttachmentItem::kItemType);
+}
+
+TEST_F(BirchModelTest, GetItemsForDisplay_NotEnoughItems) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Insert 3 items of the same type.
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Event 1");
+  calendar_item_list.back().ranking = 1.f;
+  calendar_item_list.emplace_back(u"Event 2");
+  calendar_item_list.back().ranking = 2.f;
+  calendar_item_list.emplace_back(u"Event 3");
+  calendar_item_list.back().ranking = 3.f;
+  model->SetCalendarItems(std::move(calendar_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
+
+  // Only 2 items are returned.
+  ASSERT_EQ(items.size(), 2u);
+  EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
+  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_FLOAT_EQ(items[1]->ranking, 2.f);
+  EXPECT_STREQ(items[1]->GetItemType(), BirchCalendarItem::kItemType);
+}
+
+TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Insert 1 regular item and 1 item with no ranking.
+  std::vector<BirchCalendarItem> calendar_item_list;
+  calendar_item_list.emplace_back(u"Ranked");
+  calendar_item_list.back().ranking = 1.f;
+  calendar_item_list.emplace_back(u"Unranked");
+  model->SetCalendarItems(std::move(calendar_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
+
+  // Only 1 item is returned because the unranked item is discarded.
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_FLOAT_EQ(items[0]->ranking, 1.f);
+  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+}
+
 }  // namespace ash
