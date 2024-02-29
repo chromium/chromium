@@ -18,13 +18,13 @@ namespace {
 // Returns a 16x16 red NSImage to visually show when a NSImage cannot be
 // created from PNG data.
 NSImage* GetErrorNSImage() {
-  NSRect rect = NSMakeRect(0, 0, 16, 16);
-  NSImage* image = [[NSImage alloc] initWithSize:rect.size];
-  [image lockFocus];
-  [[NSColor colorWithDeviceRed:1.0 green:0.0 blue:0.0 alpha:1.0] set];
-  NSRectFill(rect);
-  [image unlockFocus];
-  return image;
+  return [NSImage imageWithSize:NSMakeSize(16, 16)
+                        flipped:NO
+                 drawingHandler:^(NSRect rect) {
+                   [NSColor.redColor set];
+                   NSRectFill(rect);
+                   return YES;
+                 }];
 }
 
 }  // namespace
