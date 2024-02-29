@@ -64,7 +64,6 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
    private:
     // syncer::SyncServiceObserver implementation.
     void OnStateChanged(syncer::SyncService* sync) override;
-    void OnSyncCycleCompleted(syncer::SyncService* sync) override;
 
     // Pref service.
     const raw_ptr<PrefService> prefs_ = nullptr;
@@ -85,9 +84,6 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
     // |password_sync_configured_setting_| at the moment when the user is
     // changing sync settings. Updated when new settings take action.
     bool password_sync_applied_setting_ = false;
-
-    // If the first sync cycle after the startup has completed.
-    bool is_waiting_for_the_first_sync_cycle_ = true;
   };
 
   // Implements PasswordStoreBackend interface.
@@ -137,7 +133,7 @@ class LegacyPasswordStoreBackendMigrationDecorator : public PasswordStoreBackend
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // Starts migration process.
-  void StartMigrationAfterInit();
+  void StartMigrationIfNecessary();
 
   // React on sync changes to keep GMS Core local storage up-to-date.
   // Called when the changed setting is applied.

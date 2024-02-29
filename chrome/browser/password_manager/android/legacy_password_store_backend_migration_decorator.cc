@@ -29,13 +29,6 @@ using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 // the Android backend is delayed.
 constexpr int kMigrationToAndroidBackendDelay = 30;
 
-// Check the experiment stage allows migration and that user wasn't kicked out
-// from the experiment after receiving errors from the backend.
-bool ShouldAttemptMigration(const PrefService* prefs) {
-  return !prefs->GetBoolean(
-      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
-}
-
 }  // namespace
 
 LegacyPasswordStoreBackendMigrationDecorator::
@@ -109,44 +102,6 @@ void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   }
 }
 
-void LegacyPasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
-    OnSyncCycleCompleted(syncer::SyncService* sync) {
-  // Reenrollment check is made on the first sync cycle when password sync is
-  // active.
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (!sync_util::IsSyncFeatureActiveIncludingPasswords(sync) ||
-      !is_waiting_for_the_first_sync_cycle_) {
-    return;
-  }
-  is_waiting_for_the_first_sync_cycle_ = false;
-
-  // If the sync cycle has completed successfully, the migrator
-  // exists and the user is unenrolled from the UPM experiment, the reenrollment
-  // attempt will be performed.
-  if (!migrator_ ||
-      !prefs_->GetBoolean(
-          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
-    return;
-  }
-
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (sync_util::IsSyncFeatureActiveIncludingPasswords(sync)) {
-    int reenrollment_attempts = prefs_->GetInteger(
-        prefs::kTimesAttemptedToReenrollToGoogleMobileServices);
-    prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
-                       reenrollment_attempts + 1);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
-                           StartAccountMigrationIfNecessary,
-                       migrator_->GetWeakPtr(),
-                       /*should_attempt_reenrollment=*/true),
-        base::Seconds(kMigrationToAndroidBackendDelay));
-  }
-}
-
 void LegacyPasswordStoreBackendMigrationDecorator::InitBackend(
     AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
@@ -178,16 +133,12 @@ void LegacyPasswordStoreBackendMigrationDecorator::InitBackend(
       built_in_backend_.get(), android_backend_.get(), prefs_);
   sync_settings_helper_.set_migrator(migrator_.get());
 
-  // Schedule a migration if the user wasn't evicted from UPM.
-  if (!prefs_->GetBoolean(
-          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LegacyPasswordStoreBackendMigrationDecorator::StartMigrationAfterInit,
-            weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(kMigrationToAndroidBackendDelay));
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LegacyPasswordStoreBackendMigrationDecorator::
+                         StartMigrationIfNecessary,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(kMigrationToAndroidBackendDelay));
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::Shutdown(
@@ -337,15 +288,26 @@ LegacyPasswordStoreBackendMigrationDecorator::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
-  // Return early if the user was evicted after scheduling migration.
-  if (!ShouldAttemptMigration(prefs_))
-    return;
-
+void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationIfNecessary() {
   // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
+  bool password_sync_enabled =
+      sync_util::IsSyncFeatureActiveIncludingPasswords(sync_service_);
+
+  if (prefs_->GetBoolean(
+          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors) &&
+      password_sync_enabled) {
+    int reenrollment_attempts = prefs_->GetInteger(
+        prefs::kTimesAttemptedToReenrollToGoogleMobileServices);
+    prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
+                       reenrollment_attempts + 1);
+    migrator_->StartAccountMigrationIfNecessary(
+        /*should_attempt_upm_reenrollment=*/true);
+    return;
+  }
+
   if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
-      !IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+      !password_sync_enabled) {
     // Sync was disabled at the end of the last session, but migration from
     // the android backend to the built-in backend didn't happen. It's not
     // safe to attempt to call the android backend to migrate logins. Disable
@@ -362,16 +324,15 @@ void LegacyPasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
-  if (!ShouldAttemptMigration(prefs_))
+  if (prefs_->GetBoolean(
+          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
     return;
+  }
 
   sync_settings_helper_.SyncStatusChangeApplied();
   // Non-syncable data needs to be migrated to the new active backend.
   migrator_->StartAccountMigrationIfNecessary(
       /*should_attempt_upm_reenrollment=*/false);
-
-  // TODO(crbug.com/1312387): Delete all the passwords from GMS Core
-  // local storage if password sync was enabled.
 }
 
 }  // namespace password_manager
