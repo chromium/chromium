@@ -347,11 +347,14 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 - (void)layoutSubviews {
   [super layoutSubviews];
   if (_needsRepositionBubbleAndGestureIndicator) {
+    // Avoid loops if `reposition` methods call [superview layoutIfNeeded].
+    _needsRepositionBubbleAndGestureIndicator = NO;
+
     _bubbleView.frame =
         GetInitialBubbleFrameForView(self.frame.size, _bubbleView);
+    [self repositionBubbleViewInSafeArea];
     [self repositionGestureIndicator];
     [_animator startAnimation];
-    _needsRepositionBubbleAndGestureIndicator = NO;
   }
 }
 
@@ -365,6 +368,8 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   CHECK(self.superview);
   CHECK_GT(self.animationRepeatCount, 0);
 
+  [self.superview layoutIfNeeded];
+  [self repositionBubbleViewInSafeArea];
   if (UIAccessibilityIsVoiceOverRunning()) {
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                     _text);
@@ -558,6 +563,37 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
              : kGestureIndicatorDistanceAnimatedDefault;
 }
 
+// If the bubble view is fully visible in safe area, do nothing; otherwise, move
+// it into the safe area.
+- (void)repositionBubbleViewInSafeArea {
+  CHECK(self.superview);
+  UIEdgeInsets safeAreaInsets = self.safeAreaInsets;
+  if (UIEdgeInsetsEqualToEdgeInsets(safeAreaInsets, UIEdgeInsetsZero)) {
+    return;
+  }
+
+  CGRect bubbleFrame = _bubbleView.frame;
+  CGSize viewSize = self.bounds.size;
+  if (bubbleFrame.origin.x < safeAreaInsets.left) {
+    bubbleFrame.origin.x = safeAreaInsets.left;
+  }
+  if (bubbleFrame.origin.y < safeAreaInsets.top) {
+    bubbleFrame.origin.y = safeAreaInsets.top;
+  }
+  if (bubbleFrame.origin.x + bubbleFrame.size.width >
+      viewSize.width - safeAreaInsets.right) {
+    bubbleFrame.origin.x =
+        viewSize.width - safeAreaInsets.right - bubbleFrame.size.width;
+  }
+  if (bubbleFrame.origin.y + bubbleFrame.size.height >
+      viewSize.height - safeAreaInsets.bottom) {
+    bubbleFrame.origin.y =
+        viewSize.height - safeAreaInsets.bottom - bubbleFrame.size.height;
+  }
+  _bubbleView.frame = bubbleFrame;
+  [self.superview layoutIfNeeded];
+}
+
 // Puts the gesture indicator at its initial position.
 - (void)repositionGestureIndicator {
   CHECK(self.superview);
@@ -596,7 +632,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       CGFloat margin = kInitialBubbleDistanceToEdgeSpacingVertical +
                        bubbleSize.height + gestureIndicatorToBubbleSpacing;
       return [_gestureIndicator.centerYAnchor
-          constraintEqualToAnchor:self.topAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor
                          constant:margin];
     }
     case BubbleArrowDirectionDown: {
@@ -605,7 +641,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       CGFloat margin = kInitialBubbleDistanceToEdgeSpacingVertical +
                        bubbleSize.height + gestureIndicatorToBubbleSpacing;
       return [_gestureIndicator.centerYAnchor
-          constraintEqualToAnchor:self.bottomAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor
                          constant:-margin];
     }
     case BubbleArrowDirectionLeading: {
@@ -619,7 +655,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
         margin = bubbleSize.width + gestureIndicatorToBubbleSpacing;
       }
       return [_gestureIndicator.centerXAnchor
-          constraintEqualToAnchor:self.leadingAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor
                          constant:margin];
     }
     case BubbleArrowDirectionTrailing: {
@@ -633,7 +669,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
         margin = bubbleSize.width + gestureIndicatorToBubbleSpacing;
       }
       return [_gestureIndicator.centerXAnchor
-          constraintEqualToAnchor:self.trailingAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
                          constant:-margin];
     }
   }
