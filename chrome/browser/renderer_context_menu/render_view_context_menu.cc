@@ -1429,7 +1429,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   int enum_id =
       FindUMAEnumValueForCommand(id, UmaEnumIdLookupType::GeneralEnumId);
   if (enum_id == -1) {
-    NOTREACHED() << "Update kUmaEnumToControlId. Unhanded IDC: " << id;
+    NOTREACHED() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
     return;
   }
 
@@ -1542,7 +1542,7 @@ void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
     } else {
       // Just warning here. It's harder to maintain list of all possibly
       // visible items than executable items.
-      DLOG(ERROR) << "Update kUmaEnumToControlId. Unhanded IDC: " << id;
+      DLOG(ERROR) << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
     }
   }
 
