@@ -10,6 +10,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
@@ -63,7 +64,7 @@ public class ChromeDialog extends ComponentDialog {
                     AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(mContext));
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
-            linearLayout.addView(view);
+            linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         } else {
             super.setContentView(view);
         }
@@ -76,8 +77,7 @@ public class ChromeDialog extends ComponentDialog {
                     AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(mContext));
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
-            linearLayout.setLayoutParams(params);
-            linearLayout.addView(view);
+            linearLayout.addView(view, params);
         } else {
             super.setContentView(view, params);
         }
