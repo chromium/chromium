@@ -197,7 +197,6 @@ BookmarkBridge::BookmarkBridge(
   CHECK(partner_bookmarks_shim);
   // TODO(crbug.com/1503231): CHECK image_service once a mock is available.
   CHECK(dual_reading_list_model);
-  CHECK(identity_manager);
 
   profile_observation_.Observe(profile_);
   bookmark_model_observation_.Observe(bookmark_model_);
@@ -205,7 +204,9 @@ BookmarkBridge::BookmarkBridge(
   reading_list_manager_observations_.AddObservation(
       local_or_syncable_reading_list_manager_.get());
   dual_reading_list_model_observation_.Observe(dual_reading_list_model_);
-  identity_manager_observation_.Observe(identity_manager_);
+  if (identity_manager_) {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
