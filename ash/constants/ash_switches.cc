@@ -141,6 +141,15 @@ const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
 // Install roster. Used manually by developers.
 const char kArcGeneratePlayAutoInstall[] = "arc-generate-play-auto-install";
 
+// Sets the mode of operation for ureadahead during ARC Container boot.
+// readahead (default) - used during production and is equivalent to no switch
+//                       being set.
+// generate - used during Android Uprev data collector to pre-generate pack file
+//            and upload to Google Cloud as build artifact for CrOS build image.
+// disabled - used for test purpose to disable ureadahead during ARC Container
+// boot.
+const char kArcHostUreadaheadMode[] = "arc-host-ureadahead-mode";
+
 // Write ARC++ install events to chrome log for integration test.
 const char kArcInstallEventChromeLogForTests[] =
     "arc-install-event-chrome-log-for-tests";
@@ -172,9 +181,6 @@ const char kArcStartMode[] = "arc-start-mode";
 // Sets ARC Terms Of Service hostname url for testing.
 const char kArcTosHostForTests[] = "arc-tos-host-for-tests";
 
-// Sets Privacy Policy hostname url for testing.
-const char kPrivacyPolicyHostForTests[] = "privacy-policy-host-for-tests";
-
 // Sets the mode of operation for ureadahead during ARCVM boot. If this switch
 // is not set, ARCVM ureadahead will check for the presence and age of pack
 // file and reads ahead files to page cache for improved boot performance.
@@ -187,15 +193,6 @@ const char kPrivacyPolicyHostForTests[] = "privacy-policy-host-for-tests";
 //            note, |kArcDisableUreadahead| also disables both, guest and host
 //            parts of ureadahead.
 const char kArcVmUreadaheadMode[] = "arcvm-ureadahead-mode";
-
-// Sets the mode of operation for ureadahead during ARC Container boot.
-// readahead (default) - used during production and is equivalent to no switch
-//                       being set.
-// generate - used during Android Uprev data collector to pre-generate pack file
-//            and upload to Google Cloud as build artifact for CrOS build image.
-// disabled - used for test purpose to disable ureadahead during ARC Container
-// boot.
-const char kArcHostUreadaheadMode[] = "arc-host-ureadahead-mode";
 
 // Madvises the kernel to use Huge Pages for guest memory.
 const char kArcVmUseHugePages[] = "arcvm-use-hugepages";
@@ -257,10 +254,6 @@ const char kAshForceEnableStylusTools[] = "force-enable-stylus-tools";
 // Forces the status area to allow collapse/expand regardless of the current
 // state.
 const char kAshForceStatusAreaCollapsible[] = "force-status-area-collapsible";
-
-// Path for which to load growth campaigns file for testing (instead of
-// downloading from Omaha).
-const char kGrowthCampaignsPath[] = "growth-campaigns-path";
 
 // Hides notifications that are irrelevant to Chrome OS device factory testing,
 // such as battery level updates.
@@ -425,6 +418,9 @@ const char kDisableDriveFsForTesting[] = "disable-drive-fs-for-testing";
 const char kDisableFineGrainedTimeZoneDetection[] =
     "disable-fine-grained-time-zone-detection";
 
+// Disables first-run UI from being shown.
+const char kDisableFirstRunUI[] = "disable-first-run-ui";
+
 // Disables GAIA services such as enrollment and OAuth session restore. Used by
 // 'fake' telemetry login.
 const char kDisableGaiaServices[] = "disable-gaia-services";
@@ -432,9 +428,6 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 // Disables HID-detection OOBE screen.
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
-
-// Skip multidevice setup screen during tast tests.
-const char kSkipMultideviceScreenForTesting[] = "skip-multidevice-screen";
 
 // Disables the Lacros keep alive for testing.
 const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
@@ -651,9 +644,6 @@ const char kForceCryptohomeRecoveryForTesting[] =
 // Forces first-run UI to be shown for every login.
 const char kForceFirstRunUI[] = "force-first-run-ui";
 
-// Disables first-run UI from being shown.
-const char kDisableFirstRunUI[] = "disable-first-run-ui";
-
 // Forces Hardware ID check (happens during OOBE) to fail or succeed. Possible
 // values: "failure" or "success". Should be used only for testing.
 const char kForceHWIDCheckResultForTest[] = "force-hwid-check-result-for-test";
@@ -700,6 +690,10 @@ const char kGlanceablesKeyExpectedHash[] =
     "\x52\xde\x04\xda\xef\x3a\xde\xe2\x90\x68\xa1\x5c\x36\xd5\x6b\x1d\xb8\x11"
     "\xe2\xcb";
 const char kGlanceablesKeySwitch[] = "glanceables-key";
+
+// Path for which to load growth campaigns file for testing (instead of
+// downloading from Omaha).
+const char kGrowthCampaignsPath[] = "growth-campaigns-path";
 
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
@@ -976,6 +970,9 @@ const char kPrintingPpdChannelStaging[] = "staging";
 const char kPrintingPpdChannelDev[] = "dev";
 const char kPrintingPpdChannelLocalhost[] = "localhost";
 
+// Sets Privacy Policy hostname url for testing.
+const char kPrivacyPolicyHostForTests[] = "privacy-policy-host-for-tests";
+
 // If set to "true", the profile requires policy during restart (policy load
 // must succeed, otherwise session restart should fail).
 const char kProfileRequiresPolicy[] = "profile-requires-policy";
@@ -1053,6 +1050,9 @@ const char kShowTaps[] = "show-taps";
 // Disables online sign-in enforcement in tast tests.
 const char kSkipForceOnlineSignInForTesting[] =
     "skip-force-online-signin-for-testing";
+
+// Skip multidevice setup screen during tast tests.
+const char kSkipMultideviceScreenForTesting[] = "skip-multidevice-screen";
 
 // Used to skip the threshold duration that the reorder nudge has to show before
 // the nudge is considered as shown.
