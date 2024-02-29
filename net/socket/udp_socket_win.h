@@ -10,7 +10,7 @@
 #include <winsock2.h>
 
 // Must be after winsock2.h:
-#include <mswsock.h>
+#include <MSWSock.h>
 
 #include <atomic>
 #include <memory>
