@@ -782,6 +782,14 @@
       },
     },
   },
+  'mac_14_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-14',
+      },
+    },
+  },
   'mac_arm64_apple_m1_gpu_experimental': {
     'swarming': {
       'dimensions': {

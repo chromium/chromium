@@ -427,3 +427,70 @@ blink_mac_builder(
         ],
     ),
 )
+
+blink_mac_builder(
+    name = "mac14-blink-rel",
+    description_html = """\
+    Runs web tests against content-shell on Mac 14 (Intel).\
+    """,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "chrome_with_codecs",
+            "minimal_symbols",
+        ],
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
+
+blink_mac_builder(
+    name = "mac14.arm64-blink-rel",
+    description_html = """\
+    Runs web tests against content-shell on Mac 14 (ARM).\
+    """,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "chrome_with_codecs",
+            "arm64",
+            "minimal_symbols",
+        ],
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
