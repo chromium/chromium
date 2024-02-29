@@ -4,13 +4,13 @@
 
 #include "services/network/public/mojom/network_service.mojom.h"
 
+// clang-format off
 #include <windows.h>  // Must be in front of other Windows header files.
-
 #include <initguid.h>  // Must be in front of devpkey.h.
-
 // Must be in front of Windows includes because they define LogSeverity and this
 // breaks gmock.
 #include "testing/gmock/include/gmock/gmock.h"
+// clang-format on
 
 #include <cfgmgr32.h>
 #include <devpkey.h>

@@ -7,7 +7,9 @@
 
 #include "remoting/host/win/unprivileged_process_delegate.h"
 
+// clang-format off
 #include <windows.h>  // Must be in front of other Windows header files.
+// clang-format on
 
 #include <sddl.h>
 
