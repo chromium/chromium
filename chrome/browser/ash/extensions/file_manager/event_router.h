@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chrome/browser/ash/policy/local_user_files/observer.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -77,7 +78,8 @@ class EventRouter
       guest_os::GuestOsMountProviderRegistry::Observer,
       chromeos::DlpClient::Observer,
       apps::AppRegistryCache::Observer,
-      network::NetworkConnectionTracker::NetworkConnectionObserver {
+      network::NetworkConnectionTracker::NetworkConnectionObserver,
+      policy::local_user_files::Observer {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -217,6 +219,9 @@ class EventRouter
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(const network::mojom::ConnectionType type) override;
+
+  // policy::local_user_files::Observer:
+  void OnLocalUserFilesPolicyChanged() override;
 
   // Use this method for unit tests to bypass checking if there are any SWA
   // windows.

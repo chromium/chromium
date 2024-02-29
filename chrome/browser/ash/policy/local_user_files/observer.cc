@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/local_user_files/observer.h"
 
+#include "base/check_is_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 
@@ -11,6 +12,11 @@ namespace policy::local_user_files {
 
 Observer::Observer()
     : pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
+  if (!g_browser_process->local_state()) {
+    // Can be NULL in tests.
+    CHECK_IS_TEST();
+    return;
+  }
   pref_change_registrar_->Init(g_browser_process->local_state());
   pref_change_registrar_->Add(
       prefs::kLocalUserFilesAllowed,

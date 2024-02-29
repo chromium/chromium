@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/policy/local_user_files/observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
@@ -63,7 +64,8 @@ class VolumeManager : public KeyedService,
                       ash::file_system_provider::Observer,
                       storage_monitor::RemovableStorageObserver,
                       ui::ClipboardObserver,
-                      DocumentsProviderRootManager::Observer {
+                      DocumentsProviderRootManager::Observer,
+                      policy::local_user_files::Observer {
  public:
   // An alternate to device::mojom::MtpManager::GetStorageInfo.
   // Used for injecting fake MTP manager for testing in VolumeManagerTest.
@@ -263,6 +265,9 @@ class VolumeManager : public KeyedService,
 
   void ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(std::string* volume_id) const;
 
+  // policy::local_user_files::Observer:
+  void OnLocalUserFilesPolicyChanged() override;
+
   SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }
 
   io_task::IOTaskController* io_task_controller() {
@@ -336,6 +341,11 @@ class VolumeManager : public KeyedService,
                                     const guest_os::VmType vm_type,
                                     RemoveSftpGuestOsVolumeCallback callback,
                                     ash::MountError error);
+
+  // Mounts local folders (My Files, Play and Linux files).
+  void MountLocalFolders();
+  // Unmounts local folders (My Files, Play and Linux files).
+  void UnmountLocalFolders();
 
   static int counter_;
   const int id_ = ++counter_;  // Only used in log traces

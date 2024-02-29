@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -31,8 +32,10 @@
 #include "chrome/browser/ash/file_manager/snapshot_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
+#include "chrome/browser/ash/policy/local_user_files/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -957,6 +960,17 @@ void VolumeManager::ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(
   *volume_id = volume_id->substr(prefix).insert(0, "provided:");
 }
 
+void VolumeManager::OnLocalUserFilesPolicyChanged() {
+  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+    return;
+  }
+  if (policy::local_user_files::LocalUserFilesAllowed()) {
+    MountLocalFolders();
+  } else {
+    UnmountLocalFolders();
+  }
+}
+
 void VolumeManager::OnProvidedFileSystemUnmount(
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     base::File::Error error) {
@@ -1595,6 +1609,18 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
   if (callback) {
     std::move(callback).Run(false);
   }
+}
+
+void VolumeManager::MountLocalFolders() {
+  // TODO(b/322779059): Mount arc.
+  // TODO(b/322779967): Mount crostini.
+  // TODO(b/325006828): Mount My Files.
+}
+
+void VolumeManager::UnmountLocalFolders() {
+  // TODO(b/322779059): Unmount arc.
+  // TODO(b/322779967): Unmount crostini.
+  // TODO(b/325006828): Unmount My Files.
 }
 
 }  // namespace file_manager

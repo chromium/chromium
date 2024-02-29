@@ -58,6 +58,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -1568,6 +1569,13 @@ void EventRouter::OnConnectionChanged(
                      FILE_MANAGER_PRIVATE_ON_DEVICE_CONNECTION_STATUS_CHANGED,
                  fmp::OnDeviceConnectionStatusChanged::kEventName,
                  fmp::OnDeviceConnectionStatusChanged::Create(result));
+}
+
+void EventRouter::OnLocalUserFilesPolicyChanged() {
+  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+    return;
+  }
+  OnFileManagerPrefsChanged();
 }
 
 }  // namespace file_manager

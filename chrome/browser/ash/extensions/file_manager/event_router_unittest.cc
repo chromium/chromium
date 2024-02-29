@@ -19,6 +19,10 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -115,7 +119,8 @@ class TestEventRouterObserver
 
 class FileManagerEventRouterTest : public testing::Test {
  public:
-  FileManagerEventRouterTest() = default;
+  FileManagerEventRouterTest()
+      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
   FileManagerEventRouterTest(const FileManagerEventRouterTest&) = delete;
   FileManagerEventRouterTest& operator=(const FileManagerEventRouterTest&) =
       delete;
@@ -162,8 +167,9 @@ class FileManagerEventRouterTest : public testing::Test {
     return io_task::EntryStatus(std::move(url), base::File::FILE_OK);
   }
 
+  ScopedTestingLocalState scoped_testing_local_state_;
   content::BrowserTaskEnvironment task_environment_;
-  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+  display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
@@ -172,6 +178,10 @@ class FileManagerEventRouterTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
 };
+
+MATCHER(ExpectNoArgs, "") {
+  return arg.size() == 0;
+}
 
 // A matcher that matches an `extensions::Event::event_args` and attempts to
 // extract the "outputs" key. It then looks at the output at `index` and matches
@@ -387,6 +397,41 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);
+  run_loop.Run();
+}
+
+class FileManagerEventRouterLocalFilesTest : public FileManagerEventRouterTest {
+ public:
+  FileManagerEventRouterLocalFilesTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+  }
+  ~FileManagerEventRouterLocalFilesTest() override = default;
+
+  void SetLocalUserFilesPolicy(bool allowed) {
+    scoped_testing_local_state_.Get()->SetBoolean(prefs::kLocalUserFilesAllowed,
+                                                  allowed);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(FileManagerEventRouterLocalFilesTest, OnLocalUserFilesPolicyChanged) {
+  // Set up event routers.
+  extensions::TestEventRouter* test_event_router =
+      extensions::CreateAndUseTestEventRouter(profile_.get());
+  TestEventRouterObserver observer(test_event_router);
+  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  event_router->ForceBroadcastingForTesting(true);
+
+  // Expect the preferences changed event.
+  base::Value::List event_args =
+      extensions::api::file_manager_private::OnPreferencesChanged::Create();
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnBroadcastEvent(Field(&extensions::Event::event_args,
+                                               AllOf(ExpectNoArgs()))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  SetLocalUserFilesPolicy(/*allowed=*/false);
   run_loop.Run();
 }
 
