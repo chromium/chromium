@@ -3393,6 +3393,7 @@ test("ash_unittests") {
     "assistant/ui/main_stage/ui_element_container_view_unittest.cc",
     "assistant/util/deep_link_util_unittest.cc",
     "assistant/util/resource_util_unittest.cc",
+    "birch/birch_item_unittest.cc",
     "birch/birch_model_unittest.cc",
     "birch/birch_ranker_unittest.cc",
     "birch/birch_weather_provider_unittest.cc",

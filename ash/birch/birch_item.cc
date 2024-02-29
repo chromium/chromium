@@ -8,7 +8,9 @@
 #include <sstream>
 #include <string>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace ash {
@@ -59,6 +61,23 @@ std::string BirchCalendarItem::ToString() const {
   return ss.str();
 }
 
+void BirchCalendarItem::PerformAction() {
+  GURL url;
+  // Prefer the video conference URL if one is available. Otherwise open the
+  // calendar event on Google Calendar.
+  if (conference_url.is_valid()) {
+    url = conference_url;
+  } else if (calendar_url.is_valid()) {
+    url = calendar_url;
+  } else {
+    LOG(ERROR) << "No valid URL for calendar item";
+    return;
+  }
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchAttachmentItem::BirchAttachmentItem(const std::u16string& title)
@@ -90,6 +109,15 @@ std::string BirchAttachmentItem::ToString() const {
      << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time))
      << "}";
   return ss.str();
+}
+
+void BirchAttachmentItem::PerformAction() {
+  if (!file_url.is_valid()) {
+    LOG(ERROR) << "No valid URL for attachment item";
+  }
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      file_url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +152,12 @@ std::string BirchFileItem::ToString() const {
   return ss.str();
 }
 
+void BirchFileItem::PerformAction() {
+  // TODO(jamescook): Open the file using platform_util::OpenItem(), see
+  // chrome/browser/ash/app_list/search/files/file_result.cc. This will require
+  // delegating back to the chrome layer due to Profile dependencies.
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
@@ -153,6 +187,14 @@ std::string BirchWeatherItem::ToString() const {
      << ", title : " << base::UTF16ToUTF8(title)
      << ", temperature:" << base::UTF16ToUTF8(temperature) << "}";
   return ss.str();
+}
+
+void BirchWeatherItem::PerformAction() {
+  // TODO(jamescook): Localize the query string.
+  GURL url("https://google.com/search?q=weather");
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -189,6 +231,16 @@ std::string BirchTabItem::ToString() const {
      << ", timestamp:" << timestamp << ", favicon_url:" << favicon_url
      << ", session_name:" << session_name << "}";
   return ss.str();
+}
+
+void BirchTabItem::PerformAction() {
+  if (!url.is_valid()) {
+    LOG(ERROR) << "No valid URL for tab item";
+    return;
+  }
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 }  // namespace ash

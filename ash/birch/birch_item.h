@@ -33,6 +33,9 @@ struct ASH_EXPORT BirchItem {
 
   // Print the item to a string for debugging. The format is not stable.
   virtual std::string ToString() const = 0;
+
+  // Perform the action associated with this item (e.g. open a document).
+  virtual void PerformAction() = 0;
 };
 
 // A birch item which contains calendar event information.
@@ -48,10 +51,13 @@ struct ASH_EXPORT BirchCalendarItem : public BirchItem {
   // BirchItem:
   const char* GetItemType() const override;
   std::string ToString() const override;
+  void PerformAction() override;
 
   GURL icon_url;
   base::Time start_time;
   base::Time end_time;
+  // Link to the event in the Google Calendar UI.
+  GURL calendar_url;
   // Video conferencing URL (e.g. Google Meet).
   GURL conference_url;
 };
@@ -72,6 +78,7 @@ struct ASH_EXPORT BirchAttachmentItem : public BirchItem {
   // BirchItem:
   const char* GetItemType() const override;
   std::string ToString() const override;
+  void PerformAction() override;
 
   GURL file_url;          // Link to the file.
   GURL icon_url;          // Link to the file's icon's art asset.
@@ -96,6 +103,7 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
   // BirchItem:
   const char* GetItemType() const override;
   std::string ToString() const override;
+  void PerformAction() override;
 };
 
 // A birch item which contains tab and session information.
@@ -121,6 +129,7 @@ struct ASH_EXPORT BirchTabItem : public BirchItem {
   // BirchItem:
   const char* GetItemType() const override;
   std::string ToString() const override;
+  void PerformAction() override;
 };
 
 struct ASH_EXPORT BirchWeatherItem : public BirchItem {
@@ -140,6 +149,7 @@ struct ASH_EXPORT BirchWeatherItem : public BirchItem {
   // BirchItem:
   const char* GetItemType() const override;
   std::string ToString() const override;
+  void PerformAction() override;
 };
 
 }  // namespace ash

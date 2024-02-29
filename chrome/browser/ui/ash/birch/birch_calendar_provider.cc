@@ -79,6 +79,7 @@ void BirchCalendarProvider::OnEventsFetched(
     BirchCalendarItem birch_item(base::UTF8ToUTF16(item->summary()));
     birch_item.start_time = item->start_time().date_time();
     birch_item.end_time = item->end_time().date_time();
+    birch_item.calendar_url = GURL(item->html_link());
     birch_item.conference_url = item->conference_data_uri();
     calendar_items.push_back(std::move(birch_item));
 
