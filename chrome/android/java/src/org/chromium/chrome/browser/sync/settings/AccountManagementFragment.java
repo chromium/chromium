@@ -44,6 +44,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -555,8 +557,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     }
 
     private boolean isSupervisedUser() {
+        // SEED_ACCOUNTS_REVAMP is needed for using capabilities, otherwise
+        // findExtendedAccountInfoByEmailAddress is not guaranteed to have the needed account
         if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES)) {
+                        ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES)
+                && SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
             assert mSignedInCoreAccountInfo != null;
             AccountInfo accountinfo =
                     IdentityServicesProvider.get()
