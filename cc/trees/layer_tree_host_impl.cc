@@ -4629,9 +4629,6 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // UIResource will be uploaded into it.
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  // For gpu compositing, we also calculate the GL texture target.
-  // TODO(ericrk): Remove references to GL from this code.
-  GLenum texture_target = GL_TEXTURE_2D;
   // For software compositing, shared memory will be allocated and the
   // UIResource will be copied into it.
   base::MappedReadOnlyRegion shm;
@@ -4645,7 +4642,6 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   if (layer_tree_frame_sink_->context_provider()) {
     viz::RasterContextProvider* context_provider =
         layer_tree_frame_sink_->context_provider();
-    const auto& caps = context_provider->ContextCapabilities();
     const auto& shared_image_caps =
         context_provider->SharedImageInterface()->GetCapabilities();
     overlay_candidate =
@@ -4654,9 +4650,6 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
         viz::CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      texture_target = gpu::GetBufferTextureTarget(
-          gfx::BufferUsage::SCANOUT,
-          viz::SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
   } else if (use_shared_image_software) {
     DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
@@ -4775,6 +4768,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
                                     ->SharedImageInterface()
                                     ->GenUnverifiedSyncToken();
 
+    GLenum texture_target =
+        client_shared_image->GetTextureTarget(gfx::BufferUsage::SCANOUT);
     transferable = viz::TransferableResource::MakeGpu(
         client_shared_image, texture_target, sync_token, upload_size, format,
         overlay_candidate, viz::TransferableResource::ResourceSource::kUI);
