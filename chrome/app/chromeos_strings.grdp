@@ -4721,6 +4721,28 @@
     Searching for networks...
   </message>
 
+
+  <!-- Scanning DLC Installation Notification -->
+  <message name="IDS_SCANNING_DLC_NOTIFICATION_DISPLAY_SOURCE" desc="The context title of scanning DLC download notifications.">
+    Scan
+  </message>
+
+  <message name="IDS_SCANNING_DLC_NOTIFICATION_INSTALLING_TITLE" desc="Title of Scanner DLC installing progress bar">
+    Installing scanner software
+  </message>
+
+  <message name="IDS_SCANNING_DLC_NOTIFICATION_INSTALLED_TITLE" desc="Title of Scanner DLC successfully completed notification">
+    Scanner software installed
+  </message>
+
+  <message name="IDS_SCANNING_DLC_NOTIFICATION_INSTALL_FAILED_TITLE" desc="Title of Scanner DLC failed notification">
+    Can't install scanner software
+  </message>
+
+  <message name="IDS_SCANNING_DLC_NOTIFICATION_INSTALL_FAILED_MESSAGE" desc="Message of Scanner DLC failed notification">
+    Unplug the scanner's USB cable and re-plug it to retry
+  </message>
+
   <!-- HaTS Strings -->
   <message name="IDS_HATS_NOTIFICATION_TITLE" desc="The title of the notification for Happiness Tracking Survey.">
     Help us improve Chromebooks

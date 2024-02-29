@@ -24,9 +24,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
+#include "chrome/browser/ash/scanning/lorgnette_notification_controller.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/scanning/scanner.h"
@@ -180,12 +183,15 @@ std::string CreateScannerId(std::string_view uuid,
 class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
  public:
   LorgnetteScannerManagerImpl(
-      std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector)
+      std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector,
+      Profile* profile)
       : zeroconf_scanner_detector_(std::move(zeroconf_scanner_detector)) {
     zeroconf_scanner_detector_->RegisterScannersDetectedCallback(
         base::BindRepeating(&LorgnetteScannerManagerImpl::OnScannersDetected,
                             weak_ptr_factory_.GetWeakPtr()));
     OnScannersDetected(zeroconf_scanner_detector_->GetScanners());
+    lorgnette_notification_controller_ =
+        std::make_unique<LorgnetteNotificationController>(profile);
   }
 
   ~LorgnetteScannerManagerImpl() override = default;
@@ -1044,6 +1050,10 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // device.
   std::map<std::string, TokenToScannerId> client_tokens_;
 
+  // Controls scanner notifications.
+  std::unique_ptr<LorgnetteNotificationController>
+      lorgnette_notification_controller_;
+
   SEQUENCE_CHECKER(sequence_);
 
   base::WeakPtrFactory<LorgnetteScannerManagerImpl> weak_ptr_factory_{this};
@@ -1053,10 +1063,11 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
 // static
 std::unique_ptr<LorgnetteScannerManager> LorgnetteScannerManager::Create(
-    std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector) {
+    std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector,
+    Profile* profile) {
   PRINTER_LOG(EVENT) << "LorgnetteScannerManager::Create";
   return std::make_unique<LorgnetteScannerManagerImpl>(
-      std::move(zeroconf_scanner_detector));
+      std::move(zeroconf_scanner_detector), profile);
 }
 
 }  // namespace ash

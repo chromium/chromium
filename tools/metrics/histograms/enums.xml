@@ -27459,6 +27459,7 @@ Called by update_net_error_codes.py.-->
   <int value="176" label="Network Carrier Unlock"/>
   <int value="177" label="Coral Feature"/>
   <int value="178" label="Input Device Settings"/>
+  <int value="179" label="Scanning DLC"/>
 </enum>
 
 <enum name="NQEObservationSource">

@@ -191,7 +191,8 @@ enum class NotificationCatalogName {
   kNetworkCarrierUnlock = 176,
   kCoralFeature = 177,
   kInputDeviceSettings = 178,
-  kMaxValue = kInputDeviceSettings
+  kDocumentScanning = 179,
+  kMaxValue = kDocumentScanning
 };
 
 // A living catalog that registers system nudges.

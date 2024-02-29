@@ -18,15 +18,22 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
-#include "base/test/task_environment.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/scanning/scanner.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -236,8 +243,9 @@ class FakeZeroconfScannerDetector final : public ZeroconfScannerDetector {
   // Used to trigger on_scanners_detected_callback_ after adding the given
   // |scanners| to the detected scanners.
   void AddDetections(const std::vector<Scanner>& scanners) {
-    for (const auto& scanner : scanners)
+    for (const auto& scanner : scanners) {
       scanners_[scanner.display_name] = scanner;
+    }
 
     on_scanners_detected_callback_.Run(GetScanners());
   }
@@ -260,21 +268,50 @@ class FakeZeroconfScannerDetector final : public ZeroconfScannerDetector {
 
 class LorgnetteScannerManagerTest : public testing::Test {
  public:
-  LorgnetteScannerManagerTest() {
+  LorgnetteScannerManagerTest() = default;
+  ~LorgnetteScannerManagerTest() override = default;
+
+  void SetUp() override {
+    // Set up a test account / user / profile
+    constexpr char kEmail[] = "test@test";
+    const AccountId account_id = AccountId::FromUserEmail(kEmail);
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    EXPECT_TRUE(profile_manager_->SetUp());
+    TestingProfile* testing_profile =
+        profile_manager_->CreateTestingProfile(kEmail,
+                                               /*is_main_profile=*/true);
+    fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
+        account_id, false, user_manager::UserType::kRegular, testing_profile);
+    fake_user_manager->LoginUser(account_id);
+    fake_user_manager->SwitchActiveUser(account_id);
+    user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
     run_loop_ = std::make_unique<base::RunLoop>();
+
+    DlcserviceClient::InitializeFake();
     LorgnetteManagerClient::InitializeFake();
+
     auto fake_zeroconf_scanner_detector =
         std::make_unique<FakeZeroconfScannerDetector>();
     fake_zeroconf_scanner_detector_ = fake_zeroconf_scanner_detector.get();
+
     lorgnette_scanner_manager_ = LorgnetteScannerManager::Create(
-        std::move(fake_zeroconf_scanner_detector));
+        std::move(fake_zeroconf_scanner_detector), testing_profile);
     // Set empty but successful capabilities response by default.
     lorgnette::ScannerCapabilities capabilities;
     GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(capabilities);
   }
 
-  ~LorgnetteScannerManagerTest() override {
+  void TearDown() override {
+    lorgnette_scanner_manager_.reset();
     LorgnetteManagerClient::Shutdown();
+    DlcserviceClient::Shutdown();
+    run_loop_.reset();
+    user_manager_.reset();
+    profile_manager_.reset();
   }
 
   // Returns a FakeLorgnetteManagerClient with an empty but successful
@@ -547,7 +584,9 @@ class LorgnetteScannerManagerTest : public testing::Test {
     run_loop_->Quit();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
