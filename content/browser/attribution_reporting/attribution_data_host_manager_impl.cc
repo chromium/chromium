@@ -38,6 +38,7 @@
 #include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
+#include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"

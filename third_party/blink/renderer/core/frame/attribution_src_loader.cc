@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
+#include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/source_type.mojom-shared.h"
@@ -119,7 +120,7 @@ void LogAuditIssue(ExecutionContext* execution_context,
 }
 
 base::expected<std::optional<attribution_reporting::Registrar>,
-               attribution_reporting::PreferredPlatformError>
+               attribution_reporting::RegistrationInfoError>
 GetPreferredPlatform(const HTTPHeaderMap& map,
                      ExecutionContext* execution_context,
                      uint64_t request_id) {
