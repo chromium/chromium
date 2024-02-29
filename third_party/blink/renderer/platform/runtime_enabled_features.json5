@@ -736,10 +736,6 @@
       status: "experimental",
     },
     {
-      name: "CSSAnimationComposition",
-      status: "stable",
-    },
-    {
       // Support for the animation-delay-start and animation-delay-end
       // properties.
       //

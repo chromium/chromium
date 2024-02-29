@@ -766,7 +766,6 @@
       default_value: "EffectModel::kCompositeReplace",
       type_name: "EffectModel::CompositeOperation",
       valid_for_marker: true,
-      runtime_flag: "CSSAnimationComposition"
     },
     {
       name: "animation-delay",

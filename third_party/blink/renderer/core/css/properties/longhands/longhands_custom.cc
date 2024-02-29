@@ -222,7 +222,6 @@ const CSSValue* AnimationComposition::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::CSSAnimationCompositionEnabled());
   return css_parsing_utils::ConsumeCommaSeparatedList(
       css_parsing_utils::ConsumeIdent<CSSValueID::kReplace, CSSValueID::kAdd,
                                       CSSValueID::kAccumulate>,
@@ -234,7 +233,6 @@ const CSSValue* AnimationComposition::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  DCHECK(RuntimeEnabledFeatures::CSSAnimationCompositionEnabled());
   if (!style.Animations()) {
     return InitialValue();
   }

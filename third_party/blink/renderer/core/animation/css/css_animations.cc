@@ -367,8 +367,7 @@ StringKeyframeVector ProcessKeyframesRule(
           properties.PropertyAt(j);
       CSSPropertyRef ref(property_reference.Name(), document);
       const CSSProperty& property = ref.GetProperty();
-      if (RuntimeEnabledFeatures::CSSAnimationCompositionEnabled() &&
-          property.PropertyID() == CSSPropertyID::kAnimationComposition) {
+      if (property.PropertyID() == CSSPropertyID::kAnimationComposition) {
         if (const auto* value_list =
                 DynamicTo<CSSValueList>(property_reference.Value())) {
           if (const auto* identifier_value =
