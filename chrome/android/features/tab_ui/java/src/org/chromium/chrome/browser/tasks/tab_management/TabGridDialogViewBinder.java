@@ -21,10 +21,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_DIALOG_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_KEYBOARD_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_MAIN_CONTENT_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_TAB_GROUP_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.MENU_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PRIMARY_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_INVITE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOULD_SHOW_SHARE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TINT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_CURSOR_VISIBILITY;
@@ -212,6 +214,11 @@ class TabGridDialogViewBinder {
                     model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
         } else if (SHOULD_SHOW_SHARE == propertyKey) {
             viewHolder.dialogView.updateShouldShowShare(model.get(SHOULD_SHOW_SHARE));
+        } else if (SHARE_INVITE_CLICK_LISTENER == propertyKey) {
+            viewHolder.dialogView.setShareInviteOnClickListener(
+                    model.get(SHARE_INVITE_CLICK_LISTENER));
+        } else if (IS_TAB_GROUP_SHARED == propertyKey) {
+            viewHolder.dialogView.refreshShareBar(model.get(IS_TAB_GROUP_SHARED));
         }
     }
 

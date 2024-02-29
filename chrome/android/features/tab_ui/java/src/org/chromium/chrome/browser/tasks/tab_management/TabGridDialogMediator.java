@@ -345,6 +345,9 @@ public class TabGridDialogMediator
         setupToolbarEditText();
 
         mModel.set(TabGridDialogProperties.MENU_CLICK_LISTENER, getMenuButtonClickListener());
+        mModel.set(
+                TabGridDialogProperties.SHARE_INVITE_CLICK_LISTENER,
+                getShareInviteButtonClickListener());
     }
 
     void hideDialog(boolean showAnimation) {
@@ -654,6 +657,13 @@ public class TabGridDialogMediator
         assert mTabListEditorControllerSupplier != null;
         return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
                 mToolbarMenuCallback);
+    }
+
+    private View.OnClickListener getShareInviteButtonClickListener() {
+        return view -> {
+            // TODO(b/325082444): Ask data sharing service about if the tab group is shared.
+            mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        };
     }
 
     private List<Tab> getRelatedTabs(int tabId) {

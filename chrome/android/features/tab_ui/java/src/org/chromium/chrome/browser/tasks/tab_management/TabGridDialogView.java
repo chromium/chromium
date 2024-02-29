@@ -117,6 +117,7 @@ public class TabGridDialogView extends FrameLayout {
     @ColorInt private int mUngroupBarHoveredTextColor;
     private Integer mBindingToken;
     private boolean mShouldShowShare;
+    private boolean mIsTabGroupShared;
 
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -834,19 +835,9 @@ public class TabGridDialogView extends FrameLayout {
             // Add the data sharing bottom toolbar view.
             mDialogContainerView.addView(shareBar);
 
-            ViewGroup manageBar = shareBar.findViewById(R.id.dialog_data_sharing_manage);
-            ButtonCompat inviteButton = shareBar.findViewById(R.id.dialog_share_invite_button);
-
-            // TODO(b/325082444): Update |isTabGroupShared| by asking data sharing service about if
+            // TODO(b/325082444): Update |mIsTabGroupShared| by asking data sharing service about if
             // the tab group is shared.
-            boolean isTabGroupShared = false;
-            if (isTabGroupShared) {
-                manageBar.setVisibility(View.VISIBLE);
-                inviteButton.setVisibility(View.GONE);
-            } else {
-                manageBar.setVisibility(View.GONE);
-                inviteButton.setVisibility(View.VISIBLE);
-            }
+            refreshShareBar(mIsTabGroupShared);
         }
 
         // The snackbar need to be added last to appear on top of any bottom toolbar.
@@ -856,6 +847,31 @@ public class TabGridDialogView extends FrameLayout {
                 (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
         params.setMargins(0, mToolbarHeight, 0, 0);
         recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Refresh the share bar view without resetting the whole dialog.
+     *
+     * @param isTabGroupShared Whether the tab group is shared.
+     */
+    void refreshShareBar(boolean isTabGroupShared) {
+        mIsTabGroupShared = isTabGroupShared;
+        ViewGroup manageBar = mDialogContainerView.findViewById(R.id.dialog_data_sharing_manage);
+        ButtonCompat inviteButton =
+                mDialogContainerView.findViewById(R.id.dialog_share_invite_button);
+
+        // Check for conditions which the sharebar should not show.
+        if (manageBar == null || inviteButton == null || !mShouldShowShare) {
+            return;
+        }
+
+        if (mIsTabGroupShared) {
+            manageBar.setVisibility(View.VISIBLE);
+            inviteButton.setVisibility(View.GONE);
+        } else {
+            manageBar.setVisibility(View.GONE);
+            inviteButton.setVisibility(View.VISIBLE);
+        }
     }
 
     /** Show {@link PopupWindow} for dialog with animation. */
@@ -980,6 +996,19 @@ public class TabGridDialogView extends FrameLayout {
     void setBindingToken(Integer bindingToken) {
         assert mBindingToken == null || bindingToken == null;
         mBindingToken = bindingToken;
+    }
+
+    /**
+     * Set click listener for the share bar invite button.
+     *
+     * @param listener {@link android.view.View.OnClickListener} for the button.
+     */
+    void setShareInviteOnClickListener(OnClickListener listener) {
+        ButtonCompat inviteButton =
+                mDialogContainerView.findViewById(R.id.dialog_share_invite_button);
+        if (inviteButton != null) {
+            inviteButton.setOnClickListener(listener);
+        }
     }
 
     Integer getBindingToken() {
