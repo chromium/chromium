@@ -1049,6 +1049,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.DocumentServiceBind.IsSecureFrame"
+    enum="BooleanSecure" expires_after="2024-08-26">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether the frame is secure when the shared storage document mojom
+    service is initialized.
+  </summary>
+</histogram>
+
 <histogram
     name="Storage.SharedStorage.HeaderObserver.CreatedOpaqueOriginForPrefsCheck"
     enum="Boolean" expires_after="2024-12-01">
