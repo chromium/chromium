@@ -88,6 +88,10 @@ class DriveRecentFileSuggestionProvider
 
   const raw_ptr<Profile> profile_;
 
+  // The time delta within which a valid file suggestion needs to be viewed or
+  // modified.
+  const base::TimeDelta max_recency_;
+
   // Whether request for file suggest data can generate results from the latest
   // cached query results.
   bool can_use_cache_ = false;

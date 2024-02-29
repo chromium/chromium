@@ -135,11 +135,7 @@ TEST_F(LocalFileSuggestionProviderTest, OldFilesNotReturned) {
   WriteFile(Path("new.txt"));
   WriteFile(Path("old.png"));
   auto now = base::Time::Now();
-  base::TouchFile(
-      Path("old.png"), now,
-      now -
-          base::Days(
-              LocalFileSuggestionProvider::kDefaultMaxLastModifiedTimeInDays));
+  base::TouchFile(Path("old.png"), now, now - GetMaxFileSuggestionRecency());
 
   GetProvider()->OnFilesOpened(
       {OpenEvent(Path("new.txt")), OpenEvent(Path("old.png"))});

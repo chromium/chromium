@@ -602,6 +602,17 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
               .last_modified_time = GetReferenceTime() - base::Hours(26),
               .last_modifying_user = "Test User 1",
               .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"},
+             {.path = base::FilePath("/Old shared file"),
+              .last_modified_time = GetReferenceTime() - base::Days(100),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(100),
+              .sharing_user = "Test User 2"},
+             {.path = base::FilePath("/Old shared file viewed by user"),
+              .last_modified_time = GetReferenceTime() - base::Days(100),
+              .last_modifying_user = "Test User 1",
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(99),
+              .shared_with_me_time = GetReferenceTime() - base::Days(100),
               .sharing_user = "Test User 2"}}));
 
         mojo::MakeSelfOwnedReceiver(std::move(search_query),

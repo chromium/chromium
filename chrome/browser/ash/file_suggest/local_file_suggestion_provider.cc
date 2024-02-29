@@ -77,7 +77,7 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
     base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback)
     : FileSuggestionProvider(notify_update_callback),
       profile_(profile),
-      max_last_modified_time_(base::Days(kDefaultMaxLastModifiedTimeInDays)) {
+      max_last_modified_time_(GetMaxFileSuggestionRecency()) {
   DCHECK(profile_);
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(

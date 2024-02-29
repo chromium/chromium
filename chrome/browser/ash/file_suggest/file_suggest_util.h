@@ -39,6 +39,10 @@ enum class FileSuggestionType {
   kLocalFile,
 };
 
+// Returns the max amount of time from now that a file was modified or viewed to
+// be available as a file suggestion.
+base::TimeDelta GetMaxFileSuggestionRecency();
+
 // The data of an individual file suggested by `FileSuggestKeyedService`.
 struct FileSuggestData {
   FileSuggestData(FileSuggestionType new_type,

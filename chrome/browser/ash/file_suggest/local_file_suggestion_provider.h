@@ -34,8 +34,6 @@ class LocalFileSuggestionProvider
     base::File::Info info;
   };
 
-  static const int kDefaultMaxLastModifiedTimeInDays = 8;
-
   LocalFileSuggestionProvider(
       Profile* profile,
       base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback);
