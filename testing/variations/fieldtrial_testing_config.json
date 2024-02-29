@@ -7288,33 +7288,6 @@
             ]
         }
     ],
-    "FenderLcpInfluencerScriptsPriority": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "VeryHighPriorityForScriptAndLcpImage_20240215",
-                    "params": {
-                        "lcpscriptobserver_adjust_image_load_priority": "true",
-                        "lcpscriptobserver_image_load_priority": "very_high",
-                        "lcpscriptobserver_script_load_priority": "very_high",
-                        "lcpscriptobserver_script_max_url_count_per_origin": "5",
-                        "lcpscriptobserver_script_max_url_length": "1024"
-                    },
-                    "enable_features": [
-                        "LCPScriptObserver"
-                    ]
-                }
-            ]
-        }
-    ],
     "FenderScriptScheduling": [
         {
             "platforms": [
