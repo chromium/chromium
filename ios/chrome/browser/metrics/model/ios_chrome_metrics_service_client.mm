@@ -356,26 +356,26 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
           std::make_unique<metrics::ChromeBrowserStateClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
 
-  // TODO(crbug.com/40285060): Avoid using GetLastUsedBrowserState(). This code
-  // should initialize providers for all browser states.
-  ChromeBrowserState* browser_state = GetApplicationContext()
-                                          ->GetChromeBrowserStateManager()
-                                          ->GetLastUsedBrowserState();
+  std::vector<ChromeBrowserState*> loaded_browser_states =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browser_state : loaded_browser_states) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<IOSFeedActivityMetricsProvider>(
+            browser_state->GetPrefs()));
 
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSFeedActivityMetricsProvider>(
-          browser_state->GetPrefs()));
+    metrics_service_->RegisterMetricsProvider(
+        CreateIOSProfileSessionMetricsProvider());
 
-  metrics_service_->RegisterMetricsProvider(
-      CreateIOSProfileSessionMetricsProvider());
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<IOSFeedEnabledMetricsProvider>(
+            browser_state->GetPrefs()));
 
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSFeedEnabledMetricsProvider>(
-          browser_state->GetPrefs()));
-
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSPushNotificationsMetricsProvider>(
-          IdentityManagerFactory::GetForBrowserState(browser_state)));
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<IOSPushNotificationsMetricsProvider>(
+            IdentityManagerFactory::GetForBrowserState(browser_state)));
+  }
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
