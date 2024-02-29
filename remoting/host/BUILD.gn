@@ -367,6 +367,8 @@ static_library("common") {
     "keyboard_layout_monitor.h",
     "mojo_caller_security_checker.cc",
     "mojo_caller_security_checker.h",
+    "mojo_video_capturer.cc",
+    "mojo_video_capturer.h",
     "mouse_cursor_monitor_proxy.cc",
     "mouse_cursor_monitor_proxy.h",
     "mouse_shape_pump.cc",

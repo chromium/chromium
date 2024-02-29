@@ -34,6 +34,7 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
+#include "remoting/host/mojo_video_capturer.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
@@ -47,8 +48,6 @@
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/input_event_tracker.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
 namespace remoting {
@@ -275,18 +274,10 @@ void DesktopSessionAgent::Start(
   }
 
   // Start the video capturer and mouse cursor monitor.
-  video_capturer_ = desktop_environment_->CreateVideoCapturer();
-  video_capturer_->Start(this);
-  video_capturer_->SetSharedMemoryFactory(
-      std::make_unique<SharedVideoMemoryFactory>(
-          base::BindPostTask(
-              caller_task_runner_,
-              base::BindRepeating(
-                  &DesktopSessionAgent::OnSharedMemoryRegionCreated, this)),
-          base::BindPostTask(
-              caller_task_runner_,
-              base::BindRepeating(
-                  &DesktopSessionAgent::OnSharedMemoryRegionReleased, this))));
+  video_capturer_ = std::make_unique<MojoVideoCapturer>(
+      desktop_environment_->CreateVideoCapturer(), caller_task_runner_);
+  video_capturer_->set_event_handler(desktop_session_event_handler_.get());
+  video_capturer_->Start();
   mouse_cursor_monitor_ = desktop_environment_->CreateMouseCursorMonitor();
   mouse_cursor_monitor_->Init(this,
                               webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
@@ -320,34 +311,6 @@ void DesktopSessionAgent::Start(
 
   std::move(callback).Run(
       desktop_session_control_.BindNewEndpointAndPassRemote());
-}
-
-void DesktopSessionAgent::OnCaptureResult(
-    webrtc::DesktopCapturer::Result result,
-    std::unique_ptr<webrtc::DesktopFrame> frame) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  mojom::CaptureResultPtr capture_result;
-  if (frame) {
-    DCHECK_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
-    std::vector<webrtc::DesktopRect> dirty_region;
-    for (webrtc::DesktopRegion::Iterator i(frame->updated_region());
-         !i.IsAtEnd(); i.Advance()) {
-      dirty_region.push_back(i.rect());
-    }
-    capture_result =
-        mojom::CaptureResult::NewDesktopFrame(mojom::DesktopFrame::New(
-            frame->shared_memory()->id(), frame->stride(), frame->size(),
-            std::move(dirty_region), frame->capture_time_ms(), frame->dpi(),
-            frame->capturer_id()));
-  } else {
-    DCHECK_NE(result, webrtc::DesktopCapturer::Result::SUCCESS);
-    capture_result = mojom::CaptureResult::NewCaptureError(result);
-  }
-
-  last_frame_ = std::move(frame);
-
-  desktop_session_event_handler_->OnCaptureResult(std::move(capture_result));
 }
 
 void DesktopSessionAgent::OnMouseCursor(webrtc::MouseCursor* cursor) {
@@ -429,6 +392,12 @@ void DesktopSessionAgent::Stop() {
     weak_factory_.InvalidateWeakPtrs();
     client_jid_.clear();
 
+    // Avoid dangling pointer in the video-capturer when resetting the
+    // event-handler below.
+    if (video_capturer_) {
+      video_capturer_->set_event_handler(nullptr);
+    }
+
     desktop_session_event_handler_.reset();
     desktop_session_state_handler_.reset();
     desktop_session_control_.reset();
@@ -458,7 +427,6 @@ void DesktopSessionAgent::Stop() {
 
     // Stop the video capturer.
     video_capturer_.reset();
-    last_frame_.reset();
     mouse_cursor_monitor_.reset();
   }
 }
@@ -566,24 +534,6 @@ void DesktopSessionAgent::OnKeyboardLayoutChange(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   if (desktop_session_event_handler_) {
     desktop_session_event_handler_->OnKeyboardLayoutChanged(layout);
-  }
-}
-
-void DesktopSessionAgent::OnSharedMemoryRegionCreated(
-    int id,
-    base::ReadOnlySharedMemoryRegion region,
-    uint32_t size) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  if (desktop_session_event_handler_) {
-    desktop_session_event_handler_->OnSharedMemoryRegionCreated(
-        id, std::move(region), size);
-  }
-}
-
-void DesktopSessionAgent::OnSharedMemoryRegionReleased(int id) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  if (desktop_session_event_handler_) {
-    desktop_session_event_handler_->OnSharedMemoryRegionReleased(id);
   }
 }
 

@@ -31,8 +31,6 @@
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/events/event.h"
 
@@ -51,11 +49,11 @@ class ActionExecutor;
 class AudioCapturer;
 class AudioPacket;
 class AutoThreadTaskRunner;
-class DesktopCapturer;
 class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
+class MojoVideoCapturer;
 class RemoteInputFilter;
 class RemoteWebAuthnStateChangeNotifier;
 class ScreenControls;
@@ -71,7 +69,6 @@ class InputEventTracker;
 class DesktopSessionAgent
     : public base::RefCountedThreadSafe<DesktopSessionAgent>,
       public IPC::Listener,
-      public webrtc::DesktopCapturer::Callback,
       public webrtc::MouseCursorMonitor::Callback,
       public ClientSessionControl,
       public mojom::DesktopSessionAgent,
@@ -111,10 +108,6 @@ class DesktopSessionAgent
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
-
-  // webrtc::DesktopCapturer::Callback implementation.
-  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
-                       std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
   // webrtc::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* cursor) override;
@@ -175,14 +168,6 @@ class DesktopSessionAgent
   // Handles keyboard layout changes.
   void OnKeyboardLayoutChange(const protocol::KeyboardLayout& layout);
 
-  // Notifies the network process when a new shared memory region is created.
-  void OnSharedMemoryRegionCreated(int id,
-                                   base::ReadOnlySharedMemoryRegion region,
-                                   uint32_t size);
-
-  // Notifies the network process when a shared memory region is released.
-  void OnSharedMemoryRegionReleased(int id);
-
   // Posted to |audio_capture_task_runner_| to start the audio capturer.
   void StartAudioCapturer();
 
@@ -238,17 +223,13 @@ class DesktopSessionAgent
   bool started_ = false;
 
   // Captures the screen and composites with the mouse cursor if necessary.
-  std::unique_ptr<DesktopCapturer> video_capturer_;
+  std::unique_ptr<MojoVideoCapturer> video_capturer_;
 
   // Captures mouse shapes.
   std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
 
   // Watches for keyboard layout changes.
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;
-
-  // Keep reference to the last frame sent to make sure shared buffer is alive
-  // before it's received.
-  std::unique_ptr<webrtc::DesktopFrame> last_frame_;
 
   // Routes file-transfer messages to the corresponding reader/writer to be
   // executed.
