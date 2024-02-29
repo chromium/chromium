@@ -30,7 +30,7 @@ class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
 
   void CreateResponseReader(const base::FilePath& web_bundle_path,
                             const web_package::SignedWebBundleId& web_bundle_id,
-                            bool skip_signature_verification,
+                            IsolatedWebAppResponseReaderFactory::Flags flags,
                             Callback callback) override;
 
  private:

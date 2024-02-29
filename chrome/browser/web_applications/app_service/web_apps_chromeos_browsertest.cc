@@ -407,6 +407,7 @@ class IsolatedWebAppChromeOsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppChromeOsBrowserTest,
                        ContextMenuOnlyHasLaunchNew) {
+  app()->TrustSigningKey();
   web_app::IsolatedWebAppUrlInfo url_info =
       app()->InstallChecked(browser()->profile());
 

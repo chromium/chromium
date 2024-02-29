@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -281,6 +282,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ValidBundleTransitionsToShowMetadataScreen) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model(bundle_path);
@@ -339,6 +341,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        OutdatedBundleShowsAlreadyInstalledDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   AddDummyIsolatedAppToRegistry(
@@ -374,6 +377,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        NewerBundleShowsAlreadyInstalledDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "2.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "2.0");
 
   AddDummyIsolatedAppToRegistry(
@@ -458,6 +462,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        SuccessfulInstallationMovesToSuccessScreen) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model(bundle_path);
@@ -491,6 +496,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model(bundle_path);
@@ -532,6 +538,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        InstallationErrorShowsErrorDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model(bundle_path);
@@ -596,6 +603,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChangingPrefToFalseDisablesInstaller) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model(bundle_path);
@@ -630,6 +638,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChangingPrefToTrueRestartsInstaller) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model(bundle_path);

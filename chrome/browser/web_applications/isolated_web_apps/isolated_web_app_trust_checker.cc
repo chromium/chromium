@@ -44,7 +44,8 @@ IsolatedWebAppTrustChecker::~IsolatedWebAppTrustChecker() = default;
 
 IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const web_package::SignedWebBundleIntegrityBlock& integrity_block) const {
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+    bool is_dev_mode_bundle) const {
   if (expected_web_bundle_id.type() !=
       web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
     return {.status = Result::Status::kErrorUnsupportedWebBundleIdType,
@@ -78,7 +79,8 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (IsTrustedViaDevMode(expected_web_bundle_id)) {
+  if (is_dev_mode_bundle &&
+      base::FeatureList::IsEnabled(features::kIsolatedWebAppDevMode)) {
     return {.status = Result::Status::kTrusted};
   }
 
@@ -111,11 +113,6 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
       });
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-bool IsolatedWebAppTrustChecker::IsTrustedViaDevMode(
-    const web_package::SignedWebBundleId& web_bundle_id) const {
-  return base::FeatureList::IsEnabled(features::kIsolatedWebAppDevMode);
-}
 
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST
     base::flat_set<web_package::SignedWebBundleId> trusted_web_bundle_ids) {

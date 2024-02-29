@@ -37,6 +37,7 @@ class IsolatedWebAppValidator {
   virtual void ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& expected_web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+      bool dev_mode,
       base::OnceCallback<void(std::optional<std::string>)> callback);
 
   // Validates that the metadata of the Isolated Web App is valid given the

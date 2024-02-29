@@ -41,7 +41,7 @@ IsolatedWebAppResponseReaderFactory::~IsolatedWebAppResponseReaderFactory() {
 void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    bool skip_signature_verification,
+    Flags flags,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(web_bundle_id.type(),
@@ -59,8 +59,7 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
   SignedWebBundleReader& reader_ref = *reader.get();
   reader_ref.StartReading(
       base::BindOnce(&IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead,
-                     weak_ptr_factory_.GetWeakPtr(), web_bundle_id,
-                     skip_signature_verification),
+                     weak_ptr_factory_.GetWeakPtr(), web_bundle_id, flags),
       base::BindOnce(
           &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead,
           weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
@@ -95,17 +94,18 @@ std::string IsolatedWebAppResponseReaderFactory::ErrorToString(
 
 void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(
     const web_package::SignedWebBundleId& web_bundle_id,
-    bool skip_signature_verification,
+    Flags flags,
     const web_package::SignedWebBundleIntegrityBlock integrity_block,
     base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
         integrity_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   validator_->ValidateIntegrityBlock(
-      web_bundle_id, integrity_block,
+      web_bundle_id, integrity_block, flags.Has(Flag::kDevModeBundle),
       base::BindOnce(
           &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockValidated,
-          weak_ptr_factory_.GetWeakPtr(), skip_signature_verification,
+          weak_ptr_factory_.GetWeakPtr(),
+          flags.Has(Flag::kSkipSignatureVerification),
           std::move(integrity_callback)));
 }
 

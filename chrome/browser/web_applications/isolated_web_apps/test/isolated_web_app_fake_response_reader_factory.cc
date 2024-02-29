@@ -37,10 +37,11 @@ FakeResponseReaderFactory::~FakeResponseReaderFactory() = default;
 void FakeResponseReaderFactory::CreateResponseReader(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    bool skip_signature_verification,
+    IsolatedWebAppResponseReaderFactory::Flags flags,
     Callback callback) {
   // Signatures _must_ be verified during installation.
-  CHECK(!skip_signature_verification);
+  CHECK(!flags.Has(
+      IsolatedWebAppResponseReaderFactory::Flag::kSkipSignatureVerification));
   if (!bundle_status_.has_value()) {
     std::move(callback).Run(base::unexpected(bundle_status_.error()));
   } else {

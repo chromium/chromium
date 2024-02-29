@@ -75,6 +75,7 @@ class IsolatedWebAppURLLoaderFactory
 
   void HandleSignedBundle(
       const base::FilePath& path,
+      bool dev_mode,
       const web_package::SignedWebBundleId& web_bundle_id,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       const network::ResourceRequest& resource_request,

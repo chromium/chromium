@@ -85,12 +85,13 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   // both the response head and a closure it can call to read the response body,
   // or a string if an error occurs.
   void ReadResponse(const base::FilePath& web_bundle_path,
+                    bool dev_mode,
                     const web_package::SignedWebBundleId& web_bundle_id,
                     const network::ResourceRequest& resource_request,
                     ReadResponseCallback callback);
 
-  // Closes the cached readers of the given path.  After callback is invoked
-  // the caller can expect that the corresponding file is closed.
+  // Closes the cached readers of the given path. After callback is invoked the
+  // caller can expect that the corresponding file is closed.
   void ClearCacheForPath(const base::FilePath& web_bundle_path,
                          base::OnceClosure callback);
 
@@ -110,8 +111,13 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppReaderRegistryTest,
                            TestConcurrentRequests);
 
+  void ClearCacheForPath(const base::FilePath& web_bundle_path,
+                         bool dev_mode,
+                         base::OnceClosure callback);
+
   void OnResponseReaderCreated(
       const base::FilePath& web_bundle_path,
+      bool dev_mode,
       const web_package::SignedWebBundleId& web_bundle_id,
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                      UnusableSwbnFileError> reader);
@@ -127,13 +133,14 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
 
   enum class ReaderCacheState;
 
-  // A thin wrapper around `base::flat_map<base::FilePath, Cache::Entry>` that
+  // A thin wrapper around `base::flat_map<Cache::Key, Cache::Entry>` that
   // automatically removes entries from the cache if they have not been accessed
   // for some time. This makes sure that `IsolatedWebAppResponseReader`s are not
   // kept alive indefinitely, since each of them holds an open file handle and
   // memory.
   class Cache {
    public:
+    struct Key;
     class Entry;
 
     Cache();
@@ -142,16 +149,22 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     Cache(Cache&& other) = delete;
     Cache& operator=(Cache&& other) = delete;
 
-    base::flat_map<base::FilePath, Entry>::iterator Find(
-        const base::FilePath& file_path);
+    base::flat_map<Key, Entry>::iterator Find(const Key& key);
 
-    base::flat_map<base::FilePath, Entry>::iterator End();
+    base::flat_map<Key, Entry>::iterator End();
 
     template <class... Args>
-    std::pair<base::flat_map<base::FilePath, Entry>::iterator, bool> Emplace(
+    std::pair<base::flat_map<Key, Entry>::iterator, bool> Emplace(
         Args&&... args);
 
-    void Erase(base::flat_map<base::FilePath, Entry>::iterator iterator);
+    void Erase(base::flat_map<Key, Entry>::iterator iterator);
+
+    struct Key {
+      base::FilePath path;
+      bool dev_mode;
+
+      bool operator<(const Key& other) const;
+    };
 
     // A cache `Entry` has two states: In its initial `kPending` state, it
     // caches requests made to a Signed Web Bundle until an
@@ -217,7 +230,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
 
     void CleanupOldEntries();
 
-    base::flat_map<base::FilePath, Entry> cache_;
+    base::flat_map<Key, Entry> cache_;
     base::RepeatingTimer cleanup_timer_;
     SEQUENCE_CHECKER(sequence_checker_);
   };

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -55,10 +56,18 @@ class IsolatedWebAppResponseReaderFactory {
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                      UnusableSwbnFileError>)>;
 
+  enum class Flag {
+    kMinValue,
+    kDevModeBundle = kMinValue,
+    kSkipSignatureVerification,
+    kMaxValue = kSkipSignatureVerification
+  };
+  using Flags = base::EnumSet<Flag, Flag::kMinValue, Flag::kMaxValue>;
+
   virtual void CreateResponseReader(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      bool skip_signature_verification,
+      Flags flags,
       Callback callback);
 
   static std::string ErrorToString(const UnusableSwbnFileError& error);
@@ -66,7 +75,7 @@ class IsolatedWebAppResponseReaderFactory {
  private:
   void OnIntegrityBlockRead(
       const web_package::SignedWebBundleId& web_bundle_id,
-      bool skip_signature_verification,
+      Flags flags,
       const web_package::SignedWebBundleIntegrityBlock integrity_block,
       base::OnceCallback<
           void(SignedWebBundleReader::SignatureVerificationAction)> callback);

@@ -85,6 +85,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -1494,6 +1495,8 @@ void WebAppIntegrationTestDriver::InstallIsolatedApp(Site site) {
   IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id);
   webapps::AppId app_id = url_info.app_id();
+
+  SetTrustedWebBundleIdsForTesting({bundle.id});
 
   {
     base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,

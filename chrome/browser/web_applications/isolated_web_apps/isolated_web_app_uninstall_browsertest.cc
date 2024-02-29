@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
@@ -60,6 +61,7 @@ class IsolatedWebAppUninstallBrowserTest
 
   void Install() {
     base::test::TestFuture<InstallResult> future;
+    SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
     provider()->scheduler().InstallIsolatedWebApp(
         url_info_, src_location_,
         /*expected_version=*/std::nullopt,

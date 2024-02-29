@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -85,6 +86,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
 
   void Install() {
     base::test::TestFuture<InstallResult> future;
+    SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
     provider()->scheduler().InstallIsolatedWebApp(
         url_info_, source_location_,
         /*expected_version=*/installed_version_,

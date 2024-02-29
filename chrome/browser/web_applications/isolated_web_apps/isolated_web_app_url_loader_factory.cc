@@ -219,6 +219,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
   IsolatedWebAppURLLoader(
       IsolatedWebAppReaderRegistry* isolated_web_app_reader_registry,
       const base::FilePath& web_bundle_path,
+      bool dev_mode,
       web_package::SignedWebBundleId web_bundle_id,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
       const network::ResourceRequest& resource_request,
@@ -227,7 +228,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
         resource_request_(resource_request),
         frame_tree_node_id_(frame_tree_node_id) {
     isolated_web_app_reader_registry->ReadResponse(
-        web_bundle_path, web_bundle_id, resource_request,
+        web_bundle_path, dev_mode, web_bundle_id, resource_request,
         base::BindOnce(&IsolatedWebAppURLLoader::OnResponseRead,
                        weak_factory_.GetWeakPtr()));
   }
@@ -502,7 +503,8 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
           [&](const InstalledBundle& location) {
             DCHECK_EQ(url_info.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            HandleSignedBundle(location.path, url_info.web_bundle_id(),
+            HandleSignedBundle(location.path, /*dev_mode=*/false,
+                               url_info.web_bundle_id(),
                                std::move(loader_receiver), resource_request,
                                std::move(loader_client));
           },
@@ -513,7 +515,8 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
             // like a properly installed Signed Web Bundle, with the only
             // difference being that we implicitly trust its public
             // key(s) when developer mode is enabled.
-            HandleSignedBundle(location.path, url_info.web_bundle_id(),
+            HandleSignedBundle(location.path, /*dev_mode=*/true,
+                               url_info.web_bundle_id(),
                                std::move(loader_receiver), resource_request,
                                std::move(loader_client));
           },
@@ -539,6 +542,7 @@ void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(
 
 void IsolatedWebAppURLLoaderFactory::HandleSignedBundle(
     const base::FilePath& path,
+    bool dev_mode,
     const web_package::SignedWebBundleId& web_bundle_id,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     const network::ResourceRequest& resource_request,
@@ -552,7 +556,7 @@ void IsolatedWebAppURLLoaderFactory::HandleSignedBundle(
   }
 
   auto loader = std::make_unique<IsolatedWebAppURLLoader>(
-      isolated_web_app_reader_registry, path, web_bundle_id,
+      isolated_web_app_reader_registry, path, dev_mode, web_bundle_id,
       std::move(loader_client), resource_request, frame_tree_node_id_);
   mojo::MakeSelfOwnedReceiver(std::move(std::move(loader)),
                               mojo::PendingReceiver<network::mojom::URLLoader>(

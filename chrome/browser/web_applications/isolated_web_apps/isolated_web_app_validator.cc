@@ -32,6 +32,7 @@ IsolatedWebAppValidator::~IsolatedWebAppValidator() = default;
 void IsolatedWebAppValidator::ValidateIntegrityBlock(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+    bool dev_mode,
     base::OnceCallback<void(std::optional<std::string>)> callback) {
   // In here, we would also validate other properties of the Integrity Block,
   // such as whether its version is supported (once we support multiple
@@ -39,7 +40,7 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
 
   IsolatedWebAppTrustChecker::Result result =
       isolated_web_app_trust_checker_->IsTrusted(expected_web_bundle_id,
-                                                 integrity_block);
+                                                 integrity_block, dev_mode);
   if (result.status != IsolatedWebAppTrustChecker::Result::Status::kTrusted) {
     std::move(callback).Run(result.message);
     return;

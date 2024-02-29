@@ -82,7 +82,8 @@ class MockIsolatedWebAppTrustChecker : private TestingPrefServiceSimple,
       IsolatedWebAppTrustChecker::Result,
       IsTrusted,
       (const web_package::SignedWebBundleId& web_bundle_id,
-       const web_package::SignedWebBundleIntegrityBlock& integrity_block),
+       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+       bool dev_mode),
       (const, override));
 };
 
@@ -125,17 +126,20 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
 
   auto isolated_web_app_trust_checker =
       std::make_unique<MockIsolatedWebAppTrustChecker>();
-  EXPECT_CALL(*isolated_web_app_trust_checker,
-              IsTrusted(web_bundle_id, integrity_block))
-      .WillOnce([](auto web_bundle_id,
-                   auto integrity_block) -> IsolatedWebAppTrustChecker::Result {
-        return {.status = IsolatedWebAppTrustChecker::Result::Status::kTrusted};
-      });
+  EXPECT_CALL(
+      *isolated_web_app_trust_checker,
+      IsTrusted(web_bundle_id, integrity_block, /*is_dev_mode_bundle=*/false))
+      .WillOnce(
+          [](auto web_bundle_id, auto integrity_block,
+             bool is_dev_mode_bundle) -> IsolatedWebAppTrustChecker::Result {
+            return {.status =
+                        IsolatedWebAppTrustChecker::Result::Status::kTrusted};
+          });
 
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
   base::test::TestFuture<std::optional<std::string>> future;
   validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
-                                   future.GetCallback());
+                                   /*dev_mode=*/false, future.GetCallback());
   EXPECT_EQ(future.Get(), std::nullopt);
 }
 
@@ -147,11 +151,12 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
 
   auto isolated_web_app_trust_checker =
       std::make_unique<MockIsolatedWebAppTrustChecker>();
-  EXPECT_CALL(*isolated_web_app_trust_checker,
-              IsTrusted(web_bundle_id, integrity_block))
+  EXPECT_CALL(
+      *isolated_web_app_trust_checker,
+      IsTrusted(web_bundle_id, integrity_block, /*is_dev_mode_bundle=*/true))
       .WillOnce(
-          [](auto web_bundle_id,
-             auto public_key_stack) -> IsolatedWebAppTrustChecker::Result {
+          [](auto web_bundle_id, auto public_key_stack,
+             bool is_dev_mode_bundle) -> IsolatedWebAppTrustChecker::Result {
             return {
                 .status = IsolatedWebAppTrustChecker::Result::Status::
                     kErrorPublicKeysNotTrusted,
@@ -162,7 +167,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
   base::test::TestFuture<std::optional<std::string>> future;
   validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
-                                   future.GetCallback());
+                                   /*dev_mode=*/true, future.GetCallback());
   EXPECT_EQ(future.Get(), "test error");
 }
 

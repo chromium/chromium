@@ -122,6 +122,7 @@ class IsolatedWebAppInstallCommandHelper {
  private:
   void CheckTrustAndSignaturesOfBundle(
       const base::FilePath& path,
+      bool dev_mode,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);
 
   void OnTrustAndSignaturesOfBundleChecked(

@@ -250,6 +250,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NewManifestPathPreferred) {
                        "application/manifest+json")
           .BuildBundle();
 
+  app->TrustSigningKey();
   IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(url_info.app_id()),
@@ -281,6 +282,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, FallsBackToOldManifestPath) {
   auto app = ScopedBundledIsolatedWebApp::Create(
       web_bundle_id, web_package::WebBundleSigner::SignBundle(
                          builder.CreateBundle(), {key_pair}));
+  app->TrustSigningKey();
   ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(url_info.app_id()),

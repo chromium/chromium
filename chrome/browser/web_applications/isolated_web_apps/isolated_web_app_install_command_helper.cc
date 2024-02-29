@@ -236,7 +236,9 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
           [&](const InstalledBundle& location) {
             CHECK_EQ(url_info_.web_bundle_id().type(),
                      web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            CheckTrustAndSignaturesOfBundle(location.path, std::move(callback));
+            CheckTrustAndSignaturesOfBundle(location.path,
+                                            /*dev_mode=*/false,
+                                            std::move(callback));
           },
           [&](const DevModeBundle& location) {
             CHECK_EQ(url_info_.web_bundle_id().type(),
@@ -246,7 +248,9 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
               return;
             }
-            CheckTrustAndSignaturesOfBundle(location.path, std::move(callback));
+            CheckTrustAndSignaturesOfBundle(location.path,
+                                            /*dev_mode=*/true,
+                                            std::move(callback));
           },
           [&](const DevModeProxy& location) {
             CHECK_EQ(url_info_.web_bundle_id().type(),
@@ -265,6 +269,7 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
 
 void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignaturesOfBundle(
     const base::FilePath& path,
+    bool dev_mode,
     base::OnceCallback<void(base::expected<void, std::string>)> callback) {
   // To check whether the bundle is valid and trusted, we attempt to create a
   // `IsolatedWebAppResponseReader`. If a response reader is created
@@ -274,11 +279,12 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignaturesOfBundle(
   // - ...has signatures that were verified successfully (as long as
   //   `skip_signature_verification` below is set to `false`).
   // - ...contains valid metadata / no invalid URLs.
+  IsolatedWebAppResponseReaderFactory::Flags flags;
+  if (dev_mode) {
+    flags.Put(IsolatedWebAppResponseReaderFactory::Flag::kDevModeBundle);
+  }
   response_reader_factory_->CreateResponseReader(
-      path, url_info_.web_bundle_id(),
-      // During install and updates, we always want to verify signatures,
-      // regardless of the OS.
-      /*skip_signature_verification=*/false,
+      path, url_info_.web_bundle_id(), flags,
       base::BindOnce(&IsolatedWebAppInstallCommandHelper::
                          OnTrustAndSignaturesOfBundleChecked,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
