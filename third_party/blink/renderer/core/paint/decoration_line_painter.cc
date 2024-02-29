@@ -18,20 +18,23 @@ float RoundDownThickness(float stroke_thickness) {
   return std::max(floorf(stroke_thickness), 1.0f);
 }
 
-gfx::RectF GetRectForTextLine(gfx::PointF pt,
-                              float width,
-                              float stroke_thickness) {
-  // Avoid anti-aliasing lines. Currently, these are always horizontal.
-  // Round to nearest pixel to match text and other content.
-  float y = floorf(pt.y() + 0.5f);
-  return gfx::RectF(pt.x(), y, width, stroke_thickness);
+gfx::RectF DecorationRect(gfx::PointF pt, float width, float stroke_thickness) {
+  return gfx::RectF(pt, gfx::SizeF(width, stroke_thickness));
 }
 
-std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
-                                                       float width,
-                                                       float stroke_thickness) {
-  int y = floorf(pt.y() + std::max<float>(stroke_thickness / 2.0f, 0.5f));
-  return {gfx::Point(pt.x(), y), gfx::Point(pt.x() + width, y)};
+gfx::RectF SnapYAxis(const gfx::RectF& decoration_rect) {
+  gfx::RectF snapped = decoration_rect;
+  snapped.set_y(floorf(decoration_rect.y() + 0.5f));
+  snapped.set_height(RoundDownThickness(decoration_rect.height()));
+  return snapped;
+}
+
+std::pair<gfx::Point, gfx::Point> GetSnappedPointsForTextLine(
+    const gfx::RectF& decoration_rect) {
+  int mid_y = floorf(decoration_rect.y() +
+                     std::max(decoration_rect.height() / 2.0f, 0.5f));
+  return {gfx::Point(decoration_rect.x(), mid_y),
+          gfx::Point(decoration_rect.right(), mid_y)};
 }
 
 bool ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
@@ -61,26 +64,30 @@ void DecorationLinePainter::DrawLineForText(
     return;
   }
 
+  gfx::RectF line_rect = DecorationRect(pt, width, styled_stroke.Thickness());
+
   auto stroke_style = styled_stroke.Style();
-  const float thickness = styled_stroke.Thickness();
   DCHECK_NE(stroke_style, kWavyStroke);
   if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetPointsForTextLine(pt, width, thickness);
+    auto [start, end] = GetSnappedPointsForTextLine(line_rect);
     context.DrawLine(start, end, styled_stroke, auto_dark_mode, true,
                      paint_flags);
   } else {
+    // Avoid anti-aliasing lines. Currently, these are always horizontal. Round
+    // to nearest pixel to match text and other content.
+    line_rect = SnapYAxis(line_rect);
+
     if (paint_flags) {
       // In SVG, we don't round down the thickness to an integer for better
       // scaling behavior.  See crbug.com/1270336.
-      SkRect r = gfx::RectFToSkRect(GetRectForTextLine(pt, width, thickness));
-      context.DrawRect(r, *paint_flags, auto_dark_mode);
+      line_rect.set_height(styled_stroke.Thickness());
+      context.DrawRect(gfx::RectFToSkRect(line_rect), *paint_flags,
+                       auto_dark_mode);
     } else {
       cc::PaintFlags flags = context.FillFlags();
       // Text lines are drawn using the stroke color.
       flags.setColor(context.StrokeFlags().getColor4f());
-      SkRect r = gfx::RectFToSkRect(
-          GetRectForTextLine(pt, width, RoundDownThickness(thickness)));
-      context.DrawRect(r, flags, auto_dark_mode);
+      context.DrawRect(gfx::RectFToSkRect(line_rect), flags, auto_dark_mode);
     }
   }
 }
@@ -89,15 +96,15 @@ Path DecorationLinePainter::GetPathForTextLine(const gfx::PointF& pt,
                                                float width,
                                                float stroke_thickness,
                                                StrokeStyle stroke_style) {
-  Path path;
   DCHECK_NE(stroke_style, kWavyStroke);
+  const gfx::RectF line_rect = DecorationRect(pt, width, stroke_thickness);
+  Path path;
   if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetPointsForTextLine(pt, width, stroke_thickness);
+    auto [start, end] = GetSnappedPointsForTextLine(line_rect);
     path.MoveTo(gfx::PointF(start));
     path.AddLineTo(gfx::PointF(end));
   } else {
-    path.AddRect(
-        GetRectForTextLine(pt, width, RoundDownThickness(stroke_thickness)));
+    path.AddRect(SnapYAxis(line_rect));
   }
   return path;
 }
@@ -117,7 +124,7 @@ void DecorationLinePainter::Paint(const Color& color,
   // TODO(crbug.com/1346281) make other decoration styles work with PaintFlags
   switch (decoration_info_.DecorationStyle()) {
     case ETextDecorationStyle::kWavy:
-      PaintWavyTextDecoration();
+      PaintWavyTextDecoration(auto_dark_mode);
       break;
     case ETextDecorationStyle::kDotted:
     case ETextDecorationStyle::kDashed:
@@ -138,28 +145,24 @@ void DecorationLinePainter::Paint(const Color& color,
   }
 }
 
-void DecorationLinePainter::PaintWavyTextDecoration() {
-  // We need this because of the clipping we're doing below, as we paint both
-  // overlines and underlines here. That clip would hide the overlines, when
-  // painting the underlines.
-  GraphicsContextStateSaver state_saver(context_);
-
-  context_.SetShouldAntialias(true);
-
+void DecorationLinePainter::PaintWavyTextDecoration(
+    const AutoDarkMode& auto_dark_mode) {
   // The wavy line is larger than the line, as we add whole waves before and
   // after the line in TextDecorationInfo::PrepareWavyStrokePath().
   gfx::PointF origin = decoration_info_.Bounds().origin();
 
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(decoration_info_.TargetStyle(),
-                        DarkModeFilter::ElementRole::kForeground));
   cc::PaintFlags flags;
-
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
       decoration_info_.WavyTileRecord(),
       gfx::RectFToSkRect(decoration_info_.WavyTileRect()), SkTileMode::kRepeat,
       SkTileMode::kDecal, nullptr));
+
+  // We need this because of the clipping we're doing below, as we paint both
+  // overlines and underlines here. That clip would hide the overlines, when
+  // painting the underlines.
+  GraphicsContextStateSaver state_saver(context_);
+  context_.SetShouldAntialias(true);
   context_.Translate(origin.x(), origin.y());
   context_.DrawRect(gfx::RectFToSkRect(decoration_info_.WavyPaintRect()), flags,
                     auto_dark_mode);

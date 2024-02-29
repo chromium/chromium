@@ -39,7 +39,7 @@ class DecorationLinePainter final {
                                  StrokeStyle stroke_style);
 
  private:
-  void PaintWavyTextDecoration();
+  void PaintWavyTextDecoration(const AutoDarkMode&);
 
   GraphicsContext& context_;
   const TextDecorationInfo& decoration_info_;
