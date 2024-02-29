@@ -106,3 +106,105 @@ async def test_other_context_with_event_subscription(
     assert_before_request_sent_event(
         event, is_blocked=False
     )
+
+
+@pytest.mark.asyncio
+async def test_two_contexts_same_intercept(
+    bidi_session,
+    url,
+    top_context,
+    add_intercept,
+    fetch,
+    setup_network_test,
+    wait_for_event,
+    wait_for_future_safe
+):
+    other_context = await bidi_session.browsing_context.create(type_hint="tab")
+    await bidi_session.browsing_context.navigate(
+        context=other_context["context"], url=url(PAGE_EMPTY_HTML), wait="complete"
+    )
+
+    # Subscribe to network events in both contexts.
+    await setup_network_test(
+        events=[
+            BEFORE_REQUEST_SENT_EVENT,
+        ],
+        contexts=[top_context["context"], other_context["context"]],
+    )
+
+    # Add an intercept to both contexts
+    text_url = url(PAGE_EMPTY_TEXT)
+    intercept = await add_intercept(
+        phases=["beforeRequestSent"],
+        url_patterns=[{"type": "string", "pattern": text_url}],
+        contexts=[top_context["context"], other_context["context"]],
+    )
+
+    # Request on the top_context should be blocked.
+    on_network_event = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
+    asyncio.ensure_future(fetch(text_url, context=top_context))
+    event = await wait_for_future_safe(on_network_event)
+    assert_before_request_sent_event(
+        event, is_blocked=True, intercepts=[intercept]
+    )
+
+    # Request on the other_context should be blocked.
+    on_network_event = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
+    asyncio.ensure_future(fetch(text_url, context=other_context))
+    event = await wait_for_future_safe(on_network_event)
+    assert_before_request_sent_event(
+        event, is_blocked=True, intercepts=[intercept]
+    )
+
+
+@pytest.mark.asyncio
+async def test_two_contexts_global_intercept(
+    bidi_session,
+    url,
+    top_context,
+    add_intercept,
+    fetch,
+    setup_network_test,
+    wait_for_event,
+    wait_for_future_safe
+):
+    other_context = await bidi_session.browsing_context.create(type_hint="tab")
+    await bidi_session.browsing_context.navigate(
+        context=other_context["context"], url=url(PAGE_EMPTY_HTML), wait="complete"
+    )
+
+    # Subscribe to network events in both contexts.
+    await setup_network_test(
+        events=[
+            BEFORE_REQUEST_SENT_EVENT,
+        ],
+        contexts=[top_context["context"], other_context["context"]],
+    )
+
+    # Add an intercept for top_context and a global intercept.
+    text_url = url(PAGE_EMPTY_TEXT)
+    context_intercept = await add_intercept(
+        phases=["beforeRequestSent"],
+        url_patterns=[{"type": "string", "pattern": text_url}],
+        contexts=[top_context["context"]],
+    )
+    global_intercept = await add_intercept(
+        phases=["beforeRequestSent"],
+        url_patterns=[{"type": "string", "pattern": text_url}],
+    )
+
+    # Request on the top_context should be blocked and list both intercepts.
+    on_network_event = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
+    asyncio.ensure_future(fetch(text_url, context=top_context))
+    event = await wait_for_future_safe(on_network_event)
+    assert_before_request_sent_event(
+        event, is_blocked=True, intercepts=[context_intercept, global_intercept]
+    )
+
+    # Request on the other_context should be blocked by the global intercept.
+    on_network_event = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
+    asyncio.ensure_future(fetch(text_url, context=other_context))
+    event = await wait_for_future_safe(on_network_event)
+    assert_before_request_sent_event(
+        event, is_blocked=True, intercepts=[global_intercept]
+    )
