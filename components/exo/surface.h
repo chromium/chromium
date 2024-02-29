@@ -53,6 +53,11 @@ class CompositorFrame;
 }
 
 namespace exo {
+
+// Occluded surfaces can be detected and not emitted as a quad in the
+// corresponding compositor frame.
+BASE_DECLARE_FEATURE(kExoPerSurfaceOcclusion);
+
 class Buffer;
 class SecurityDelegate;
 class FrameSinkResourceManager;
