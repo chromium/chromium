@@ -66,7 +66,7 @@ int SetWebStatePinnedState(WebStateList* web_state_list,
 
 // Returns whether `items` has items (of type group or tab) with the same
 // identifier.
-bool HasDuplicatGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items);
+bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items);
 
 // Returns whether `items` has items with the same identifier.
 bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items);

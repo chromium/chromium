@@ -624,6 +624,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                    item:itemIdentifier
                                                             .tabSwitcherItem];
     }
+    case GridItemType::Group: {
+      // TODO(crbug.com/1501837): Add the new group item handling.
+      return nil;
+    }
     case GridItemType::SuggestedActions:
       UICollectionViewCellRegistration* registration =
           self.suggestedActionsCellRegistration;
@@ -1092,7 +1096,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
        selectedItemID:(web::WebStateID)selectedItemID {
-  CHECK(!HasDuplicatGroupsAndTabsIdentifiers(items));
+  CHECK(!HasDuplicateGroupsAndTabsIdentifiers(items));
   // Call self.view to ensure that the collection view is created.
   [self view];
   CHECK(self.diffableDataSource);

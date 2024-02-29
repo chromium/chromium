@@ -11,9 +11,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-@implementation TabGroupItem {
-  const TabGroup* _tabGroup;
-}
+@implementation TabGroupItem
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup {
   CHECK(tabGroup);

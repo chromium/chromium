@@ -25,6 +25,7 @@ typedef void (^GroupTabInfosFetchingCompletionBlock)(
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+@property(nonatomic, readonly) const TabGroup* tabGroup;
 @property(nonatomic, readonly) NSString* title;
 @property(nonatomic, readonly) UIColor* groupColor;
 

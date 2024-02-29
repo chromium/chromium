@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state.h"
 
@@ -128,18 +129,22 @@ int SetWebStatePinnedState(WebStateList* web_state_list,
   return web_state_list->SetWebStatePinnedAt(index, pin_state);
 }
 
-bool HasDuplicatGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
+bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
   std::set<web::WebStateID> identifiers;
+  std::set<const TabGroup*> groups;
   for (GridItemIdentifier* item in items) {
     switch (item.type) {
       case GridItemType::Tab:
         identifiers.insert(item.tabSwitcherItem.identifier);
         break;
+      case GridItemType::Group:
+        groups.insert(item.tabGroupItem.tabGroup);
+        break;
       case GridItemType::SuggestedActions:
         NOTREACHED_NORETURN();
     }
   }
-  return identifiers.size() != items.count;
+  return (identifiers.size() + groups.size()) != items.count;
 }
 
 bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items) {

@@ -8,19 +8,22 @@
 #import <Foundation/Foundation.h>
 
 @class TabSwitcherItem;
+@class TabGroupItem;
 
 // Different types of items identified by an ItemIdentifier.
 enum class GridItemType : NSUInteger {
   Tab,
+  Group,
   SuggestedActions,
 };
 
 // Represents grid items in a diffable data source. GridItemIdentifier equality
-// is based on the type and the potentil tab switcher item's identifier. This
-// means that two different objects can be equal (via -isEqual:) and share the
-// same -hash. Different items though will have different hashes (the hashing is
-// based on NSNumber's hashing, which prevents consecutive identifiers to have
-// consecutive hash values).
+// is based on the type and the potential item's properties. This means that two
+// different GridItemIdentifier-s can be equal (via -isEqual:) and share the
+// same -hash. Different items though won't be equal and will likely have
+// different hashes (the hashing for tabs is based on NSNumber's hashing, which
+// prevents consecutive identifiers to have consecutive hash values, while the
+// hashing for groups is based on NSValue's hashing of the TabGroup pointer).
 @interface GridItemIdentifier : NSObject
 
 // The type of collection view item this is referring to.
@@ -29,8 +32,12 @@ enum class GridItemType : NSUInteger {
 // Only valid when itemType is ItemTypeTab.
 @property(nonatomic, readonly) TabSwitcherItem* tabSwitcherItem;
 
+// Only valid when itemType is ItemTypeGroup.
+@property(nonatomic, readonly) TabGroupItem* tabGroupItem;
+
 // Use factory methods to create item identifiers.
 + (instancetype)tabIdentifier:(TabSwitcherItem*)item;
++ (instancetype)groupIdentifier:(TabGroupItem*)item;
 + (instancetype)suggestedActionsIdentifier;
 
 - (instancetype)init NS_UNAVAILABLE;

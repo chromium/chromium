@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -35,6 +36,14 @@ NSUInteger HashInt(int32_t identifier) {
   identifier->_type = GridItemType::Tab;
   identifier->_tabSwitcherItem = item;
   identifier->_hash = HashInt(item.identifier.identifier());
+  return identifier;
+}
+
++ (instancetype)groupIdentifier:(TabGroupItem*)item {
+  GridItemIdentifier* identifier = [[self alloc] init];
+  identifier->_type = GridItemType::Group;
+  identifier->_tabGroupItem = item;
+  identifier->_hash = [NSValue valueWithPointer:item.tabGroup].hash;
   return identifier;
 }
 
@@ -70,6 +79,9 @@ NSUInteger HashInt(int32_t identifier) {
       return [NSString
           stringWithFormat:@"Tab ID: %d",
                            self.tabSwitcherItem.identifier.identifier()];
+    case GridItemType::Group:
+      return [NSString
+          stringWithFormat:@"Group Title: %@", self.tabGroupItem.title];
     case GridItemType::SuggestedActions:
       return [NSString stringWithFormat:@"Suggested Action identifier."];
   }
@@ -88,6 +100,8 @@ NSUInteger HashInt(int32_t identifier) {
     case GridItemType::Tab:
       return self.tabSwitcherItem.identifier ==
              itemIdentifier.tabSwitcherItem.identifier;
+    case GridItemType::Group:
+      return self.tabGroupItem.tabGroup == itemIdentifier.tabGroupItem.tabGroup;
     case GridItemType::SuggestedActions:
       return YES;
   }
