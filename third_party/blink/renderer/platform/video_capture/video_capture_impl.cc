@@ -680,15 +680,22 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 #if BUILDFLAG(IS_LINUX)
       // Explicitly set GL_TEXTURE_EXTERNAL_OES as the
       // `media::VideoFrame::RequiresExternalSampler()` requires it for NV12
-      // format, while the `ImageTextureTarget()` will return GL_TEXTURE_2D.
+      // format, while `ClientSharedImage::GetTextureTarget()` will return
+      // GL_TEXTURE_2D.
+      // TODO(crbug.com/41494843): Eliminate this client-side check under the
+      // killswitch that switches ClientSharedImage::GetTextureTarget() to
+      // return GL_TEXTURE_EXTERNAL_OES if the ClientSI prefers external
+      // sampling or is legacy multiplanar, since at that point it will be
+      // redundant.
       (video_frame_init_data.ready_buffer->info->pixel_format ==
        media::PIXEL_FORMAT_NV12)
           ? GL_TEXTURE_EXTERNAL_OES
           :
 #endif
-          video_frame_init_data.buffer_context->gpu_factories()
-              ->ImageTextureTarget(gpu_memory_buffer->GetFormat());
-
+          video_frame_init_data.buffer_context->gmb_resources()
+              ->shared_images[0]
+              ->GetTextureTarget(gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+                                 gpu_memory_buffer->GetFormat());
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
