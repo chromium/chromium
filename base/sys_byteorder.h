@@ -118,6 +118,4 @@ inline constexpr uint64_t HostToNet64(uint64_t x) {
 
 }  // namespace base
 
-#undef constexpr
-
 #endif  // BASE_SYS_BYTEORDER_H_
