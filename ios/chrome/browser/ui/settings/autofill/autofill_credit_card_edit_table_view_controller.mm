@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
-#import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -40,7 +39,6 @@ using ::AutofillTypeFromAutofillUIType;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierFields = kSectionIdentifierEnumZero,
-  SectionIdentifierCopiedToChrome,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -48,7 +46,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCardNumber,
   ItemTypeExpirationMonth,
   ItemTypeExpirationYear,
-  ItemTypeCopiedToChrome,
   ItemTypeNickname,
 };
 
@@ -95,8 +92,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)editButtonPressed {
   // In the case of server cards, open the Payments editing page instead.
   if (_creditCard.record_type() ==
-          autofill::CreditCard::RecordType::kFullServerCard ||
-      _creditCard.record_type() ==
           autofill::CreditCard::RecordType::kMaskedServerCard) {
     GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl();
     OpenNewTabCommand* command =
@@ -169,16 +164,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierFields];
   for (AutofillEditItem* item in editItems) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
-  }
-
-  if (_creditCard.record_type() ==
-      autofill::CreditCard::RecordType::kFullServerCard) {
-    // Add CopiedToChrome cell in its own section.
-    [model addSectionWithIdentifier:SectionIdentifierCopiedToChrome];
-    CopiedToChromeItem* copiedToChromeItem =
-        [[CopiedToChromeItem alloc] initWithType:ItemTypeCopiedToChrome];
-    [model addItem:copiedToChromeItem
-        toSectionWithIdentifier:SectionIdentifierCopiedToChrome];
   }
 }
 
@@ -280,14 +265,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeExpirationYear:
     case ItemTypeNickname:
       break;
-    case ItemTypeCopiedToChrome: {
-      CopiedToChromeCell* copiedToChromeCell =
-          base::apple::ObjCCastStrict<CopiedToChromeCell>(cell);
-      [copiedToChromeCell.button addTarget:self
-                                    action:@selector(buttonTapped:)
-                          forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
     default:
       break;
   }
@@ -331,7 +308,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeExpirationMonth:
     case ItemTypeExpirationYear:
     case ItemTypeNickname:
-    case ItemTypeCopiedToChrome:
       return YES;
   }
   NOTREACHED();

@@ -8,8 +8,6 @@ source_set("cells") {
     "account_sign_in_item.mm",
     "byo_textfield_item.h",
     "byo_textfield_item.mm",
-    "copied_to_chrome_item.h",
-    "copied_to_chrome_item.mm",
     "inline_promo_cell.h",
     "inline_promo_cell.mm",
     "inline_promo_item.h",
@@ -81,7 +79,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "byo_textfield_item_unittest.mm",
-    "copied_to_chrome_item_unittest.mm",
     "inline_promo_item_unittest.mm",
     "passphrase_error_item_unittest.mm",
     "settings_check_item_unittest.mm",

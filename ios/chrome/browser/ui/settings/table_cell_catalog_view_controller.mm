@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
-#import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
@@ -573,11 +572,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   autofillHeader.text = @"Autofill";
   [model setHeader:autofillHeader
       forSectionWithIdentifier:SectionIdentifierAutofill];
-
-  CopiedToChromeItem* copiedToChrome =
-      [[CopiedToChromeItem alloc] initWithType:ItemTypeAutofillData];
-  [model addItem:copiedToChrome
-      toSectionWithIdentifier:SectionIdentifierAutofill];
 
   // SectionIdentifierAccount.
   UIImage* signinPromoAvatar = ios::provider::GetSigninDefaultAvatar();
