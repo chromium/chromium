@@ -14,8 +14,10 @@ import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -254,7 +256,28 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                 mDeferredIMEWindowInsetApplicationCallback != null
                         ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
                         : 0;
-        int windowHeight = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp);
+
+        int windowHeight;
+        if (BuildInfo.getInstance().isAutomotive
+                && contentView != null
+                && contentView.getRootWindowInsets() != null) {
+            // Some automotive devices dismiss bottom system bars when bringing up the keyboard,
+            // preventing the height of those bottom bars from being subtracted from the keyboard.
+            // To avoid a bottom-bar-sized gap above the keyboard, Chrome needs to calculate a new
+            // window height from the display with the new system bar insets, rather than rely on
+            // the cached mWindowHeightDp (that implicitly assumes persistence of the now-dismissed
+            // bottom system bars).
+            WindowInsetsCompat windowInsets =
+                    WindowInsetsCompat.toWindowInsetsCompat(contentView.getRootWindowInsets());
+            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            windowHeight =
+                    mWindowAndroid.getDisplay().getDisplayHeight()
+                            - systemBars.top
+                            - systemBars.bottom;
+        } else {
+            windowHeight = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp);
+        }
+
         int minSpaceAboveWindowBottom =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_min_space_above_window_bottom);

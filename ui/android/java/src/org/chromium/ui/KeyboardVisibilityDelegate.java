@@ -150,12 +150,12 @@ public class KeyboardVisibilityDelegate {
             WindowInsetsCompat windowInsetsCompat =
                     WindowInsetsCompat.toWindowInsetsCompat(
                             rootView.getRootWindowInsets(), rootView);
-            int imeHeightIncludingNavigationBar =
+            int imeHeightIncludingSystemBars =
                     windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-            if (imeHeightIncludingNavigationBar == 0) return 0;
-            int navigationBarHeight =
-                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-            return imeHeightIncludingNavigationBar - navigationBarHeight;
+            if (imeHeightIncludingSystemBars == 0) return 0;
+            int bottomSystemBarsHeight =
+                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+            return imeHeightIncludingSystemBars - bottomSystemBarsHeight;
         }
     }
 
