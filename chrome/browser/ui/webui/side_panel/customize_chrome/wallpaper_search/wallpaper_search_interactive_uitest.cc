@@ -102,7 +102,7 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
             }));
   }
 
-  InteractiveTestApi::MultiStep ClickElement(
+  InteractiveTestApi::MultiStep WaitForElementVisible(
       const ui::ElementIdentifier& contents_id,
       const DeepQuery& element) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementVisibleEvent);
@@ -112,7 +112,13 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
     element_visible.event = kElementVisibleEvent;
     element_visible.test_function = "(el) => el.offsetParent !== null";
 
-    return Steps(WaitForStateChange(contents_id, element_visible),
+    return WaitForStateChange(contents_id, element_visible);
+  }
+
+  InteractiveTestApi::MultiStep ClickElement(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element) {
+    return Steps(WaitForElementVisible(contents_id, element),
                  MoveMouseTo(contents_id, element), ClickMouse());
   }
 
@@ -344,3 +350,73 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
+                       DescriptorErrorCTANavigatesToThemesPage) {
+  const DeepQuery kErrorCTA = {"customize-chrome-app", "#wallpaperSearchPage",
+                               "#errorCTA"};
+  const DeepQuery kThemesPage = {"customize-chrome-app", "#categoriesPage"};
+  const DeepQuery kWallpaperSearchTile = {
+      "customize-chrome-app", "#categoriesPage", "#wallpaperSearchTile"};
+  const DeepQuery kSubmitButton = {"customize-chrome-app",
+                                   "#wallpaperSearchPage", "#wallpaperSearch",
+                                   "#submitButton"};
+
+  // Intercept Wallpaper Search descriptor fetches, and respond with a network
+  // failure or data, depending on the value of |offline|.
+  bool offline;
+  std::unique_ptr<content::URLLoaderInterceptor> descriptors_fetch_interceptor =
+      std::make_unique<content::URLLoaderInterceptor>(
+          base::BindLambdaForTesting(
+              [&](content::URLLoaderInterceptor::RequestParams* params)
+                  -> bool {
+                if (params->url_request.url.path() ==
+                    "/chrome-wallpaper-search/descriptors_en-US.json") {
+                  if (offline) {
+                    params->client->OnComplete(
+                        network::URLLoaderCompletionStatus(
+                            net::ERR_INTERNET_DISCONNECTED));
+                  } else {
+                    std::string headers =
+                        "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
+                    const std::string body =
+                        R"()]}'
+                      {
+                        "descriptor_a":[
+                          {"category":"foo","labels":["bar"]}
+                        ],
+                        "descriptor_b":[
+                          {"label":"foo","image":"bar.png"}
+                        ],
+                        "descriptor_c":["foo"]
+                      })";
+                    content::URLLoaderInterceptor::WriteResponse(
+                        headers, body, params->client.get(),
+                        std::optional<net::SSLInfo>());
+                  }
+                  return true;
+                }
+                return false;
+              }));
+
+  RunTestSequence(
+      // 1. Open Wallpaper Search without internet connection.
+      Steps(Do(base::BindLambdaForTesting([&]() { offline = true; })),
+            OpenNewTabPage(), OpenWallpaperSearchAt(kCustomizeChromeElementId)),
+      // 2. Wait for the error CTA to show.
+      WaitForElementVisible(kCustomizeChromeElementId, kErrorCTA),
+      // 3. Assert that the themes page isn't showing yet.
+      CheckJsResultAt(kCustomizeChromeElementId, kThemesPage,
+                      "(el) => el.offsetParent === null"),
+      // 4. Click the error CTA.
+      ClickElement(kCustomizeChromeElementId, kErrorCTA),
+      // 5. Ensure that the themes page shows.
+      WaitForElementVisible(kCustomizeChromeElementId, kThemesPage),
+      // 6. Reopen Wallpaper Search with internet connection.
+      Steps(Do(base::BindLambdaForTesting([&]() { offline = false; })),
+            ClickElement(kCustomizeChromeElementId, kWallpaperSearchTile)),
+      // 7. Ensure that the error state went away.
+      Steps(WaitForElementVisible(kCustomizeChromeElementId, kSubmitButton),
+            CheckJsResultAt(kCustomizeChromeElementId, kErrorCTA,
+                            "(el) => el.offsetParent === null")));
+}

@@ -1005,37 +1005,42 @@ suite('WallpaperSearchTest', () => {
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
 
-      test('reattempts failed descriptor fetch for generic error', async () => {
-        loadTimeData.overrideValues({genericErrorDescription: 'generic error'});
-        createWallpaperSearchElement();
-        await flushTasks();
+      test(
+          'clicking generic cta for descriptors creates back-click event',
+          async () => {
+            loadTimeData.overrideValues(
+                {genericErrorDescription: 'generic error'});
+            createWallpaperSearchElement();
+            await flushTasks();
 
-        assertEquals(1, handler.getCallCount('getDescriptors'));
-        assertNotStyle(
-            $$(wallpaperSearchElement, '#error')!, 'display', 'none');
-        assertEquals(
-            $$<HTMLElement>(
-                wallpaperSearchElement, '#errorDescription')!.textContent,
-            'generic error');
-        assertStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
+            assertEquals(1, handler.getCallCount('getDescriptors'));
+            assertNotStyle(
+                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
+            assertEquals(
+                $$<HTMLElement>(
+                    wallpaperSearchElement, '#errorDescription')!.textContent,
+                'generic error');
+            assertStyle(
+                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
+                'none');
 
-        handler.setResultFor('getDescriptors', Promise.resolve({
-          status: WallpaperSearchStatus.kOk,
-          descriptors: {
-            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-            descriptorC: ['foo', 'bar', 'baz'],
-          },
-        }));
-        $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
-        await waitAfterNextRender(wallpaperSearchElement);
 
-        assertEquals(2, handler.getCallCount('getDescriptors'));
-        assertStyle($$(wallpaperSearchElement, '#error')!, 'display', 'none');
-        assertNotStyle(
-            $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
-      });
+            handler.setResultFor('getDescriptors', Promise.resolve({
+              status: WallpaperSearchStatus.kOk,
+              descriptors: {
+                descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
+                descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
+                descriptorC: ['foo', 'bar', 'baz'],
+              },
+            }));
+            const eventPromise =
+                eventToPromise('back-click', wallpaperSearchElement);
+            $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+            const event = await eventPromise;
+
+            assertTrue(!!event);
+            assertEquals(1, handler.getCallCount('getDescriptors'));
+          });
 
       test('shows history description for generic error', async () => {
         loadTimeData.overrideValues(
@@ -1157,7 +1162,8 @@ suite('WallpaperSearchTest', () => {
           });
 
       test(
-          'reattempts failed descriptor fetch with offline error', async () => {
+          'clicking offline cta for descriptors creates back-click event',
+          async () => {
             loadTimeData.overrideValues({offlineDescription: 'offline error'});
             windowProxy.setResultFor('onLine', false);
             createWallpaperSearchElement();
@@ -1174,24 +1180,13 @@ suite('WallpaperSearchTest', () => {
                 $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
                 'none');
 
-            windowProxy.setResultFor('onLine', true);
-            handler.setResultFor('getDescriptors', Promise.resolve({
-              status: WallpaperSearchStatus.kOk,
-              descriptors: {
-                descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-                descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-                descriptorC: ['foo', 'bar', 'baz'],
-              },
-            }));
+            const eventPromise =
+                eventToPromise('back-click', wallpaperSearchElement);
             $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
-            await waitAfterNextRender(wallpaperSearchElement);
+            const event = await eventPromise;
 
-            assertEquals(2, handler.getCallCount('getDescriptors'));
-            assertStyle(
-                $$(wallpaperSearchElement, '#error')!, 'display', 'none');
-            assertNotStyle(
-                $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
-                'none');
+            assertTrue(!!event);
+            assertEquals(1, handler.getCallCount('getDescriptors'));
           });
 
       test('shows history description for offline error', async () => {
@@ -1447,31 +1442,6 @@ suite('WallpaperSearchTest', () => {
                 $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display',
                 'none');
           });
-    });
-
-    test('maintains focus on error ui if error is unresolved', async () => {
-      loadTimeData.overrideValues({offlineDescription: 'offline error'});
-      windowProxy.setResultFor('onLine', false);
-      createWallpaperSearchElement();
-      await flushTasks();
-      assertEquals(
-          $$<HTMLElement>(
-              wallpaperSearchElement, '#errorDescription')!.textContent,
-          'offline error');
-      assertEquals(
-          wallpaperSearchElement.$.error,
-          wallpaperSearchElement.shadowRoot!.activeElement);
-
-      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      assertEquals(
-          $$<HTMLElement>(
-              wallpaperSearchElement, '#errorDescription')!.textContent,
-          'offline error');
-      assertEquals(
-          wallpaperSearchElement.$.error,
-          wallpaperSearchElement.shadowRoot!.activeElement);
     });
 
     test('refocuses on search ui after error is resolved', async () => {

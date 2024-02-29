@@ -394,7 +394,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.errorCallback_ = undefined;
         recordStatusChange(WallpaperSearchStatus.kOk);
       } else {
-        this.errorCallback_ = () => this.fetchDescriptors_();
+        // Wallpaper search cannot render properly without descriptors, so the
+        // error callback takes the user back a page.
+        this.errorCallback_ = () => this.dispatchEvent(new Event('back-click'));
         this.status_ = WindowProxy.getInstance().onLine ?
             WallpaperSearchStatus.kError :
             WallpaperSearchStatus.kOffline;

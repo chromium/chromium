@@ -241,6 +241,11 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
   descriptors_simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
+  descriptors_simple_url_loader_->SetRetryOptions(
+      /*max_retries=*/3,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
   descriptors_simple_url_loader_->DownloadToString(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&WallpaperSearchHandler::OnDescriptorsRetrieved,
