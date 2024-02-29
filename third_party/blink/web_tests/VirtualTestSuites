@@ -2090,7 +2090,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2InNewTab,Prerender2AllowActivationInBackground,LCPCriticalPathPredictor,LCPTimingPredictorPrerender2",
+      "--enable-features=Prerender2InNewTab,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2",
       "--disable-features=KeepAliveInBrowserMigration"
     ],
     "owners": ["nhiroki@chromium.org", "yoichio@chromium.org"],
