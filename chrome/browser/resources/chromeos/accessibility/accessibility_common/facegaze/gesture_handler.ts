@@ -40,6 +40,13 @@ export class GestureHandler {
           if (pref.value) {
             // Update the whole map from this preference.
             this.gestureToMacroName_.clear();
+            if (Object.entries(pref.value).length === 0) {
+              // TODO(b:322510392): Remove this hard-coded mapping after
+              // settings page lands when users can pick their own mappings.
+              pref.value[FacialGesture.JAW_OPEN] = 'MOUSE_CLICK_LEFT';
+              pref.value[FacialGesture.BROW_INNER_UP] = 'MOUSE_CLICK_RIGHT';
+              pref.value[FacialGesture.BROWS_DOWN] = 'RESET_CURSOR';
+            }
             for (const [gesture, assignedAction] of Object.entries(
                      pref.value)) {
               if (assignedAction === '') {
