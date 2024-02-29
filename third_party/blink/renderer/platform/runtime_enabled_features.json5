@@ -2255,7 +2255,7 @@
     {
       // crbug.com/40417720
       name: "MaskingGraphemeClusters",
-      status: "test",
+      status: "stable",
       depends_on: ["OffsetMappingUnitVariable"],
     },
     {
@@ -2577,7 +2577,7 @@
     {
       // crbug.com/40532763
       name: "OffsetMappingUnitVariable",
-      status: "test",
+      status: "stable",
     },
     {
       name: "OnDeviceChange",
