@@ -13,6 +13,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 
@@ -26,7 +27,7 @@ constexpr VideoFrame::StorageType kDefaultFrameStorageType =
     VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
 
 // The default method to create frames.
-CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
+CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -40,12 +41,15 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
     return CroStatus::Codes::kFailedToCreateVideoFrame;
   }
 
-  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
-      format, coded_size, visible_rect, natural_size, timestamp,
-      use_protected
-          ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
-          : (use_linear_buffers ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
-                                : gfx::BufferUsage::SCANOUT_VDA_WRITE));
+  // TODO(nhebert): change this to create a NativePixmap-backed FrameResource
+  // when it is ready.
+  scoped_refptr<FrameResource> frame =
+      VideoFrameResource::Create(CreateGpuMemoryBufferVideoFrame(
+          format, coded_size, visible_rect, natural_size, timestamp,
+          use_protected
+              ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
+              : (use_linear_buffers ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+                                    : gfx::BufferUsage::SCANOUT_VDA_WRITE)));
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
@@ -78,7 +82,7 @@ PlatformVideoFramePool::~PlatformVideoFramePool() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
+scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
@@ -113,12 +117,13 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
     // implies that we can create |new_frame| using gfx::Rect(coded_size) as
     // the visible rectangle.
     CHECK(use_linear_buffers_.has_value());
-    CroStatus::Or<scoped_refptr<VideoFrame>> new_frame = create_frame_cb_.Run(
-        format, coded_size, gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
-        coded_size, use_protected_, *use_linear_buffers_,
-        frame_layout_->fourcc() == Fourcc(Fourcc::MM21) ||
-            frame_layout_->fourcc() == Fourcc(Fourcc::MT2T),
-        base::TimeDelta());
+    CroStatus::Or<scoped_refptr<FrameResource>> new_frame =
+        create_frame_cb_.Run(
+            format, coded_size, gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
+            coded_size, use_protected_, *use_linear_buffers_,
+            frame_layout_->fourcc() == Fourcc(Fourcc::MM21) ||
+                frame_layout_->fourcc() == Fourcc(Fourcc::MT2T),
+            base::TimeDelta());
     if (!new_frame.has_value()) {
       // TODO(crbug.com/c/1103510) Push the error up instead of dropping it.
       return nullptr;
@@ -138,15 +143,22 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   }
 
   DCHECK(!free_frames_.empty());
-  scoped_refptr<VideoFrame> origin_frame = std::move(free_frames_.back());
+  scoped_refptr<FrameResource> origin_frame = std::move(free_frames_.back());
   free_frames_.pop_back();
   DCHECK_EQ(origin_frame->format(), format);
   DCHECK_EQ(origin_frame->coded_size(), coded_size);
 
-  scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
-      origin_frame, format, visible_rect_, natural_size_);
+  scoped_refptr<FrameResource> wrapped_frame =
+      origin_frame->CreateWrappingFrame(visible_rect_, natural_size_);
   DCHECK(wrapped_frame);
-  frames_in_use_.emplace(GetSharedMemoryId(*wrapped_frame), origin_frame.get());
+  // TODO(nhebert): Migrate |frames_in_use_| to store a pointer to the
+  // FrameResource instead of to the underlying VideoFrame. |frames_in_use_| is
+  // used for unwrapping the frame by the MailboxVideoFrameConverter in order to
+  // add a destruction observer to the original frame.
+  CHECK(origin_frame->AsVideoFrameResource());
+  frames_in_use_.emplace(
+      wrapped_frame->GetSharedMemoryId(),
+      origin_frame->AsVideoFrameResource()->GetMutableVideoFrame().get());
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&PlatformVideoFramePool::OnFrameReleasedThunk, weak_this_,
                      parent_task_runner_, std::move(origin_frame)));
@@ -309,7 +321,7 @@ std::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
 void PlatformVideoFramePool::OnFrameReleasedThunk(
     std::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<VideoFrame> origin_frame) {
+    scoped_refptr<FrameResource> origin_frame) {
   TRACE_EVENT2("media", "PlatformVideoFramePool::OnFrameReleasedThunk",
                "frame_id", origin_frame->unique_id(), "frame",
                origin_frame->AsHumanReadableString());
@@ -322,7 +334,7 @@ void PlatformVideoFramePool::OnFrameReleasedThunk(
 }
 
 void PlatformVideoFramePool::OnFrameReleased(
-    scoped_refptr<VideoFrame> origin_frame) {
+    scoped_refptr<FrameResource> origin_frame) {
   TRACE_EVENT2("media", "PlatformVideoFramePool::OnFrameReleased", "frame_id",
                origin_frame->unique_id(), "frame",
                origin_frame->AsHumanReadableString());
@@ -330,7 +342,7 @@ void PlatformVideoFramePool::OnFrameReleased(
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
-  gfx::GenericSharedMemoryId frame_id = GetSharedMemoryId(*origin_frame);
+  gfx::GenericSharedMemoryId frame_id = origin_frame->GetSharedMemoryId();
   auto it = frames_in_use_.find(frame_id);
   DCHECK(it != frames_in_use_.end());
   frames_in_use_.erase(it);
@@ -346,7 +358,7 @@ void PlatformVideoFramePool::OnFrameReleased(
 }
 
 void PlatformVideoFramePool::InsertFreeFrame_Locked(
-    scoped_refptr<VideoFrame> frame) {
+    scoped_refptr<FrameResource> frame) {
   DCHECK(frame);
   DVLOGF(4);
   lock_.AssertAcquired();

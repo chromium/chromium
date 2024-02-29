@@ -251,7 +251,7 @@ V4L2StatelessVideoDecoderBackend::CreateSecureSurface(uint64_t secure_handle) {
     // conversion before being sent to Chrome's Media pipeline. On ChromeOS,
     // currently only RK3399 (scarlet) supports this.
     DCHECK_EQ(output_queue_->GetMemoryType(), V4L2_MEMORY_DMABUF);
-    frame = VideoFrameResource::Create(pool->GetFrame());
+    frame = pool->GetFrame();
     if (!frame) {
       // We allocate the same number of output buffer slot in V4L2 device and
       // the output FrameResource. If there is free output buffer slot but no

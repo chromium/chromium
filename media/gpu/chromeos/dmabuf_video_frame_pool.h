@@ -21,10 +21,12 @@
 
 namespace media {
 
+class FrameResource;
+
 // Forward declare for use in AsPlatformVideoFramePool.
 class PlatformVideoFramePool;
 
-// Interface for allocating and managing DMA-buf VideoFrame. The client should
+// Interface for allocating and managing DMA-buf frames. The client should
 // set a task runner first via set_parent_task_runner(), and guarantee that
 // Initialize(), GetFrame(), GetGpuBufferLayout() and the destructor are
 // executed on this task runner. Note: other public methods might be called at
@@ -32,7 +34,7 @@ class PlatformVideoFramePool;
 class MEDIA_GPU_EXPORT DmabufVideoFramePool {
  public:
   using CreateFrameCB =
-      base::RepeatingCallback<CroStatus::Or<scoped_refptr<VideoFrame>>(
+      base::RepeatingCallback<CroStatus::Or<scoped_refptr<FrameResource>>(
           VideoPixelFormat,
           const gfx::Size&,
           const gfx::Rect&,
@@ -72,7 +74,7 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // Returns a frame from the pool with the layout that is returned by the
   // previous Initialize() method and zero timestamp. Returns nullptr if the
   // pool is exhausted.
-  virtual scoped_refptr<VideoFrame> GetFrame() = 0;
+  virtual scoped_refptr<FrameResource> GetFrame() = 0;
 
   // Returns the storage type of frames that GetFrame() returns.
   virtual VideoFrame::StorageType GetFrameStorageType() const = 0;

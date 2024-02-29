@@ -497,12 +497,11 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
   DCHECK_EQ(state_, State::kDecoding);
   DCHECK(current_decode_task_);
 
-  // Get a video frame from the video frame pool.
+  // Get a frame from the video frame pool.
   DCHECK(client_);
   DmabufVideoFramePool* frame_pool = client_->GetVideoFramePool();
   DCHECK(frame_pool);
-  scoped_refptr<FrameResource> frame =
-      VideoFrameResource::Create(frame_pool->GetFrame());
+  scoped_refptr<FrameResource> frame = frame_pool->GetFrame();
   if (!frame) {
     // Ask the video frame pool to notify us when new frames are available, so
     // we can retry the current decode task.
@@ -861,7 +860,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 }
 
 // Static
-CroStatus::Or<scoped_refptr<VideoFrame>>
+CroStatus::Or<scoped_refptr<FrameResource>>
 VaapiVideoDecoder::AllocateCustomFrameProxy(
     base::WeakPtr<VaapiVideoDecoder> decoder,
     VideoPixelFormat format,
@@ -879,15 +878,15 @@ VaapiVideoDecoder::AllocateCustomFrameProxy(
       use_linear_buffers, needs_detiling, timestamp);
 }
 
-CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
-    VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    bool use_protected,
-    bool use_linear_buffers,
-    bool needs_detiling,
-    base::TimeDelta timestamp) {
+CroStatus::Or<scoped_refptr<FrameResource>>
+VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
+                                       const gfx::Size& coded_size,
+                                       const gfx::Rect& visible_rect,
+                                       const gfx::Size& natural_size,
+                                       bool /*use_protected*/,
+                                       bool use_linear_buffers,
+                                       bool needs_detiling,
+                                       base::TimeDelta timestamp) {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kChangingResolution || state_ == State::kDecoding);
@@ -937,9 +936,10 @@ CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
   if (!gmb)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
   const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      visible_rect, natural_size, std::move(gmb), mailbox_holders,
-      base::NullCallback(), timestamp);
+  scoped_refptr<FrameResource> frame =
+      VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
+          visible_rect, natural_size, std::move(gmb), mailbox_holders,
+          base::NullCallback(), timestamp));
 
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;

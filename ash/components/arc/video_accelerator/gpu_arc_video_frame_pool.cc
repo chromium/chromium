@@ -18,6 +18,7 @@
 #include "media/base/format_utils.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -204,7 +205,8 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
 
   // Add the frame to the underlying video frame pool.
   DCHECK(import_frame_cb_);
-  import_frame_cb_.Run(std::move(wrapped_frame));
+  import_frame_cb_.Run(
+      media::VideoFrameResource::Create(std::move(wrapped_frame)));
 
   std::move(callback).Run(true);
 }

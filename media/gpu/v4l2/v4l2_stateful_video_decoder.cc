@@ -1003,8 +1003,7 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
                 weak_ptr_factory_for_CAPTURE_availability_.GetWeakPtr())));
         return;
       }
-      auto frame =
-          VideoFrameResource::Create(client_->GetVideoFramePool()->GetFrame());
+      auto frame = client_->GetVideoFramePool()->GetFrame();
       CHECK(frame);
 
       // TODO(mcasas): Consider using GetFreeBufferForFrame().

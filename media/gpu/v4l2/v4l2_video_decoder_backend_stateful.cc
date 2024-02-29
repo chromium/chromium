@@ -386,8 +386,7 @@ V4L2StatefulVideoDecoderBackend::GetPoolVideoFrame() {
   DCHECK_EQ(output_queue_->GetMemoryType(), V4L2_MEMORY_DMABUF);
   DCHECK_NE(pool, nullptr);
 
-  scoped_refptr<FrameResource> frame =
-      VideoFrameResource::Create(pool->GetFrame());
+  scoped_refptr<FrameResource> frame = pool->GetFrame();
   if (!frame) {
     DVLOGF(3) << "No available VideoFrame for now";
     // We will try again once a frame becomes available.

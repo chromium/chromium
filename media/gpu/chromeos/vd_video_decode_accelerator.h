@@ -30,7 +30,7 @@
 
 namespace media {
 
-class VideoFrame;
+class FrameResource;
 
 // Implements the VideoDecodeAccelerator backed by a VideoDecoder.
 // Currently GpuArcVideoDecodeAccelerator bridges the video codec from
@@ -112,9 +112,9 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   static void OnFrameReleasedThunk(
       std::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      scoped_refptr<VideoFrame> origin_frame);
+      scoped_refptr<FrameResource> origin_frame);
   // Called when a frame gets destroyed.
-  void OnFrameReleased(scoped_refptr<VideoFrame> origin_frame);
+  void OnFrameReleased(scoped_refptr<FrameResource> origin_frame);
 
   // Called when any error occurs. Notify |client_| an error occurred.
   void OnError(base::Location location, Error error);

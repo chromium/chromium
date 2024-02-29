@@ -175,7 +175,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       const std::vector<gfx::Size>& screen_resolution);
 
   // Private static helper to allow using weak ptr instead of an unretained ptr.
-  static CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrameProxy(
+  static CroStatus::Or<scoped_refptr<FrameResource>> AllocateCustomFrameProxy(
       base::WeakPtr<VaapiVideoDecoder> decoder,
       VideoPixelFormat format,
       const gfx::Size& coded_size,
@@ -189,7 +189,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // Allocates a new FrameResource using a new VASurface directly. Since this is
   // only used on linux, it also sets the required YCbCr information for the
   // frame it creates.
-  CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrame(
+  CroStatus::Or<scoped_refptr<FrameResource>> AllocateCustomFrame(
       VideoPixelFormat format,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,

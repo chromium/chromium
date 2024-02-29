@@ -8,8 +8,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/media_serializers.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 
 namespace media {
@@ -101,8 +101,7 @@ void ImageProcessorWithPool::PumpProcessFrames() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   while (!pending_frames_.empty()) {
-    scoped_refptr<FrameResource> output_frame =
-        VideoFrameResource::Create(frame_pool_->GetFrame());
+    scoped_refptr<FrameResource> output_frame = frame_pool_->GetFrame();
     if (!output_frame) {
       // Notify when pool is available.
       frame_pool_->NotifyWhenFrameAvailable(base::BindOnce(

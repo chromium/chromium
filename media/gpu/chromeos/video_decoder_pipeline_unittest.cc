@@ -65,7 +65,7 @@ class MockVideoFramePool : public DmabufVideoFramePool {
                                               size_t,
                                               bool,
                                               bool));
-  MOCK_METHOD0(GetFrame, scoped_refptr<VideoFrame>());
+  MOCK_METHOD0(GetFrame, scoped_refptr<FrameResource>());
   MOCK_CONST_METHOD0(GetFrameStorageType, VideoFrame::StorageType());
   MOCK_METHOD0(IsExhausted, bool());
   MOCK_METHOD1(NotifyWhenFrameAvailable, void(base::OnceClosure));

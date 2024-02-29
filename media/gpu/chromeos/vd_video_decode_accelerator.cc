@@ -24,8 +24,10 @@
 #include "media/base/video_types.h"
 #include "media/base/waiting.h"
 #include "media/gpu/buffer_validation.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -45,7 +47,7 @@ namespace media {
 namespace {
 
 // VideoDecoder copies the timestamp from DecodeBuffer to its corresponding
-// VideoFrame. However, VideoDecodeAccelerator uses bitstream ID to find the
+// FrameResource. However, VideoDecodeAccelerator uses bitstream ID to find the
 // corresponding output picture. Therefore, we store bitstream ID at the
 // timestamp field. These two functions are used for converting between
 // bitstream ID and fake timestamp.
@@ -573,21 +575,21 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   }
 
   const gpu::MailboxHolder mailbox_holder[VideoFrame::kMaxPlanes] = {};
-  // VideoFrame::WrapVideoFrame() will check whether the updated visible_rect
-  // is sub rect of the original visible_rect. Therefore we set visible_rect
-  // as large as coded_size to guarantee this condition.
-  scoped_refptr<VideoFrame> origin_frame =
-      VideoFrame::WrapExternalGpuMemoryBuffer(
+  // FrameResource::CreateWrappingFrame() will check whether the updated
+  // visible_rect is sub rect of the original visible_rect. Therefore we set
+  // visible_rect as large as coded_size to guarantee this condition.
+  scoped_refptr<FrameResource> origin_frame =
+      VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(layout_->coded_size()), layout_->coded_size(),
           std::move(gpu_memory_buffer), mailbox_holder, base::NullCallback(),
-          base::TimeDelta());
+          base::TimeDelta()));
 
   // This passes because GetFrameStorageType() is hard coded to match the
   // storage type of frames produced by
   // VideoFrame::WrapExternalGpuMemoryBuffer().
   CHECK_EQ(origin_frame->storage_type(), GetFrameStorageType());
 
-  auto res = frame_id_to_picture_id_.emplace(GetSharedMemoryId(*origin_frame),
+  auto res = frame_id_to_picture_id_.emplace(origin_frame->GetSharedMemoryId(),
                                              picture_buffer_id);
   // The frame ID should not be inside the map before insertion.
   DCHECK(res.second);
@@ -595,9 +597,8 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   // |wrapped_frame| is used to keep |origin_frame| alive until everyone
   // released |wrapped_frame|. Then GpuMemoryBufferId will be available at
   // OnFrameReleased().
-  scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
-      origin_frame, origin_frame->format(), origin_frame->visible_rect(),
-      origin_frame->natural_size());
+  scoped_refptr<FrameResource> wrapped_frame =
+      origin_frame->CreateWrappingFrame();
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&VdVideoDecodeAccelerator::OnFrameReleasedThunk,
                      weak_this_, client_task_runner_, std::move(origin_frame)));
@@ -636,7 +637,7 @@ std::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
 void VdVideoDecodeAccelerator::OnFrameReleasedThunk(
     std::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<VideoFrame> origin_frame) {
+    scoped_refptr<FrameResource> origin_frame) {
   DVLOGF(4);
   DCHECK(weak_this);
 
@@ -646,11 +647,11 @@ void VdVideoDecodeAccelerator::OnFrameReleasedThunk(
 }
 
 void VdVideoDecodeAccelerator::OnFrameReleased(
-    scoped_refptr<VideoFrame> origin_frame) {
+    scoped_refptr<FrameResource> origin_frame) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  auto it = frame_id_to_picture_id_.find(GetSharedMemoryId(*origin_frame));
+  auto it = frame_id_to_picture_id_.find(origin_frame->GetSharedMemoryId());
   DCHECK(it != frame_id_to_picture_id_.end());
   int32_t picture_buffer_id = it->second;
   frame_id_to_picture_id_.erase(it);
