@@ -20,65 +20,86 @@ class MockVideoCaptureDeviceClient : public VideoCaptureDevice::Client {
   MockVideoCaptureDeviceClient();
   ~MockVideoCaptureDeviceClient() override;
 
-  MOCK_METHOD0(OnCaptureConfigurationChanged, void(void));
-  MOCK_METHOD9(OnIncomingCapturedData,
-               void(const uint8_t* data,
-                    int length,
-                    const VideoCaptureFormat& frame_format,
-                    const gfx::ColorSpace& color_space,
-                    int rotation,
-                    bool flip_y,
-                    base::TimeTicks reference_time,
-                    base::TimeDelta timestamp,
-                    int frame_feedback_id));
-  MOCK_METHOD6(OnIncomingCapturedGfxBuffer,
-               void(gfx::GpuMemoryBuffer* buffer,
-                    const VideoCaptureFormat& frame_format,
-                    int clockwise_rotation,
-                    base::TimeTicks reference_time,
-                    base::TimeDelta timestamp,
-                    int frame_feedback_id));
-  MOCK_METHOD4(OnIncomingCapturedExternalBuffer,
-               void(CapturedExternalVideoBuffer buffer,
-                    base::TimeTicks reference_time,
-                    base::TimeDelta timestamp,
-                    const gfx::Rect& visible_rect));
-  MOCK_METHOD4(ReserveOutputBuffer,
-               ReserveResult(const gfx::Size&, VideoPixelFormat, int, Buffer*));
-  MOCK_METHOD3(OnError,
-               void(media::VideoCaptureError error,
-                    const base::Location& from_here,
-                    const std::string& reason));
-  MOCK_METHOD1(OnFrameDropped, void(VideoCaptureFrameDropReason reason));
-  MOCK_METHOD0(OnStarted, void(void));
-  MOCK_CONST_METHOD0(GetBufferPoolUtilization, double(void));
+  MOCK_METHOD(void, OnCaptureConfigurationChanged, (), (override));
+  MOCK_METHOD(void,
+              OnIncomingCapturedData,
+              (const uint8_t* data,
+               int length,
+               const VideoCaptureFormat& frame_format,
+               const gfx::ColorSpace& color_space,
+               int rotation,
+               bool flip_y,
+               base::TimeTicks reference_time,
+               base::TimeDelta timestamp,
+               std::optional<base::TimeTicks> capture_begin_time,
+               int frame_feedback_id),
+              (override));
+  MOCK_METHOD(void,
+              OnIncomingCapturedGfxBuffer,
+              (gfx::GpuMemoryBuffer * buffer,
+               const VideoCaptureFormat& frame_format,
+               int clockwise_rotation,
+               base::TimeTicks reference_time,
+               base::TimeDelta timestamp,
+               std::optional<base::TimeTicks> capture_begin_time,
+               int frame_feedback_id),
+              (override));
+  MOCK_METHOD(void,
+              OnIncomingCapturedExternalBuffer,
+              (CapturedExternalVideoBuffer buffer,
+               base::TimeTicks reference_time,
+               base::TimeDelta timestamp,
+               std::optional<base::TimeTicks> capture_begin_time,
+               const gfx::Rect& visible_rect),
+              (override));
+  MOCK_METHOD(ReserveResult,
+              ReserveOutputBuffer,
+              (const gfx::Size&, VideoPixelFormat, int, Buffer*),
+              (override));
+  MOCK_METHOD(void,
+              OnError,
+              (media::VideoCaptureError error,
+               const base::Location& from_here,
+               const std::string& reason),
+              (override));
+  MOCK_METHOD(void,
+              OnFrameDropped,
+              (VideoCaptureFrameDropReason reason),
+              (override));
+  MOCK_METHOD(void, OnStarted, (), (override));
+  MOCK_METHOD(double, GetBufferPoolUtilization, (), (const override));
 
-  void OnIncomingCapturedBuffer(Buffer buffer,
-                                const VideoCaptureFormat& format,
-                                base::TimeTicks reference_time,
-                                base::TimeDelta timestamp) override;
+  void OnIncomingCapturedBuffer(
+      Buffer buffer,
+      const VideoCaptureFormat& format,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time) override;
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
       const VideoCaptureFormat& format,
       const gfx::ColorSpace& color_space,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
       gfx::Rect visible_rect,
       const VideoFrameMetadata& additional_metadata) override;
 
-  MOCK_METHOD4(DoOnIncomingCapturedBuffer,
-               void(Buffer&,
-                    const VideoCaptureFormat&,
-                    base::TimeTicks,
-                    base::TimeDelta));
-  MOCK_METHOD7(DoOnIncomingCapturedBufferExt,
-               void(Buffer& buffer,
-                    const VideoCaptureFormat& format,
-                    const gfx::ColorSpace& color_space,
-                    base::TimeTicks reference_time,
-                    base::TimeDelta timestamp,
-                    gfx::Rect visible_rect,
-                    const VideoFrameMetadata& additional_metadata));
+  MOCK_METHOD(
+      void,
+      DoOnIncomingCapturedBuffer,
+      (Buffer&, const VideoCaptureFormat&, base::TimeTicks, base::TimeDelta),
+      ());
+  MOCK_METHOD(void,
+              DoOnIncomingCapturedBufferExt,
+              (Buffer & buffer,
+               const VideoCaptureFormat& format,
+               const gfx::ColorSpace& color_space,
+               base::TimeTicks reference_time,
+               base::TimeDelta timestamp,
+               gfx::Rect visible_rect,
+               const VideoFrameMetadata& additional_metadata),
+              ());
 
   static std::unique_ptr<MockVideoCaptureDeviceClient>
   CreateMockClientWithBufferAllocator(

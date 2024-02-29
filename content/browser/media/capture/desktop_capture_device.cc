@@ -647,7 +647,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
           gfx::Size(output_size.width(), output_size.height()),
           requested_frame_rate_, media::PIXEL_FORMAT_ARGB),
       frame_color_space, 0 /* clockwise_rotation */, false /* flip_y */, now,
-      now - first_ref_time_);
+      now - first_ref_time_, std::nullopt);
 
   ScheduleNextCaptureFrame();
 }

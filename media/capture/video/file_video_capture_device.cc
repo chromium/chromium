@@ -5,6 +5,7 @@
 #include "media/capture/video/file_video_capture_device.h"
 
 #include <stddef.h>
+#include <optional>
 
 #include <algorithm>
 #include <memory>
@@ -692,16 +693,16 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     // NV12.
     VideoCaptureFormat gmb_format = ptz_format;
     gmb_format.pixel_format = PIXEL_FORMAT_NV12;
-    client_->OnIncomingCapturedBuffer(std::move(capture_buffer), gmb_format,
-                                      current_time,
-                                      current_time - first_ref_time_);
+    client_->OnIncomingCapturedBuffer(
+        std::move(capture_buffer), gmb_format, current_time,
+        current_time - first_ref_time_, std::nullopt);
   } else {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.
     client_->OnIncomingCapturedData(
         ptz_frame.data(), ptz_frame.size(), ptz_format, gfx::ColorSpace(),
         0 /* clockwise_rotation */, false /* flip_y */, current_time,
-        current_time - first_ref_time_);
+        current_time - first_ref_time_, std::nullopt);
   }
 
   // Process waiting photo callbacks

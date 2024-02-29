@@ -87,9 +87,11 @@ void VideoCaptureDevice::Client::OnIncomingCapturedData(
     int clockwise_rotation,
     bool flip_y,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp) {
   OnIncomingCapturedData(data, length, frame_format, color_space,
                          clockwise_rotation, flip_y, reference_time, timestamp,
+                         capture_begin_timestamp,
                          /*frame_feedback_id=*/0);
 }
 
@@ -98,9 +100,11 @@ void VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
     const VideoCaptureFormat& frame_format,
     int clockwise_rotation,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp) {
   OnIncomingCapturedGfxBuffer(buffer, frame_format, clockwise_rotation,
                               reference_time, timestamp,
+                              capture_begin_timestamp,
                               /*frame_feedback_id=*/0);
 }
 

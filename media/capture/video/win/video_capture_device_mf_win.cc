@@ -2275,8 +2275,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
       VideoCaptureFormat(
           texture_size, selected_video_capability_->supported_format.frame_rate,
           pixel_format),
-      color_space_, reference_time, timestamp, gfx::Rect(texture_size),
-      frame_metadata);
+      color_space_, reference_time, timestamp, std::nullopt,
+      gfx::Rect(texture_size), frame_metadata);
 
   return hr;
 }
@@ -2344,9 +2344,9 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
               selected_video_capability_->supported_format.frame_rate,
               pixel_format),
           gfx::ColorSpace());
-  client_->OnIncomingCapturedExternalBuffer(std::move(external_buffer),
-                                            reference_time, timestamp,
-                                            gfx::Rect(texture_size));
+  client_->OnIncomingCapturedExternalBuffer(
+      std::move(external_buffer), reference_time, timestamp, std::nullopt,
+      gfx::Rect(texture_size));
   return hr;
 }
 
@@ -2409,8 +2409,8 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
     client_->OnIncomingCapturedData(
         locked_buffer.data(), locked_buffer.length(),
         selected_video_capability_->supported_format, color_space_,
-        camera_rotation_.value(), false /* flip_y */, reference_time,
-        timestamp);
+        camera_rotation_.value(), false /* flip_y */, reference_time, timestamp,
+        std::nullopt);
   }
 
   while (!video_stream_take_photo_callbacks_.empty()) {

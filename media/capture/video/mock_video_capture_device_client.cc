@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "media/base/video_frame.h"
 
 using testing::_;
 using testing::Invoke;
+using testing::WithArgs;
 
 namespace media {
 
@@ -87,7 +89,8 @@ void MockVideoCaptureDeviceClient::OnIncomingCapturedBuffer(
     Buffer buffer,
     const media::VideoCaptureFormat& format,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_time) {
   DoOnIncomingCapturedBuffer(buffer, format, reference_time, timestamp);
 }
 void MockVideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
@@ -96,6 +99,7 @@ void MockVideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
     const gfx::ColorSpace& color_space,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_time,
     gfx::Rect visible_rect,
     const media::VideoFrameMetadata& additional_metadata) {
   DoOnIncomingCapturedBufferExt(buffer, format, color_space, reference_time,
@@ -110,7 +114,7 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
   result->fake_frame_captured_callback_ = std::move(frame_captured_callback);
 
   auto* raw_result_ptr = result.get();
-  ON_CALL(*result, ReserveOutputBuffer(_, _, _, _))
+  ON_CALL(*result, ReserveOutputBuffer)
       .WillByDefault(
           Invoke([](const gfx::Size& dimensions, VideoPixelFormat format, int,
                     VideoCaptureDevice::Client::Buffer* buffer) {
@@ -121,37 +125,26 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
                                               frame_format.frame_size));
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           }));
-  ON_CALL(*result, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
-      .WillByDefault(
-          Invoke([raw_result_ptr](const uint8_t*, int,
-                                  const media::VideoCaptureFormat& frame_format,
-                                  const gfx::ColorSpace&, int, bool,
-                                  base::TimeTicks, base::TimeDelta, int) {
+  ON_CALL(*result, OnIncomingCapturedData)
+      .WillByDefault(WithArgs<2>(Invoke(
+          [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          }));
-  ON_CALL(*result, OnIncomingCapturedGfxBuffer(_, _, _, _, _, _))
-      .WillByDefault(
-          Invoke([raw_result_ptr](gfx::GpuMemoryBuffer*,
-                                  const media::VideoCaptureFormat& frame_format,
-                                  int, base::TimeTicks, base::TimeDelta, int) {
+          })));
+  ON_CALL(*result, OnIncomingCapturedGfxBuffer)
+      .WillByDefault(WithArgs<1>(Invoke(
+          [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          }));
-  ON_CALL(*result, DoOnIncomingCapturedBuffer(_, _, _, _))
-      .WillByDefault(
-          Invoke([raw_result_ptr](media::VideoCaptureDevice::Client::Buffer&,
-                                  const media::VideoCaptureFormat& frame_format,
-                                  base::TimeTicks, base::TimeDelta) {
+          })));
+  ON_CALL(*result, DoOnIncomingCapturedBuffer)
+      .WillByDefault(WithArgs<1>(Invoke(
+          [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          }));
-  ON_CALL(*result, DoOnIncomingCapturedBufferExt(_, _, _, _, _, _, _))
-      .WillByDefault(
-          Invoke([raw_result_ptr](media::VideoCaptureDevice::Client::Buffer&,
-                                  const media::VideoCaptureFormat& frame_format,
-                                  const gfx::ColorSpace&, base::TimeTicks,
-                                  base::TimeDelta, gfx::Rect,
-                                  const media::VideoFrameMetadata&) {
+          })));
+  ON_CALL(*result, DoOnIncomingCapturedBufferExt)
+      .WillByDefault(WithArgs<1>(Invoke(
+          [raw_result_ptr](const media::VideoCaptureFormat& frame_format) {
             raw_result_ptr->fake_frame_captured_callback_.Run(frame_format);
-          }));
+          })));
   return result;
 }
 

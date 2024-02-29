@@ -806,7 +806,7 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
       buffer_.get(), frame_size, device_state()->format,
       GetDefaultColorSpace(device_state()->format.pixel_format),
       0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now));
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 ClientBufferFrameDeliverer::ClientBufferFrameDeliverer(
@@ -840,9 +840,9 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   buffer_access.reset();  // Can't outlive `capture_buffer.handle_provider'.
 
   base::TimeTicks now = base::TimeTicks::Now();
-  client()->OnIncomingCapturedBuffer(std::move(capture_buffer),
-                                     device_state()->format, now,
-                                     CalculateTimeSinceFirstInvocation(now));
+  client()->OnIncomingCapturedBuffer(
+      std::move(capture_buffer), device_state()->format, now,
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 JpegEncodingFrameDeliverer::JpegEncodingFrameDeliverer(
@@ -881,7 +881,7 @@ void JpegEncodingFrameDeliverer::PaintAndDeliverNextFrame(
   client()->OnIncomingCapturedData(
       &jpeg_buffer_[0], frame_size, device_state()->format,
       gfx::ColorSpace::CreateJpeg(), 0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now));
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 GpuMemoryBufferFrameDeliverer::GpuMemoryBufferFrameDeliverer(
@@ -936,9 +936,9 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
   // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for most
   // of the time.  Currently the only supported underlying format is NV12.
   modified_format.pixel_format = PIXEL_FORMAT_NV12;
-  client()->OnIncomingCapturedBuffer(std::move(capture_buffer), modified_format,
-                                     now,
-                                     CalculateTimeSinceFirstInvocation(now));
+  client()->OnIncomingCapturedBuffer(
+      std::move(capture_buffer), modified_format, now,
+      CalculateTimeSinceFirstInvocation(now), std::nullopt);
 }
 
 void FakeVideoCaptureDevice::BeepAndScheduleNextCapture(

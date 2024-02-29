@@ -891,9 +891,9 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
     // DXVA_ExtendedFormat. Then use its fields DXVA_VideoPrimaries,
     // DXVA_VideoTransferMatrix, DXVA_VideoTransferFunction and
     // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
-    client_->OnIncomingCapturedData(buffer, length, format, gfx::ColorSpace(),
-                                    camera_rotation_.value(), flip_y,
-                                    base::TimeTicks::Now(), timestamp);
+    client_->OnIncomingCapturedData(
+        buffer, length, format, gfx::ColorSpace(), camera_rotation_.value(),
+        flip_y, base::TimeTicks::Now(), timestamp, std::nullopt);
   }
 
   while (!take_photo_callbacks_.empty()) {

@@ -76,40 +76,48 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
 
   // VideoCaptureDevice::Client implementation.
   void OnCaptureConfigurationChanged() override;
-  void OnIncomingCapturedData(const uint8_t* data,
-                              int length,
-                              const VideoCaptureFormat& frame_format,
-                              const gfx::ColorSpace& color_space,
-                              int clockwise_rotation,
-                              bool flip_y,
-                              base::TimeTicks reference_time,
-                              base::TimeDelta timestamp,
-                              int frame_feedback_id) override;
-  void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
-                                   const VideoCaptureFormat& frame_format,
-                                   int clockwise_rotation,
-                                   base::TimeTicks reference_time,
-                                   base::TimeDelta timestamp,
-                                   int frame_feedback_id) override;
+  void OnIncomingCapturedData(
+      const uint8_t* data,
+      int length,
+      const VideoCaptureFormat& frame_format,
+      const gfx::ColorSpace& color_space,
+      int clockwise_rotation,
+      bool flip_y,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp,
+      int frame_feedback_id) override;
+  void OnIncomingCapturedGfxBuffer(
+      gfx::GpuMemoryBuffer* buffer,
+      const VideoCaptureFormat& frame_format,
+      int clockwise_rotation,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp,
+      int frame_feedback_id) override;
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp,
       const gfx::Rect& visible_rect) override;
   ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
                                     VideoPixelFormat format,
                                     int frame_feedback_id,
                                     Buffer* buffer) override;
-  void OnIncomingCapturedBuffer(Buffer buffer,
-                                const VideoCaptureFormat& format,
-                                base::TimeTicks reference_time,
-                                base::TimeDelta timestamp) override;
+  void OnIncomingCapturedBuffer(
+      Buffer buffer,
+      const VideoCaptureFormat& format,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp) override;
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
       const VideoCaptureFormat& format,
       const gfx::ColorSpace& color_space,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp,
       gfx::Rect visible_rect,
       const VideoFrameMetadata& additional_metadata) override;
   void OnError(VideoCaptureError error,
@@ -125,16 +133,19 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp,
       const gfx::Rect& visible_rect,
       ReadyFrameInBuffer* ready_buffer);
 
   // A branch of OnIncomingCapturedData for Y16 frame_format.pixel_format.
-  void OnIncomingCapturedY16Data(const uint8_t* data,
-                                 int length,
-                                 const VideoCaptureFormat& frame_format,
-                                 base::TimeTicks reference_time,
-                                 base::TimeDelta timestamp,
-                                 int frame_feedback_id);
+  void OnIncomingCapturedY16Data(
+      const uint8_t* data,
+      int length,
+      const VideoCaptureFormat& frame_format,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp,
+      int frame_feedback_id);
 
   // The receiver to which we post events.
   const std::unique_ptr<VideoFrameReceiver> receiver_;

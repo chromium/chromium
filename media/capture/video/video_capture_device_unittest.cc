@@ -150,6 +150,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::WithArgs;
 
 namespace media {
 namespace {
@@ -337,36 +338,33 @@ class VideoCaptureDeviceTest
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateDeviceClient() {
     auto result = std::make_unique<NiceMockVideoCaptureDeviceClient>();
-    ON_CALL(*result, OnError(_, _, _)).WillByDefault(Invoke(DumpError));
-    EXPECT_CALL(*result, ReserveOutputBuffer(_, _, _, _)).Times(0);
-    EXPECT_CALL(*result, DoOnIncomingCapturedBuffer(_, _, _, _)).Times(0);
-    EXPECT_CALL(*result, DoOnIncomingCapturedBufferExt(_, _, _, _, _, _, _))
-        .Times(0);
-    ON_CALL(*result, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
-        .WillByDefault(
+    ON_CALL(*result, OnError).WillByDefault(Invoke(DumpError));
+    EXPECT_CALL(*result, ReserveOutputBuffer).Times(0);
+    EXPECT_CALL(*result, DoOnIncomingCapturedBuffer).Times(0);
+    EXPECT_CALL(*result, DoOnIncomingCapturedBufferExt).Times(0);
+    ON_CALL(*result, OnIncomingCapturedData)
+        .WillByDefault(WithArgs<0, 1, 2>(
             Invoke([this](const uint8_t* data, int length,
-                          const media::VideoCaptureFormat& frame_format,
-                          const gfx::ColorSpace&, int, bool, base::TimeTicks,
-                          base::TimeDelta, int) {
+                          const media::VideoCaptureFormat& frame_format) {
               ASSERT_GT(length, 0);
               ASSERT_TRUE(data);
               main_thread_task_runner_->PostTask(
                   FROM_HERE,
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
                                  base::Unretained(this), frame_format));
-            }));
-    ON_CALL(*result, OnIncomingCapturedGfxBuffer(_, _, _, _, _, _))
-        .WillByDefault(Invoke([this](
-                                  gfx::GpuMemoryBuffer* buffer,
-                                  const media::VideoCaptureFormat& frame_format,
-                                  int, base::TimeTicks, base::TimeDelta, int) {
-          ASSERT_TRUE(buffer);
-          ASSERT_GT(buffer->GetSize().width() * buffer->GetSize().height(), 0);
-          main_thread_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
-                             base::Unretained(this), frame_format));
-        }));
+            })));
+    ON_CALL(*result, OnIncomingCapturedGfxBuffer)
+        .WillByDefault(WithArgs<0, 1>(
+            Invoke([this](gfx::GpuMemoryBuffer* buffer,
+                          const media::VideoCaptureFormat& frame_format) {
+              ASSERT_TRUE(buffer);
+              ASSERT_GT(buffer->GetSize().width() * buffer->GetSize().height(),
+                        0);
+              main_thread_task_runner_->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
+                                 base::Unretained(this), frame_format));
+            })));
     return result;
   }
 

@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -295,6 +296,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
     bool flip_y,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
     int frame_feedback_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -329,7 +331,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 
   if (format.pixel_format == PIXEL_FORMAT_Y16) {
     return OnIncomingCapturedY16Data(data, length, format, reference_time,
-                                     timestamp, frame_feedback_id);
+                                     timestamp, capture_begin_timestamp,
+                                     frame_feedback_id);
   }
 
   // |new_unrotated_{width,height}| are the dimensions of the output buffer that
@@ -406,9 +409,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 
   const VideoCaptureFormat output_format =
       VideoCaptureFormat(dimensions, format.frame_rate, PIXEL_FORMAT_I420);
-  OnIncomingCapturedBufferExt(std::move(buffer), output_format, color_space,
-                              reference_time, timestamp, gfx::Rect(dimensions),
-                              VideoFrameMetadata());
+  OnIncomingCapturedBufferExt(
+      std::move(buffer), output_format, color_space, reference_time, timestamp,
+      capture_begin_timestamp, gfx::Rect(dimensions), VideoFrameMetadata());
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
@@ -417,6 +420,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
     int clockwise_rotation,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
     int frame_feedback_id) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer");
@@ -495,18 +499,19 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       dimensions, frame_format.frame_rate, PIXEL_FORMAT_I420);
   OnIncomingCapturedBuffer(std::move(output_buffer), output_format,
-                           reference_time, timestamp);
+                           reference_time, timestamp, capture_begin_timestamp);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     CapturedExternalVideoBuffer buffer,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
     const gfx::Rect& visible_rect) {
   ReadyFrameInBuffer ready_frame;
   if (CreateReadyFrameFromExternalBuffer(
-          std::move(buffer), reference_time, timestamp, visible_rect,
-          &ready_frame) != ReserveResult::kSucceeded) {
+          std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
+          visible_rect, &ready_frame) != ReserveResult::kSucceeded) {
     DVLOG(2) << __func__
              << " CreateReadyFrameFromExternalBuffer failed: reservation "
                 "trakcer failed.";
@@ -520,6 +525,7 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
     CapturedExternalVideoBuffer buffer,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
     const gfx::Rect& visible_rect,
     ReadyFrameInBuffer* ready_buffer) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
@@ -577,6 +583,7 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   info->visible_rect = visible_rect;
   info->metadata.frame_rate = buffer.format.frame_rate;
   info->metadata.reference_time = reference_time;
+  info->metadata.capture_begin_time = capture_begin_timestamp;
 
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
@@ -651,11 +658,13 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBuffer(
     Buffer buffer,
     const VideoCaptureFormat& format,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   OnIncomingCapturedBufferExt(
       std::move(buffer), format, gfx::ColorSpace(), reference_time, timestamp,
-      gfx::Rect(format.frame_size), VideoFrameMetadata());
+      capture_begin_timestamp, gfx::Rect(format.frame_size),
+      VideoFrameMetadata());
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
@@ -664,6 +673,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
     const gfx::ColorSpace& color_space,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
     gfx::Rect visible_rect,
     const VideoFrameMetadata& additional_metadata) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -673,6 +683,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
   VideoFrameMetadata metadata = additional_metadata;
   metadata.frame_rate = format.frame_rate;
   metadata.reference_time = reference_time;
+  metadata.capture_begin_time = capture_begin_timestamp;
 
   mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New();
   info->timestamp = timestamp;
@@ -727,6 +738,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     const VideoCaptureFormat& format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_timestamp,
     int frame_feedback_id) {
   Buffer buffer;
   const auto reservation_result_code = ReserveOutputBuffer(
@@ -747,6 +759,6 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       format.frame_size, format.frame_rate, PIXEL_FORMAT_Y16);
   OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,
-                           timestamp);
+                           timestamp, capture_begin_timestamp);
 }
 }  // namespace media

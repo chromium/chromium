@@ -128,6 +128,7 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
       const gfx::ColorSpace& color_space,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
       gfx::Rect visible_rect,
       const VideoFrameMetadata& additional_metadata) override {
     EXPECT_TRUE(started_);
@@ -148,28 +149,34 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
                               bool flip_y,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
+                              std::optional<base::TimeTicks> capture_begin_time,
                               int frame_feedback_id) override {
     NOTREACHED_NORETURN();
   }
-  void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
-                                   const VideoCaptureFormat& frame_format,
-                                   int clockwise_rotation,
-                                   base::TimeTicks reference_time,
-                                   base::TimeDelta timestamp,
-                                   int frame_feedback_id) override {
+  void OnIncomingCapturedGfxBuffer(
+      gfx::GpuMemoryBuffer* buffer,
+      const VideoCaptureFormat& frame_format,
+      int clockwise_rotation,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
+      int frame_feedback_id) override {
     NOTREACHED_NORETURN();
   }
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
       const gfx::Rect& visible_rect) override {
     NOTREACHED_NORETURN();
   }
-  void OnIncomingCapturedBuffer(Buffer buffer,
-                                const VideoCaptureFormat& format,
-                                base::TimeTicks reference_time,
-                                base::TimeDelta timestamp) override {
+  void OnIncomingCapturedBuffer(
+      Buffer buffer,
+      const VideoCaptureFormat& format,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time) override {
     NOTREACHED_NORETURN();
   }
   void OnError(VideoCaptureError error,

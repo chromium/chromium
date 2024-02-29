@@ -432,7 +432,7 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
 
   client_->OnIncomingCapturedBufferExt(
       std::move(buffer), capture_format, gfx::ColorSpace(), reference_time,
-      timestamp, gfx::Rect(visible_size), VideoFrameMetadata());
+      timestamp, std::nullopt, gfx::Rect(visible_size), VideoFrameMetadata());
 
   // Frame buffer is returned to the device by dropping the |frame_info|.
 }
