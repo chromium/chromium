@@ -83,8 +83,10 @@ class WeakDocumentPtr;
 // The lifetime of an instance is roughly equal to the lifetime of a keepalive
 // request, which may surpass the initiator renderer's lifetime.
 //
-// Design Doc:
+// * Design Doc:
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
+// * Mojo Connections:
+// https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
 class CONTENT_EXPORT KeepAliveURLLoader
     : public network::mojom::URLLoader,
       public network::mojom::URLLoaderClient,
@@ -283,6 +285,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // service.
   mojo::Receiver<network::mojom::URLLoaderClient> loader_receiver_{this};
 
+  // See
+  // https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
+  class ForwardingClient;
   // Browser -> Renderer connection:
   //
   // Connects to the receiver URLLoaderClient implemented in the renderer.
@@ -290,7 +295,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // the network service, i.e. message received by `loader_receiver_`, to.
   // It may be disconnected if the renderer is dead. In such case, subsequent
   // URLLoader response may be handled in browser.
-  mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
+  const std::unique_ptr<ForwardingClient> forwarding_client_;
 
   // Browser <- Renderer connection:
   // Timer used for triggering cleaning up `this` after the receiver is
