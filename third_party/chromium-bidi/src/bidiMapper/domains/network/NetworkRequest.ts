@@ -40,6 +40,8 @@ import {
   cdpToBiDiCookie,
 } from './NetworkUtils.js';
 
+const REALM_REGEX = /(?<=realm=").*(?=")/;
+
 /** Abstracts one individual network request. */
 export class NetworkRequest {
   static unknownParameter = 'UNKNOWN';
@@ -615,6 +617,7 @@ export class NetworkRequest {
       this.#response.extraInfo = undefined;
     }
 
+    const authChallenges = this.#authChallenges(this.#response.info.headers);
     const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
       this.#response.info.headers
     );
@@ -642,6 +645,7 @@ export class NetworkRequest {
             // TODO: consider removing from spec.
             size: 0,
           },
+          ...(authChallenges ? {authChallenges} : {}),
         },
       },
     };
@@ -649,6 +653,33 @@ export class NetworkRequest {
 
   #isIgnoredEvent(): boolean {
     return this.#request.info?.request.url.endsWith('/favicon.ico') ?? false;
+  }
+
+  #authChallenges(
+    headers: Protocol.Network.Headers
+  ): Network.AuthChallenge[] | undefined {
+    if (!(this.statusCode === 401 || this.statusCode === 407)) {
+      return undefined;
+    }
+
+    const headerName =
+      this.statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
+
+    const authChallenges = [];
+    for (const [header, value] of Object.entries(headers)) {
+      // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
+      // Or verify this works
+      if (
+        header.localeCompare(headerName, undefined, {sensitivity: 'base'}) === 0
+      ) {
+        authChallenges.push({
+          scheme: value.split(' ').at(0) ?? '',
+          realm: value.match(REALM_REGEX)?.at(0) ?? '',
+        });
+      }
+    }
+
+    return authChallenges;
   }
 
   static #getInitiatorType(
