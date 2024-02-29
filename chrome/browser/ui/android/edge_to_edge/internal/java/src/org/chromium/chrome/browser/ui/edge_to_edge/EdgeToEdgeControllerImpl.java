@@ -42,9 +42,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private static final String TAG = "E2E_ControllerImpl";
 
-    /** Static to force-enable TotallyEdgeToEdge for testing purposes. */
-    private static boolean sEnableTotallyEdgeToEdgeForTesting;
-
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
 
@@ -62,7 +59,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private Tab mCurrentTab;
     private WebContentsObserver mWebContentsObserver;
     private boolean mIsActivityToEdge;
-    private float mPreviousSuggestedPadding;
     private @Nullable Insets mSystemInsets;
     private boolean mDidSetDecorAndListener;
     private final @Nullable TotallyEdgeToEdge mTotallyEdgeToEdge;
@@ -111,16 +107,15 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                     }
                 };
         mTotallyEdgeToEdge =
-                TotallyEdgeToEdge.isEnabled() || sEnableTotallyEdgeToEdgeForTesting
+                TotallyEdgeToEdge.isEnabled()
                         ? new TotallyEdgeToEdge(
                                 browserControlsStateProvider,
-                                (suggestedPadding) ->
+                                () ->
                                         maybeDrawToEdge(
                                                 ROOT_UI_VIEW_ID,
                                                 mCurrentTab == null
                                                         ? null
-                                                        : mCurrentTab.getWebContents(),
-                                                suggestedPadding))
+                                                        : mCurrentTab.getWebContents()))
                         : null;
     }
 
@@ -197,24 +192,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param webContents The {@link WebContents} to notify of inset env() changes.
      */
     private void maybeDrawToEdge(int viewId, @Nullable WebContents webContents) {
-        maybeDrawToEdge(viewId, webContents, 0);
-    }
-
-    /**
-     * Conditionally draws the given View ToEdge or ToNormal based on {@link
-     * EdgeToEdgeUtils#shouldDrawToEdge(Tab)}
-     *
-     * @param viewId The ID of the Root UI View.
-     * @param webContents The {@link WebContents} to notify of inset env() changes.
-     * @param suggestedPadding A fraction indicating the amount of padding (range 0 - 1).
-     */
-    private void maybeDrawToEdge(
-            int viewId, @Nullable WebContents webContents, float suggestedPadding) {
-        drawToEdge(
-                viewId,
-                shouldDrawToEdge(mCurrentTab) || totallyToEdge(),
-                webContents,
-                suggestedPadding);
+        Log.v(TAG, "maybeDrawToEdge? totally: %s", totallyToEdge());
+        drawToEdge(viewId, shouldDrawToEdge(mCurrentTab) || totallyToEdge(), webContents);
     }
 
     /**
@@ -248,30 +227,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param webContents The {@link WebContents} to notify of inset env() changes.
      */
     private void drawToEdge(int viewId, boolean toEdge, @Nullable WebContents webContents) {
-        drawToEdge(viewId, toEdge, webContents, 0);
-    }
-
-    /**
-     * Conditionally draws the given View ToEdge or ToNormal based on the {@code toEdge} param.
-     *
-     * @param viewId The ID of the Root UI View.
-     * @param toEdge Whether to draw ToEdge.
-     * @param webContents The {@link WebContents} to notify of inset env() changes.
-     * @param suggestedPadding A suggested value for the padding of the bottom of the screen. Use 0
-     *     to pad all the way to the edge, and a positive non-zero value to pad that many pixels
-     *     from the edge.
-     */
-    private void drawToEdge(
-            int viewId, boolean toEdge, @Nullable WebContents webContents, float suggestedPadding) {
-        if (toEdge == mIsActivityToEdge && mPreviousSuggestedPadding == suggestedPadding) return;
-
-        if (toEdge == mIsActivityToEdge
-                && mPreviousSuggestedPadding != suggestedPadding
-                && mSystemInsets != null) {
-            adjustEdges(toEdge, viewId, webContents, suggestedPadding);
-            mPreviousSuggestedPadding = suggestedPadding;
-            return;
-        }
+        if (toEdge == mIsActivityToEdge) return;
 
         mIsActivityToEdge = toEdge;
         Log.v(TAG, "Switching %s", (toEdge ? "ToEdge" : "ToNormal"));
@@ -300,12 +256,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                                                     mActivity);
                             // Note that we cannot adjustEdges earlier since we need the system
                             // insets.
-                            adjustEdges(mIsActivityToEdge, viewId, webContents, suggestedPadding);
+                            adjustEdges(mIsActivityToEdge, viewId, webContents);
                         }
                         return windowInsets;
                     });
-        } else if (mSystemInsets != null) {
-            adjustEdges(toEdge, viewId, webContents, suggestedPadding);
+        } else {
+            adjustEdges(toEdge, viewId, webContents);
         }
     }
 
@@ -317,22 +273,14 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param toEdge Whether to adjust the drawing environment ToEdge.
      * @param viewId The ID of the view to adjust.
      * @param webContents A {@link WebContents} to notify Blink of the adjusted insets.
-     * @param suggestedPadding A suggested value for the padding of the bottom of the screen. Use 0
-     *     to pad all the way to the edge, and a positive non-zero value to pad that many pixels
-     *     from the edge.
      */
-    private void adjustEdges(
-            boolean toEdge, int viewId, @Nullable WebContents webContents, float suggestedPadding) {
+    private void adjustEdges(boolean toEdge, int viewId, @Nullable WebContents webContents) {
         assert mSystemInsets != null : "Trying to adjustToEdge without mSystemInsets!";
 
         // Adjust the bottom padding to reflect whether ToEdge or ToNormal for the Gesture Nav Bar.
         // All the other edges need to be padded to prevent drawing under an edge that we
         // don't want drawn ToEdge (e.g. the Status Bar).
-        int bottomInset =
-                toEdge
-                        ? mSystemInsets.bottom - Math.round(suggestedPadding * mSystemInsets.bottom)
-                        : mSystemInsets.bottom;
-
+        int bottomInset = toEdge ? 0 : mSystemInsets.bottom;
         mEdgeToEdgeOSWrapper.setPadding(
                 mActivity.findViewById(viewId),
                 mSystemInsets.left,
@@ -354,10 +302,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         @ColorInt int navBarColor = toEdge ? Color.TRANSPARENT : Color.BLACK;
         mEdgeToEdgeOSWrapper.setNavigationBarColor(mActivity.getWindow(), navBarColor);
 
-        if (webContents != null) {
-            pushInsetsToBlink(
-                    toEdge, webContents, Math.round(suggestedPadding * mSystemInsets.bottom));
-        }
+        if (webContents != null) pushInsetsToBlink(toEdge, webContents);
     }
 
     /**
@@ -366,12 +311,12 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param toEdge Whether we're drawing all the way to the edge of the screen.
      * @param webContents A {@link WebContents} that leads to a Blink Renderer.
      */
-    private void pushInsetsToBlink(
-            boolean toEdge, @NonNull WebContents webContents, int suggestedPadding) {
+    private void pushInsetsToBlink(boolean toEdge, @NonNull WebContents webContents) {
         // Push the insets back to the webpage if we have one.
         // TODO(https://crbug.com/1475820) Move this work into the nascent
         // SafeAreaInsetsTracker.
-        Rect insetsRect = new Rect(0, 0, 0, toEdge ? scale(suggestedPadding) : 0);
+        assert mSystemInsets != null : "Error, trying to notify Blink without system insets set";
+        Rect insetsRect = new Rect(0, 0, 0, toEdge ? scale(mSystemInsets.bottom) : 0);
         Log.v(TAG, "Pushing back insets to Blink %s", insetsRect);
         webContents.setDisplayCutoutSafeArea(insetsRect);
     }
@@ -431,9 +376,5 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
 
     void setSystemInsetsForTesting(Insets systemInsetsForTesting) {
         mSystemInsets = systemInsetsForTesting;
-    }
-
-    static void setTotallyEdgeToEdgeForTesting(boolean isEnabled) {
-        sEnableTotallyEdgeToEdgeForTesting = isEnabled;
     }
 }
