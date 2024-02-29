@@ -99,12 +99,12 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(const Length& length,
   length_array.values[CSSPrimitiveValue::kUnitTypePixels] =
       pixels_and_percent.pixels / zoom;
   length_array.type_flags[CSSPrimitiveValue::kUnitTypePixels] =
-      pixels_and_percent.pixels != 0;
+      pixels_and_percent.has_explicit_pixels;
 
   length_array.values[CSSPrimitiveValue::kUnitTypePercentage] =
       pixels_and_percent.percent;
   length_array.type_flags[CSSPrimitiveValue::kUnitTypePercentage] =
-      length.IsPercentOrCalc();
+      pixels_and_percent.has_explicit_percent;
   return MakeGarbageCollected<InterpolableLength>(std::move(length_array));
 }
 
