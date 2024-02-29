@@ -25,12 +25,17 @@ enum class PushNotificationClientId;
 // feature and notifies the delegate on changes.
 @interface NotificationsSettingsObserver : NSObject <PrefObserverDelegate>
 
+// Delegate to receive a message when notification settings change.
+@property(nonatomic, weak) id<NotificationsSettingsObserverDelegate> delegate;
+
 - (instancetype)initWithPrefService:(PrefService*)prefService
+                         localState:(PrefService*)localState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<NotificationsSettingsObserverDelegate> delegate;
+// Shuts down observations.
+- (void)disconnect;
 
 @end
 

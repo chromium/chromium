@@ -23,6 +23,12 @@
   // Pref Service.
   raw_ptr<PrefService> _prefService;
 
+  // Registrar for pref changes in localState.
+  PrefChangeRegistrar _localStatePrefChangeRegistrar;
+
+  // Stores Local State.
+  raw_ptr<PrefService> _localState;
+
   // YES if price tracing notification is enabled.
   BOOL _priceTrackingNotificationEnabled;
 
@@ -31,9 +37,13 @@
 
   // YES if sports notification is enabled.
   BOOL _sportsNotificationEnabled;
+
+  // Yes if tips notification is enabled.
+  BOOL _tipsNotificationEnabled;
 }
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithPrefService:(PrefService*)prefService
+                         localState:(PrefService*)localState {
   self = [super init];
   if (self) {
     DCHECK(prefService);
@@ -57,6 +67,17 @@
     _contentNotificationEnabled =
         _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
             .FindBool(kSportsNotificationKey)
+            .value_or(false);
+
+    _localStatePrefChangeRegistrar.Init(localState);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kAppLevelPushNotificationPermissions,
+        &_localStatePrefChangeRegistrar);
+
+    _localState = localState;
+    _tipsNotificationEnabled =
+        _localState->GetDict(prefs::kAppLevelPushNotificationPermissions)
+            .FindBool(kTipsNotificationKey)
             .value_or(false);
   }
 
@@ -87,7 +108,21 @@
       [self.delegate notificationsSettingsDidChangeForClient:
                          PushNotificationClientId::kSports];
     }
+  } else if (preferenceName == prefs::kAppLevelPushNotificationPermissions) {
+    if (_tipsNotificationEnabled != [self isTipsNotificationEnabled]) {
+      _tipsNotificationEnabled = [self isTipsNotificationEnabled];
+      [self.delegate notificationsSettingsDidChangeForClient:
+                         PushNotificationClientId::kTips];
+    }
   }
+}
+
+- (void)disconnect {
+  _localStatePrefChangeRegistrar.RemoveAll();
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _prefService = nullptr;
+  _localState = nullptr;
 }
 
 #pragma mark - private
@@ -107,6 +142,12 @@
 - (BOOL)isSportsNotificationEnabled {
   return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
       .FindBool(kSportsNotificationKey)
+      .value_or(false);
+}
+
+- (BOOL)isTipsNotificationEnabled {
+  return _localState->GetDict(prefs::kAppLevelPushNotificationPermissions)
+      .FindBool(kTipsNotificationKey)
       .value_or(false);
 }
 

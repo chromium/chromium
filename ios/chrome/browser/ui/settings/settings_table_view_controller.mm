@@ -415,8 +415,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(prefs::kSigninAllowed,
                                                      &_prefChangeRegistrar);
-    _notificationsObserver =
-        [[NotificationsSettingsObserver alloc] initWithPrefService:prefService];
+    _notificationsObserver = [[NotificationsSettingsObserver alloc]
+        initWithPrefService:prefService
+                 localState:GetApplicationContext()->GetLocalState()];
     _notificationsObserver.delegate = self;
 
     // TODO(crbug.com/764578): -loadModel should not be called from
@@ -2199,6 +2200,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Remove PrefObserverDelegates.
   _notificationsObserver.delegate = nil;
+  [_notificationsObserver disconnect];
   _notificationsObserver = nil;
 
   // Clear C++ ivars.

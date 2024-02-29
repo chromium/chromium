@@ -11,6 +11,7 @@
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -79,8 +80,9 @@
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
   PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-  _notificationsObserver =
-      [[NotificationsSettingsObserver alloc] initWithPrefService:prefService];
+  _notificationsObserver = [[NotificationsSettingsObserver alloc]
+      initWithPrefService:prefService
+               localState:GetApplicationContext()->GetLocalState()];
 
   self.viewController = [[NotificationsViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
@@ -98,6 +100,7 @@
 
 - (void)stop {
   _notificationsObserver.delegate = nil;
+  [_notificationsObserver disconnect];
   _notificationsObserver = nil;
   [_optInAlertCoordinator stop];
 }
