@@ -1580,6 +1580,30 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
       operands_({left_side, right_side}),
       operator_(op) {}
 
+bool CSSMathExpressionOperation::HasPercentage() const {
+  if (Category() == kCalcPercent) {
+    return true;
+  }
+  if (Category() != kCalcLengthFunction) {
+    return false;
+  }
+  switch (operator_) {
+    case CSSMathOperator::kProgress:
+      return false;
+    case CSSMathOperator::kCalcSize:
+      DCHECK_EQ(operands_.size(), 2u);
+      return operands_[0]->HasPercentage();
+    default:
+      break;
+  }
+  for (const CSSMathExpressionNode* operand : operands_) {
+    if (operand->HasPercentage()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool CSSMathExpressionOperation::InvolvesLayout() const {
   if (Category() == kCalcPercent || Category() == kCalcLengthFunction) {
     return true;

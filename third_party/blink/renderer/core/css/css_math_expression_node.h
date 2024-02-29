@@ -155,9 +155,14 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsComputationallyIndependent() const = 0;
 
   CalculationResultCategory Category() const { return category_; }
-  bool HasPercentage() const {
-    return category_ == kCalcPercent || category_ == kCalcLengthFunction;
-  }
+
+  // HasPercentage returns whether the toplevel result type involves a
+  // percentage.  In some cases a result type having a percentage requires
+  // different layout behavior (when there's nothing to resolve percentages
+  // against), so this needs to be tracked accurately.  This examines the
+  // cases of kCalcLengthFunction to determine whether it results from a
+  // percentage.
+  virtual bool HasPercentage() const { return Category() == kCalcPercent; }
 
   // InvolvesLayout returns whether a percentage, an anchor query, or a
   // calc-size() keyword is used anywhere in the value, including in contexts
@@ -546,6 +551,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
            IsTrigonometricFunction() || IsSignRelatedFunction() || IsCalcSize();
   }
 
+  bool HasPercentage() const final;
   bool InvolvesLayout() const final;
   bool InvolvesAnchorQueries() const final;
 
