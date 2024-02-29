@@ -54,6 +54,11 @@ export class SummaryPanelElement extends PolymerElement {
   protected onPrintClicked(_event: Event): void {
     this.controller.handlePrintClicked();
   }
+
+  // Click event handler for `#cancel` button.
+  protected onCancelClicked(_event: Event): void {
+    this.controller.handleCancelClicked();
+  }
 }
 
 declare global {

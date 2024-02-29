@@ -17,6 +17,7 @@ import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/tes
 suite('SummaryPanel', () => {
   const sheetsUsedSelector = '#sheetsUsed';
   const printButtonSelector = '#print';
+  const cancelButtonSelector = '#cancel';
 
   let element: SummaryPanelElement|null = null;
   let controller: SummaryPanelController|null = null;
@@ -65,7 +66,6 @@ suite('SummaryPanel', () => {
     assert(element);
     assertTrue(isVisible(element));
 
-    const cancelButtonSelector = '#cancel';
     assertTrue(
         isChildVisible(element, cancelButtonSelector),
         `Should display ${cancelButtonSelector}`);
@@ -128,6 +128,24 @@ suite('SummaryPanel', () => {
     const printButtonEvent = eventToPromise('click', printButton);
     printButton.click();
     await printButtonEvent;
+
+    // Verify controller is listening to click event.
+    mockController.verifyMocks();
+  });
+
+  // Verify cancel button calls controller.handleCancelClicked functionality.
+  test('click cancel triggers PrintPreviewPageHandler', async () => {
+    assert(mockController);
+    const handleCancelClickedMock =
+        mockController.createFunctionMock(controller!, 'handleCancelClicked');
+    handleCancelClickedMock.addExpectation();
+
+    // Click print button.
+    const cancelButton =
+        strictQuery<Button>(cancelButtonSelector, element!.shadowRoot, Button);
+    const cancelButtonEvent = eventToPromise('click', cancelButton);
+    cancelButton.click();
+    await cancelButtonEvent;
 
     // Verify controller is listening to click event.
     mockController.verifyMocks();
