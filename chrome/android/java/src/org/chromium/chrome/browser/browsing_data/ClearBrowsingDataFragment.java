@@ -10,7 +10,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -239,7 +242,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     private ConfirmImportantSitesDialogFragment mConfirmImportantSitesDialog;
 
     private @TimePeriod int mLastSelectedTimePeriod;
-    private boolean mShouldShowSnackbar;
+    private boolean mShouldShowPostDeleteFeedback;
 
     /**
      * @return All available {@link DialogOption} entries.
@@ -464,7 +467,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     @Override
     public void onBrowsingDataCleared() {
         if (getActivity() == null) return;
-        mShouldShowSnackbar = QuickDeleteController.isQuickDeleteFollowupEnabled();
+        mShouldShowPostDeleteFeedback = QuickDeleteController.isQuickDeleteFollowupEnabled();
 
         // If the user deleted their browsing history, the dialog about other forms of history
         // is enabled, and it has never been shown before, show it. Note that opening a new
@@ -706,7 +709,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             item.destroy();
         }
         mSigninManager.removeSignInStateObserver(this);
-        if (mShouldShowSnackbar) {
+        if (mShouldShowPostDeleteFeedback) {
+            triggerHapticFeedback();
             showSnackbar();
         }
     }
@@ -892,7 +896,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         }
     }
 
-    public SnackbarManager getSnackbarManager() {
+    private SnackbarManager getSnackbarManager() {
         Activity activity = getLastFocusedActivity();
         if (activity instanceof SnackbarManager.SnackbarManageable) {
             return ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
@@ -924,5 +928,18 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_CLEAR_BROWSING_DATA);
         snackbarManager.showSnackbar(snackbar);
+    }
+
+    private void triggerHapticFeedback() {
+        Activity activity = getLastFocusedActivity();
+        if (activity == null) return;
+        Vibrator v = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        final long duration = 50;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            // Deprecated in API 26.
+            v.vibrate(duration);
+        }
     }
 }
