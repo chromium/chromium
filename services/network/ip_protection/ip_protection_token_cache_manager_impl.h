@@ -73,6 +73,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
 
  private:
   void OnGotAuthTokens(
+      base::TimeTicks attempt_start_time_for_metrics,
       std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
           tokens,
       std::optional<base::Time> try_again_after);

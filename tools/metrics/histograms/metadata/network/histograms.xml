@@ -4586,6 +4586,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.TokenBatchGenerationTime"
+    units="ms" expires_after="2024-08-22">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Records the time taken for a successful attempt to generate auth tokens.
+    This only measures the time across a single attempt (not across retries,
+    which may be delayed by a variable backoff).
+
+    This measures the whole token batch generation process, from an
+    IpProtectionTokenCacheManagerImpl's perspective, from just before calling
+    IpProtectionConfigGetter::TryGetAuthTokens until OnGotAuthTokens. Note that
+    if OnGotAuthTokens receives a non-nullopt but empty vector of tokens this is
+    considered a success by this metric.
+
+    Note that if multiple token caches exist (one for each proxy layer), the
+    attempts in each token cache are timed independently, but they will all feed
+    into the same histogram.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled. Some kind of platform-dependent
+    signin is also required.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.TokenBatchRequestTime" units="ms"
     expires_after="2024-07-28">
   <owner>djmitche@chromium.org</owner>
@@ -4593,6 +4619,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the elapsed time for successful requests by IpProtectionConfigGetter
     for blind-signed tokens from BSA.
+
+    This metric only measures part of the Chrome-specific blind-signing
+    implementation and does not encompass the full token batch generation
+    process. See NetworkService.IpProtection.TokenBatchGenerationTime for a
+    generic measurement of the full token batch generation process.
   </summary>
 </histogram>
 

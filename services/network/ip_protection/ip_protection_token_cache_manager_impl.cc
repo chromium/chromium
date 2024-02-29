@@ -84,8 +84,10 @@ void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
     config_getter_->get()->TryGetAuthTokens(
         batch_size_, proxy_layer_,
-        base::BindOnce(&IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
+            weak_ptr_factory_.GetWeakPtr(),
+            /*attempt_start_time_for_metrics=*/base::TimeTicks::Now()));
   }
 
   ScheduleMaybeRefillCache();
@@ -133,6 +135,7 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
 }
 
 void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
+    const base::TimeTicks attempt_start_time_for_metrics,
     std::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
     std::optional<base::Time> try_again_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -160,6 +163,10 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
                  network::mojom::BlindSignedAuthTokenPtr& b) {
                 return a->expiration < b->expiration;
               });
+
+    base::UmaHistogramMediumTimes(
+        "NetworkService.IpProtection.TokenBatchGenerationTime",
+        base::TimeTicks::Now() - attempt_start_time_for_metrics);
   } else {
     VLOG(2) << "IPPATC::OnGotAuthTokens back off until " << *try_again_after;
     try_get_auth_tokens_after_ = *try_again_after;
@@ -266,8 +273,10 @@ void IpProtectionTokenCacheManagerImpl::CallTryGetAuthTokensForTesting() {
   CHECK(on_try_get_auth_tokens_completed_for_testing_);
   config_getter_->get()->TryGetAuthTokens(
       batch_size_, proxy_layer_,
-      base::BindOnce(&IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
+          weak_ptr_factory_.GetWeakPtr(),
+          /*attempt_start_time_for_metrics=*/base::TimeTicks::Now()));
 }
 
 }  // namespace network
