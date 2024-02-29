@@ -113,6 +113,9 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   // inserting into it.
   CreateMainURLIndex();
 
+  // After this point, the database may be accessed from another sequence.
+  db_.DetachFromSequence();
+
   return true;
 }
 

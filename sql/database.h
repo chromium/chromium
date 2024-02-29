@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/thread_annotations.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
@@ -260,8 +261,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseDiagnostics {
 
 // Handle to an open SQLite database.
 //
-// Instances of this class are not thread-safe. After construction, a Database
-// instance should only be accessed from one sequence.
+// Instances of this class are not thread-safe. With few exceptions, Database
+// instances should only be accessed from one sequence. Database instances may
+// be constructed on one sequence and safely used/destroyed on another. Callers
+// may explicitly use `DetachFromSequence()` before moving to another sequence.
 //
 // When a Database instance goes out of scope, any uncommitted transactions are
 // rolled back.
@@ -400,6 +403,10 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Returns true if the database has been successfully opened.
   bool is_open() const;
+
+  // Detach from the currently-attached sequence. If already attached to a
+  // sequence, this method must be called from that sequence.
+  void DetachFromSequence();
 
   // Closes the database. This is automatically performed on destruction for
   // you, but this allows you to close the database early. You must not call
@@ -706,6 +713,7 @@ class COMPONENT_EXPORT(SQL) Database {
   static base::FilePath SharedMemoryFilePath(const base::FilePath& db_path);
 
   // Internal state accessed by other classes in //sql.
+  base::WeakPtr<Database> GetWeakPtr(InternalApiToken);
   sqlite3* db(InternalApiToken) const { return db_; }
   bool poisoned(InternalApiToken) const { return poisoned_; }
   base::FilePath DbPath(InternalApiToken) const { return DbPath(); }

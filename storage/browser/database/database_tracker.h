@@ -77,7 +77,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfo {
 // The data in this class is not thread-safe, so all methods of this class
 // should be called on the task runner returned by task_runner(). The only
 // exceptions are the constructor, the destructor, and the getters explicitly
-// marked as thread-safe.
+// marked as thread-safe. Although the destructor itself may run on any thread,
+// destruction effectively occurs in Shutdown(), which expects to be called on
+// task_runner().
 class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
     : public base::RefCountedThreadSafe<DatabaseTracker> {
  public:

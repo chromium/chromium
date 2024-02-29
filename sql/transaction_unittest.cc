@@ -206,6 +206,36 @@ TEST_F(SQLTransactionTest, NestedRollback) {
   EXPECT_EQ(0, CountFoo());
 }
 
+TEST(SQLTransactionDatabaseDestroyedTest, BeginIsNoOp) {
+  auto db = std::make_unique<Database>();
+  ASSERT_TRUE(db->OpenInMemory());
+  Transaction transaction(db.get());
+  db.reset();
+  ASSERT_FALSE(transaction.Begin());
+}
+
+TEST(SQLTransactionDatabaseDestroyedTest, RollbackIsNoOp) {
+  auto db = std::make_unique<Database>();
+  ASSERT_TRUE(db->OpenInMemory());
+  Transaction transaction(db.get());
+  ASSERT_TRUE(transaction.Begin());
+  EXPECT_TRUE(db->HasActiveTransactions());
+  db.reset();
+  // `Transaction::Rollback()` does not return a value, so we cannot verify
+  // externally whether it returned early.
+  transaction.Rollback();
+}
+
+TEST(SQLTransactionDatabaseDestroyedTest, CommitIsNoOp) {
+  auto db = std::make_unique<Database>();
+  ASSERT_TRUE(db->OpenInMemory());
+  Transaction transaction(db.get());
+  ASSERT_TRUE(transaction.Begin());
+  EXPECT_TRUE(db->HasActiveTransactions());
+  db.reset();
+  ASSERT_FALSE(transaction.Commit());
+}
+
 }  // namespace
 
 }  // namespace sql
