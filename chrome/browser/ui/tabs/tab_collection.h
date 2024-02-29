@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 
@@ -17,7 +18,7 @@ class TabModel;
 
 class TabCollection {
  public:
-  TabCollection();
+  TabCollection() = default;
   virtual ~TabCollection() = default;
   TabCollection(const TabCollection&) = delete;
   TabCollection& operator=(const TabCollection&) = delete;
