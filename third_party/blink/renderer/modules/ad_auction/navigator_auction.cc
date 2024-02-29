@@ -2159,6 +2159,7 @@ bool CopyAuctionReportBuyerDebugModeConfigFromIdlToMojo(
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint(
           input, "auctionReportBuyerDebugModeConfig",
           "debugKey can only be specified when debug mode is enabled."));
+      return false;
     }
   }
 
