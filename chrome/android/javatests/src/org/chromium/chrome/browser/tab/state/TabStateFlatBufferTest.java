@@ -224,7 +224,7 @@ public class TabStateFlatBufferTest {
                             /* isFlatBuffer= */ true));
         }
         int cancelledTabId = 2;
-        TabStateFileManager.cancelMigration(
+        TabStateFileManager.cancelMigrationIfExists(
                 cancelledTabId, /* isEncrypted= */ cancelledTabId % 2 == 0);
         TabStateFileManager.onDeferredStartup();
         CriteriaHelper.pollInstrumentationThread(
@@ -304,6 +304,93 @@ public class TabStateFlatBufferTest {
                 TabStateFileManager.restoreTabState(temporaryFolder.getRoot(), 1);
         Assert.assertNull(restoredTabState);
         histograms.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testNoFlatBufferFileUntilAfterDeferredStartup() throws ExecutionException {
+        TabState state = getTestTabState(false);
+        TabStateFileManager.saveState(
+                temporaryFolder.getRoot(), state, /* tabId= */ 1, /* encrypted= */ false);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File legacyFile =
+                            TabStateFileManager.getTabStateFile(
+                                    temporaryFolder.getRoot(),
+                                    /* tabId= */ 1,
+                                    /* encrypted= */ false,
+                                    /* isFlatBuffer= */ false);
+                    Criteria.checkThat(
+                            "Legacy file " + legacyFile + " should exist.",
+                            legacyFile.exists(),
+                            Matchers.is(true));
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File flatBufferFile =
+                            TabStateFileManager.getTabStateFile(
+                                    temporaryFolder.getRoot(),
+                                    /* tabId= */ 1,
+                                    /* encrypted= */ false,
+                                    /* isFlatBuffer= */ true);
+                    Criteria.checkThat(
+                            "FlatBuffer file " + flatBufferFile + " should not exist.",
+                            flatBufferFile.exists(),
+                            Matchers.is(false));
+                });
+        TabStateFileManager.onDeferredStartup();
+        // Queue should be flushed and FlatBuffer file should exist after Deferred startup.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File flatBufferFile =
+                            TabStateFileManager.getTabStateFile(
+                                    temporaryFolder.getRoot(),
+                                    /* tabId= */ 1,
+                                    /* encrypted= */ false,
+                                    /* isFlatBuffer= */ true);
+                    Criteria.checkThat(
+                            "FlatBuffer file " + flatBufferFile + " should now exist.",
+                            flatBufferFile.exists(),
+                            Matchers.is(true));
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testFlatBufferFileAutomaticallySavedAfterDeferredStartup()
+            throws ExecutionException {
+        TabState state = getTestTabState(false);
+        TabStateFileManager.saveState(
+                temporaryFolder.getRoot(), state, /* tabId= */ 1, /* encrypted= */ false);
+        TabStateFileManager.onDeferredStartup();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File legacyFile =
+                            TabStateFileManager.getTabStateFile(
+                                    temporaryFolder.getRoot(),
+                                    /* tabId= */ 1,
+                                    /* encrypted= */ false,
+                                    /* isFlatBuffer= */ false);
+                    Criteria.checkThat(
+                            "Legacy file  " + legacyFile + " should exist.",
+                            legacyFile.exists(),
+                            Matchers.is(true));
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File flatBufferFile =
+                            TabStateFileManager.getTabStateFile(
+                                    temporaryFolder.getRoot(),
+                                    /* tabId= */ 1,
+                                    /* encrypted= */ false,
+                                    /* isFlatBuffer= */ true);
+                    Criteria.checkThat(
+                            "FlatBuffer file  " + flatBufferFile + " should exist.",
+                            flatBufferFile.exists(),
+                            Matchers.is(true));
+                });
     }
 
     private static TabState getTestTabState(boolean isIncognito) throws ExecutionException {
