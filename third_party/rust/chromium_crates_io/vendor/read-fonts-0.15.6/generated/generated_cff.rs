@@ -49,7 +49,7 @@ impl<'a> FontRead<'a> for CffHeader<'a> {
         cursor.advance::<u8>();
         let _padding_byte_len = transforms::subtract(hdr_size, 4_usize) * u8::RAW_BYTE_LEN;
         cursor.advance_by(_padding_byte_len);
-        let trailing_data_byte_len = cursor.remaining_bytes();
+        let trailing_data_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(trailing_data_byte_len);
         cursor.finish(CffHeaderMarker {
             _padding_byte_len,

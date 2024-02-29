@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "read-fonts"
-version = "0.15.5"
+version = "0.15.6"
 description = "Reading OpenType font files."
 readme = "README.md"
 categories = [

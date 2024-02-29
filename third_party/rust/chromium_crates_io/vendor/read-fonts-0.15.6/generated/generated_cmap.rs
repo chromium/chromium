@@ -652,7 +652,8 @@ impl<'a> FontRead<'a> for Cmap4<'a> {
         cursor.advance_by(id_delta_byte_len);
         let id_range_offsets_byte_len = transforms::half(seg_count_x2) * u16::RAW_BYTE_LEN;
         cursor.advance_by(id_range_offsets_byte_len);
-        let glyph_id_array_byte_len = cursor.remaining_bytes();
+        let glyph_id_array_byte_len =
+            cursor.remaining_bytes() / u16::RAW_BYTE_LEN * u16::RAW_BYTE_LEN;
         cursor.advance_by(glyph_id_array_byte_len);
         cursor.finish(Cmap4Marker {
             end_code_byte_len,
@@ -1152,7 +1153,8 @@ impl<'a> FontRead<'a> for Cmap10<'a> {
         cursor.advance::<u32>();
         cursor.advance::<u32>();
         cursor.advance::<u32>();
-        let glyph_id_array_byte_len = cursor.remaining_bytes();
+        let glyph_id_array_byte_len =
+            cursor.remaining_bytes() / u16::RAW_BYTE_LEN * u16::RAW_BYTE_LEN;
         cursor.advance_by(glyph_id_array_byte_len);
         cursor.finish(Cmap10Marker {
             glyph_id_array_byte_len,

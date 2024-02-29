@@ -347,7 +347,7 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.15.5"
+version = "0.15.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "font-types",

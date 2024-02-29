@@ -112,7 +112,7 @@ impl<'a> FontRead<'a> for SimpleGlyph<'a> {
         let instruction_length: u16 = cursor.read()?;
         let instructions_byte_len = instruction_length as usize * u8::RAW_BYTE_LEN;
         cursor.advance_by(instructions_byte_len);
-        let glyph_data_byte_len = cursor.remaining_bytes();
+        let glyph_data_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(glyph_data_byte_len);
         cursor.finish(SimpleGlyphMarker {
             end_pts_of_contours_byte_len,
@@ -648,7 +648,8 @@ impl<'a> FontRead<'a> for CompositeGlyph<'a> {
         cursor.advance::<i16>();
         cursor.advance::<i16>();
         cursor.advance::<i16>();
-        let component_data_byte_len = cursor.remaining_bytes();
+        let component_data_byte_len =
+            cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(component_data_byte_len);
         cursor.finish(CompositeGlyphMarker {
             component_data_byte_len,

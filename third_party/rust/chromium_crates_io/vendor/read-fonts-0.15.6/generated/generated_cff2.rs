@@ -56,7 +56,7 @@ impl<'a> FontRead<'a> for Cff2Header<'a> {
         cursor.advance_by(_padding_byte_len);
         let top_dict_data_byte_len = top_dict_length as usize * u8::RAW_BYTE_LEN;
         cursor.advance_by(top_dict_data_byte_len);
-        let trailing_data_byte_len = cursor.remaining_bytes();
+        let trailing_data_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(trailing_data_byte_len);
         cursor.finish(Cff2HeaderMarker {
             _padding_byte_len,

@@ -1148,7 +1148,7 @@ impl<'a> FontRead<'a> for ItemVariationData<'a> {
         let region_index_count: u16 = cursor.read()?;
         let region_indexes_byte_len = region_index_count as usize * u16::RAW_BYTE_LEN;
         cursor.advance_by(region_indexes_byte_len);
-        let delta_sets_byte_len = cursor.remaining_bytes();
+        let delta_sets_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(delta_sets_byte_len);
         cursor.finish(ItemVariationDataMarker {
             region_indexes_byte_len,

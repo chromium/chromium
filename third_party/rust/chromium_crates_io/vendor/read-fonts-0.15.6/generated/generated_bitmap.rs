@@ -966,7 +966,8 @@ impl<'a> FontRead<'a> for IndexSubtable1<'a> {
         cursor.advance::<u16>();
         cursor.advance::<u16>();
         cursor.advance::<u32>();
-        let sbit_offsets_byte_len = cursor.remaining_bytes();
+        let sbit_offsets_byte_len =
+            cursor.remaining_bytes() / u32::RAW_BYTE_LEN * u32::RAW_BYTE_LEN;
         cursor.advance_by(sbit_offsets_byte_len);
         cursor.finish(IndexSubtable1Marker {
             sbit_offsets_byte_len,
@@ -1176,7 +1177,8 @@ impl<'a> FontRead<'a> for IndexSubtable3<'a> {
         cursor.advance::<u16>();
         cursor.advance::<u16>();
         cursor.advance::<u32>();
-        let sbit_offsets_byte_len = cursor.remaining_bytes();
+        let sbit_offsets_byte_len =
+            cursor.remaining_bytes() / u16::RAW_BYTE_LEN * u16::RAW_BYTE_LEN;
         cursor.advance_by(sbit_offsets_byte_len);
         cursor.finish(IndexSubtable3Marker {
             sbit_offsets_byte_len,

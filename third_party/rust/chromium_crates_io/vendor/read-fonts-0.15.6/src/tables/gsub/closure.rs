@@ -69,10 +69,36 @@ impl<'a> Gsub<'a> {
         let feature_list = self.feature_list()?;
         let lookup_list = self.lookup_list()?;
         // first we want to get the lookups that are directly referenced by a feature
+        // (including in a feature variation table)
         let mut lookup_ids = HashSet::with_capacity(lookup_list.lookup_count() as _);
-        for rec in feature_list.feature_records() {
-            let feat = rec.feature(feature_list.offset_data())?;
-            lookup_ids.extend(feat.lookup_list_indices().iter().map(|idx| idx.get()));
+        let feature_variations = self
+            .feature_variations()
+            .transpose()?
+            .map(|vars| {
+                let data = vars.offset_data();
+                vars.feature_variation_records()
+                    .iter()
+                    .filter_map(move |rec| {
+                        rec.feature_table_substitution(data)
+                            .transpose()
+                            .ok()
+                            .flatten()
+                    })
+                    .flat_map(|subs| {
+                        subs.substitutions()
+                            .iter()
+                            .map(move |sub| sub.alternate_feature(subs.offset_data()))
+                    })
+            })
+            .into_iter()
+            .flatten();
+        for feature in feature_list
+            .feature_records()
+            .iter()
+            .map(|rec| rec.feature(feature_list.offset_data()))
+            .chain(feature_variations)
+        {
+            lookup_ids.extend(feature?.lookup_list_indices().iter().map(|idx| idx.get()));
         }
 
         // and now we need to add lookups referenced by contextual lookups,
@@ -596,5 +622,14 @@ mod tests {
 
         let intermediate = compute_closure(&gsub, &glyph_map, &["a", "B.2"]);
         assert_closure_result!(glyph_map, intermediate, &["a", "B.2", "B.3"]);
+    }
+
+    #[test]
+    fn feature_variations() {
+        let gsub = get_gsub(test_data::VARIATIONS_CLOSURE);
+        let glyph_map = GlyphMap::new(test_data::VARIATIONS_GLYPHS);
+
+        let input = compute_closure(&gsub, &glyph_map, &["a"]);
+        assert_closure_result!(glyph_map, input, &["a", "b", "c"]);
     }
 }

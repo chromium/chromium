@@ -72,3 +72,27 @@ pub mod flags {
 pub mod enums {
     include!("../generated/generated_test_enum.rs");
 }
+
+pub mod count_all {
+    use crate::FontData;
+
+    include!("../generated/generated_test_count_all.rs");
+
+    /// Test for count(..) with element sizes > 1
+    #[test]
+    fn element_size_greater_than_one_with_padding() {
+        // Size of 13 ensures we have an extra padding byte
+        let bytes = [0u8; 13];
+        // Generated table has a 2 byte field above the array
+        let remainder_len = bytes.len() - 2;
+        let data = FontData::new(&bytes);
+        // Trailing array with 16-bit elements
+        assert!(remainder_len % 2 != 0);
+        let count16 = CountAll16::read(data).unwrap();
+        assert_eq!(count16.remainder().len(), remainder_len / 2);
+        // Trailing array with 32-bit elements
+        assert!(remainder_len % 4 != 0);
+        let count32 = CountAll32::read(data).unwrap();
+        assert_eq!(count32.remainder().len(), remainder_len / 4);
+    }
+}

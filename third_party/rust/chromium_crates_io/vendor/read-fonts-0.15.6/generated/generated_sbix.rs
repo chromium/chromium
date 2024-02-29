@@ -583,7 +583,7 @@ impl<'a> FontRead<'a> for GlyphData<'a> {
         cursor.advance::<i16>();
         cursor.advance::<i16>();
         cursor.advance::<Tag>();
-        let data_byte_len = cursor.remaining_bytes();
+        let data_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(data_byte_len);
         cursor.finish(GlyphDataMarker { data_byte_len })
     }

@@ -40,7 +40,7 @@ impl<'a> FontRead<'a> for Index1<'a> {
         let offsets_byte_len =
             transforms::add_multiply(count, 1_usize, off_size) * u8::RAW_BYTE_LEN;
         cursor.advance_by(offsets_byte_len);
-        let data_byte_len = cursor.remaining_bytes();
+        let data_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(data_byte_len);
         cursor.finish(Index1Marker {
             offsets_byte_len,
@@ -136,7 +136,7 @@ impl<'a> FontRead<'a> for Index2<'a> {
         let offsets_byte_len =
             transforms::add_multiply(count, 1_usize, off_size) * u8::RAW_BYTE_LEN;
         cursor.advance_by(offsets_byte_len);
-        let data_byte_len = cursor.remaining_bytes();
+        let data_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(data_byte_len);
         cursor.finish(Index2Marker {
             offsets_byte_len,
@@ -282,7 +282,7 @@ impl<'a> FontRead<'a> for FdSelectFormat0<'a> {
     fn read(data: FontData<'a>) -> Result<Self, ReadError> {
         let mut cursor = data.cursor();
         cursor.advance::<u8>();
-        let fds_byte_len = cursor.remaining_bytes();
+        let fds_byte_len = cursor.remaining_bytes() / u8::RAW_BYTE_LEN * u8::RAW_BYTE_LEN;
         cursor.advance_by(fds_byte_len);
         cursor.finish(FdSelectFormat0Marker { fds_byte_len })
     }

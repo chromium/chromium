@@ -181,7 +181,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."read-fonts:0.15.5"]
+[policy."read-fonts:0.15.6"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.5"]
@@ -412,12 +412,13 @@ criteria = "does-not-implement-crypto"
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.read-fonts]]
-version = "0.15.5"
+version = "0.15.6"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = """
 0.15.2 grandparented-in when setting up `cargo vet` in Jan 2024.
 
 Exemption updated to 0.15.5 when updating the crate in Feb 2024.
+Exemption updated to 0.15.6 when updating the crate in Feb 2024.
 """
 
 [[exemptions.rustversion]]
