@@ -50,7 +50,9 @@
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/public/web/web_input_element.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "third_party/blink/public/web/web_range.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -64,7 +66,9 @@ using blink::WebFormRelatedChangeType;
 using blink::WebFrame;
 using blink::WebInputElement;
 using blink::WebKeyboardEvent;
+using blink::WebLocalFrame;
 using blink::WebNode;
+using blink::WebRange;
 using blink::WebString;
 
 namespace autofill {
@@ -776,7 +780,7 @@ void AutofillAgent::ApplyFieldAction(
                                          form_control);
             break;
           case mojom::FieldActionType::kSelectAll:
-            DCHECK(value.empty());
+            NOTIMPLEMENTED() << "Previewing select all is not implemented";
             break;
         }
         break;
@@ -794,6 +798,7 @@ void AutofillAgent::ApplyFieldAction(
           }
           case mojom::FieldActionType::kSelectAll:
             DCHECK(value.empty());
+            form_control.SelectText(/*select_all=*/true);
             break;
         }
         break;
@@ -810,15 +815,20 @@ void AutofillAgent::ApplyFieldAction(
             << "Previewing replacement of selection is not implemented";
         break;
       case mojom::ActionPersistence::kFill:
-        if (action_type == mojom::FieldActionType::kSelectAll) {
-          DCHECK(value.empty());
-          break;
+        switch (action_type) {
+          case mojom::FieldActionType::kSelectAll:
+            DCHECK(value.empty());
+            content_editable.SelectText(/*select_all=*/true);
+            break;
+          case mojom::FieldActionType::kReplaceAll:
+            [[fallthrough]];
+          case mojom::FieldActionType::kReplaceSelection:
+            content_editable.PasteText(
+                WebString::FromUTF16(value),
+                /*replace_all=*/
+                (action_type == mojom::FieldActionType::kReplaceAll));
+            break;
         }
-        content_editable.PasteText(
-            WebString::FromUTF16(value),
-            /*replace_all=*/
-            (action_type == mojom::FieldActionType::kReplaceAll));
-        break;
     }
   }
 }

@@ -169,6 +169,37 @@ WebString WebElement::SelectedText() const {
                         .Build());
 }
 
+void WebElement::SelectText(bool select_all) {
+  auto* element = Unwrap<Element>();
+  LocalFrame* frame = element->GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  // Makes sure the selection is inside `element`: if `select_all`, selects
+  // all inside `element`; otherwise, selects an empty range at the end.
+  if (auto* text_control_element =
+          blink::DynamicTo<TextControlElement>(element)) {
+    if (select_all) {
+      text_control_element->select();
+    } else {
+      text_control_element->Focus(FocusParams(SelectionBehaviorOnFocus::kNone,
+                                              mojom::blink::FocusType::kScript,
+                                              nullptr, FocusOptions::Create()));
+      text_control_element->setSelectionStart(std::numeric_limits<int>::max());
+    }
+  } else {
+    Position base = FirstPositionInOrBeforeNode(*element);
+    Position extent = LastPositionInOrAfterNode(*element);
+    if (!select_all) {
+      base = extent;
+    }
+    frame->Selection().SetSelection(
+        SelectionInDOMTree::Builder().SetBaseAndExtent(base, extent).Build(),
+        SetSelectionOptions());
+  }
+}
+
 void WebElement::PasteText(const WebString& text, bool replace_all) {
   if (!IsEditable()) {
     return;
@@ -185,29 +216,7 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
   };
 
   if (replace_all || !ContainsFrameSelection()) {
-    // Makes sure the selection is inside `element`: if `replace_all`, selects
-    // all inside `element`; otherwise, selects an empty range at the end.
-    if (auto* text_control_element =
-            blink::DynamicTo<TextControlElement>(element)) {
-      if (replace_all) {
-        text_control_element->select();
-      } else {
-        text_control_element->Focus(FocusParams(
-            SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
-            nullptr, FocusOptions::Create()));
-        text_control_element->setSelectionStart(
-            std::numeric_limits<int>::max());
-      }
-    } else {
-      Position base = FirstPositionInOrBeforeNode(*element);
-      Position extent = LastPositionInOrAfterNode(*element);
-      if (!replace_all) {
-        base = extent;
-      }
-      frame->Selection().SetSelection(
-          SelectionInDOMTree::Builder().SetBaseAndExtent(base, extent).Build(),
-          SetSelectionOptions());
-    }
+    SelectText(replace_all);
     // JavaScript handlers may have destroyed the frame or moved the selection.
     if (is_destroyed(*frame) || !ContainsFrameSelection()) {
       return;

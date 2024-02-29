@@ -95,6 +95,12 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Otherwise returns the empty string.
   WebString SelectedText() const;
 
+  // Selects the text in this element.
+  // If `select_all`, then the entire contents of the element is selected.
+  // If `!select_all`, then selects only the empty range at the end of the
+  // element
+  void SelectText(bool select_all);
+
   // Simulates a paste of `text` event into `this` element.
   //
   // There are three different behaviors depending on `replace_all` and which
