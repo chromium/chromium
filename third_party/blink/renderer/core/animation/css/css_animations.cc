@@ -1871,6 +1871,10 @@ bool AffectsBackgroundColor(const AnimationEffect& effect) {
   return effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor()));
 }
 
+bool AffectsClipPath(const AnimationEffect& effect) {
+  return effect.Affects(PropertyHandle(GetCSSPropertyClipPath()));
+}
+
 void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
                                    ComputedStyleBuilder& builder) {
   if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
@@ -1889,15 +1893,18 @@ void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
     builder.SetHasCurrentBackdropFilterAnimation(true);
   if (AffectsBackgroundColor(effect))
     builder.SetHasCurrentBackgroundColorAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath())))
+  if (AffectsClipPath(effect)) {
     builder.SetHasCurrentClipPathAnimation(true);
+  }
 }
 
 void SetCompositablePaintAnimationChangedIfAffected(
     const AnimationEffect& effect,
     ComputedStyleBuilder& builder) {
-  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-      AffectsBackgroundColor(effect)) {
+  if ((RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+       AffectsBackgroundColor(effect)) ||
+      (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
+       AffectsClipPath(effect))) {
     builder.SetCompositablePaintAnimationChanged(true);
   }
 }

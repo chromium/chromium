@@ -57,7 +57,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
   }
 };
 
-// Test the case where there is a background-color animation with two simple
+// Test the case where there is a clip-path animation with two simple
 // keyframes that will not fall back to main.
 TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   ScopedCompositeClipPathAnimationForTest composite_clip_path_animation(true);
@@ -109,6 +109,93 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
             animation);
+}
+
+// Test the case where a 2nd composited clip path animation causes a fallback to
+// the main thread. In this case, the paint properties should update to avoid
+// any crashes or paint worklets existing beyond their validity.
+TEST_F(ClipPathPaintDefinitionTest, FallbackOnNonCompositableSecondAnimation) {
+  ScopedCompositeClipPathAnimationForTest composite_clip_path_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kClipPath;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(property_id, "circle(50% at 50% 50%)",
+                                      SecureContextMode::kInsecureContext,
+                                      nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(property_id, "circle(30% at 30% 30%)",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  model->SetComposite(EffectModel::kCompositeReplace);
+
+  Element* element = GetElementById("target");
+  LayoutObject* lo = element->GetLayoutObject();
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+  animation->play();
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(lo->NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+
+  // After adding a single animation, all should be well.
+  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
+            animation);
+
+  Timing timing2;
+  timing2.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
+  timing2.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(5));
+
+  Animation* animation2 = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing2), timeline,
+      exception_state);
+  animation2->play();
+
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
+  // If support for delayed animations is added, this check will fail. This test
+  // should be updated to create a non compositible animation through other
+  // means in this case.
+  EXPECT_EQ(ClipPathPaintDefinition::GetAnimationIfCompositable(element),
+            nullptr);
+
+  // After adding a second animation with a delay, we gracefully fallback.
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(lo->NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+
+  // Further frames shouldn't cause more property updates than necessary.
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(lo->NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(lo->FirstFragment().PaintProperties()->ClipPathMask());
 }
 
 TEST_F(ClipPathPaintDefinitionTest, ClipBoundingBoxEncompassesAnimation) {
