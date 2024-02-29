@@ -1657,6 +1657,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLinkedServicesSettingIosName,
      flag_descriptions::kLinkedServicesSettingIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLinkedServicesSettingIos)},
+    {"disable-fullscreen-scrolling",
+     flag_descriptions::kDisableFullscreenScrollingName,
+     flag_descriptions::kDisableFullscreenScrollingDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDisableFullscreenScrolling)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

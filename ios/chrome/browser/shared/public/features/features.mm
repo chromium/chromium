@@ -738,3 +738,7 @@ BASE_FEATURE(kIOSMagicStackCollectionView,
 bool IsIOSMagicStackCollectionViewEnabled() {
   return base::FeatureList::IsEnabled(kIOSMagicStackCollectionView);
 }
+
+BASE_FEATURE(kDisableFullscreenScrolling,
+             "DisableFullscreenScrolling",
+             base::FEATURE_DISABLED_BY_DEFAULT);

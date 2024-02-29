@@ -588,4 +588,7 @@ BASE_DECLARE_FEATURE(kIOSMagicStackCollectionView);
 // Returns true if the MagicStack UICollectionView implementation is enabled.
 bool IsIOSMagicStackCollectionViewEnabled();
 
+// Feature flag to disable fullscreen scrolling logic.
+BASE_DECLARE_FEATURE(kDisableFullscreenScrolling);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
