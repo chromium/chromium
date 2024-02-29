@@ -2692,12 +2692,6 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
 
   MaybeNewRelationTarget(*node, obj);
 
-  // If there is a previous AXObject, it is being reattached with a new
-  // LayoutObject, in which case we should ensureinvalidation of its subtree.
-  // TODO(accessibility): Try to remove this by finding the specific situations
-  // where it is necessary and handling proactively for those.
-  NotifySubtreeDirty(obj);
-
   // Even if the node or parent are ignored, an ancestor may need to include
   // descendants of the attached node, thus ChildrenChangedWithCleanLayout()
   // must be called. It handles ignored logic, ensuring that the first ancestor
