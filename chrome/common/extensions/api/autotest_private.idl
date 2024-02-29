@@ -290,7 +290,6 @@ namespace autotestPrivate {
     Unavailable,
     Stopped,
     PreparingForLaunch,
-    WaitingOwnerFetch,
     PreLaunched,
     Starting,
     Running,

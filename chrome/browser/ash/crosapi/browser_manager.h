@@ -27,8 +27,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
-#include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
-#include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -331,11 +329,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void set_device_ownership_waiter_for_testing(
       std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
 
-  // Skips device ownership fetch. Use set_device_ownership_waiter_for_testing()
-  // above if possible. Use this method only if your test must set up the
-  // behavior before BrowserManager is initialized.
-  static void SkipDeviceOwnershipWaitForTesting(bool skip);
-
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 
   // Disable most of BrowserManager's functionality such that it never tries to
@@ -403,10 +396,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
     // Params for lacros-chrome are parepared on a background thread.
     PREPARING_FOR_LAUNCH,
-
-    // Lacros-chrome is waiting for device owner to be fetched after receiving
-    // params. For prelaunching, it also waits for profile to be added.
-    WAITING_OWNER_FETCH,
 
     // Lacros-chrome has been pre-launched at login screen, and it's waiting to
     // be unblocked post-login.
@@ -563,11 +552,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void StartIfNeeded(bool launching_at_login_screen = false);
 
-  // Starts the lacros-chrome process and redirects stdout/err to file pointed
-  // by |params.logfd|.
-  void StartWithLogFile(bool launching_at_login_screen,
-                        BrowserLauncher::LaunchParamsFromBackground params);
-
   // Called when the Mojo connection to lacros-chrome is disconnected. It may be
   // "just a Mojo error" or "lacros-chrome crash". This method posts a
   // shutdown-blocking async task that waits lacros-chrome to exit, giving it a
@@ -595,21 +579,21 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Resume Lacros startup process after login.
   void ResumeLaunch();
 
-  // Executes actions needed to resume Lacros's launch post-login,
-  // and writes post login data to the Lacros process.
-  // This method is guaranteed to run after the profile has been added.
-  void ResumeLaunchAfterProfileAdded();
-
-  // Waits for the device owner being fetched from `UserManager` and the primary
-  // user profile being fully created and then executes a callback. Should NOT
-  // be called if Lacros is launching at the login screen since the device owner
-  // nor the profile is not available until login.
-  void WaitForDeviceOwnerFetchedAndProfileAddedAndThen(base::OnceClosure cb);
+  // Called on ResumeLaunch completed.
+  void OnResumeLaunchComplete(
+      base::expected<base::TimeTicks, BrowserLauncher::LaunchFailureReason>
+          resume_time);
 
   // Called as soon as `LaunchParamsFromBackground` are fetched.
   void OnLaunchParamsFetched(
       bool launching_at_login_screens,
       BrowserLauncher::LaunchParamsFromBackground params);
+
+  // Called on launch process completed.
+  void OnLaunchComplete(
+      bool lauching_at_login_screen,
+      base::expected<BrowserLauncher::LaunchResults,
+                     BrowserLauncher::LaunchFailureReason> launch_results);
 
   // Launch "Go to files" if the migration error page was clicked.
   void HandleGoToFiles();
@@ -759,10 +743,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // '--lacros-mojo-socket-for-testing' is present in the command line.
   std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
 
-  // Used to wait for the primary user profile to be fully created.
-  std::unique_ptr<PrimaryProfileCreationWaiter>
-      primary_profile_creation_waiter_;
-
   // The features that are currently registered to keep Lacros alive.
   std::set<Feature> keep_alive_features_;
 
@@ -771,9 +751,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   const bool launch_at_login_screen_;
 
   const bool disabled_for_testing_;
-
-  // Indicates whether the delegate has been used.
-  bool device_ownership_waiter_called_{false};
 
   // Used to launch files.app when user clicked "Go to files" on the migration
   // error screen.
@@ -794,9 +771,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};
-
-  // Used to delay an action until the definitive device owner is fetched.
-  std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

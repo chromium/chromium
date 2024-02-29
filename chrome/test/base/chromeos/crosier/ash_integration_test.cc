@@ -57,7 +57,7 @@ void AshIntegrationTest::SetUpLacrosBrowserManager() {
   // test uses BrowserManager::Get() to install the fake waiter (e.g. in
   // SetUpOnMainThread) often the existing device ownership waiter has already
   // been called and its too late to install the fake.
-  crosapi::BrowserManager::SkipDeviceOwnershipWaitForTesting(true);
+  crosapi::BrowserLauncher::SkipDeviceOwnershipWaitForTesting(true);
 }
 
 void AshIntegrationTest::WaitForAshFullyStarted() {

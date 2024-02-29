@@ -14,8 +14,10 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
@@ -29,6 +31,8 @@ struct LaunchOptions;
 }  // namespace base
 
 namespace crosapi {
+class DeviceOwnershipWaiter;
+class PrimaryProfileCreationWaiter;
 
 // Manages launching and terminating Lacros process.
 // TODO(crbug.com/1495590): Extract launching logic from BrowserManager to
@@ -108,6 +112,18 @@ class BrowserLauncher {
     base::TimeTicks lacros_launch_time;
   };
 
+  // Reason of Lacros not being able to launch.
+  enum class LaunchFailureReason {
+    // Failed to launch due to unknown error.
+    kUnknown,
+
+    // Shutdown is requested from BrowserManager during the process launch.
+    kShutdownRequested,
+  };
+
+  using LaunchCompletionCallback = base::OnceCallback<void(
+      base::expected<LaunchResults, LaunchFailureReason>)>;
+
   // Launches a process of the given options, which are expected to be Lacros's
   // ones.
   // Following is explanation for Arguments.
@@ -121,17 +137,21 @@ class BrowserLauncher {
   // `mojo_disconnection_cb`: Callback function setting up mojo connection.
   // `BrowserManager::OnMojoDisconnected` is called.
   // `is_keep_alive_enabled`: Whether `keep_alive_features` is empty.
-  std::optional<LaunchResults> LaunchProcess(
-      const base::FilePath& chrome_path,
-      const LaunchParamsFromBackground& params,
-      bool launching_at_login_screen,
-      browser_util::LacrosSelection lacros_selection,
-      base::OnceClosure mojo_disconnection_cb,
-      bool is_keep_alive_enabled);
+  // `callback`: Callback function that will be called on launch process
+  // completion.
+  void Launch(const base::FilePath& chrome_path,
+              LaunchParamsFromBackground params,
+              bool launching_at_login_screen,
+              browser_util::LacrosSelection lacros_selection,
+              base::OnceClosure mojo_disconnection_cb,
+              bool is_keep_alive_enabled,
+              LaunchCompletionCallback callback);
 
-  // Writes post login data to the Lacros process. After that,
-  // `postlogin_pipe_fd` is reset.
-  void ResumeLaunch();
+  // Writes post login data to the Lacros process, resets `postlogin_pipe_fd`
+  // and then executes a callback.
+  void ResumeLaunch(
+      base::OnceCallback<
+          void(base::expected<base::TimeTicks, LaunchFailureReason>)> callback);
 
   void SetLastPolicyFetchAttemptTimestamp(base::Time last_refresh);
 
@@ -155,6 +175,9 @@ class BrowserLauncher {
   void EnsureProcessTerminated(base::OnceClosure callback,
                                base::TimeDelta timeout);
 
+  // Records Shutdown() request from BrowserManager.
+  void Shutdown() { shutdown_requested_ = true; }
+
   // Returns reference to `process_` for testing.
   const base::Process& GetProcessForTesting();
 
@@ -166,7 +189,39 @@ class BrowserLauncher {
   void SetUpAdditionalParametersForTesting(LaunchParamsFromBackground& params,
                                            LaunchParams& parameters);
 
+  // Provides public API to call WaitForDeviceOwnerFetchedAndProfileAddedAndThen
+  // for testing.
+  void WaitForDeviceOwnerFetchedAndProfileAddedAndThenForTesting(
+      base::OnceClosure cb);
+
+  // TODO(crbug.com/1463883): Remove this once we refactored to use the
+  // constructor.
+  void set_device_ownership_waiter_for_testing(
+      std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
+
+  // Skips device ownership fetch. Use set_device_ownership_waiter_for_testing()
+  // above if possible. Use this method only if your test must set up the
+  // behavior before BrowserManager is initialized.
+  // TODO(crbug.com/1463883): Remove this and set it from constructor.
+  static void SkipDeviceOwnershipWaitForTesting(bool skip);
+
  private:
+  // Waits for the device owner being fetched from `UserManager` and the primary
+  // user profile being fully created and then executes a callback. Should NOT
+  // be called if Lacros is launching at the login screen since the device owner
+  // nor the profile is not available until login.
+  void WaitForDeviceOwnerFetchedAndProfileAddedAndThen(base::OnceClosure cb);
+
+  // Launches lacros-chrome process after device owner and primary profile
+  // become ready.
+  void LaunchProcess(const base::FilePath& chrome_path,
+                     LaunchParamsFromBackground params,
+                     bool launching_at_login_screen,
+                     browser_util::LacrosSelection lacros_selection,
+                     base::OnceClosure mojo_disconnection_cb,
+                     bool is_keep_alive_enabled,
+                     LaunchCompletionCallback callback);
+
   LaunchParams CreateLaunchParams(
       const base::FilePath& chrome_path,
       const LaunchParamsFromBackground& params,
@@ -180,14 +235,36 @@ class BrowserLauncher {
   // This is also used for unittest.
   bool LaunchProcessWithParameters(const LaunchParams& parameters);
 
+  // Writes post login data after waiting for device owner and profile to be
+  // ready.
+  void WritePostLoginData(
+      base::OnceCallback<
+          void(base::expected<base::TimeTicks, LaunchFailureReason>)> callback);
+
   // Process handle for the lacros_chrome process.
   base::Process process_;
 
   // Pipe FDs through which Ash and Lacros exchange post-login parameters.
   base::ScopedFD postlogin_pipe_fd_;
 
+  // Used to delay an action until the definitive device owner is fetched.
+  std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter_;
+
+  // Used to wait for the primary user profile to be fully created.
+  std::unique_ptr<PrimaryProfileCreationWaiter>
+      primary_profile_creation_waiter_;
+
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
   EnvironmentProvider environment_provider_;
+
+  // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
+  // new or existing lacros startup tasks are not executed during shutdown.
+  bool shutdown_requested_ = false;
+
+  // Indicates whether the delegate has been used.
+  bool device_ownership_waiter_called_{false};
+
+  base::WeakPtrFactory<BrowserLauncher> weak_factory_{this};
 };
 
 }  // namespace crosapi
