@@ -126,7 +126,7 @@ CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::UnitTypeToUnitCategory(
 bool CSSPrimitiveValue::IsCalculatedPercentageWithLength() const {
   // TODO(crbug.com/979895): Move this function to |CSSMathFunctionValue|.
   return IsCalculated() &&
-         To<CSSMathFunctionValue>(this)->Category() == kCalcPercentLength;
+         To<CSSMathFunctionValue>(this)->Category() == kCalcLengthFunction;
 }
 
 bool CSSPrimitiveValue::IsResolution() const {

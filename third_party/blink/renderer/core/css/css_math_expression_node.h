@@ -61,11 +61,10 @@ enum CalculationResultCategory {
   kCalcNumber,
   kCalcLength,
   kCalcPercent,
-  // TODO(crbug.com/1309178): We are now using this for all calculated lengths
-  // that can't be resolved at style time, including not only calc(px + %) but
-  // also anchor queries and intrinsic size keywords in calc-size(). Rename
-  // this category accordingly.
-  kCalcPercentLength,
+  // kCalcLengthFunction is used for calculated lengths that can't be resolved
+  // at style time.  This includes mixes of length and percent, and also
+  // anchor queries and intrinsic size keywords in calc-size().
+  kCalcLengthFunction,
   kCalcAngle,
   kCalcTime,
   kCalcFrequency,
@@ -141,7 +140,8 @@ class CORE_EXPORT CSSMathExpressionNode
   // TODO(crbug.com/984372): We currently use 'ms' as the canonical unit of
   // <time>. Switch to 's' to follow the spec.
   // Returns |nullopt| on evaluation failures due to the following reasons:
-  // - The category doesn't have a canonical unit (e.g., |kCalcPercentLength|).
+  // - The category doesn't have a canonical unit (e.g.,
+  //   |kCalcLengthFunction|).
   // - A type conversion that doesn't have a fixed conversion ratio is needed
   //   (e.g., between 'px' and 'em').
   // - There's an unsupported calculation, e.g., dividing two lengths.
@@ -156,7 +156,7 @@ class CORE_EXPORT CSSMathExpressionNode
 
   CalculationResultCategory Category() const { return category_; }
   bool HasPercentage() const {
-    return category_ == kCalcPercent || category_ == kCalcPercentLength;
+    return category_ == kCalcPercent || category_ == kCalcLengthFunction;
   }
   virtual bool InvolvesPercentage() const { return HasPercentage(); }
   virtual bool InvolvesAnchorQueries() const { return IsAnchorQuery(); }

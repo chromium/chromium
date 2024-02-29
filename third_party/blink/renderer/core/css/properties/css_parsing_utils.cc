@@ -1273,7 +1273,7 @@ CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenRange& range,
 bool CanConsumeCalcValue(CalculationResultCategory category,
                          CSSParserMode css_parser_mode) {
   return category == kCalcLength || category == kCalcPercent ||
-         category == kCalcPercentLength ||
+         category == kCalcLengthFunction ||
          (css_parser_mode == kSVGAttributeMode && category == kCalcNumber);
 }
 

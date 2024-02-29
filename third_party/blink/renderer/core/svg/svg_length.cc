@@ -156,7 +156,7 @@ static bool IsSupportedCalculationCategory(CalculationResultCategory category) {
     case kCalcLength:
     case kCalcNumber:
     case kCalcPercent:
-    case kCalcPercentLength:
+    case kCalcLengthFunction:
       return true;
     default:
       return false;
