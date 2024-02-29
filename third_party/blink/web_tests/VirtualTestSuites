@@ -2570,7 +2570,7 @@
     "prefix": "webnn-service-enabled",
     "platforms": ["Linux", "Win"],
     "bases": [
-      "external/wpt/webnn/gpu"
+      "external/wpt/webnn/conformance_tests/gpu"
     ],
     "exclusive_tests": "ALL",
     "args": ["--use-gpu-in-tests", "--enable-features=WebMachineLearningNeuralNetwork"],

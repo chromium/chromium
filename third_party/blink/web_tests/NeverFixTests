@@ -2117,7 +2117,7 @@ crbug.com/1517744 external/wpt/wai-aria/role/table-roles.html [ Skip ]
 crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Skip ]
 
 # WebNN GPU backend is supported on Win11 by default.
-crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-enabled/external/wpt/webnn/gpu/* [ Skip ]
+crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-enabled/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 
 ######## Unload Deprecation
 # This is for tests in the "unload-allowed" virtual suite that

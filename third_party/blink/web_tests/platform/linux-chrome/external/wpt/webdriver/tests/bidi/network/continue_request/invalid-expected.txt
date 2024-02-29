@@ -1,0 +1,200 @@
+This is a wdspec test.
+[FAIL] test_params_body_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_invalid_type[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_invalid_value[value0]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_invalid_value[value1]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_invalid_value[value2]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_type_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_type_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_type_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_type_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_type_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_type_invalid_value[]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_type_invalid_value[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_value_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_value_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_value_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_value_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_body_value_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_invalid_type[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_value[value0]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_value[value1]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_value[value2]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_value[]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_value[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_invalid_type[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_invalid_type[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_name_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_name_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_name_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_name_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_name_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_type[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_value[value0]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_value[value1]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_invalid_value[value2]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_type_invalid_value[]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_type_invalid_value[foo]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[None]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[value4]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_method_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_method_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_method_invalid_type[value2]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_method_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_type[False]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_type[42]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_type[value2]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_type[value3]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_value[:invalid-http]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_value[:invalid-https]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_value[#invalid-http]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_url_invalid_value[#invalid-https]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+Harness: the test ran to completion.

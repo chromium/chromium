@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_params_contexts_invalid_value[value0]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_contexts_invalid_value[value1]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_params_contexts_context_non_top_level
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+Harness: the test ran to completion.

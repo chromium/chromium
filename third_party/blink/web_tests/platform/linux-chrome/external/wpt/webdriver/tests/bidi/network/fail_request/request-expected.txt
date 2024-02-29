@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_phases[beforeRequestSent]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_phases[responseStarted]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+Harness: the test ran to completion.

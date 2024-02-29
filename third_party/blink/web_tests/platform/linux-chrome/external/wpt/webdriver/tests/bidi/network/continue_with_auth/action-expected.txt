@@ -1,3 +1,10 @@
 This is a wdspec test.
-Harness Error. harness_status.status = 2 , harness_status.message = 
+[FAIL] test_cancel
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_default
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_provideCredentials
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_provideCredentials_wrong_credentials
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
 Harness: the test ran to completion.

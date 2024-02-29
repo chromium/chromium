@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSFontFeatureValuesRule interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
 [FAIL] CSSFontFeatureValuesRule interface object length
@@ -24,6 +25,8 @@ This is a testharness.js-based test.
 [FAIL] CSSFontFeatureValuesRule interface: attribute characterVariant
   assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
 [FAIL] CSSFontFeatureValuesRule interface: attribute styleset
+  assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
+[FAIL] CSSFontFeatureValuesRule interface: attribute historicalForms
   assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
 [FAIL] CSSFontFeatureValuesMap interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSFontFeatureValuesMap" expected property "CSSFontFeatureValuesMap" missing

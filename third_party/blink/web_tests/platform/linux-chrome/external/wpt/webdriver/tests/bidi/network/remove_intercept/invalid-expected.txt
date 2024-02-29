@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_params_intercept_removed_intercept
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+Harness: the test ran to completion.

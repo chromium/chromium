@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MediaSession interface: operation setMicrophoneActive(boolean)
+  assert_unreached: Throws "TypeError: Illegal invocation" instead of rejecting promise Reached unreachable code
+[FAIL] MediaSession interface: operation setCameraActive(boolean)
+  assert_unreached: Throws "TypeError: Illegal invocation" instead of rejecting promise Reached unreachable code
+[FAIL] MediaSession interface: calling setMicrophoneActive(boolean) on navigator.mediaSession with too few arguments must throw TypeError
+  assert_unreached: Throws "TypeError: Failed to execute 'setMicrophoneActive' on 'MediaSession': 1 argument required, but only 0 present." instead of rejecting promise Reached unreachable code
+[FAIL] MediaSession interface: calling setCameraActive(boolean) on navigator.mediaSession with too few arguments must throw TypeError
+  assert_unreached: Throws "TypeError: Failed to execute 'setCameraActive' on 'MediaSession': 1 argument required, but only 0 present." instead of rejecting promise Reached unreachable code
+Harness: the test ran to completion.
+

@@ -1,0 +1,14 @@
+This is a wdspec test.
+[FAIL] test_provide_response_auth_required[fetch]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_provide_response_auth_required[navigate]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_provide_response_phase[fetch-beforeRequestSent]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_provide_response_phase[fetch-responseStarted]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_provide_response_phase[navigate-beforeRequestSent]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+[FAIL] test_provide_response_phase[navigate-responseStarted]
+  TypeError: add_intercept() got an unexpected keyword argument 'contexts'
+Harness: the test ran to completion.
