@@ -5403,6 +5403,15 @@
         <message name="IDS_SETTINGS_APN_DIALOG_DONE" desc="Text used to close the APN dialog in view mode.">
           Done
         </message>
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_TITLE" desc="Text used to cancel the APN dialog.">
+          Choose from available APNs
+        </message>
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION" desc="Text used to cancel the APN dialog.">
+          Invalid APNs could cause your mobile connection to be disabled. Only set APNs provided by your mobile provider or administrator.
+        </message>
+        <message name="IDS_SETTINGS_APN_SELECTION_DIALOG_BUTTON_USE_APN" desc="Text used to close the APN dialog in view mode.">
+          Use this APN
+        </message>
         <!-- End of APN -->
 
         <!-- Arc Input Overlay -->

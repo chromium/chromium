@@ -13,15 +13,14 @@
     margin-top: 20px;
   }
 </style>
-<!-- TODO(b/325487350): Use localized strings. -->
 <cr-dialog id="apnSelectionDialog" show-on-attach>
-  <div slot="title" aria-live="polite">
-    Choose from available APNs
+  <div id="apnSelectionDialogTitle" slot="title" aria-live="polite">
+    [[i18n('apnSelectionDialogTitle')]]
   </div>
   <!-- TODO(b/325487350): Add a11y. -->
   <div slot="body">
-    <div>
-      Invalid APNs could cause your mobile connection to be disabled. Only set APNs provided by your mobile provider or administrator.
+    <div id="apnSelectionDialogDescription">
+      [[i18n('apnSelectionDialogDescription')]]
     </div>
     <div id="container" class="layout vertical flex" scrollable>
       <iron-list items="[[apnList]]"
@@ -50,7 +49,7 @@
           disabled="[[!selectedApn_]]"
           class="action-button"
           on-click="onActionButtonClicked_">
-        Use this APN
+        [[i18n('apnSelectionDialogUseApn')]]
       </cr-button>
     </template>
   </div>

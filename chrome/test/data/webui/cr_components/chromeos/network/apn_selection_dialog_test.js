@@ -51,6 +51,34 @@ suite('ApnSelectionDialog', () => {
     const dialog = apnSelectionDialog.shadowRoot.querySelector('cr-dialog');
     assertTrue(!!dialog);
     assertTrue(dialog.open);
+    const apnSelectionDialogTitle =
+        apnSelectionDialog.shadowRoot.querySelector('#apnSelectionDialogTitle');
+    assertTrue(!!apnSelectionDialogTitle);
+    assertEquals(
+        apnSelectionDialog.i18n('apnSelectionDialogTitle'),
+        apnSelectionDialogTitle.innerText);
+
+    const apnSelectionDialogDescription =
+        apnSelectionDialog.shadowRoot.querySelector(
+            '#apnSelectionDialogDescription');
+    assertTrue(!!apnSelectionDialogDescription);
+    assertEquals(
+        apnSelectionDialog.i18n('apnSelectionDialogDescription'),
+        apnSelectionDialogDescription.innerText);
+
+    const apnSelectionActionBtn =
+        apnSelectionDialog.shadowRoot.querySelector('#apnSelectionActionBtn');
+    assertTrue(!!apnSelectionActionBtn);
+    assertEquals(
+        apnSelectionDialog.i18n('apnSelectionDialogUseApn'),
+        apnSelectionActionBtn.innerText);
+
+    const apnSelectionCancelBtn =
+        apnSelectionDialog.shadowRoot.querySelector('#apnSelectionCancelBtn');
+    assertTrue(!!apnSelectionCancelBtn);
+    assertEquals(
+        apnSelectionDialog.i18n('apnDetailDialogCancel'),
+        apnSelectionCancelBtn.innerText);
   });
 
   test('No apnList', () => {
