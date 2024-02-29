@@ -19,6 +19,10 @@ namespace autofill {
 class AutofillClient;
 }  // namespace autofill
 
+namespace device_reauth {
+class DeviceAuthenticator;
+}  // namespace device_reauth
+
 namespace password_manager {
 
 class PasswordManagerDriver;
@@ -83,6 +87,12 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // function assumes that passwords have been read from disk.
   void RunFlowImpl(const gfx::RectF& bounds,
                    base::i18n::TextDirection text_direction);
+  void FillPasswordSuggestion(const std::u16string& password);
+  // Executed when the biometric reautch that guards password filling completes.
+  void OnBiometricReauthCompleted(const std::u16string& password,
+                                  bool auth_succeeded);
+  // Cancels an ongoing biometric re-authentication.
+  void CancelBiometricReauthIfOngoing();
 
   const PasswordSuggestionGenerator suggestion_generator_;
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
@@ -105,6 +115,11 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   base::ScopedObservation<SavedPasswordsPresenter,
                           SavedPasswordsPresenter::Observer>
       passwords_presenter_observation_{this};
+
+  // Used to trigger a reauthentication prompt based on biometrics that needs
+  // to be cleared before the password is filled. Currently only used
+  // on Android, Mac and Windows.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
   base::WeakPtrFactory<PasswordManualFallbackFlow> weak_ptr_factory_{this};
 };

@@ -7,6 +7,8 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 
 namespace password_manager {
 
@@ -26,7 +28,9 @@ PasswordManualFallbackFlow::PasswordManualFallbackFlow(
   passwords_presenter_->Init();
 }
 
-PasswordManualFallbackFlow::~PasswordManualFallbackFlow() = default;
+PasswordManualFallbackFlow::~PasswordManualFallbackFlow() {
+  CancelBiometricReauthIfOngoing();
+}
 
 // static
 bool PasswordManualFallbackFlow::SupportsSuggestionType(
@@ -116,8 +120,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       // TODO(b/321678448): Fill username.
       break;
     case autofill::PopupItemId::kFillPassword:
-      // TODO(b/324241248): Conditionally trigger concent dialog and fill
-      // password.
+      FillPasswordSuggestion(
+          suggestion.GetPayload<Suggestion::ValueToFill>().value());
       break;
     case autofill::PopupItemId::kViewPasswordDetails:
       // TODO(b/324242001): Trigger password details dialog.
@@ -178,6 +182,58 @@ void PasswordManualFallbackFlow::RunFlowImpl(
       autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords);
   autofill_client_->ShowAutofillPopup(open_args,
                                       weak_ptr_factory_.GetWeakPtr());
+}
+
+void PasswordManualFallbackFlow::FillPasswordSuggestion(
+    const std::u16string& password) {
+  // TODO(b/324241248): Conditionally trigger consent dialog and fill
+  // password.
+  CancelBiometricReauthIfOngoing();
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+      password_client_->GetDeviceAuthenticator();
+  // Note: this is currently only implemented on Android, Mac and Windows.
+  // For other platforms, the `authenticator` will be null.
+  if (!password_client_->CanUseBiometricAuthForFilling(authenticator.get())) {
+    password_manager_driver_->FillField(saved_field_id_, password);
+  } else {
+    authenticator_ = std::move(authenticator);
+
+    std::u16string message;
+    auto on_reath_complete =
+        base::BindOnce(&PasswordManualFallbackFlow::OnBiometricReauthCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), password);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    const std::u16string origin = base::UTF8ToUTF16(GetShownOrigin(
+        url::Origin::Create(password_manager_driver_->GetLastCommittedURL())));
+    message =
+        l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
+#endif
+    authenticator_->AuthenticateWithMessage(
+        message, metrics_util::TimeCallback(
+                     std::move(on_reath_complete),
+                     "PasswordManager.PasswordFilling.AuthenticationTime"));
+  }
+}
+
+void PasswordManualFallbackFlow::OnBiometricReauthCompleted(
+    const std::u16string& password,
+    bool auth_succeeded) {
+  authenticator_.reset();
+  base::UmaHistogramBoolean(
+      "PasswordManager.PasswordFilling.AuthenticationResult", auth_succeeded);
+  if (!auth_succeeded) {
+    return;
+  }
+  password_manager_driver_->FillField(saved_field_id_, password);
+}
+
+void PasswordManualFallbackFlow::CancelBiometricReauthIfOngoing() {
+  if (!authenticator_) {
+    return;
+  }
+  authenticator_->Cancel();
+  authenticator_.reset();
 }
 
 }  // namespace password_manager
