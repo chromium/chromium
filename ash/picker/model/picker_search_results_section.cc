@@ -4,6 +4,9 @@
 
 #include "ash/picker/model/picker_search_results_section.h"
 
+#include <utility>
+#include <vector>
+
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 
@@ -11,8 +14,8 @@ namespace ash {
 
 PickerSearchResultsSection::PickerSearchResultsSection(
     PickerSectionType type,
-    base::span<const PickerSearchResult> results)
-    : type_(type), results_(results.begin(), results.end()) {}
+    std::vector<PickerSearchResult> results)
+    : type_(type), results_(std::move(results)) {}
 
 PickerSearchResultsSection::PickerSearchResultsSection(
     const PickerSearchResultsSection& other) = default;
