@@ -43,6 +43,7 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/mojom/ax_event.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_util.h"
 #include "v8/include/v8-context.h"
@@ -52,6 +53,8 @@ using read_anything::mojom::ReadAnythingTheme;
 using read_anything::mojom::ReadAnythingThemePtr;
 
 namespace {
+
+constexpr char kUndeterminedLocale[] = "und";
 
 // The following methods convert v8::Value types to an AXTreeUpdate. This is not
 // a complete conversion (thus way gin::Converter<ui::AXTreeUpdate> is not used
@@ -789,8 +792,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::MovePositionToPreviousGranularity)
       .SetMethod("requestImageDataUrl",
                  &ReadAnythingAppController::RequestImageDataUrl)
-      .SetMethod("getImageDataUrl",
-                 &ReadAnythingAppController::GetImageDataUrl);
+      .SetMethod("getImageDataUrl", &ReadAnythingAppController::GetImageDataUrl)
+      .SetMethod("getDisplayNameForLocale",
+                 &ReadAnythingAppController::GetDisplayNameForLocale);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1085,6 +1089,31 @@ void ReadAnythingAppController::RequestImageDataUrl(
 std::string ReadAnythingAppController::GetImageDataUrl(
     ui::AXNodeID node_id) const {
   return model_.GetImageDataUrl(node_id);
+}
+
+const std::string ReadAnythingAppController::GetDisplayNameForLocale(
+    const std::string& locale,
+    const std::string& display_locale) const {
+  bool found_valid_result = false;
+  std::string locale_result;
+  if (l10n_util::IsValidLocaleSyntax(locale) &&
+      l10n_util::IsValidLocaleSyntax(display_locale)) {
+    locale_result = base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
+        locale, display_locale, /*is_for_ui=*/true));
+    // Check for valid locales before getting the display name.
+    // The ICU Locale class returns "und" for undetermined locales, and
+    // returns the locale string directly if it has no translation.
+    // Treat these cases as invalid results.
+    found_valid_result =
+        locale_result != kUndeterminedLocale && locale_result != locale;
+  }
+
+  // Return an empty string to communicate there's no display name.
+  if (!found_valid_result) {
+    locale_result = std::string();
+  }
+
+  return locale_result;
 }
 
 const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {

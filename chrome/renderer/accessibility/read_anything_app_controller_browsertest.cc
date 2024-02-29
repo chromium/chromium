@@ -330,6 +330,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetChildren(ax_node_id);
   }
 
+  std::string GetDisplayNameForLocale(std::string locale,
+                                      std::string display_locale) {
+    return controller_->GetDisplayNameForLocale(locale, display_locale);
+  }
+
   std::string GetDataFontCss(ui::AXNodeID ax_node_id) {
     return controller_->GetDataFontCss(ax_node_id);
   }
@@ -982,6 +987,16 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ("", GetTextContent(1));
   EXPECT_EQ("", GetTextContent(2));
   EXPECT_EQ("", GetTextContent(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetDisplayNameForLocale) {
+  EXPECT_EQ(GetDisplayNameForLocale("en-US", "en"), "English (United States)");
+  EXPECT_EQ(GetDisplayNameForLocale("en-US", "es"), "inglés (Estados Unidos)");
+  EXPECT_EQ(GetDisplayNameForLocale("en-US", "en-US"),
+            "English (United States)");
+  EXPECT_EQ(GetDisplayNameForLocale("en-UK", "en"), "English (United Kingdom)");
+  EXPECT_EQ(GetDisplayNameForLocale("en-UK", "foo5"), "");
+  EXPECT_EQ(GetDisplayNameForLocale("foo", "en"), "");
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetUrl) {

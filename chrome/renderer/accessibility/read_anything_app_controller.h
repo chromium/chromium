@@ -192,6 +192,10 @@ class ReadAnythingAppController
   // supported for speech.
   const std::string& GetLanguageCodeForSpeech() const;
 
+  const std::string GetDisplayNameForLocale(
+      const std::string& locale,
+      const std::string& display_locale) const;
+
   void Distill();
   void Draw();
   void DrawSelection();
