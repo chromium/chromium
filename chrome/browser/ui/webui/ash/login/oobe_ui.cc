@@ -187,6 +187,8 @@ constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
 constexpr char kDebuggerMJSPath[] = "debug/debug.js";
 constexpr char kQuickStartDebuggerPath[] = "debug/quick_start_debugger.js";
+constexpr char kQuickStartDebuggerHtmlPath[] =
+    "debug/quick_start_debugger.html.js";
 
 constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.js";
@@ -274,6 +276,10 @@ void AddDebuggerResources(content::WebUIDataSource* source) {
                           quick_start_debugger_enabled
                               ? IDR_OOBE_DEBUG_QUICK_START_DEBUGGER_JS
                               : IDR_OOBE_DEBUG_NO_DEBUG_JS);
+  if (quick_start_debugger_enabled) {
+    source->AddResourcePath(kQuickStartDebuggerHtmlPath,
+                            IDR_OOBE_DEBUG_QUICK_START_DEBUGGER_HTML_JS);
+  }
 }
 
 void AddTestAPIResources(content::WebUIDataSource* source) {
