@@ -484,6 +484,27 @@ void TabSearchPageHandler::RemoveTabFromOrganization(
   }
 }
 
+void TabSearchPageHandler::RejectSession(int32_t session_id) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser || !organization_service_) {
+    return;
+  }
+
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(browser);
+  if (!session || session->session_id() != session_id) {
+    return;
+  }
+
+  for (const std::unique_ptr<TabOrganization>& organization :
+       session->tab_organizations()) {
+    organization->Reject();
+  }
+
+  organization_service_->ResetSessionForBrowser(
+      browser, TabOrganizationEntryPoint::kTabSearch, nullptr);
+}
+
 void TabSearchPageHandler::RestartSession() {
   Browser* browser = chrome::FindLastActive();
   if (!browser) {

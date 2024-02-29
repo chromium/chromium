@@ -86,6 +86,7 @@ class TabSearchPageHandler
   void RemoveTabFromOrganization(int32_t session_id,
                                  int32_t organization_id,
                                  tab_search::mojom::TabPtr tab) override;
+  void RejectSession(int32_t session_id) override;
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;

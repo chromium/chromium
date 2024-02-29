@@ -139,6 +139,7 @@
   </iron-selector>
   <template is="dom-if" if="[[!multiTabOrganization]]">
     <tab-organization-results-actions
+        show-refresh="[[refreshButtonEnabled_]]"
         is-last-organization="[[isLastOrganization]]"
         on-create-group-click="onCreateGroupClick_"
         on-reject-click="onRejectGroupClick_">

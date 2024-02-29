@@ -246,11 +246,25 @@ export class TabOrganizationPageElement extends PolymerElement {
         this.session_!.sessionId, event.detail.organizationId);
   }
 
+  private onRejectAllGroupsClick_() {
+    this.apiProxy_.rejectSession(this.session_!.sessionId);
+  }
+
   private onCreateGroupClick_(
       event: CustomEvent<{organizationId: number, name: string, tabs: Tab[]}>) {
     this.apiProxy_.acceptTabOrganization(
         this.session_!.sessionId, event.detail.organizationId,
         event.detail.name, event.detail.tabs);
+  }
+
+  private onCreateAllGroupsClick_(event: CustomEvent<{
+    organizations: Array<{organizationId: number, name: string, tabs: Tab[]}>,
+  }>) {
+    event.detail.organizations.forEach((organization) => {
+      this.apiProxy_.acceptTabOrganization(
+          this.session_!.sessionId, organization.organizationId,
+          organization.name, organization.tabs);
+    });
   }
 
   private onCheckNow_() {

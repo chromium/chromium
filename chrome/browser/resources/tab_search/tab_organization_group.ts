@@ -53,6 +53,12 @@ export class TabOrganizationGroupElement extends PolymerElement {
         value: 0,
       },
 
+      refreshButtonEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('tabOrganizationRefreshButtonEnabled'),
+      },
+
       showInput_: Boolean,
 
       tabDatas_: {
@@ -70,6 +76,7 @@ export class TabOrganizationGroupElement extends PolymerElement {
   organizationId: number;
 
   private lastFocusedIndex_: number;
+  private refreshButtonEnabled_: boolean;
   private showInput_: boolean;
   private tabDatas_: TabData[];
 

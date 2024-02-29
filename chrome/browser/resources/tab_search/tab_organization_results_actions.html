@@ -11,12 +11,14 @@
 </style>
 
 <div class="button-row">
-  <template is="dom-if" if="[[showRefresh_]]">
-    <cr-button class="tonal-button" on-click="onRejectGroupClick_">
+  <template is="dom-if" if="[[showRefresh]]">
+    <cr-button id="refreshButton" class="tonal-button"
+        on-click="onRejectGroupClick_">
       [[getRefreshButtonText_(isLastOrganization, multipleOrganizations)]]
     </cr-button>
   </template>
-  <cr-button class="action-button" on-click="onCreateGroupClick_">
+  <cr-button id="createButton" class="action-button"
+      on-click="onCreateGroupClick_">
     [[getCreateButtonText_(multipleOrganizations)]]
   </cr-button>
 </div>

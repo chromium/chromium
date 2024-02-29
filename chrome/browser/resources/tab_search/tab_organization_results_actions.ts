@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview 'tab-organization-results-actions' is a row with actions that
+ * can be taken on a tab organization suggestion. It is agnostic as to what
+ * that suggestion is, and can be used to suggest one or multiple groups.
+ */
+
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
@@ -19,19 +25,13 @@ export class TabOrganizationResultsActionsElement extends PolymerElement {
     return {
       isLastOrganization: Boolean,
       multipleOrganizations: Boolean,
-
-      showRefresh_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('tabOrganizationRefreshButtonEnabled'),
-      },
+      showRefresh: Boolean,
     };
   }
 
   isLastOrganization: boolean;
   multipleOrganizations: boolean;
-
-  private showRefresh_: boolean;
+  showRefresh: boolean;
 
   static get template() {
     return getTemplate();

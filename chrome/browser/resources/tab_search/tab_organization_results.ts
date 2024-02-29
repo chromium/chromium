@@ -17,6 +17,7 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {TabOrganizationGroupElement} from './tab_organization_group.js';
 import {getTemplate} from './tab_organization_results.html.js';
 import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 
@@ -123,13 +124,31 @@ export class TabOrganizationResultsElement extends PolymerElement {
   private onCreateAllGroupsClick_(event: CustomEvent) {
     event.stopPropagation();
     event.preventDefault();
-    // TODO(b/324942857): Implement
+
+    const groups =
+        [...this.shadowRoot!.querySelectorAll('tab-organization-group')];
+    const organizations = groups.map((group: TabOrganizationGroupElement) => {
+      return {
+        organizationId: group.organizationId,
+        name: group.name,
+        tabs: group.tabs,
+      };
+    });
+
+    this.dispatchEvent(new CustomEvent('create-all-groups-click', {
+      bubbles: true,
+      composed: true,
+      detail: {organizations},
+    }));
   }
 
   private onRejectAllGroupsClick_(event: CustomEvent) {
     event.stopPropagation();
     event.preventDefault();
-    // TODO(b/324944497): Implement
+    this.dispatchEvent(new CustomEvent('reject-all-groups-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onLearnMoreClick_() {

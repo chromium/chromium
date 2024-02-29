@@ -230,6 +230,9 @@ interface PageHandler {
   // Remove the tab from the tab organization.
   RemoveTabFromOrganization(int32 session_id, int32 organization_id, Tab tab);
 
+  // Reject all tab organizations in the current session.
+  RejectSession(int32 session_id);
+
   // Clear the current tab organization session state and start a new request.
   RestartSession();
 

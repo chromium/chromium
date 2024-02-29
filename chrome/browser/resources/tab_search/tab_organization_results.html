@@ -49,7 +49,7 @@
     </template>
   </div>
   <template is="dom-if" if="[[multiTabOrganization]]">
-    <tab-organization-results-actions
+    <tab-organization-results-actions show-refresh
         multiple-organizations="[[hasMultipleOrganizations_(session)]]"
         on-create-group-click="onCreateAllGroupsClick_"
         on-reject-click="onRejectAllGroupsClick_">
