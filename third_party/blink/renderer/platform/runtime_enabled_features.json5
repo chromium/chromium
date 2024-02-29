@@ -3889,7 +3889,7 @@
       // Makes the global root scrollbars follow the preferred color scheme
       // by default. Please see more details: crbug.com/1423087.
       name: "UsedColorSchemeRootScrollbars",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "UserActivationSameOriginVisibility",
