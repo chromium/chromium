@@ -14,15 +14,15 @@ import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeFocusBehavior, OobeFocusBehaviorInterface} from '../behaviors/oobe_focus_behavior.js';
+import {OobeFocusMixin, OobeFocusMixinInterface} from '../mixins/oobe_focus_mixin.js';
 import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from '../behaviors/oobe_scrollable_behavior.js';
 
 import {getTemplate} from './oobe_content_dialog.html.js';
 
 const OobeContentDialogBase =
     mixinBehaviors(
-        [OobeFocusBehavior, OobeScrollableBehavior], PolymerElement) as {
-      new (): PolymerElement & OobeFocusBehaviorInterface &
+        [OobeScrollableBehavior], OobeFocusMixin(PolymerElement)) as {
+      new (): PolymerElement & OobeFocusMixinInterface &
           OobeScrollableBehaviorInterface,
     };
 

@@ -31,15 +31,15 @@ import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeFocusBehavior, OobeFocusBehaviorInterface} from '../behaviors/oobe_focus_behavior.js';
+import {OobeFocusMixin, OobeFocusMixinInterface} from '../mixins/oobe_focus_mixin.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './oobe_modal_dialog.html.js';
 
 const OobeModalDialogBase =
-    mixinBehaviors([OobeI18nBehavior, OobeFocusBehavior], PolymerElement) as {
+    mixinBehaviors([OobeI18nBehavior], OobeFocusMixin(PolymerElement)) as {
       new (): PolymerElement & OobeI18nBehaviorInterface &
-          OobeFocusBehaviorInterface,
+          OobeFocusMixinInterface,
     };
 
 export class OobeModalDialog extends OobeModalDialogBase {
