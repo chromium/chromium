@@ -28,7 +28,7 @@ def main():
   if args.cros_input is not None:
     cros_structured = model.Model(
         open(args.cros_input, encoding='utf-8').read(), 'cros')
-    structured = model.MergeModels(structured, cros_structured)
+    structured = model.merge_models(structured, cros_structured)
 
   codegen.ValidatorHeaderTemplate(
       args.output, 'structured_metrics_validator.h').write_file()

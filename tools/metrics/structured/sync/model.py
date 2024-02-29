@@ -107,7 +107,8 @@ class Model:
 </structured-metrics>"""
 
 
-def MergeModels(primary: Model, other: Model) -> Model:
+def merge_models(primary: Model, other: Model) -> Model:
+  """Merges two models into one."""
   primary.projects += [
       p for p in other.projects if not re.match('Test', p.name)
   ]
