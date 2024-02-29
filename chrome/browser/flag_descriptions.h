@@ -1243,9 +1243,6 @@ extern const char kJavascriptExperimentalSharedMemoryDescription[];
 extern const char kJourneysName[];
 extern const char kJourneysDescription[];
 
-extern const char kRenameJourneysName[];
-extern const char kRenameJourneysDescription[];
-
 extern const char kJourneysLabelsName[];
 extern const char kJourneysLabelsDescription[];
 

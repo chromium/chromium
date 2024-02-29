@@ -99,9 +99,6 @@ BASE_DECLARE_FEATURE(kSidePanelJourneys);
 extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
 BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 
-// Enables renaming Journeys in the UI.
-BASE_DECLARE_FEATURE(kRenameJourneys);
-
 // Enables Side Panel Grouped History and WebUI Grouped History to find
 // ungrouped visits as well when the user has typed a search query.
 BASE_DECLARE_FEATURE(kSearchesFindUngroupedVisits);

@@ -21,19 +21,8 @@
 namespace policy {
 
 // Tests setting the visibility of the History Clusters by policy.
-class HistoryClustersPolicyTest : public PolicyTest,
-                                  public testing::WithParamInterface<bool> {
+class HistoryClustersPolicyTest : public PolicyTest {
  public:
-  HistoryClustersPolicyTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          history_clusters::kRenameJourneys);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          history_clusters::kRenameJourneys);
-    }
-  }
-
   void SetUp() override {
     PolicyTest::SetUp();
 
@@ -42,15 +31,10 @@ class HistoryClustersPolicyTest : public PolicyTest,
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   history_clusters::Config config_;
 };
 
-INSTANTIATE_TEST_SUITE_P(RenameJourneys,
-                         HistoryClustersPolicyTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(HistoryClustersPolicyTest, HistoryClustersVisible) {
+IN_PROC_BROWSER_TEST_F(HistoryClustersPolicyTest, HistoryClustersVisible) {
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(browser()->profile());
   PrefService* prefs = browser()->profile()->GetPrefs();
@@ -66,10 +50,9 @@ IN_PROC_BROWSER_TEST_P(HistoryClustersPolicyTest, HistoryClustersVisible) {
 
   EXPECT_FALSE(prefs->GetBoolean(history_clusters::prefs::kVisible));
   EXPECT_FALSE(prefs->IsManagedPreference(history_clusters::prefs::kVisible));
-  // When history_clusters::kRenameJourneys is enabled, history clusters are
-  // always visible unless the visibility prefs is set to false by policy.
-  EXPECT_EQ(history_clusters_service->IsJourneysEnabledAndVisible(),
-            GetParam());
+  // History clusters are always visible unless the visibility prefs is set to
+  // false by policy.
+  EXPECT_TRUE(history_clusters_service->IsJourneysEnabledAndVisible());
 
   // Verify that history clusters can be hidden by policy.
   policies.Set(key::kHistoryClustersVisible, POLICY_LEVEL_MANDATORY,
@@ -97,10 +80,9 @@ IN_PROC_BROWSER_TEST_P(HistoryClustersPolicyTest, HistoryClustersVisible) {
 
   EXPECT_FALSE(prefs->GetBoolean(history_clusters::prefs::kVisible));
   EXPECT_FALSE(prefs->IsManagedPreference(history_clusters::prefs::kVisible));
-  // When history_clusters::kRenameJourneys is enabled, history clusters are
-  // always visible unless the visibility prefs is set to false by policy.
-  EXPECT_EQ(history_clusters_service->IsJourneysEnabledAndVisible(),
-            GetParam());
+  // History clusters are always visible unless the visibility prefs is set to
+  // false by policy.
+  EXPECT_TRUE(history_clusters_service->IsJourneysEnabledAndVisible());
 }
 
 }  // namespace policy

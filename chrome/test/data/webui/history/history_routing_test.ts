@@ -8,7 +8,7 @@ import type {HistoryAppElement, HistorySideBarElement} from 'chrome://history/hi
 import {BrowserProxyImpl, BrowserServiceImpl, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
@@ -29,7 +29,6 @@ import {navigateTo} from './test_util.js';
         enableHistoryClusters: 'Enable',
         isHistoryClustersEnabled,
         isHistoryClustersVisible: true,
-        renameJourneys: false,
       });
     });
 
@@ -49,24 +48,6 @@ import {navigateTo} from './test_util.js';
       return flushTasks();
     });
 
-    [true, false].forEach(isHistoryClustersVisibleManagedByPolicy => {
-      const suiteSuffix =
-          isHistoryClustersVisibleManagedByPolicy ? 'managed' : 'not-managed';
-      suite(`toggle-history-clusters-sidebar-menu-item-${suiteSuffix}`, () => {
-        suiteSetup(() => {
-          loadTimeData.overrideValues({
-            isHistoryClustersVisibleManagedByPolicy,
-          });
-        });
-
-        test('menu item visiblity', () => {
-          const visible = isHistoryClustersEnabled &&
-              !isHistoryClustersVisibleManagedByPolicy;
-          assertEquals(!visible, sidebar.$['toggle-history-clusters'].hidden);
-        });
-      });
-    });
-
     test('changing route changes active view', function() {
       assertEquals('history', app.$.content.selected);
       assertEquals(app.$.history, app.$['tabs-content'].selectedItem);
@@ -82,15 +63,15 @@ import {navigateTo} from './test_util.js';
       });
     });
 
-    test('routing to /journeys may change active view', function() {
+    test('routing to /grouped may change active view', function() {
       assertEquals('history', app.$.content.selected);
       assertEquals(
           app.shadowRoot!.querySelector('#history'),
           app.$['tabs-content'].selectedItem);
 
-      navigateTo('/journeys', app);
+      navigateTo('/grouped', app);
       return flushTasks().then(function() {
-        assertEquals('chrome://history/journeys', window.location.href);
+        assertEquals('chrome://history/grouped', window.location.href);
 
         assertEquals('history', app.$.content.selected);
         assertEquals(
@@ -104,19 +85,19 @@ import {navigateTo} from './test_util.js';
       });
     });
 
-    test('routing to /journeys may update sidebar menu item', function() {
+    test('routing to /grouped may update sidebar menu item', function() {
       assertEquals('chrome://history/', sidebar.$.history.href);
       assertEquals('history', sidebar.$.history.getAttribute('path'));
 
-      navigateTo('/journeys', app);
+      navigateTo('/grouped', app);
       return flushTasks().then(function() {
         // Currently selected history view is preserved in sidebar menu item.
         assertEquals(
-            isHistoryClustersEnabled ? 'chrome://history/journeys' :
+            isHistoryClustersEnabled ? 'chrome://history/grouped' :
                                        'chrome://history/',
             sidebar.$.history.href);
         assertEquals(
-            isHistoryClustersEnabled ? 'journeys' : 'history',
+            isHistoryClustersEnabled ? 'grouped' : 'history',
             sidebar.$.history.getAttribute('path'));
       });
     });
@@ -140,8 +121,8 @@ import {navigateTo} from './test_util.js';
       if (isHistoryClustersEnabled) {
         assertTrue(!!historyTabs);
         historyTabs.selected = 1;
-        assertEquals('journeys', sidebar.$.menu.selected);
-        assertEquals('chrome://history/journeys', window.location.href);
+        assertEquals('grouped', sidebar.$.menu.selected);
+        assertEquals('chrome://history/grouped', window.location.href);
 
         keyDownOn(sidebar.$.syncedTabs, 0, '', ' ');
         assertEquals('syncedTabs', sidebar.$.menu.selected);
@@ -149,76 +130,13 @@ import {navigateTo} from './test_util.js';
 
         // Currently selected history view is preserved in sidebar menu item.
         keyDownOn(sidebar.$.history, 0, '', ' ');
-        assertEquals('journeys', sidebar.$.menu.selected);
-        assertEquals('chrome://history/journeys', window.location.href);
+        assertEquals('grouped', sidebar.$.menu.selected);
+        assertEquals('chrome://history/grouped', window.location.href);
 
         historyTabs.selected = 0;
         assertEquals('history', sidebar.$.menu.selected);
         assertEquals('chrome://history/', window.location.href);
       }
-    });
-
-    test('toggle history clusters on/off from sidebar menu item', async () => {
-      if (!isHistoryClustersEnabled) {
-        return;
-      }
-
-      const handler = testBrowserProxy.handler;
-
-      assertEquals('history', sidebar.$.menu.selected);
-      assertEquals('chrome://history/', window.location.href);
-
-      // Navigate to chrome://history/journeys.
-      app.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
-      assertEquals('journeys', sidebar.$.menu.selected);
-      assertEquals('chrome://history/journeys', window.location.href);
-      await flushTasks();
-      assertTrue(app.shadowRoot!.querySelector('#history-clusters')!.classList
-                     .contains('iron-selected'));
-
-      handler.setResultFor(
-          'toggleVisibility', Promise.resolve({visible: false}));
-
-      // Verify the menu item label and press it.
-      assertEquals(
-          'Disable', sidebar.$['toggle-history-clusters'].textContent!.trim());
-      keyDownOn(sidebar.$['toggle-history-clusters'], 0, '', ' ');
-
-      // Verify that the browser is notified and the histogram is recorded.
-      let visible =
-          await testMetricsProxy.whenCalled('recordToggledVisibility');
-      assertFalse(visible);
-      visible = await handler.whenCalled('toggleVisibility');
-      assertFalse(visible);
-
-      // Toggling history clusters off navigates to chrome://history/.
-      assertEquals('history', sidebar.$.menu.selected);
-      assertEquals('chrome://history/', window.location.href);
-      assertFalse(app.shadowRoot!.querySelector('#history-clusters')!.classList
-                      .contains('iron-selected'));
-
-      handler.reset();
-      testMetricsProxy.reset();
-
-      handler.setResultFor(
-          'toggleVisibility', Promise.resolve({visible: true}));
-
-      // Verify the updated menu item label and press it again.
-      assertEquals(
-          'Enable', sidebar.$['toggle-history-clusters'].textContent!.trim());
-      keyDownOn(sidebar.$['toggle-history-clusters'], 0, '', ' ');
-
-      // Verify that the browser is notified and the histogram is recorded.
-      visible = await testMetricsProxy.whenCalled('recordToggledVisibility');
-      assertTrue(visible);
-      visible = await handler.whenCalled('toggleVisibility');
-      assertTrue(visible);
-
-      // Toggling history clusters on navigates to chrome://history/journeys.
-      assertEquals('journeys', sidebar.$.menu.selected);
-      assertEquals('chrome://history/journeys', window.location.href);
-      assertTrue(app.shadowRoot!.querySelector('#history-clusters')!.classList
-                     .contains('iron-selected'));
     });
 
     test('search updates from route', function() {
@@ -256,10 +174,10 @@ import {navigateTo} from './test_util.js';
 
       if (isHistoryClustersEnabled) {
         app.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
-        assertEquals('journeys', sidebar.$.menu.selected);
+        assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals(searchTerm, app.$.toolbar.searchTerm);
         assertEquals(
-            'chrome://history/journeys?q=' + searchTerm, window.location.href);
+            'chrome://history/grouped?q=' + searchTerm, window.location.href);
       }
     });
   });
@@ -275,7 +193,6 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
     loadTimeData.overrideValues({
       isHistoryClustersEnabled: true,
       isHistoryClustersVisible: true,
-      renameJourneys: false,
       lastSelectedTab: 1,
     });
   });
@@ -302,14 +219,14 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
       `route to non default last selected tab when no url params set `,
       async () => {
         initialize();
-        assertEquals(`chrome://history/journeys`, window.location.href);
+        assertEquals(`chrome://history/grouped`, window.location.href);
       });
 
   test(`route to grouped url when last tab is grouped`, async () => {
     initialize();
-    assertEquals(`chrome://history/journeys`, window.location.href);
-    navigateTo('/journeys', app);
-    assertEquals(`chrome://history/journeys`, window.location.href);
+    assertEquals(`chrome://history/grouped`, window.location.href);
+    navigateTo('/grouped', app);
+    assertEquals(`chrome://history/grouped`, window.location.href);
     const lastSelectedTab =
         await testBrowserService.whenCalled('setLastSelectedTab');
     assertEquals(lastSelectedTab, 1);

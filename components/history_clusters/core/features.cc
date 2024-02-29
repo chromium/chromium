@@ -113,10 +113,6 @@ BASE_FEATURE(kSidePanelJourneys,
 const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox{
     &kSidePanelJourneys, "SidePanelJourneysOpensFromOmnibox", true};
 
-BASE_FEATURE(kRenameJourneys,
-             "RenameJourneys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Intended to be Enabled by default on Desktop and the flag left here as a
 // killswitch.
 BASE_FEATURE(kSearchesFindUngroupedVisits,

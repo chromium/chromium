@@ -96,19 +96,6 @@
       </a>
       <!-- tabindex is needed below because <a> without href attribute is not
             focusable in sequential keyboard navigation by default. -->
-      <a role="menuitem" id="toggle-history-clusters"
-          class="cr-nav-menu-item"
-          tabindex="0"
-          on-click="onToggleHistoryClustersClick_"
-          on-keydown="onToggleHistoryClustersKeydown_"
-          on-mousedown="onToggleHistoryClustersMousedown_"
-          hidden="[[!showToggleHistoryClusters_]]">
-        <iron-icon icon="[[getToggleHistoryClustersItemIcon_(
-            historyClustersVisible)]]">
-        </iron-icon>
-        [[getToggleHistoryClustersItemLabel_(historyClustersVisible)]]
-        <paper-ripple id="thc-ripple"></paper-ripple>
-      </a>
       <a role="menuitem" id="clear-browsing-data"
           class="cr-nav-menu-item"
           href="chrome://settings/clearBrowserData"

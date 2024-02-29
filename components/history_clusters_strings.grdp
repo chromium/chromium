@@ -12,20 +12,8 @@
   <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history clusters page">
     Are you sure you want to delete these pages from your history?
   </message>
-  <message name="IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn off the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'.">
-    Turn off Journeys
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn on the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'.">
-    Turn on Journeys
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where Journeys are collected and shown to the user. See glossary entry for meaning of 'Journeys'.">
-    Journeys
-  </message>
   <message name="IDS_HISTORY_CLUSTERS_BY_GROUP_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items organized into groups of pages are shown to the user.">
     By group
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
-    List
   </message>
   <message name="IDS_HISTORY_CLUSTERS_BY_DATE_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
     By date
@@ -93,9 +81,6 @@
   </message>
   <message name="IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL" desc="A label indicating whether a history item was added to a tab group.">
     Saved in tab group
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_SEARCH_PROMPT" desc="A placeholder for the search bar in the side panel.">
-    Search Journeys
   </message>
   <message name="IDS_HISTORY_CLUSTERS_CUT" desc="Label of the item in drop-down menu that allows the user to cut the searchbox query">
     Cut

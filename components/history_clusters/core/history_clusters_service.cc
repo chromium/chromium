@@ -154,14 +154,12 @@ base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
 void HistoryClustersService::Shutdown() {}
 
 bool HistoryClustersService::IsJourneysEnabledAndVisible() const {
-  const bool rename_journeys = base::FeatureList::IsEnabled(kRenameJourneys);
   const bool journeys_is_managed =
       pref_service_->IsManagedPreference(prefs::kVisible);
-  // When history_clusters::kRenameJourneys is enabled, history clusters are
-  // always visible unless the visibility prefs is set to false by policy.
+  // History clusters are always visible unless the visibility prefs is
+  // set to false by policy.
   return is_journeys_feature_flag_enabled_ &&
-         (pref_service_->GetBoolean(prefs::kVisible) ||
-          (rename_journeys && !journeys_is_managed));
+         (pref_service_->GetBoolean(prefs::kVisible) || !journeys_is_managed);
 }
 
 // static

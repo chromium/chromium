@@ -9,9 +9,7 @@
 namespace history_clusters {
 
 const char* GetChromeUIHistoryClustersURL() {
-  return base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
-             ? "chrome://history/grouped"
-             : "chrome://history/journeys";
+  return "chrome://history/grouped";
 }
 
 }  // namespace history_clusters

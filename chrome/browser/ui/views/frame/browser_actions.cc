@@ -104,8 +104,6 @@ BrowserActions* BrowserActions::FromBrowser(Browser* browser) {
 }
 
 void BrowserActions::InitializeBrowserActions() {
-  const bool rename_journeys =
-      base::FeatureList::IsEnabled(history_clusters::kRenameJourneys);
   Profile* profile = browser_->profile();
 
   actions::ActionManager::Get().AddAction(
@@ -145,13 +143,11 @@ void BrowserActions::InitializeBrowserActions() {
 
   if (HistoryClustersSidePanelCoordinator::IsSupported(profile)) {
     root_action_item_->AddChild(
-        SidePanelAction(
-            SidePanelEntryId::kHistoryClusters,
-            rename_journeys ? IDS_HISTORY_TITLE
-                            : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL,
-            IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
-            vector_icons::kHistoryChromeRefreshIcon,
-            kActionSidePanelShowHistoryCluster, &(browser_.get()), true)
+        SidePanelAction(SidePanelEntryId::kHistoryClusters, IDS_HISTORY_TITLE,
+                        IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
+                        vector_icons::kHistoryChromeRefreshIcon,
+                        kActionSidePanelShowHistoryCluster, &(browser_.get()),
+                        true)
             .Build());
   }
 

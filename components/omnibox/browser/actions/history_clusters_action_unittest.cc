@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -62,9 +61,6 @@ class HistoryClustersActionTest : public testing::Test {
 
   // `history_dir_` needs to be initialized once only.
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        history_clusters::kRenameJourneys);
-
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
@@ -129,11 +125,12 @@ class HistoryClustersActionTest : public testing::Test {
 
   void SetHistoryClustersVisiblePref(bool value) {
     prefs_enabled_.SetBoolean(history_clusters::prefs::kVisible, value);
+    // Make the history clusters visible pref managed.
+    prefs_enabled_.SetManagedPref(history_clusters::prefs::kVisible,
+                                  std::make_unique<base::Value>(value));
   }
 
   base::test::TaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;

@@ -16,8 +16,6 @@ import './shared_icons.html.js';
 import './shared_vars.css.js';
 import './strings.m.js';
 
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
-import {MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
@@ -85,11 +83,6 @@ export class HistorySideBarElement extends PolymerElement {
         },
       },
 
-      renameJourneys_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('renameJourneys'),
-      },
-
       /**
        * Used to display notices for profile sign-in status and managed status.
        */
@@ -104,13 +97,6 @@ export class HistorySideBarElement extends PolymerElement {
         computed: 'computeShowHistoryClusters_(' +
             'historyClustersEnabled, historyClustersVisible)',
       },
-
-      showToggleHistoryClusters_: {
-        type: Boolean,
-        computed: 'computeShowToggleHistoryClusters_(' +
-            'historyClustersEnabled, historyClustersVisibleManagedByPolicy_, ' +
-            'renameJourneys_)',
-      },
     };
   }
 
@@ -121,7 +107,6 @@ export class HistorySideBarElement extends PolymerElement {
   selectedTab: number;
   private guestSession_ = loadTimeData.getBoolean('isGuestSession');
   private historyClustersVisibleManagedByPolicy_: boolean;
-  private renameJourneys_: boolean;
   private showFooter_: boolean;
   private showHistoryClusters_: boolean;
 
@@ -186,43 +171,6 @@ export class HistorySideBarElement extends PolymerElement {
         Page.HISTORY;
   }
 
-  private getToggleHistoryClustersItemIcon_(): string {
-    return `history:journeys-${this.historyClustersVisible ? 'off' : 'on'}`;
-  }
-
-  private getToggleHistoryClustersItemLabel_(): string {
-    return loadTimeData.getString(
-        this.historyClustersVisible ? 'disableHistoryClusters' :
-                                      'enableHistoryClusters');
-  }
-
-  private onToggleHistoryClustersClick_() {
-    MetricsProxyImpl.getInstance().recordToggledVisibility(
-        !this.historyClustersVisible);
-    BrowserProxyImpl.getInstance()
-        .handler.toggleVisibility(!this.historyClustersVisible)
-        .then(({visible}) => {
-          this.historyClustersVisible = visible;
-          this.selectedTab = TABBED_PAGES.indexOf(
-              visible ? Page.HISTORY_CLUSTERS : Page.HISTORY);
-        });
-
-    this.$['thc-ripple'].upAction();
-  }
-
-  private onToggleHistoryClustersKeydown_(e: KeyboardEvent) {
-    // Handle 'Enter' keypress because the menu item is missing href attribute.
-    if (e.key === 'Enter') {
-      this.onToggleHistoryClustersClick_();
-    }
-  }
-
-  private onToggleHistoryClustersMousedown_(e: MouseEvent) {
-    // The menu item steals the focus on mousedown event because it is given a
-    // tabindex="0" so that it is focusable in sequential keyboard navigation.
-    e.preventDefault();
-  }
-
   private computeShowFooter_(
       includeOtherFormsOfBrowsingHistory: boolean, managed: boolean): boolean {
     return includeOtherFormsOfBrowsingHistory || managed;
@@ -230,11 +178,6 @@ export class HistorySideBarElement extends PolymerElement {
 
   private computeShowHistoryClusters_(): boolean {
     return this.historyClustersEnabled && this.historyClustersVisible;
-  }
-
-  private computeShowToggleHistoryClusters_(): boolean {
-    return this.historyClustersEnabled &&
-        !this.historyClustersVisibleManagedByPolicy_ && !this.renameJourneys_;
   }
 }
 

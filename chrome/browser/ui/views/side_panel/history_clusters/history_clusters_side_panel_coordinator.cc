@@ -64,18 +64,13 @@ bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
 
 void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
-  const bool rename_journeys =
-      base::FeatureList::IsEnabled(history_clusters::kRenameJourneys);
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kHistoryClusters,
-      l10n_util::GetStringUTF16(rename_journeys
-                                    ? IDS_HISTORY_TITLE
-                                    : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL),
+      l10n_util::GetStringUTF16(IDS_HISTORY_TITLE),
       ui::ImageModel::FromVectorIcon(
-          rename_journeys ? (features::IsChromeRefresh2023()
-                                 ? vector_icons::kHistoryChromeRefreshIcon
-                                 : kHistoryIcon)
-                          : kJourneysIcon,
+          features::IsChromeRefresh2023()
+              ? vector_icons::kHistoryChromeRefreshIcon
+              : kHistoryIcon,
           ui::kColorIcon,
           /*icon_size=*/16),
       base::BindRepeating(
@@ -111,8 +106,7 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
       std::make_unique<SidePanelWebUIViewT<HistoryClustersSidePanelUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<HistoryClustersSidePanelUI>>(
-              url, GetBrowser().profile(),
-              IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL,
+              url, GetBrowser().profile(), IDS_HISTORY_TITLE,
               /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false));
 
