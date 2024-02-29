@@ -10202,6 +10202,35 @@
             ]
         }
     ],
+    "LightweightUAFDetector": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240130",
+                    "params": {
+                        "AllocationSamplingMultiplier": "100",
+                        "EvictionTaskIntervalMs": "5000",
+                        "MaxAllocations": "1400",
+                        "MaxMetadata": "5100",
+                        "MaxTotalSize": "131072",
+                        "Mode": "Random",
+                        "TotalSizeHighWaterMark": "104857",
+                        "TotalSizeLowWaterMark": "91750"
+                    },
+                    "enable_features": [
+                        "LightweightUafDetector"
+                    ],
+                    "disable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
     "LinkPreview": [
         {
             "platforms": [
