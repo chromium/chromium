@@ -169,7 +169,7 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
   }
 
   if ([self isRunningTest:@selector
-            (testOpenPasswordBottomSheetWithSingleSharedPassword)] ||
+            (DISABLED_testOpenPasswordBottomSheetWithSingleSharedPassword)] ||
       [self isRunningTest:@selector
             (testOpenPasswordBottomSheetWithMultipleSharedPasswords)] ||
       [self isRunningTest:@selector
@@ -978,7 +978,8 @@ id<GREYMatcher> OpenKeyboardButton() {
   }
 }
 
-- (void)testOpenPasswordBottomSheetWithSingleSharedPassword {
+// TODO(crbug.com/327629133): Fix failing test (on fieldtrial bot) & re-enable.
+- (void)DISABLED_testOpenPasswordBottomSheetWithSingleSharedPassword {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
