@@ -31,6 +31,15 @@ namespace browsing_topics {
 
 namespace {
 
+enum class NumberOfTopics {
+  kZero = 0,
+  kOne = 1,
+  kTwo = 2,
+  kThree = 3,
+
+  kMaxValue = kThree,
+};
+
 // Returns whether the topics should all be cleared given
 // `browsing_topics_data_accessible_since` and `is_topic_allowed_by_settings`.
 // Returns true if `browsing_topics_data_accessible_since` is greater than the
@@ -217,16 +226,19 @@ void RecordBrowsingTopicsApiResultMetrics(
     }
   }
 
-  const int kBuckets = 10;
-  DCHECK_GE(kBuckets,
-            blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get());
+  CHECK_GE(real_count, 0);
+  CHECK_GE(fake_count, 0);
+  CHECK_GE(filtered_count, 0);
+  CHECK_LE(real_count, static_cast<int>(NumberOfTopics::kMaxValue));
+  CHECK_LE(fake_count, static_cast<int>(NumberOfTopics::kMaxValue));
+  CHECK_LE(filtered_count, static_cast<int>(NumberOfTopics::kMaxValue));
 
-  base::UmaHistogramExactLinear("BrowsingTopics.Result.RealTopicCount",
-                                real_count, kBuckets);
-  base::UmaHistogramExactLinear("BrowsingTopics.Result.FakeTopicCount",
-                                fake_count, kBuckets);
-  base::UmaHistogramExactLinear("BrowsingTopics.Result.FilteredTopicCount",
-                                filtered_count, kBuckets);
+  base::UmaHistogramEnumeration("BrowsingTopics.Result.RealTopicCount",
+                                static_cast<NumberOfTopics>(real_count));
+  base::UmaHistogramEnumeration("BrowsingTopics.Result.FakeTopicCount",
+                                static_cast<NumberOfTopics>(fake_count));
+  base::UmaHistogramEnumeration("BrowsingTopics.Result.FilteredTopicCount",
+                                static_cast<NumberOfTopics>(filtered_count));
 
   builder.Record(ukm_recorder->Get());
 }

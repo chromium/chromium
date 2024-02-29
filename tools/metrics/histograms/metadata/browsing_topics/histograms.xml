@@ -178,8 +178,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.Result.FakeTopicCount" units="topics"
-    expires_after="2024-07-07">
+<histogram name="BrowsingTopics.Result.FakeTopicCount"
+    enum="BrowsingTopicsNumberOfTopics" expires_after="2024-07-07">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -188,8 +188,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.Result.FilteredTopicCount" units="topics"
-    expires_after="2024-07-07">
+<histogram name="BrowsingTopics.Result.FilteredTopicCount"
+    enum="BrowsingTopicsNumberOfTopics" expires_after="2024-07-07">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -199,8 +199,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.Result.RealTopicCount" units="topics"
-    expires_after="2024-07-07">
+<histogram name="BrowsingTopics.Result.RealTopicCount"
+    enum="BrowsingTopicsNumberOfTopics" expires_after="2024-07-07">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>

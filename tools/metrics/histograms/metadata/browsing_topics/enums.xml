@@ -59,6 +59,18 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failure: Disallowed by permissions policy."/>
 </enum>
 
+<enum name="BrowsingTopicsNumberOfTopics">
+  <summary>
+    The number of topics returned by the Topics API. This enum type is used for
+    histograms when they want to set up Chirp alert on bucket proportion, as
+    Chirp lacks bucket proportion monitoring for numeric types.
+  </summary>
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+</enum>
+
 <enum name="BrowsingTopicsOverrideListFileLoadResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>
