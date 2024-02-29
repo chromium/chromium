@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_value_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -95,13 +96,6 @@ MenuItem::OwnedList MenuItemsFromValue(
     items.push_back(std::move(item));
   }
   return items;
-}
-
-base::Value::List MenuItemsToValue(const MenuItem::List& items) {
-  base::Value::List list;
-  for (const auto* item : items)
-    list.Append(item->ToValue());
-  return list;
 }
 
 bool GetStringList(const base::Value::Dict& dict,
@@ -874,8 +868,9 @@ void MenuManager::WriteToStorageInternal(
     observer.WillWriteToStorage(extension_key.extension_id);
 
   if (store_) {
-    store_->SetExtensionValue(extension_key.extension_id, kContextMenusKey,
-                              base::Value(MenuItemsToValue(all_items)));
+    store_->SetExtensionValue(
+        extension_key.extension_id, kContextMenusKey,
+        base::Value(base::ToValueList(all_items, &MenuItem::ToValue)));
   }
 }
 

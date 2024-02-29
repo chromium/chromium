@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/to_value_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -145,15 +146,6 @@ using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 constexpr char kDefaultRulesetID[] = "id";
-
-template <class T>
-base::Value::List VectorToList(const std::vector<T>& values) {
-  base::Value::List lv;
-  for (const auto& value : values) {
-    lv.Append(value);
-  }
-  return lv;
-}
 
 // Returns true if |window.scriptExecuted| is true for the given frame.
 bool WasFrameWithScriptLoaded(content::RenderFrameHost* render_frame_host) {
@@ -462,8 +454,8 @@ class DeclarativeNetRequestBrowserTest
           });
     )";
 
-    base::Value::List ids_to_disable = VectorToList(rule_ids_to_disable);
-    base::Value::List ids_to_enable = VectorToList(rule_ids_to_enable);
+    base::Value::List ids_to_disable = base::ToValueList(rule_ids_to_disable);
+    base::Value::List ids_to_enable = base::ToValueList(rule_ids_to_enable);
 
     const std::string script = content::JsReplace(
         kScript, ruleset_id, base::Value(std::move(ids_to_disable)),
@@ -505,7 +497,7 @@ class DeclarativeNetRequestBrowserTest
                 : ['expected:', expected, '; actual:', actual].join(''));
           });
     )";
-    base::Value::List expected = VectorToList(expected_disabled_rule_ids);
+    base::Value::List expected = base::ToValueList(expected_disabled_rule_ids);
     std::string result = ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         content::JsReplace(kScript, ruleset_id_string, std::move(expected)));
@@ -743,15 +735,6 @@ class DeclarativeNetRequestBrowserTest
         });
     )";
 
-    // Serialize |rules_to_add|.
-    base::Value::List rules_to_add_builder;
-    for (const auto& rule : rules_to_add)
-      rules_to_add_builder.Append(rule.ToValue());
-
-    // Serialize |rule_ids|.
-    base::Value::List rule_ids_to_remove_value =
-        VectorToList(rule_ids_to_remove);
-
     const char* function_name = nullptr;
     switch (scope) {
       case RulesetScope::kDynamic:
@@ -764,8 +747,8 @@ class DeclarativeNetRequestBrowserTest
 
     const std::string script =
         content::JsReplace(base::StringPrintf(kScript, function_name),
-                           base::Value(std::move(rules_to_add_builder)),
-                           base::Value(std::move(rule_ids_to_remove_value)));
+                           base::ToValueList(rules_to_add, &TestRule::ToValue),
+                           base::ToValueList(rule_ids_to_remove));
     ASSERT_EQ("success", ExecuteScriptInBackgroundPageAndReturnString(
                              extension_id, script));
   }
@@ -898,12 +881,9 @@ class DeclarativeNetRequestBrowserTest
       });
     )";
 
-    base::Value::List ids_to_remove = VectorToList(ruleset_ids_to_remove);
-    base::Value::List ids_to_add = VectorToList(ruleset_ids_to_add);
-
     const std::string script =
-        content::JsReplace(kScript, base::Value(std::move(ids_to_remove)),
-                           base::Value(std::move(ids_to_add)));
+        content::JsReplace(kScript, base::ToValueList(ruleset_ids_to_remove),
+                           base::ToValueList(ruleset_ids_to_add));
     return ExecuteScriptInBackgroundPageAndReturnString(extension_id, script);
   }
 

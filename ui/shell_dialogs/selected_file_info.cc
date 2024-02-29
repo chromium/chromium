@@ -4,6 +4,7 @@
 
 #include "ui/shell_dialogs/selected_file_info.h"
 
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 
 namespace ui {
@@ -38,19 +39,13 @@ base::FilePath SelectedFileInfo::path() const {
 
 std::vector<SelectedFileInfo> FilePathListToSelectedFileInfoList(
     const std::vector<base::FilePath>& paths) {
-  std::vector<SelectedFileInfo> selected_files;
-  for (const auto& path : paths) {
-    selected_files.emplace_back(path);
-  }
-  return selected_files;
+  return base::ToVector(
+      paths, [](const auto& path) { return SelectedFileInfo(path); });
 }
 
 std::vector<base::FilePath> SelectedFileInfoListToFilePathList(
     const std::vector<SelectedFileInfo>& files) {
-  std::vector<base::FilePath> paths;
-  base::ranges::transform(files, std::back_inserter(paths),
-                          &SelectedFileInfo::path);
-  return paths;
+  return base::ToVector(files, &SelectedFileInfo::path);
 }
 
 }  // namespace ui

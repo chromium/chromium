@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/containers/to_value_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -33,15 +34,6 @@ bool TimeIsBetween(const base::Time& time,
                    const base::Time& start,
                    const base::Time& end) {
   return time >= start && (end.is_null() || time <= end);
-}
-
-// Converts a std::vector<base::Time> to a base::Value::List
-base::Value::List TimesToList(const std::vector<base::Time>& times) {
-  base::Value::List times_list;
-  for (auto time : times) {
-    times_list.Append(base::TimeToValue(time));
-  }
-  return times_list;
 }
 
 // Converts a base::Value::List of Time to std::vector<base::Time>
@@ -90,7 +82,8 @@ base::Value::Dict ToDictValue(const CdmPrefData& pref_data) {
              base::TimeToValue(pref_data.client_token_creation_time()));
   }
   dict.Set(prefs::kHardwareSecureDecryptionDisabledTimes,
-           TimesToList(pref_data.hw_secure_decryption_disable_times()));
+           base::ToValueList(pref_data.hw_secure_decryption_disable_times(),
+                             &base::TimeToValue));
   return dict;
 }
 

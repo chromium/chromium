@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -87,12 +88,7 @@ bool DenyAccessToPath(const FilePath& path,
 }
 
 std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids) {
-  std::vector<Sid> clone;
-  clone.reserve(sids.size());
-  for (const Sid& sid : sids) {
-    clone.push_back(sid.Clone());
-  }
-  return clone;
+  return base::ToVector(sids, &Sid::Clone);
 }
 
 void AppendSidVector(std::vector<Sid>& base_sids,

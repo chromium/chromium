@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,7 +24,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
-#include "base/test/to_vector.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -69,8 +69,8 @@
 namespace web_app {
 namespace {
 
+using base::ToVector;
 using base::test::DictionaryHasValue;
-using base::test::ToVector;
 using base::test::ValueIs;
 using ::testing::_;
 using ::testing::AllOf;

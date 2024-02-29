@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/to_value_list.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -73,11 +74,8 @@ void IgnoreBoolCallback(bool result) {}
 // This function converts std::vector<net::IPEndPoint> to base::Value::List.
 base::Value::List IPEndpointsToBaseList(
     const std::vector<net::IPEndPoint>& resolved_addresses) {
-  base::Value::List resolved_addresses_list;
-  for (const net::IPEndPoint& resolved_address : resolved_addresses) {
-    resolved_addresses_list.Append(resolved_address.ToStringWithoutPort());
-  }
-  return resolved_addresses_list;
+  return base::ToValueList(resolved_addresses,
+                           &net::IPEndPoint::ToStringWithoutPort);
 }
 
 // This function converts std::optional<net::HostResolverEndpointResults> to

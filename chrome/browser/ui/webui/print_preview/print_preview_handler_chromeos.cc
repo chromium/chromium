@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/to_value_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -73,11 +74,9 @@ base::Value::Dict PrintServersConfigMojomToValue(
 
 base::Value::List ConvertPrintersToValues(
     const std::vector<crosapi::mojom::LocalDestinationInfoPtr>& printers) {
-  base::Value::List list;
-  for (const crosapi::mojom::LocalDestinationInfoPtr& p : printers) {
-    list.Append(LocalPrinterHandlerChromeos::PrinterToValue(*p));
-  }
-  return list;
+  return base::ToValueList(printers, [](const auto& printer) {
+    return LocalPrinterHandlerChromeos::PrinterToValue(*printer);
+  });
 }
 
 }  // namespace
