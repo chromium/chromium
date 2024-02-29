@@ -377,8 +377,6 @@ try_.orchestrator_builder(
             "release_try_builder",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
-            "enable_dangling_raw_ptr_feature_flag",
-            "enable_backup_ref_ptr_feature_flag",
         ],
     ),
     compilator = "linux-rel-compilator",
