@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/race_network_request_read_buffer_manager.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -218,7 +219,6 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // has to be called after calling this function.
   std::optional<base::span<const char>> StartReadData(
       MojoResult initial_mojo_result);
-  std::pair<MojoResult, base::span<const char>> BeginReadData();
   void CompleteReadData(uint32_t num_bytes_to_consume);
   void WatchDataUpdate();
 
@@ -240,12 +240,11 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   const network::ResourceRequest request_;
   base::WeakPtr<ServiceWorkerResourceLoader> owner_;
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
-  mojo::SimpleWatcher body_consumer_watcher_;
-  mojo::ScopedDataPipeConsumerHandle body_;
 
   network::mojom::URLResponseHeadPtr head_;
   std::optional<mojo_base::BigBuffer> cached_metadata_;
 
+  std::optional<RaceNetworkRequestReadBufferManager> read_buffer_manager_;
   RaceNetworkRequestWriteBufferManager
       write_buffer_manager_for_race_network_request_;
   RaceNetworkRequestWriteBufferManager write_buffer_manager_for_fetch_handler_;
