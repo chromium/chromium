@@ -15,6 +15,7 @@ import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './shortcuts.html.js';
@@ -101,6 +102,8 @@ export class ShortcutsElement extends PolymerElement {
   }
 
   private onShowShortcutsToggleChange_(e: CustomEvent<boolean>) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.SHOW_SHORTCUTS_TOGGLE_CLICKED);
     this.show_ = e.detail;
     this.setMostVisitedSettings_();
   }

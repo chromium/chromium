@@ -15,6 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './cards.html.js';
 import {ChromeCartProxy} from './chrome_cart_proxy.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {CustomizeChromePageHandlerInterface, ModuleSettings} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
@@ -138,6 +139,8 @@ export class CardsElement extends PolymerElement {
   }
 
   private onShowChange_(e: CustomEvent<boolean>) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.SHOW_CARDS_TOGGLE_CLICKED);
     this.show_ = e.detail;
     this.pageHandler_.setModulesVisible(this.show_);
   }

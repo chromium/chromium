@@ -4,11 +4,15 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {installMock} from './test_support.js';
@@ -17,6 +21,7 @@ suite('ShortcutsTest', () => {
   let customizeShortcutsElement: ShortcutsElement;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
+  let metrics: MetricsTracker;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -27,6 +32,7 @@ suite('ShortcutsTest', () => {
                 mock, new CustomizeChromePageCallbackRouter()));
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    metrics = fakeMetricsPrivate();
   });
 
   async function setInitialSettings(
@@ -157,5 +163,21 @@ suite('ShortcutsTest', () => {
 
     // Still animation after update.
     assertFalse(ironCollapse.noAnimation!);
+  });
+
+  suite('Metrics', () => {
+    test('Clicking show shortcuts toggle sets metric', async () => {
+      customizeShortcutsElement.$.showShortcutsToggle.click();
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(customizeShortcutsElement);
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.SHOW_SHORTCUTS_TOGGLE_CLICKED));
+    });
   });
 });

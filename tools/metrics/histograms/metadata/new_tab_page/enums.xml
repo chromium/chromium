@@ -301,6 +301,8 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Wallpaper search color value changed."/>
   <int value="15" label="Wallpaper search inspiration theme selected."/>
   <int value="16" label="Set classic Chrome theme clicked"/>
+  <int value="17" label="Show shortcuts toggle clicked"/>
+  <int value="18" label="Show cards toggle clicked"/>
 </enum>
 
 <enum name="NTPCustomizedFeatures">
