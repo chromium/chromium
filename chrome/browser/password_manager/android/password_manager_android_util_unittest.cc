@@ -572,6 +572,75 @@ TEST_F(PasswordManagerAndroidUtilTest,
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_KeepMigrationPendingIfSyncEnabled) {
+  // Set up a user who was signed out with saved passwords (thus got into
+  // kOffAndMigrationPending), failed to migrate (thus stayed in
+  // kOffAndMigrationPending) and later enabled sync.
+  // kLoginDataForAccountFileName exists because the account store was created
+  // when the migration got scheduled, even if it was never used.
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+       password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration},
+      {});
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOffAndMigrationPending));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+  SetPasswordSyncEnabledPref(true);
+  base::WriteFile(login_db_directory().Append(
+                      password_manager::kLoginDataForAccountFileName),
+                  "");
+  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForProfileFileName)));
+  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForAccountFileName)));
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  // The browser should keep trying to migrate existing passwords to the *local*
+  // Android backend. The login database files should be untouched.
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOffAndMigrationPending));
+  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForProfileFileName)));
+  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForAccountFileName)));
+  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                      false, 1);
+
+  // Advanced case: roll back too.
+  base::test::ScopedFeatureList disable_local_upm;
+  disable_local_upm.InitWithFeatures(
+      {}, {password_manager::features::
+               kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+           password_manager::features::
+               kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  // kOn syncing users that get rolled back will "undo" the login DB file move,
+  // i.e. they replace the "profile" loginDB with the "account" one. This isn't
+  // always perfect, see comment MaybeDeactivateSplitStoresAndLocalUpm(). The
+  // "account" DB might even be empty and overwrite a non-empty "profile" one.
+  // However: for kOffAndMigrationPending users, the "account" DB is *surely*
+  // empty (password sync is suppressed). So replacing the file can only be
+  // worse. Instead, the DB files should just be untouched. The account one is
+  // empty anyway, so no data is leftover.
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOff));
+  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForProfileFileName)));
+  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForAccountFileName)));
+  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                      false, 2);
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SyncingHealthy) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   base::test::ScopedFeatureList disable_local_upm;

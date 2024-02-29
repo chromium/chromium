@@ -264,8 +264,8 @@ void MaybeActivateSplitStoresAndLocalUpm(
   }
 }
 
-// Must only be called if the state pref is kOn, to set it to kOff if any of
-// these happened:
+// Must only be called if the state pref is kOn or kOffAndMigrationPending, to
+// set it to kOff if any of these happened:
 // - The user downgraded GmsCore and can no longer use the local UPM properly.
 // - The min GmsCore version for the A/B experiment was bumped server-side.
 // - The A/B experiment was stopped due to bugs.
@@ -273,7 +273,7 @@ void MaybeActivateSplitStoresAndLocalUpm(
 void MaybeDeactivateSplitStoresAndLocalUpm(
     PrefService* pref_service,
     const base::FilePath& login_db_directory) {
-  CHECK_EQ(GetSplitStoresAndLocalUpmPrefValue(pref_service), kOn);
+  CHECK_NE(GetSplitStoresAndLocalUpmPrefValue(pref_service), kOff);
 
   // Only deactivate based on the *NoMigration* flag.
   // - If problems arise when rolling out NoMigration (first launch), disable
@@ -332,7 +332,8 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
       login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
   base::FilePath account_db_path =
       login_db_directory.Append(password_manager::kLoginDataForAccountFileName);
-  if (IsPasswordSyncEnabled(pref_service) &&
+  if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
+      IsPasswordSyncEnabled(pref_service) &&
       !base::ReplaceFile(account_db_path, profile_db_path, /*error=*/nullptr)) {
     return;
   }
@@ -359,12 +360,9 @@ bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {
 void SetUsesSplitStoresAndUPMForLocal(
     PrefService* pref_service,
     const base::FilePath& login_db_directory) {
-  if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn) {
+  if (GetSplitStoresAndLocalUpmPrefValue(pref_service) != kOff) {
     MaybeDeactivateSplitStoresAndLocalUpm(pref_service, login_db_directory);
   } else {
-    // Reset the migration pending state if needed.
-    pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                             static_cast<int>(kOff));
     MaybeActivateSplitStoresAndLocalUpm(pref_service, login_db_directory);
   }
 
