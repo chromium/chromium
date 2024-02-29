@@ -256,6 +256,8 @@ static_library("core") {
       "model_execution/session_impl.h",
       "model_execution/settings_enabled_observer.cc",
       "model_execution/settings_enabled_observer.h",
+      "model_execution/substitution.cc",
+      "model_execution/substitution.h",
       output_proto_descriptors_cc_file,
     ]
   }
@@ -473,6 +475,7 @@ source_set("unit_tests") {
       "model_execution/optimization_guide_model_execution_error_unittest.cc",
       "model_execution/redactor_unittest.cc",
       "model_execution/repetition_checker_unittest.cc",
+      "model_execution/substitution_unittest.cc",
       "model_execution/test_on_device_model_component.cc",
       "model_execution/test_on_device_model_component.h",
     ]

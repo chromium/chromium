@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace optimization_guide {
@@ -36,19 +37,8 @@ class OnDeviceModelExecutionConfigInterpreter {
   // Whether there is an on-device model execution config for `feature`.
   bool HasConfigForFeature(proto::ModelExecutionFeature feature) const;
 
-  struct InputStringConstructionResult {
-    // The input string for the feature and request. Will return
-    // std::nullopt if there is not a valid config for the feature or the
-    // request could not be fulfilled for any reason.
-    std::string input_string;
-
-    // If this is not a request for input context, this returns whether the
-    // existing input context should be ignored for the execution.
-    bool should_ignore_input_context = false;
-  };
-
   // Constructs the input string for `feature` and `request`.
-  std::optional<InputStringConstructionResult> ConstructInputString(
+  std::optional<SubstitutionResult> ConstructInputString(
       proto::ModelExecutionFeature feature,
       const google::protobuf::MessageLite& request,
       bool want_input_context) const;
