@@ -658,6 +658,12 @@ inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
 inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
     "settings.a11y.face_gaze.cursor_use_acceleration";
 
+// A dictionary pref which maps facial gestures to action macros. Facial
+// gestures are strings like 'browDownLeft', and actions are enums from
+// macro_names.
+inline constexpr char kAccessibilityFaceGazeGesturesToMacros[] =
+    "settings.a11y.face_gaze.gestures_to_macros";
+
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 inline constexpr char kShouldAlwaysShowAccessibilityMenu[] =

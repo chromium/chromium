@@ -498,7 +498,7 @@ AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
 
 // The BrowDown gesture is special because it is the combination of two
 // separate facial gestures. This test ensures that the associated action is
-// only performed when both gestures are detected.
+// performed if either of the gestures is detected.
 AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
   const gestureToMacroName =
       new Map().set(FacialGesture.BROWS_DOWN, MacroName.RESET_CURSOR);
@@ -512,7 +512,7 @@ AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
 
   let result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_DOWN_LEFT, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_DOWN_LEFT, 0.3)
           .addGestureWithConfidence(
               MediapipeFacialGesture.BROW_DOWN_RIGHT, 0.3);
   this.processFaceLandmarkerResult(
@@ -521,12 +521,27 @@ AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
 
   result =
       new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_DOWN_LEFT, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.BROW_DOWN_RIGHT, 0.3);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  assertEquals(600, this.mockAccessibilityPrivate.getLatestCursorPosition().x);
+  assertEquals(400, this.mockAccessibilityPrivate.getLatestCursorPosition().y);
+  this.mockAccessibilityPrivate.clearCursorPosition();
+  this.clearGestureLastRecognizedTime();
+
+  result =
+      new MockFaceLandmarkerResult()
           .addGestureWithConfidence(MediapipeFacialGesture.BROW_DOWN_LEFT, 0.3)
           .addGestureWithConfidence(
               MediapipeFacialGesture.BROW_DOWN_RIGHT, 0.9);
   this.processFaceLandmarkerResult(
       result, /*triggerMouseControllerInterval=*/ true);
-  assertEquals(null, this.mockAccessibilityPrivate.getLatestCursorPosition());
+  assertEquals(600, this.mockAccessibilityPrivate.getLatestCursorPosition().x);
+  assertEquals(400, this.mockAccessibilityPrivate.getLatestCursorPosition().y);
+  this.mockAccessibilityPrivate.clearCursorPosition();
+  this.clearGestureLastRecognizedTime();
 
   result =
       new MockFaceLandmarkerResult()

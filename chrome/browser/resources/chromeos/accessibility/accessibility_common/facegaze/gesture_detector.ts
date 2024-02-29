@@ -8,12 +8,18 @@ import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 /**
  * The facial gestures that are supported by FaceGaze. New values should also
  * be added to FacialGesturesToMediapipeGestures.
+ * Note that these correspond to values in
+ * facegaze_facial_expression_subpage.ts, and if these values get changed, those
+ * should too.
  */
 export enum FacialGesture {
   BROWS_DOWN = 'browsDown',
   BROW_INNER_UP = 'browInnerUp',
+  EYES_LOOK_DOWN = 'eyesLookDown',
+  EYES_LOOK_UP = 'eyesLookUp',
   JAW_OPEN = 'jawOpen',
   MOUTH_LEFT = 'mouthLeft',
+  MOUTH_PUCKER = 'mouthPucker',
   MOUTH_RIGHT = 'mouthRight',
 }
 
@@ -22,8 +28,13 @@ export enum MediapipeFacialGesture {
   BROW_DOWN_LEFT = 'browDownLeft',
   BROW_DOWN_RIGHT = 'browDownRight',
   BROW_INNER_UP = 'browInnerUp',
+  EYE_LOOK_DOWN_LEFT = 'eyeLookDownLeft',
+  EYE_LOOK_DOWN_RIGHT = 'eyeLookDownRight',
+  EYE_LOOK_UP_LEFT = 'eyeLookUpLeft',
+  EYE_LOOK_UP_RIGHT = 'eyeLookUpRight',
   JAW_OPEN = 'jawOpen',
   MOUTH_LEFT = 'mouthLeft',
+  MOUTH_PUCKER = 'mouthPucker',
   MOUTH_RIGHT = 'mouthRight',
 }
 
@@ -43,6 +54,21 @@ export const FacialGesturesToMediapipeGestures = new Map([
   [FacialGesture.JAW_OPEN, [MediapipeFacialGesture.JAW_OPEN]],
   [FacialGesture.MOUTH_LEFT, [MediapipeFacialGesture.MOUTH_LEFT]],
   [FacialGesture.MOUTH_RIGHT, [MediapipeFacialGesture.MOUTH_RIGHT]],
+  [FacialGesture.MOUTH_PUCKER, [MediapipeFacialGesture.MOUTH_PUCKER]],
+  [
+    FacialGesture.EYES_LOOK_DOWN,
+    [
+      MediapipeFacialGesture.EYE_LOOK_DOWN_LEFT,
+      MediapipeFacialGesture.EYE_LOOK_DOWN_RIGHT,
+    ],
+  ],
+  [
+    FacialGesture.EYES_LOOK_UP,
+    [
+      MediapipeFacialGesture.EYE_LOOK_UP_LEFT,
+      MediapipeFacialGesture.EYE_LOOK_UP_RIGHT,
+    ],
+  ],
 ]);
 
 export class GestureDetector {
@@ -85,16 +111,17 @@ export class GestureDetector {
       }
 
       // Score will be the minimum from among the compound gestures.
-      let score = 100;
+      let score = -1;
       let hasCompoundGesture = true;
       for (const mediapipeGesture of mediapipeGestures) {
         if (!recognizedGestures.has(mediapipeGesture)) {
           hasCompoundGesture = false;
           break;
         }
-        // The score of a compound gesture is the minimum of its component
-        // parts.
-        score = Math.min(score, recognizedGestures.get(mediapipeGesture));
+        // The score of a compound gesture is the maximum of its component
+        // parts. This is max instead of min in case people have uneven
+        // facial strength or dexterity.
+        score = Math.max(score, recognizedGestures.get(mediapipeGesture));
       }
       if (!hasCompoundGesture) {
         continue;

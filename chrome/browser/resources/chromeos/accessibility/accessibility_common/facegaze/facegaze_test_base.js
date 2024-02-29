@@ -152,6 +152,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     assertNotNullNorUndefined(accessibilityCommon);
     assertNotNullNorUndefined(FaceGaze);
     assertNotNullNorUndefined(FacialGesture);
+    assertNotNullNorUndefined(GestureHandler);
     assertNotNullNorUndefined(MediapipeFacialGesture);
     assertNotNullNorUndefined(FacialGesturesToMediapipeGestures);
     assertNotNullNorUndefined(MouseController);
@@ -200,8 +201,14 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.gestureToMacroName) {
-      faceGaze.gestureHandler_.gestureToMacroName_ =
-          new Map(config.gestureToMacroName);
+      const gestureToMacroName = {};
+      for (const [gesture, macroName] of config.gestureToMacroName) {
+        // Map from enums to the string version of the macro name.
+        gestureToMacroName[gesture] =
+            Object.keys(MacroName).find(key => MacroName[key] === macroName);
+      }
+      await this.setPref(
+          GestureHandler.GESTURE_TO_MACRO_PREF, gestureToMacroName);
     }
 
     if (config.gestureToConfidence) {
@@ -251,5 +258,10 @@ FaceGazeTestBase = class extends E2ETestBase {
       // Manually trigger the mouse interval one time.
       this.triggerMouseControllerInterval();
     }
+  }
+
+  /** Clears the timestamps at which gestures were last recognized. */
+  clearGestureLastRecognizedTime() {
+    this.getFaceGaze().gestureHandler_.gestureLastRecognized_.clear();
   }
 };

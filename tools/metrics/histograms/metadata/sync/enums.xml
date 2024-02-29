@@ -525,13 +525,14 @@ chromium-metrics-reviews@google.com.
       label="kProfileContentSettingsPartitionedExceptionsWindowPlacement"/>
   <int value="100261" label="kStandaloneWindowMigrationNudgeShown"/>
   <int value="100262" label="TabDiscardingExceptionsWithTime"/>
-  <int value="100263" label="kAccessibilityFaceGazeCursorSpeedUp"/>
-  <int value="100264" label="kAccessibilityFaceGazeCursorSpeedDown"/>
-  <int value="100265" label="kAccessibilityFaceGazeCursorSpeedLeft"/>
-  <int value="100266" label="kAccessibilityFaceGazeCursorSpeedRight"/>
-  <int value="100267" label="kAccessibilityFaceGazeCursorSmoothing"/>
-  <int value="100268" label="kAccessibilityFaceGazeCursorUseAcceleration"/>
+  <int value="100263" label="AccessibilityFaceGazeCursorSpeedUp"/>
+  <int value="100264" label="AccessibilityFaceGazeCursorSpeedDown"/>
+  <int value="100265" label="AccessibilityFaceGazeCursorSpeedLeft"/>
+  <int value="100266" label="AccessibilityFaceGazeCursorSpeedRight"/>
+  <int value="100267" label="AccessibilityFaceGazeCursorSmoothing"/>
+  <int value="100268" label="AccessibilityFaceGazeCursorUseAcceleration"/>
   <int value="100269" label="AntiFingerprintingEnabled"/>
+  <int value="100270" label="AccessibilityFaceGazeGesturesToMacros"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>

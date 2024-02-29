@@ -425,7 +425,11 @@ E2ETestBase = class extends AccessibilityTestBase {
         // Wait for changes to fully propagate.
         const result = await (this.getPref(name));
         assertEquals(result.key, name);
-        assertEquals(result.value, value);
+        if (typeof (value) === 'object') {
+          assertObjectEquals(value, result.value);
+        } else {
+          assertEquals(value, result.value);
+        }
         resolve();
       });
     });

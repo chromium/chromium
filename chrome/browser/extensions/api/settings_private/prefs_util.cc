@@ -719,6 +719,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorUseAcceleration] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeGesturesToMacros] =
+      settings_api::PrefType::kDictionary;
 
   // Text to Speech.
   (*s_allowlist)[::prefs::kTextToSpeechLangToVoiceName] =

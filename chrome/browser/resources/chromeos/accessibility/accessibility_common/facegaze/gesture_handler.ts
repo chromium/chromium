@@ -6,11 +6,14 @@ import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {MouseClickMacro} from '/common/action_fulfillment/macros/mouse_click_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {FacialGesture, GestureDetector} from './gesture_detector.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
+
+type PrefObject = chrome.settingsPrivate.PrefObject;
 
 /**
  * Handles converting facial gestures to Macros.
@@ -20,29 +23,42 @@ export class GestureHandler {
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
   private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
+  private prefsListener_: (prefs: any) => void;
 
   constructor(mouseController: MouseController) {
     this.mouseController_ = mouseController;
 
-    // Initialize default mapping of facial gestures to actions.
-    // TODO(b/309121742): Set this using the user's preferences.
-    this.gestureToMacroName_
-        .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
-        .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_RIGHT)
-        .set(FacialGesture.BROWS_DOWN, MacroName.RESET_CURSOR);
+    this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
+    chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
+    chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
+  }
 
-    // Initialize default mapping of facial gestures to confidence
-    // threshold.
-    // TODO(b/309121742): Set this using the user's preferences.
-    this.gestureToConfidence_
-        .set(
-            FacialGesture.JAW_OPEN, GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD)
-        .set(
-            FacialGesture.BROW_INNER_UP,
-            GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD)
-        .set(
-            FacialGesture.BROWS_DOWN,
-            GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
+  private updateFromPrefs_(prefs: PrefObject[]): void {
+    prefs.forEach(pref => {
+      switch (pref.key) {
+        case GestureHandler.GESTURE_TO_MACRO_PREF:
+          if (pref.value) {
+            // Update the whole map from this preference.
+            this.gestureToMacroName_.clear();
+            for (const [gesture, assignedAction] of Object.entries(
+                     pref.value)) {
+              if (assignedAction === '') {
+                continue;
+              }
+              this.gestureToMacroName_.set(
+                  gesture as FacialGesture,
+                  MacroName[assignedAction as keyof typeof MacroName]);
+              // TODO(b/309121742): Set this using the user's preferences.
+              this.gestureToConfidence_.set(
+                  gesture as FacialGesture,
+                  GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
+            }
+          }
+          break;
+        default:
+          return;
+      }
+    });
   }
 
   detectMacros(result: FaceLandmarkerResult): Macro[] {
@@ -103,4 +119,12 @@ export namespace GestureHandler {
   /** Minimum repeat rate of a gesture. */
   // TODO(b:322511275): Move to a pref in settings.
   export const DEFAULT_REPEAT_DELAY_MS = 500;
+
+  /**
+   * Pref name of preference mapping facegaze gestures to macro action names.
+   */
+  export const GESTURE_TO_MACRO_PREF =
+      'settings.a11y.face_gaze.gestures_to_macros';
 }
+
+TestImportManager.exportForTesting(GestureHandler);
