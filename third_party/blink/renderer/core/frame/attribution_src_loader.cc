@@ -21,8 +21,8 @@
 #include "base/unguessable_token.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registrar.h"
+#include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
-#include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/source_type.mojom-shared.h"
@@ -964,18 +964,17 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 
   headers.MaybeLogAllTriggerHeadersIgnored(loader_->local_frame_->DomWindow());
 
-  auto registration_info = attribution_reporting::RegistrationInfo::Get(
+  auto registrar_info = attribution_reporting::RegistrarInfo::Get(
       !headers.web_source.IsNull(), !headers.os_source.IsNull(),
       /*is_source=*/true, preferred_platform, support_);
 
-  headers.LogIssues(loader_->local_frame_->DomWindow(),
-                    registration_info.issues);
+  headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues);
 
-  if (!registration_info.registrar.has_value()) {
+  if (!registrar_info.registrar.has_value()) {
     return;
   }
 
-  switch (registration_info.registrar.value()) {
+  switch (registrar_info.registrar.value()) {
     case attribution_reporting::Registrar::kWeb: {
       CHECK(!headers.web_source.IsNull());
       base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterSource",
@@ -1033,18 +1032,17 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
 
   headers.MaybeLogAllSourceHeadersIgnored(loader_->local_frame_->DomWindow());
 
-  auto registration_info = attribution_reporting::RegistrationInfo::Get(
+  auto registrar_info = attribution_reporting::RegistrarInfo::Get(
       !headers.web_trigger.IsNull(), !headers.os_trigger.IsNull(),
       /*is_source=*/false, preferred_platform, support_);
 
-  headers.LogIssues(loader_->local_frame_->DomWindow(),
-                    registration_info.issues);
+  headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues);
 
-  if (!registration_info.registrar.has_value()) {
+  if (!registrar_info.registrar.has_value()) {
     return;
   }
 
-  switch (registration_info.registrar.value()) {
+  switch (registrar_info.registrar.value()) {
     case attribution_reporting::Registrar::kWeb: {
       CHECK(!headers.web_trigger.IsNull());
       // Max header size is 256 KB, use 1M count to encapsulate.

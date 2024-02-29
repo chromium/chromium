@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/attribution_reporting/registration_info.h"
+#include "components/attribution_reporting/registrar_info.h"
 
 #include <optional>
 
@@ -17,7 +17,7 @@ namespace attribution_reporting {
 namespace {
 
 using SetRegistrarOrIssueFunc = base::FunctionRef<
-    void(bool, network::mojom::AttributionSupport, RegistrationInfo&)>;
+    void(bool, network::mojom::AttributionSupport, RegistrarInfo&)>;
 
 void SetRegistrarOrIssue(
     bool is_source,
@@ -26,7 +26,7 @@ void SetRegistrarOrIssue(
     IssueType source_issue,
     IssueType trigger_issue,
     base::FunctionRef<bool(network::mojom::AttributionSupport)> check_func,
-    RegistrationInfo& info) {
+    RegistrarInfo& info) {
   if (check_func(support)) {
     info.registrar = registrar;
   } else {
@@ -36,7 +36,7 @@ void SetRegistrarOrIssue(
 
 void SetWebRegistrarOrIssue(bool is_source,
                             network::mojom::AttributionSupport support,
-                            RegistrationInfo& info) {
+                            RegistrarInfo& info) {
   SetRegistrarOrIssue(is_source, support, Registrar::kWeb,
                       IssueType::kSourceIgnored, IssueType::kTriggerIgnored,
                       &network::HasAttributionWebSupport, info);
@@ -44,7 +44,7 @@ void SetWebRegistrarOrIssue(bool is_source,
 
 void SetOsRegistrarOrIssue(bool is_source,
                            network::mojom::AttributionSupport support,
-                           RegistrationInfo& info) {
+                           RegistrarInfo& info) {
   SetRegistrarOrIssue(is_source, support, Registrar::kOs,
                       IssueType::kOsSourceIgnored, IssueType::kOsTriggerIgnored,
                       &network::HasAttributionOsSupport, info);
@@ -58,7 +58,7 @@ void HandlePreferredPlatform(bool is_source,
                              SetRegistrarOrIssueFunc preferred_func,
                              bool has_secondary_header,
                              SetRegistrarOrIssueFunc secondary_func,
-                             RegistrationInfo& info) {
+                             RegistrarInfo& info) {
   if (!has_preferred_header) {
     info.issues.Put(is_source ? source_issue : trigger_issue);
     return;
@@ -73,31 +73,30 @@ void HandlePreferredPlatform(bool is_source,
 
 }  // namespace
 
-RegistrationInfo::RegistrationInfo() = default;
+RegistrarInfo::RegistrarInfo() = default;
 
-RegistrationInfo::~RegistrationInfo() = default;
+RegistrarInfo::~RegistrarInfo() = default;
 
-RegistrationInfo::RegistrationInfo(const RegistrationInfo&) = default;
+RegistrarInfo::RegistrarInfo(const RegistrarInfo&) = default;
 
-RegistrationInfo& RegistrationInfo::operator=(const RegistrationInfo&) =
-    default;
+RegistrarInfo& RegistrarInfo::operator=(const RegistrarInfo&) = default;
 
-RegistrationInfo::RegistrationInfo(RegistrationInfo&&) = default;
+RegistrarInfo::RegistrarInfo(RegistrarInfo&&) = default;
 
-RegistrationInfo& RegistrationInfo::operator=(RegistrationInfo&&) = default;
+RegistrarInfo& RegistrarInfo::operator=(RegistrarInfo&&) = default;
 
 // static
-RegistrationInfo RegistrationInfo::Get(
+RegistrarInfo RegistrarInfo::Get(
     bool has_web_header,
     bool has_os_header,
     bool is_source,
     std::optional<Registrar> preferred_platform,
     network::mojom::AttributionSupport support) {
   if (!has_web_header && !has_os_header) {
-    return RegistrationInfo();
+    return RegistrarInfo();
   }
 
-  RegistrationInfo info;
+  RegistrarInfo info;
 
   if (!preferred_platform.has_value()) {
     if (has_web_header && has_os_header) {

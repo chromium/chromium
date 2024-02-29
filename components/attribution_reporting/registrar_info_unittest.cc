@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/attribution_reporting/registration_info.h"
+#include "components/attribution_reporting/registrar_info.h"
 
 #include <optional>
 
@@ -19,14 +19,14 @@ using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
 
-TEST(RegistrationInfoTest, GetForSource) {
+TEST(RegistrarInfoTest, GetForSource) {
   const struct {
     const char* description;
     bool has_web_header;
     bool has_os_header;
     std::optional<Registrar> preferred_platform;
     AttributionSupport support;
-    ::testing::Matcher<RegistrationInfo> matches;
+    ::testing::Matcher<RegistrarInfo> matches;
   } kTestCases[] = {
       {
           "no-headers",
@@ -34,8 +34,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           false,
           std::nullopt,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-unspecified-both",
@@ -43,8 +43,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           std::nullopt,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kWebAndOsHeaders}))),
       },
       {
@@ -53,8 +53,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           false,
           std::nullopt,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kWeb),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kWeb),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-unspecified-web-none",
@@ -62,8 +62,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           false,
           std::nullopt,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kSourceIgnored}))),
       },
       {
@@ -72,8 +72,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           std::nullopt,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kOs),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kOs),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-unspecified-os-none",
@@ -81,8 +81,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           std::nullopt,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsSourceIgnored}))),
       },
       {
@@ -91,8 +91,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kOs,
           AttributionSupport::kWebAndOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kOs),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kOs),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-os-both-web",
@@ -100,8 +100,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kOs,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kWeb),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kWeb),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsSourceIgnored}))),
       },
       {
@@ -110,8 +110,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kOs,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsSourceIgnored,
                                   IssueType::kSourceIgnored}))),
       },
@@ -121,8 +121,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kOs,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsSourceIgnored}))),
       },
       {
@@ -131,8 +131,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           false,
           Registrar::kOs,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kNoRegisterOsSourceHeader}))),
       },
       {
@@ -141,8 +141,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kWeb,
           AttributionSupport::kWebAndOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kWeb),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kWeb),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-web-both-os",
@@ -150,8 +150,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kWeb,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kOs),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kOs),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kSourceIgnored}))),
       },
       {
@@ -160,8 +160,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kWeb,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kSourceIgnored,
                                   IssueType::kOsSourceIgnored}))),
       },
@@ -171,8 +171,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           false,
           Registrar::kWeb,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kSourceIgnored}))),
       },
       {
@@ -181,8 +181,8 @@ TEST(RegistrationInfoTest, GetForSource) {
           true,
           Registrar::kWeb,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kNoRegisterSourceHeader}))),
       },
   };
@@ -190,21 +190,21 @@ TEST(RegistrationInfoTest, GetForSource) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
     EXPECT_THAT(
-        RegistrationInfo::Get(test_case.has_web_header, test_case.has_os_header,
+        RegistrarInfo::Get(test_case.has_web_header, test_case.has_os_header,
                               /*is_source=*/true, test_case.preferred_platform,
                               test_case.support),
         test_case.matches);
   }
 }
 
-TEST(RegistrationInfoTest, GetForTrigger) {
+TEST(RegistrarInfoTest, GetForTrigger) {
   const struct {
     const char* description;
     bool has_web_header;
     bool has_os_header;
     std::optional<Registrar> preferred_platform;
     AttributionSupport support;
-    ::testing::Matcher<RegistrationInfo> matches;
+    ::testing::Matcher<RegistrarInfo> matches;
   } kTestCases[] = {
       {
           "no-headers",
@@ -212,8 +212,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           false,
           std::nullopt,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-unspecified-both",
@@ -221,8 +221,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           std::nullopt,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kWebAndOsHeaders}))),
       },
       {
@@ -231,8 +231,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           false,
           std::nullopt,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kWeb),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kWeb),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-unspecified-web-none",
@@ -240,8 +240,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           false,
           std::nullopt,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kTriggerIgnored}))),
       },
       {
@@ -250,8 +250,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           std::nullopt,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kOs),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kOs),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-unspecified-os-none",
@@ -259,8 +259,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           std::nullopt,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsTriggerIgnored}))),
       },
       {
@@ -269,8 +269,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kOs,
           AttributionSupport::kWebAndOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kOs),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kOs),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-os-both-web",
@@ -278,8 +278,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kOs,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kWeb),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kWeb),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsTriggerIgnored}))),
       },
       {
@@ -288,8 +288,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kOs,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsTriggerIgnored,
                                   IssueType::kTriggerIgnored}))),
       },
@@ -299,8 +299,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kOs,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kOsTriggerIgnored}))),
       },
       {
@@ -309,8 +309,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           false,
           Registrar::kOs,
           AttributionSupport::kWeb,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kNoRegisterOsTriggerHeader}))),
       },
       {
@@ -319,8 +319,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kWeb,
           AttributionSupport::kWebAndOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kWeb),
-                Field(&RegistrationInfo::issues, IssueTypes())),
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kWeb),
+                Field(&RegistrarInfo::issues, IssueTypes())),
       },
       {
           "preferred-web-both-os",
@@ -328,8 +328,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kWeb,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Registrar::kOs),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Registrar::kOs),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kTriggerIgnored}))),
       },
       {
@@ -338,8 +338,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kWeb,
           AttributionSupport::kNone,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kTriggerIgnored,
                                   IssueType::kOsTriggerIgnored}))),
       },
@@ -349,8 +349,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           false,
           Registrar::kWeb,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kTriggerIgnored}))),
       },
       {
@@ -359,8 +359,8 @@ TEST(RegistrationInfoTest, GetForTrigger) {
           true,
           Registrar::kWeb,
           AttributionSupport::kOs,
-          AllOf(Field(&RegistrationInfo::registrar, Eq(std::nullopt)),
-                Field(&RegistrationInfo::issues,
+          AllOf(Field(&RegistrarInfo::registrar, Eq(std::nullopt)),
+                Field(&RegistrarInfo::issues,
                       IssueTypes({IssueType::kNoRegisterTriggerHeader}))),
       },
   };
@@ -368,7 +368,7 @@ TEST(RegistrationInfoTest, GetForTrigger) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
     EXPECT_THAT(
-        RegistrationInfo::Get(test_case.has_web_header, test_case.has_os_header,
+        RegistrarInfo::Get(test_case.has_web_header, test_case.has_os_header,
                               /*is_source=*/false, test_case.preferred_platform,
                               test_case.support),
         test_case.matches);

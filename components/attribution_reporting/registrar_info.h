@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ATTRIBUTION_REPORTING_REGISTRATION_INFO_H_
-#define COMPONENTS_ATTRIBUTION_REPORTING_REGISTRATION_INFO_H_
+#ifndef COMPONENTS_ATTRIBUTION_REPORTING_REGISTRAR_INFO_H_
+#define COMPONENTS_ATTRIBUTION_REPORTING_REGISTRAR_INFO_H_
 
 #include <optional>
 #include <vector>
@@ -35,21 +35,21 @@ enum class IssueType {
 using IssueTypes =
     base::EnumSet<IssueType, IssueType::kMinValue, IssueType::kMaxValue>;
 
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
-  static RegistrationInfo Get(bool has_web_header,
-                              bool has_os_header,
-                              bool is_source,
-                              std::optional<Registrar> preferred_platform,
-                              network::mojom::AttributionSupport);
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrarInfo {
+  static RegistrarInfo Get(bool has_web_header,
+                           bool has_os_header,
+                           bool is_source,
+                           std::optional<Registrar> preferred_platform,
+                           network::mojom::AttributionSupport);
 
-  RegistrationInfo();
-  ~RegistrationInfo();
+  RegistrarInfo();
+  ~RegistrarInfo();
 
-  RegistrationInfo(const RegistrationInfo&);
-  RegistrationInfo& operator=(const RegistrationInfo&);
+  RegistrarInfo(const RegistrarInfo&);
+  RegistrarInfo& operator=(const RegistrarInfo&);
 
-  RegistrationInfo(RegistrationInfo&&);
-  RegistrationInfo& operator=(RegistrationInfo&&);
+  RegistrarInfo(RegistrarInfo&&);
+  RegistrarInfo& operator=(RegistrarInfo&&);
 
   std::optional<Registrar> registrar;
   IssueTypes issues;
@@ -57,4 +57,4 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
 
 }  // namespace attribution_reporting
 
-#endif  // COMPONENTS_ATTRIBUTION_REPORTING_REGISTRATION_INFO_H_
+#endif  // COMPONENTS_ATTRIBUTION_REPORTING_REGISTRAR_INFO_H_

@@ -36,8 +36,8 @@
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registrar.h"
+#include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
-#include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -1187,7 +1187,7 @@ void AttributionDataHostManagerImpl::HandlePreferredPlatform(
     std::optional<Registrar> preferred_platform) {
   DCHECK(it != registrations_.end());
 
-  auto registration_info = attribution_reporting::RegistrationInfo::Get(
+  auto registrar_info = attribution_reporting::RegistrarInfo::Get(
       pending_registration_data.headers.web_header.has_value(),
       pending_registration_data.headers.os_header.has_value(),
       pending_registration_data.headers.type == RegistrationType::kSource,
@@ -1197,14 +1197,14 @@ void AttributionDataHostManagerImpl::HandlePreferredPlatform(
               RenderFrameHost::FromID(it->render_frame_id()))));
 
   pending_registration_data.headers.LogIssues(
-      *it, pending_registration_data.reporting_url, registration_info.issues);
+      *it, pending_registration_data.reporting_url, registrar_info.issues);
 
-  if (!registration_info.registrar.has_value()) {
+  if (!registrar_info.registrar.has_value()) {
     return;
   }
 
   std::optional<std::string>* header;
-  switch (registration_info.registrar.value()) {
+  switch (registrar_info.registrar.value()) {
     case Registrar::kWeb:
       header = &pending_registration_data.headers.web_header;
       break;
@@ -1221,7 +1221,7 @@ void AttributionDataHostManagerImpl::HandlePreferredPlatform(
                           std::move(pending_registration_data.reporting_origin),
                           std::move(pending_registration_data.reporting_url),
                           std::move(pending_registration_data.verifications)),
-      registration_info.registrar.value());
+      registrar_info.registrar.value());
 }
 
 void AttributionDataHostManagerImpl::HandleNextWebDecode(
