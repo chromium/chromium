@@ -10,6 +10,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -27,6 +29,8 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+using set_up_list_prefs::SetUpListItemState;
 
 // Tests the PushNotificationsOptInMediator functionality.
 class NotificationsOptInMediatorTest : public PlatformTest {
@@ -125,4 +129,15 @@ TEST_F(NotificationsOptInMediatorTest,
   OCMExpect([consumer_ setOptInItem:kTips enabled:NO]);
   [mediator_ disableUserSelectionForItem:kTips];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that tapping "No Thanks" marks the Set Up List item as complete.
+TEST_F(NotificationsOptInMediatorTest, TestNoThanksTapped) {
+  mediator_ = [[NotificationsOptInMediator alloc]
+      initWithAuthenticationService:auth_service_];
+  [mediator_ didTapSecondaryActionButton];
+  SetUpListItemState item_state = set_up_list_prefs::GetItemState(
+      local_state_.get(), SetUpListItemType::kNotifications);
+  EXPECT_TRUE(item_state == SetUpListItemState::kCompleteInList ||
+              item_state == SetUpListItemState::kCompleteNotInList);
 }

@@ -8,6 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -71,6 +73,9 @@
 
 - (void)didTapSecondaryActionButton {
   // TODO(crbug.com/41492138): record metrics.
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  set_up_list_prefs::MarkItemComplete(localState,
+                                      SetUpListItemType::kNotifications);
   [self.presenter dismiss];
 }
 
