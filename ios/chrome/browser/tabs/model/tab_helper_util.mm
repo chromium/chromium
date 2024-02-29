@@ -140,7 +140,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     web::JavaScriptFindInPageManager::CreateForWebState(web_state);
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
-  ITunesUrlsHandlerTabHelper::CreateForWebState(web_state);
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(web_state);
+  }
   HistoryTabHelper::CreateForWebState(web_state);
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);

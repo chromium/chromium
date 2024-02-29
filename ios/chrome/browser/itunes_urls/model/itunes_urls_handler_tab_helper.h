@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_ITUNES_URLS_MODEL_ITUNES_URLS_HANDLER_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_ITUNES_URLS_MODEL_ITUNES_URLS_HANDLER_TAB_HELPER_H_
 
+#import "ios/web/public/lazy_web_state_user_data.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/web_state_user_data.h"
 
 @protocol WebContentCommands;
 
@@ -18,7 +18,7 @@
 // content for itunes.apple.com pages, see http://crbug.com/623016.
 class ITunesUrlsHandlerTabHelper
     : public web::WebStatePolicyDecider,
-      public web::WebStateUserData<ITunesUrlsHandlerTabHelper> {
+      public web::LazyWebStateUserData<ITunesUrlsHandlerTabHelper> {
  public:
   ITunesUrlsHandlerTabHelper(const ITunesUrlsHandlerTabHelper&) = delete;
   ITunesUrlsHandlerTabHelper& operator=(const ITunesUrlsHandlerTabHelper&) =
@@ -40,7 +40,7 @@ class ITunesUrlsHandlerTabHelper
   void SetWebContentsHandler(id<WebContentCommands> handler);
 
  private:
-  friend class web::WebStateUserData<ITunesUrlsHandlerTabHelper>;
+  friend class web::LazyWebStateUserData<ITunesUrlsHandlerTabHelper>;
 
   // Opens the StoreKit for the given iTunes app `url`.
   void HandleITunesUrl(const GURL& url);

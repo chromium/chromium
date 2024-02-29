@@ -22,8 +22,7 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
         chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {
     web_state_.SetBrowserState(
         chrome_browser_state_->GetOriginalChromeBrowserState());
-    ITunesUrlsHandlerTabHelper::CreateForWebState(&web_state_);
-    ITunesUrlsHandlerTabHelper::FromWebState(&web_state_)
+    ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(&web_state_)
         ->SetWebContentsHandler(fake_handler_);
   }
 
