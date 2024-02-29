@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -162,13 +161,14 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
 
 #if BUILDFLAG(IS_MAC)
 using IntentPickerInteractiveUiTest = DefaultLinkCapturingInteractiveUiTest;
-// Test that if there is a Universal Link for a site, it shows the picker
-// with the app icon.
+// Test that if there is a Universal Link for a site, it shows the picker icon
+// and lists the app as an option in the bubble.
 IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
-                       ShowUniversalLinkAppInIntentChip) {
+                       ShowUniversalLinkInIntentPicker) {
   const GURL url1(embedded_test_server()->GetURL("/title1.html"));
   const GURL url2(embedded_test_server()->GetURL("/title2.html"));
 
+  const char* kFinderAppName = "Finder";
   const char* kFinderAppPath = "/System/Library/CoreServices/Finder.app";
 
   // Start with a page with no corresponding native app.
@@ -184,16 +184,24 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
   apps::OverrideMacAppForUrlForTesting(true, kFinderAppPath);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
-  // Verify app icon shows up in the intent picker.
-  IntentChipButton* intent_picker_icon =
-      web_app::GetIntentPickerIcon(browser());
-  ASSERT_NE(intent_picker_icon, nullptr);
+  // Verify intent picker chip shows up, click on it, and wait for the bubble to
+  // be populated
+  EXPECT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
+  EXPECT_TRUE(web_app::intent_picker_bubble()->GetVisible());
 
-  ui::ImageModel app_icon = intent_picker_icon->GetAppIconForTesting();
+  EXPECT_EQ(1U, GetItemContainerSize(web_app::intent_picker_bubble()));
+  auto& app_info =
+      web_app::intent_picker_bubble()->app_info_for_testing();  // IN-TEST
+  ASSERT_EQ(1U, app_info.size());
+  EXPECT_EQ(kFinderAppPath, app_info[0].launch_name);
+  EXPECT_EQ(kFinderAppName, app_info[0].display_name);
 
-  SkColor final_color = app_icon.GetImage().AsBitmap().getColor(8, 8);
-  EXPECT_TRUE(
-      web_app::AreColorsEqual(SK_ColorRED, final_color, /*threshold=*/50));
+  // Navigate to the first page while simulating no native app.
+  apps::OverrideMacAppForUrlForTesting(true, "");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  // Verify that the icon was hidden.
+  ASSERT_FALSE(web_app::GetIntentPickerIcon(browser())->GetVisible());
 }
 #endif  // BUILDFLAG(IS_MAC)
 
