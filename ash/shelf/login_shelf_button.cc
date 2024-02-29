@@ -31,7 +31,8 @@ namespace ash {
 namespace {
 
 // The highlight radius of the button.
-constexpr int kButtonHighlightRadiusDp = 16;
+// The large pill buttons height is 36 and the radius should be half of that.
+constexpr int kButtonHighlightRadiusDp = 18;
 
 }  // namespace
 
