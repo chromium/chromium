@@ -325,7 +325,14 @@ void QuickStartController::OnStatusChanged(
       // implemented.
       return;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
-      CHECK(controller_state_ == ControllerState::CONNECTED);
+      if (controller_state_ != ControllerState::CONNECTED) {
+        QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
+                         "controller_state_: "
+                      << controller_state_;
+        AbortFlow(AbortFlowReason::ERROR);
+        return;
+      }
+
       if (absl::holds_alternative<
               TargetDeviceBootstrapController::GaiaCredentials>(
               status.payload)) {
