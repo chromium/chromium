@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HEADER_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_DIALOG_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_KEYBOARD_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_MAIN_CONTENT_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_TAB_GROUP_SHARED;
@@ -28,6 +29,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_INVITE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOULD_SHOW_SHARE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TAB_GROUP_COLOR_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TINT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_CURSOR_VISIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER;
@@ -103,7 +105,8 @@ class TabGridDialogViewBinder {
         } else if (bindingToken == null || oldBindingToken == null) {
             return;
         } else if (!bindingToken.equals(oldBindingToken)) {
-            assert false : "Attempting to update a property of TabGridDialog without binding token.";
+            assert false
+                    : "Attempting to update a property of TabGridDialog without binding token.";
             return;
         }
 
@@ -219,6 +222,9 @@ class TabGridDialogViewBinder {
                     model.get(SHARE_INVITE_CLICK_LISTENER));
         } else if (IS_TAB_GROUP_SHARED == propertyKey) {
             viewHolder.dialogView.refreshShareBar(model.get(IS_TAB_GROUP_SHARED));
+        } else if (TAB_GROUP_COLOR_ID == propertyKey) {
+            viewHolder.toolbarView.setColorIconColor(
+                    model.get(TAB_GROUP_COLOR_ID), model.get(IS_INCOGNITO));
         }
     }
 

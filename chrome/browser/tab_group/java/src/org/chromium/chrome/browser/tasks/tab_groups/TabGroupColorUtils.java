@@ -57,6 +57,26 @@ public class TabGroupColorUtils {
     }
 
     /**
+     * This method fetches tab group colors for the related tab group root ID. If the color does not
+     * exist, the next suggested color will be fetched, stored and returned for that root ID.
+     *
+     * @param tabRootId The tab root ID whose related tab group color will be fetched if found.
+     * @param filter The {@link TabGroupModelFilter} used to fetch the next suggested color.
+     * @return The stored or newly created color for the target tab group.
+     */
+    public static int getOrCreateTabGroupColor(int tabRootId, TabGroupModelFilter filter) {
+        assert tabRootId != Tab.INVALID_TAB_ID;
+        int color = getTabGroupColor(tabRootId);
+
+        if (color == INVALID_COLOR_ID) {
+            color = getNextSuggestedColorId(filter);
+            storeTabGroupColor(tabRootId, color);
+        }
+
+        return color;
+    }
+
+    /**
      * This method assigns a color to all tab groups which do not have an assigned tab color at
      * startup. If a migration for all existing tabs has already been performed, skip this logic.
      *

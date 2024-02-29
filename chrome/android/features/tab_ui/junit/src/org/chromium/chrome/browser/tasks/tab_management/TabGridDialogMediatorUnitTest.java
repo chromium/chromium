@@ -25,6 +25,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -46,6 +48,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -91,6 +94,8 @@ public class TabGridDialogMediatorUnitTest {
     private static final String DIALOG_TITLE1 = "1 tab";
     private static final String DIALOG_TITLE2 = "2 tabs";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
+    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
+    private static final int COLOR_2 = 1;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
@@ -177,6 +182,11 @@ public class TabGridDialogMediatorUnitTest {
                 },
                 mTabGroupTitleEditor);
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
+    }
+
+    private static SharedPreferences getGroupColorSharedPreferences() {
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     @Test
@@ -1028,6 +1038,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void showDialog_FromGTS() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
@@ -1039,7 +1050,17 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabgroup, TAB1_ID, TAB_GROUP_ID);
 
+        // Mock that we have a stored color stored with reference to root ID of tab1.
+        getGroupColorSharedPreferences()
+                .edit()
+                .putInt(String.valueOf(mTab1.getRootId()), COLOR_2)
+                .apply();
+
         mMediator.onReset(tabgroup);
+
+        // Assert that a color and the incognito status were set.
+        assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_2));
 
         assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim click runnable should be set as the current scrim runnable.
@@ -1084,6 +1105,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void showDialog_FromStrip() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
@@ -1116,7 +1138,17 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabgroup, TAB1_ID, TAB_GROUP_ID);
 
+        // Mock that we have a stored color stored with reference to root ID of tab1.
+        getGroupColorSharedPreferences()
+                .edit()
+                .putInt(String.valueOf(mTab1.getRootId()), COLOR_2)
+                .apply();
+
         mMediator.onReset(tabgroup);
+
+        // Assert that a color and the incognito status were set.
+        assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_2));
 
         assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim observer should be set as the current scrim runnable.

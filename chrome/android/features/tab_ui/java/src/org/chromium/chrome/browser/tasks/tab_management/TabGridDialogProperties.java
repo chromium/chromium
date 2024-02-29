@@ -85,6 +85,10 @@ class TabGridDialogProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String>
             COLLAPSE_BUTTON_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableIntPropertyKey TAB_GROUP_COLOR_ID =
+            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BINDING_TOKEN,
@@ -116,6 +120,8 @@ class TabGridDialogProperties {
                 IS_TAB_GROUP_SHARED,
                 CONTENT_TOP_MARGIN,
                 IS_MAIN_CONTENT_VISIBLE,
-                INITIAL_SCROLL_INDEX
+                INITIAL_SCROLL_INDEX,
+                TAB_GROUP_COLOR_ID,
+                IS_INCOGNITO
             };
 }

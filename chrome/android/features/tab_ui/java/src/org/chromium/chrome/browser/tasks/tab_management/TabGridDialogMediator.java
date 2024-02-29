@@ -23,6 +23,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.data_sharing.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -457,9 +459,10 @@ public class TabGridDialogMediator
             hideDialog(true);
             return;
         }
+
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
         if (mTabGroupTitleEditor != null) {
-            TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-            Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(currentTab.getRootId());
             if (storedTitle != null && filter.isTabInTabGroup(currentTab)) {
                 mModel.set(
@@ -482,6 +485,11 @@ public class TabGridDialogMediator
         mModel.set(
                 TabGridDialogProperties.HEADER_TITLE,
                 TabGroupTitleEditor.getDefaultTitle(mContext, tabsCount));
+
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            int color = TabGroupColorUtils.getOrCreateTabGroupColor(currentTab.getRootId(), filter);
+            mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
+        }
     }
 
     private void updateColorProperties(Context context, boolean isIncognito) {
@@ -518,6 +526,7 @@ public class TabGridDialogMediator
         mModel.set(
                 TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR,
                 ungroupBarHoveredTextColor);
+        mModel.set(TabGridDialogProperties.IS_INCOGNITO, isIncognito);
     }
 
     private int getIdForTab(@Nullable Tab tab) {

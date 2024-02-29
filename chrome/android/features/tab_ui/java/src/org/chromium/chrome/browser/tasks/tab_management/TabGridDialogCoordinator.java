@@ -173,7 +173,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             TabGroupUiToolbarView toolbarView =
                     (TabGroupUiToolbarView)
                             LayoutInflater.from(activity)
-                                    .inflate(R.layout.bottom_tab_grid_toolbar, recyclerView, false);
+                                    .inflate(R.layout.tab_group_ui_toolbar, recyclerView, false);
             toolbarView.setupDialogToolbarLayout();
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(

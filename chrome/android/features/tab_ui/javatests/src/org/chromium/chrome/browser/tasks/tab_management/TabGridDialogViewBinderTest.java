@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.a
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -49,6 +51,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
@@ -56,6 +59,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -81,6 +85,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private ChromeImageView mRightButton;
     private ChromeImageView mLeftButton;
     private EditText mTitleTextView;
+    private ImageView mColorIcon;
     private View mMainContent;
     private ScrimCoordinator mScrimCoordinator;
     private GridLayoutManager mLayoutManager;
@@ -115,7 +120,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                             (TabGroupUiToolbarView)
                                     LayoutInflater.from(getActivity())
                                             .inflate(
-                                                    R.layout.bottom_tab_grid_toolbar,
+                                                    R.layout.tab_group_ui_toolbar,
                                                     mContentView,
                                                     false);
                     LayoutInflater.from(getActivity())
@@ -124,6 +129,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                     mLeftButton = mToolbarView.findViewById(R.id.toolbar_left_button);
                     mRightButton = mToolbarView.findViewById(R.id.toolbar_right_button);
                     mTitleTextView = mToolbarView.findViewById(R.id.title);
+                    mColorIcon = mToolbarView.findViewById(R.id.tab_group_color_icon);
                     mMainContent = mToolbarView.findViewById(R.id.main_content);
                     mScrimCoordinator =
                             new ScrimCoordinator(getActivity(), null, parentView, Color.RED);
@@ -554,6 +560,24 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
 
         verify(mLinearLayoutManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .scrollToPositionWithOffset(eq(5), eq(0));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testSetTabGroupColorIdAndIncognito() {
+        int color = TabGroupColorId.GREY;
+
+        mModel.set(TabGridDialogProperties.IS_INCOGNITO, false);
+        mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
+
+        GradientDrawable drawable = (GradientDrawable) mColorIcon.getBackground();
+        Assert.assertEquals(
+                ColorStateList.valueOf(
+                        ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                getActivity(), color, false)),
+                drawable.getColor());
     }
 
     @Override
