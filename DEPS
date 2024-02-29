@@ -4172,7 +4172,7 @@ deps = {
     'packages': [
         {
             'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/x64/internal',
-            'version': 'ONBUvln4HGgBn4B4uwD_GLKwHKk4XtyBTTcb0VqLqBUC',
+            'version': 'sQlpA8YX9xqenXh1shzWPTjO-UbfG8RZBdjG4Bq6_JEC',
         },
     ],
     'condition': 'checkout_src_internal and checkout_chromeos',
@@ -4183,7 +4183,7 @@ deps = {
     'packages': [
         {
             'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/arm64/internal',
-            'version': '8tJ92R7a1cME_3Lb8dY17jMPhIZmJKGn74jRcvBwDA8C',
+            'version': 'jBi2aiKUgOIsm4EySOUEOYcZVx1_vGQKdX624Sn7--cC',
         },
     ],
     'condition': 'checkout_src_internal and checkout_chromeos',
@@ -4194,7 +4194,7 @@ deps = {
     'packages': [
         {
             'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/arm/internal',
-            'version': 'HWbMkz4ukSFB4WDMHQokyqvncNrDQdykTNAFPxMiXSYC',
+            'version': 'p4h4yK1oeCIH1yXn637uVBIZ82hFnGinKrdn4EZ9L8QC',
         },
     ],
     'condition': 'checkout_src_internal and checkout_chromeos',
@@ -4205,7 +4205,7 @@ deps = {
     'packages': [
         {
             'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_glinux/x64/internal',
-            'version': 'CHE67HLb-6imPXB3fBp_A_eFs2kf_lg-sU5xH2q_bmYC',
+            'version': 'vsmFJIFJr5245jA8Zz67H6mJFahlkhwf_AYa00ay5fkC',
         },
     ],
     'condition': 'checkout_src_internal and checkout_chromeos',
@@ -4216,7 +4216,7 @@ deps = {
     'packages': [
         {
             'package': 'chromeos_internal/assistant/libassistant/fake_s3_server_cros_glinux/x64/internal',
-            'version': 'IRweCdbYxKDjyJ0cm9uNuSdHydlV75Nrw3eUboDEAPYC',
+            'version': '_9aXc-Ngn6ckUP5OFPt55-pAyP6Wgg0eiSKZaoN1LLAC',
         },
     ],
     'condition': 'checkout_src_internal and checkout_chromeos',
