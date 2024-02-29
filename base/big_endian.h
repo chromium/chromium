@@ -91,6 +91,14 @@ inline void WriteBigEndian(span<uint8_t, sizeof(T)> buffer, T val) {
   buffer.copy_from(byte_span_from_ref(raw));
 }
 
+// TODO(crbug.com/40284755): Remove this function when there are no callers.
+template <typename T>
+  requires(std::is_integral_v<T>)
+inline void WriteBigEndian(char buf[], T val) {
+  return WriteBigEndian(
+      as_writable_bytes(span<char, sizeof(T)>(buf, sizeof(T))), val);
+}
+
 // Allows reading integers in network order (big endian) while iterating over
 // an underlying buffer. All the reading functions advance the internal pointer.
 class BASE_EXPORT BigEndianReader {
