@@ -11,6 +11,7 @@
 
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/family_link_user_log_record.h"
+#include "components/supervised_user/core/browser/proto/families_common.pb.h"
 
 class GURL;
 class PrefService;
@@ -51,6 +52,9 @@ enum class FirstTimeInterstitialBannerState : int {
   // Banner state has not been set.
   kUnknown = 2,
 };
+
+// Converts FamilyRole enum to string format.
+std::string FamilyRoleToString(kids_chrome_management::FamilyRole role);
 
 // Converts FilteringBehaviorReason enum to string format.
 std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason);

@@ -31,6 +31,9 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#import "components/supervised_user/core/browser/proto_fetcher.h"
+#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/url_formatter/url_formatter.h"
 #import "components/version_info/version_info.h"
 #import "components/web_resource/web_resource_pref_names.h"
@@ -183,6 +186,7 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -302,6 +306,27 @@ void InjectNTP(Browser* browser) {
       WebStateList::InsertionParams::Automatic().Activate());
 }
 
+// Updates `data` with the Family Link member role associated to the primary
+// signed-in account, no-op if the account is not enrolled in Family Link.
+void OnListFamilyMembersResponse(
+    const std::string& primary_account_gaia,
+    UserFeedbackData* data,
+    const supervised_user::ProtoFetcherStatus& status,
+    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+        response) {
+  if (!status.IsOk()) {
+    return;
+  }
+  for (const kids_chrome_management::FamilyMember& member :
+       response->members()) {
+    if (member.user_id() == primary_account_gaia) {
+      data.familyMemberRole = base::SysUTF8ToNSString(
+          supervised_user::FamilyRoleToString(member.role()));
+      break;
+    }
+  }
+}
+
 }  // namespace
 
 @interface SceneController () <AppStateObserver,
@@ -335,6 +360,11 @@ void InjectNTP(Browser* browser) {
   // Map recording the number of tabs in WebStateList before the batch
   // operation started.
   std::map<WebStateList*, int> _tabCountBeforeBatchOperation;
+
+  // Fetches the Family Link member role asynchronously from KidsManagement API.
+  std::unique_ptr<supervised_user::ProtoFetcher<
+      kids_chrome_management::ListFamilyMembersResponse>>
+      _family_members_fetcher;
 }
 
 // Navigation View controller for the settings.
@@ -1561,16 +1591,26 @@ void InjectNTP(Browser* browser) {
   // disappear before taking a screenshot.
   __weak SceneController* weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
+    // Set the delay timeout to capture about 85% of users (approx. 2 seconds),
+    // see Signin.ListFamilyMembersRequest.OverallLatency.
     [weakSelf presentReportAnIssueViewController:baseViewController
                                           sender:sender
-                             specificProductData:specificProductData];
+                             specificProductData:specificProductData
+                                         timeout:base::Seconds(2)
+                                      completion:base::DoNothing()];
   });
 }
+
+using UserFeedbackDataCallback =
+    base::RepeatingCallback<void(UserFeedbackData*)>;
 
 - (void)presentReportAnIssueViewController:(UIViewController*)baseViewController
                                     sender:(UserFeedbackSender)sender
                        specificProductData:(NSDictionary<NSString*, NSString*>*)
-                                               specificProductData {
+                                               specificProductData
+                                   timeout:(base::TimeDelta)timeout
+                                completion:
+                                    (UserFeedbackDataCallback)completion {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
@@ -1582,7 +1622,55 @@ void InjectNTP(Browser* browser) {
       [self createUserFeedbackDataForSender:sender
                         specificProductData:specificProductData];
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.mainInterface.browserState);
+  CoreAccountInfo primary_account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  // Retrieves the Family Link member role for the signed-in account and
+  // populates the corresponding `UserFeedbackData` property.
+  if (!primary_account.IsEmpty()) {
+    __weak SceneController* weakSelf = self;
+    _family_members_fetcher = supervised_user::FetchListFamilyMembers(
+        *identity_manager, GetApplicationContext()->GetSharedURLLoaderFactory(),
+        base::BindOnce(&OnListFamilyMembersResponse, primary_account.gaia, data)
+            .Then(base::BindOnce(^{
+              [weakSelf presentUserFeedbackViewController:baseViewController
+                                     withUserFeedbackData:data
+                                 cancelFamilyMembersFetch:NO
+                                               completion:completion];
+            })));
+
+    // Timeout the request to list family members.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf presentUserFeedbackViewController:baseViewController
+                                 withUserFeedbackData:data
+                             cancelFamilyMembersFetch:YES
+                                           completion:completion];
+        }),
+        timeout);
+    return;
+  }
+
+  [self presentUserFeedbackViewController:baseViewController
+                     withUserFeedbackData:data
+                 cancelFamilyMembersFetch:NO
+                               completion:completion];
+}
+
+- (void)presentUserFeedbackViewController:(UIViewController*)baseViewController
+                     withUserFeedbackData:(UserFeedbackData*)data
+                 cancelFamilyMembersFetch:(BOOL)cancelFamilyMembersFetch
+                               completion:(UserFeedbackDataCallback)completion {
+  // Cancel any list family member requests in progress.
+  if (cancelFamilyMembersFetch) {
+    _family_members_fetcher.reset();
+  }
+
   Browser* browser = self.mainInterface.browser;
+
   id<ApplicationCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
 
@@ -1608,6 +1696,7 @@ void InjectNTP(Browser* browser) {
                                      animated:YES
                                    completion:nil];
   }
+  std::move(completion).Run(data);
 }
 
 - (UserFeedbackData*)createUserFeedbackDataForSender:(UserFeedbackSender)sender

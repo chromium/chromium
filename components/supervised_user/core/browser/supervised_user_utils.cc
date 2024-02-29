@@ -56,6 +56,22 @@ std::optional<WebFilterType> GetWebFilterForHistogram(
 }
 }  // namespace
 
+std::string FamilyRoleToString(kids_chrome_management::FamilyRole role) {
+  switch (role) {
+    case kids_chrome_management::CHILD:
+      return "child";
+    case kids_chrome_management::MEMBER:
+      return "member";
+    case kids_chrome_management::PARENT:
+      return "parent";
+    case kids_chrome_management::HEAD_OF_HOUSEHOLD:
+      return "family_manager";
+    default:
+      // Keep the previous semantics - other values were not allowed.
+      NOTREACHED_NORETURN();
+  }
+}
+
 std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason) {
   switch (reason) {
     case FilteringBehaviorReason::DEFAULT:
