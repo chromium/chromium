@@ -1798,7 +1798,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Simulate showing a credit card suggestion polled from "Name on card" field.
   {
     base::UserActionTester user_action_tester;
-    DidShowAutofillSuggestions(form);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_ShowedCreditCardSuggestions"));
   }
@@ -1807,7 +1808,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // field.
   {
     base::UserActionTester user_action_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/1);
+    DidShowAutofillSuggestions(form, /*field_index=*/1,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_ShowedCreditCardSuggestions"));
   }
@@ -1832,7 +1834,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // field along with a "Clear form" footer suggestion.
   {
     base::UserActionTester user_action_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/1);
+    DidShowAutofillSuggestions(form, /*field_index=*/1,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_ShowedCreditCardSuggestions"));
   }
@@ -1873,7 +1876,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // field, this time to submit the form.
   {
     base::UserActionTester user_action_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/1);
+    DidShowAutofillSuggestions(form, /*field_index=*/1,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_ShowedCreditCardSuggestions"));
   }
@@ -2347,7 +2351,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   {
     // Simulating new popup being shown.
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
@@ -2365,8 +2370,10 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   {
     // Simulating two popups in the same page load.
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form);
-    DidShowAutofillSuggestions(form);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
@@ -2427,7 +2434,8 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
     // Simulate new popup being shown.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -2453,8 +2461,10 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
     // Simulating two popups in the same page load.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -2517,8 +2527,10 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
     // logged, but suggestions shown with virtual card should not.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -3424,7 +3436,8 @@ TEST_F(AutofillMetricsTest,
 
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
-  DidShowAutofillSuggestions(form);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   SubmitForm(form);
   histogram_tester.ExpectBucketCount(
@@ -3455,7 +3468,8 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
-  DidShowAutofillSuggestions(form);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   SubmitForm(form);
   histogram_tester.ExpectBucketCount(
@@ -3489,7 +3503,8 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
-  DidShowAutofillSuggestions(form);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   SubmitForm(form);
   histogram_tester.ExpectBucketCount(
@@ -3523,7 +3538,8 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
-  DidShowAutofillSuggestions(form);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   SubmitForm(form);
   histogram_tester.ExpectBucketCount(
@@ -3557,7 +3573,8 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
-  DidShowAutofillSuggestions(form);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   SubmitForm(form);
   histogram_tester.ExpectBucketCount(
@@ -3591,7 +3608,8 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Simulating submission with suggestion shown and selected.
   base::HistogramTester histogram_tester;
-  DidShowAutofillSuggestions(form);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             PopupItemId::kCreditCardEntry);
   autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form, form.fields.back(),
@@ -3689,7 +3707,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
   {
     // Simulating submission with suggestion shown.
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     SubmitForm(form);
     EXPECT_THAT(
@@ -3731,7 +3750,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     // autofill manager is reset before UploadFormDataAsyncCallback is
     // triggered.
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     SubmitForm(form);
     // Trigger UploadFormDataAsyncCallback.
@@ -4128,7 +4148,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   {
     // Simulating submission with suggestion shown.
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
     autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
     SubmitForm(form);
     EXPECT_THAT(
@@ -4368,7 +4389,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // popup being shown and filling a local card suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields.front(),
         *personal_data().GetCreditCardByGUID(kTestLocalCardId),
@@ -4414,7 +4436,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // logged to offer sub-histogram.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     // Select the masked server card with the linked offer.
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields.back(),
@@ -4460,7 +4483,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // logged to offer sub-histogram.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     // Select another card, and still log to offer
     // sub-histogram because user has another masked server card with offer.
     autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -4513,7 +4537,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // new popup being shown and filling a local card suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     // Select the card with linked offer, though metrics should not record it
     // since the offer is expired.
     autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -4579,7 +4604,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // for crbug/1198751.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     // Select the masked server card with the linked offer.
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields.back(),
@@ -4591,7 +4617,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // Simulate user showing suggestions but then submitting form with
     // previously filled card info.
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     SubmitForm(form);
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
@@ -4630,7 +4657,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // related form events are correctly logged to offer sub-histogram.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     // Select the masked server card with the linked offer, but fail the CVC
     // check.
     autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -4681,7 +4709,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
 
     // Show suggestions and select the card with offer.
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields.back(),
         *personal_data().GetCreditCardByGUID(kMaskedServerCardIds[2]),
@@ -4691,7 +4720,8 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
 
     // Show suggestions again, and select a local card instead.
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
-    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1);
+    DidShowAutofillSuggestions(form, /*field_index=*/form.fields.size() - 1,
+                               PopupItemId::kCreditCardEntry);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields.back(),
         *personal_data().GetCreditCardByGUID(kTestLocalCardId),
@@ -5948,8 +5978,10 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
   {
     SCOPED_TRACE("Separate pop-ups");
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form);
-    DidShowAutofillSuggestions(form);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness"),
         BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 2),
@@ -5968,8 +6000,10 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
   {
     SCOPED_TRACE("Multiple keystrokes");
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form);
-    DidShowAutofillSuggestions(form);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
+    DidShowAutofillSuggestions(form, /*field_index=*/0,
+                               PopupItemId::kCreditCardEntry);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.UserHappiness"),
         BucketsInclude(Bucket(AutofillMetrics::SUGGESTIONS_SHOWN, 2),
@@ -5984,7 +6018,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
   {
     SCOPED_TRACE("Different field");
     base::HistogramTester histogram_tester;
-    DidShowAutofillSuggestions(form, /*field_index=*/1);
+    DidShowAutofillSuggestions(form, /*field_index=*/1,
+                               PopupItemId::kCreditCardEntry);
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                         AutofillMetrics::SUGGESTIONS_SHOWN, 1);
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness.CreditCard",

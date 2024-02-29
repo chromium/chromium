@@ -148,6 +148,35 @@ namespace {
 // our analysis.
 constexpr size_t kMinFormSizeToTriggerUserPerceptionSurvey = 4;
 
+// Checks if the user triggered address Autofill through the
+// Chrome context menu on a field not classified as address.
+// `popup_item_id` defines the suggestion type shown.
+// `autofill_field` is the `AutofillField` from where the user triggered
+// suggestions.
+bool IsAddressAutofillManuallyTriggeredOnNonAddressField(
+    PopupItemId popup_item_id,
+    const AutofillField* autofill_field) {
+  return GetFillingProductFromPopupItemId(popup_item_id) ==
+             FillingProduct::kAddress &&
+         (!autofill_field ||
+          !IsAddressType(autofill_field->Type().GetStorableType()));
+}
+
+// Checks if the user triggered payments Autofill through the
+// Chrome context menu on a field not classified as credit card.
+// `popup_item_id` defines the suggestion type shown.
+// `autofill_field` is the `AutofillField` from where the user triggered
+// suggestions.
+bool IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
+    PopupItemId popup_item_id,
+    const AutofillField* autofill_field) {
+  return GetFillingProductFromPopupItemId(popup_item_id) ==
+             FillingProduct::kCreditCard &&
+         (!autofill_field ||
+          GroupTypeOfFieldType(autofill_field->Type().GetStorableType()) !=
+              FieldTypeGroup::kCreditCard);
+}
+
 // Converts `filling_stats` to a key-value representation, where the key
 // is the "stats category" and the value is the number of fields that match
 // such category. This is used to show users a survey that will measure the
@@ -1281,6 +1310,18 @@ void BrowserAutofillManager::FillOrPreviewField(
           form.global_id(), base::make_span(&const_field, 1u),
           base::make_span(&const_autofill_field, 1u));
     }
+
+    const bool is_address_manual_fallback_on_non_address_field =
+        IsAddressAutofillManuallyTriggeredOnNonAddressField(
+            popup_item_id, const_autofill_field);
+    const bool is_payments_manual_fallback_on_non_payments_field =
+        IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
+            popup_item_id, const_autofill_field);
+    if (is_address_manual_fallback_on_non_address_field ||
+        is_payments_manual_fallback_on_non_payments_field) {
+      manual_fallback_logger_->OnDidFillSuggestion(
+          GetFillingProductFromPopupItemId(popup_item_id));
+    }
   }
 }
 
@@ -1445,8 +1486,36 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  // TODO(crbug.com/1493361): Adapt for the unclassified forms.
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  const bool has_cached_form_and_field =
+      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+
+  // Check if Autofill was triggered via manual fallback on a field that was
+  // either unclassified or classified differently as the target
+  // `FillingProduct`.
+  // Note that in this type of flow we purposely do not log key metrics so we do
+  // not mess with the current denominator (classified forms).
+  const bool is_address_manual_fallback_on_non_address_field =
+      base::ranges::any_of(
+          shown_suggestions_types, [autofill_field](PopupItemId popup_item_id) {
+            return IsAddressAutofillManuallyTriggeredOnNonAddressField(
+                popup_item_id, autofill_field);
+          });
+  const bool is_payments_manual_fallback_on_non_payments_field =
+      base::ranges::any_of(
+          shown_suggestions_types, [autofill_field](PopupItemId popup_item_id) {
+            return IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
+                popup_item_id, autofill_field);
+          });
+  if (is_address_manual_fallback_on_non_address_field) {
+    manual_fallback_logger_->OnDidShowSuggestions(FillingProduct::kAddress);
+    return;
+  }
+  if (is_payments_manual_fallback_on_non_payments_field) {
+    manual_fallback_logger_->OnDidShowSuggestions(FillingProduct::kCreditCard);
+    return;
+  }
+
+  if (!has_cached_form_and_field) {
     return;
   }
 

@@ -750,10 +750,12 @@ class BrowserAutofillManagerTest : public testing::Test {
                                                     trigger_source);
   }
 
-  void DidShowAutofillSuggestions(const FormData& form,
-                                  size_t field_index = 0) {
+  void DidShowAutofillSuggestions(
+      const FormData& form,
+      size_t field_index = 0,
+      PopupItemId popup_item_id = PopupItemId::kAddressEntry) {
     browser_autofill_manager_->DidShowSuggestions(
-        std::vector<PopupItemId>({PopupItemId::kAddressEntry}), form,
+        std::vector<PopupItemId>({popup_item_id}), form,
         form.fields[field_index]);
   }
 
@@ -6182,7 +6184,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  DidShowAutofillSuggestions(form);
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             PopupItemId::kCreditCardEntry);
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
                                      AutofillMetrics::SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness.CreditCard",

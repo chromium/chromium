@@ -19,6 +19,36 @@ ManualFallbackEventLogger::~ManualFallbackEventLogger() {
                                 "Address");
   EmitExplicitlyTriggeredMetric(not_classified_as_target_filling_credit_card,
                                 "CreditCard");
+  EmitFillAfterSuggestionMetric(address_suggestions_state_, "Address");
+  EmitFillAfterSuggestionMetric(credit_card_suggestions_state_, "CreditCard");
+}
+
+void ManualFallbackEventLogger::OnDidShowSuggestions(
+    FillingProduct target_filling_product) {
+  CHECK(target_filling_product == FillingProduct::kAddress ||
+        target_filling_product == FillingProduct::kCreditCard);
+  SuggestionState& suggestion_state =
+      target_filling_product == FillingProduct::kAddress
+          ? address_suggestions_state_
+          : credit_card_suggestions_state_;
+
+  if (suggestion_state == SuggestionState::kNotShown) {
+    suggestion_state = SuggestionState::kShown;
+  }
+}
+
+void ManualFallbackEventLogger::OnDidFillSuggestion(
+    FillingProduct target_filling_product) {
+  CHECK(target_filling_product == FillingProduct::kAddress ||
+        target_filling_product == FillingProduct::kCreditCard);
+  SuggestionState& suggestion_state =
+      target_filling_product == FillingProduct::kAddress
+          ? address_suggestions_state_
+          : credit_card_suggestions_state_;
+
+  if (suggestion_state == SuggestionState::kShown) {
+    suggestion_state = SuggestionState::kFilled;
+  }
 }
 
 void ManualFallbackEventLogger::ContextMenuEntryShown(
@@ -66,6 +96,19 @@ void ManualFallbackEventLogger::EmitExplicitlyTriggeredMetric(
   const bool was_accepted = state == ContextMenuEntryState::kAccepted;
   base::UmaHistogramBoolean(metric_name(bucket), was_accepted);
   base::UmaHistogramBoolean(metric_name("Total"), was_accepted);
+}
+
+void ManualFallbackEventLogger::EmitFillAfterSuggestionMetric(
+    SuggestionState suggestion_state,
+    std::string_view bucket) {
+  if (suggestion_state == SuggestionState::kNotShown) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.Funnel.NotClassifiedAsTargetFilling."
+                    "FillAfterSuggestion.",
+                    bucket}),
+      suggestion_state == SuggestionState::kFilled);
 }
 
 }  // namespace autofill::autofill_metrics
