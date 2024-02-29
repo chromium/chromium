@@ -8,6 +8,7 @@
 
 #import "base/ios/crb_protocol_observers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -69,6 +71,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 @implementation SetUpListMediator {
   SetUpList* _setUpList;
   raw_ptr<PrefService> _localState;
+  raw_ptr<PrefService> _prefService;
   // Used by SetUpList to get the sync status.
   raw_ptr<syncer::SyncService> _syncService;
   // Observer for sync service status changes.
@@ -83,8 +86,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       _authServiceObserverBridge;
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Registrar for pref changes notifications.
+  // Registrars for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  PrefChangeRegistrar _localStatePrefChangeRegistrar;
   SceneState* _sceneState;
   SetUpListConsumerList* _consumers;
 }
@@ -96,6 +100,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                          sceneState:(SceneState*)sceneState {
   self = [super init];
   if (self) {
+    _prefService = prefService;
     _localState = GetApplicationContext()->GetLocalState();
     _syncService = syncService;
     _syncObserverBridge =
@@ -108,12 +113,20 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         std::make_unique<AuthenticationServiceObserverBridge>(authService,
                                                               self);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-    _prefChangeRegistrar.Init(_localState);
+    _localStatePrefChangeRegistrar.Init(_localState);
+    _prefChangeRegistrar.Init(prefService);
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kIosCredentialProviderPromoLastActionTaken,
-        &_prefChangeRegistrar);
+        &_localStatePrefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
-        set_up_list_prefs::kDisabled, &_prefChangeRegistrar);
+        set_up_list_prefs::kDisabled, &_localStatePrefChangeRegistrar);
+    if (IsIOSTipsNotificationsEnabled()) {
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kAppLevelPushNotificationPermissions,
+          &_localStatePrefChangeRegistrar);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kFeaturePushNotificationPermissions, &_prefChangeRegistrar);
+    }
     if (CredentialProviderPromoDismissed(_localState)) {
       set_up_list_prefs::MarkItemComplete(_localState,
                                           SetUpListItemType::kAutofill);
@@ -142,6 +155,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
   if (_prefObserverBridge) {
+    _localStatePrefChangeRegistrar.RemoveAll();
     _prefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
   }
@@ -149,6 +163,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _setUpList = nil;
   [_sceneState removeObserver:self];
   _localState = nullptr;
+  _prefService = nullptr;
 }
 
 - (void)addConsumer:(id<SetUpListConsumer>)consumer {
@@ -317,6 +332,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   } else if (preferenceName == set_up_list_prefs::kDisabled &&
              set_up_list_prefs::IsSetUpListDisabled(_localState)) {
     [self hideSetUpList];
+  } else if (preferenceName == prefs::kAppLevelPushNotificationPermissions ||
+             preferenceName == prefs::kFeaturePushNotificationPermissions) {
+    CHECK(IsIOSTipsNotificationsEnabled());
+    if ([self hasOptedInToNotifications]) {
+      [self markSetUpListItemPrefComplete:SetUpListItemType::kNotifications];
+    }
   }
 }
 
@@ -409,6 +430,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
               }));
         }
       }];
+}
+
+- (BOOL)hasOptedInToNotifications {
+  id<SystemIdentity> identity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
+      base::SysNSStringToUTF8(identity.gaiaID), _prefService);
 }
 
 @end
