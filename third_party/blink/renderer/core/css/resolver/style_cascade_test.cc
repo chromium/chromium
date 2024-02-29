@@ -185,7 +185,7 @@ class TestCascade {
     DCHECK(ref.IsValid());
     const LayoutObject* layout_object = nullptr;
     bool allow_visited_style = false;
-    CSSValuePhase value_phase = CSSValuePhase::kComputedValue;
+    CSSValuePhase value_phase = CSSValuePhase::kResolvedValue;
     const ComputedStyle* style = state_.StyleBuilder().CloneStyle();
     const CSSValue* value = ref.GetProperty().CSSValueFromComputedStyle(
         *style, layout_object, allow_visited_style, value_phase);

@@ -30,10 +30,7 @@ enum class CSSValuePhase {
   kComputedValue,
   // The value returned from getComputedStyle().
   // https://www.w3.org/TR/cssom-1/#resolved-values
-  kResolvedValue,
-  // The value after calculating layout.
-  // https://www.w3.org/TR/css-cascade-3/#used
-  kUsedValue
+  kResolvedValue
 };
 
 // For use in Get(Un)VisitedProperty(), although you could probably

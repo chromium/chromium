@@ -362,8 +362,8 @@ const CSSValue* AnimationDuration::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForAnimationDurationList(
-      style.Animations(), CSSValuePhase::kUsedValue);
+  return ComputedStyleUtils::ValueForAnimationDurationList(style.Animations(),
+                                                           value_phase);
 }
 
 const CSSValue* AnimationDuration::InitialValue() const {
@@ -822,10 +822,8 @@ const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(
         .CSSValueFromComputedStyle(style, nullptr, allow_visited_style,
                                    value_phase);
   }
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
-  return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, background_color, CSSValuePhase::kUsedValue);
+  return ComputedStyleUtils::CurrentColorOrValidColor(style, background_color,
+                                                      value_phase);
 }
 
 const CSSValue* BackgroundImage::ParseSingleValue(
@@ -1089,12 +1087,10 @@ const CSSValue* BorderBottomColor::CSSValueFromComputedStyleInternal(
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
   return allow_visited_style
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, border_bottom_color, CSSValuePhase::kUsedValue);
+                   style, border_bottom_color, value_phase);
 }
 
 const CSSValue* BorderBottomLeftRadius::ParseSingleValue(
@@ -1366,12 +1362,10 @@ const CSSValue* BorderLeftColor::CSSValueFromComputedStyleInternal(
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
   return allow_visited_style
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, border_left_color, CSSValuePhase::kUsedValue);
+                   style, border_left_color, value_phase);
 }
 
 const CSSValue* BorderLeftStyle::CSSValueFromComputedStyleInternal(
@@ -1430,12 +1424,10 @@ const CSSValue* BorderRightColor::CSSValueFromComputedStyleInternal(
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
   return allow_visited_style
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, border_right_color, CSSValuePhase::kUsedValue);
+                   style, border_right_color, value_phase);
 }
 
 const CSSValue* BorderRightStyle::CSSValueFromComputedStyleInternal(
@@ -1508,12 +1500,10 @@ const CSSValue* BorderTopColor::CSSValueFromComputedStyleInternal(
     return GetCSSPropertyInternalForcedBorderColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
   return allow_visited_style
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, border_top_color, CSSValuePhase::kUsedValue);
+                   style, border_top_color, value_phase);
 }
 
 const CSSValue* BorderTopLeftRadius::ParseSingleValue(
@@ -1607,10 +1597,8 @@ const CSSValue* BoxShadow::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
   return ComputedStyleUtils::ValueForShadowList(style.BoxShadow(), style, true,
-                                                CSSValuePhase::kUsedValue);
+                                                value_phase);
 }
 
 const CSSValue* BoxSizing::CSSValueFromComputedStyleInternal(
@@ -1709,10 +1697,8 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
     return cssvalue::CSSColor::Create(style.GetInternalForcedCurrentColor());
   }
 
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
   return ComputedStyleUtils::ValueForStyleAutoColor(style, style.CaretColor(),
-                                                    CSSValuePhase::kUsedValue);
+                                                    value_phase);
 }
 
 const CSSValue* Clear::CSSValueFromComputedStyleInternal(
@@ -2169,8 +2155,7 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
   return allow_visited_style
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, style.ColumnRuleColor(),
-                   CSSValuePhase::kComputedValue);
+                   style, style.ColumnRuleColor(), value_phase);
 }
 
 const CSSValue* ColumnRuleStyle::CSSValueFromComputedStyleInternal(
@@ -3535,8 +3520,8 @@ const CSSValue* FloodColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.FloodColor(), CSSValuePhase::kComputedValue);
+  return ComputedStyleUtils::CurrentColorOrValidColor(style, style.FloodColor(),
+                                                      value_phase);
 }
 
 const CSSValue* FloodOpacity::ParseSingleValue(
@@ -5464,7 +5449,7 @@ const CSSValue* LightingColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.LightingColor(), CSSValuePhase::kComputedValue);
+      style, style.LightingColor(), value_phase);
 }
 
 const CSSValue* LineBreak::CSSValueFromComputedStyleInternal(
@@ -6278,8 +6263,8 @@ const CSSValue* AccentColor::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 
-  return ComputedStyleUtils::ValueForStyleAutoColor(
-      style, style.AccentColor(), CSSValuePhase::kComputedValue);
+  return ComputedStyleUtils::ValueForStyleAutoColor(style, style.AccentColor(),
+                                                    value_phase);
 }
 
 const blink::Color OutlineColor::ColorIncludingFallback(
@@ -6306,12 +6291,10 @@ const CSSValue* OutlineColor::CSSValueFromComputedStyleInternal(
     return GetCSSPropertyInternalForcedOutlineColor().CSSValueFromComputedStyle(
         style, nullptr, allow_visited_style, value_phase);
   }
-  // https://drafts.csswg.org/cssom/#resolved-values
-  // For this property, the resolved value is the used value.
   return allow_visited_style
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
-                   style, outline_color, CSSValuePhase::kUsedValue);
+                   style, outline_color, value_phase);
 }
 
 const CSSValue* OutlineOffset::ParseSingleValue(
@@ -7473,11 +7456,9 @@ const CSSValue* ScrollbarColor::CSSValueFromComputedStyleInternal(
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
-      style, scrollbar_color.value().GetThumbColor(),
-      CSSValuePhase::kComputedValue));
+      style, scrollbar_color.value().GetThumbColor(), value_phase));
   list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
-      style, scrollbar_color.value().GetTrackColor(),
-      CSSValuePhase::kComputedValue));
+      style, scrollbar_color.value().GetTrackColor(), value_phase));
   return list;
 }
 
@@ -8608,7 +8589,7 @@ const CSSValue* TextDecorationColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.TextDecorationColor(), CSSValuePhase::kComputedValue);
+      style, style.TextDecorationColor(), value_phase);
 }
 
 const CSSValue* TextDecorationLine::ParseSingleValue(
@@ -8786,8 +8767,8 @@ const CSSValue* TextShadow::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForShadowList(
-      style.TextShadow(), style, false, CSSValuePhase::kComputedValue);
+  return ComputedStyleUtils::ValueForShadowList(style.TextShadow(), style,
+                                                false, value_phase);
 }
 
 const CSSValue* TextSizeAdjust::ParseSingleValue(
@@ -10383,7 +10364,7 @@ const CSSValue* WebkitTapHighlightColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.TapHighlightColor(), CSSValuePhase::kComputedValue);
+      style, style.TapHighlightColor(), value_phase);
 }
 
 const CSSValue* WebkitTextCombine::CSSValueFromComputedStyleInternal(
@@ -10440,7 +10421,7 @@ const CSSValue* TextEmphasisColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.TextEmphasisColor(), CSSValuePhase::kComputedValue);
+      style, style.TextEmphasisColor(), value_phase);
 }
 
 // [ over | under ] && [ right | left ]?
@@ -10686,7 +10667,7 @@ const CSSValue* WebkitTextFillColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.TextFillColor(), CSSValuePhase::kComputedValue);
+      style, style.TextFillColor(), value_phase);
 }
 
 const CSSValue* WebkitTextOrientation::CSSValueFromComputedStyleInternal(
@@ -10734,7 +10715,7 @@ const CSSValue* WebkitTextStrokeColor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
-      style, style.TextStrokeColor(), CSSValuePhase::kComputedValue);
+      style, style.TextStrokeColor(), value_phase);
 }
 
 const CSSValue* WebkitTextStrokeWidth::ParseSingleValue(
