@@ -67,7 +67,11 @@ export function flattenTests(report) {
   return report.results
     .filter(excludeTentativeTests)
     .map(flattenSingleTest)
-    .flat();
+    .flat()
+    .sort(
+      (a, b) =>
+        a.path?.localeCompare(b.path) || a.name?.localeCompare(b.name) || 0
+    );
 }
 
 export function groupTests(tests) {
