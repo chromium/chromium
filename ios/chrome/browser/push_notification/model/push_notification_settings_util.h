@@ -53,6 +53,12 @@ BOOL GetMobileNotificationPermissionStatusForClient(
     PushNotificationClientId clientID,
     const std::string& gaia_id);
 
+// Returns whether the push notification client's, `client_ids`,
+// permission status for mobile notifications is enabled or disabled for the
+// current user. Only returns YES if all clients are enabled.
+BOOL GetMobileNotificationPermissionStatusForMultipleClients(
+    std::vector<PushNotificationClientId> client_ids,
+    const std::string& gaia_id);
 }  // namespace push_notification_settings
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SETTINGS_UTIL_H_

@@ -42,8 +42,8 @@
   std::string gaiaID = base::SysNSStringToUTF8([self primaryIdentity].gaiaID);
   for (auto [item, selection] : _selected) {
     selection = push_notification_settings::
-        GetMobileNotificationPermissionStatusForClient(
-            [self clientIDForItem:item], gaiaID);
+        GetMobileNotificationPermissionStatusForMultipleClients(
+            [self clientIDsForItem:item], gaiaID);
     [self.consumer setOptInItem:item enabled:selection];
   }
 }
@@ -61,10 +61,14 @@
   std::vector<PushNotificationClientId> selectedClientIds;
   std::vector<PushNotificationClientId> deselectedClientIds;
   for (auto [item, selection] : _selected) {
+    std::vector<PushNotificationClientId> clientIDs =
+        [self clientIDsForItem:item];
     if (selection) {
-      selectedClientIds.push_back([self clientIDForItem:item]);
+      selectedClientIds.insert(selectedClientIds.end(), clientIDs.begin(),
+                               clientIDs.end());
     } else {
-      deselectedClientIds.push_back([self clientIDForItem:item]);
+      deselectedClientIds.insert(deselectedClientIds.end(), clientIDs.begin(),
+                                 clientIDs.end());
     }
   }
   [self disableNotifications:deselectedClientIds];
@@ -99,15 +103,16 @@
       signin::ConsentLevel::kSignin);
 }
 
-- (PushNotificationClientId)clientIDForItem:
+- (std::vector<PushNotificationClientId>)clientIDsForItem:
     (NotificationsOptInItemIdentifier)item {
   switch (item) {
     case kContent:
-      return PushNotificationClientId::kContent;
+      return {PushNotificationClientId::kContent,
+              PushNotificationClientId::kSports};
     case kTips:
-      return PushNotificationClientId::kTips;
+      return {PushNotificationClientId::kTips};
     case kPriceTracking:
-      return PushNotificationClientId::kCommerce;
+      return {PushNotificationClientId::kCommerce};
   }
 }
 

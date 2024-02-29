@@ -114,6 +114,7 @@ TEST_F(NotificationsOptInMediatorTest,
        TestConsumer_NotificationsInitiallyEnabled) {
   TurnNotificationForKey(YES, kCommerceNotificationKey);
   TurnNotificationForKey(YES, kContentNotificationKey);
+  TurnNotificationForKey(YES, kSportsNotificationKey);
   TurnAppLevelNotificationForKey(YES, kTipsNotificationKey);
 
   mediator_ = [[NotificationsOptInMediator alloc]

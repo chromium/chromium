@@ -135,4 +135,17 @@ BOOL GetMobileNotificationPermissionStatusForClient(
                                           forAccount:gaia_id];
 }
 
+BOOL GetMobileNotificationPermissionStatusForMultipleClients(
+    std::vector<PushNotificationClientId> client_ids,
+    const std::string& gaia_id) {
+  for (PushNotificationClientId clientId : client_ids) {
+    // In case one out of the joined clientIDs return NO, return NO for purposes
+    // of enabling both at the same time.
+    if (!GetMobileNotificationPermissionStatusForClient(clientId, gaia_id)) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
 }  // namespace push_notification_settings
