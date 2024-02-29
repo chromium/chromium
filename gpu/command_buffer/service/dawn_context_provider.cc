@@ -371,8 +371,8 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::MultiPlanarRenderTargets,
       wgpu::FeatureName::Norm16TextureFormats,
 
-      // The following features are always supported when running on the
-      // Metal backend.
+      // The following features are always supported by the the Metal backend on
+      // the Mac versions on which Chrome runs.
       wgpu::FeatureName::SharedTextureMemoryIOSurface,
       wgpu::FeatureName::SharedFenceMTLSharedEvent,
 
