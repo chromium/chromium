@@ -21,6 +21,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/badges/badge_button_factory.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
@@ -109,6 +111,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @property(nonatomic, strong) BadgeMediator* badgeMediator;
 // ViewController for the badges displayed in the LocationBar.
 @property(nonatomic, strong) BadgeViewController* badgeViewController;
+// Coordinator for the contextual panel entrypoint.
+@property(nonatomic, strong)
+    ContextualPanelEntrypointCoordinator* contextualPanelEntrypointCoordinator;
 // Coordinator for the omnibox.
 @property(nonatomic, strong) OmniboxCoordinator* omniboxCoordinator;
 @property(nonatomic, strong) LocationBarMediator* mediator;
@@ -206,6 +211,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
 
+  if (IsContextualPanelEnabled()) {
+    self.contextualPanelEntrypointCoordinator =
+        [[ContextualPanelEntrypointCoordinator alloc]
+            initWithBaseViewController:self.viewController
+                               browser:self.browser];
+    [self.contextualPanelEntrypointCoordinator start];
+  }
+
   // Create button factory that wil be used by the ViewController to get
   // BadgeButtons for a BadgeType.
   BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
@@ -260,6 +273,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (!self.started)
     return;
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+
+  [self.contextualPanelEntrypointCoordinator stop];
+  self.contextualPanelEntrypointCoordinator = nil;
+
   // The popup has to be destroyed before the location bar.
   [self.omniboxCoordinator stop];
   [self.badgeMediator disconnect];

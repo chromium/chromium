@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
 
 @protocol ContextualPanelEntrypointConsumer;
 @protocol ContextualPanelEntrypointMediatorDelegate;
@@ -16,6 +17,11 @@
 @interface ContextualPanelEntrypointMediator
     : NSObject <ContextualPanelEntrypointMutator>
 
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithBrowserAgent:(ContextualPanelBrowserAgent*)browserAgent
+    NS_DESIGNATED_INITIALIZER;
+
 // The consumer for this mediator.
 @property(nonatomic, weak) id<ContextualPanelEntrypointConsumer> consumer;
 
@@ -23,6 +29,7 @@
 @property(nonatomic, weak) id<ContextualPanelEntrypointMediatorDelegate>
     delegate;
 
+// Cleanup and disconnect the mediator.
 - (void)disconnect;
 
 @end
