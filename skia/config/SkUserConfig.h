@@ -241,6 +241,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_DONT_PAD_LAYER_IMAGES
 
+// TODO: (skbug.com/40045243) - Remove legacy Perlin Noise implementation from
+// Skia, then remove this migration flag.
+#define SK_RASTER_PIPELINE_PERLIN_NOISE
+
 /* When --disable-skia-runtime-opts is set in Chrome (or when SkGraphics::Init
    is not called), Skia will prefer precision over performance when computing
    reciprocals and inverse-square roots.
