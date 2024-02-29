@@ -733,56 +733,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "cr23_browser_tests",
-    mixins = [
-        "chrome-refresh-2023",
-    ],
-    binary = "browser_tests",
-)
-
-targets.tests.gtest_test(
-    name = "cr23_interactive_ui_tests",
-    mixins = [
-        "chrome-refresh-2023",
-    ],
-    binary = "interactive_ui_tests",
-)
-
-targets.tests.gtest_test(
-    name = "cr23_pixel_browser_tests",
-    mixins = [
-        "skia_gold_test",
-        "chrome-refresh-2023",
-    ],
-    args = [
-        "--browser-ui-tests-verify-pixels",
-        "--enable-pixel-output-in-tests",
-    ],
-    binary = "browser_tests",
-)
-
-targets.tests.gtest_test(
-    name = "cr23_pixel_interactive_ui_tests",
-    mixins = [
-        "skia_gold_test",
-        "chrome-refresh-2023",
-    ],
-    args = [
-        "--browser-ui-tests-verify-pixels",
-        "--enable-pixel-output-in-tests",
-    ],
-    binary = "interactive_ui_tests",
-)
-
-targets.tests.gtest_test(
-    name = "cr23_views_unittests",
-    mixins = [
-        "chrome-refresh-2023",
-    ],
-    binary = "views_unittests",
-)
-
-targets.tests.gtest_test(
     name = "crashpad_tests",
 )
 

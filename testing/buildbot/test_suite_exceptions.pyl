@@ -2366,25 +2366,6 @@
       'Android FYI Release (Pixel 2)',
     ],
   },
-  'cr23_pixel_browser_tests': {
-    # This target should be removed from any CI only builders. Developers can
-    # intentionally make UI changes. Without running pixel tests on CQ, those
-    # cls will get wrongly reverted by sheriffs.
-    # When we switch CQ builders(e.g. use Win11 to replace Win10), we also
-    # need to update this field.
-    'remove_from': [
-      'Win11 Tests x64',
-      'win-rel-cft',
-      'win11-arm64-rel-tests',
-    ],
-    'modifications': {
-      'win-rel-cft': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.cr23_pixel_browser_tests.filter',
-        ],
-      },
-    },
-  },
   'crashpad_tests': {
     'remove_from': [
       'linux-win_cross-rel', # https://crbug.com/762167

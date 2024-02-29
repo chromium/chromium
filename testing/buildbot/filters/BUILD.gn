@@ -56,12 +56,6 @@ source_set("blink_web_tests_filter") {
   data = [ "//testing/buildbot/filters/cft.blink_web_tests.filter" ]
 }
 
-source_set("cr23_pixel_browser_tests_filters") {
-  testonly = true
-
-  data = [ "//testing/buildbot/filters/win.win-rel-cft.cr23_pixel_browser_tests.filter" ]
-}
-
 source_set("browser_tests_filters") {
   testonly = true
 
@@ -71,9 +65,6 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter",
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter",
     "//testing/buildbot/filters/code_coverage.browser_tests.filter",
-    "//testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter",
-    "//testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter",
-    "//testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
     "//testing/buildbot/filters/fuchsia.browser_tests.filter",
     "//testing/buildbot/filters/linux-chromeos.browser_tests.pixel_tests.filter",
     "//testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
@@ -349,9 +340,6 @@ source_set("interactive_ui_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/accessibility-linux.interactive_ui_tests.filter",
-    "//testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter",
-    "//testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter",
-    "//testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",
     "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter",
     "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
     "//testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter",

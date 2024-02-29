@@ -1718,145 +1718,6 @@
       },
     },
 
-    'cr23_linux_gtests': {
-      'cr23_browser_tests': {
-        'test': 'browser_tests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'cr23_interactive_ui_tests': {
-        'test': 'interactive_ui_tests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'cr23_views_unittests': {
-        'test': 'views_unittests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'ci_only': True,
-      },
-    },
-
-    'cr23_mac_gtests': {
-      'cr23_browser_tests': {
-        'test': 'browser_tests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'cr23_interactive_ui_tests': {
-        'test': 'interactive_ui_tests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'cr23_views_unittests': {
-        'test': 'views_unittests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'ci_only': True,
-      },
-    },
-
-    'cr23_pixel_browser_tests_gtests': {
-      'cr23_pixel_browser_tests': {
-        'test': 'browser_tests',
-        'mixins': [
-          'skia_gold_test',
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--browser-ui-tests-verify-pixels',
-          '--enable-pixel-output-in-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter',
-          '--test-launcher-jobs=1',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'cr23_pixel_interactive_ui_tests': {
-        'test': 'interactive_ui_tests',
-        'mixins': [
-          'skia_gold_test',
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--browser-ui-tests-verify-pixels',
-          '--enable-pixel-output-in-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter',
-        ],
-      },
-    },
-
-    'cr23_win_gtests': {
-      'cr23_browser_tests': {
-        'test': 'browser_tests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'cr23_interactive_ui_tests': {
-        'test': 'interactive_ui_tests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'cr23_views_unittests': {
-        'test': 'views_unittests',
-        'mixins': [
-          'chrome-refresh-2023',
-        ],
-        'ci_only': True,
-      },
-    },
-
     'cronet_gtests': {
       'cronet_sample_test_apk': {},
       'cronet_smoketests_apk': {},
@@ -6051,22 +5912,6 @@
       'vr_platform_specific_chromium_gtests',
     ],
 
-    'chromium_linux_gtests_once': [
-      'aura_gtests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_gtests_for_linux_and_chromeos_only',
-      'chromium_gtests_for_linux_and_mac_only',
-      'chromium_gtests_for_linux_only',
-      'chromium_gtests_for_win_and_linux_only',
-      'cr23_linux_gtests',
-      'linux_flavor_specific_chromium_gtests',
-      'linux_specific_xr_gtests',
-      'non_android_and_cast_and_chromeos_chromium_gtests',
-      'non_android_chromium_gtests_no_nacl',
-      'vr_platform_specific_chromium_gtests',
-    ],
-
     'chromium_linux_rel_isolated_scripts': [
       'chromedriver_py_tests_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
@@ -6121,15 +5966,6 @@
       'non_android_chromium_gtests_no_nacl',
     ],
 
-    'chromium_mac_gtests_no_nacl_once': [
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'cr23_mac_gtests',
-      'mac_specific_chromium_gtests',
-      'non_android_and_cast_and_chromeos_chromium_gtests',
-      'non_android_chromium_gtests_no_nacl',
-    ],
-
     'chromium_mac_rel_isolated_scripts': [
       'chromedriver_py_tests_isolated_scripts',
       'components_perftests_isolated_scripts',
@@ -6167,7 +6003,6 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_win_and_linux_only',
-      'cr23_pixel_browser_tests_gtests',
       'fieldtrial_browser_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests_no_nacl',
@@ -6179,22 +6014,6 @@
 
     'chromium_win10_gtests_multiscreen_fyi': [
       'chromium_gtests_for_windows_multiscreen',
-    ],
-
-    'chromium_win10_gtests_once': [
-      'aura_gtests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_gtests_for_win_and_linux_only',
-      'cr23_pixel_browser_tests_gtests',
-      'cr23_win_gtests',
-      'fieldtrial_browser_tests',
-      'non_android_and_cast_and_chromeos_chromium_gtests',
-      'non_android_chromium_gtests_no_nacl',
-      'non_android_chromium_gtests_skia_gold',
-      'pixel_browser_tests_gtests',
-      'vr_platform_specific_chromium_gtests',
-      'win_specific_chromium_gtests',
     ],
 
     'chromium_win_dbg_isolated_scripts': [

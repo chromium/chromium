@@ -1,8 +1,0 @@
-# cr23_interactive_ui_tests that are expected to fail on mac bots:
--PermissionsFlowInteractiveUITest.CameraActivityIndicatorTest
--PermissionsFlowInteractiveUITest.CameraAndMicrophoneActivityIndicatorTest
--PermissionsFlowInteractiveUITest.MicrophoneActivityIndicatorTest
--PriceTrackingIconViewInteractiveTest.EnablePriceTrackOnPress
-
-# This may be a flaky failure unrelated to the cr23 code paths.
--SitePerProcessInteractivePDFTest.ContextMenuPositionForEmbeddedPDFInCrossOriginFrame

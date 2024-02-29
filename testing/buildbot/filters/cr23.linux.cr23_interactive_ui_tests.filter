@@ -1,5 +1,0 @@
-# cr23_interactive_ui_tests that are expected to fail on linux bots:
--PermissionsFlowInteractiveUITest.CameraActivityIndicatorTest
--PermissionsFlowInteractiveUITest.CameraAndMicrophoneActivityIndicatorTest
--PermissionsFlowInteractiveUITest.MicrophoneActivityIndicatorTest
--PriceTrackingIconViewInteractiveTest.EnablePriceTrackOnPress
