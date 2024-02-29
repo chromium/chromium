@@ -11321,6 +11321,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4873" label="DOMClobberedNotShadowedDocumentPropertyAccessed"/>
   <int value="4874" label="DOMClobberedShadowedFormPropertyAccessed"/>
   <int value="4875" label="DOMClobberedNotShadowedFormPropertyAccessed"/>
+  <int value="4876" label="TpcdCookieReadBlockedByAdHeuristics"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

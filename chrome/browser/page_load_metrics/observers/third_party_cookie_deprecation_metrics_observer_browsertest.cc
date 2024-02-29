@@ -1331,6 +1331,11 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
     histogram_tester.ExpectBucketCount(
         "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus",
         test_case.expected_status, 1);
+
+    bool is_read_blocked_by_ad_heuristics = test_case.expected_status == 20;
+    histogram_tester.ExpectBucketCount(
+        kWebFeatureHistogram, WebFeature::kTpcdCookieReadBlockedByAdHeuristics,
+        is_read_blocked_by_ad_heuristics);
   }
 }
 

@@ -340,6 +340,16 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieReadUseCounters(
 
     base::UmaHistogramEnumeration(
         "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus", status);
+
+    if (status == CookieReadStatus::kBlockedSkippedMetadataGrantAd ||
+        status == CookieReadStatus::kBlockedSkippedTrialAd ||
+        status == CookieReadStatus::kBlockedSkippedHeuristicsAd ||
+        status == CookieReadStatus::kBlockedSkippedTopLevelTrialAd) {
+      page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+          GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
+          std::vector<blink::mojom::WebFeature>{
+              blink::mojom::WebFeature::kTpcdCookieReadBlockedByAdHeuristics});
+    }
   }
 
   if (blocked_by_policy) {

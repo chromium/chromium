@@ -4238,6 +4238,7 @@ enum WebFeature {
   kDOMClobberedNotShadowedDocumentPropertyAccessed = 4873,
   kDOMClobberedShadowedFormPropertyAccessed = 4874,
   kDOMClobberedNotShadowedFormPropertyAccessed = 4875,
+  kTpcdCookieReadBlockedByAdHeuristics = 4876,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
