@@ -392,16 +392,6 @@ void BluetoothAdapterBlueZ::Init() {
           base::BindOnce(&BluetoothAdapterBlueZ::OnSetDevCoredumpError,
                          weak_ptr_factory_.GetWeakPtr()));
 #endif // BUILDFLAG(IS_CHROMEOS)
-
-  bluez::BluezDBusManager::Get()
-      ->GetBluetoothDebugManagerClient()
-      ->SetLLPrivacy(
-          base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy),
-          base::BindOnce(&BluetoothAdapterBlueZ::OnSetLLPrivacySuccess,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&BluetoothAdapterBlueZ::OnSetLLPrivacyError,
-                         weak_ptr_factory_.GetWeakPtr()));
-
   std::move(init_callback_).Run();
 }
 

@@ -5799,7 +5799,7 @@ const char kBluetoothFlossIsAvailabilityCheckNeededDescription[] =
     "bluetooth-use-floss is set. Enable this flag will bypass the check so "
     "that users can still enable Floss by bluetooth-use-floss.";
 
-const char kBluetoothUseLLPrivacyName[] = "Enable LL Privacy in BlueZ";
+const char kBluetoothUseLLPrivacyName[] = "Enable LL Privacy in Floss";
 const char kBluetoothUseLLPrivacyDescription[] =
     "Enable address resolution offloading to Bluetooth Controller if "
     "supported. Modifying this flag will cause Bluetooth Controller to reset.";
