@@ -2645,18 +2645,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   ForAllNonThrottledLocalFrameViews(
       [this, needed_update,
        &total_animations_count](LocalFrameView& frame_view) {
-        if (needed_update && paint_artifact_compositor_ &&
-            frame_view.UserScrollableAreas()) {
-          for (auto& scrollable_area : *frame_view.UserScrollableAreas()) {
-            const auto* properties = scrollable_area->GetLayoutBox()
-                                         ->FirstFragment()
-                                         .PaintProperties();
-            scrollable_area->SetShouldScrollOnMainThread(
-                !properties || !properties->Scroll() ||
-                paint_artifact_compositor_->GetMainThreadScrollingReasons(
-                    *properties->Scroll()));
-          }
-        }
         if (auto* scrollable_area = frame_view.GetScrollableArea())
           scrollable_area->UpdateCompositorScrollAnimations();
         if (const auto* animating_scrollable_areas =
@@ -3581,9 +3569,9 @@ void LocalFrameView::AddUserScrollableArea(
 
 void LocalFrameView::RemoveUserScrollableArea(
     PaintLayerScrollableArea* scrollable_area) {
-  if (!user_scrollable_areas_)
-    return;
-  user_scrollable_areas_->erase(scrollable_area);
+  if (user_scrollable_areas_) {
+    user_scrollable_areas_->erase(scrollable_area);
+  }
 }
 
 void LocalFrameView::AttachToLayout() {

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
@@ -1880,6 +1881,55 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_FALSE(scrollable_area->ScrollsOverflow());
   ASSERT_TRUE(scrollable_area->HorizontalScrollbar());
   EXPECT_TRUE(scrollable_area->HorizontalScrollbar()->Maximum());
+}
+
+class PaintLayerScrollableAreaWithWebFrameTest : public ::testing::Test {
+ public:
+  void SetUp() override { web_view_helper_.Initialize(); }
+  void TearDown() override { web_view_helper_.Reset(); }
+
+  Document& GetDocument() {
+    return *web_view_helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  }
+
+ private:
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper web_view_helper_;
+};
+
+// This test needs a WebLocalFrame for accurate main thread scrolling reasons.
+// Otherwise we'll force main-thread scrolling for reason kPopupNoThreadedInput
+// because threaded scrolling is not possible without a WebLocalFrame.
+TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
+       UpdateShouldAnimateScrollOnMainThread) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <div id="scroller"
+         style="width: 100px; height: 100px; background: red; overflow: hidden">
+      <div style="height: 2000px"></div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  scroller->scrollTo(0, 200);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* box = scroller->GetLayoutBox();
+  auto* scrollable_area = box->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+  EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
+  EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
+
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflow, CSSValueID::kAuto);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(scrollable_area->ShouldScrollOnMainThread());
+  EXPECT_TRUE(box->FirstFragment().PaintProperties()->Scroll());
+
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflow,
+                                   CSSValueID::kHidden);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(scrollable_area->ShouldScrollOnMainThread());
+  EXPECT_FALSE(box->FirstFragment().PaintProperties()->Scroll());
 }
 
 }  // namespace blink

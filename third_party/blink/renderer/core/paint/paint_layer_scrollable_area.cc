@@ -138,7 +138,6 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       is_scrollbar_freeze_root_(false),
       is_horizontal_scrollbar_frozen_(false),
       is_vertical_scrollbar_frozen_(false),
-      should_scroll_on_main_thread_(true),
       scrollbar_manager_(*this),
       has_last_committed_scroll_offset_(false),
       scroll_corner_(nullptr),
@@ -2526,17 +2525,22 @@ ScrollingCoordinator* PaintLayerScrollableArea::GetScrollingCoordinator()
 bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kPaintClean);
-  return HasBeenDisposed() || should_scroll_on_main_thread_;
-}
-
-void PaintLayerScrollableArea::SetShouldScrollOnMainThread(
-    bool scroll_on_main_thread) {
-  DCHECK_EQ(GetDocument()->Lifecycle().GetState(),
-            DocumentLifecycle::kPaintClean);
-  if (scroll_on_main_thread != should_scroll_on_main_thread_) {
-    should_scroll_on_main_thread_ = scroll_on_main_thread;
-    MainThreadScrollingDidChange();
+  if (HasBeenDisposed()) {
+    return true;
   }
+
+  if (const auto* paint_artifact_compositor =
+          GetLayoutBox()->GetFrameView()->GetPaintArtifactCompositor()) {
+    if (const auto* properties =
+            GetLayoutBox()->FirstFragment().PaintProperties()) {
+      if (const auto* scroll = properties->Scroll()) {
+        return paint_artifact_compositor->GetMainThreadScrollingReasons(
+                   *scroll) !=
+               cc::MainThreadScrollingReason::kNotScrollingOnMain;
+      }
+    }
+  }
+  return true;
 }
 
 bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
