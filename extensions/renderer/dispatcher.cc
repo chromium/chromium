@@ -924,86 +924,6 @@ std::vector<Dispatcher::JsResourceInfo> Dispatcher::GetJsResources() {
   return resources;
 }
 
-// NOTE: please use the naming convention "foo_natives" for these.
-// static
-void Dispatcher::RegisterNativeHandlers(
-    ModuleSystem* module_system,
-    ScriptContext* context,
-    Dispatcher* dispatcher,
-    NativeExtensionBindingsSystem* bindings_system,
-    V8SchemaRegistry* v8_schema_registry) {
-  module_system->RegisterNativeHandler(
-      "chrome",
-      std::unique_ptr<NativeHandler>(new ChromeNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "logging",
-      std::unique_ptr<NativeHandler>(new LoggingNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "schema_registry",
-      v8_schema_registry->AsNativeHandler(context->isolate()));
-  module_system->RegisterNativeHandler(
-      "test_features",
-      std::unique_ptr<NativeHandler>(new TestFeaturesNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "test_native_handler",
-      std::unique_ptr<NativeHandler>(new TestNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "user_gestures",
-      std::unique_ptr<NativeHandler>(new UserGesturesNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "utils", std::unique_ptr<NativeHandler>(new UtilsNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "v8_context",
-      std::unique_ptr<NativeHandler>(new V8ContextNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "messaging_natives", std::make_unique<MessagingBindings>(context));
-  module_system->RegisterNativeHandler(
-      "apiDefinitions", std::unique_ptr<NativeHandler>(
-                            new ApiDefinitionsNatives(dispatcher, context)));
-  module_system->RegisterNativeHandler(
-      "setIcon", std::unique_ptr<NativeHandler>(new SetIconNatives(context)));
-  module_system->RegisterNativeHandler(
-      "activityLogger", std::make_unique<APIActivityLogger>(
-                            bindings_system->GetIPCMessageSender(), context));
-  module_system->RegisterNativeHandler(
-      "renderFrameObserverNatives",
-      std::unique_ptr<NativeHandler>(new RenderFrameObserverNatives(context)));
-
-  // Natives used by multiple APIs.
-  module_system->RegisterNativeHandler(
-      "file_system_natives",
-      std::unique_ptr<NativeHandler>(new FileSystemNatives(context)));
-  module_system->RegisterNativeHandler(
-      "service_worker_natives",
-      std::make_unique<ServiceWorkerNatives>(context));
-
-  // Custom bindings.
-  module_system->RegisterNativeHandler(
-      "app_window_natives",
-      std::unique_ptr<NativeHandler>(new AppWindowCustomBindings(context)));
-  module_system->RegisterNativeHandler(
-      "blob_natives",
-      std::unique_ptr<NativeHandler>(new BlobNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "context_menus",
-      std::unique_ptr<NativeHandler>(new ContextMenusCustomBindings(context)));
-  module_system->RegisterNativeHandler(
-      "guest_view_internal", std::unique_ptr<NativeHandler>(
-                                 new GuestViewInternalCustomBindings(context)));
-  module_system->RegisterNativeHandler(
-      "id_generator",
-      std::unique_ptr<NativeHandler>(new IdGeneratorCustomBindings(context)));
-  module_system->RegisterNativeHandler(
-      "process", std::make_unique<ProcessInfoNativeHandler>(context));
-  module_system->RegisterNativeHandler(
-      "runtime",
-      std::unique_ptr<NativeHandler>(new RuntimeCustomBindings(context)));
-
-  module_system->RegisterNativeHandler(
-      "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
-                                context, bindings_system));
-}
-
 void Dispatcher::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
   // This base::Unretained() is safe, because:
@@ -1495,8 +1415,65 @@ void Dispatcher::RegisterNativeHandlers(
     ScriptContext* context,
     NativeExtensionBindingsSystem* bindings_system,
     V8SchemaRegistry* v8_schema_registry) {
-  RegisterNativeHandlers(module_system, context, this, bindings_system,
-                         v8_schema_registry);
+  module_system->RegisterNativeHandler(
+      "chrome", std::make_unique<ChromeNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "logging", std::make_unique<LoggingNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "schema_registry",
+      v8_schema_registry->AsNativeHandler(context->isolate()));
+  module_system->RegisterNativeHandler(
+      "test_features", std::make_unique<TestFeaturesNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "test_native_handler", std::make_unique<TestNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "user_gestures", std::make_unique<UserGesturesNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "utils", std::make_unique<UtilsNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "v8_context", std::make_unique<V8ContextNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "messaging_natives", std::make_unique<MessagingBindings>(context));
+  module_system->RegisterNativeHandler(
+      "apiDefinitions",
+      std::make_unique<ApiDefinitionsNatives>(v8_schema_registry, context));
+  module_system->RegisterNativeHandler(
+      "setIcon", std::make_unique<SetIconNatives>(context));
+  module_system->RegisterNativeHandler(
+      "activityLogger", std::make_unique<APIActivityLogger>(
+                            bindings_system->GetIPCMessageSender(), context));
+  module_system->RegisterNativeHandler(
+      "renderFrameObserverNatives",
+      std::make_unique<RenderFrameObserverNatives>(context));
+
+  // Natives used by multiple APIs.
+  module_system->RegisterNativeHandler(
+      "file_system_natives", std::make_unique<FileSystemNatives>(context));
+  module_system->RegisterNativeHandler(
+      "service_worker_natives",
+      std::make_unique<ServiceWorkerNatives>(context));
+
+  // Custom bindings.
+  module_system->RegisterNativeHandler(
+      "app_window_natives", std::make_unique<AppWindowCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "blob_natives", std::make_unique<BlobNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "context_menus", std::make_unique<ContextMenusCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "guest_view_internal",
+      std::make_unique<GuestViewInternalCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "id_generator", std::make_unique<IdGeneratorCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "process", std::make_unique<ProcessInfoNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "runtime", std::make_unique<RuntimeCustomBindings>(context));
+
+  module_system->RegisterNativeHandler(
+      "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
+                                context, bindings_system));
+
   delegate_->RegisterNativeHandlers(this, module_system, bindings_system,
                                     context);
 }

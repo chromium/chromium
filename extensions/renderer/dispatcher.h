@@ -204,12 +204,6 @@ class Dispatcher : public content::RenderThreadObserver,
   };
   // Returns a list of resources for the JS modules to add to the source map.
   static std::vector<JsResourceInfo> GetJsResources();
-  static void RegisterNativeHandlers(
-      ModuleSystem* module_system,
-      ScriptContext* context,
-      Dispatcher* dispatcher,
-      NativeExtensionBindingsSystem* bindings_system,
-      V8SchemaRegistry* v8_schema_registry);
 
   NativeExtensionBindingsSystem* bindings_system() {
     return bindings_system_.get();

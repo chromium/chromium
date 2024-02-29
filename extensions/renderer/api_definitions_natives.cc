@@ -7,16 +7,18 @@
 #include "base/functional/bind.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
-#include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/v8_schema_registry.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-function-callback.h"
 
 namespace extensions {
 
-ApiDefinitionsNatives::ApiDefinitionsNatives(Dispatcher* dispatcher,
-                                             ScriptContext* context)
-    : ObjectBackedNativeHandler(context), dispatcher_(dispatcher) {}
+ApiDefinitionsNatives::ApiDefinitionsNatives(
+    V8SchemaRegistry* v8_schema_registry,
+    ScriptContext* context)
+    : ObjectBackedNativeHandler(context),
+      v8_schema_registry_(v8_schema_registry) {}
 
 void ApiDefinitionsNatives::AddRoutes() {
   RouteHandlerFunction(
@@ -37,7 +39,7 @@ void ApiDefinitionsNatives::GetExtensionAPIDefinitionsForTest(
     }
   }
   args.GetReturnValue().Set(
-      dispatcher_->v8_schema_registry()->GetSchemas(args.GetIsolate(), apis));
+      v8_schema_registry_->GetSchemas(args.GetIsolate(), apis));
 }
 
 }  // namespace extensions
