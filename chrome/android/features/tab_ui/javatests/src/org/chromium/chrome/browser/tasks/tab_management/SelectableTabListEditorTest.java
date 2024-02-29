@@ -156,7 +156,7 @@ public class SelectableTabListEditorTest {
         boolean isTabSwitcherReady =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return cta.getTabSwitcherForTesting() != null;
+                            return cta.getTabSwitcherSupplierForTesting().get() != null;
                         });
         if (!isTabSwitcherReady) {
             TabUiTestHelper.enterTabSwitcher(cta);

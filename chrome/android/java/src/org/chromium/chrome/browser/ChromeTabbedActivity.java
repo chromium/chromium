@@ -3744,8 +3744,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return mStartSurfaceSupplier.get();
     }
 
-    public TabSwitcher getTabSwitcherForTesting() {
-        return mTabSwitcherSupplier.get();
+    public OneshotSupplier<TabSwitcher> getTabSwitcherSupplierForTesting() {
+        return mTabSwitcherSupplier;
     }
 
     private ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
