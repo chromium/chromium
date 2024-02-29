@@ -12,6 +12,7 @@
 #import "components/grit/components_scaled_resources.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -30,7 +30,7 @@ namespace {
 // Credit Card icon corner radius.
 CGFloat const kCreditCardIconCornerRadius = 5;
 
-// Default spacing use for the views in the bottom sheet.
+// Default spacing used for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
 
 // Spacing use for the spacing before the logo title in the bottom sheet.
@@ -42,29 +42,11 @@ CGFloat const kSpacingAfterImage = 4;
 // Height of the logo used as the title of the bottom sheet.
 CGFloat const kTitleLogoHeight = 24;
 
-// Custom detent identifier for when the bottom sheet is minimized.
-NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
-
-// Default custom detent identifier.
-NSString* const kCustomDetentIdentifier = @"customDetent";
-
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetViewController () <
     ConfirmationAlertActionHandler,
-    UISheetPresentationControllerDelegate,
     UITableViewDataSource> {
-  // If YES: the table view is currently showing 2.5 credit card suggestions.
-  // If NO: the table view is currently showing all credit card suggestions.
-  BOOL _tableViewIsMinimized;
-
-  // Height constraint for the bottom sheet when showing 2.5 credit card
-  // suggestions.
-  NSLayoutConstraint* _minimizedHeightConstraint;
-
-  // Height constraint for the bottom sheet when showing all suggestions.
-  NSLayoutConstraint* _heightConstraint;
-
   // List of credit cards and icon for the bottom sheet.
   NSArray<CreditCardData*>* _creditCardData;
 
@@ -80,12 +62,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 // Whether the bottom sheet will be disabled on exit. Default is YES.
 @property(nonatomic, assign) BOOL disableBottomSheetOnExit;
-
-// YES if the expanded bottom sheet size takes the whole screen.
-@property(nonatomic, assign) BOOL expandSizeTooLarge;
-
-// Keep track of the minimized state height.
-@property(nonatomic, assign) std::optional<CGFloat> minimizedStateHeight;
 
 @end
 
@@ -106,11 +82,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  // If the user has more than 2 credit cards, we want to start with the
-  // minimized bottom sheet.
-  _tableViewIsMinimized = _creditCardData.count > 2;
-
-  self.view.accessibilityViewIsModal = YES;
   self.image = [self titleImage];
   self.imageViewAccessibilityLabel = [NSString
       stringWithFormat:@"%@. %@",
@@ -142,9 +113,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
       DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
-
-  // Set selection to the first one.
-  [self selectFirstRow];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -161,20 +129,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     // Make sure the GPay logo matches the new trait collection.
     self.image = [self titleImage];
   }
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    self.minimizedStateHeight = std::nullopt;
-    [self updateHeight];
-  }
-}
-
-- (void)viewIsAppearing:(BOOL)animated {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
-  [super viewIsAppearing:animated];
-#endif
-
-  [self updateHeight];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -183,13 +137,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     [self.delegate disableBottomSheet];
   }
   [self.handler viewDidDisappear:animated];
-}
-
-- (CGFloat)initialHeight {
-  if (!self.minimizedStateHeight.has_value()) {
-    self.minimizedStateHeight = [self preferredHeightForContent];
-  }
-  return self.minimizedStateHeight.value();
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
@@ -201,7 +148,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   self.showGooglePayLogo = showGooglePayLogo;
   if (requiresUpdate) {
     [self reloadTableViewData];
-    [self updateHeight];
   }
 }
 
@@ -210,21 +156,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 }
 
 #pragma mark - UITableViewDelegate
-
-// It is called when the table view is about to draw a cell for a particular
-// row.
-- (void)tableView:(UITableView*)tableView
-      willDisplayCell:(UITableViewCell*)cell
-    forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (_creditCardData.count > 1) {
-    cell.userInteractionEnabled = YES;
-    return;
-  }
-  // If only one suggestion exists, the item should not be selectable,
-  // but mark the cell as selected for the user.
-  cell.userInteractionEnabled = NO;
-  cell.accessoryType = UITableViewCellAccessoryCheckmark;
-}
 
 // Long press open context menu.
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
@@ -269,7 +200,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return _creditCardData.count;
+  return [self rowCount];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
@@ -291,7 +222,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   NSInteger index = [self selectedRow];
   [self.handler primaryButtonTapped:_creditCardData[index]];
 
-  if (_creditCardData.count > 1) {
+  if ([self rowCount] > 1) {
     base::UmaHistogramCounts100("Autofill.TouchToFill.CreditCard.SelectedIndex",
                                 (int)index);
   }
@@ -299,6 +230,32 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 - (void)confirmationAlertSecondaryAction {
   [self.handler secondaryButtonTapped];
+}
+
+#pragma mark - TableViewBottomSheetViewController
+
+- (UITableView*)createTableView {
+  UITableView* tableView = [super createTableView];
+
+  tableView.dataSource = self;
+  [tableView registerClass:TableViewDetailIconCell.class
+      forCellReuseIdentifier:@"cell"];
+
+  return tableView;
+}
+
+- (NSUInteger)rowCount {
+  return _creditCardData.count;
+}
+
+- (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
+  TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
+  // Setup UI same as real cell.
+  CGFloat tableWidth = [self tableViewWidth];
+  cell = [self layoutCell:cell
+        forTableViewWidth:tableWidth
+              atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
 }
 
 #pragma mark - Private
@@ -360,115 +317,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   return l10n_util::GetNSStringF(
       IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
       base::SysNSStringToUTF16([_creditCardData[row] accessibleCardName]), u"",
-      base::NumberToString16(row + 1),
-      base::NumberToString16(_creditCardData.count));
-}
-
-// Creates the payments bottom sheet's table view.
-- (UITableView*)createTableView {
-  UITableView* tableView = [super createTableView];
-
-  tableView.dataSource = self;
-  [tableView registerClass:TableViewDetailIconCell.class
-      forCellReuseIdentifier:@"cell"];
-
-  _minimizedHeightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
-                                [self initialNumberOfVisibleCells]];
-  _minimizedHeightConstraint.priority = UILayoutPriorityDefaultLow;
-  _heightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
-                                _creditCardData.count];
-
-  _minimizedHeightConstraint.active = _tableViewIsMinimized;
-  _heightConstraint.active = !_tableViewIsMinimized;
-
-  return tableView;
-}
-
-// Updates the bottom sheet's height based on the number of credit cards to
-// show.
-- (void)updateHeight {
-  BOOL useMinimizedState = _tableViewIsMinimized;
-
-  if (_creditCardData.count) {
-    [self.view layoutIfNeeded];
-    CGFloat fullHeight = [self computeTableViewHeightForAllCells] + kSpacing;
-    if (fullHeight > 0) {
-      // Update height constraints for the table view.
-      _heightConstraint.constant = fullHeight;
-
-      if (_creditCardData.count > 2) {
-        _minimizedHeightConstraint.constant =
-            [self computeTableViewHeightForMinimizedState];
-      } else {
-        _minimizedHeightConstraint.constant = fullHeight;
-      }
-
-      // Do not use minized state if it is larger than the superview height.
-      useMinimizedState &=
-          [self initialHeight] < self.parentViewControllerHeight;
-    }
-  }
-
-  // Update the custom detent with the correct initial height for the bottom
-  // sheet. (Initial height is not calculated properly in -viewDidLoad, but we
-  // need to setup the bottom sheet in that method so there is not a delay when
-  // showing the table view and the action buttons).
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  presentationController.delegate = self;
-  // Setup the minimized height (if the user has more than 2 credit cards).
-  NSMutableArray* currentDetents = [[NSMutableArray alloc] init];
-  if (@available(iOS 16, *)) {
-    if (useMinimizedState) {
-      // Show gradient view when the user is in minimized state to show that the
-      // view can be scrolled.
-      [self displayGradientView:YES];
-
-      CGFloat bottomSheetHeight = [self initialHeight];
-      auto detentBlock = ^CGFloat(
-          id<UISheetPresentationControllerDetentResolutionContext> context) {
-        return bottomSheetHeight;
-      };
-      UISheetPresentationControllerDetent* customDetent =
-          [UISheetPresentationControllerDetent
-              customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                                resolver:detentBlock];
-      [currentDetents addObject:customDetent];
-    }
-  }
-
-  // Done calculating the height for the bottom sheet for 2.5 credit card
-  // suggestions, disable minimized height constraint.
-  _minimizedHeightConstraint.active = NO;
-  _heightConstraint.active = YES;
-
-  // Calculate the full height of the bottom sheet with the minimized height
-  // constraint disabled.
-  if (@available(iOS 16, *)) {
-    CGFloat fullHeight = [self preferredHeightForContent];
-    auto fullHeightBlock = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      self.expandSizeTooLarge = (fullHeight > context.maximumDetentValue);
-      return self.expandSizeTooLarge ? context.maximumDetentValue : fullHeight;
-    };
-    UISheetPresentationControllerDetent* customDetentExpand =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomDetentIdentifier
-                              resolver:fullHeightBlock];
-    [currentDetents addObject:customDetentExpand];
-    presentationController.detents = currentDetents;
-    presentationController.selectedDetentIdentifier =
-        useMinimizedState ? kCustomMinimizedDetentIdentifier
-                          : kCustomDetentIdentifier;
-  }
-}
-
-// Returns whether the provided index path points to the last row of the table
-// view.
-- (BOOL)isLastRow:(NSIndexPath*)indexPath {
-  return NSUInteger(indexPath.row) == (_creditCardData.count - 1);
+      base::NumberToString16(row + 1), base::NumberToString16([self rowCount]));
 }
 
 // Creates the UI action used to open the payment methods view.
@@ -514,48 +363,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
                         handler:showDetailsButtonTapHandler];
 }
 
-- (CGFloat)initialNumberOfVisibleCells {
-  return 2.5;
-}
-
-- (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
-  // Setup UI same as real cell.
-  cell = [self layoutCell:cell
-        forTableViewWidth:[self tableViewWidth]
-              atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-  return [cell systemLayoutSizeFittingSize:CGSizeMake([self tableViewWidth], 1)]
-      .height;
-}
-
-// Mocks the all the cells to calculate the real table view height.
-- (CGFloat)computeTableViewHeightForAllCells {
-  CGFloat height = 0;
-  for (NSUInteger i = 0; i < _creditCardData.count; i++) {
-    CGFloat cellHeight = [self computeTableViewCellHeightAtIndex:i];
-    height += cellHeight;
-  }
-  return height;
-}
-
-// Mocks the cells to calculate the real table view height in minized state.
-- (CGFloat)computeTableViewHeightForMinimizedState {
-  CHECK(_creditCardData.count > [self initialNumberOfVisibleCells]);
-  CGFloat height = 0;
-  NSInteger count =
-      static_cast<NSInteger>(floor([self initialNumberOfVisibleCells]));
-  for (NSInteger i = 0; i <= count; i++) {
-    CGFloat cellHeight = [self computeTableViewCellHeightAtIndex:i];
-    if (i == count) {
-      CGFloat diff = abs([self initialNumberOfVisibleCells] - count);
-      height += cellHeight * diff;
-    } else {
-      height += cellHeight;
-    }
-  }
-  return height;
-}
-
 // Layouts the cell for the table view with the payment info at the specific
 // index path.
 - (TableViewDetailIconCell*)layoutCell:(TableViewDetailIconCell*)cell
@@ -567,6 +374,8 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
+  cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  cell.textLabel.numberOfLines = 1;
 
   // If we have the potential presence of a virtual card, the textLabel on its
   // own is no longer a unique identifier, so we include the description.
@@ -586,36 +395,10 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
          cornerRadius:kCreditCardIconCornerRadius];
   [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
 
-  // Make separator invisible on last cell
-  CGFloat separatorLeftMargin =
-      [self isLastRow:indexPath] ? tableViewWidth : kTableViewHorizontalSpacing;
-  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
-
-  if (_creditCardData.count > 1 && [self selectedRow] == indexPath.row) {
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-  } else {
-    cell.accessoryType = UITableViewCellAccessoryNone;
-  }
-  cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.textLabel.numberOfLines = 1;
+  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
+                                                  atIndexPath:indexPath];
+  cell.accessoryType = [self accessoryType:indexPath];
   return cell;
-}
-
-#pragma mark - UISheetPresentationControllerDelegate
-
-- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
-    (UISheetPresentationController*)sheetPresentationController
-    API_AVAILABLE(ios(16)) {
-  // Show the gradient view to let the user know that the view can be scrolled
-  // when the bottom sheet is in minimized state or if the expanded state takes
-  // more space than the screen.
-  NSString* selectedDetentIdentifier =
-      sheetPresentationController.selectedDetentIdentifier;
-  [self displayGradientView:selectedDetentIdentifier ==
-                                kCustomMinimizedDetentIdentifier ||
-                            (selectedDetentIdentifier ==
-                                 kCustomDetentIdentifier &&
-                             self.expandSizeTooLarge)];
 }
 
 #pragma mark - ConfirmationAlertViewController

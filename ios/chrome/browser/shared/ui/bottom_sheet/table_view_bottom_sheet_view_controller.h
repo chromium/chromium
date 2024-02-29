@@ -12,32 +12,24 @@
 @interface TableViewBottomSheetViewController
     : BottomSheetViewController <UITableViewDelegate>
 
-// Creates the table view which will display suggestions on the bottom sheet.
-- (UITableView*)createTableView;
-
-// Performs the expand bottom sheet animation.
-- (void)expand:(NSInteger)numberOfRows;
+// Height of the parent view controller.
+@property(nonatomic, assign) CGFloat parentViewControllerHeight;
 
 // Request to relaod data from the table view's data source.
 - (void)reloadTableViewData;
 
-// Returns the estimated height of a single row in the table view.
-- (CGFloat)tableViewEstimatedRowHeight;
-
 // Returns the currently selected row.
 - (NSInteger)selectedRow;
-
-// Returns the height of the table view content size.
-- (CGFloat)tableViewContentSizeHeight;
 
 // Returns the width of the table view.
 - (CGFloat)tableViewWidth;
 
-// Select the first row in the table view.
-- (void)selectFirstRow;
+// Returns the cell's separator inset for the provided index path.
+- (UIEdgeInsets)separatorInsetForTableViewWidth:(CGFloat)tableViewWidth
+                                    atIndexPath:(NSIndexPath*)indexPath;
 
-// Returns the initial number of cells the user sees.
-- (CGFloat)initialNumberOfVisibleCells;
+// Returns the cell's accessory type for the provided index path.
+- (UITableViewCellAccessoryType)accessoryType:(NSIndexPath*)indexPath;
 
 @end
 

@@ -104,6 +104,8 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
     return;
   }
 
+  self.viewController.parentViewControllerHeight =
+      self.baseViewController.view.frame.size.height;
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES

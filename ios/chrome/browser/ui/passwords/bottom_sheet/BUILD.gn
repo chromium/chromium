@@ -73,7 +73,6 @@ source_set("bottom_sheet_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
   ]
 }

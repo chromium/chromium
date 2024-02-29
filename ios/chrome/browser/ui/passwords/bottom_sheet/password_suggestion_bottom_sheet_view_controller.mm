@@ -10,6 +10,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -40,16 +40,6 @@ CGFloat const kSpacingAfterTitle = 4;
     ConfirmationAlertActionHandler,
     UITableViewDataSource,
     UITableViewDelegate> {
-  // If YES: the table view is currently showing a single suggestion
-  // If NO: the table view is currently showing all suggestions
-  BOOL _tableViewIsMinimized;
-
-  // Height constraint for the bottom sheet when showing a single suggestion.
-  NSLayoutConstraint* _minimizedHeightConstraint;
-
-  // Height constraint for the bottom sheet when showing all suggestions.
-  NSLayoutConstraint* _fullHeightConstraint;
-
   // List of suggestions in the bottom sheet
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
   NSArray<FormSuggestion*>* _suggestions;
@@ -89,10 +79,6 @@ CGFloat const kSpacingAfterTitle = 4;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  _tableViewIsMinimized = YES;
-
-  self.view.accessibilityViewIsModal = YES;
-
   // Image needs to be above title view, which is the case only when the latter
   // is a `titleView`. In more common case without the image, title should be an
   // `aboveTitleView`.
@@ -131,40 +117,6 @@ CGFloat const kSpacingAfterTitle = 4;
   [super viewDidLoad];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:
-           (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-  if (!_tableViewIsMinimized) {
-    // Recompute sheet height and enable/disable scrolling if required.
-    __weak __typeof(self) weakSelf = self;
-    [coordinator
-        animateAlongsideTransition:nil
-                        completion:^(
-                            id<UIViewControllerTransitionCoordinatorContext>
-                                context) {
-                          [weakSelf expand];
-                        }];
-  }
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self updateHeightConstraints];
-  }
-}
-
-- (void)viewIsAppearing:(BOOL)animated {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
-  [super viewIsAppearing:animated];
-#endif
-
-  [self updateHeightConstraints];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
@@ -179,8 +131,12 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions
              andDomain:(NSString*)domain {
+  BOOL requiresUpdate = (_suggestions != nil);
   _suggestions = suggestions;
   _domain = domain;
+  if (requiresUpdate) {
+    [self reloadTableViewData];
+  }
 }
 
 - (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle {
@@ -201,57 +157,6 @@ CGFloat const kSpacingAfterTitle = 4;
 }
 
 #pragma mark - UITableViewDelegate
-
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (_suggestions.count <= 1) {
-    return;
-  }
-
-  if (_tableViewIsMinimized) {
-    _tableViewIsMinimized = NO;
-    TableViewURLCell* cell = base::apple::ObjCCastStrict<TableViewURLCell>(
-        [tableView cellForRowAtIndexPath:indexPath]);
-
-    cell.accessoryView = nil;
-    // Make separator visible on first cell.
-    cell.separatorInset =
-        UIEdgeInsetsMake(0.f, kTableViewHorizontalSpacing, 0.f, 0.f);
-    // Remove the portion of the accessibility label mentioning that the user
-    // can tap for more passwords now that the table view is no longer
-    // minimized.
-    cell.accessibilityLabel = [self cellAccessibilityLabel:cell
-                                               atIndexPath:indexPath];
-
-    [self addRemainingRowsToTableView:tableView];
-
-    // Update table view height.
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:0.1
-                     animations:^{
-                       [weakSelf expandTableView];
-                     }];
-
-    [self expand];
-  }
-
-  [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-}
-
-// It is called when the table view is about to draw a cell for a particular
-// row.
-- (void)tableView:(UITableView*)tableView
-      willDisplayCell:(UITableViewCell*)cell
-    forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (_suggestions.count > 1) {
-    cell.userInteractionEnabled = YES;
-    return;
-  }
-  // If only one suggestion exists, the item should not be selectable,
-  // but mark the cell as selected for the user.
-  cell.userInteractionEnabled = NO;
-  cell.accessoryType = UITableViewCellAccessoryCheckmark;
-}
 
 // Long press open context menu.
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
@@ -298,11 +203,10 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return _tableViewIsMinimized ? [self initialNumberOfVisibleCells]
-                               : _suggestions.count;
+  return [self rowCount];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
   return 1;
 }
 
@@ -344,6 +248,32 @@ CGFloat const kSpacingAfterTitle = 4;
   }
 }
 
+#pragma mark - TableViewBottomSheetViewController
+
+- (UITableView*)createTableView {
+  UITableView* tableView = [super createTableView];
+
+  tableView.dataSource = self;
+  [tableView registerClass:TableViewURLCell.class
+      forCellReuseIdentifier:@"cell"];
+
+  return tableView;
+}
+
+- (NSUInteger)rowCount {
+  return _suggestions.count;
+}
+
+- (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
+  TableViewURLCell* cell = [[TableViewURLCell alloc] init];
+  // Setup UI same as real cell.
+  CGFloat tableWidth = [self tableViewWidth];
+  cell = [self layoutCell:cell
+        forTableViewWidth:tableWidth
+              atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+}
+
 #pragma mark - Private
 
 // Configures the title view of this ViewController.
@@ -366,28 +296,6 @@ CGFloat const kSpacingAfterTitle = 4;
              : username;
 }
 
-// Creates the password bottom sheet's table view, initially at minimized
-// height.
-- (UITableView*)createTableView {
-  UITableView* tableView = [super createTableView];
-
-  tableView.dataSource = self;
-  [tableView registerClass:TableViewURLCell.class
-      forCellReuseIdentifier:@"cell"];
-
-  _minimizedHeightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
-                                [self initialNumberOfVisibleCells]];
-  _minimizedHeightConstraint.active = YES;
-
-  _fullHeightConstraint = [tableView.heightAnchor
-      constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
-                                _suggestions.count];
-  _fullHeightConstraint.active = NO;
-
-  return tableView;
-}
-
 // Loads the favicon associated with the provided cell.
 // Defaults to the globe symbol if no URL is associated with the cell.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
@@ -405,50 +313,14 @@ CGFloat const kSpacingAfterTitle = 4;
   [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
 }
 
-// Sets the password bottom sheet's table view to full height.
-- (void)expandTableView {
-  _minimizedHeightConstraint.active = NO;
-  _fullHeightConstraint.active = YES;
-  [self.view layoutIfNeeded];
-}
-
 // Notifies the delegate that a password suggestion was selected by the user.
 - (void)didSelectSuggestion {
   NSInteger index = [self selectedRow];
   [self.delegate didSelectSuggestion:index];
 
-  if (_suggestions.count > 1) {
+  if ([self rowCount] > 1) {
     base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
                                 (int)index);
-  }
-}
-
-// Returns whether the provided index path points to the last row of the table
-// view.
-- (BOOL)isLastRow:(NSIndexPath*)indexPath {
-  return NSUInteger(indexPath.row) == (_suggestions.count - 1);
-}
-
-// Performs the expand bottom sheet animation.
-- (void)expand {
-  [self expand:_suggestions.count];
-}
-
-// Starting with a table view containing a single suggestion, add all other
-// suggestions to the table view.
-- (void)addRemainingRowsToTableView:(UITableView*)tableView {
-  NSUInteger currentNumberOfRows = [tableView numberOfRowsInSection:0];
-  NSUInteger maximumNumberOfRows = _suggestions.count;
-  if (maximumNumberOfRows > currentNumberOfRows) {
-    [tableView beginUpdates];
-    NSMutableArray<NSIndexPath*>* indexPaths = [NSMutableArray
-        arrayWithCapacity:maximumNumberOfRows - currentNumberOfRows];
-    for (NSUInteger i = currentNumberOfRows; i < maximumNumberOfRows; i++) {
-      [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-    }
-    [tableView insertRowsAtIndexPaths:indexPaths
-                     withRowAnimation:UITableViewRowAnimationNone];
-    [tableView endUpdates];
   }
 }
 
@@ -491,41 +363,6 @@ CGFloat const kSpacingAfterTitle = 4;
                         handler:showDetailsButtonTapHandler];
 }
 
-// Mocks the cells to calculate the real table view height.
-- (CGFloat)computeTableViewHeightForCellCount:(NSUInteger)count {
-  CGFloat height = 0;
-  for (NSUInteger i = 0; i < count; i++) {
-    TableViewURLCell* cell = [[TableViewURLCell alloc] init];
-    // Setup UI same as real cell.
-    cell = [self layoutCell:cell
-          forTableViewWidth:[self tableViewWidth]
-                atIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-    CGFloat cellHeight =
-        [cell systemLayoutSizeFittingSize:CGSizeMake([self tableViewWidth], 1)]
-            .height;
-    height += cellHeight;
-  }
-  return height;
-}
-
-// Updates the bottom sheet's height constraints.
-- (void)updateHeightConstraints {
-  if (_suggestions.count) {
-    [self.view layoutIfNeeded];
-    // Update height constraints for the table view.
-    CGFloat fullHeight =
-        [self computeTableViewHeightForCellCount:_suggestions.count];
-    if (fullHeight > 0) {
-      _fullHeightConstraint.constant = fullHeight;
-    }
-    CGFloat minimizedHeight = [self
-        computeTableViewHeightForCellCount:[self initialNumberOfVisibleCells]];
-    if (minimizedHeight > 0) {
-      _minimizedHeightConstraint.constant = minimizedHeight;
-    }
-  }
-}
-
 // Returns the accessibility label for the given cell at the provided index
 // path.
 - (NSString*)cellAccessibilityLabel:(TableViewURLCell*)cell
@@ -534,7 +371,7 @@ CGFloat const kSpacingAfterTitle = 4;
                                  base::SysNSStringToUTF16(cell.titleLabel.text),
                                  base::SysNSStringToUTF16(_domain),
                                  base::NumberToString16(indexPath.row + 1),
-                                 base::NumberToString16(_suggestions.count));
+                                 base::NumberToString16([self rowCount]));
 }
 
 // Layouts the cell for the table view with the password form suggestion at the
@@ -550,20 +387,16 @@ CGFloat const kSpacingAfterTitle = 4;
   // and URL.
   cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  cell.titleLabel.numberOfLines = 1;
   cell.URLLabel.text = _domain;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  cell.URLLabel.numberOfLines = 1;
   cell.URLLabel.hidden = NO;
   cell.accessibilityLabel = [self cellAccessibilityLabel:cell
                                              atIndexPath:indexPath];
-
-  cell.userInteractionEnabled = YES;
-
-  // Make separator invisible on last cell
-  CGFloat separatorLeftMargin =
-      (_tableViewIsMinimized || [self isLastRow:indexPath])
-          ? tableViewWidth
-          : kTableViewHorizontalSpacing;
-  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
+  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
+                                                  atIndexPath:indexPath];
+  cell.accessoryType = [self accessoryType:indexPath];
 
   [cell
       setFaviconContainerBackgroundColor:
@@ -574,18 +407,6 @@ CGFloat const kSpacingAfterTitle = 4;
   cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
-  if (_tableViewIsMinimized && (_suggestions.count > 1)) {
-    // The table view is showing a single suggestion and the chevron down
-    // symbol, which can be tapped in order to expand the list of suggestions.
-    cell.accessoryView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolTemplateWithPointSize(
-                          kChevronDownSymbol, kSymbolAccessoryPointSize)];
-    cell.accessoryView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
-    cell.accessibilityLabel = [NSString
-        stringWithFormat:@"%@. %@", cell.accessibilityLabel,
-                         l10n_util::GetNSString(
-                             IDS_IOS_PASSWORD_BOTTOM_SHEET_MORE_PASSWORDS)];
-  }
   [self loadFaviconAtIndexPath:indexPath forCell:cell];
   return cell;
 }
