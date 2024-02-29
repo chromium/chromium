@@ -544,6 +544,7 @@ void QuickStartController::FinishAccountCreation() {
       /*sync_trusted_vault_keys=*/std::nullopt,
       /*challenge_response_key=*/std::nullopt,
       /*user_context=*/user_context.get());
+  user_context->SetAuthCode(gaia_creds_.auth_code);
 
   if (LoginDisplayHost::default_host()) {
     LoginDisplayHost::default_host()->CompleteLogin(*user_context);
