@@ -217,7 +217,7 @@ void AutofillPopupControllerImpl::Show(
                    controller->view_->OverlapsWithPictureInPictureWindow();
           },
           GetWeakPtr());
-  popup_hide_helper_ = std::make_unique<AutofillPopupHideHelper>(
+  popup_hide_helper_.emplace(
       web_contents_.get(), rfh->GetGlobalId(), std::move(hiding_params),
       std::move(hiding_callback), std::move(pip_detection_callback));
 

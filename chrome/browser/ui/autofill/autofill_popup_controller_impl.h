@@ -284,7 +284,7 @@ class AutofillPopupControllerImpl
   base::WeakPtr<AutofillPopupControllerImpl> sub_popup_controller_;
 
   // This is a helper which detects events that should hide the popup.
-  std::unique_ptr<AutofillPopupHideHelper> popup_hide_helper_;
+  std::optional<AutofillPopupHideHelper> popup_hide_helper_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
@@ -53,7 +55,7 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
   const ui::ElementIdentifier promo_element_identifier_;
   base::WeakPtr<AutofillFieldPromoView> promo_view_;
   // This is a helper which detects events that should hide the promo.
-  std::unique_ptr<AutofillPopupHideHelper> promo_hide_helper_;
+  std::optional<AutofillPopupHideHelper> promo_hide_helper_;
 };
 
 }  // namespace autofill

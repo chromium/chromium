@@ -47,7 +47,7 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
                    controller.promo_view_->OverlapsWithPictureInPictureWindow();
           },
           std::ref(*this));
-  promo_hide_helper_ = std::make_unique<AutofillPopupHideHelper>(
+  promo_hide_helper_.emplace(
       web_contents_, rfh->GetGlobalId(), std::move(hiding_params),
       std::move(hiding_callback), std::move(pip_detection_callback));
   promo_view_ = AutofillFieldPromoView::CreateAndShow(
