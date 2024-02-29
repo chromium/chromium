@@ -13,6 +13,11 @@ import {type PrintPreviewPageHandler} from '../utils/print_preview_cros_app_type
  * signaling updates to subscribed listeners.
  */
 
+export const PRINT_REQUEST_STARTED_EVENT =
+    'print-ticket-manager.print-request-started';
+export const PRINT_REQUEST_FINISHED_EVENT =
+    'print-ticket-manager.print-request-finished';
+
 export class PrintTicketManager extends EventTarget {
   private static instance: PrintTicketManager|null = null;
 
@@ -39,20 +44,37 @@ export class PrintTicketManager extends EventTarget {
     this.printPreviewPageHandler = getPrintPreviewPageHandler();
   }
 
+  // Custom event dispatch helper.
+  private dispatch(eventName: string): void {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true}));
+  }
+
+  // Handles notifying start and finish print request.
   // TODO(b/323421684): Takes current print ticket uses PrintPreviewPageHandler
-  // to initiate actual print request. Also handles print request start and
-  // finish events.
+  // to initiate actual print request.
   sendPrintRequest(): void {
     assert(this.printPreviewPageHandler);
 
+    this.dispatch(PRINT_REQUEST_STARTED_EVENT);
+
     // TODO(b/323421684): Handle result from page handler and update UI if error
     // occurred.
-    this.printPreviewPageHandler!.print();
+    this.printPreviewPageHandler!.print().finally(() => {
+      this.dispatch(PRINT_REQUEST_FINISHED_EVENT);
+    });
   }
 
   // Does cleanup for print request.
   cancelPrintRequest(): void {
     assert(this.printPreviewPageHandler);
     this.printPreviewPageHandler!.cancel();
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    [PRINT_REQUEST_FINISHED_EVENT]: CustomEvent<void>;
+    [PRINT_REQUEST_STARTED_EVENT]: CustomEvent<void>;
   }
 }

@@ -4,20 +4,29 @@
 
 import 'chrome://os-print/js/data/print_ticket_manager.js';
 
-import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
+import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('PrintTicketManager', () => {
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
+  let mockTimer: MockTimer;
 
   setup(() => {
     PrintTicketManager.resetInstanceForTesting();
 
     // Setup fakes for testing.
+    mockTimer = new MockTimer();
+    mockTimer.install();
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+  });
+
+  teardown(() => {
+    mockTimer.uninstall();
   });
 
   test('is a singleton', () => {
@@ -49,4 +58,45 @@ suite('PrintTicketManager', () => {
     instance.cancelPrintRequest();
     assertEquals(1, printPreviewPageHandler.getCallCount(method));
   });
+
+  // Verify PRINT_REQUEST_STARTED_EVENT is dispatched when sentPrintRequest is
+  // called and PRINT_REQUEST_FINISHED_EVENT is called when
+  // PrintPreviewPageHandler.print resolves.
+  test(
+      'PRINT_REQUEST_STARTED_EVENT and PRINT_REQUEST_FINISHED_EVENT are ' +
+          ' invoked when sentPrintRequest called',
+      async () => {
+        const delay = 1;
+        printPreviewPageHandler.useTestDelay(delay);
+        const instance = PrintTicketManager.getInstance();
+        let startCount = 0;
+        instance.addEventListener(PRINT_REQUEST_STARTED_EVENT, () => {
+          ++startCount;
+        });
+        let finishCount = 0;
+        instance.addEventListener(PRINT_REQUEST_FINISHED_EVENT, () => {
+          ++finishCount;
+        });
+        const startEvent =
+            eventToPromise(PRINT_REQUEST_STARTED_EVENT, instance);
+        const finishEvent =
+            eventToPromise(PRINT_REQUEST_FINISHED_EVENT, instance);
+
+        assertEquals(0, startCount, 'Start should have zero calls');
+        assertEquals(0, finishCount, 'Finish should have zero calls');
+
+        instance.sendPrintRequest();
+
+        await startEvent;
+
+        assertEquals(1, startCount, 'Start should have one call');
+        assertEquals(0, finishCount, 'Finish should have zero calls');
+
+        // Advance time by test delay to trigger method resolver.
+        mockTimer.tick(delay);
+        await finishEvent;
+
+        assertEquals(1, startCount, 'Start should have one call');
+        assertEquals(1, finishCount, 'Finish should have one call');
+      });
 });

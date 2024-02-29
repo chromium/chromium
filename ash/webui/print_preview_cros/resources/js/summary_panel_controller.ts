@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {PrintTicketManager} from './data/print_ticket_manager.js';
+import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from './data/print_ticket_manager.js';
 
 /**
  * @fileoverview
@@ -21,6 +21,16 @@ export const SHEETS_USED_CHANGED_EVENT =
 export class SummaryPanelController extends EventTarget {
   private sheetsUsed = 0;
   private printTicketManger = PrintTicketManager.getInstance();
+
+  constructor() {
+    super();
+    this.printTicketManger.addEventListener(
+        PRINT_REQUEST_STARTED_EVENT,
+        (e: Event) => this.onPrintRequestStarted(e));
+    this.printTicketManger.addEventListener(
+        PRINT_REQUEST_FINISHED_EVENT,
+        (e: Event) => this.onPrintRequestFinished(e));
+  }
 
   // Returns localized string based on current number of sheets in document and
   // whether document is being saved to a digital destination or printed to a
@@ -52,6 +62,12 @@ export class SummaryPanelController extends EventTarget {
   handleCancelClicked(): void {
     this.printTicketManger.cancelPrintRequest();
   }
+
+  // Handles notifying UI to update state when print request starts.
+  private onPrintRequestStarted(_e: Event): void {}
+
+  // Handles notifying UI to update state when print request finishes.
+  private onPrintRequestFinished(_e: Event): void {}
 }
 
 declare global {

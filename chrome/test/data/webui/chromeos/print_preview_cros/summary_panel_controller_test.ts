@@ -4,18 +4,29 @@
 
 import 'chrome://os-print/js/summary_panel.js';
 
-import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
+import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
+import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
+import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('SummaryPanelController', () => {
   let controller: SummaryPanelController|null = null;
   let mockController: MockController;
+  let printPreviewPageHandler: FakePrintPreviewPageHandler;
+  let printTicketManger: PrintTicketManager;
 
   setup(() => {
     mockController = new MockController();
+
+    PrintTicketManager.resetInstanceForTesting();
+    // Setup fakes.
+    printPreviewPageHandler = new FakePrintPreviewPageHandler();
+    setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+    printTicketManger = PrintTicketManager.getInstance();
 
     controller = new SummaryPanelController();
     assertTrue(!!controller);
@@ -23,6 +34,7 @@ suite('SummaryPanelController', () => {
 
   teardown(() => {
     mockController.reset();
+    PrintTicketManager.resetInstanceForTesting();
     controller = null;
   });
 
@@ -65,6 +77,41 @@ suite('SummaryPanelController', () => {
             mockController.createFunctionMock(manager, 'cancelPrintRequest');
         cancelPrintRequestFn.addExpectation();
         controller!.handleCancelClicked();
+        mockController.verifyMocks();
+      });
+
+  // Verify handler called when PRINT_REQUEST_STARTED_EVENT triggered.
+  test('PRINT_REQUEST_STARTED_EVENT calls onPrintRequestStarted', async () => {
+    assert(controller);
+    const handlerFn =
+        mockController.createFunctionMock(controller, 'onPrintRequestStarted');
+    const testEvent = new CustomEvent<void>(
+        PRINT_REQUEST_STARTED_EVENT, {bubbles: true, composed: true});
+    const startRequest =
+        eventToPromise(PRINT_REQUEST_STARTED_EVENT, printTicketManger);
+    handlerFn.addExpectation(testEvent);
+
+    printTicketManger.dispatchEvent(testEvent);
+    await startRequest;
+
+    mockController.verifyMocks();
+  });
+
+  // Verify handler called when PRINT_REQUEST_FINISHED_EVENT triggered.
+  test(
+      'PRINT_REQUEST_FINISHED_EVENT calls onPrintRequestFinished', async () => {
+        assert(controller);
+        const handlerFn = mockController.createFunctionMock(
+            controller, 'onPrintRequestFinished');
+        const testEvent = new CustomEvent<void>(
+            PRINT_REQUEST_FINISHED_EVENT, {bubbles: true, composed: true});
+        const finishRequest =
+            eventToPromise(PRINT_REQUEST_FINISHED_EVENT, printTicketManger);
+        handlerFn.addExpectation(testEvent);
+
+        printTicketManger.dispatchEvent(testEvent);
+        await finishRequest;
+
         mockController.verifyMocks();
       });
 });
