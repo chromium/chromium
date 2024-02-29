@@ -434,12 +434,20 @@ public class PersonalDataManager {
     /** Autofill IBAN information. */
     public static class Iban {
         private String mGuid;
+        // Obfuscated IBAN value. This is used for displaying the IBAN in the Payment methods page.
+        private String mLabel;
         private String mNickname;
         private @IbanRecordType int mRecordType;
         private String mValue;
 
-        private Iban(String guid, String nickname, @IbanRecordType int recordType, String value) {
+        private Iban(
+                String guid,
+                String label,
+                String nickname,
+                @IbanRecordType int recordType,
+                String value) {
             mGuid = guid;
+            mLabel = label;
             mNickname = nickname;
             mRecordType = recordType;
             mValue = value;
@@ -447,9 +455,14 @@ public class PersonalDataManager {
 
         @CalledByNative("Iban")
         private static Iban create(
-                String guid, String nickname, @IbanRecordType int recordType, String value) {
+                String guid,
+                String label,
+                String nickname,
+                @IbanRecordType int recordType,
+                String value) {
             return new Iban.Builder()
                     .setGuid(guid)
+                    .setLabel(label)
                     .setNickname(nickname)
                     .setRecordType(recordType)
                     .setValue(value)
@@ -459,6 +472,10 @@ public class PersonalDataManager {
         @CalledByNative("Iban")
         public String getGuid() {
             return mGuid;
+        }
+
+        public String getLabel() {
+            return mLabel;
         }
 
         @CalledByNative("Iban")
@@ -487,12 +504,18 @@ public class PersonalDataManager {
         /** Builder for {@link Iban}. */
         public static final class Builder {
             private String mGuid;
+            private String mLabel;
             private String mNickname;
             private @IbanRecordType int mRecordType;
             private String mValue;
 
             public Builder setGuid(String guid) {
                 mGuid = guid;
+                return this;
+            }
+
+            public Builder setLabel(String label) {
+                mLabel = label;
                 return this;
             }
 
@@ -525,7 +548,7 @@ public class PersonalDataManager {
                         throw new UnsupportedOperationException(
                                 "Server IBANs are not supported yet.");
                 }
-                return new Iban(mGuid, mNickname, mRecordType, mValue);
+                return new Iban(mGuid, mLabel, mNickname, mRecordType, mValue);
             }
         }
     }

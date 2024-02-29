@@ -664,6 +664,8 @@ PersonalDataManagerAndroid::CreateJavaIbanFromNative(JNIEnv* env,
   // TODO(b/324635902): Add support for server IBAN.
   return Java_Iban_create(
       env, ConvertUTF8ToJavaString(env, iban.guid()),
+      ConvertUTF16ToJavaString(env,
+                               iban.GetIdentifierStringForAutofillDisplay()),
       ConvertUTF16ToJavaString(env, iban.nickname()),
       static_cast<jint>(iban.record_type()),
       ConvertUTF16ToJavaString(env, iban.GetRawInfo(IBAN_VALUE)));

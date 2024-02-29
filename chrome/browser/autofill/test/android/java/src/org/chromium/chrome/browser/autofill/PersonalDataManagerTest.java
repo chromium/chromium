@@ -1214,6 +1214,7 @@ public class PersonalDataManagerTest {
         Iban iban =
                 new Iban.Builder()
                         .setGuid("")
+                        .setLabel("")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)
                         .setValue("FR76 3000 6000 0112 3456 7890 189")
@@ -1234,6 +1235,7 @@ public class PersonalDataManagerTest {
         Iban iban =
                 new Iban.Builder()
                         .setGuid("")
+                        .setLabel("")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.UNKNOWN)
                         .setValue("FR76 3000 6000 0112 3456 7890 189")
@@ -1263,6 +1265,7 @@ public class PersonalDataManagerTest {
         Iban.Builder ibanBuilder =
                 new Iban.Builder()
                         .setGuid(guid)
+                        .setLabel("")
                         .setNickname("My IBAN")
                         .setRecordType(IbanRecordType.SERVER_IBAN)
                         .setValue("FR76 3000 6000 0112 3456 7890 189");
@@ -1271,5 +1274,28 @@ public class PersonalDataManagerTest {
                 assertThrows(UnsupportedOperationException.class, () -> ibanBuilder.build());
 
         assertThat(e).hasMessageThat().isEqualTo("Server IBANs are not supported yet.");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testGetIbanLabelReturnsObfuscatedIbanValue() throws TimeoutException {
+        Iban iban =
+                new Iban.Builder()
+                        .setGuid("")
+                        .setLabel("")
+                        .setNickname("My IBAN")
+                        .setRecordType(IbanRecordType.UNKNOWN)
+                        .setValue("CH56 0483 5012 3456 7800 9")
+                        .build();
+        String ibanGuid = mHelper.addOrUpdateLocalIban(iban);
+
+        Iban storedLocalIban = mHelper.getIban(ibanGuid);
+        // \u2022 is Bullet and \u2006 is SIX-PER-EM SPACE (small space between bullets). The
+        // expected string is 'CH56 •••• •••• •••• •800 9'.
+        Assert.assertEquals(
+                "CH56\u2006\u2022\u2022\u2022\u2022\u2006\u2022\u2022\u2022\u2022"
+                        + "\u2006\u2022\u2022\u2022\u2022\u2006\u2022800\u20069",
+                storedLocalIban.getLabel());
     }
 }
