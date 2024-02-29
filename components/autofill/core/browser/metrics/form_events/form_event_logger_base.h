@@ -60,8 +60,10 @@ class FormEventLoggerBase {
   // This is different from OnDidFillSuggestion because it does not require to
   // provide data models or other parameters. It is needed to be used in field
   // by field filling.
-  void RecordFillingOperation(FormGlobalId form_id,
-                              base::span<const AutofillField*> filled_fields);
+  void RecordFillingOperation(
+      FormGlobalId form_id,
+      base::span<const FormFieldData*> filled_fields,
+      base::span<const AutofillField*> filled_autofill_fields);
 
   void OnDidRefill(
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,

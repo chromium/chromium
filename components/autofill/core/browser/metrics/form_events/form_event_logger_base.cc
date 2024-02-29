@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -151,20 +152,24 @@ void FormEventLoggerBase::OnDidShowSuggestions(
 
 void FormEventLoggerBase::RecordFillingOperation(
     FormGlobalId form_id,
-    base::span<const AutofillField*> filled_fields) {
+    base::span<const FormFieldData*> filled_fields,
+    base::span<const AutofillField*> filled_autofill_fields) {
   ++filling_operation_count_;
   bool is_address = form_type_name_ == "Address";
-  for (const AutofillField* filled_field : filled_fields) {
-    if (!filled_field ||
-        filled_field->Type().GetStorableType() == UNKNOWN_TYPE ||
-        (IsAddressType(filled_field->Type().GetStorableType()) != is_address)) {
-      filled_fields_types_[filled_field->global_id()] =
-          FilledFieldTypeMetric::kUnclassified;
-    } else if (filled_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      filled_fields_types_[filled_field->global_id()] =
+  CHECK_EQ(filled_fields.size(), filled_autofill_fields.size());
+  for (size_t i = 0; i < filled_fields.size(); ++i) {
+    FieldGlobalId field_id = CHECK_DEREF(filled_fields[i]).global_id();
+    const AutofillField* autofill_field = filled_autofill_fields[i];
+    if (!autofill_field ||
+        autofill_field->Type().GetStorableType() == UNKNOWN_TYPE ||
+        (IsAddressType(autofill_field->Type().GetStorableType()) !=
+         is_address)) {
+      filled_fields_types_[field_id] = FilledFieldTypeMetric::kUnclassified;
+    } else if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      filled_fields_types_[field_id] =
           FilledFieldTypeMetric::kClassifiedWithUnrecognizedAutocomplete;
     } else {
-      filled_fields_types_[filled_field->global_id()] =
+      filled_fields_types_[field_id] =
           FilledFieldTypeMetric::kClassifiedWithRecognizedAutocomplete;
     }
   }
