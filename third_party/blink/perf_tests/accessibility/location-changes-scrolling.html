@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/runner.js"></script>
+
+<table id="testElement">
+  <tr>
+    <th>Sender</th>
+    <td>Message</td>
+  </tr>
+</table>
+
+<script>
+var isDone = false;
+var startTime;
+
+// Before the test starts, add 2000 rows to the table, something like a
+// message board with lots of replies on a long thread.
+
+let table = document.getElementById('testElement');
+for (let i = 0; i < 2000; i++) {
+    let tr = document.createElement('tr');
+    table.appendChild(tr);
+    let sender = document.createElement('td');
+    sender.innerHTML = 'user' + Math.floor(10000*Math.random());
+    tr.appendChild(sender);
+    let message = document.createElement('td');
+    message.innerHTML = '<div>Message content ' +
+        Math.floor(10000*Math.random()) + '</div>';
+    let link = document.createElement('a');
+    link.href = '#';
+    link.id = 'link' + i;
+    link.innerHTML = 'Reply';
+    message.appendChild(link);
+    tr.appendChild(message);
+}
+
+function runTest() {
+    if (startTime) {
+        PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+        PerfTestRunner.addRunTestEndMarker();
+    }
+    if (!isDone) {
+        PerfTestRunner.addRunTestStartMarker();
+        startTime = PerfTestRunner.now();
+
+        let scrollTimes = 0;
+
+        let scrollInProcess = false;
+        let scroll = () => {
+          if(scrollInProcess) return;
+          scrollInProcess = true;
+
+          if(scrollTimes == 5) {
+            return runTest();
+          }
+
+          requestAnimationFrame(() => {
+            scrollTimes ++;
+            window.scrollBy({
+              top: 600,
+              behavior: 'smooth'
+            });
+            document.addEventListener("scrollend", () => {
+              console.log("scrolling again!");
+              scrollInProcess = false;
+              setTimeout(scroll, 500);
+            }, { once: true });
+          });
+        };
+
+        scroll();
+      }
+    }
+
+PerfTestRunner.startMeasureValuesAsync({
+    description: 'Test accessibility performance when scrolling some divs',
+    unit: 'ms',
+    done: function () {
+        isDone = true;
+    },
+    run: function() {
+        runTest();
+    },
+    iterationCount: 6,
+    tracingCategories: 'accessibility',
+    traceEventsToMeasure: [
+        'BrowserAccessibilityManager::OnAccessibilityEvents',
+        'ProcessDeferredAccessibilityEvents',
+        'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+    ]
+});
+</script>
+
+</html>
