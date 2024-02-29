@@ -46,6 +46,12 @@ class ReferrerChainProvider {
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) = 0;
 
+  virtual AttributionResult IdentifyReferrerChainByEventURL(
+      const GURL& event_url,
+      SessionID event_tab_id,
+      int user_gesture_count_limit,
+      ReferrerChain* out_referrer_chain) = 0;
+
   virtual AttributionResult IdentifyReferrerChainByPendingEventURL(
       const GURL& event_url,
       int user_gesture_count_limit,

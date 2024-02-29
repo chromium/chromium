@@ -67,7 +67,8 @@ UrlCheckerOnSB::UrlCheckerOnSB(
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
-    bool is_async_check)
+    bool is_async_check,
+    SessionID tab_id)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
       navigation_id_(navigation_id),
@@ -81,8 +82,8 @@ UrlCheckerOnSB::UrlCheckerOnSB(
       hash_realtime_service_(hash_realtime_service),
       hash_realtime_selection_(hash_realtime_selection),
       creation_time_(base::TimeTicks::Now()),
-      is_async_check_(is_async_check) {
-}
+      is_async_check_(is_async_check),
+      tab_id_(tab_id) {}
 
 UrlCheckerOnSB::~UrlCheckerOnSB() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -107,7 +108,7 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
         can_check_db_, can_check_high_confidence_allowlist_,
         url_lookup_service_metric_suffix_, content::GetUIThreadTaskRunner({}),
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
-        is_async_check_);
+        is_async_check_, tab_id_);
   }
 
   CheckUrl(params.url, params.method);

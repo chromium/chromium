@@ -296,20 +296,23 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
 
 void RealTimeUrlLookupServiceBase::SendSampledRequest(
     const GURL& url,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    SessionID tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
   SendRequest(url,
               /* access_token_string */ std::string(),
               /* response_callback */ base::NullCallback(),
-              std::move(callback_task_runner), /* is_sampled_report */ true);
+              std::move(callback_task_runner), /* is_sampled_report */ true,
+              tab_id);
 }
 
 void RealTimeUrlLookupServiceBase::StartLookup(
     const GURL& url,
     RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    SessionID tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
@@ -336,12 +339,12 @@ void RealTimeUrlLookupServiceBase::StartLookup(
 
   if (CanPerformFullURLLookupWithToken()) {
     GetAccessToken(url, std::move(response_callback),
-                   std::move(callback_task_runner));
+                   std::move(callback_task_runner), tab_id);
   } else {
     SendRequest(url,
                 /* access_token_string */ std::string(),
                 std::move(response_callback), std::move(callback_task_runner),
-                /* is_sampled_report */ false);
+                /* is_sampled_report */ false, tab_id);
   }
 }
 
@@ -350,10 +353,11 @@ void RealTimeUrlLookupServiceBase::SendRequest(
     const std::string& access_token_string,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    bool is_sampled_report) {
+    bool is_sampled_report,
+    SessionID tab_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<RTLookupRequest> request =
-      FillRequestProto(url, is_sampled_report);
+      FillRequestProto(url, is_sampled_report, tab_id);
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
       request->population().user_population());
@@ -534,7 +538,8 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
 
 std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     const GURL& url,
-    bool is_sampled_report) {
+    bool is_sampled_report,
+    SessionID tab_id) {
   auto request = std::make_unique<RTLookupRequest>();
   request->set_url(SanitizeURL(url).spec());
   request->set_lookup_type(RTLookupRequest::NAVIGATION);
@@ -550,9 +555,28 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
 
   *request->mutable_population() = get_user_population_callback_.Run();
   if (referrer_chain_provider_) {
-    referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
-        SanitizeURL(url), GetReferrerUserGestureLimit(),
-        request->mutable_referrer_chain());
+    ReferrerChainProvider::AttributionResult attribution_result =
+        referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
+            SanitizeURL(url), GetReferrerUserGestureLimit(),
+            request->mutable_referrer_chain());
+    // The navigation event may not be found for various reasons. One
+    // possibility is that with async checks, the event URL may no longer be
+    // pending if the page has already loaded. If the navigation event is not
+    // found, try to fetch the referrer chain as a regular event URL rather than
+    // a pending one.
+    if (attribution_result == ReferrerChainProvider::AttributionResult::
+                                  NAVIGATION_EVENT_NOT_FOUND &&
+        base::FeatureList::IsEnabled(
+            safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+      CHECK(request->referrer_chain().empty());
+      referrer_chain_provider_->IdentifyReferrerChainByEventURL(
+          SanitizeURL(url), tab_id, GetReferrerUserGestureLimit(),
+          request->mutable_referrer_chain());
+
+      RecordBooleanWithAndWithoutSuffix(
+          "SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded",
+          GetMetricSuffix(), !request->referrer_chain().empty());
+    }
     SanitizeReferrerChainEntries(request->mutable_referrer_chain(),
                                  GetMinAllowedTimestampForReferrerChains(),
                                  /*should_remove_subresource_url=*/

@@ -24,6 +24,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/sessions/core/session_id.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -239,7 +240,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void StartLookup(
       const GURL& gurl,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(url_details_, url));
     auto response = std::make_unique<RTLookupResponse>();
@@ -288,7 +290,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
 
   void SendSampledRequest(
       const GURL& gurl,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override {}
 
   // |should_complete_lookup| should generally be true, unless you specifically
   // want to test time-sensitive things like timeouts. Setting it to false will
@@ -330,7 +333,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void GetAccessToken(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override {}
   std::optional<std::string> GetDMTokenString() const override {
     return std::nullopt;
   }
@@ -435,7 +439,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
                                      : nullptr,
         /*hash_realtime_service=*/hash_realtime_service_->GetWeakPtr(),
         hash_real_time_selection,
-        /*is_async_check=*/false);
+        /*is_async_check=*/false, SessionID::InvalidValue());
   }
 
  protected:

@@ -123,7 +123,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
     HashRealTimeSelection hash_realtime_selection,
-    bool is_async_check)
+    bool is_async_check,
+    SessionID tab_id)
     : headers_(headers),
       load_flags_(load_flags),
       request_destination_(request_destination),
@@ -144,7 +145,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
       hash_realtime_selection_(hash_realtime_selection),
-      is_async_check_(is_async_check) {
+      is_async_check_(is_async_check),
+      tab_id_(tab_id) {
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
 
   // This object is used exclusively on the IO thread but may be constructed on
@@ -469,7 +471,8 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         can_check_db_, can_check_high_confidence_allowlist_,
         url_lookup_service_metric_suffix_, ui_task_runner_,
-        url_lookup_service_on_ui_, url_checker_delegate_, web_contents_getter_);
+        url_lookup_service_on_ui_, url_checker_delegate_, web_contents_getter_,
+        tab_id_);
   } else if (!can_check_db_) {
     return KickOffLookupMechanismResult(
         SafeBrowsingLookupMechanism::StartCheckResult(

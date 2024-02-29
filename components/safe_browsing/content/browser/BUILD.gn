@@ -127,6 +127,7 @@ source_set("browser") {
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/unified_consent",
     "//components/version_info",

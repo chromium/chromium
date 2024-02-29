@@ -101,7 +101,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void GetAccessToken(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override;
   std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
   void OnResponseUnauthorized(const std::string& invalid_access_token) override;
@@ -121,6 +122,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::TimeTicks get_token_start_time,
+      SessionID tab_id,
       const std::string& access_token);
 
   // Unowned object used for getting preference settings.

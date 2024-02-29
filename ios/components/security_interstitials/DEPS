@@ -6,6 +6,7 @@ include_rules = [
   "+components/safe_browsing/core/common",
   "+components/safe_browsing/ios",
   "+components/security_interstitials/core",
+  "+components/sessions/core",
   "+components/sync_preferences",
   "+components/keyed_service/core",
   "+components/keyed_service/ios",

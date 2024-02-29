@@ -371,6 +371,54 @@ TEST_F(SBNavigationObserverTest, TestFindEventInCorrectOutermostFrame) {
               events.NavigationEventsSize() - 1));
 }
 
+TEST_F(SBNavigationObserverTest, TestBasicReferrerChain) {
+  base::Time now = base::Time::Now();
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
+  base::Time two_seconds_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 2.0);
+
+  std::unique_ptr<NavigationEvent> first_navigation =
+      std::make_unique<NavigationEvent>();
+  first_navigation->original_request_url = GURL("http://A.com");
+  first_navigation->last_updated = two_seconds_ago;
+  first_navigation->navigation_initiation =
+      ReferrerChainEntry::BROWSER_INITIATED;
+  navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
+
+  std::unique_ptr<NavigationEvent> second_navigation =
+      std::make_unique<NavigationEvent>();
+  second_navigation->source_url = GURL("http://A.com");
+  second_navigation->original_request_url = GURL("http://B.com");
+  second_navigation->last_updated = one_second_ago;
+  second_navigation->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  navigation_event_list()->RecordNavigationEvent(std::move(second_navigation));
+
+  std::unique_ptr<NavigationEvent> third_navigation =
+      std::make_unique<NavigationEvent>();
+  third_navigation->source_url = GURL("http://B.com");
+  third_navigation->original_request_url = GURL("http://C.com");
+  third_navigation->last_updated = now;
+  third_navigation->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  navigation_event_list()->RecordNavigationEvent(std::move(third_navigation));
+
+  ASSERT_EQ(3U, navigation_event_list()->NavigationEventsSize());
+
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      GURL("http://C.com/"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
+  ASSERT_EQ(3, referrer_chain.size());
+
+  ReferrerChain referrer_chain_without_render_frame_host;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      GURL("http://C.com/"), SessionID::InvalidValue(), 10,
+      &referrer_chain_without_render_frame_host);
+  ASSERT_EQ(3, referrer_chain_without_render_frame_host.size());
+}
+
 TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
   // Navigation in current tab.
   NavigateAndCommit(GURL("http://foo/1"), ui::PAGE_TRANSITION_AUTO_BOOKMARK);

@@ -17,6 +17,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -35,7 +36,8 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
-          web_contents_getter);
+          web_contents_getter,
+      SessionID tab_id);
   UrlRealTimeMechanism(const UrlRealTimeMechanism&) = delete;
   UrlRealTimeMechanism& operator=(const UrlRealTimeMechanism&) = delete;
   ~UrlRealTimeMechanism() override;
@@ -56,6 +58,7 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       base::WeakPtr<UrlRealTimeMechanism> weak_ptr_on_io,
       const GURL& url,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
+      SessionID tab_id,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Checks the eligibility of sending a sampled ping first;
@@ -64,6 +67,7 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       base::WeakPtr<UrlRealTimeMechanism> weak_ptr_on_io,
       const GURL& url,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
+      SessionID tab_id,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Called when the |response| from the real-time lookup service is received.
@@ -128,6 +132,10 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // This will be created in cases where the real-time URL check decides to fall
   // back to the hash-based checks.
   std::unique_ptr<DatabaseManagerMechanism> hash_database_mechanism_ = nullptr;
+
+  // The current tab ID. Used sometimes for identifying the referrer chain. Can
+  // be |SessionID::InvalidValue()|.
+  SessionID tab_id_;
 
   base::WeakPtrFactory<UrlRealTimeMechanism> weak_factory_{this};
 };

@@ -269,6 +269,15 @@ class SafeBrowsingNavigationObserverManager
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) override;
 
+  // Helper function to |IdentifyReferrerChainByEventURL| above in cases where
+  // |event_outermost_main_frame_id| is not available. That value will default
+  // to |content::GlobalRenderFrameHostId()|.
+  AttributionResult IdentifyReferrerChainByEventURL(
+      const GURL& event_url,
+      SessionID event_tab_id,  // Invalid if tab id is unknown or not available.
+      int user_gesture_count_limit,
+      ReferrerChain* out_referrer_chain) override;
+
   // Based on the |event_url|, traces back the observed PendingNavigationEvents
   // and NavigationEvents in navigation_event_list_ to identify the sequence of
   // navigations leading to the |event_url|, with the coverage limited to

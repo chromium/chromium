@@ -78,7 +78,7 @@ class WebApiHandshakeChecker::CheckerOnSB {
         /*hash_realtime_service_on_ui=*/nullptr,
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone,
-        /*is_async_check=*/false);
+        /*is_async_check=*/false, SessionID::InvalidValue());
     url_checker_->CheckUrl(
         url, "GET",
         base::BindOnce(&WebApiHandshakeChecker::CheckerOnSB::OnCheckUrlResult,

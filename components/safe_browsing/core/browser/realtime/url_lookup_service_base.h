@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -107,13 +108,15 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   virtual void StartLookup(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id);
 
   // Similar to the function StartLookup above,
   // but to send Protego sampled request specifically.
   virtual void SendSampledRequest(
       const GURL& url,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id);
 
   // Helper function to return a weak pointer.
   base::WeakPtr<RealTimeUrlLookupServiceBase> GetWeakPtr();
@@ -159,7 +162,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const std::string& access_token_string,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      bool is_sampled_report);
+      bool is_sampled_report,
+      SessionID tab_id);
 
  private:
   using PendingRTLookupRequests =
@@ -193,7 +197,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   virtual void GetAccessToken(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) = 0;
 
   // Called when the response from the server is unauthorized, so child classes
   // can add extra handling when this happens.
@@ -264,9 +269,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       std::unique_ptr<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.
-  std::unique_ptr<RTLookupRequest> FillRequestProto(
-      const GURL& url,
-      bool is_sampled_report);
+  std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url,
+                                                    bool is_sampled_report,
+                                                    SessionID tab_id);
 
   // Logs |request| and |oauth_token| on any open
   // chrome://safe-browsing pages. Returns a token that can be passed

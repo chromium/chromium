@@ -124,10 +124,12 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void StartLookup(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override {}
   void SendSampledRequest(
       const GURL& url,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override {}
 
  private:
   GURL GetRealTimeLookupUrl() const override { return GURL(); }
@@ -140,7 +142,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void GetAccessToken(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override {}
   std::optional<std::string> GetDMTokenString() const override {
     return std::nullopt;
   }
@@ -201,7 +204,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    url_lookup_service_on_ui,
                                    hash_realtime_service_on_ui,
                                    hash_realtime_selection,
-                                   is_async_check) {}
+                                   is_async_check,
+                                   SessionID::InvalidValue()) {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
   // It will crash if |AddCallbackInfo| was not called.

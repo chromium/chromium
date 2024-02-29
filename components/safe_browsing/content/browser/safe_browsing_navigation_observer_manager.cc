@@ -564,6 +564,17 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
 }
 
 SafeBrowsingNavigationObserverManager::AttributionResult
+SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
+    const GURL& event_url,
+    SessionID event_tab_id,
+    int user_gesture_count_limit,
+    ReferrerChain* out_referrer_chain) {
+  return IdentifyReferrerChainByEventURL(
+      event_url, event_tab_id, content::GlobalRenderFrameHostId(),
+      user_gesture_count_limit, out_referrer_chain);
+}
+
+SafeBrowsingNavigationObserverManager::AttributionResult
 SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByPendingEventURL(
     const GURL& event_url,
     int user_gesture_count_limit,

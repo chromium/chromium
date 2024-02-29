@@ -173,7 +173,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*hash_realtime_service_on_ui=*/nullptr,
       /*hash_realtime_selection=*/
       hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*is_async_check=*/false);
+      /*is_async_check=*/false, SessionID::InvalidValue());
   auto weak_impl = checker_impl->WeakPtr();
 
   checker_impl->CheckUrl(

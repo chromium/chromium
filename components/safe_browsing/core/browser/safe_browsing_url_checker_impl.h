@@ -124,7 +124,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
-      bool is_async_check);
+      bool is_async_check,
+      SessionID tab_id);
 
   SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
   SafeBrowsingUrlCheckerImpl& operator=(const SafeBrowsingUrlCheckerImpl&) =
@@ -342,6 +343,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // If this check allows navigation to commit before it completes.
   const bool is_async_check_;
+
+  // The current tab ID. Used sometimes for identifying the referrer chain for
+  // URL real-time lookups. Can be |SessionID::InvalidValue()|.
+  SessionID tab_id_;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

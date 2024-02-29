@@ -74,6 +74,7 @@ static_library("url_lookup_service_base") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/sessions:session_id",
     "//services/network/public/cpp:cpp",
     "//url:url",
   ]

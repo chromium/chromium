@@ -91,7 +91,8 @@ class UrlCheckerOnSB final {
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
-      bool is_async_check);
+      bool is_async_check,
+      SessionID tab_id);
 
   ~UrlCheckerOnSB();
 
@@ -163,6 +164,7 @@ class UrlCheckerOnSB final {
       hash_realtime_utils::HashRealTimeSelection::kNone;
   base::TimeTicks creation_time_;
   bool is_async_check_ = false;
+  SessionID tab_id_;
   base::WeakPtrFactory<UrlCheckerOnSB> weak_factory_{this};
 };
 

@@ -17,6 +17,7 @@
 #import "components/safe_browsing/core/browser/url_checker_delegate.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
@@ -176,12 +177,11 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
       /*navigation_id=*/std::nullopt, can_perform_full_url_lookup,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
-      /*url_lookup_service_metric_suffix=*/"",
-      web::GetUIThreadTaskRunner({}),
+      /*url_lookup_service_metric_suffix=*/"", web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
-      /*is_async_check=*/false);
+      /*is_async_check=*/false, SessionID::InvalidValue());
 }
 
 bool SafeBrowsingServiceImpl::CanCheckUrl(const GURL& url) const {

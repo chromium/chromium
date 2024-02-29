@@ -20,6 +20,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -139,6 +140,9 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
   url_lookup_service_metric_suffix_ =
       url_real_time_lookup_enabled_ ? url_lookup_service_->GetMetricSuffix()
                                     : kNoRealTimeURLLookupService;
+  content::WebContents* web_contents = web_contents_getter_.Run();
+  tab_id_ = web_contents ? sessions::SessionTabHelper::IdForTab(web_contents)
+                         : SessionID::InvalidValue();
   skip_check_checker_ = std::make_unique<SkipCheckCheckerOnSB>(
       delegate_getter_, frame_tree_node_id);
 }
@@ -223,7 +227,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*hash_realtime_service=*/nullptr,
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone,
-        /*is_async_check=*/false);
+        /*is_async_check=*/false, SessionID::InvalidValue());
     async_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
         delegate_getter_, frame_tree_node_id_, navigation_id_,
         web_contents_getter_,
@@ -233,7 +237,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         url_real_time_lookup_enabled_, can_check_db,
         can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
-        /*is_async_check=*/true);
+        /*is_async_check=*/true, tab_id_);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
     }
@@ -250,7 +254,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         url_real_time_lookup_enabled_, can_check_db,
         can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
-        /*is_async_check=*/false);
+        /*is_async_check=*/false, tab_id_);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
     }

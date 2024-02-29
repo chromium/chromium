@@ -2076,6 +2076,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded"
+    enum="BooleanSuccess" expires_after="2024-08-21">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged when fetching the referrer chain for a pending event URL is not able
+    to find a matching navigation event, so the referrer chain is fetched for
+    non-pending event URLs instead as a fallback. Logs true if the fallback
+    fetch returns a non-empty chain.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.GetCache.FallbackThreatType"
     enum="SBThreatType" expires_after="2025-01-22">
   <owner>xinghuilu@chromium.org</owner>
