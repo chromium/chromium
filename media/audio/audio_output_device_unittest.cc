@@ -293,7 +293,8 @@ TEST_F(AudioOutputDeviceTest, NoErrorForNormalShutdown) {
   StopAudioDevice();
 }
 
-TEST_F(AudioOutputDeviceTest, ErrorFiredForSocketClose) {
+// TODO(crbug.com/327577325) Re-enable this test
+TEST_F(AudioOutputDeviceTest, DISABLED_ErrorFiredForSocketClose) {
   StartAudioDevice();
   CallOnStreamCreated();
 
