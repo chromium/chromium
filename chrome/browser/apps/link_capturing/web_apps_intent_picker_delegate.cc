@@ -34,21 +34,6 @@
 
 namespace apps {
 
-namespace {
-
-#if BUILDFLAG(IS_MAC)
-std::vector<apps::IntentPickerAppInfo> CombinePossibleMacAppWithOtherApps(
-    std::vector<apps::IntentPickerAppInfo> apps,
-    std::optional<apps::IntentPickerAppInfo> mac_app) {
-  if (mac_app) {
-    apps.emplace_back(std::move(mac_app.value()));
-  }
-  return apps;
-}
-#endif  // BUILDFLAG(IS_MAC)
-
-}  // namespace
-
 WebAppsIntentPickerDelegate::WebAppsIntentPickerDelegate(Profile* profile)
     : profile_(*profile),
       provider_(*web_app::WebAppProvider::GetForWebApps(profile)) {}
@@ -75,8 +60,10 @@ void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(&FindMacAppForUrl, url),
-      base::BindOnce(&CombinePossibleMacAppWithOtherApps, std::move(apps))
-          .Then(std::move(apps_callback)));
+      base::BindOnce(
+          &WebAppsIntentPickerDelegate::CacheMacAppInfoAndPostFinalCallback,
+          weak_ptr_factory.GetWeakPtr(), std::move(apps_callback),
+          std::move(apps)));
 #else
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(apps_callback), std::move(apps)));
@@ -93,36 +80,54 @@ void WebAppsIntentPickerDelegate::LoadSingleAppIcon(
     const std::string& app_id,
     int size_in_dep,
     IconLoadedCallback icon_loaded_callback) {
-  web_app::WebAppIconManager& icon_manager = provider_->icon_manager();
-  // First, iterate over all icons with the given order of purposes, and verify
-  // if there exists an icon that can be loaded. The order of purposes helps
-  // ensure we first look for ANY and MASKABLE icons before going for
-  // MONOCHROME.
-  std::vector<web_app::IconPurpose> ordered_purpose = {
-      web_app::IconPurpose::MASKABLE, web_app::IconPurpose::ANY,
-      web_app::IconPurpose::MONOCHROME};
-  auto size_and_purpose =
-      icon_manager.FindIconMatchBigger(app_id, ordered_purpose, size_in_dep);
-  if (!size_and_purpose.has_value()) {
-    std::move(icon_loaded_callback).Run(ui::ImageModel());
-    return;
+  CHECK(entry_type == PickerEntryType::kWeb ||
+        entry_type == PickerEntryType::kMacOs);
+
+  if (entry_type == PickerEntryType::kWeb) {
+    web_app::WebAppIconManager& icon_manager = provider_->icon_manager();
+    // First, iterate over all icons with the given order of purposes, and
+    // verify if there exists an icon that can be loaded. The order of purposes
+    // helps ensure we first look for ANY and MASKABLE icons before going for
+    // MONOCHROME.
+    std::vector<web_app::IconPurpose> ordered_purpose = {
+        web_app::IconPurpose::MASKABLE, web_app::IconPurpose::ANY,
+        web_app::IconPurpose::MONOCHROME};
+    auto size_and_purpose =
+        icon_manager.FindIconMatchBigger(app_id, ordered_purpose, size_in_dep);
+    if (!size_and_purpose.has_value()) {
+      std::move(icon_loaded_callback).Run(ui::ImageModel());
+      return;
+    }
+
+    web_app::IconPurpose purpose_to_get = size_and_purpose.value().purpose;
+    auto transform_bitmaps_to_icon_metadata = base::BindOnce(
+        [](std::map<web_app::SquareSizePx, SkBitmap> icons) -> ui::ImageModel {
+          bool is_valid_icon = !icons.empty();
+          if (!is_valid_icon) {
+            return ui::ImageModel();
+          }
+
+          CHECK_EQ(icons.size(), 1u);
+          return ui::ImageModel::FromImageSkia(
+              gfx::ImageSkia::CreateFrom1xBitmap(icons.begin()->second));
+        });
+    icon_manager.ReadIconAndResize(app_id, purpose_to_get, size_in_dep,
+                                   std::move(transform_bitmaps_to_icon_metadata)
+                                       .Then(std::move(icon_loaded_callback)));
+  } else if (entry_type == apps::PickerEntryType::kMacOs) {
+#if BUILDFLAG(IS_MAC)
+    // Read from the cached app information if an app with universal links were
+    // found.
+    ui::ImageModel mac_app_icon;
+    if (mac_app_info_.has_value()) {
+      CHECK_EQ(mac_app_info_->launch_name, app_id);
+      mac_app_icon = mac_app_info_->icon_model;
+    }
+    std::move(icon_loaded_callback).Run(mac_app_icon);
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(IS_MAC)
   }
-
-  web_app::IconPurpose purpose_to_get = size_and_purpose.value().purpose;
-  auto transform_bitmaps_to_icon_metadata = base::BindOnce(
-      [](std::map<web_app::SquareSizePx, SkBitmap> icons) -> ui::ImageModel {
-        bool is_valid_icon = !icons.empty();
-        if (!is_valid_icon) {
-          return ui::ImageModel();
-        }
-
-        CHECK_EQ(icons.size(), 1u);
-        return ui::ImageModel::FromImageSkia(
-            gfx::ImageSkia::CreateFrom1xBitmap(icons.begin()->second));
-      });
-  icon_manager.ReadIconAndResize(app_id, purpose_to_get, size_in_dep,
-                                 std::move(transform_bitmaps_to_icon_metadata)
-                                     .Then(std::move(icon_loaded_callback)));
 }
 
 void WebAppsIntentPickerDelegate::RecordIntentPickerIconEvent(
@@ -136,12 +141,23 @@ void WebAppsIntentPickerDelegate::RecordIntentPickerIconEvent(
 
 bool WebAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
     const GURL& url,
-    const std::string& app_id) {
-  // Launch app directly only if |url| is in the scope of |app_id|.
-  // TODO(b/294079334): Use `IsUrlInAppExtendedScope` to support scope
-  // extensions for user link capturing on desktop platforms.
-  return features::ShouldShowLinkCapturingUX() &&
-         provider_->registrar_unsafe().IsUrlInAppScope(url, app_id);
+    const std::string& app_id,
+    PickerEntryType entry_type) {
+  CHECK(entry_type == PickerEntryType::kWeb ||
+        entry_type == PickerEntryType::kMacOs);
+  if (!features::ShouldShowLinkCapturingUX()) {
+    return false;
+  }
+  if (entry_type == PickerEntryType::kWeb) {
+    // Launch app directly only if |url| is in the scope of |app_id|.
+    // TODO(b/294079334): Use `IsUrlInAppExtendedScope` to support scope
+    // extensions for user link capturing on desktop platforms.
+    return provider_->registrar_unsafe().IsUrlInAppScope(url, app_id);
+  }
+
+  // This is only reached on MacOS if there is one app available and the picker
+  // entry type is kMacOS, so it's fine to launch directly.
+  return true;
 }
 
 void WebAppsIntentPickerDelegate::RecordOutputMetrics(
@@ -206,5 +222,19 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
 #endif  // BUILDFLAG(IS_MAC)
   }
 }
+
+#if BUILDFLAG(IS_MAC)
+void WebAppsIntentPickerDelegate::CacheMacAppInfoAndPostFinalCallback(
+    IntentPickerAppsCallback apps_callback,
+    std::vector<IntentPickerAppInfo> apps,
+    MacAppInfo mac_app_info) {
+  mac_app_info_ = mac_app_info;
+  if (mac_app_info_.has_value()) {
+    apps.emplace_back(mac_app_info_.value());
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(apps_callback), std::move(apps)));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace apps

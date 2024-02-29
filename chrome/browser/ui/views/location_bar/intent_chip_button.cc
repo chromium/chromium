@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
@@ -71,6 +72,11 @@ void IntentChipButton::Update() {
   if (browser_->window() && was_visible && !is_visible) {
     IntentPickerBubbleView::CloseCurrentBubble();
   }
+}
+
+ui::ImageModel IntentChipButton::GetAppIconForTesting() const {
+  CHECK_IS_TEST();
+  return GetAppIcon();
 }
 
 bool IntentChipButton::GetShowChip() const {

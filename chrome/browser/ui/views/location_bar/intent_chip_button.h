@@ -27,6 +27,7 @@ class IntentChipButton : public OmniboxChipButton {
   ~IntentChipButton() override;
 
   void Update();
+  ui::ImageModel GetAppIconForTesting() const;
 
  private:
   bool GetShowChip() const;
