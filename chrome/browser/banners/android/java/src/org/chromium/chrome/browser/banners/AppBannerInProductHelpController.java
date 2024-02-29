@@ -12,6 +12,7 @@ import androidx.annotation.IdRes;
 
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -30,12 +31,14 @@ public class AppBannerInProductHelpController implements UnownedUserData {
      * Constructs an AppBannerInProductHelpController.
      *
      * @param activity The current activity.
+     * @param profile The current profile.
      * @param appMenuHandler The app menu containing the menu entry to highlight.
      * @param menuButtonView The menu button view to anchor the bubble to.
      * @param higlightMenuItemId The id of the menu item to highlight.
      */
     public AppBannerInProductHelpController(
             Activity activity,
+            Profile profile,
             AppMenuHandler appMenuHandler,
             Supplier<View> menuButtonView,
             @IdRes int higlightMenuItemId) {
@@ -43,7 +46,7 @@ public class AppBannerInProductHelpController implements UnownedUserData {
         mAppMenuHandler = appMenuHandler;
         mMenuButtonView = menuButtonView;
         mHiglightMenuItemId = higlightMenuItemId;
-        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
+        mUserEducationHelper = new UserEducationHelper(mActivity, profile, mHandler);
     }
 
     /** Makes an asynchronous request to show the in-product help, anchored to app menu. */

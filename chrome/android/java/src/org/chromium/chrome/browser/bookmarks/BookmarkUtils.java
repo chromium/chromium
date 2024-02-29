@@ -161,7 +161,7 @@ public class BookmarkUtils {
 
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
         UserEducationHelper userEducationHelper =
-                new UserEducationHelper(activity, new Handler(Looper.myLooper()));
+                new UserEducationHelper(activity, profile, new Handler(Looper.myLooper()));
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
 

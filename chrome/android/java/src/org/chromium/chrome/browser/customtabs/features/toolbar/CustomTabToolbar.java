@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -95,6 +96,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -1392,7 +1394,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (currentTab == null) return;
                 Activity activity = currentTab.getWindowAndroid().getActivity().get();
                 if (activity == null) return;
-                mPageInfoIPHController = new PageInfoIPHController(activity, getSecurityIconView());
+                mPageInfoIPHController =
+                        new PageInfoIPHController(
+                                new UserEducationHelper(
+                                        activity,
+                                        currentTab.getProfile(),
+                                        new Handler(Looper.getMainLooper())),
+                                getSecurityIconView());
             }
             if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
                 if (!mCookieControlsVisible || !mThirdPartyCookiesBlocked) return;

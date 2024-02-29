@@ -66,7 +66,7 @@ public class ToolbarButtonInProductHelpController
     private final View mSecurityIconAnchorView;
     private final AppMenuHandler mAppMenuHandler;
     private final UserEducationHelper mUserEducationHelper;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Profile mProfile;
     private final Supplier<Tab> mCurrentTabSupplier;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
 
@@ -76,7 +76,7 @@ public class ToolbarButtonInProductHelpController
      * @param appMenuCoordinator {@link AppMenuCoordinator} whose visual state is to be updated
      *     accordingly.
      * @param lifecycleDispatcher {@link LifecycleDispatcher} that helps observe activity lifecycle.
-     * @param profileSupplier A supplier of the Profile associated with the current visible state.
+     * @param profile The current Profile.
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param menuButtonAnchorView The menu button view to serve as an anchor.
@@ -87,7 +87,7 @@ public class ToolbarButtonInProductHelpController
             @NonNull WindowAndroid windowAndroid,
             @NonNull AppMenuCoordinator appMenuCoordinator,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull Profile profile,
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull View menuButtonAnchorView,
@@ -99,13 +99,13 @@ public class ToolbarButtonInProductHelpController
         mMenuButtonAnchorView = menuButtonAnchorView;
         mSecurityIconAnchorView = securityIconAnchorView;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mUserEducationHelper = new UserEducationHelper(mActivity, new Handler());
+        mUserEducationHelper = new UserEducationHelper(mActivity, profile, new Handler());
         if (!BuildInfo.getInstance().isAutomotive) {
             mScreenshotMonitor = new ScreenshotMonitorImpl(this, mActivity);
         }
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
-        mProfileSupplier = profileSupplier;
+        mProfile = profile;
         mCurrentTabSupplier = tabSupplier;
         mPageLoadObserver =
                 new CurrentTabObserver(
@@ -231,8 +231,7 @@ public class ToolbarButtonInProductHelpController
     @Override
     public void onScreenshotTaken() {
         Tab currentTab = mCurrentTabSupplier.get();
-        Profile currentProfile =
-                currentTab != null ? currentTab.getProfile() : mProfileSupplier.get();
+        Profile currentProfile = currentTab != null ? currentTab.getProfile() : mProfile;
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(currentProfile);
         tracker.notifyEvent(EventConstants.SCREENSHOT_TAKEN_CHROME_IN_FOREGROUND);

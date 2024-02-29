@@ -99,6 +99,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     private NewTabPageManager mManager;
     private Activity mActivity;
+    private Profile mProfile;
     private UiConfig mUiConfig;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
     private CallbackController mCallbackController = new CallbackController();
@@ -241,6 +242,7 @@ public class NewTabPageLayout extends LinearLayout {
         mScrollDelegate = scrollDelegate;
         mManager = manager;
         mActivity = activity;
+        mProfile = ProfileManager.getLastUsedRegularProfile();
         mUiConfig = uiConfig;
         mNewTabPageUma = uma;
         mIsIncognito = isIncognito;
@@ -248,7 +250,6 @@ public class NewTabPageLayout extends LinearLayout {
         mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceOnTablet;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
 
@@ -302,7 +303,7 @@ public class NewTabPageLayout extends LinearLayout {
         }
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(
-                profile,
+                mProfile,
                 lifecycleDispatcher,
                 tileGroupDelegate,
                 touchEnabledDelegate,
@@ -1055,7 +1056,8 @@ public class NewTabPageLayout extends LinearLayout {
                         R.string.feature_notification_guide_tooltip_message_voice_search,
                         mSearchBoxCoordinator.getVoiceSearchButton(),
                         true);
-        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
+        UserEducationHelper userEducationHelper =
+                new UserEducationHelper(mActivity, mProfile, new Handler());
         userEducationHelper.requestShowIPH(iphCommandBuilder.build());
     }
 

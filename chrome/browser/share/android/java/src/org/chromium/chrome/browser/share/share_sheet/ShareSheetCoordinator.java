@@ -203,7 +203,7 @@ public class ShareSheetCoordinator
 
         mBottomSheet =
                 new ShareSheetBottomSheetContent(
-                        mActivity, mIconBridge, this, params, mFeatureEngagementTracker);
+                        mActivity, mProfile, mIconBridge, this, params, mFeatureEngagementTracker);
 
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = mBottomSheet.getLinkGenerationState();

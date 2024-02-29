@@ -2901,7 +2901,10 @@ public class ToolbarPhone extends ToolbarLayout
             View optionalButton = optionalButtonStub.inflate();
 
             UserEducationHelper userEducationHelper =
-                    new UserEducationHelper((Activity) getContext(), new Handler());
+                    new UserEducationHelper(
+                            (Activity) getContext(),
+                            ProfileManager.getLastUsedRegularProfile(),
+                            new Handler());
 
             BooleanSupplier isAnimationAllowedPredicate =
                     new BooleanSupplier() {

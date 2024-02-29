@@ -446,10 +446,11 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         mBottomSheetController,
                         new ShareSheetBottomSheetContent(
                                 mActivity,
+                                mProfile,
                                 null,
                                 mShareSheetCoordinator,
-                                shareParams,
-                                /* featureEngagementTracker= */ null),
+                                /* featureEngagementTracker= */ shareParams,
+                                null),
                         shareParams,
                         /* TabPrinterDelegate= */ null,
                         isIncognito,

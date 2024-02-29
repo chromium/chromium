@@ -4,14 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
-import android.app.Activity;
 import android.graphics.Rect;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
@@ -27,20 +23,15 @@ public class PageInfoIPHController {
     private final UserEducationHelper mUserEducationHelper;
     private final View mStatusView;
 
-    @VisibleForTesting
-    public PageInfoIPHController(UserEducationHelper educationHelper, View statusView) {
-        mUserEducationHelper = educationHelper;
-        mStatusView = statusView;
-    }
-
     /**
      * Constructor
      *
-     * @param activity The activity.
+     * @param educationHelper The helper controlling user education.
      * @param statusView The status view in the omnibox. Used as anchor for IPH bubble.
      */
-    public PageInfoIPHController(Activity activity, View statusView) {
-        this(new UserEducationHelper(activity, new Handler(Looper.getMainLooper())), statusView);
+    public PageInfoIPHController(UserEducationHelper educationHelper, View statusView) {
+        mUserEducationHelper = educationHelper;
+        mStatusView = statusView;
     }
 
     /**

@@ -95,6 +95,7 @@ public class WebFeedFollowIntroController {
     private Clock mClock = System::currentTimeMillis;
 
     private final Activity mActivity;
+    private final Profile mProfile;
     private final CurrentTabObserver mCurrentTabObserver;
     private final EmptyTabObserver mTabObserver;
     private final PrefService mPrefService;
@@ -153,6 +154,7 @@ public class WebFeedFollowIntroController {
                         snackbarManager);
 
         mActivity = activity;
+        mProfile = profile;
         mTabSupplier = tabSupplier;
         mFeatureEngagementTracker = TrackerFactory.getTrackerForProfile(profile);
         mWebFeedSnackbarController =
@@ -286,7 +288,7 @@ public class WebFeedFollowIntroController {
     }
 
     private void maybeShowIPH(RecommendedWebFeedInfo recommendedInfo) {
-        UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
+        UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, new Handler());
         mWebFeedFollowIntroView.showIPH(
                 helper, () -> introWasShown(recommendedInfo), this::introWasNotShown);
     }

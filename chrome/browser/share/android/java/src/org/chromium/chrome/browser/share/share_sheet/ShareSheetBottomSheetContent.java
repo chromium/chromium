@@ -34,6 +34,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
@@ -74,6 +75,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private static final int SHARE_SHEET_ITEM = 0;
 
     private final Activity mActivity;
+    private final Profile mProfile;
     private final LargeIconBridge mIconBridge;
     private final ShareSheetCoordinator mShareSheetCoordinator;
     private final Tracker mFeatureEngagementTracker;
@@ -88,6 +90,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
      *
      * @param activity The containing {@link Activity}.
+     * @param profile The active {@link Profile}.
      * @param iconBridge The {@link LargeIconBridge} to generate the icon in the preview.
      * @param shareSheetCoordinator The Coordinator that instantiated this BottomSheetContent.
      * @param params The {@link ShareParams} for the current share.
@@ -95,11 +98,13 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      */
     ShareSheetBottomSheetContent(
             Activity activity,
+            Profile profile,
             LargeIconBridge iconBridge,
             ShareSheetCoordinator shareSheetCoordinator,
             ShareParams params,
             Tracker featureEngagementTracker) {
         mActivity = activity;
+        mProfile = profile;
         mIconBridge = iconBridge;
         mShareSheetCoordinator = shareSheetCoordinator;
         mParams = params;
@@ -486,7 +491,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         Rect insetRect = new Rect(0, -yInsetPx, 0, -yInsetPx);
 
         UserEducationHelper userEducationHelper =
-                new UserEducationHelper(mActivity, new Handler(Looper.getMainLooper()));
+                new UserEducationHelper(mActivity, mProfile, new Handler(Looper.getMainLooper()));
         userEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(
                                 mActivity.getResources(),

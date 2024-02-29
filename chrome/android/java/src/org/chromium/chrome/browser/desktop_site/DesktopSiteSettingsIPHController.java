@@ -84,7 +84,7 @@ public class DesktopSiteSettingsIPHController {
                 profile,
                 toolbarMenuButton,
                 appMenuHandler,
-                new UserEducationHelper(activity, new Handler(Looper.getMainLooper())),
+                new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper())),
                 new WebsitePreferenceBridge(),
                 MessageDispatcherProvider.from(windowAndroid));
     }

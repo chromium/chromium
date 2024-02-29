@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.view.View;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -22,11 +23,14 @@ public class PageZoomIPHController {
     private final UserEducationHelper mUserEducationHelper;
 
     public PageZoomIPHController(
-            Activity mActivity, AppMenuHandler mAppMenuHandler, View mToolbarMenuButton) {
+            Activity mActivity,
+            Profile profile,
+            AppMenuHandler mAppMenuHandler,
+            View mToolbarMenuButton) {
         this(
                 mAppMenuHandler,
                 mToolbarMenuButton,
-                new UserEducationHelper(mActivity, new Handler(Looper.getMainLooper())));
+                new UserEducationHelper(mActivity, profile, new Handler(Looper.getMainLooper())));
     }
 
     protected PageZoomIPHController(

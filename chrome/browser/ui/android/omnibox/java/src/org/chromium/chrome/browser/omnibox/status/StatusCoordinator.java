@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import android.animation.Animator;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
@@ -26,6 +28,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
@@ -98,7 +101,10 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         PageInfoIPHController pageInfoIPHController =
                 new PageInfoIPHController(
-                        ContextUtils.activityFromContext(mStatusView.getContext()),
+                        new UserEducationHelper(
+                                ContextUtils.activityFromContext(mStatusView.getContext()),
+                                profileSupplier,
+                                new Handler(Looper.getMainLooper())),
                         getSecurityIconView());
 
         mMediator =

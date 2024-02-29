@@ -8,10 +8,13 @@ import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -20,6 +23,9 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that shows and hides in-product help message bubbles.
@@ -46,11 +52,54 @@ public class UserEducationHelper {
     private final Activity mActivity;
     private final Handler mHandler;
 
-    public UserEducationHelper(Activity activity, Handler handler) {
+    private Profile mProfile;
+    private List<IPHCommand> mPendingIPHCommands;
+
+    /**
+     * Constructs a {@link UserEducationHelper} that is immediately available to process inbound
+     * {@link IPHCommand}s.
+     */
+    public UserEducationHelper(
+            @NonNull Activity activity, @NonNull Profile profile, Handler handler) {
         assert activity != null : "Trying to show an IPH for a null activity.";
+        assert profile != null : "Trying to show an IPH with a null profile";
 
         mActivity = activity;
         mHandler = handler;
+
+        setProfile(profile);
+    }
+
+    /**
+     * Constructs a {@link UserEducationHelper} that will wait for a {@link Profile} to become
+     * available before processing inbound {@link IPHCommand}s.
+     *
+     * <p>Caveat, this will only observe the first available Profile from the supplier and will keep
+     * a reference to the {@link Profile#getOriginalProfile()}.
+     */
+    public UserEducationHelper(
+            @NonNull Activity activity,
+            @NonNull Supplier<Profile> profileSupplier,
+            Handler handler) {
+        assert activity != null : "Trying to show an IPH for a null activity.";
+        assert profileSupplier != null : "Trying to show an IPH with a null profile supplier";
+
+        mActivity = activity;
+        mHandler = handler;
+
+        SupplierUtils.waitForAll(() -> setProfile(profileSupplier.get()), profileSupplier);
+    }
+
+    private void setProfile(Profile profile) {
+        assert profile != null;
+        mProfile = profile.getOriginalProfile();
+
+        if (mPendingIPHCommands != null) {
+            for (IPHCommand iphCommand : mPendingIPHCommands) {
+                requestShowIPH(iphCommand);
+            }
+            mPendingIPHCommands = null;
+        }
     }
 
     /**
@@ -62,13 +111,14 @@ public class UserEducationHelper {
     public void requestShowIPH(IPHCommand iphCommand) {
         if (iphCommand == null) return;
 
+        if (mProfile == null) {
+            if (mPendingIPHCommands == null) mPendingIPHCommands = new ArrayList<>();
+            mPendingIPHCommands.add(iphCommand);
+            return;
+        }
+
         try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIPH")) {
-            // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-            // incognito profile) instead of always using regular profile. Currently always original
-            // profile is used not to start popping IPH messages as soon as opening an incognito
-            // tab.
-            Profile profile = ProfileManager.getLastUsedRegularProfile();
-            final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+            final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
             tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
         }
     }

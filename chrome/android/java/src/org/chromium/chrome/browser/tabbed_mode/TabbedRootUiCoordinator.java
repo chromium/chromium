@@ -826,7 +826,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mWindowAndroid,
                         mAppMenuCoordinator,
                         mActivityLifecycleDispatcher,
-                        mProfileSupplier,
+                        profile,
                         mActivityTabProvider,
                         mIsInOverviewModeSupplier,
                         mToolbarManager.getMenuButtonView(),
@@ -834,6 +834,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mReadAloudIPHController =
                 new ReadAloudIPHController(
                         mActivity,
+                        profile,
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler(),
                         mActivityTabProvider,
@@ -841,6 +842,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mReadLaterIPHController =
                 new ReadLaterIPHController(
                         mActivity,
+                        profile,
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler());
 
@@ -933,6 +935,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     && MultiWindowUtils.shouldShowManageWindowsMenu()) {
                 MultiInstanceIphController.maybeShowInProductHelp(
                         mActivity,
+                        profile,
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler(),
                         R.id.manage_all_windows_menu_id);
@@ -955,6 +958,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mOfflineIndicatorInProductHelpController =
                     new OfflineIndicatorInProductHelpController(
                             mActivity,
+                            profile,
                             mToolbarManager,
                             mAppMenuCoordinator.getAppMenuHandler(),
                             mStatusIndicatorCoordinator);
@@ -976,6 +980,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mAppBannerInProductHelpController =
                 AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
                         mActivity,
+                        profile,
                         mAppMenuCoordinator.getAppMenuHandler(),
                         () -> mToolbarManager.getMenuButtonView(),
                         R.id.add_to_homescreen_id);
@@ -1022,6 +1027,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 PageZoomIPHController mPageZoomIPHController =
                         new PageZoomIPHController(
                                 mActivity,
+                                profile,
                                 mAppMenuCoordinator.getAppMenuHandler(),
                                 mToolbarManager.getMenuButtonView());
                 mPageZoomIPHController.showColdStartIPH();

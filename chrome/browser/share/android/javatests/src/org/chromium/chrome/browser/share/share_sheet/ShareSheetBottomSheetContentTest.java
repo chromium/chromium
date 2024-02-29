@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
@@ -114,10 +115,12 @@ public final class ShareSheetBottomSheetContentTest {
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mFeatureEngagementTracker);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         mShareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         mShareParams,
@@ -131,6 +134,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")
@@ -162,6 +166,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")
@@ -193,6 +198,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")
@@ -332,6 +338,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", sUrl).build(),
@@ -363,6 +370,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")
@@ -397,6 +405,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")
@@ -431,6 +440,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")
@@ -476,6 +486,7 @@ public final class ShareSheetBottomSheetContentTest {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(
                         mActivity,
+                        mProfile,
                         new MockLargeIconBridge(),
                         null,
                         new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")

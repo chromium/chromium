@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -35,6 +36,7 @@ public class ReadAloudIPHController {
      * Constructor.
      *
      * @param activity The current activity.
+     * @param profile The current Profile.
      * @param toolbarMenuButton The toolbar menu button to which IPH will be anchored.
      * @param appMenuHandler The app menu handler
      * @param tabSupplier The tab supplier
@@ -42,6 +44,7 @@ public class ReadAloudIPHController {
      */
     public ReadAloudIPHController(
             Activity activity,
+            Profile profile,
             View toolbarMenuButton,
             AppMenuHandler appMenuHandler,
             ObservableSupplier<Tab> tabSupplier,
@@ -50,7 +53,7 @@ public class ReadAloudIPHController {
                 activity,
                 toolbarMenuButton,
                 appMenuHandler,
-                new UserEducationHelper(activity, new Handler(Looper.getMainLooper())),
+                new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper())),
                 tabSupplier,
                 readAloudControllerSupplier);
     }

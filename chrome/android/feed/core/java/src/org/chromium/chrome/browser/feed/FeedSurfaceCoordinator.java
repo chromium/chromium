@@ -560,7 +560,8 @@ public class FeedSurfaceCoordinator
                     // The feed header may not be visible for smaller screens or landscape mode.
                     // Scroll to show the header before showing the IPH.
                     mMediator.scrollToViewIfNecessary(getSectionHeaderPosition());
-                    UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
+                    UserEducationHelper helper =
+                            new UserEducationHelper(mActivity, mProfile, mHandler);
                     mSectionHeaderView.showHeaderIph(helper);
                 },
                 DELAY_FEED_HEADER_IPH_MS);
@@ -570,7 +571,7 @@ public class FeedSurfaceCoordinator
         if (mWebFeedHasContent
                 && FeedFeatures.shouldUseWebFeedAwarenessIPH()
                 && !FeedFeatures.isFeedFollowUiUpdateEnabled()) {
-            UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
+            UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, mHandler);
             mSectionHeaderView.showWebFeedAwarenessIph(
                     helper, StreamTabId.FOLLOWING, new Scroller());
         }
@@ -1070,7 +1071,7 @@ public class FeedSurfaceCoordinator
                         mScrollableContainerDelegate,
                         () -> {
                             UserEducationHelper helper =
-                                    new UserEducationHelper(mActivity, mHandler);
+                                    new UserEducationHelper(mActivity, mProfile, mHandler);
                             mSectionHeaderView.showMenuIph(helper);
                         });
         mScrollableContainerDelegate.addScrollListener(mHeaderIphScrollListener);
@@ -1083,7 +1084,7 @@ public class FeedSurfaceCoordinator
                         mScrollableContainerDelegate,
                         () -> {
                             UserEducationHelper helper =
-                                    new UserEducationHelper(mActivity, mHandler);
+                                    new UserEducationHelper(mActivity, mProfile, mHandler);
                             mSwipeRefreshLayout.showIPH(helper);
                         });
         mScrollableContainerDelegate.addScrollListener(mRefreshIphScrollListener);

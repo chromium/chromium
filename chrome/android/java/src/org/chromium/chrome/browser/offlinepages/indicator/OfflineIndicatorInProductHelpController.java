@@ -9,6 +9,7 @@ import android.os.Handler;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -31,13 +32,14 @@ public class OfflineIndicatorInProductHelpController
 
     public OfflineIndicatorInProductHelpController(
             final Activity activity,
+            Profile profile,
             final ToolbarManager toolbarManager,
             final AppMenuHandler appMenuHandler,
             final StatusIndicatorCoordinator coordinator) {
         mActivity = activity;
         mToolbarManager = toolbarManager;
         mAppMenuHandler = appMenuHandler;
-        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
+        mUserEducationHelper = new UserEducationHelper(mActivity, profile, mHandler);
 
         assert coordinator != null;
         mCoordinator = coordinator;
