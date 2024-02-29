@@ -174,6 +174,11 @@ public class PlayerCoordinator implements Player {
         }
     }
 
+    /** Collapses the expanded player and shows mini player */
+    void hideExpandedPlayer() {
+        mExpandedPlayer.dismiss(true);
+    }
+
     @Override
     public void hidePlayers() {
         int expandedSheetVisibility = mExpandedPlayer.getVisibility();

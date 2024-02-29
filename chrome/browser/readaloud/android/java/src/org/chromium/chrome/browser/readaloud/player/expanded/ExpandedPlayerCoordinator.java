@@ -131,8 +131,12 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
     }
 
     public void dismiss() {
+        dismiss(/* showMiniPlayer= */ false);
+    }
+
+    public void dismiss(boolean showMiniPlayer) {
         if (mMediator != null) {
-            mMediator.setShowMiniPlayerOnDismiss(false);
+            mMediator.setShowMiniPlayerOnDismiss(showMiniPlayer);
             mMediator.dismiss();
         }
     }

@@ -333,4 +333,12 @@ public class PlayerCoordinatorUnitTest {
         verify(mExpandedPlayer).dismiss();
         verify(mObserver, never()).onRequestClosePlayers();
     }
+
+    @Test
+    public void testHideExpandedPlayer() {
+        mPlayerCoordinator.hideExpandedPlayer();
+
+        verify(mExpandedPlayer).dismiss(true);
+        verify(mMiniPlayer, never()).dismiss(anyBoolean());
+    }
 }

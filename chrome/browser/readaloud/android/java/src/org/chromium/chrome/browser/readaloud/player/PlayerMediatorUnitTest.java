@@ -393,6 +393,7 @@ public class PlayerMediatorUnitTest {
     @Test
     public void testOnPublisherClick() {
         mMediator.onPublisherClick();
+        verify(mPlayerCoordinator).hideExpandedPlayer();
         verify(mDelegate).navigateToPlayingTab();
     }
 

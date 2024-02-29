@@ -219,6 +219,7 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onPublisherClick() {
+        mCoordinator.hideExpandedPlayer();
         mDelegate.navigateToPlayingTab();
     }
 
