@@ -213,10 +213,12 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
     return;
 
   ResetLastInteractedElements();
-  if (element.Form().IsNull())
+  if (blink::WebFormElement form = form_util::GetOwningForm(element);
+      !form.IsNull()) {
+    last_interacted_form_ = FormRef(form);
+  } else {
     last_interacted_formless_element_ = FieldRef(element);
-  else
-    last_interacted_form_ = FormRef(element.Form());
+  }
   // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,
   // document the reason, if not, remove.
   TrackElement(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
@@ -233,13 +235,14 @@ void FormTracker::FormControlDidChangeImpl(
     return;
   }
 
-  if (element.Form().IsNull()) {
-    last_interacted_formless_element_ = FieldRef(element);
+  blink::WebFormElement form = form_util::GetOwningForm(element);
+  if (!form.IsNull()) {
+    last_interacted_form_ = FormRef(form);
   } else {
-    last_interacted_form_ = FormRef(element.Form());
+    last_interacted_formless_element_ = FieldRef(element);
   }
   for (auto& observer : observers_) {
-    observer.OnProvisionallySaveForm(element.Form(), element, change_source);
+    observer.OnProvisionallySaveForm(form, element, change_source);
   }
 }
 
