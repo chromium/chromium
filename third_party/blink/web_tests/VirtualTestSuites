@@ -2566,14 +2566,30 @@
     "args": ["--enable-features=GenericSensorExtraClasses"],
     "expires": "never"
   },
+  "Run the WebNN WPTs with the WebNN service enabled. These are confusingly ",
+  "named 'gpu' tests however this really means that the WebNN Mojo service ",
+  "is used instead of the renderer-only implementation built using XNNPACK.",
   {
-    "prefix": "webnn-service-enabled",
-    "platforms": ["Linux", "Win"],
+    "prefix": "webnn-service-with-gpu",
+    "platforms": ["Win"],
     "bases": [
       "external/wpt/webnn/conformance_tests/gpu"
     ],
     "exclusive_tests": "ALL",
     "args": ["--use-gpu-in-tests", "--enable-features=WebMachineLearningNeuralNetwork"],
+    "expires": "Jun 1, 2024",
+    "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
+  },
+  "The WebNN service on Linux doesn't use the GPU (for now) and can't run ",
+  "under MSan so a separate flag configuration is defined here.",
+  {
+    "prefix": "webnn-service-without-gpu",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/webnn/conformance_tests/gpu"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=WebMachineLearningNeuralNetwork"],
     "expires": "Jun 1, 2024",
     "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
   },
