@@ -231,7 +231,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
-  speechPlayngState: SpeechPlayingState = {
+  speechPlayingState: SpeechPlayingState = {
     paused: true,
     pauseSource: PauseActionSource.DEFAULT,
     speechStarted: false,
@@ -374,7 +374,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // TODO(crbug.com/1442693): Potentially hide links during distillation.
   private shouldShowLinks(): boolean {
     // Links should only show when Read Aloud is paused.
-    return chrome.readingMode.linksEnabled && this.speechPlayngState.paused;
+    return chrome.readingMode.linksEnabled && this.speechPlayingState.paused;
   }
 
   private appendChildSubtrees_(node: Node, nodeId: number) {
@@ -707,13 +707,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(b/323912186) Handle when menu is closed mid-preview and the user
     // presses play/pause button.
-    if (this.speechPlayngState.paused &&
+    if (this.speechPlayingState.paused &&
         event.detail.voicePlayingWhenMenuOpened) {
       this.playSpeech();
     }
   }
   private onPlayPauseClick_() {
-    if (this.speechPlayngState.paused) {
+    if (this.speechPlayingState.paused) {
       this.playSpeech();
     } else {
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
@@ -723,8 +723,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   stopSpeech(pauseSource: PauseActionSource) {
     // TODO(crbug.com/1474951): When pausing, can we pause on a word boundary
     // and continue playing from the previous word?
-    this.speechPlayngState = {
-      ...this.speechPlayngState,
+    this.speechPlayingState = {
+      ...this.speechPlayingState,
       paused: true,
       pauseSource,
     };
@@ -780,9 +780,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   playSpeech() {
     const container = this.$.container;
-    if (this.speechPlayngState.speechStarted && this.speechPlayngState.paused) {
-      const pausedFromButton =
-          this.speechPlayngState.pauseSource === PauseActionSource.BUTTON_CLICK;
+    if (this.speechPlayingState.speechStarted &&
+        this.speechPlayingState.paused) {
+      const pausedFromButton = this.speechPlayingState.pauseSource ===
+          PauseActionSource.BUTTON_CLICK;
 
       if (pausedFromButton) {
         this.synth.resume();
@@ -790,7 +791,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.highlightAndPlayMessage();
       }
 
-      this.speechPlayngState = {paused: false, speechStarted: true};
+      this.speechPlayingState = {paused: false, speechStarted: true};
 
       // Hide links when speech resumes. We only hide links when the page was
       // paused from the play/pause button.
@@ -811,7 +812,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
     if (container.textContent) {
-      this.speechPlayngState = {paused: false, speechStarted: true};
+      this.speechPlayingState = {paused: false, speechStarted: true};
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
         this.updateLinks();
@@ -1060,7 +1061,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private clearReadAloudState() {
-    this.speechPlayngState = {
+    this.speechPlayingState = {
       paused: true,
       pauseSource: PauseActionSource.DEFAULT,
       speechStarted: false,
@@ -1082,11 +1083,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private resetSpeechPostSettingChange_() {
     // Don't call stopSpeech() if initAxPositionWithNode hasn't been called
-    if (!this.speechPlayngState.speechStarted) {
+    if (!this.speechPlayingState.speechStarted) {
       return;
     }
 
-    const playSpeechOnChange = !this.speechPlayngState.paused;
+    const playSpeechOnChange = !this.speechPlayingState.paused;
 
     // Cancel the queued up Utterance using the old speech settings
     this.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);

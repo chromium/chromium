@@ -58,8 +58,8 @@ suite('PlayPause', () => {
 
   suite('by default', () => {
     test('is paused', () => {
-      assertTrue(app.speechPlayngState.paused);
-      assertFalse(app.speechPlayngState.speechStarted);
+      assertTrue(app.speechPlayingState.paused);
+      assertFalse(app.speechPlayingState.speechStarted);
     });
 
     test('shows play icon', () => {
@@ -77,7 +77,7 @@ suite('PlayPause', () => {
     });
 
     test('starts speech', () => {
-      assertFalse(app.speechPlayngState.paused);
+      assertFalse(app.speechPlayingState.paused);
       // TODO: b/323960128 - Since this test browser doesn't have any
       // voices, speechStarted doesn't get set to true. Find a way to add a mock
       // voice to this browser, and test that app.speechStarted is true.
@@ -99,7 +99,7 @@ suite('PlayPause', () => {
     });
 
     test('stops speech', () => {
-      assertTrue(app.speechPlayngState.paused);
+      assertTrue(app.speechPlayingState.paused);
     });
 
     test('updates icon to play', () => {
@@ -120,13 +120,13 @@ suite('PlayPause', () => {
 
     test('first press plays', () => {
       app.$.flexParent!.dispatchEvent(kPress);
-      assertFalse(app.speechPlayngState.paused);
+      assertFalse(app.speechPlayingState.paused);
     });
 
     test('second press pauses', () => {
       app.$.flexParent!.dispatchEvent(kPress);
       app.$.flexParent!.dispatchEvent(kPress);
-      assertTrue(app.speechPlayngState.paused);
+      assertTrue(app.speechPlayingState.paused);
     });
   });
 });
