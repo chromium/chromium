@@ -25,6 +25,8 @@ ios_appex_bundle("content_process") {
 
   sources = [ "../shell_main.cc" ]
 
+  ldflags = [ "-Wl,--ignore-auto-link-option=CoreAudioTypes" ]
+
   deps = [
     "//content/app/ios/appex:content_process",
     "//content/public/app",
