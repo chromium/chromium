@@ -109,6 +109,9 @@ constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
     {"credential_id_mismatch",
      SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
          kCredentialIdMismatch},
+    {"account_not_supported_federated_dasher",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kFederatedEnterpriseAccountNotSupported},
 });
 
 // Network annotations.

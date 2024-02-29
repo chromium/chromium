@@ -112,6 +112,7 @@ BQADQQA/ugzBrjjK9jcWnDVfGHlk3icNRq0oV7Ri32z/+HQX67aRfgZu7KWdI+Ju
 Wm7DCfrPNGVwFWUQOmsPue9rZBgO
 -----END CERTIFICATE-----
     })";
+constexpr char kFakeEmail[] = "fake-user@example.com";
 
 constexpr char kFidoCredentialIdBytes[] = "fake-fido-credential-id";
 constexpr char kFakeDeviceId[] = "fake-device-id";
@@ -794,12 +795,28 @@ TEST_F(SecondDeviceAuthBrokerTest,
 // they will consider it to be a "less_secure_device" and reject the request.
 TEST_F(SecondDeviceAuthBrokerTest,
        FetchAuthCodeReturnsRejectionResponseForLessSecureDevices) {
-  const std::string email = "fake-user@example.com";
-  AddFakeRejectionResponse(email, /*rejection_reason=*/"LESS_SECURE_DEVICE");
+  AddFakeRejectionResponse(kFakeEmail,
+                           /*rejection_reason=*/"LESS_SECURE_DEVICE");
   AuthCodeRejectionResponse expected_response;
-  expected_response.email = email;
+  expected_response.email = kFakeEmail;
   expected_response.reason =
       AuthCodeRejectionResponse::Reason::kLessSecureDevice;
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
+}
+
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeReturnsRejectionResponseForFederatedEnterpriseAccounts) {
+  AddFakeRejectionResponse(
+      kFakeEmail,
+      /*rejection_reason=*/"ACCOUNT_NOT_SUPPORTED_FEDERATED_DASHER");
+  AuthCodeRejectionResponse expected_response;
+  expected_response.email = kFakeEmail;
+  expected_response.reason = AuthCodeRejectionResponse::Reason::
+      kFederatedEnterpriseAccountNotSupported;
   SecondDeviceAuthBroker::AuthCodeResponse response =
       FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
                     /*certificate=*/GetCertificate());

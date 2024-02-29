@@ -91,6 +91,9 @@ class SecondDeviceAuthBroker {
 
       // Credential ID mismatch thrown during FIDO assertion verification.
       kCredentialIdMismatch,
+
+      // Federated Enterprise accounts are currently not supported.
+      kFederatedEnterpriseAccountNotSupported,
     };
 
     Reason reason;
