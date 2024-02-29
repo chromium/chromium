@@ -6618,14 +6618,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "privacy-guide-android",
-    "owners": [
-      "rubindl@chromium.org",
-      "msramek@chromium.org",
-      "chrome-privacy-controls@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "privacy-guide-android-3",
     "owners": [
       "rubindl@chromium.org",
