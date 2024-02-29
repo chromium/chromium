@@ -359,7 +359,6 @@ crbug.com/1230619 [ android-chromium android-pixel-4 android-r angle-disabled no
 
 # Failing likely due to protected memory, but cause TBD.
 crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]
-crbug.com/1420067 [ fuchsia fuchsia-board-nelson ] Pixel_Video* [ Failure ]
 crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
 
 
