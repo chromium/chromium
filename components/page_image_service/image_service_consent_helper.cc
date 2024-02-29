@@ -10,6 +10,7 @@
 #include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/unified_consent/consent_throttle.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
@@ -135,6 +136,19 @@ std::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
     return false;
   }
 
+  // If upload of the given ModelType is disabled (or inactive due to an
+  // error), then consent must be assumed to be NOT given.
+  // Note that the "INITIALIZING" state is good enough: It means the data
+  // type is enabled in principle, Sync just hasn't fully finished
+  // initializing yet. This case is handled by the DownloadStatus check
+  // below.
+  if (syncer::GetUploadToGoogleState(sync_service_, model_type_) ==
+      syncer::UploadState::NOT_ACTIVE) {
+    return false;
+  }
+
+  // Ensure Sync has downloaded all relevant updates (i.e. any deletions from
+  // other devices are known).
   syncer::SyncService::ModelTypeDownloadStatus download_status =
       sync_service_->GetDownloadStatusFor(model_type_);
   switch (download_status) {
