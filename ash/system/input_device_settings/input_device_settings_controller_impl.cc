@@ -1756,6 +1756,14 @@ void InputDeviceSettingsControllerImpl::InitializeGraphicsTabletSettings(
     return;
   }
 
+  // If there is no active account id or local state isn't initialized, use
+  // default graphics tablet settings. This can happen as an uncommon race
+  // condition when first signing in on the login screen.
+  if (!active_account_id_ || !local_state_) {
+    graphics_tablet->settings = mojom::GraphicsTabletSettings::New();
+    return;
+  }
+
   graphics_tablet_pref_handler_->InitializeLoginScreenGraphicsTabletSettings(
       local_state_, active_account_id_.value(), graphics_tablet);
 }
