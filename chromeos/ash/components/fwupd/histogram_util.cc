@@ -38,9 +38,9 @@ void EmitInstallFailedWithStatus(FwupdStatus last_fwupd_status) {
       "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus", last_fwupd_status);
 }
 
-void EmitInstallResult(FirmwareUpdateManager::InstallResult result) {
-  base::UmaHistogramEnumeration("ChromeOS.FirmwareUpdateUi.InstallResult",
-                                result);
+void EmitInstallResult(InstallResult result) {
+  base::UmaHistogramSparse("ChromeOS.FirmwareUpdateUi.InstallResult",
+                           static_cast<int>(result));
 }
 
 void EmitDeviceRequest(firmware_update::mojom::DeviceRequestPtr request) {

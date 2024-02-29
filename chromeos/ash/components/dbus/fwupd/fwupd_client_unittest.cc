@@ -649,12 +649,12 @@ TEST_F(FwupdClientTest, Install) {
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
   base::RunLoop run_loop;
-  fwupd_client_->InstallUpdate(kFakeDeviceIdForTesting, base::ScopedFD(0),
-                               std::map<std::string, bool>(),
-                               base::BindLambdaForTesting([&](bool success) {
-                                 EXPECT_TRUE(success);
-                                 run_loop.Quit();
-                               }));
+  fwupd_client_->InstallUpdate(
+      kFakeDeviceIdForTesting, base::ScopedFD(0), std::map<std::string, bool>(),
+      base::BindLambdaForTesting([&](FwupdResult result) {
+        EXPECT_EQ(result, FwupdResult::kSuccess);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

@@ -59,6 +59,49 @@ enum class FwupdStatus {
   kMaxValue = kWaitingForUser,
 };
 
+// Used in histograms. Keep in sync with FirmwareUpdateInstallResult in
+// tools/metrics/histograms/metadata/chromeos/enums.xml.
+enum class InstallResult {
+  kSuccess = 0,
+  // DEPRECATED: kInstallFailed = 1,
+  kFailedToCreateUpdateDirectory = 2,
+  // DEPRECATED: kInvalidDestinationFile = 3,
+  kInvalidFileDescriptor = 4,
+  kFailedToDownloadToFile = 5,
+  kFailedToCreatePatchFile = 6,
+  kEmptyPatchFile = 7,
+  kInvalidPatchFileUri = 8,
+  kInvalidPatchFile = 9,
+  kInstallFailedTimeout = 10,
+
+  // All Install Errors returned by fwupd dbus signal
+  // These errors are consistent with
+  // /chromeos/ash/components/dbus/fwupd/fwupd_client.h
+  //
+  // Starting values from 100 to keep the Fwupd Error message contiguous in case
+  // more error names are added.
+  kInternalError = 100,
+  kVersionNewerError = 101,
+  kVersionSameError = 102,
+  kAlreadyPendingError = 103,
+  kAuthFailedError = 104,
+  kReadError = 105,
+  kWriteError = 106,
+  kInvalidFileError = 107,
+  kNotFoundError = 108,
+  kNothingToDoError = 109,
+  kNotSupportedError = 110,
+  kSignatureInvalidError = 111,
+  kAcPowerRequiredError = 112,
+  kPermissionDeniedError = 113,
+  kBrokenSystemError = 114,
+  kBatteryLevelTooLowError = 115,
+  kNeedsUserActionError = 116,
+  kAuthExpiredError = 117,
+  kUnknownError = 118,
+  kMaxValue = kUnknownError,
+};
+
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
@@ -69,23 +112,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
   ~FirmwareUpdateManager() override;
-
-  // Used in histograms. Keep in sync with FirmwareUpdateInstallResult in
-  // tools/metrics/histograms/metadata/chromeos/enums.xml.
-  enum class InstallResult {
-    kSuccess = 0,
-    kInstallFailed = 1,
-    kFailedToCreateUpdateDirectory = 2,
-    // DEPRECATED: kInvalidDestinationFile = 3,
-    kInvalidFileDescriptor = 4,
-    kFailedToDownloadToFile = 5,
-    kFailedToCreatePatchFile = 6,
-    kEmptyPatchFile = 7,
-    kInvalidPatchFileUri = 8,
-    kInvalidPatchFile = 9,
-    kInstallFailedTimeout = 10,
-    kMaxValue = kInstallFailedTimeout,
-  };
 
   class Observer : public base::CheckedObserver {
    public:
@@ -191,7 +217,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
                      base::File patch_file);
 
   // Response from fwupd DBus client InstallUpdate call.
-  void OnInstallResponse(InstallCallback callback, bool success);
+  void OnInstallResponse(InstallCallback callback, FwupdResult result);
 
   // InstallComplete will be called exactly once with a result when an install
   // attempt succeeds or fails for any reason.

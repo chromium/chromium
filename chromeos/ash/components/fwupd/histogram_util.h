@@ -21,7 +21,7 @@ void EmitUpdateCount(int num_updates,
                      bool is_startup);
 
 void EmitInstallFailedWithStatus(FwupdStatus last_fwupd_status);
-void EmitInstallResult(FirmwareUpdateManager::InstallResult result);
+void EmitInstallResult(InstallResult result);
 void EmitDeviceRequest(firmware_update::mojom::DeviceRequestPtr request);
 void EmitFailedDeviceRequestDuration(const base::TimeDelta& request_duration,
                                      mojom::DeviceRequestId request_id);

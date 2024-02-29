@@ -32,6 +32,34 @@ enum DeviceRequestId {
 };
 
 namespace ash {
+
+// All values returnable by fwupd dbus signal
+// The errors are consistent with
+// https://fwupd.github.io/libfwupd/error.Error.html
+enum class FwupdResult {
+  kSuccess,
+  kInternalError,
+  kVersionNewerError,
+  kVersionSameError,
+  kAlreadyPendingError,
+  kAuthFailedError,
+  kReadError,
+  kWriteError,
+  kInvalidFileError,
+  kNotFoundError,
+  kNothingToDoError,
+  kNotSupportedError,
+  kSignatureInvalidError,
+  kAcPowerRequiredError,
+  kPermissionDeniedError,
+  kBrokenSystemError,
+  kBatteryLevelTooLowError,
+  kNeedsUserActionError,
+  kAuthExpiredError,
+  kUnknownError,
+  kMaxValue = kUnknownError,
+};
+
 using FirmwareInstallOptions = std::map<std::string, bool>;
 using FwupdStringToRequestIdMap = std::map<std::string, DeviceRequestId>;
 
@@ -85,10 +113,11 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
 
   // Install an update for |device_id|. Invokes |callback| when the operation
   // completes.
-  virtual void InstallUpdate(const std::string& device_id,
-                             base::ScopedFD file_descriptor,
-                             FirmwareInstallOptions options,
-                             base::OnceCallback<void(bool)> callback) = 0;
+  virtual void InstallUpdate(
+      const std::string& device_id,
+      base::ScopedFD file_descriptor,
+      FirmwareInstallOptions options,
+      base::OnceCallback<void(FwupdResult)> callback) = 0;
 
  protected:
   friend class FwupdClientTest;

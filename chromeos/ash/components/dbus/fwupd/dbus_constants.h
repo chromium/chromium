@@ -42,6 +42,34 @@ const char kFwupdDeviceRequestId_ReplugInstall[] =
 const char kFwupdDeviceRequestId_ReplugPower[] =
     "org.freedesktop.fwupd.replug-power";
 
+const char kFwupdErrorName_Internal[] = "org.freedesktop.fwupd.Internal";
+const char kFwupdErrorName_VersionNewer[] =
+    "org.freedesktop.fwupd.VersionNewer";
+const char kFwupdErrorName_VersionSame[] = "org.freedesktop.fwupd.VersionSame";
+const char kFwupdErrorName_AlreadyPending[] =
+    "org.freedesktop.fwupd.AlreadyPending";
+const char kFwupdErrorName_AuthFailed[] = "org.freedesktop.fwupd.AuthFailed";
+const char kFwupdErrorName_Read[] = "org.freedesktop.fwupd.Read";
+const char kFwupdErrorName_Write[] = "org.freedesktop.fwupd.Write";
+const char kFwupdErrorName_InvalidFile[] = "org.freedesktop.fwupd.InvalidFile";
+const char kFwupdErrorName_NotFound[] = "org.freedesktop.fwupd.NotFound";
+const char kFwupdErrorName_NothingToDo[] = "org.freedesktop.fwupd.NothingToDo";
+const char kFwupdErrorName_NotSupported[] =
+    "org.freedesktop.fwupd.NotSupported";
+const char kFwupdErrorName_SignatureInvalid[] =
+    "org.freedesktop.fwupd.SignatureInvalid";
+const char kFwupdErrorName_AcPowerRequired[] =
+    "org.freedesktop.fwupd.AcPowerRequired";
+const char kFwupdErrorName_PermissionDenied[] =
+    "org.freedesktop.fwupd.PermissionDenied";
+const char kFwupdErrorName_BrokenSystem[] =
+    "org.freedesktop.fwupd.BrokenSystem";
+const char kFwupdErrorName_BatteryLevelTooLow[] =
+    "org.freedesktop.fwupd.BatteryLevelTooLow";
+const char kFwupdErrorName_NeedsUserAction[] =
+    "org.freedesktop.fwupd.NeedsUserAction";
+const char kFwupdErrorName_AuthExpired[] = "org.freedesktop.fwupd.AuthExpired";
+
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_DBUS_CONSTANTS_H_

@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
@@ -60,14 +61,15 @@ void FakeFwupdClient::RequestUpdates(const std::string& device_id) {
     observer.OnUpdateListResponse(device_id, &updates);
 }
 
-void FakeFwupdClient::InstallUpdate(const std::string& device_id,
-                                    base::ScopedFD file_descriptor,
-                                    FirmwareInstallOptions options,
-                                    base::OnceCallback<void(bool)> callback) {
+void FakeFwupdClient::InstallUpdate(
+    const std::string& device_id,
+    base::ScopedFD file_descriptor,
+    FirmwareInstallOptions options,
+    base::OnceCallback<void(FwupdResult)> callback) {
   // This matches the behavior of the real class. I.e. if you send an unknown
   // id, nothing happens.
   if (device_id != kFakeDeviceIdForTesting) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(FwupdResult::kInternalError);
     return;
   }
 
@@ -75,7 +77,7 @@ void FakeFwupdClient::InstallUpdate(const std::string& device_id,
   if (defer_install_update_callback_) {
     install_update_callback_ = std::move(callback);
   } else {
-    std::move(callback).Run(/*success=*/true);
+    std::move(callback).Run(FwupdResult::kSuccess);
   }
 }
 
@@ -90,7 +92,7 @@ void FakeFwupdClient::TriggerPropertiesChangeForTesting(uint32_t percentage,
 void FakeFwupdClient::TriggerSuccessfulUpdateForTesting() {
   CHECK(install_update_callback_);
   has_update_started_ = false;
-  std::move(install_update_callback_).Run(/*success=*/true);
+  std::move(install_update_callback_).Run(FwupdResult::kSuccess);
 }
 
 void FakeFwupdClient::EmitDeviceRequestForTesting(uint32_t device_request_id) {

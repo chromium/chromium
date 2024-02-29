@@ -886,7 +886,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="FirmwareUpdateInstallResult">
   <int value="0" label="Success"/>
-  <int value="1" label="InstallFailed"/>
+  <int value="1" label="DEPRECATED: InstallFailed"/>
   <int value="2" label="FailedToCreateUpdateDirectory"/>
   <int value="3" label="DEPRECATED: InvalidDestinationFile"/>
   <int value="4" label="InvalidFileDescriptor"/>
@@ -896,6 +896,25 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="InvalidPatchFileUri"/>
   <int value="9" label="InvalidPatchFile"/>
   <int value="10" label="InstallFailedTimeout"/>
+  <int value="100" label="InternalError"/>
+  <int value="101" label="InstalledNewerFirmwareVersion"/>
+  <int value="102" label="InstalledSameFirmwareVersion"/>
+  <int value="103" label="AlreadySetToBeInstalledOffline"/>
+  <int value="104" label="FailedToGetAuthentication"/>
+  <int value="105" label="FailedToReadFromDevice"/>
+  <int value="106" label="FailedToWriteToTheDevice"/>
+  <int value="107" label="InvalidFileFormat"/>
+  <int value="108" label="NoMatchingDeviceExists"/>
+  <int value="109" label="NothingToDo"/>
+  <int value="110" label="ActionWasNotPossible"/>
+  <int value="111" label="SignatureWasInvalid"/>
+  <int value="112" label="ACPowerWasRequired"/>
+  <int value="113" label="PermissionWasDenied"/>
+  <int value="114" label="UserHasConfiguredTheirSystemInABrokenWay"/>
+  <int value="115" label="TheSystemBatteryLevelIsTooLow"/>
+  <int value="116" label="UserNeedsToDoAnActionToCompleteTheUpdate"/>
+  <int value="117" label="FailedToGetAuthAsCredentialsHaveExpired"/>
+  <int value="118" label="UnknownError"/>
 </enum>
 
 <enum name="GeolocationAccessLevel">

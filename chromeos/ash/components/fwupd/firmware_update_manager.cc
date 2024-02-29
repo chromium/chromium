@@ -26,6 +26,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -78,6 +79,51 @@ const char kHttpsComponent[] = "https:";
 const char kFileComponent[] = "file:";
 
 FirmwareUpdateManager* g_instance = nullptr;
+
+InstallResult GetInstallResultFromFwupdResult(FwupdResult error) {
+  switch (error) {
+    case FwupdResult::kSuccess:
+      return InstallResult::kSuccess;
+    case FwupdResult::kInternalError:
+      return InstallResult::kInternalError;
+    case FwupdResult::kVersionNewerError:
+      return InstallResult::kVersionNewerError;
+    case FwupdResult::kVersionSameError:
+      return InstallResult::kVersionSameError;
+    case FwupdResult::kAlreadyPendingError:
+      return InstallResult::kAlreadyPendingError;
+    case FwupdResult::kAuthFailedError:
+      return InstallResult::kAuthFailedError;
+    case FwupdResult::kReadError:
+      return InstallResult::kReadError;
+    case FwupdResult::kWriteError:
+      return InstallResult::kWriteError;
+    case FwupdResult::kInvalidFileError:
+      return InstallResult::kInvalidFileError;
+    case FwupdResult::kNotFoundError:
+      return InstallResult::kNotFoundError;
+    case FwupdResult::kNothingToDoError:
+      return InstallResult::kNothingToDoError;
+    case FwupdResult::kNotSupportedError:
+      return InstallResult::kNotSupportedError;
+    case FwupdResult::kSignatureInvalidError:
+      return InstallResult::kSignatureInvalidError;
+    case FwupdResult::kAcPowerRequiredError:
+      return InstallResult::kAcPowerRequiredError;
+    case FwupdResult::kPermissionDeniedError:
+      return InstallResult::kPermissionDeniedError;
+    case FwupdResult::kBrokenSystemError:
+      return InstallResult::kBrokenSystemError;
+    case FwupdResult::kBatteryLevelTooLowError:
+      return InstallResult::kBatteryLevelTooLowError;
+    case FwupdResult::kNeedsUserActionError:
+      return InstallResult::kNeedsUserActionError;
+    case FwupdResult::kAuthExpiredError:
+      return InstallResult::kAuthExpiredError;
+    case FwupdResult::kUnknownError:
+      return InstallResult::kUnknownError;
+  }
+}
 
 base::ScopedFD OpenFileAndGetFileDescriptor(base::FilePath download_path) {
   base::File dest_file(download_path,
@@ -649,7 +695,9 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
 }
 
 void FirmwareUpdateManager::OnInstallResponse(InstallCallback callback,
-                                              bool success) {
+                                              FwupdResult result) {
+  InstallResult install_result = GetInstallResultFromFwupdResult(result);
+  bool success = install_result == InstallResult::kSuccess;
   FIRMWARE_LOG(EVENT) << "OnInstallResponse(). Success: " << success;
 
   if (!success) {
@@ -669,7 +717,7 @@ void FirmwareUpdateManager::OnInstallResponse(InstallCallback callback,
           request_duration, last_device_request_->id);
       std::move(callback).Run(InstallResult::kInstallFailedTimeout);
     } else {
-      std::move(callback).Run(InstallResult::kInstallFailed);
+      std::move(callback).Run(install_result);
     }
     return;
   }
