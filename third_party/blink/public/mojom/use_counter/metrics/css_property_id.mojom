@@ -840,6 +840,7 @@ enum CSSSampleId {
     kPositionTryOptions = 784,
     kPositionTry = 785,
     kTextBoxEdge = 786,
+    kReadingOrderItems = 787,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

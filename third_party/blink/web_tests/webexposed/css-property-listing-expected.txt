@@ -316,6 +316,7 @@ All changes to this list should go through Blink's feature review process: http:
     position-try-order
     quotes
     r
+    reading-order-items
     resize
     right
     rotate

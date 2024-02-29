@@ -4250,6 +4250,16 @@
       computable: false,
     },
     {
+      name: "reading-order-items",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["normal", "flex-visual", "flex-flow", "grid-rows", "grid-columns", "grid-order"],
+      typedom_types: ["Keyword"],
+      default_value: "normal",
+      runtime_flag: "CSSReadingOrderItems",
+    },
+    {
       name: "resize",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",

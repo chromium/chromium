@@ -989,9 +989,11 @@
       status: "test",
     },
     {
+      // TODO(crbug.com/40932006): Non-standard 'reading-order-items' keyword
+      // for CSS reading of grid and flex layout.
       // https://drafts.csswg.org/css-display-4/#reading-order-items
       name: "CSSReadingOrderItems",
-      status: "experimental",
+      status: "test",
     },
     {
       // https://drafts.csswg.org/css-color-5/#relative-colors

@@ -298,6 +298,7 @@ position-fallback-bounds: normal
 position-try-options: none
 position-try-order: normal
 r: 0px
+reading-order-items: normal
 resize: none
 right: auto
 rotate: none
