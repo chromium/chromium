@@ -24,13 +24,13 @@ using password_manager_util::GetMatchType;
 namespace {
 
 std::vector<std::unique_ptr<PasswordForm>> DeepCopyNonPSLVector(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        password_forms) {
+    base::span<const PasswordForm> password_forms) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   result.reserve(password_forms.size());
-  for (const PasswordForm* form : password_forms) {
-    if (GetMatchType(*form) != password_manager_util::GetLoginMatchType::kPSL)
-      result.push_back(std::make_unique<PasswordForm>(*form));
+  for (const PasswordForm& form : password_forms) {
+    if (GetMatchType(form) != password_manager_util::GetLoginMatchType::kPSL) {
+      result.push_back(std::make_unique<PasswordForm>(form));
+    }
   }
   return result;
 }
@@ -136,11 +136,12 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
   ClearData();
   form_manager_ = std::move(form_manager);
-  for (const password_manager::PasswordForm* form :
+  for (const password_manager::PasswordForm& form :
        form_manager_->GetBestMatches()) {
-    if (GetMatchType(*form) == password_manager_util::GetLoginMatchType::kPSL)
+    if (GetMatchType(form) == password_manager_util::GetLoginMatchType::kPSL) {
       continue;
-    local_credentials_forms_.push_back(std::make_unique<PasswordForm>(*form));
+    }
+    local_credentials_forms_.push_back(std::make_unique<PasswordForm>(form));
   }
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
@@ -185,8 +186,7 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
 }
 
 void ManagePasswordsState::OnPasswordAutofilled(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        password_forms,
+    base::span<const PasswordForm> password_forms,
     url::Origin origin,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
         federated_matches) {

@@ -118,8 +118,8 @@ void ManagePasswordsTest::SetupManagingPasswords(
   password_form_.url = !password_form_url.is_empty()
                            ? GURL(password_form_url.spec() + "empty.html")
                            : embedded_test_server()->GetURL("/empty.html");
-  std::vector<raw_ptr<const password_manager::PasswordForm, VectorExperimental>>
-      forms = {&password_form_, &federated_form};
+  std::vector<const password_manager::PasswordForm> forms = {password_form_,
+                                                             federated_form};
   GetController()->OnPasswordAutofilled(
       forms, embedded_test_server()->GetOrigin(), nullptr);
 }
@@ -188,9 +188,9 @@ void ManagePasswordsTest::SetupMovingPasswords() {
       testing::NiceMock<password_manager::MockPasswordFormManagerForUI>>();
   password_manager::MockPasswordFormManagerForUI* form_manager_ptr =
       form_manager.get();
-  std::vector<raw_ptr<const password_manager::PasswordForm, VectorExperimental>>
-      best_matches = {test_form()};
-  EXPECT_CALL(*form_manager, GetBestMatches).WillOnce(ReturnRef(best_matches));
+  std::vector<const password_manager::PasswordForm> best_matches = {
+      *test_form()};
+  EXPECT_CALL(*form_manager, GetBestMatches).WillOnce(Return(best_matches));
   ON_CALL(*form_manager, GetPendingCredentials)
       .WillByDefault(ReturnRef(*test_form()));
   ON_CALL(*form_manager, GetFederatedMatches)

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_FORM_FETCHER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_FORM_FETCHER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -54,8 +55,7 @@ class FakeFormFetcher : public FormFetcher {
                        const std::u16string& username) const override;
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
   GetAllRelevantMatches() const override;
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-  GetBestMatches() const override;
+  base::span<const PasswordForm> GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   // Returns a new FakeFormFetcher.
   std::unique_ptr<FormFetcher> Clone() override;
@@ -107,7 +107,7 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>> federated_;
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       non_federated_same_scheme_;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches_;
+  std::vector<PasswordForm> best_matches_;
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       insecure_credentials_;
   bool is_blocklisted_ = false;

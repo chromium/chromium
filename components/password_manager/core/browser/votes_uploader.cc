@@ -164,8 +164,7 @@ void LabelFields(const FieldTypeMap& field_types,
 // which doesn't have a username.
 bool IsAddingUsernameToExistingMatch(
     const PasswordForm& credentials,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        matches) {
+    const base::span<const PasswordForm>& matches) {
   if (credentials.username_value.empty())
     return false;
   const PasswordForm* match = FindFormByUsername(matches, std::u16string());
@@ -215,8 +214,7 @@ FieldSignature GetUsernameFieldSignature(
 
 AutofillUploadContents::ValueType GetValueType(
     const std::u16string& username_value,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        stored_credentials) {
+    const base::span<const PasswordForm>& stored_credentials) {
   if (username_value.empty())
     return AutofillUploadContents::NO_VALUE_TYPE;
 
@@ -346,8 +344,7 @@ SingleUsernameVoteData::SingleUsernameVoteData(
     FieldRendererId renderer_id,
     const std::u16string& username_value,
     const FormPredictions& form_predictions,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        stored_credentials,
+    const base::span<const PasswordForm>& stored_credentials,
     PasswordFormHadMatchingUsername password_form_had_matching_username)
     : renderer_id(renderer_id),
       form_predictions(form_predictions),
@@ -378,8 +375,7 @@ VotesUploader::~VotesUploader() = default;
 void VotesUploader::SendVotesOnSave(
     const FormData& observed,
     const PasswordForm& submitted_form,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    const base::span<const PasswordForm>& best_matches,
     PasswordForm* pending_credentials) {
   if (pending_credentials->times_used_in_html_form == 1 ||
       IsAddingUsernameToExistingMatch(*pending_credentials, best_matches)) {
@@ -603,8 +599,7 @@ bool VotesUploader::UploadPasswordVote(
 
 // TODO(crbug.com/840384): Share common code with UploadPasswordVote.
 void VotesUploader::UploadFirstLoginVotes(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    const base::span<const PasswordForm>& best_matches,
     const PasswordForm& pending_credentials,
     const PasswordForm& form_to_upload) {
   AutofillCrowdsourcingManager* crowdsourcing_manager =
@@ -813,8 +808,7 @@ void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
 
 void VotesUploader::SetKnownValueFlag(
     const PasswordForm& pending_credentials,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    const base::span<const PasswordForm>& best_matches,
     FormStructure* form) {
   const std::u16string& known_username = pending_credentials.username_value;
   std::u16string known_password;

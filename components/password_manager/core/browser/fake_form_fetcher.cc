@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -88,16 +89,15 @@ FakeFormFetcher::GetAllRelevantMatches() const {
   return non_federated_same_scheme_;
 }
 
-const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-FakeFormFetcher::GetBestMatches() const {
-  return best_matches_;
+base::span<const PasswordForm> FakeFormFetcher::GetBestMatches() const {
+  return base::make_span(best_matches_);
 }
 
 const PasswordForm* FakeFormFetcher::GetPreferredMatch() const {
   if (best_matches_.empty()) {
     return nullptr;
   }
-  return *best_matches_.begin();
+  return &best_matches_[0];
 }
 
 std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
@@ -108,8 +108,8 @@ void FakeFormFetcher::SetNonFederated(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         non_federated) {
   non_federated_ = non_federated;
-  password_manager_util::FindBestMatches(
-      non_federated_, scheme_, &non_federated_same_scheme_, &best_matches_);
+  best_matches_ = password_manager_util::FindBestMatches(
+      non_federated_, scheme_, &non_federated_same_scheme_);
 }
 
 void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {

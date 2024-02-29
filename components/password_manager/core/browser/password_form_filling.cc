@@ -74,8 +74,7 @@ void Autofill(
     PasswordManagerClient* client,
     PasswordManagerDriver* driver,
     const PasswordForm& form_for_autofill,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    const base::span<const PasswordForm>& best_matches,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         federated_matches,
     std::optional<PasswordForm> preferred_match,
@@ -126,8 +125,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     PasswordManagerClient* client,
     PasswordManagerDriver* driver,
     const PasswordForm& observed_form,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         federated_matches,
     const PasswordForm* preferred_match,
@@ -274,7 +272,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 
 PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    base::span<const PasswordForm> matches,
     std::optional<PasswordForm> preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username) {
@@ -318,23 +316,23 @@ PasswordFormFillData CreatePasswordFormFillData(
   }
 
   // Add additional username/value pairs.
-  for (const PasswordForm* match : matches) {
+  for (const PasswordForm& match : matches) {
     if (preferred_match.has_value() &&
-        (match->username_value == preferred_match.value().username_value &&
-         match->password_value == preferred_match.value().password_value)) {
+        (match.username_value == preferred_match.value().username_value &&
+         match.password_value == preferred_match.value().password_value)) {
       continue;
     }
     PasswordAndMetadata value;
-    value.username_value = match->username_value;
-    value.password_value = match->password_value;
-    value.uses_account_store = match->IsUsingAccountStore();
+    value.username_value = match.username_value;
+    value.password_value = match.password_value;
+    value.uses_account_store = match.IsUsingAccountStore();
 
-    if (GetMatchType(*match) != GetLoginMatchType::kExact) {
-      value.realm = GetPreferredRealm(*match);
-    } else if (!IsSameOrigin(main_frame_origin, match->url)) {
+    if (GetMatchType(match) != GetLoginMatchType::kExact) {
+      value.realm = GetPreferredRealm(match);
+    } else if (!IsSameOrigin(main_frame_origin, match.url)) {
       // If the suggestion is for a cross-origin iframe, display the origin of
       // the suggestion.
-      value.realm = GetPreferredRealm(*match);
+      value.realm = GetPreferredRealm(match);
     }
     result.additional_logins.push_back(std::move(value));
   }

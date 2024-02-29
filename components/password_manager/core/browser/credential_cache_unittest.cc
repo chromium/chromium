@@ -60,36 +60,28 @@ TEST_F(CredentialCacheTest, ReturnsSameStoreForSameOriginOnly) {
 
 TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
   Origin origin = Origin::Create(GURL(kExampleSite));
+  std::vector<PasswordForm> matches = {
+      CreateEntry("Berta", "30948", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact),
+      CreateEntry("Adam", "Pas83B", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact),
+      CreateEntry("Dora", "PakudC", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact),
+      CreateEntry("Carl", "P1238C", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact),
+      // These entries need to be ordered but come after the examples above.
+      CreateEntry("Cesar", "V3V1V", GURL(kExampleSite),
+                  PasswordForm::MatchType::kAffiliated),
+      CreateEntry("Rolf", "A4nd0m", GURL(kExampleSiteMobile),
+                  PasswordForm::MatchType::kPSL),
+      CreateEntry("Greg", "5fnd1m", GURL(kExampleSiteSubdomain),
+                  PasswordForm::MatchType::kPSL),
+      CreateEntry("Elfi", "a65ddm", GURL(kExampleSiteSubdomain),
+                  PasswordForm::MatchType::kPSL),
+      CreateEntry("Alf", "R4nd50m", GURL(kExampleSiteMobile),
+                  PasswordForm::MatchType::kPSL)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {CreateEntry("Berta", "30948", GURL(kExampleSite),
-                   PasswordForm::MatchType::kExact)
-           .get(),
-       CreateEntry("Adam", "Pas83B", GURL(kExampleSite),
-                   PasswordForm::MatchType::kExact)
-           .get(),
-       CreateEntry("Dora", "PakudC", GURL(kExampleSite),
-                   PasswordForm::MatchType::kExact)
-           .get(),
-       CreateEntry("Carl", "P1238C", GURL(kExampleSite),
-                   PasswordForm::MatchType::kExact)
-           .get(),
-       // These entries need to be ordered but come after the examples above.
-       CreateEntry("Cesar", "V3V1V", GURL(kExampleSite),
-                   PasswordForm::MatchType::kAffiliated)
-           .get(),
-       CreateEntry("Rolf", "A4nd0m", GURL(kExampleSiteMobile),
-                   PasswordForm::MatchType::kPSL)
-           .get(),
-       CreateEntry("Greg", "5fnd1m", GURL(kExampleSiteSubdomain),
-                   PasswordForm::MatchType::kPSL)
-           .get(),
-       CreateEntry("Elfi", "a65ddm", GURL(kExampleSiteSubdomain),
-                   PasswordForm::MatchType::kPSL)
-           .get(),
-       CreateEntry("Alf", "R4nd50m", GURL(kExampleSiteMobile),
-                   PasswordForm::MatchType::kPSL)
-           .get()},
-      IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetCredentials(),
@@ -128,29 +120,30 @@ TEST_F(CredentialCacheTest, StoresUnnotifiedSharedCredentialsCredentials) {
   const std::string kSharedNotified = "shared_notified";
   const std::string kSharedUnnotified = "shared_unnotified";
 
-  std::unique_ptr<PasswordForm> non_shared_credentials = CreateEntry(
+  PasswordForm non_shared_credentials = CreateEntry(
       kNonShared, "pass", GURL(kExampleSite), PasswordForm::MatchType::kExact);
 
-  std::unique_ptr<PasswordForm> shared_notified_credentials =
+  PasswordForm shared_notified_credentials =
       CreateEntry(kSharedNotified, "pass", GURL(kExampleSite),
                   PasswordForm::MatchType::kExact);
-  shared_notified_credentials->type = PasswordForm::Type::kReceivedViaSharing;
-  shared_notified_credentials->sharing_notification_displayed = true;
+  shared_notified_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_notified_credentials.sharing_notification_displayed = true;
 
-  std::unique_ptr<PasswordForm> shared_unnotified_credentials =
+  PasswordForm shared_unnotified_credentials =
       CreateEntry(kSharedUnnotified, "pass", GURL(kExampleSite),
                   PasswordForm::MatchType::kExact);
-  shared_unnotified_credentials->type = PasswordForm::Type::kReceivedViaSharing;
-  shared_unnotified_credentials->sharing_notification_displayed = false;
+  shared_unnotified_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_unnotified_credentials.sharing_notification_displayed = false;
 
+  std::vector<PasswordForm> matches = {non_shared_credentials,
+                                       shared_notified_credentials,
+                                       shared_unnotified_credentials};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {non_shared_credentials.get(), shared_notified_credentials.get(),
-       shared_unnotified_credentials.get()},
-      IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetUnnotifiedSharedCredentials(),
-      testing::ElementsAre(*shared_unnotified_credentials));
+      testing::ElementsAre(shared_unnotified_credentials));
 
   // Credentials should be sorted such that shared unnotified credentials come
   // first.
@@ -175,17 +168,19 @@ TEST_F(
   const std::string kNonShared = "non_shared";
   const std::string kSharedUnnotified = "shared_unnotified";
 
-  std::unique_ptr<PasswordForm> non_shared_credentials = CreateEntry(
+  PasswordForm non_shared_credentials = CreateEntry(
       kNonShared, "pass", GURL(kExampleSite), PasswordForm::MatchType::kExact);
 
-  std::unique_ptr<PasswordForm> shared_unnotified_credentials =
+  PasswordForm shared_unnotified_credentials =
       CreateEntry(kSharedUnnotified, "pass", GURL(kExampleSite),
                   PasswordForm::MatchType::kExact);
-  shared_unnotified_credentials->type = PasswordForm::Type::kReceivedViaSharing;
-  shared_unnotified_credentials->sharing_notification_displayed = false;
+  shared_unnotified_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_unnotified_credentials.sharing_notification_displayed = false;
+  std::vector<PasswordForm> matches = {
+      std::move(non_shared_credentials),
+      std::move(shared_unnotified_credentials)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {non_shared_credentials.get(), shared_unnotified_credentials.get()},
-      IsOriginBlocklisted(false), origin);
+      matches, IsOriginBlocklisted(false), origin);
 
   EXPECT_THAT(
       cache()->GetCredentialStore(origin).GetUnnotifiedSharedCredentials(),
@@ -203,17 +198,14 @@ TEST_F(
 TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {
   Origin origin = Origin::Create(GURL(kExampleSite));
   Origin origin2 = Origin::Create(GURL(kExampleSite2));
-
+  std::vector<PasswordForm> matches1 = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite),
-                   PasswordForm::MatchType::kExact)
-           .get()},
-      IsOriginBlocklisted(false), origin);
+      matches1, IsOriginBlocklisted(false), origin);
+  std::vector<PasswordForm> matches2 = {CreateEntry(
+      "Abe", "B4dPW", GURL(kExampleSite2), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {CreateEntry("Abe", "B4dPW", GURL(kExampleSite2),
-                   PasswordForm::MatchType::kExact)
-           .get()},
-      IsOriginBlocklisted(false), origin2);
+      matches2, IsOriginBlocklisted(false), origin2);
 
   EXPECT_THAT(cache()->GetCredentialStore(origin).GetCredentials(),
               testing::ElementsAre(MakeUiCredential("Ben", "S3cur3")));
@@ -224,11 +216,10 @@ TEST_F(CredentialCacheTest, StoresCredentialsForIndependentOrigins) {
 
 TEST_F(CredentialCacheTest, ClearsCredentials) {
   Origin origin = Origin::Create(GURL(kExampleSite));
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite),
-                   PasswordForm::MatchType::kExact)
-           .get()},
-      IsOriginBlocklisted(false), Origin::Create(GURL(kExampleSite)));
+      matches, IsOriginBlocklisted(false), Origin::Create(GURL(kExampleSite)));
   ASSERT_THAT(cache()->GetCredentialStore(origin).GetCredentials(),
               testing::ElementsAre(MakeUiCredential("Ben", "S3cur3")));
 
@@ -238,11 +229,10 @@ TEST_F(CredentialCacheTest, ClearsCredentials) {
 
 TEST_F(CredentialCacheTest, StoresBlocklistedWithCredentials) {
   Origin origin = Origin::Create(GURL(kExampleSite));
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
-      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite),
-                   PasswordForm::MatchType::kExact)
-           .get()},
-      IsOriginBlocklisted(true), Origin::Create(GURL(kExampleSite)));
+      matches, IsOriginBlocklisted(true), Origin::Create(GURL(kExampleSite)));
   EXPECT_EQ(OriginCredentialStore::BlocklistedStatus::kIsBlocklisted,
             cache()->GetCredentialStore(origin).GetBlocklistedStatus());
 }

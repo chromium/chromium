@@ -57,13 +57,11 @@ void PasswordManagerClient::GeneratePassword(
 
 void PasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     bool is_blocklisted) {}
 
 void PasswordManagerClient::PasswordWasAutofilled(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     const url::Origin& origin,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
         federated_matches,

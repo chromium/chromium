@@ -67,13 +67,12 @@ PasswordForm CreateTestForm() {
 }
 
 std::vector<PasswordForm> CreateTestLogins() {
-  std::vector<PasswordForm> forms;
-  forms.push_back(*CreateEntry("Todd Tester", "S3cr3t",
-                               GURL(u"https://example.com"),
-                               PasswordForm::MatchType::kExact));
-  forms.push_back(*CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
-                               GURL(u"https://m.example.com"),
-                               PasswordForm::MatchType::kPSL));
+  std::vector<PasswordForm> forms = {
+      CreateEntry("Todd Tester", "S3cr3t", GURL(u"https://example.com"),
+                  PasswordForm::MatchType::kExact),
+      CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
+                  GURL(u"https://m.example.com"),
+                  PasswordForm::MatchType::kPSL)};
   return forms;
 }
 

@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -60,8 +61,7 @@ class FormFetcherImpl : public FormFetcher,
 
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
   GetAllRelevantMatches() const override;
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-  GetBestMatches() const override;
+  base::span<const PasswordForm> GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   std::unique_ptr<FormFetcher> Clone() override;
   std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
@@ -136,7 +136,7 @@ class FormFetcherImpl : public FormFetcher,
 
   // Set of nonblocklisted PasswordForms from the password store that best match
   // the form being managed by |this|.
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches_;
+  std::vector<PasswordForm> best_matches_;
 
   // Whether there were any blocklisted credentials obtained from the profile
   // and account password stores respectively.

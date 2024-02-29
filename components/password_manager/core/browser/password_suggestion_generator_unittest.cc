@@ -70,10 +70,10 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
   PasswordSuggestionGenerator& generator() { return generator_; }
 
   CredentialUIEntry credential_ui_entry() const {
-    std::unique_ptr<PasswordForm> form = CreateEntry(
-        "username@example.com", "password", GURL("https://google.com/"),
-        PasswordForm::MatchType::kExact);
-    return CredentialUIEntry(*form);
+    PasswordForm form = CreateEntry("username@example.com", "password",
+                                    GURL("https://google.com/"),
+                                    PasswordForm::MatchType::kExact);
+    return CredentialUIEntry(std::move(form));
   }
 
  private:
@@ -117,13 +117,13 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_SuggestionContent) {
 }
 
 TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_FirstDomainIsUsed) {
-  std::unique_ptr<PasswordForm> form_1 =
+  PasswordForm form_1 =
       CreateEntry("example@google.com", "password", GURL("https://google.com/"),
                   PasswordForm::MatchType::kExact);
-  std::unique_ptr<PasswordForm> form_2 =
+  PasswordForm form_2 =
       CreateEntry("example@google.com", "password", GURL("https://amazon.com/"),
                   PasswordForm::MatchType::kExact);
-  CredentialUIEntry entry({*form_1, *form_2});
+  CredentialUIEntry entry({std::move(form_1), std::move(form_2)});
   std::vector<Suggestion> suggestions =
       generator().GetManualFallbackSuggestions({entry});
 
@@ -139,23 +139,25 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_FirstDomainIsUsed) {
 
 TEST_F(PasswordSuggestionGeneratorTest,
        ManualFallback_MultipleCredentials_SortedByDomain) {
-  std::unique_ptr<PasswordForm> form_1 =
+  PasswordForm form_1 =
       CreateEntry("first@google.com", "first", GURL("https://google.com/"),
                   PasswordForm::MatchType::kExact);
-  std::unique_ptr<PasswordForm> form_2 =
+  PasswordForm form_2 =
       CreateEntry("second@google.com", "first", GURL("https://microsoft.com/"),
                   PasswordForm::MatchType::kExact);
-  std::unique_ptr<PasswordForm> form_3 =
+  PasswordForm form_3 =
       CreateEntry("third@google.com", "second", GURL("https://netflix.com/"),
                   PasswordForm::MatchType::kExact);
-  std::unique_ptr<PasswordForm> form_4 =
+  PasswordForm form_4 =
       CreateEntry("fourth@google.com", "second", GURL("https://amazon.com/"),
                   PasswordForm::MatchType::kExact);
 
   std::vector<Suggestion> suggestions =
       generator().GetManualFallbackSuggestions(
-          {CredentialUIEntry({*form_1}), CredentialUIEntry({*form_2}),
-           CredentialUIEntry({*form_3}), CredentialUIEntry({*form_4})});
+          {CredentialUIEntry({std::move(form_1)}),
+           CredentialUIEntry({std::move(form_2)}),
+           CredentialUIEntry({std::move(form_3)}),
+           CredentialUIEntry({std::move(form_4)})});
 
   // Manual fallback suggestions are sorted by domain name.
   EXPECT_THAT(suggestions,

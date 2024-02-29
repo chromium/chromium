@@ -598,8 +598,7 @@ void ChromePasswordManagerClient::ResetSubmissionTrackingAfterTouchToFill() {
 
 void ChromePasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     bool is_blocklisted) {
 #if BUILDFLAG(IS_ANDROID)
   credential_cache_.SaveCredentialsAndBlocklistedForOrigin(
@@ -624,8 +623,7 @@ void ChromePasswordManagerClient::AutomaticPasswordSave(
 }
 
 void ChromePasswordManagerClient::PasswordWasAutofilled(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     const url::Origin& origin,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
         federated_matches,

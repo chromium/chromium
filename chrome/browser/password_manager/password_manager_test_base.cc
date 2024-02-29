@@ -95,8 +95,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
       const url::Origin& origin,
       ManagePasswordsState::CredentialsCallback callback) override;
   void OnPasswordAutofilled(
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& password_forms,
+      const base::span<const password_manager::PasswordForm> password_forms,
       const url::Origin& origin,
       const std::vector<
           raw_ptr<const password_manager::PasswordForm, VectorExperimental>>*
@@ -230,8 +229,7 @@ bool CustomManagePasswordsUIController::OnChooseCredentials(
 }
 
 void CustomManagePasswordsUIController::OnPasswordAutofilled(
-    const std::vector<raw_ptr<const password_manager::PasswordForm,
-                              VectorExperimental>>& password_forms,
+    const base::span<const password_manager::PasswordForm> password_forms,
     const url::Origin& origin,
     const std::vector<raw_ptr<const password_manager::PasswordForm,
                               VectorExperimental>>* federated_matches) {

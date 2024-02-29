@@ -176,12 +176,12 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   preferred_match.password_value = u"test";
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches;
+  std::vector<const PasswordForm> matches;
   PasswordForm non_preferred_match = preferred_match;
   non_preferred_match.username_value = u"test1@gmail.com";
   non_preferred_match.password_value = u"test1";
   non_preferred_match.match_type = PasswordForm::MatchType::kPSL;
-  matches.push_back(&non_preferred_match);
+  matches.push_back(std::move(non_preferred_match));
 
   url::Origin page_origin = url::Origin::Create(GURL("https://foo.com/"));
 

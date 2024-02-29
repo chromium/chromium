@@ -57,6 +57,7 @@ using ::affiliations::GroupedFacets;
 using ::autofill::password_generation::PasswordGenerationType;
 using ::device_reauth::MockDeviceAuthenticator;
 using ::password_manager::PasswordForm;
+using ::testing::Not;
 
 constexpr char kTestAndroidRealm[] = "android://hash@com.example.beta.android";
 constexpr char kTestFederationURL[] = "https://google.com/";
@@ -373,15 +374,14 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     for (const PasswordForm& match : owning_matches)
       matches.push_back(&match);
 
-    std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
     const PasswordForm* preferred_match = nullptr;
 
     std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
         same_scheme_matches;
-    FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
-                    &best_matches);
+    std::vector<PasswordForm> best_matches = FindBestMatches(
+        matches, PasswordForm::Scheme::kHtml, &same_scheme_matches);
     if (!best_matches.empty()) {
-      preferred_match = best_matches[0];
+      preferred_match = &best_matches[0];
     }
 
     if (test_case.expected_preferred_match_index == kNotFound) {
@@ -390,20 +390,23 @@ TEST(PasswordManagerUtil, FindBestMatches) {
       EXPECT_TRUE(best_matches.empty());
     } else {
       // Check |preferred_match|.
-      EXPECT_EQ(matches[test_case.expected_preferred_match_index],
-                preferred_match);
+      EXPECT_EQ(*matches[test_case.expected_preferred_match_index],
+                *preferred_match);
       // Check best matches.
       ASSERT_EQ(test_case.expected_best_matches_indices.size(),
                 best_matches.size());
 
-      for (const PasswordForm* match : best_matches) {
-        std::string username = base::UTF16ToUTF8(match->username_value);
+      for (const PasswordForm& match : best_matches) {
+        std::string username = base::UTF16ToUTF8(match.username_value);
         ASSERT_NE(test_case.expected_best_matches_indices.end(),
                   test_case.expected_best_matches_indices.find(username));
         size_t expected_index =
             test_case.expected_best_matches_indices.at(username);
-        size_t actual_index =
-            std::distance(matches.begin(), base::ranges::find(matches, match));
+        size_t actual_index = std::distance(
+            matches.begin(),
+            base::ranges::find_if(matches, [&match](const auto& non_federated) {
+              return *non_federated == match;
+            }));
         EXPECT_EQ(expected_index, actual_index);
       }
     }
@@ -446,17 +449,19 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   matches.push_back(&account_form2);
   matches.push_back(&profile_form2);
 
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       same_scheme_matches;
-  FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
-                  &best_matches);
-  // |profile_form1| is filtered out because it's the same as |account_form1|.
+  std::vector<PasswordForm> best_matches = FindBestMatches(
+      matches, PasswordForm::Scheme::kHtml, &same_scheme_matches);
   EXPECT_EQ(best_matches.size(), 3U);
-  EXPECT_TRUE(base::Contains(best_matches, &account_form1));
-  EXPECT_TRUE(base::Contains(best_matches, &account_form2));
-  EXPECT_FALSE(base::Contains(best_matches, &profile_form1));
-  EXPECT_TRUE(base::Contains(best_matches, &profile_form2));
+  account_form1.in_store =
+      password_manager::PasswordForm::Store::kProfileStore |
+      password_manager::PasswordForm::Store::kAccountStore;
+  EXPECT_THAT(best_matches, testing::Contains(account_form1));
+  EXPECT_THAT(best_matches, testing::Contains(account_form2));
+  // |profile_form1| is filtered out because it's the same as |account_form1|.
+  EXPECT_THAT(best_matches, Not(testing::Contains(profile_form1)));
+  EXPECT_THAT(best_matches, testing::Contains(profile_form2));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {

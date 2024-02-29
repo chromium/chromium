@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 
 namespace autofill {
@@ -48,8 +49,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     PasswordManagerClient* client,
     PasswordManagerDriver* driver,
     const PasswordForm& observed_form,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         federated_matches,
     const PasswordForm* preferred_match,
@@ -63,7 +63,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 // If |wait_for_username| is true then fill on account select will be used.
 autofill::PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    base::span<const PasswordForm> best_matches,
     std::optional<PasswordForm> preferred_match,
     const url::Origin& main_frame_origin,
     bool wait_for_username);

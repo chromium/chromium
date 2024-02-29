@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/votes_uploader.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -25,6 +26,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/vote_uploads_test_matchers.h"
@@ -270,11 +272,15 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
     field.name = GetFieldNameByIndex(i);
     match_form.form_data.fields.push_back(field);
   }
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
-      &match_form};
+
+  std::vector<const PasswordForm> matches = {match_form};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches_ptr(
+      matches.size());
+  base::ranges::transform(matches, matches_ptr.begin(),
+                          [](const PasswordForm& form) { return &form; });
 
   EXPECT_TRUE(votes_uploader.FindCorrectedUsernameElement(
-      matches, u"correct_username", u"password_value"));
+      matches_ptr, u"correct_username", u"password_value"));
 
   // SendVotesOnSave should call UploadPasswordVote and StartUploadRequest
   // twice. The first call is not the one that should be tested.

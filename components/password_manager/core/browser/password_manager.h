@@ -183,9 +183,9 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns the best matches from the manager which manages |form_id|. |driver|
   // is needed to determine the match. Returns nullptr when no matched manager
   // is found.
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-  GetBestMatches(PasswordManagerDriver* driver,
-                 autofill::FormRendererId form_id);
+  base::span<const PasswordForm> GetBestMatches(
+      PasswordManagerDriver* driver,
+      autofill::FormRendererId form_id);
 
   // Returns true if password element is detected on the current page.
   bool IsPasswordFieldDetectedOnPage() const;

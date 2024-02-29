@@ -86,25 +86,22 @@ base::StringPiece GetSignonRealmWithProtocolExcluded(
 GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form);
 
 // Given all non-blocklisted |non_federated_matches|, finds and populates
-// |non_federated_same_scheme|, |best_matches| accordingly.
-// For comparing credentials the following rule is used: non-psl match is better
-// than psl match, most recently used match is better than other matches. In
-// case of tie, an arbitrary credential from the tied ones is chosen for
-// |best_matches|.
-void FindBestMatches(
+// |non_federated_same_scheme| and returns |best_matches| as the result of the
+// function. For comparing credentials the following rule is used: non-psl match
+// is better than psl match, most recently used match is better than other
+// matches. In case of tie, an arbitrary credential from the tied ones is chosen
+// for |best_matches|.
+std::vector<password_manager::PasswordForm> FindBestMatches(
     const std::vector<raw_ptr<const password_manager::PasswordForm,
                               VectorExperimental>>& non_federated_matches,
     password_manager::PasswordForm::Scheme scheme,
     std::vector<raw_ptr<const password_manager::PasswordForm,
-                        VectorExperimental>>* non_federated_same_scheme,
-    std::vector<raw_ptr<const password_manager::PasswordForm,
-                        VectorExperimental>>* best_matches);
+                        VectorExperimental>>* non_federated_same_scheme);
 
 // Returns a form with the given |username_value| from |forms|, or nullptr if
 // none exists. If multiple matches exist, returns the first one.
 const password_manager::PasswordForm* FindFormByUsername(
-    const std::vector<raw_ptr<const password_manager::PasswordForm,
-                              VectorExperimental>>& forms,
+    base::span<const password_manager::PasswordForm> forms,
     const std::u16string& username_value);
 
 // If the user submits a form, they may have used existing credentials, new

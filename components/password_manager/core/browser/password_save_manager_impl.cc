@@ -122,8 +122,9 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MatchesInStore(
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>> store_matches;
   for (const PasswordForm* match : matches) {
     DCHECK(match->in_store != PasswordForm::Store::kNotSet);
-    if (match->in_store == store)
+    if (static_cast<int>(match->in_store) & static_cast<int>(store)) {
       store_matches.push_back(match);
+    }
   }
   return store_matches;
 }
@@ -282,16 +283,14 @@ bool AlternativeElementsContainValue(const AlternativeElementVector& elements,
                               });
 }
 
-void PopulateAlternativeUsernames(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
-    PasswordForm& form) {
-  for (const PasswordForm* match : best_matches) {
-    if ((match->username_value != form.username_value) &&
+void PopulateAlternativeUsernames(base::span<const PasswordForm> best_matches,
+                                  PasswordForm& form) {
+  for (const PasswordForm& match : best_matches) {
+    if ((match.username_value != form.username_value) &&
         !AlternativeElementsContainValue(form.all_alternative_usernames,
-                                         match->username_value)) {
+                                         match.username_value)) {
       form.all_alternative_usernames.emplace_back(
-          AlternativeElement::Value(match->username_value));
+          AlternativeElement::Value(match.username_value));
     }
   }
 }
@@ -705,9 +704,15 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
 std::pair<const PasswordForm*, PendingCredentialsState>
 PasswordSaveManagerImpl::FindSimilarSavedFormAndComputeState(
     const PasswordForm& parsed_submitted_form) const {
+  // TODO(b/327343301): Refactor ComputePendingCredentialsStates to accept
+  // base::span.
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches(
+      form_fetcher_->GetBestMatches().size());
+  base::ranges::transform(form_fetcher_->GetBestMatches(), best_matches.begin(),
+                          [](const PasswordForm& form) { return &form; });
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      parsed_submitted_form, form_fetcher_->GetBestMatches(),
-      username_updated_in_bubble_, generation_manager_.get());
+      parsed_submitted_form, best_matches, username_updated_in_bubble_,
+      generation_manager_.get());
 
   // Resolve the two states to a single canonical one. This will be used to
   // decide what UI bubble (if any) to show to the user.

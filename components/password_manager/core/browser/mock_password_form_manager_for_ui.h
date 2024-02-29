@@ -23,11 +23,10 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   ~MockPasswordFormManagerForUI() override;
 
   MOCK_METHOD(const GURL&, GetURL, (), (const override));
-  MOCK_METHOD(
-      const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&,
-      GetBestMatches,
-      (),
-      (const override));
+  MOCK_METHOD(base::span<const PasswordForm>,
+              GetBestMatches,
+              (),
+              (const override));
   MOCK_METHOD(std::vector<vector_experimental_raw_ptr<const PasswordForm>>,
               GetFederatedMatches,
               (),

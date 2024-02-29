@@ -92,8 +92,7 @@ class PasswordsClientUIDelegate {
   // the manage password icon. |federated_matches| contain the matching stored
   // federated credentials to display in the UI.
   virtual void OnPasswordAutofilled(
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& password_forms,
+      base::span<const password_manager::PasswordForm> password_forms,
       const url::Origin& origin,
       const std::vector<raw_ptr<const password_manager::PasswordForm,
                                 VectorExperimental>>* federated_matches) = 0;

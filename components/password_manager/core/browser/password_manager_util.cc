@@ -219,20 +219,17 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
   NOTREACHED_NORETURN();
 }
 
-void FindBestMatches(
+std::vector<PasswordForm> FindBestMatches(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         non_federated_matches,
     PasswordForm::Scheme scheme,
     std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-        non_federated_same_scheme,
-    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-        best_matches) {
-  DCHECK(base::ranges::none_of(non_federated_matches,
-                               &PasswordForm::blocked_by_user));
-  DCHECK(non_federated_same_scheme);
-  DCHECK(best_matches);
+        non_federated_same_scheme) {
+  CHECK(base::ranges::none_of(non_federated_matches,
+                              &PasswordForm::blocked_by_user));
+  CHECK(non_federated_same_scheme);
 
-  best_matches->clear();
+  std::vector<PasswordForm> best_matches;
   non_federated_same_scheme->clear();
 
   for (const password_manager::PasswordForm* match : non_federated_matches) {
@@ -241,7 +238,7 @@ void FindBestMatches(
   }
 
   if (non_federated_same_scheme->empty())
-    return;
+    return best_matches;
 
   std::sort(non_federated_same_scheme->begin(),
             non_federated_same_scheme->end(), IsBetterMatch);
@@ -255,7 +252,7 @@ void FindBestMatches(
     // match.
     if (it == matches_per_username.end()) {
       matches_per_username[match->username_value] = {match};
-      best_matches->push_back(match);
+      best_matches.push_back(*match);
     } else {
       // Insert another credential only if the store is different as well as the
       // password value.
@@ -263,23 +260,42 @@ void FindBestMatches(
                          [](const auto* form) { return form->in_store; })) {
         continue;
       };
-      if (base::Contains(
-              it->second, match->password_value,
-              [](const auto* form) { return form->password_value; })) {
+      // If 2 credential have the same password and the same username, update
+      // the in_store value in the best matches.
+      auto duplicate_match_it = base::ranges::find_if(
+          best_matches, [&match](const PasswordForm& form) {
+            return match->username_value == form.username_value &&
+                   match->password_value == form.password_value;
+          });
+      if (duplicate_match_it != best_matches.end()) {
+        duplicate_match_it->in_store =
+            duplicate_match_it->in_store | match->in_store;
         continue;
-      };
-      best_matches->push_back(match);
+      }
+      best_matches.push_back(*match);
       it->second.push_back(match);
     }
   }
+  return best_matches;
+}
+
+const PasswordForm* FindFormByUsername(base::span<const PasswordForm> forms,
+                                       const std::u16string& username_value) {
+  for (const PasswordForm& form : forms) {
+    if (form.username_value == username_value) {
+      return &form;
+    }
+  }
+  return nullptr;
 }
 
 const PasswordForm* FindFormByUsername(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms,
     const std::u16string& username_value) {
   for (const PasswordForm* form : forms) {
-    if (form->username_value == username_value)
+    if (form->username_value == username_value) {
       return form;
+    }
   }
   return nullptr;
 }

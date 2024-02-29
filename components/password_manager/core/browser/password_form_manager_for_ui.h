@@ -29,8 +29,7 @@ class PasswordFormManagerForUI {
   virtual const GURL& GetURL() const = 0;
 
   // Returns the best saved matches for the observed form.
-  virtual const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-  GetBestMatches() const = 0;
+  virtual base::span<const PasswordForm> GetBestMatches() const = 0;
 
   // Returns the federated saved matches for the observed form.
   // TODO(crbug.com/831123): merge with GetBestMatches.

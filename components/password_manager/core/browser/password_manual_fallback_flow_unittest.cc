@@ -80,10 +80,10 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
     profile_password_store().Init(/*prefs=*/nullptr,
                                   /*affiliated_match_helper=*/nullptr);
     // Add 1 password form to the password store.
-    std::unique_ptr<PasswordForm> form = CreateEntry(
-        "username@example.com", "password", GURL("https://google.com/"),
-        PasswordForm::MatchType::kExact);
-    profile_password_store().AddLogin(*form);
+    PasswordForm form = CreateEntry("username@example.com", "password",
+                                    GURL("https://google.com/"),
+                                    PasswordForm::MatchType::kExact);
+    profile_password_store().AddLogin(form);
 
     std::unique_ptr<SavedPasswordsPresenter> passwords_presenter =
         std::make_unique<SavedPasswordsPresenter>(

@@ -701,9 +701,10 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   password_form.username_value = u"test";
   password_form.url = GetAppURL().DeprecatedGetOriginAsURL();
   password_form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  std::vector<const password_manager::PasswordForm> forms = {password_form};
   PasswordsClientUIDelegateFromWebContents(web_contents)
-      ->OnPasswordAutofilled({&password_form},
-                             url::Origin::Create(password_form.url), nullptr);
+      ->OnPasswordAutofilled(forms, url::Origin::Create(password_form.url),
+                             nullptr);
   chrome::ManagePasswordsForPage(app_browser_);
   ASSERT_TRUE(WaitForVisible(true, manage_passwords_icon));
 }

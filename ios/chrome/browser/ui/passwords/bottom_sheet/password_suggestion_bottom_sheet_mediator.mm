@@ -497,25 +497,21 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
   password_manager::PasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
-  const std::vector<raw_ptr<const password_manager::PasswordForm,
-                            VectorExperimental>>* passwordForms =
+  const base::span<const password_manager::PasswordForm> passwordForms =
       passwordManager->GetBestMatches(driver, formId);
-  if (!passwordForms) {
-    return;
-  }
 
-  for (const password_manager::PasswordForm* form : *passwordForms) {
-    if (form->type ==
+  for (const password_manager::PasswordForm& form : passwordForms) {
+    if (form.type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
-        !form->sharing_notification_displayed) {
+        !form.sharing_notification_displayed) {
       if (base::FeatureList::IsEnabled(
               password_manager::features::kSharedPasswordNotificationUI)) {
-        _sharedUnnotifiedForms.push_back(form);
+        _sharedUnnotifiedForms.push_back(&form);
         __weak __typeof__(self) weakSelf = self;
         image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
                                                  kImageFetcherUmaClient);
         _imageFetcher->FetchImage(
-            form->sender_profile_image_url,
+            form.sender_profile_image_url,
             base::BindOnce(^(const gfx::Image& image,
                              const image_fetcher::RequestMetadata& metadata) {
               if (!image.IsEmpty()) {
@@ -525,7 +521,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
             params);
       }
     }
-    _credentials.push_back(password_manager::CredentialUIEntry(*form));
+    _credentials.push_back(password_manager::CredentialUIEntry(form));
   }
 }
 

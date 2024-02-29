@@ -146,8 +146,7 @@ class SaveUpdatePasswordMessageDelegateTest
 
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
       const GURL& password_form_url,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-          best_matches);
+      const std::vector<const PasswordForm>& best_matches);
   void RecordPasswordSaved();
   void SetPendingCredentials(std::u16string username,
                              std::u16string password,
@@ -212,14 +211,11 @@ class SaveUpdatePasswordMessageDelegateTest
     return &message_dispatcher_bridge_;
   }
 
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-  empty_best_matches() {
-    return &kEmptyBestMatches;
-  }
+  std::vector<const PasswordForm> empty_best_matches() { return {}; }
 
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-  two_forms_best_matches() {
-    return &kTwoFormsBestMatches;
+  std::vector<const PasswordForm> two_forms_best_matches() {
+    return {CreatePasswordForm(kUsername, kPassword),
+            CreatePasswordForm(kUsername2, kPassword)};
   }
 
   PasswordEditDialogBridgeDelegate* get_password_edit_dialog_bridge_delegate() {
@@ -227,13 +223,6 @@ class SaveUpdatePasswordMessageDelegateTest
   }
 
  private:
-  const PasswordForm kPasswordForm1 = CreatePasswordForm(kUsername, kPassword);
-  const PasswordForm kPasswordForm2 = CreatePasswordForm(kUsername2, kPassword);
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      kEmptyBestMatches = {};
-  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      kTwoFormsBestMatches = {&kPasswordForm1, &kPasswordForm2};
-
   PasswordForm pending_credentials_;
   GURL password_form_url_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
@@ -283,8 +272,7 @@ void SaveUpdatePasswordMessageDelegateTest::TearDown() {
 std::unique_ptr<MockPasswordFormManagerForUI>
 SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
     const GURL& password_form_url,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-        best_matches) {
+    const std::vector<const PasswordForm>& best_matches) {
   password_form_url_ = password_form_url;
   auto form_manager =
       std::make_unique<testing::NiceMock<MockPasswordFormManagerForUI>>();
@@ -294,8 +282,7 @@ SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
       .WillByDefault(Return(password_manager::metrics_util::
                                 CredentialSourceType::kPasswordManager));
   ON_CALL(*form_manager, GetURL()).WillByDefault(ReturnRef(password_form_url_));
-  ON_CALL(*form_manager, GetBestMatches())
-      .WillByDefault(ReturnRef(*best_matches));
+  ON_CALL(*form_manager, GetBestMatches()).WillByDefault(Return(best_matches));
   ON_CALL(*form_manager, GetFederatedMatches())
       .WillByDefault(Return(
           std::vector<raw_ptr<const PasswordForm, VectorExperimental>>{}));
@@ -669,11 +656,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   SetPendingCredentials(kUsername, kPassword);
-  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form};
+  std::vector<const PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword)};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
   EXPECT_CALL(*form_manager, Save());
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
@@ -693,11 +679,10 @@ TEST_F(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   SetPendingCredentials(kUsername, kPassword);
-  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form};
+  std::vector<const PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword)};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
@@ -826,11 +811,10 @@ TEST_F(
     SaveUpdatePasswordMessageDelegateTest,
     DontTriggerLocalPasswordMigrationWarning_OnUpdateMessageAutodismissTimer) {
   SetPendingCredentials(kUsername, kPassword);
-  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form};
+  std::vector<const PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword)};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
@@ -846,11 +830,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   SetPendingCredentials(kUsername, kPassword);
-  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form};
+  std::vector<const PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword)};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
   EXPECT_CALL(*form_manager, Save());
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
@@ -1345,11 +1328,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
-  PasswordForm password_form1 = CreatePasswordForm(kUsername, kPassword, true);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form1};
+  std::vector<const PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword, true)};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
   const bool is_signed_in = true;
   const bool is_update = true;
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/is_signed_in,
@@ -1370,11 +1352,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnableUseUPMLocalAndSeparateStores();
 
   SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
-  PasswordForm password_form = CreatePasswordForm(kUsername, kPassword, false);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form};
+  std::vector<const PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword, false)};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
   const bool is_update = true;
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/is_update);
@@ -1399,10 +1380,9 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   password_form.in_store =
       password_manager::PasswordForm::Store::kProfileStore |
       password_manager::PasswordForm::Store::kAccountStore;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form};
+  std::vector<const PasswordForm> single_form_best_matches = {password_form};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
   const bool is_update = true;
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/is_update);
@@ -1449,10 +1429,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   PasswordForm password_form1 = CreatePasswordForm(kUsername, kPassword, true);
   PasswordForm password_form2 =
       CreatePasswordForm(kUsername2, kPassword, false);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form1, &password_form2};
+  std::vector<const PasswordForm> single_form_best_matches = {password_form1,
+                                                              password_form2};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
 
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
@@ -1473,10 +1453,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnableUseUPMLocalAndSeparateStores();
   SetPendingCredentials(kUsername, kPassword);
   PasswordForm password_form1 = CreatePasswordForm(kUsername, kPassword, false);
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      single_form_best_matches = {&password_form1};
+  std::vector<const PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword, false)};
   auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
 
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);

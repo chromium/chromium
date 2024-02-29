@@ -32,8 +32,7 @@ class CredentialCache {
   // Saves credentials and blocklisted status for an origin so that they can be
   // used in the sheet.
   void SaveCredentialsAndBlocklistedForOrigin(
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches,
+      base::span<const PasswordForm> matches,
       IsOriginBlocklisted is_blocklisted,
       const url::Origin& origin);
 

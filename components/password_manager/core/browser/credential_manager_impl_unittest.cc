@@ -101,7 +101,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(
       void,
       PasswordWasAutofilled,
-      (const std::vector<vector_experimental_raw_ptr<const PasswordForm>>&,
+      (base::span<const PasswordForm>,
        const url::Origin&,
        const std::vector<vector_experimental_raw_ptr<const PasswordForm>>*,
        bool was_autofilled_on_pageload),
@@ -1732,7 +1732,7 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_CALL(
       *client_,
       PasswordWasAutofilled(
-          ElementsAre(Pointee(MatchesFormExceptStore(form_))), _,
+          ElementsAre(MatchesFormExceptStore(form_)), _,
           Pointee(ElementsAre(Pointee(MatchesFormExceptStore(federated)))), _));
 
   bool called = false;

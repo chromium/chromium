@@ -203,7 +203,10 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
-  expected_forms.push_back(std::make_unique<PasswordForm>(account_form));
+  PasswordForm expected_form = form_;
+  expected_form.in_store =
+      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
+  expected_forms.push_back(std::make_unique<PasswordForm>(expected_form));
   EXPECT_CALL(*client(),
               PromptUserToChooseCredentials(
                   UnorderedPasswordFormElementsAre(&expected_forms), _, _));

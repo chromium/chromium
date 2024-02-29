@@ -99,8 +99,7 @@ class ManagePasswordsUIController
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
       bool is_update_confirmation) override;
   void OnPasswordAutofilled(
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& password_forms,
+      base::span<const password_manager::PasswordForm> password_forms,
       const url::Origin& origin,
       const std::vector<
           raw_ptr<const password_manager::PasswordForm, VectorExperimental>>*

@@ -219,7 +219,7 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_UpdateUI) {
   ASSERT_TRUE(ui_form);
   EXPECT_EQ(GURL(kURL), ui_form->GetURL());
   EXPECT_THAT(ui_form->GetBestMatches(),
-              ElementsAre(Pointee(Field(&PasswordForm::username_value, u""))));
+              ElementsAre(Field(&PasswordForm::username_value, u"")));
   EXPECT_THAT(ui_form->GetFederatedMatches(),
               ElementsAre(Pointee(CreateSavedFederated())));
   EXPECT_EQ(u"", ui_form->GetPendingCredentials().username_value);

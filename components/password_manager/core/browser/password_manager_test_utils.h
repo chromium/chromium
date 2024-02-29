@@ -94,12 +94,18 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     const PasswordFormData& form_data,
     bool use_federated_login = false);
 
+PasswordForm CreateEntry(const std::string& username,
+                         const std::string& password,
+                         const GURL& origin_url,
+                         PasswordForm::MatchType match_type);
+
 // Creates a new vector entry. Callers are expected to call .get() to get a raw
 // pointer to the underlying PasswordForm.
-std::unique_ptr<PasswordForm> CreateEntry(const std::string& username,
-                                          const std::string& password,
-                                          const GURL& origin_url,
-                                          PasswordForm::MatchType match_type);
+std::unique_ptr<PasswordForm> CreateUniquePtrEntry(
+    const std::string& username,
+    const std::string& password,
+    const GURL& origin_url,
+    PasswordForm::MatchType match_type);
 
 // Checks whether the PasswordForms pointed to in |actual_values| are in some
 // permutation pairwise equal to those in |expectations|. Returns true in case

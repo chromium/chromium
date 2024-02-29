@@ -341,8 +341,7 @@ const GURL& PasswordFormManager::GetURL() const {
   return observed_form() ? observed_form()->url : observed_digest()->url;
 }
 
-const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-PasswordFormManager::GetBestMatches() const {
+base::span<const PasswordForm> PasswordFormManager::GetBestMatches() const {
   return form_fetcher_->GetBestMatches();
 }
 
@@ -402,9 +401,9 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
   const std::u16string& password = GetPendingCredentials().password_value;
   // If no match in the profile store with the same username and password exist,
   // then there is nothing to move.
-  auto is_movable = [&](const PasswordForm* match) {
-    return !match->IsUsingAccountStore() && match->username_value == username &&
-           match->password_value == password;
+  auto is_movable = [&username, &password](const PasswordForm& match) {
+    return !match.IsUsingAccountStore() && match.username_value == username &&
+           match.password_value == password;
   };
   return base::ranges::any_of(form_fetcher_->GetBestMatches(), is_movable) &&
          !form_fetcher_->IsMovingBlocked(GaiaIdHash::FromGaiaId(gaia_id),
@@ -444,8 +443,8 @@ bool PasswordFormManager::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
   const std::u16string& username = GetPendingCredentials().username_value;
   //  If no match in the account store with the same username exists, then there
   //  is nothing to update in this store.
-  auto same_username_in_account_store = [&](const PasswordForm* match) {
-    return match->IsUsingAccountStore() && match->username_value == username;
+  auto same_username_in_account_store = [&](const PasswordForm& match) {
+    return match.IsUsingAccountStore() && match.username_value == username;
   };
   return base::ranges::any_of(form_fetcher_->GetBestMatches(),
                               same_username_in_account_store) &&
@@ -1657,8 +1656,8 @@ bool HasObservedFormChanged(const FormData& form_data,
 base::flat_set<std::u16string> PasswordFormManager::GetStoredUsernames() const {
   base::flat_set<std::u16string> stored_usernames =
       base::MakeFlatSet<std::u16string>(
-          GetBestMatches(), {}, [](const PasswordForm* password_form) {
-            return base::i18n::ToLower(password_form->username_value);
+          GetBestMatches(), {}, [](const PasswordForm& password_form) {
+            return base::i18n::ToLower(password_form.username_value);
           });
   if (stored_usernames.contains(u"")) {
     stored_usernames.erase(u"");

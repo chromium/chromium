@@ -22,6 +22,11 @@ namespace password_manager {
 namespace {
 
 std::string ToString(PasswordForm::Store in_store) {
+  // It is possible that both flags are set for password forms in best matches.
+  if (in_store == (PasswordForm::Store::kProfileStore |
+                   PasswordForm::Store::kAccountStore)) {
+    return "Account and Profile Store";
+  }
   switch (in_store) {
     case PasswordForm::Store::kNotSet:
       return "Not Set";

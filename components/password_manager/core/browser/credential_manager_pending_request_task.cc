@@ -168,13 +168,14 @@ void CredentialManagerPendingRequestTask::OnFetchCompleted() {
   FilterDuplicatesInFederatedCredentials(all_matches);
   base::ranges::transform(form_fetcher_->GetBestMatches(),
                           std::back_inserter(all_matches),
-                          [](const PasswordForm* form) {
-                            return std::make_unique<PasswordForm>(*form);
+                          [](const PasswordForm& form) {
+                            return std::make_unique<PasswordForm>(form);
                           });
   FilterIrrelevantForms(all_matches, include_passwords_, federations_);
   ProcessForms(std::move(all_matches));
 }
 
+// TODO (b/327343301): Refactor `results` to be a span.
 void CredentialManagerPendingRequestTask::ProcessForms(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   using metrics_util::LogCredentialManagerGetResult;
@@ -222,15 +223,14 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     }
 
     if (!results.empty()) {
-      std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-          non_federated_matches;
+      std::vector<PasswordForm> non_federated_matches;
       std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
           federated_matches;
       for (const auto& result : results) {
         if (result->IsFederatedCredential()) {
           federated_matches.emplace_back(result.get());
         } else {
-          non_federated_matches.emplace_back(result.get());
+          non_federated_matches.emplace_back(*result.get());
         }
       }
       delegate_->client()->PasswordWasAutofilled(

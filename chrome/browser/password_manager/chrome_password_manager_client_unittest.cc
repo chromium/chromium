@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -155,15 +156,15 @@ FormData MakePasswordFormData() {
   return form_data;
 }
 
-std::unique_ptr<PasswordForm> MakePasswordForm() {
-  std::unique_ptr<PasswordForm> form = std::make_unique<PasswordForm>();
-  form->url = GURL("https://www.example.com/");
-  form->action = GURL("https://www.example.com/");
-  form->password_element = u"password-element";
-  form->submit_element = u"signIn";
-  form->signon_realm = "https://www.example.com/";
-  form->in_store = PasswordForm::Store::kProfileStore;
-  form->match_type = PasswordForm::MatchType::kExact;
+PasswordForm MakePasswordForm() {
+  PasswordForm form;
+  form.url = GURL("https://www.example.com/");
+  form.action = GURL("https://www.example.com/");
+  form.password_element = u"password-element";
+  form.submit_element = u"signIn";
+  form.signon_realm = "https://www.example.com/";
+  form.in_store = PasswordForm::Store::kProfileStore;
+  form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
 #endif
@@ -1400,8 +1401,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   driver->GetPasswordManager()->OnPasswordFormsParsed(driver.get(),
                                                       {observed_form_data});
 
-  std::vector<PasswordForm> forms;
-  forms.push_back(*MakePasswordForm());
+  std::vector<PasswordForm> forms = {MakePasswordForm()};
   store_consumer->OnGetPasswordStoreResultsOrErrorFrom(mock_store,
                                                        std::move(forms));
 
@@ -1432,11 +1432,11 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 TEST_F(ChromePasswordManagerClientAndroidTest,
        SameDocumentNavigationDoesNotClearCache) {
   auto origin = url::Origin::Create(GURL("https://example.com"));
-  auto form = MakePasswordForm();
+  std::vector<PasswordForm> forms = {MakePasswordForm()};
   GetClient()
       ->GetCredentialCacheForTesting()
       ->SaveCredentialsAndBlocklistedForOrigin(
-          {form.get()}, CredentialCache::IsOriginBlocklisted(false), origin);
+          forms, CredentialCache::IsOriginBlocklisted(false), origin);
 
   // Check that a navigation within the same document does not clear the cache.
   content::MockNavigationHandle handle(web_contents());
@@ -1581,32 +1581,32 @@ TEST_F(ChromePasswordManagerClientWithAccountStoreAndroidTest,
   GURL kURL = GURL("https://example.com");
   auto origin = url::Origin::Create(kURL);
   auto not_shared = MakePasswordForm();
-  not_shared->username_value = u"not_shared";
+  not_shared.username_value = u"not_shared";
 
   auto shared_and_notified = MakePasswordForm();
-  shared_and_notified->username_value = u"shared_and_notified";
-  shared_and_notified->type = PasswordForm::Type::kReceivedViaSharing;
-  shared_and_notified->sharing_notification_displayed = true;
+  shared_and_notified.username_value = u"shared_and_notified";
+  shared_and_notified.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_and_notified.sharing_notification_displayed = true;
 
   auto shared_not_notified_profile = MakePasswordForm();
-  shared_not_notified_profile->username_value = u"shared_not_notified_profile";
-  shared_not_notified_profile->type = PasswordForm::Type::kReceivedViaSharing;
-  shared_not_notified_profile->sharing_notification_displayed = false;
-  shared_not_notified_profile->in_store = PasswordForm::Store::kProfileStore;
+  shared_not_notified_profile.username_value = u"shared_not_notified_profile";
+  shared_not_notified_profile.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_not_notified_profile.sharing_notification_displayed = false;
+  shared_not_notified_profile.in_store = PasswordForm::Store::kProfileStore;
 
   auto shared_not_notified_account = MakePasswordForm();
-  shared_not_notified_account->username_value = u"shared_not_notified_account";
-  shared_not_notified_account->type = PasswordForm::Type::kReceivedViaSharing;
-  shared_not_notified_account->sharing_notification_displayed = false;
-  shared_not_notified_account->in_store = PasswordForm::Store::kAccountStore;
+  shared_not_notified_account.username_value = u"shared_not_notified_account";
+  shared_not_notified_account.type = PasswordForm::Type::kReceivedViaSharing;
+  shared_not_notified_account.sharing_notification_displayed = false;
+  shared_not_notified_account.in_store = PasswordForm::Store::kAccountStore;
 
+  std::vector<PasswordForm> forms = {not_shared, shared_and_notified,
+                                     shared_not_notified_profile,
+                                     shared_not_notified_account};
   GetClient()
       ->GetCredentialCacheForTesting()
       ->SaveCredentialsAndBlocklistedForOrigin(
-          {not_shared.get(), shared_and_notified.get(),
-           shared_not_notified_profile.get(),
-           shared_not_notified_account.get()},
-          CredentialCache::IsOriginBlocklisted(false), origin);
+          forms, CredentialCache::IsOriginBlocklisted(false), origin);
 
   MockPasswordStoreInterface* profile_store =
       static_cast<MockPasswordStoreInterface*>(
@@ -1616,10 +1616,10 @@ TEST_F(ChromePasswordManagerClientWithAccountStoreAndroidTest,
       static_cast<MockPasswordStoreInterface*>(
           GetClient()->GetAccountPasswordStore());
 
-  shared_not_notified_profile->sharing_notification_displayed = true;
-  shared_not_notified_account->sharing_notification_displayed = true;
-  EXPECT_CALL(*profile_store, UpdateLogin(*shared_not_notified_profile, _));
-  EXPECT_CALL(*account_store, UpdateLogin(*shared_not_notified_account, _));
+  shared_not_notified_profile.sharing_notification_displayed = true;
+  shared_not_notified_account.sharing_notification_displayed = true;
+  EXPECT_CALL(*profile_store, UpdateLogin(shared_not_notified_profile, _));
+  EXPECT_CALL(*account_store, UpdateLogin(shared_not_notified_account, _));
   GetClient()->MarkSharedCredentialsAsNotified(kURL);
 }
 
